@@ -5,6 +5,8 @@ using System.Text;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.Request;
+using sones.GraphDB.Request.GetEdgeType;
+using sones.GraphDB.Request.GetVertexType;
 
 namespace sones.GraphDB
 {
@@ -85,6 +87,20 @@ namespace sones.GraphDB
                                         RequestGetVertexType myRequestGetVertexType,
                                         Converter.GetVertexTypeResultConverter<TResult> myOutputconverter);
 
+        /// <summary>
+        /// Get a vertex type from the graphdb
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestGetAllVertexTypes">The request to get all vertex types</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult GetAllVertexTypes<TResult>(SecurityToken mySecurityToken,
+                                            TransactionToken myTransactionToken,
+                                            RequestGetAllVertexTypes myRequestGetAllVertexTypes,
+                                            Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter);
+
         #endregion
 
         #region GetEdgeType
@@ -95,13 +111,27 @@ namespace sones.GraphDB
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
-        /// <param name="myRequestGetEdgeType">The request to get an edge type</param>
+        /// <param name="myRequestGetAllEdgeTypes">The request to get the edge types</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult GetEdgeType<TResult>(   SecurityToken mySecurityToken,
                                         TransactionToken myTransactionToken,
                                         RequestGetEdgeType myRequestGetEdgeType,
                                         Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Get a edge type from the graphdb
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestGetAllEdgeTypes">The request to get all edge types</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult GetAllEdgeTypes<TResult>(SecurityToken mySecurityToken,
+                                            TransactionToken myTransactionToken,
+                                            RequestGetAllEdgeTypes myRequestGetAllEdgeTypes,
+                                            Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter);
 
         #endregion
 

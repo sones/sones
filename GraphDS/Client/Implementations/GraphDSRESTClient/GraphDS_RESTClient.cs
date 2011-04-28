@@ -9,6 +9,8 @@ using System.Web;
 using System.IO;
 using System.Text;
 using sones.Plugins.GraphDS.IO.XML_IO;
+using sones.GraphDB.Request.GetVertexType;
+using sones.GraphDB.Request.GetEdgeType;
 
 namespace sones.GraphDS.GraphDSRESTClient
 {
@@ -119,7 +121,17 @@ namespace sones.GraphDS.GraphDSRESTClient
             throw new NotImplementedException();
         }
 
+        public TResult GetAllVertexTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllVertexTypes myRequestGetAllVertexTypes, Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
         public TResult GetEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetEdgeType myRequestGetEdgeType, Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult GetAllEdgeTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllEdgeTypes myRequestGetAllEdgeTypes, Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

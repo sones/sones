@@ -14,6 +14,8 @@ using sones.Networking.HTTP;
 using sones.Plugins.GraphDS.RESTService;
 using sones.GraphDS.PluginManager.GraphDSPluginManager;
 using sones.GraphQL;
+using sones.GraphDB.Request.GetVertexType;
+using sones.GraphDB.Request.GetEdgeType;
 
 namespace sones.GraphDSServer
 {
@@ -196,9 +198,20 @@ namespace sones.GraphDSServer
             return _iGraphDB.GetVertexType<TResult>(mySecurityToken, myTransactionToken, myRequestGetVertexType, myOutputconverter);
         }
 
+        public TResult GetAllVertexTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllVertexTypes myRequestGetAllVertexTypes, Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.GetAllVertexTypes<TResult>(mySecurityToken, myTransactionToken, myRequestGetAllVertexTypes, myOutputconverter);
+        }
+
         public TResult GetEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetEdgeType myRequestGetEdgeType, Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.GetEdgeType<TResult>(mySecurityToken, myTransactionToken, myRequestGetEdgeType,
+                                                  myOutputconverter);
+        }
+
+        public TResult GetAllEdgeTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllEdgeTypes myRequestGetAllEdgeTypes, Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.GetAllEdgeTypes<TResult>(mySecurityToken, myTransactionToken, myRequestGetAllEdgeTypes,
                                                   myOutputconverter);
         }
 

@@ -10,6 +10,8 @@ using sones.Library.Commons.Security;
 using sones.Library.Settings;
 using sones.Library.Commons.Transaction;
 using sones.Library.VersionedPluginManager;
+using sones.GraphDB.Request.GetEdgeType;
+using sones.GraphDB.Request.GetVertexType;
 
 namespace sones.GraphDB
 {
@@ -222,6 +224,14 @@ namespace sones.GraphDB
             return ((PipelineableGetVertexTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
 
+        public TResult GetAllVertexTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllVertexTypes myRequestGetVertexType, Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableGetAllVertexTypesRequest(myRequestGetVertexType, mySecurityToken, myTransactionToken));
+
+            return ((PipelineableGetAllVertexTypesRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
+
         #endregion
 
         #region GetEdgeType
@@ -232,6 +242,14 @@ namespace sones.GraphDB
                 _requestManager.RegisterRequest(new PipelineableGetEdgeTypeRequest(myRequestGetEdgeType, mySecurityToken, myTransactionToken));
 
             return ((PipelineableGetEdgeTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
+
+        public TResult GetAllEdgeTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllEdgeTypes myRequestGetEdgeType, Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableGetAllEdgeTypesRequest(myRequestGetEdgeType, mySecurityToken, myTransactionToken));
+
+            return ((PipelineableGetAllEdgeTypesRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion

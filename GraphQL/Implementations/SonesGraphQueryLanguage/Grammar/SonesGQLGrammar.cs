@@ -22,7 +22,6 @@ using sones.Plugins.Index.Interfaces;
 using sones.Plugins.SonesGQL.Aggregates;
 using sones.Plugins.SonesGQL.Functions;
 using sones.Plugins.SonesGQL.DBImport;
-using sones.Plugins.Index.Interfaces;
 using System;
 
 namespace sones.GraphQL

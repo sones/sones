@@ -32,6 +32,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
+        /// Gets a vertex type by name.
+        /// </summary>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>An instance of IVertexType, that represents the vertex type.</returns>
+        IEnumerable<IVertexType> GetAllVertexTypes(TransactionToken myTransaction, SecurityToken mySecurity);
+
+        /// <summary>
         /// Checks if the execution of <see cref="AddVertexType(System.Collections.Generic.IEnumerable{VertexTypePredefinition},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)" /> will succeed, if no unexpected error occurs.
         /// </summary>
         /// <param name="myVertexTypeDefinitions">The definition of the new vertex types.</param>

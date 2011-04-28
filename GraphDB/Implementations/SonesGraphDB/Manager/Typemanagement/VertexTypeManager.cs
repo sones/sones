@@ -163,6 +163,24 @@ namespace sones.GraphDB.Manager.TypeManagement
             #endregion
         }
 
+        public IEnumerable<IVertexType> GetAllVertexTypes(TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            //if (String.IsNullOrWhiteSpace(myTypeName))
+            //    throw new ArgumentOutOfRangeException("myTypeName", "The type name must contain at least one character.");
+
+            //#region get from fs
+
+            //var vertex = Get(myTypeName, myTransaction, mySecurity);
+
+            //if (vertex == null)
+            //    throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeName));
+
+            //return new VertexType(vertex);
+
+            //#endregion
+            return null;
+        }
+
         #endregion
 
         #region Updates

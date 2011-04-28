@@ -10,6 +10,8 @@ using sones.Library.Commons.Security;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.GraphDS.DrainPipeLog.Storage;
 using System.Threading;
+using sones.GraphDB.Request.GetVertexType;
+using sones.GraphDB.Request.GetEdgeType;
 
 namespace sones.Plugins.GraphDS.DrainPipeLog
 {
@@ -252,7 +254,17 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             throw new NotImplementedException();
         }
 
+        public TResult GetAllVertexTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllVertexTypes myRequestGetAllVertexTypes, Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
         public TResult GetEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetEdgeType myRequestGetEdgeType, Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult GetAllEdgeTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllEdgeTypes myRequestGetAllEdgeTypes, Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

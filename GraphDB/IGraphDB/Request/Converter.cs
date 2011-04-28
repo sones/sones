@@ -67,9 +67,27 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <typeparam name="TResult">The type of the result</typeparam>
         /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myVertexType">The VertexType that has been fetched from the GraphDB</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult GetAllVertexTypesResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IVertexType> myVertexTypes);
+        
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <param name="myEdgeType">The EdgeType that has been fetched from the GraphDB</param>
         /// <returns>A TResult</returns>
         public delegate TResult GetEdgeTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEdgeType myEdgeType);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myEdgeType">The EdgeType that has been fetched from the GraphDB</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult GetAllEdgeTypesResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IEdgeType> myEdgeTypes);
 
         /// <summary>
         /// A converter delegate that produces a generic result

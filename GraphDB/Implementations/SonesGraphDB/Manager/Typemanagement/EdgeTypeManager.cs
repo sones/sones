@@ -3,6 +3,7 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using System;
+using System.Collections.Generic;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -16,6 +17,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         public IEdgeType GetEdgeType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IEdgeType> GetAllEdgeTypes(TransactionToken myTransaction, SecurityToken mySecurity)
         {
             throw new NotImplementedException();
         }

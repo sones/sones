@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\ExpressionGraphInternalException.cs" />
     <Compile Include="ErrorHandling\GQLGrammarSetExtandableMemberException.cs" />
     <Compile Include="ErrorHandling\GQLParsingException.cs" />
@@ -82,9 +84,12 @@
     <Compile Include="StatementNodes\Settings\SettingNode.cs" />
     <Compile Include="StatementNodes\Transactions\BeginTransactionNode.cs" />
     <Compile Include="StatementNodes\Transactions\CommitRollbackTransactionNode.cs" />
+    <Compile Include="Structure\Helper\Definition\ADescribeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\AttributeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\BackwardEdgeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\DBTypeOfAttributeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\DescribeAggregateDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\DescribeEdgeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\EdgeTypeParamDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\GraphDBTypeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\IndexAttributeDefinition.cs" />
@@ -148,6 +153,7 @@
     <Compile Include="Structure\Nodes\DDL\IndexAttributeNode.cs" />
     <Compile Include="Structure\Nodes\DDL\IndexAttributeListNode.cs" />
     <Compile Include="Structure\Nodes\DDL\UniqueOptNode.cs" />
+    <Compile Include="Structure\Nodes\DML\ADescrNode.cs" />
     <Compile Include="Structure\Nodes\DML\AttrUpdateOrAssignListNode.cs" />
     <Compile Include="Structure\Nodes\DML\AttributeAssignNode.cs" />
     <Compile Include="Structure\Nodes\DML\AttrRemoveNode.cs" />
