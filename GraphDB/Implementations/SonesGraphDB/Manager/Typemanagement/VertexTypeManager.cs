@@ -146,6 +146,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         private const char InomingEdgeSeparator = '.';
+        private const string StreamVertexType = "Stream";
 
         public IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
@@ -506,6 +507,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 vertexTypeDefinition.CheckNull("Element in myVertexTypeDefinitions");
 
+                ConvertUnknownAttributes(vertexTypeDefinition);
+
                 CheckSealedAndAbstract(vertexTypeDefinition);
                 CheckVertexTypeName(vertexTypeDefinition);
                 CheckParentTypeAreNoBaseTypes(vertexTypeDefinition);
@@ -513,6 +516,27 @@ namespace sones.GraphDB.Manager.TypeManagement
                 CheckUniques(vertexTypeDefinition);
                 CheckIndices(vertexTypeDefinition);
             }
+        }
+
+        private static void ConvertUnknownAttributes(VertexTypePredefinition myVertexTypeDefinition)
+        {
+            foreach (var unknown in myVertexTypeDefinition.UnknownAttributes)
+            {
+                if (StreamVertexType.Equals(unknown.AttributeType))
+                {
+                    if (unknown.DefaultValue != null)
+                        throw new Exception("A default value is not allowed on an binary property.");
+
+                    if (unknown.EdgeType != null)
+                        throw new Exception("An edge type is not allowed on an binary property.");
+
+                    if (unknown.Multiplicity != null)
+                        throw new Exception("A multiplicity is not allowed on an binary property.");
+
+                    myVertexTypeDefinition.AddAttribute(new BinaryPropertyPredefinition(unknown.AttributeName).SetComment(unknown.Comment));
+                }
+            }
+            myVertexTypeDefinition.ResetUnknown();
         }
 
         private static void CheckIndices(VertexTypePredefinition vertexTypeDefinition)

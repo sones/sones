@@ -124,6 +124,7 @@
     <Compile Include="Request\CreateVertexTypes\PropertyPredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\RequestCreateVertexTypes.cs" />
     <Compile Include="Request\CreateVertexTypes\UniquePredefinition.cs" />
+    <Compile Include="Request\CreateVertexTypes\UnknownAttributePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\VertexTypePredefinition.cs" />
     <Compile Include="Request\GetEdgeType\RequestGetAllEdgeTypes.cs" />
     <Compile Include="Request\GetEdgeType\RequestGetEdgeType.cs" />

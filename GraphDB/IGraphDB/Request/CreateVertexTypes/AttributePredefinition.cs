@@ -5,7 +5,7 @@ using System.Text;
 
 namespace sones.GraphDB.Request
 {
-    public class AttributePredefinition
+    public abstract class AttributePredefinition
     {
         /// <summary>
         /// 
@@ -26,7 +26,7 @@ namespace sones.GraphDB.Request
         /// 
         /// </summary>
         /// <param name="myAttributeName"></param>
-        public AttributePredefinition(String myAttributeName)
+        protected AttributePredefinition(String myAttributeName)
         {
             AttributeName = myAttributeName;
         }

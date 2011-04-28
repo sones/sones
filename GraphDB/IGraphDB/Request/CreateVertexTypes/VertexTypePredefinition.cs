@@ -16,37 +16,44 @@ namespace sones.GraphDB.Request
         /// The name of the vertex type that is going to be created
         /// </summary>
         public readonly string VertexTypeName;
-        private List<PropertyPredefinition> _properties;
-        private List<OutgoingEdgePredefinition> _outgoingEdges;
-        private List<IncomingEdgePredefinition> _incomingEdges;
+        private List<AttributePredefinition> _attributes;
         private List<UniquePredefinition> _uniques;
         private List<IndexPredefinition> _indices;
-        private List<BinaryPropertyPredefinition> _binaries;
 
+        private int _properties = 0;
+        private int _incoming = 0;
+        private int _outgoing = 0;
+        private int _binaries = 0;
+        private int _unknown = 0;
 
         public int PropertyCount
         {
-            get { return _properties.Count; }
+            get { return _properties; }
         }
 
         public int IncomingEdgeCount
         {
-            get { return _incomingEdges.Count; }
+            get { return _incoming; }
         }
 
         public int OutgoingEdgeCount
         {
-            get { return _outgoingEdges.Count; }
+            get { return _outgoing; }
         }
 
         public int AttributeCount 
         {
-            get { return _properties.Count + _binaries.Count + _outgoingEdges.Count + _incomingEdges.Count; }
+            get { return _attributes.Count; }
         }
 
         public int BinaryPropertyCount 
         {
-            get { return _binaries.Count; }
+            get { return _binaries; }
+        }
+
+        public int UnknownPropertyCount
+        {
+            get { return _unknown; }
         }
 
 
@@ -60,12 +67,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         public IEnumerable<PropertyPredefinition> Properties
         {
-            get
-            {
-                return (_properties == null) 
-                    ? Enumerable.Empty<PropertyPredefinition>() : 
-                    _properties.AsReadOnly();
-            }
+            get { return (_attributes== null) ? null : _attributes.OfType<PropertyPredefinition>(); }
         }
 
         /// <summary>
@@ -73,12 +75,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         public IEnumerable<OutgoingEdgePredefinition> OutgoingEdges
         {
-            get 
-            {
-                return (_outgoingEdges == null)
-                    ? Enumerable.Empty<OutgoingEdgePredefinition>()
-                    : _outgoingEdges.AsReadOnly(); 
-            }
+            get { return (_attributes == null) ? null : _attributes.OfType<OutgoingEdgePredefinition>(); }
         }
 
         /// <summary>
@@ -86,12 +83,15 @@ namespace sones.GraphDB.Request
         /// </summary>
         public IEnumerable<IncomingEdgePredefinition> IncomingEdges
         {
-            get
-            {
-                return (_incomingEdges == null)
-                    ? Enumerable.Empty<IncomingEdgePredefinition>()
-                    : _incomingEdges.AsReadOnly();
-            }
+            get { return (_attributes == null) ? null : _attributes.OfType<IncomingEdgePredefinition>(); }
+        }
+
+        /// <summary>
+        /// the unknown attributes of this edge type.
+        /// </summary>
+        public IEnumerable<UnknownAttributePredefinition> UnknownAttributes
+        {
+            get { return (_attributes == null) ? null : _attributes.OfType<UnknownAttributePredefinition>(); }
         }
 
         /// <summary>
@@ -99,37 +99,20 @@ namespace sones.GraphDB.Request
         /// </summary>
         public IEnumerable<UniquePredefinition> Uniques
         {
-            get
-            {
-                return (_uniques == null)
-                    ? Enumerable.Empty<UniquePredefinition>()
-                    : _uniques.AsReadOnly();
-            }
+            get { return (_uniques == null) ? null : _uniques.AsReadOnly(); }
         }
 
         public IEnumerable<BinaryPropertyPredefinition> BinaryProperties
         {
-            get
-            {
-                return (_binaries == null)
-                    ? Enumerable.Empty<BinaryPropertyPredefinition>()
-                    : _binaries.AsReadOnly();
-            }
+            get { return (_attributes == null) ? null : _attributes.OfType<BinaryPropertyPredefinition>(); }
         }
-
-
 
         /// <summary>
         /// The index definitions of this vertex type.
         /// </summary>
         public IEnumerable<IndexPredefinition> Indices
         {
-            get
-            {
-                return (_indices == null)
-                    ? Enumerable.Empty<IndexPredefinition>()
-                    : _indices.AsReadOnly();
-            }
+            get { return (_indices == null) ? null : _indices.AsReadOnly(); }
         }
 
         /// <summary>
@@ -198,8 +181,9 @@ namespace sones.GraphDB.Request
         {
             if (myPropertyDefinition != null)
             {
-                _properties = (_properties) ?? new List<PropertyPredefinition>();
-                _properties.Add(myPropertyDefinition);
+                _attributes = (_attributes) ?? new List<AttributePredefinition>();
+                _attributes.Add(myPropertyDefinition);
+                _properties++;
             }
 
             return this;
@@ -214,9 +198,44 @@ namespace sones.GraphDB.Request
         {
             if (myOutgoingEdgePredefinition != null)
             {
-                _outgoingEdges = (_outgoingEdges) ?? new List<OutgoingEdgePredefinition>();
-                _outgoingEdges.Add(myOutgoingEdgePredefinition);
+                _attributes = (_attributes) ?? new List<AttributePredefinition>();
+                _attributes.Add(myOutgoingEdgePredefinition);
+                _outgoing++;
             }
+
+            return this;
+        }
+
+        public VertexTypePredefinition AddBinaryProperty(BinaryPropertyPredefinition myBinaryPropertyPredefinition)
+        {
+            if (myBinaryPropertyPredefinition != null)
+            {
+                _attributes = (_attributes) ?? new List<AttributePredefinition>();
+                _attributes.Add(myBinaryPropertyPredefinition);
+                _binaries++;
+            }
+
+            return this;
+        }
+
+        private VertexTypePredefinition AddIncomingEdge(IncomingEdgePredefinition myIncomingEdgePredefinition)
+        {
+            if (myIncomingEdgePredefinition != null)
+            {
+                _attributes = (_attributes) ?? new List<AttributePredefinition>();
+                _attributes.Add(myIncomingEdgePredefinition);
+                _incoming++;
+            }
+
+            return this;
+        }
+
+        public VertexTypePredefinition AddAttribute(AttributePredefinition myAttributePredefinition)
+        {
+            AddBinaryProperty(myAttributePredefinition as BinaryPropertyPredefinition);
+            AddProperty(myAttributePredefinition as PropertyPredefinition);
+            AddOutgoingEdge(myAttributePredefinition as OutgoingEdgePredefinition);
+            AddIncomingEdge(myAttributePredefinition as IncomingEdgePredefinition);
 
             return this;
         }
@@ -286,5 +305,15 @@ namespace sones.GraphDB.Request
         }
 
         #endregion
+
+        /// <summary>
+        /// Removes all unknown attributes.
+        /// </summary>
+        /// <remarks>This method is used internally.</remarks>
+        public void ResetUnknown()
+        {
+            _attributes.RemoveAll(x => x is UnknownAttributePredefinition);
+            _unknown = 0;
+        }
     }
 }
