@@ -23,6 +23,7 @@ using sones.Plugins.SonesGQL.Aggregates;
 using sones.Plugins.SonesGQL.Functions;
 using sones.Plugins.SonesGQL.DBImport;
 using System;
+using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 
 namespace sones.GraphQL
 {
@@ -1790,6 +1791,16 @@ namespace sones.GraphQL
             aATypeNode.Init(context, parseNode);
 
             parseNode.AstNode = aATypeNode;
+
+            if (!context.Values.ContainsKey(SonesGQLConstants.GraphListOfReferences))
+            {
+                context.Values[SonesGQLConstants.GraphListOfReferences] = new List<TypeReferenceDefinition>();
+            }
+
+            if (aATypeNode.ReferenceAndType.Reference != null && !(context.Values[SonesGQLConstants.GraphListOfReferences] as List<TypeReferenceDefinition>).Contains(aATypeNode.ReferenceAndType))
+            {
+                (context.Values[SonesGQLConstants.GraphListOfReferences] as List<TypeReferenceDefinition>).Add(aATypeNode.ReferenceAndType);
+            }
         }
 
         private void CreateAlterStmNode(ParsingContext context, ParseTreeNode parseNode)

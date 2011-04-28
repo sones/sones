@@ -15,7 +15,14 @@ namespace sones.GraphQL.Structure.Nodes
 
         protected List<TypeReferenceDefinition> GetTypeReferenceDefinitions(ParsingContext context)
         {
-            throw new NotImplementedException();
+            if (context.Values.ContainsKey(SonesGQLConstants.GraphListOfReferences))
+            {
+                return ((List<TypeReferenceDefinition>)context.Values[SonesGQLConstants.GraphListOfReferences]);
+            }
+            else
+            {
+                return new List<TypeReferenceDefinition>();
+            }
         }
 
         /// <summary>

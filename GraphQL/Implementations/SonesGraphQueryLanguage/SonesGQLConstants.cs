@@ -21,6 +21,11 @@ namespace sones.GraphQL
         /// </summary>
         public static String GQL = "GQL";
 
+        /// <summary>
+        /// The list of references that are stored within irony
+        /// </summary>
+        public static String GraphListOfReferences = "ListOfReferences";
+
         #endregion
 
         #region grammar
