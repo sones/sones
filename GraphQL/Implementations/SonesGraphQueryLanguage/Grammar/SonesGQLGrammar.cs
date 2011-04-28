@@ -1359,7 +1359,7 @@ namespace sones.GraphQL
 
             DescrTypeStmt.Rule = S_VERTEX + S_TYPE + Id_simple;
 
-            DescrTypesStmt.Rule = S_TYPES;
+            DescrTypesStmt.Rule = S_VERTEX + S_TYPES;
 
             DescrFuncStmt.Rule = S_FUNCTION + Id_simple;
 

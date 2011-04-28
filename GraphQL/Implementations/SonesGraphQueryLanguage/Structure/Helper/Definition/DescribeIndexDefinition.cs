@@ -39,7 +39,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
 
 
-        public override QueryResult GetResult(ParsingContext myContext,
+        public override QueryResult GetResult(
                                                 GQLPluginManager myPluginManager,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,

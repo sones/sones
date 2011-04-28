@@ -390,7 +390,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         public IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            throw new NotImplementedException();
+            return GetVertices(myExpression, false, myTransactionToken, mySecurityToken).FirstOrDefault();
         }
 
         public IVertexStore VertexStore

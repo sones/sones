@@ -42,7 +42,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <summary>
         /// <seealso cref=" ADescribeDefinition"/>
         /// </summary>
-        public override QueryResult GetResult(ParsingContext myContext,
+        public override QueryResult GetResult(
                                                 GQLPluginManager myPluginManager,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,
@@ -63,7 +63,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 if (type != null)
                 {
-                    resultingVertices = new List<IVertexView>() { (GenerateOutput(myContext, type, 1)) };
+                    resultingVertices = new List<IVertexView>() { (GenerateOutput(type, 1)) };
                 }
                 else
                 {
@@ -83,7 +83,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                                                                                             new RequestGetAllVertexTypes(), 
                                                                                             (stats, vertexTypes) => vertexTypes))
                 {
-                    resultingVertices.Add(GenerateOutput(myContext, type));
+                    resultingVertices.Add(GenerateOutput(type));
                 }
 
                 #endregion
@@ -105,7 +105,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <param name="myDBContext">The db context</param>
         /// <param name="myType">The db type</param>
         /// <param name="myDepth">If depth == 0 only the type basic attributes will be returned</param>
-        private IVertexView GenerateOutput(ParsingContext myDBContext, IVertexType myType, Int32 myDepth = 0)
+        private IVertexView GenerateOutput(IVertexType myType, Int32 myDepth = 0)
         {
 
             var retVal = new Dictionary<String, object>();
@@ -120,22 +120,22 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             if (myDepth > 0)
             {
 
-                retVal.Add("Properties", GeneratePropertiesOutput(myType, myDBContext, myType.GetPropertyDefinitions(true)));
+                retVal.Add("Properties", GeneratePropertiesOutput(myType, myType.GetPropertyDefinitions(true)));
 
-                retVal.Add("Edges", GenerateEdgesOutput(myType, myDBContext, myType.GetOutgoingEdgeDefinitions(true)));
+                retVal.Add("Edges", GenerateEdgesOutput(myType, myType.GetOutgoingEdgeDefinitions(true)));
 
-                retVal.Add("BackwardEdges", GenerateEdgesOutput(myType, myDBContext, myType.GetIncomingEdgeDefinitions(true)));
+                retVal.Add("BackwardEdges", GenerateEdgesOutput(myType, myType.GetIncomingEdgeDefinitions(true)));
 
-                retVal.Add("UniqueAttributes", GenerateUniquePropertiesOutput(myType, myDBContext, myType.GetUniqueDefinitions(true)));
+                retVal.Add("UniqueAttributes", GenerateUniquePropertiesOutput(myType, myType.GetUniqueDefinitions(true)));
 
-                retVal.Add("Attributes", GenerateAttributesOutput(myType, myDBContext, myType.GetAttributeDefinitions(true)));
+                retVal.Add("Attributes", GenerateAttributesOutput(myType, myType.GetAttributeDefinitions(true)));
 
-                retVal.Add("Indices", GenerateIndicesOutput(myType, myDBContext));
+                retVal.Add("Indices", GenerateIndicesOutput(myType));
 
                 if (myType.HasParentType)
                 {
                     var _ParentType = myType.GetParentVertexType;
-                    retVal.Add("Extends", GenerateOutput(myDBContext, _ParentType, myDepth - 1));
+                    retVal.Add("Extends", GenerateOutput(_ParentType, myDepth - 1));
                 }
 
             }
@@ -151,7 +151,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <param name="myDBContext">The db context</param>
         /// <param name="myProperties">The propertyDefinitions</param>
         /// <returns>a list of readouts, contains the properties</returns>
-        private IEnumerable<IVertexView> GeneratePropertiesOutput(IVertexType myType, ParsingContext myContext, IEnumerable<IPropertyDefinition> myProperties)
+        private IEnumerable<IVertexView> GeneratePropertiesOutput(IVertexType myType, IEnumerable<IPropertyDefinition> myProperties)
         {
 
             var _AttributeReadout = new List<IVertexView>();
@@ -182,7 +182,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <param name="myDBContext">The db context</param>
         /// <param name="myAttributes">The attributeDefinitions</param>
         /// <returns>a list of readouts, contains the attributes</returns>
-        private IEnumerable<IVertexView> GenerateAttributesOutput(IVertexType myType, ParsingContext myContext, IEnumerable<IAttributeDefinition> myAttributes)
+        private IEnumerable<IVertexView> GenerateAttributesOutput(IVertexType myType, IEnumerable<IAttributeDefinition> myAttributes)
         {
 
             var _AttributeReadout = new List<IVertexView>();
@@ -212,7 +212,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <param name="myDBContext">The db context</param>
         /// <param name="myUniques">The uniqueDefinitions</param>
         /// <returns>a list of readouts, contains the attributes</returns>
-        private IEnumerable<IVertexView> GenerateUniquePropertiesOutput(IVertexType myType, ParsingContext myContext, IEnumerable<IUniqueDefinition> myUniques)
+        private IEnumerable<IVertexView> GenerateUniquePropertiesOutput(IVertexType myType, IEnumerable<IUniqueDefinition> myUniques)
         {
 
             var _AttributeReadout = new List<IVertexView>();
@@ -224,7 +224,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 
                 Attributes.Add("CorrespondingIndex", unique.CorrespondingIndex);
                 Attributes.Add("DefiningVertexType", unique.DefiningVertexType);
-                Attributes.Add("UniqueProperties", GeneratePropertiesOutput(myType, myContext, unique.UniquePropertyDefinitions));
+                Attributes.Add("UniqueProperties", GeneratePropertiesOutput(myType, unique.UniquePropertyDefinitions));
                 
                 _AttributeReadout.Add(new VertexView(Attributes, new Dictionary<String, IEdgeView>()));
 
@@ -240,7 +240,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <param name="myType">The db type</param>
         /// <param name="myDBContext">The db context</param>
         /// <returns>a list of readouts, contains the attributes</returns>
-        private IEnumerable<IVertexView> GenerateIndicesOutput(IVertexType myType, ParsingContext myContext)
+        private IEnumerable<IVertexView> GenerateIndicesOutput(IVertexType myType)
         {
 
             var _AttributeReadout = new List<IVertexView>();
@@ -270,7 +270,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <param name="myDBContext">The db context</param>
         /// <param name="myEdges">The EdgeDefinitions</param>
         /// <returns>a list of readouts, contains the attributes</returns>
-        private IEnumerable<IVertexView> GenerateEdgesOutput(IVertexType myType, ParsingContext myDBContext, IEnumerable<IAttributeDefinition> myEdges)
+        private IEnumerable<IVertexView> GenerateEdgesOutput(IVertexType myType, IEnumerable<IAttributeDefinition> myEdges)
         {
 
             var _AttributeReadout = new List<IVertexView>();
