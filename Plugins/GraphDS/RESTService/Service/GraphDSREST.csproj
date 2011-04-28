@@ -123,6 +123,10 @@
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
       <Name>IGraphQL</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\GraphQL\QueryResult\QueryResult.csproj">
+      <Project>{BE2A2669-CCDE-40A8-AEAB-673260D7260A}</Project>
+      <Name>QueryResult</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Library\External\Irony\Irony.csproj">
       <Project>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</Project>
       <Name>Irony</Name>
