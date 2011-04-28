@@ -28,7 +28,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            AttributeDefinition = new AttributeDefinition(((GraphDBTypeNode)parseNode.ChildNodes[0].AstNode).DBTypeDefinition, parseNode.ChildNodes[1].Token.ValueString, ((AttrDefaultValueNode)parseNode.ChildNodes[2].AstNode));
+            AttributeDefinition = new AttributeDefinition(((GraphDBTypeNode)parseNode.ChildNodes[0].AstNode).DBTypeDefinition, parseNode.ChildNodes[1].Token.ValueString, ((AttrDefaultValueNode)(parseNode.ChildNodes[2].AstNode)).Value);
         }
 
         #endregion

@@ -19,7 +19,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
         public TypeCharacteristics TypeCharacteristics { get; set; }
         public String EdgeType { get; set; }
-        public EdgeTypeParamDefinition[] Parameters { get; set; }
 
         public DBTypeOfAttributeDefinition()
         {

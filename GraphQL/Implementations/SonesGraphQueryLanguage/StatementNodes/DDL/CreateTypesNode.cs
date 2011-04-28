@@ -40,14 +40,17 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         public void Init(ParsingContext context, ParseTreeNode myParseTreeNode)
         {
-            if (myParseTreeNode.ChildNodes.Count > 3)
+            //createTypesStmt.Rule =      S_CREATE + S_VERTEX + S_TYPES + bulkTypeList
+            //                        |   S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkType
+            //                        |   S_CREATE + S_VERTEX + S_TYPE + bulkType;
+
+            if (myParseTreeNode.ChildNodes[1].Token.KeyTerm == ((SonesGQLGrammar)context.Language.Grammar).S_ABSTRACT)
             {
+                #region Abstract & Single VertexType
 
-                #region Single type
+                BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[4].AstNode;
 
-                BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[3].AstNode;
-
-                Boolean isAbstract = false;
+                Boolean isAbstract = true;
 
                 if (HasChildNodes(myParseTreeNode.ChildNodes[1]))
                 {
@@ -57,25 +60,34 @@ namespace sones.GraphQL.StatementNodes.DDL
                 _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, isAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
 
                 #endregion
-
             }
-
             else
             {
-
-                #region Multi types
-
-                foreach (var _ParseTreeNode in myParseTreeNode.ChildNodes[2].ChildNodes)
+                if (myParseTreeNode.ChildNodes[2].Token.KeyTerm == ((SonesGQLGrammar)context.Language.Grammar).S_TYPES)
                 {
-                    if (_ParseTreeNode.AstNode != null)
+                    #region multiple VertexTypes
+
+                    foreach (var _ParseTreeNode in myParseTreeNode.ChildNodes[3].ChildNodes)
                     {
-                        BulkTypeListMemberNode aTempNode = (BulkTypeListMemberNode)_ParseTreeNode.AstNode;
-                        _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, aTempNode.IsAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
+                        if (_ParseTreeNode.AstNode != null)
+                        {
+                            BulkTypeListMemberNode aTempNode = (BulkTypeListMemberNode)_ParseTreeNode.AstNode;
+                            _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, aTempNode.IsAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
+                        }
                     }
+
+                    #endregion
                 }
+                else
+                {
+                    #region single vertex type
 
-                #endregion
+                    BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[3].AstNode;
 
+                    _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, false, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
+
+                    #endregion
+                }
             }
         }
 
@@ -182,7 +194,67 @@ namespace sones.GraphQL.StatementNodes.DDL
         {
             var result = new VertexTypePredefinition(aDefinition.Name);
 
+            #region extends
 
+            if (aDefinition.ParentType != null && aDefinition.ParentType.Length > 0)
+            {
+                result.SetSuperVertexTypeName(aDefinition.ParentType);
+            }
+
+            #endregion
+
+            #region abstract
+
+            if (aDefinition.IsAbstract)
+            {
+                result.MarkAsAbstract();
+            }
+
+            #endregion
+
+            #region comment
+
+            if (aDefinition.Comment != null && aDefinition.Comment.Length > 0)
+            {
+                result.SetComment(aDefinition.Comment);
+            }
+
+            #endregion
+
+            #region attributes
+
+            if (aDefinition.Attributes != null)
+            {
+                foreach (var aAttribute in aDefinition.Attributes)
+                {
+                }
+            }
+
+            #endregion
+
+            #region incoming edges
+
+            if (aDefinition.BackwardEdgeNodes != null)
+            {
+                foreach (var aIncomingEdge in aDefinition.BackwardEdgeNodes)
+                {
+
+                }
+            }
+
+            #endregion
+
+            #region indices
+
+            if (aDefinition.Indices != null)
+            {
+                foreach (var aIndex in aDefinition.Indices)
+                {
+
+                }
+            }
+
+            #endregion
 
             return result;
         }

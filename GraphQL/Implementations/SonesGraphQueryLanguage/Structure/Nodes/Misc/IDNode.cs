@@ -112,7 +112,7 @@ namespace sones.GraphQL.Structure.Nodes.Misc
             foreach (var aChildNode in parseNode.ChildNodes)
             {
 
-                if (aChildNode.AstNode == null)
+                if (aChildNode.Term is IdentifierTerminal)
                 {
                     _IDNodeString += aChildNode.Token.ValueString;
                 }

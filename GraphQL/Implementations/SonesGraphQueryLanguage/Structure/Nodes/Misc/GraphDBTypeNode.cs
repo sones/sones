@@ -31,7 +31,7 @@ namespace sones.GraphQL.Structure.Nodes.Misc
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            if (parseNode.FirstChild.Term.Name.Equals("id_simple"))
+            if (parseNode.FirstChild.Term is IdentifierTerminal)
             {
 
                 #region simple id
@@ -75,7 +75,6 @@ namespace sones.GraphQL.Structure.Nodes.Misc
                     Name = ((EdgeTypeDefNode)parseNode.FirstChild.AstNode).Name,
                     TypeCharacteristics = ((EdgeTypeDefNode)parseNode.FirstChild.AstNode).TypeCharacteristics,
                     EdgeType = ((EdgeTypeDefNode)parseNode.FirstChild.AstNode).EdgeType,
-                    Parameters = ((EdgeTypeDefNode)parseNode.FirstChild.AstNode).Parameters,
                 };
 
                 #endregion
@@ -93,7 +92,6 @@ namespace sones.GraphQL.Structure.Nodes.Misc
                     Name = ((SingleEdgeTypeDefNode)parseNode.FirstChild.AstNode).Name,
                     TypeCharacteristics = ((SingleEdgeTypeDefNode)parseNode.FirstChild.AstNode).TypeCharacteristics,
                     EdgeType = ((SingleEdgeTypeDefNode)parseNode.FirstChild.AstNode).EdgeType,
-                    Parameters = ((SingleEdgeTypeDefNode)parseNode.FirstChild.AstNode).Parameters,
                 };
 
                 #endregion

@@ -709,6 +709,7 @@ namespace sones.GraphQL
             var DescrIdxStmt = new NonTerminal("DescrIdxStmt", CreateDescrIdx);
             var DescrIdxsStmt = new NonTerminal("DescrIdxsStmt", CreateDescrIdxs);
             var DescrIdxEdtStmt = new NonTerminal("DescrIdxEdtStmt");
+            var DescrDedicatedIdxStmt = new NonTerminal("DescrDedicatedIdxStmt");
             var DescrEdgeStmt = new NonTerminal("DescrEdgeStmt", CreateDescrEdge);
             var DescrEdgesStmt = new NonTerminal("DescrEdgesStmt", CreateDescrEdges);
 
@@ -1122,9 +1123,7 @@ namespace sones.GraphQL
                                             | S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT;
 
             AttrDefaultOpValue.Rule = Empty
-                                    | "=" + Value
-                                    | "=" + S_LISTOF + S_BRACKET_LEFT + ValueList + S_BRACKET_RIGHT
-                                    | "=" + S_SETOF + S_BRACKET_LEFT + ValueList + S_BRACKET_RIGHT;
+                                    | "=" + Value;
 
             #endregion
 
@@ -1366,9 +1365,13 @@ namespace sones.GraphQL
 
             DescrFunctionsStmt.Rule = S_FUNCTIONS;
 
-            DescrIdxStmt.Rule = S_INDEX + id_simpleDotList + DescrIdxEdtStmt;
+            //                            User        [IndexName]             [EDITION default]
+            DescrIdxStmt.Rule = S_INDEX + Id_simple + DescrDedicatedIdxStmt + DescrIdxEdtStmt;
 
-            DescrIdxEdtStmt.Rule = Empty | Id_simple;
+            DescrDedicatedIdxStmt.Rule = Empty | Id_simple;
+
+            DescrIdxEdtStmt.Rule =      Empty 
+                                    |   S_EDITION + Id_simple;
 
             DescrIdxsStmt.Rule = S_INDICES;
 

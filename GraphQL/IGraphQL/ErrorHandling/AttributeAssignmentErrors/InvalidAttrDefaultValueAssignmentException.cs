@@ -43,6 +43,15 @@ namespace sones.GraphQL.ErrorHandling
             _msg = String.Format("Invalid type assignment for default value. Current type is \"{0}\". The type \"{1}\" is expected.", AttributeType, ExpectedType);
         }
 
+        public InvalidAttrDefaultValueAssignmentException(String myInfo)
+        {
+            AttributeName = null;
+            AttributeType = null;
+            ExpectedType = null;
+
+            _msg = myInfo;
+        }
+
         #endregion
           
     }

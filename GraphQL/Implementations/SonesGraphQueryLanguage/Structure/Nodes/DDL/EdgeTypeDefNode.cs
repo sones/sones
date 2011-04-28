@@ -28,8 +28,6 @@ namespace sones.GraphQL.Structure.Nodes.DDL
         /// </summary>
         public String EdgeType { get; private set; }
 
-        public EdgeTypeParamDefinition[] Parameters { get; private set; }
-
         #endregion
 
         #region constructor
@@ -47,20 +45,11 @@ namespace sones.GraphQL.Structure.Nodes.DDL
         {
             #region TypeEdge class
 
-            //if (!dbContext.DBPluginManager.HasEdgeType(parseNode.ChildNodes[2].Token.ValueString))
-            //    throw new GraphDBException(new Error_EdgeTypeDoesNotExist(parseNode.ChildNodes[2].Token.ValueString));
-
-            //EdgeType = dbContext.DBPluginManager.GetEdgeType(parseNode.ChildNodes[2].Token.ValueString);
-            EdgeType = parseNode.ChildNodes[2].Token.ValueString;
-
-            if (parseNode.ChildNodes[3].AstNode != null)
-            {
-                Parameters = ((EdgeTypeParamsNode)parseNode.ChildNodes[3].AstNode).Parameters;
-            }
+            EdgeType = parseNode.ChildNodes[3].Token.ValueString;
 
             #endregion
 
-            if (parseNode.FirstChild.Term.Name.Equals("id_simple"))
+            if (parseNode.FirstChild.Term is IdentifierTerminal)
             {
                 #region simple id
 
@@ -81,7 +70,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
             else
             {
 
-                Name = parseNode.ChildNodes[5].Token.ValueString;
+                Name = parseNode.ChildNodes[2].Token.ValueString;
 
                 if (parseNode.ChildNodes[0].Token.ValueString.ToUpper() == SonesGQLGrammar.TERMINAL_SET)
                 {
