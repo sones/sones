@@ -1,15 +1,16 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ISonesGQLFunction")]
+[assembly: AssemblyTitle("GraphDBImport")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("sones GmbH")]
-[assembly: AssemblyProduct("ISonesGQLFunction")]
-[assembly: AssemblyCopyright("Copyright © sones GmbH 2011")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("GraphDBImport")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("fdd16fe0-eea2-45a6-97fe-336a8a61add4")]
+[assembly: Guid("eb3861dd-a9be-4e54-b995-700cee76a19f")]
 
 // Version information for an assembly consists of the following four values:
 //

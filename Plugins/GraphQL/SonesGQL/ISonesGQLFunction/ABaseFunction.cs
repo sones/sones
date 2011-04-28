@@ -26,6 +26,7 @@ namespace sones.Plugins.SonesGQL.Functions
     public abstract class ABaseFunction : IGQLFunction
     {
 
+
         #region Abstract methods
 
         /// <summary>

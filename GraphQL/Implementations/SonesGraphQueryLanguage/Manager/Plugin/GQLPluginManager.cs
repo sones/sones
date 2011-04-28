@@ -8,6 +8,7 @@ using sones.Plugins.Index;
 using sones.Plugins.SonesGQL;
 using sones.Plugins.SonesGQL.Functions;
 using sones.Plugins.SonesGQL.Aggregates;
+using sones.Plugins.SonesGQL.DBImport;
 
 namespace sones.GraphQL.GQL.Manager.Plugin
 {
@@ -43,7 +44,7 @@ namespace sones.GraphQL.GQL.Manager.Plugin
 
             #region importer
 
-
+                .Register<IGraphDBImport>(IGraphDBImportVersionCompatibility.MaxVersion, IGraphDBImportVersionCompatibility.MaxVersion)
 
             #endregion
 
@@ -68,6 +69,7 @@ namespace sones.GraphQL.GQL.Manager.Plugin
             FillLookup<IMultipleValueIndex<IComparable, Int64>>(componentName);
             FillLookup<IGQLAggregate>(componentName);
             FillLookup<IGQLFunction>(componentName);
+            FillLookup<IGraphDBImport>(componentName);
 
             #endregion
         }

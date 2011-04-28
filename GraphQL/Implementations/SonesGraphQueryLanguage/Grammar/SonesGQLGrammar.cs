@@ -5,6 +5,7 @@ using System.Text;
 using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphDB;
+using sones.GraphDB.Interfaces;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.StatementNodes.DDL;
 using sones.GraphQL.StatementNodes.DML;
@@ -17,9 +18,10 @@ using sones.GraphQL.Structure.Nodes.Expressions;
 using sones.GraphQL.Structure.Nodes.Misc;
 using sones.Library.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
-using sones.GraphDB.Interfaces;
+using sones.Plugins.Index.Interfaces;
 using sones.Plugins.SonesGQL.Aggregates;
 using sones.Plugins.SonesGQL.Functions;
+using sones.Plugins.SonesGQL.DBImport;
 using sones.Plugins.Index.Interfaces;
 using System;
 
@@ -61,7 +63,7 @@ namespace sones.GraphQL
 
         #region NonTerminals
 
-        public NonTerminal BNF_VertexTypes { get; private set; }
+        //public NonTerminal BNF_VertexTypes { get; private set; }
 
         #region class scope NonTerminal - need for IExtendableGrammar
 
@@ -527,6 +529,7 @@ namespace sones.GraphQL
             var attributesOpt = new NonTerminal("attributesOpt");
             var insertValuesOpt = new NonTerminal("insertValuesOpt");
             var optionalShards = new NonTerminal("optionalShards", typeof(ShardsNode));
+            
 
             #region Expression
 
@@ -582,8 +585,8 @@ namespace sones.GraphQL
             var term = new NonTerminal("term");
             var notOpt = new NonTerminal("notOpt");
 
-            var vertexType = new NonTerminal("vertexType");
-            BNF_VertexTypes = new NonTerminal("vertexTypes");
+            //var vertexType = new NonTerminal("vertexType");
+            //BNF_VertexTypes = new NonTerminal("vertexTypes");
 
             var GraphDBType = new NonTerminal(SonesGQLConstants.GraphDBType, CreateGraphDBTypeNode);
             var AttributeList = new NonTerminal("AttributeList");
@@ -991,10 +994,6 @@ namespace sones.GraphQL
                             | "!>"
                             | "AND"
                             | "OR"
-                            | "LIKE"
-                            | S_NOT + "LIKE"
-                            | "IN"
-                            | "NOTIN" | "NOT_IN" | "NIN" | "!IN"
                             | "INRANGE";
 
             notOpt.Rule = Empty
@@ -1051,7 +1050,7 @@ namespace sones.GraphQL
 
             #region CREATE INDEX
 
-            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + vertexType + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt
+            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + S_VERTEX + S_TYPE + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt
                 | S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt; // due to compatibility the  + S_TYPE is optional
 
             uniqueOpt.Rule = Empty | S_UNIQUE;
@@ -1077,11 +1076,12 @@ namespace sones.GraphQL
 
             #region CREATE TYPE(S)
 
-            createTypesStmt.Rule = S_CREATE + BNF_VertexTypes + bulkTypeList
-                                    | S_CREATE + abstractOpt + vertexType + bulkType;
+            createTypesStmt.Rule =      S_CREATE + S_VERTEX + S_TYPES + bulkTypeList
+                                    |   S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkType
+                                    |   S_CREATE + S_VERTEX + S_TYPE + bulkType;
 
-            vertexType.Rule = S_VERTEX + S_TYPE;
-            BNF_VertexTypes.Rule = S_VERTEX + S_TYPES;
+            //vertexType.Rule = S_VERTEX + S_TYPE;
+            //BNF_VertexTypes.Rule = S_VERTEX + S_TYPES;
 
             bulkTypeList.Rule = MakePlusRule(bulkTypeList, S_comma, bulkTypeListMember);
 
@@ -1092,8 +1092,8 @@ namespace sones.GraphQL
             commentOpt.Rule = Empty
                                     | S_COMMENT + "=" + string_literal;
 
-            abstractOpt.Rule = Empty
-                                    | S_ABSTRACT;
+            abstractOpt.Rule =      S_ABSTRACT
+                                |   Empty;
 
             extendsOpt.Rule = Empty
                                     | S_EXTENDS + Id_simple;
@@ -1133,7 +1133,7 @@ namespace sones.GraphQL
 
             #region ALTER TYPE/VERTEX
 
-            alterStmt.Rule = S_ALTER + vertexType + Id_simple + alterCmdList + uniquenessOpt + mandatoryOpt;
+            alterStmt.Rule = S_ALTER + S_VERTEX + S_TYPE + Id_simple + alterCmdList + uniquenessOpt + mandatoryOpt;
 
             alterCmd.Rule = Empty
                             | S_ADD + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
@@ -1324,7 +1324,7 @@ namespace sones.GraphQL
 
             #region DROP TYPE
 
-            dropTypeStmt.Rule = S_DROP + vertexType + Id_simple;
+            dropTypeStmt.Rule = S_DROP + S_VERTEX + S_TYPE + Id_simple;
 
             #endregion
 
@@ -1336,8 +1336,7 @@ namespace sones.GraphQL
 
             #region TRUNCATE
 
-            truncateStmt.Rule = S_TRUNCATE + vertexType + Id_simple
-                              | S_TRUNCATE + Id_simple; // Due to compatibility the  + S_TYPE is optional
+            truncateStmt.Rule = S_TRUNCATE + S_VERTEX + S_TYPE + Id_simple;
 
             #endregion
 
@@ -1362,7 +1361,7 @@ namespace sones.GraphQL
 
             DescrEdgesStmt.Rule = S_EDGES;
 
-            DescrTypeStmt.Rule = vertexType + Id_simple;
+            DescrTypeStmt.Rule = S_VERTEX + S_TYPE + Id_simple;
 
             DescrTypesStmt.Rule = S_TYPES;
 
@@ -1444,7 +1443,7 @@ namespace sones.GraphQL
 
             dumpType.Rule = Empty | S_ALL | S_GDDL | S_GDML;      // If empty => create both
             dumpFormat.Rule = Empty | S_AS + S_GQL;                 // If empty => create GQL
-            typeOptionalList.Rule = Empty | BNF_VertexTypes + TypeList;
+            typeOptionalList.Rule = Empty | S_VERTEX + S_TYPES + TypeList;
 
             dumpDestination.Rule = Empty | S_INTO + location_literal | S_TO + location_literal;
 
@@ -1501,17 +1500,17 @@ namespace sones.GraphQL
             #endregion
 
             base.MarkTransient(
-                singlestmt, Id_simple, selList, selectionSource, BNF_Expression, term, BNF_FunArgs
-                , unOp, binOp, aliasOpt, aliasOptName, orderByAttributeListMember
+                singlestmt, Id_simple, selList, /* selectionSource, */BNF_Expression, term, BNF_FunArgs
+                , unOp, /*binOp, */ /*aliasOpt, */ aliasOptName, orderByAttributeListMember
                 , Value
                 //, EdgeTypeParam
                 , EdgeType_SortedMember, AttrUpdateOrAssign, ListAttrUpdate, DescrArgument,
                 TypeWrapper //is used as a wrapper for AType
                 , IdOrFunc //, IdOrFuncList
                 , BNF_ExprList, BNF_AggregateArg,
-                ExtendedExpressionList,
-                BNF_ImportFormat, BNF_FuncCall, BNF_Aggregate, verbosityTypes,
-                vertexType, BNF_VertexTypes);
+                //ExtendedExpressionList,
+                BNF_ImportFormat, BNF_FuncCall, BNF_Aggregate, verbosityTypes/*,
+                vertexType, BNF_VertexTypes*/);
 
             #endregion
         }
@@ -2844,35 +2843,35 @@ namespace sones.GraphQL
             #endregion
         }
 
-        //public void SetGraphDBImporter(IEnumerable<AGraphDBImport> graphDBImporter)
-        //{
+        public void SetGraphDBImporter(IEnumerable<IGraphDBImport> graphDBImporter)
+        {
 
-        //    #region Add all plugins to the grammar
+            #region Add all plugins to the grammar
 
-        //    if (graphDBImporter.IsNullOrEmpty())
-        //    {
-        //        /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
-        //        BNF_ImportFormat.Rule = Empty;
-        //        BNF_ImportStmt.Rule = Empty;
-        //    }
-        //    else
-        //    {
-        //        foreach (var importer in graphDBImporter)
-        //        {
-        //            if (BNF_ImportFormat.Rule == null)
-        //            {
-        //                BNF_ImportFormat.Rule = ToTerm(importer.ImportFormat);
-        //            }
-        //            else
-        //            {
-        //                BNF_ImportFormat.Rule |= ToTerm(importer.ImportFormat);
-        //            }
-        //        }
-        //    }
+            if (graphDBImporter == null || graphDBImporter.Count() == 0)
+            {
+                /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
+                BNF_ImportFormat.Rule = Empty;
+                BNF_ImportStmt.Rule = Empty;
+            }
+            else
+            {
+                foreach (var importer in graphDBImporter)
+                {
+                    if (BNF_ImportFormat.Rule == null)
+                    {
+                        BNF_ImportFormat.Rule = ToTerm(importer.ImportFormat);
+                    }
+                    else
+                    {
+                        BNF_ImportFormat.Rule |= ToTerm(importer.ImportFormat);
+                    }
+                }
+            }
 
-        //    #endregion
+            #endregion
 
-        //}
+        }
 
         #endregion
     }

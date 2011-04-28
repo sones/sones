@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using sones.GraphDB;
-using sones.GraphQL.Result;
-using sones.Library.Commons.Security;
-using sones.Library.Settings;
-using sones.Library.Commons.Transaction;
-using sones.Library.VersionedPluginManager;
-using sones.GraphQL.GQL.Manager.Plugin;
-using sones.Plugins.SonesGQL.Functions;
-using sones.Plugins.SonesGQL.Aggregates;
-using sones.Plugins.Index.Interfaces;
-using Irony.Parsing;
-using sones.GraphQL.GQL.ErrorHandling;
-using sones.GraphQL.StatementNodes;
-using sones.GraphQL.ErrorHandling;
 using System.Linq;
+using Irony.Parsing;
+using sones.GraphDB;
+using sones.GraphQL.ErrorHandling;
+using sones.GraphQL.GQL.ErrorHandling;
+using sones.GraphQL.GQL.Manager.Plugin;
+using sones.GraphQL.Result;
+using sones.GraphQL.StatementNodes;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 using sones.Library.ErrorHandling;
+using sones.Library.Settings;
+using sones.Library.VersionedPluginManager;
+using sones.Plugins.Index.Interfaces;
+using sones.Plugins.SonesGQL.Aggregates;
+using sones.Plugins.SonesGQL.Functions;
+using sones.Plugins.SonesGQL.DBImport;
 
 namespace sones.GraphQL
 {
@@ -77,11 +78,11 @@ namespace sones.GraphQL
 
             #endregion
 
-            #region create gql grammar and set aggregates, functions, indices, importer
+            #region create gql grammar and set extendable members
 
             _GQLGrammar = new SonesGQLGrammar(myIGraphDBInstace);
 
-            SetExtendableMember();
+            SetExtendableMember(_GQLGrammar);
 
             #endregion
 
@@ -89,7 +90,7 @@ namespace sones.GraphQL
             _parser = new Parser(_GQLGrammar);
 
             //check language
-            if (_parser.Language.ErrorLevel != GrammarErrorLevel.NoError)
+            if (_parser.Language.ErrorLevel != GrammarErrorLevel.Warning && _parser.Language.ErrorLevel != GrammarErrorLevel.NoError)
             {
                 throw new IronyInitializeGrammarException(_parser.Language.Errors, "");
             }
@@ -240,28 +241,35 @@ namespace sones.GraphQL
 
         #region private helper
 
-        private void SetExtendableMember()
+        private void SetExtendableMember(SonesGQLGrammar myGQLGrammar)
         {
             List<IGQLAggregate> aggregates = new List<IGQLAggregate>();
             foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGQLAggregate>())
             {
                 aggregates.Add(_GQLPluginManager.GetAndInitializePlugin<IGQLAggregate>(plugin));
             }
-            _GQLGrammar.SetAggregates(aggregates);
+            myGQLGrammar.SetAggregates(aggregates);
 
             List<ABaseFunction> functions = new List<ABaseFunction>();
             foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGQLFunction>())
             {
                 functions.Add(_GQLPluginManager.GetAndInitializePlugin<IGQLFunction>(plugin) as ABaseFunction);
             }
-            _GQLGrammar.SetFunctions(functions);
+            myGQLGrammar.SetFunctions(functions);
 
             List<IIndex<IComparable, Int64>> indices = new List<IIndex<IComparable, Int64>>();
             foreach (var plugin in _GQLPluginManager.GetPluginsForType<IIndex<IComparable, Int64>>())
             {
                 indices.Add(_GQLPluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(plugin));
             }
-            _GQLGrammar.SetIndices(indices);
+            myGQLGrammar.SetIndices(indices);
+
+            List<IGraphDBImport> importer = new List<IGraphDBImport>();
+            foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGraphDBImport>())
+            {
+                importer.Add(_GQLPluginManager.GetAndInitializePlugin<IGraphDBImport>(plugin));
+            }
+            myGQLGrammar.SetGraphDBImporter(importer);
         }
 
         #endregion

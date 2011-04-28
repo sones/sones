@@ -263,6 +263,10 @@
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
       <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\IGraphDBImport\ISonesGraphDBImport.csproj">
+      <Project>{3B43C10E-28AE-42E5-9B9B-08F2B4153951}</Project>
+      <Name>ISonesGraphDBImport</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\ISonesGQLAggregate\ISonesGQLAggregate.csproj">
       <Project>{B70DCE72-B636-442A-8825-F3BE78D86D34}</Project>
       <Name>ISonesGQLAggregate</Name>
