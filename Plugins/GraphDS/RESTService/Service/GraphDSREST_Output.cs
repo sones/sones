@@ -135,7 +135,7 @@ namespace sones.Plugins.GraphDS.RESTService
                 var _StopWatch = new Stopwatch();
 
                 _StopWatch.Start();
-                _QueryResult = _GraphDS.Query(null, null, myQuery, "");
+                _QueryResult = _GraphDS.Query(null, null, myQuery, "GQL");
                 _StopWatch.Stop();
 
                 GenerateResultOutput(_QueryResult, _StopWatch);
