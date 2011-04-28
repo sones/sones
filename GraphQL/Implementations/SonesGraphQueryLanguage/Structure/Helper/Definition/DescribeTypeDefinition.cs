@@ -48,10 +48,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                                                 SecurityToken mySecurityToken,
                                                 TransactionToken myTransactionToken)
         {
-            var sw = new Stopwatch();
-
-            sw.Reset();
-            sw.Start();
+            var sw = Stopwatch.StartNew();
 
             var resultingVertices = new List<IVertexView>();
             ASonesException error = null;

@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Linq;
 using Irony.Ast;
 using Irony.Parsing;
-using sones.GraphQL.Result;
 using sones.GraphDB;
-using sones.Library.ErrorHandling;
+using sones.GraphQL.GQL.Manager.Plugin;
+using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using System.Linq;
-using sones.GraphQL.GQL.Manager.Plugin;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -23,8 +23,6 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            var grammar = (SonesGQLGrammar)context.Language.Grammar;
-
             // get Name
             _TypeName = parseNode.ChildNodes.Last().Token.ValueString;
         }
