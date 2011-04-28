@@ -41,7 +41,7 @@ namespace sones.GraphDB.Manager
 
         #region BaseType
 
-        private static readonly byte BaseTypeOffset = AttributeOffset + 4;
+        private static readonly long BaseTypeOffset = AttributeOffset + 4;
 
         private readonly VertexInformation _BaseType                 = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.BaseType);
         private readonly VertexInformation _BaseTypeDotID            = new VertexInformation((long)BaseTypes.Property    , BaseTypeOffset + (long)AttributeDefinitions.ID);
@@ -56,7 +56,7 @@ namespace sones.GraphDB.Manager
 
         #region Edge
 
-        private static readonly byte EdgeOffset = BaseTypeOffset + 7;
+        private static readonly long EdgeOffset = BaseTypeOffset + 7;
 
         private readonly VertexInformation _Edge = new VertexInformation((long)BaseTypes.VertexType, EdgeOffset + (long)BaseTypes.Edge);
 
@@ -64,7 +64,7 @@ namespace sones.GraphDB.Manager
 
         #region EdgeType
 
-        private static readonly byte EdgeTypeOffset = EdgeOffset;
+        private static readonly long EdgeTypeOffset = EdgeOffset;
 
         private readonly VertexInformation _EdgeType            = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.EdgeType);
         private readonly VertexInformation _EdgeTypeDotParent   = new VertexInformation((long)BaseTypes.OutgoingEdge, EdgeTypeOffset + (long)AttributeDefinitions.Parent);
@@ -74,7 +74,7 @@ namespace sones.GraphDB.Manager
 
         #region IncomingEdge
 
-        private static readonly byte IncomingEdgeOffset = EdgeTypeOffset + 2;
+        private static readonly long IncomingEdgeOffset = EdgeTypeOffset + 2;
 
         private readonly VertexInformation _IncomingEdge               = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.IncomingEdge);
         private readonly VertexInformation _IncomingEdgeDotRelatedEdge = new VertexInformation((long)BaseTypes.OutgoingEdge, IncomingEdgeOffset +(long)AttributeDefinitions.RelatedEgde);
@@ -83,7 +83,7 @@ namespace sones.GraphDB.Manager
 
         #region Index
 
-        private static readonly byte IndexOffset = IncomingEdgeOffset + 1;
+        private static readonly long IndexOffset = IncomingEdgeOffset + 1;
 
         private readonly VertexInformation _Index                      = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.Index);
         private readonly VertexInformation _IndexDotIndexedProperties  = new VertexInformation((long)BaseTypes.Property  , IndexOffset + (long)AttributeDefinitions.IndexedProperties);
@@ -100,7 +100,7 @@ namespace sones.GraphDB.Manager
 
         #region OutgoingEdge
 
-        private static readonly byte OutgoingEdgeOffset = IndexOffset + 9;
+        private static readonly long OutgoingEdgeOffset = IndexOffset + 9;
 
         private readonly VertexInformation _OutgoingEdge                        = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.OutgoingEdge);
         private readonly VertexInformation _OutgoingEdgeDotRelatedIncomingEdges = new VertexInformation((long)BaseTypes.IncomingEdge, OutgoingEdgeOffset + (long)AttributeDefinitions.RelatedIncomingEdges);
@@ -113,7 +113,7 @@ namespace sones.GraphDB.Manager
 
         #region Property
 
-        private static readonly byte PropertyOffset = OutgoingEdgeOffset + 5;
+        private static readonly long PropertyOffset = OutgoingEdgeOffset + 5;
 
         private readonly VertexInformation _Property                = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.Property);
         private readonly VertexInformation _PropertyDotType         = new VertexInformation((long)BaseTypes.OutgoingEdge, PropertyOffset + (long)AttributeDefinitions.Type);
@@ -125,7 +125,7 @@ namespace sones.GraphDB.Manager
 
         #region Vertex
 
-        private static readonly byte VertexOffset = PropertyOffset + 4;
+        private static readonly long VertexOffset = PropertyOffset + 4;
 
         private readonly VertexInformation _Vertex                    = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.Vertex);
         private readonly VertexInformation _VertexDotUUID             = new VertexInformation((long)BaseTypes.Property  , VertexOffset + (long)AttributeDefinitions.UUID);
@@ -141,7 +141,7 @@ namespace sones.GraphDB.Manager
 
         #region VertexType
 
-        private static readonly byte VertexTypeOffset = VertexOffset + 8;
+        private static readonly long VertexTypeOffset = VertexOffset + 8;
 
         private readonly VertexInformation _VertexType                     = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.VertexType);
         private readonly VertexInformation _VertexTypeDotParent            = new VertexInformation((long)BaseTypes.OutgoingEdge, VertexTypeOffset + (long)AttributeDefinitions.Parent);
@@ -153,7 +153,7 @@ namespace sones.GraphDB.Manager
 
         #region WeightedEdge
 
-        private static readonly byte WeightedEdgeOffset = VertexTypeOffset + 4;
+        private static readonly long WeightedEdgeOffset = VertexTypeOffset + 4;
 
         private readonly VertexInformation _WeightedEdge          = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.WeightedEdge);
         private readonly VertexInformation _WeightedEdgeDotWeight = new VertexInformation((long)BaseTypes.Property  , WeightedEdgeOffset + (long)AttributeDefinitions.Weight);
@@ -162,7 +162,7 @@ namespace sones.GraphDB.Manager
 
         #region OrderableEdge
 
-        private static readonly byte OrderableEdgeOffset = WeightedEdgeOffset + 1;
+        private static readonly long OrderableEdgeOffset = WeightedEdgeOffset + 1;
 
         private readonly VertexInformation _OrderableEdge         = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.OrderableEdge);
         private readonly VertexInformation _OrderableEdgeDotOrder = new VertexInformation((long)BaseTypes.Property, OrderableEdgeOffset + (long)AttributeDefinitions.Order);
