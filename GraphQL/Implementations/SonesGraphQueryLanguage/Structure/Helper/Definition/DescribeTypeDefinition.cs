@@ -102,7 +102,8 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             var retVal = new Dictionary<String, object>();
 
-            if (myType.HasParentType)
+            List<IVertexView> result = new List<IVertexView>();
+            var edges = new Dictionary<String, IEdgeView>();
 
             retVal.Add("UUID", myType.ID);
             retVal.Add("TYPE", myType.GetType());
@@ -116,28 +117,31 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             if (myDepth > 0)
             {
+                edges.Add("Properties", new EdgeView(null, GeneratePropertiesOutput(myType, myType.GetPropertyDefinitions(true))));
 
-                retVal.Add("Properties", GeneratePropertiesOutput(myType, myType.GetPropertyDefinitions(true)));
+                edges.Add("Edges", new EdgeView(null, GenerateEdgesOutput(myType, myType.GetOutgoingEdgeDefinitions(true))));
+                    
+                //    retVal.Add("Properties", GeneratePropertiesOutput(myType, myType.GetPropertyDefinitions(true)));
 
-                retVal.Add("Edges", GenerateEdgesOutput(myType, myType.GetOutgoingEdgeDefinitions(true)));
+                //retVal.Add("Edges", GenerateEdgesOutput(myType, myType.GetOutgoingEdgeDefinitions(true)));
 
-                retVal.Add("BackwardEdges", GenerateEdgesOutput(myType, myType.GetIncomingEdgeDefinitions(true)));
+                //retVal.Add("BackwardEdges", GenerateEdgesOutput(myType, myType.GetIncomingEdgeDefinitions(true)));
 
-                retVal.Add("UniqueAttributes", GenerateUniquePropertiesOutput(myType, myType.GetUniqueDefinitions(true)));
+                //retVal.Add("UniqueAttributes", GenerateUniquePropertiesOutput(myType, myType.GetUniqueDefinitions(true)));
 
-                retVal.Add("Attributes", GenerateAttributesOutput(myType, myType.GetAttributeDefinitions(true)));
+                //retVal.Add("Attributes", GenerateAttributesOutput(myType, myType.GetAttributeDefinitions(true)));
 
-                retVal.Add("Indices", GenerateIndicesOutput(myType));
+                //retVal.Add("Indices", GenerateIndicesOutput(myType));
 
-                if (myType.HasParentType)
-                {
-                    var _ParentType = myType.GetParentVertexType;
-                    retVal.Add("Extends", GenerateOutput(_ParentType, myDepth - 1));
-                }
+                //if (myType.HasParentType)
+                //{
+                //    var _ParentType = myType.GetParentVertexType;
+                //    retVal.Add("Extends", GenerateOutput(_ParentType, myDepth - 1));
+                //}
 
             }
 
-            return new VertexView(retVal, new Dictionary<String, IEdgeView>());
+            return new VertexView(retVal, edges);
 
         }
 
