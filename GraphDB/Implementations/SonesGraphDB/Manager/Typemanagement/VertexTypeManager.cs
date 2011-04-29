@@ -853,12 +853,15 @@ namespace sones.GraphDB.Manager.TypeManagement
             //Thus we can add all predefinitions, that has parent predefinition in the list to the end of the list.
             for (var current = result.First; current != null; current = current.Next)
             {
-                //All predefinitions, that has the current predefintion as parent vertex type.
-                var corrects = myDefsByParentVertexName[current.Value.VertexTypeName];
-
-                foreach (var correct in corrects)
+                if (myDefsByParentVertexName.ContainsKey(current.Value.VertexTypeName))
                 {
-                    result.AddLast(correct);
+                    //All predefinitions, that has the current predefintion as parent vertex type.
+                    var corrects = myDefsByParentVertexName[current.Value.VertexTypeName];
+
+                    foreach (var correct in corrects)
+                    {
+                        result.AddLast(correct);
+                    }
                 }
             }
 
