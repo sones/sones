@@ -15,7 +15,6 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
 {
     public sealed class JSON_IO : IOInterface
     {
-
         #region Data
 
         private readonly ContentType _contentType;
@@ -103,7 +102,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             return _Query.ToString();
         }
 
-        #region private toJSON
+        #region private toJSON Extensions
         private JArray GenererateVertexViewJSON(IVertexView aVertex)
         {
             JArray _results = new JArray();
@@ -152,13 +151,15 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             foreach (var _property in aEdge.GetAllProperties())
             {
                 JProperty _newEdge = null;
-
-                if (_property.Item2 is Stream)
-                {
-                    _newEdge = new JProperty(_property.Item1, "BinaryProperty");
-                }
+                if (_property.Item2 == null)
+                    _newEdge = new JProperty(_property.Item1, "");
                 else
-                    _newEdge = new JProperty(_property.Item1, _property.Item2.ToString());
+                    if (_property.Item2 is Stream)
+                    {
+                        _newEdge = new JProperty(_property.Item1, "BinaryProperty");
+                    }
+                    else
+                        _newEdge = new JProperty(_property.Item1, _property.Item2.ToString());
 
                 Output.Add(new JObject(_newEdge));
             }
@@ -194,7 +195,6 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
         #endregion
 
         #endregion
-
 
     }
 }

@@ -602,7 +602,7 @@ InitGoosh = function (goosh) {
         this.name = "format";
         this.aliases = new Array("format");
         this.help = "sets the output-format  of query results default is " + goosh.config.webservice_default_format;
-        this.parameters = "[xml|json|text|gexf]";
+        this.parameters = "[xml|json|text]";
 
         this.call = function (args) {
             if ((args == undefined) || (args.length == 0)) {
