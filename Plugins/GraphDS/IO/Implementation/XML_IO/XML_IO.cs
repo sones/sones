@@ -91,11 +91,12 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                 binProp.ID = aProperty.Item1;
                 var content = new byte[aProperty.Item2.Length];
-                aProperty.Item2.Write(content, 0, content.Length);
+                aProperty.Item2.Read(content, 0, content.Length);
+                
 
                 binProp.Content = content;
 
-                Array.Clear(content, 0 , content.Length);
+               
 
                 binProperties.Add(binProp);
             }
@@ -348,11 +349,18 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                                 case "Content":
                                     contentStream = new MemoryStream();
-                                    var buf = System.Text.Encoding.UTF8.GetBytes(binPropElement.InnerText);
-
-                                    contentStream.Write(buf, 0, buf.Length);                                    
+                                    string str = binPropElement.InnerText;
+                                    //convert string (hex) to MemoryStream 
+                                    for (int i = 0; i < str.Length; i += 2)
+                                    {
+                                        string sub = str.Substring(i, 2);
+                                        byte b = byte.Parse(sub, System.Globalization.NumberStyles.HexNumber);
+                                        contentStream.WriteByte(b);
+                                    }
+                                    contentStream.Position = 0;
                                     break;
-                            }                            
+
+                            }
                         }                        
                         binPropElement = binPropElement.NextSibling;
                     }
