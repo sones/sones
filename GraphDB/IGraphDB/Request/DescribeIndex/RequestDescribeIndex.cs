@@ -54,7 +54,7 @@ namespace sones.GraphDB.Request.GetIndex
 
         public GraphDBAccessMode AccessMode
         {
-            get { throw new NotImplementedException(); }
+            get { return GraphDBAccessMode.ReadOnly; }
         }
 
         #endregion

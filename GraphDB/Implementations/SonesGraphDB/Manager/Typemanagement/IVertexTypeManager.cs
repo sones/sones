@@ -8,6 +8,27 @@ namespace sones.GraphDB.Manager.TypeManagement
 {
     public interface IVertexTypeManager
     {
+        /// <summary>
+        /// Checks if a vertex exists, by id.
+        /// </summary>
+        /// <param name="myTypeId">
+        /// The id of the vertex type.
+        /// </param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>True is type exists, else false.</returns>
+        void CanGetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity);
+
+        /// <summary>
+        /// Checks if a vertex exists, by id.
+        /// </summary>
+        /// <param name="myTypeName">
+        /// The name of the vertex type.
+        /// </param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>True is type exists, else false.</returns>
+        void CanGetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Gets a vertex type by id.

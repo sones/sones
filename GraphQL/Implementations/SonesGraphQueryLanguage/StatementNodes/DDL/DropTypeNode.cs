@@ -15,7 +15,8 @@ namespace sones.GraphQL.StatementNodes.DDL
     {
         #region Data
 
-        String _TypeName = ""; //the name of the type that should be dropped
+        //the name of the type that should be dropped
+        String _TypeName = ""; 
 
         #endregion
 

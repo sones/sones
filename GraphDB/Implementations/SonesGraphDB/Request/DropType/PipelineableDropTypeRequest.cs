@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.GraphDB.Manager;
+using sones.GraphDB.TypeSystem;
+using sones.Library.ErrorHandling;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphDB.Request.DropType
 {
@@ -36,19 +40,26 @@ namespace sones.GraphDB.Request.DropType
 
         #endregion
         
-        public override void Validate(Manager.IMetaManager myMetaManager)
+        public override void Validate(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            myMetaManager.VertexTypeManager.CanGetVertexType(_request.TypeName, TransactionToken, SecurityToken);
         }
 
-        public override void Execute(Manager.IMetaManager myMetaManager)
+        public override void Execute(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            IVertexType graphDBType = myMetaManager.VertexTypeManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
+
+            if (graphDBType == null)
+            {
+                throw new VertexTypeDoesNotExistException(_request.TypeName);
+            }
+
+            myMetaManager.VertexTypeManager.RemoveVertexType(new List<IVertexType> {graphDBType}, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()
         {
-            throw new NotImplementedException();
+            return _request;
         }
 
         #region internal methods

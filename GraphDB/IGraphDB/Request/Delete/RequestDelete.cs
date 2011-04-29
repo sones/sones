@@ -20,7 +20,7 @@ namespace sones.GraphDB.Request.Delete
 
         public GraphDBAccessMode AccessMode
         {
-            get { throw new NotImplementedException(); }
+            get { return GraphDBAccessMode.TypeChange; }
         }
 
         #endregion

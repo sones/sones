@@ -136,6 +136,31 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Retrieving
 
+        public void CanGetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            if (!Enum.IsDefined(typeof(BaseTypes), myTypeId))
+            {
+                throw new VertexTypeDoesNotExistException(myTypeId.ToString());
+            }
+            else if (!_baseTypes.ContainsKey(((BaseTypes)myTypeId).ToString()))
+            {
+                throw new VertexTypeDoesNotExistException(myTypeId.ToString());
+            }
+        }
+
+        public void CanGetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            if (String.IsNullOrWhiteSpace(myTypeName))
+            {
+                throw new VertexTypeDoesNotExistException(myTypeName);
+            }
+            else if (!_baseTypes.ContainsKey(myTypeName))
+            {
+                throw new VertexTypeDoesNotExistException(myTypeName);
+            }
+
+        }
+        
         public IVertexType GetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region get static types
