@@ -87,7 +87,7 @@ namespace sones.Networking.HTTP
         /// </summary>
         /// <param name="myInstance">An optional instance. If null, each request will create a new instance of <typeparamref name="T"/></param>
         /// <param name="myTimeout">An optional timeout</param>
-        public HTTPServer(IPAddress myIPAddress, UInt16 myPort, T myInstance = null, Int32 myTimeout = 100000, Boolean myAutoStart = false)
+        public HTTPServer(IPAddress myIPAddress, UInt16 myPort, T myInstance = null, Int32 myTimeout = 5000, Boolean myAutoStart = false)
         {
             ListenAddress = myIPAddress;
             ListenPort = myPort;
