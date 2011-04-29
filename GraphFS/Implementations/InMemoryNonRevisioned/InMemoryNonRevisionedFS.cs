@@ -658,6 +658,37 @@ namespace sones.GraphFS
         {
             _vertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
         }
+        
+        private void RemoveIncommingEdgeFromTargetVertex(InMemoryVertex myTargetVertex, Int64 myIncommingVertexTypeID, Int64 myIncommingEdgeID, InMemoryVertex myIncommingVertex)
+        {
+            if(myTargetVertex.IncomingEdges != null)
+            {
+                lock (myTargetVertex.IncomingEdges)
+                {
+                    Dictionary<Int64, IncomingEdgeCollection> iEdgeCollection = null;
+
+                    if (myTargetVertex.IncomingEdges.TryGetValue(myIncommingVertexTypeID, out iEdgeCollection))
+                    {
+                        IncomingEdgeCollection edgeCollection = null;
+
+                        if (iEdgeCollection.TryGetValue(myIncommingEdgeID, out edgeCollection))
+                        {
+                            edgeCollection.RemoveVertex(myIncommingVertex);
+                        }
+
+                        if (edgeCollection.Count() == 0)
+                        {
+                            iEdgeCollection.Remove(myIncommingEdgeID);
+                        }
+
+                        if (iEdgeCollection.Count == 0)
+                        {
+                            myTargetVertex.IncomingEdges.Remove(myIncommingVertexTypeID);
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Updates an InMemoryVertex
@@ -688,8 +719,15 @@ namespace sones.GraphFS
             
             if (myVertexUpdate.UpdatedSingleEdges != null)
             {
+                if(toBeUpdatedVertex.OutgoingEdges == null)
+                {
+                    toBeUpdatedVertex.OutgoingEdges = new Dictionary<long, IEdge>();
+                }
+
                 lock (toBeUpdatedVertex.OutgoingEdges)
                 {
+                    #region delete edges
+                    
                     if (myVertexUpdate.UpdatedSingleEdges.Deleted != null)
                     {
                         foreach (var item in myVertexUpdate.UpdatedSingleEdges.Deleted)
@@ -700,12 +738,20 @@ namespace sones.GraphFS
                             {
                                 if (edge is SingleEdge)
                                 {
+                                    var targetVertex = edge.GetTargetVertices().First();
+
+                                    RemoveIncommingEdgeFromTargetVertex((InMemoryVertex)targetVertex, item, edge.EdgeTypeID, toBeUpdatedVertex);
+                                    
                                     toBeUpdatedVertex.OutgoingEdges.Remove(item);
                                 }
                             }
                         }
                     }
 
+                    #endregion
+
+                    #region update edges
+                    
                     if (myVertexUpdate.UpdatedSingleEdges.Updated != null)
                     {
                         foreach (var item in myVertexUpdate.UpdatedSingleEdges.Updated)
@@ -756,12 +802,7 @@ namespace sones.GraphFS
                                                       toBeUpdatedVertex,
                                                       targetVertex,
                                                       item.Value.CommentUpdate, 0, 0,
-                                                      item.Value.
-                                                          UpdatedStructuredProperties.
-                                                          Updated,
-                                                      item.Value.
-                                                          UpdatedUnstructuredProperties.
-                                                          Updated);
+                                                      item.Value.UpdatedStructuredProperties == null ? null : item.Value.UpdatedStructuredProperties.Updated, item.Value.UpdatedUnstructuredProperties == null ? null : item.Value.UpdatedUnstructuredProperties.Updated);
 
                                 toBeUpdatedVertex.OutgoingEdges.Add(item.Key, edge);
                             }
@@ -769,6 +810,8 @@ namespace sones.GraphFS
                             CreateOrUpdateIncomingEdgesOnVertex(targetVertex, item.Key, toBeUpdatedVertex.VertexTypeID, toBeUpdatedVertex);
                         }
                     }
+
+                    #endregion
                 }
             }
 
@@ -780,6 +823,8 @@ namespace sones.GraphFS
             {
                 lock (toBeUpdatedVertex.OutgoingEdges)
                 {
+                    #region delete edges
+                    
                     if (myVertexUpdate.UpdateHyperEdges.Deleted != null)
                     {
                         foreach (var item in myVertexUpdate.UpdateHyperEdges.Deleted)
@@ -790,12 +835,21 @@ namespace sones.GraphFS
                             {
                                 if (edge is HyperEdge)
                                 {
+                                    foreach (var targetVertex in edge.GetTargetVertices())
+                                    {
+                                        RemoveIncommingEdgeFromTargetVertex((InMemoryVertex)targetVertex, item, edge.EdgeTypeID, toBeUpdatedVertex);
+                                    }
+                                    
                                     toBeUpdatedVertex.OutgoingEdges.Remove(item);
                                 }
                             }
                         }
                     }
 
+                    #endregion
+
+                    #region update edges
+                    
                     if (myVertexUpdate.UpdateHyperEdges.Updated != null)
                     {
                         foreach (var item in myVertexUpdate.UpdateHyperEdges.Updated)
@@ -967,6 +1021,8 @@ namespace sones.GraphFS
                             
                         }
                     }
+
+                    #endregion
                 }
             }
 

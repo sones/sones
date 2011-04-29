@@ -63,6 +63,19 @@ namespace sones.GraphFS.Element.Edge
         #region public methods
 
         /// <summary>
+        /// Removes a vertex from the collection
+        /// </summary>
+        /// <param name="myVertex">The vertex to remove.</param>
+        public void RemoveVertex(InMemoryVertex myVertex)
+        {
+            var contElements = _containedVertices.Where(item => item == myVertex);
+            _containedVertices = _containedVertices.Except(contElements).ToArray();
+            _idx = _idx - contElements.Count();
+
+            _isDirty = true;
+        }
+
+        /// <summary>
         /// Adds a vertex to the collection
         /// </summary>
         /// <param name="myVertex">The edge that is going to be added</param>
