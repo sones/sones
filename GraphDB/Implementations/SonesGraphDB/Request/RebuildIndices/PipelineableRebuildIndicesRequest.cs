@@ -71,6 +71,7 @@ namespace sones.GraphDB.Request.RebuildIndices
 
             }
 
+            //TODO implement indeManager.RebuildIndices
             //IndexDefinitions = myMetaManager.IndexManager.RebuildIndices(typesToRebuild);
 
             if (IndexDefinitions == null)

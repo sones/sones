@@ -78,11 +78,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 {
                     try
                     {
-                        var aggregate = myPluginManager.GetAndInitializePlugin<IGQLFunction>(funcName);
+                        var func = myPluginManager.GetAndInitializePlugin<IGQLFunction>(funcName);
 
-                        if (aggregate != null)
+                        if (func != null)
                         {
-                            resultingVertices.Add(GenerateOutput(aggregate, funcName));
+                            resultingVertices.Add(GenerateOutput(func, funcName));
                         }
                         else
                         {
