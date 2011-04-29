@@ -614,14 +614,15 @@ namespace sones.GraphDB.Manager.TypeManagement
                         .SetEdgeType(unknown.EdgeType)
                         .SetComment(unknown.Comment);
 
-                    switch (unknown.Multiplicity)
-                    {
-                        case UnknownAttributePredefinition.SetMultiplicity:
-                            prop.SetAsHyperEdge();
-                            break;
-                        default:
-                            throw new Exception("Unknown multiplicity for edges.");
-                    }
+                    if (unknown.Multiplicity != null)
+                        switch (unknown.Multiplicity)
+                        {
+                            case UnknownAttributePredefinition.SetMultiplicity:
+                                prop.SetAsHyperEdge();
+                                break;
+                            default:
+                                throw new Exception("Unknown multiplicity for edges.");
+                        }
 
                     myVertexTypeDefinition.AddOutgoingEdge(prop);
                 }
