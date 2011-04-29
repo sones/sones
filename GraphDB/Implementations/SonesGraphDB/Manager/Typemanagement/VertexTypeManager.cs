@@ -541,7 +541,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private static void ConvertUnknownAttributes(VertexTypePredefinition myVertexTypeDefinition)
         {
-            List<UnknownPropertyTypeException> toBeConverted = myVertexTypeDefinition.UnknownAttributes.ToArray();
+            var toBeConverted = myVertexTypeDefinition.UnknownAttributes.ToArray();
             foreach (var unknown in toBeConverted)
             {
                 if (BinaryPropertyPredefinition.TypeName.Equals(unknown.AttributeType))

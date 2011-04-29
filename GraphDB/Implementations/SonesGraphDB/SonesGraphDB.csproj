@@ -92,7 +92,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Request\CreateVertexType\PipelineableCreateVertexTypeRequest.cs" />
+    <Compile Include="Request\CreateVertexType\PipelineableCreateVertexTypeRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Request\DecribeIndex\PipelineableDescribeIndexRequest.cs" />
     <Compile Include="Request\Delete\PipelineableDeleteRequest.cs" />
     <Compile Include="Request\GetEdgeType\PipelineableGetAllEdgeTypesRequest.cs" />
