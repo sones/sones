@@ -54,6 +54,7 @@
     <Compile Include="ErrorHandling\IndexTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\InvalidBinaryExpressionException.cs" />
     <Compile Include="ErrorHandling\InvalidLevelKeyOperationException.cs" />
+    <Compile Include="ErrorHandling\InvalidTransactionIsolationLevelException.cs" />
     <Compile Include="ErrorHandling\IronyInitializeGrammarException.cs" />
     <Compile Include="ErrorHandling\VertexTypeDoesNotExistException.cs" />
     <Compile Include="Extensions.cs" />
