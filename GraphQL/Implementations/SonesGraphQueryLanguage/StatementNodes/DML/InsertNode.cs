@@ -15,6 +15,9 @@ using sones.GraphDB.Request;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphQL.GQL.Structure.Helper.Definition;
 using sones.GraphQL.Structure.Nodes.Expressions;
+using sones.GraphQL.GQL.Structure.Nodes.Expressions;
+using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -103,6 +106,12 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             var result = new RequestInsertVertex(_TypeName);
 
+            var vertexType = myGraphDB.GetVertexType<IVertexType>(
+                mySecurityToken,
+                myTransactionToken,
+                new RequestGetVertexType(_TypeName),
+                (stats, vtype) => vtype);
+
             foreach (var aAttributeDefinition in _AttributeAssignList)
             {
                 #region AttributeAssignOrUpdateValue
@@ -111,7 +120,15 @@ namespace sones.GraphQL.StatementNodes.DML
                 {
                     var value = aAttributeDefinition as AttributeAssignOrUpdateValue;
 
-                    result.AddStructuredProperty(value.AttributeIDChain.ContentString, (IComparable)value.Value);
+                    if (vertexType.HasAttribute(value.AttributeIDChain.ContentString))
+                    {
+                        result.AddStructuredProperty(value.AttributeIDChain.ContentString, (IComparable)value.Value);
+                    }
+                    else
+                    {
+                        result.AddUnstructuredProperty(value.AttributeIDChain.ContentString, value.Value);
+
+                    }
 
                     continue;
                 }
@@ -124,7 +141,44 @@ namespace sones.GraphQL.StatementNodes.DML
                 {
                     var value = aAttributeDefinition as AttributeAssignOrUpdateList;
 
+                    switch (value.CollectionDefinition.CollectionType)
+                    {
+                        case CollectionType.Set:
 
+                            #region set
+
+                            EdgePredefinition edgeDefinition = new EdgePredefinition(value.AttributeIDChain.ContentString);
+
+                            foreach (var aTupleElement in value.CollectionDefinition.TupleDefinition)
+                            {
+                                if (aTupleElement.Value is BinaryExpressionDefinition)
+                                {
+                                    #region BinaryExpressionDefinition
+
+                                    var binExpression = (BinaryExpressionDefinition)aTupleElement.Value;
+
+                                    binExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+
+                                    var expressionGraph = binExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+
+                                    LevelKey interestingLevelKey = new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken);
+
+                                    edgeDefinition.AddVertexID(expressionGraph.SelectVertexIDs(interestingLevelKey, null, true));
+
+                                    #endregion
+                                }
+                            }
+
+                            #endregion
+
+                            break;
+                        case CollectionType.List:
+                            break;
+                        case CollectionType.SetOfUUIDs:
+                            break;
+                        default:
+                            break;
+                    }
 
                     continue;
                 }

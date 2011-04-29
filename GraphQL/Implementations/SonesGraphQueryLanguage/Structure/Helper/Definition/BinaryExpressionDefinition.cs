@@ -15,6 +15,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.GraphQL.GQL.ErrorHandling;
 using sones.GraphQL.Result;
 using sones.GraphQL.GQL.Manager.Select;
+using sones.GraphQL.GQL.Structure.Helper.Operator;
 
 namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 {
@@ -542,12 +543,12 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
             {
                 #region process leaf expression
 
-                return this.Operator.TypeOperation(
-                    this.Left, this.Right,
+                return ABinaryCompareOperator.TypeOperation(this.Left, this.Right,
                     myPluginManager, myGraphDB, mySecurityToken, myTransactionToken,
                     this.TypeOfBinaryExpression,
                     GetAssociativityReloaded(ExtractIDNode(this.Left), ExtractIDNode(this.Right)),
                    resultGraph,
+                   TypesOfOperators.AffectsLocalLevelOnly,
                    aggregateAllowed);
 
                 #endregion

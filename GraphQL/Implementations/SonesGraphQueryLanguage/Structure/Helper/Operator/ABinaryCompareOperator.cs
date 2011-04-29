@@ -29,7 +29,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// <param name="leftData">Left data tuple.</param>
         /// <param name="rightData">Right data tuple.</param>
         /// <returns>A data tuple.</returns>
-        private DataContainer JoinData(DataContainer leftData, DataContainer rightData)
+        private static DataContainer JoinData(DataContainer leftData, DataContainer rightData)
         {
             return new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(leftData.IDChainDefinitions.Item1, rightData.IDChainDefinitions.Item1), new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Operands.Item1, rightData.Operands.Item1), new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Extraordinaries.Item1, rightData.Extraordinaries.Item1));
         }
@@ -42,7 +42,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// <param name="errors">The list of errors.</param>
         /// <param name="typeOfBinExpr">The kind of the binary expression</param>
         /// <returns>A data tuple.</returns>
-        private DataContainer ExtractData(AExpressionDefinition myComplexValue, AExpressionDefinition mySimpleValue, ref TypesOfBinaryExpression typeOfBinExpr, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, Boolean aggregateAllowed)
+        private static DataContainer ExtractData(AExpressionDefinition myComplexValue, AExpressionDefinition mySimpleValue, ref TypesOfBinaryExpression typeOfBinExpr, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, Boolean aggregateAllowed)
         {
             #region data
 
@@ -198,7 +198,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             return new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(complexIDNode, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(simpleValue, complexValue), new Tuple<AExpressionDefinition, AExpressionDefinition>(extraordinaryValue, null));
         }
 
-        private ValueDefinition GetCorrectValueDefinition(IAttributeDefinition typeAttribute, IVertexType graphDBType, ValueDefinition myValueDefinition)
+        private static ValueDefinition GetCorrectValueDefinition(IAttributeDefinition typeAttribute, IVertexType graphDBType, ValueDefinition myValueDefinition)
         {
 
             if (typeAttribute.Kind == AttributeType.IncomingEdge)
@@ -231,11 +231,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// <param name="referenceList"></param>
         /// <param name="queryCache">The per query DBObject/BackwardEdge cache.</param>
         /// <returns></returns>
-        public override IExpressionGraph TypeOperation( 
+        public static IExpressionGraph TypeOperation( 
             AExpressionDefinition myLeftValueObject, AExpressionDefinition myRightValueObject,
             GQLPluginManager myPluginManager,
             IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken,
-            TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph resultGr, Boolean aggregateAllowed = true)
+            TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph resultGr, TypesOfOperators mytypesOfOpertators, Boolean aggregateAllowed = true)
         {
             #region Data
 
@@ -354,7 +354,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
                     #region LeftComplex
 
-                    MatchData(data, typeOfBinExpr, resultGr, myGraphDB, mySecurityToken, myTransactionToken);
+                    MatchData(data, typeOfBinExpr, resultGr, myGraphDB, mySecurityToken, myTransactionToken, mytypesOfOpertators);
 
                     #endregion
 
@@ -364,7 +364,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
                     #region RightComplex
 
-                    MatchData(data, typeOfBinExpr, resultGr, myGraphDB, mySecurityToken, myTransactionToken);
+                    MatchData(data, typeOfBinExpr, resultGr, myGraphDB, mySecurityToken, myTransactionToken, mytypesOfOpertators);
 
                     #endregion
 
@@ -387,7 +387,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             return resultGr;
         }
 
-        private TypesOfBinaryExpression SetTypeOfBinaryExpression(DataContainer leftData, DataContainer rightData)
+        private static TypesOfBinaryExpression SetTypeOfBinaryExpression(DataContainer leftData, DataContainer rightData)
         {
             TypesOfBinaryExpression result;
 
@@ -424,7 +424,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// <param name="idx">The index for the complex part.</param>
         /// <param name="errors">A list of errors.</param>
         /// <param name="resultGraph">The IExpressionGraph that serves as result.</param>
-        private void MatchData(DataContainer data, TypesOfBinaryExpression typeOfBinExpr, IExpressionGraph resultGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private static void MatchData(DataContainer data, TypesOfBinaryExpression typeOfBinExpr, IExpressionGraph resultGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfOperators myTypeOfOperator)
         {
             #region data
 
@@ -444,14 +444,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
             foreach (var aVertex in vertices)
             {
-                IntegrateInGraph(aVertex, resultGraph, myLevelKey);
+                IntegrateInGraph(aVertex, resultGraph, myLevelKey, myTypeOfOperator);
             }
 
             if (resultGraph.ContainsLevelKey(myLevelKey))
             {
                 #region clean lower levels
 
-                if (Type == TypesOfOperators.AffectsLowerLevels)
+                if (myTypeOfOperator == TypesOfOperators.AffectsLowerLevels)
                 {
                     CleanLowerLevel(myLevelKey, resultGraph, myGraphDB, mySecurityToken, myTransactionToken);
                 }
@@ -465,17 +465,17 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             }
         }
 
-        private IExpression GenerateLiteral(AExpressionDefinition aExpressionDefinition)
+        private static IExpression GenerateLiteral(AExpressionDefinition aExpressionDefinition)
         {
             throw new NotImplementedException();
         }
 
-        private BinaryOperator GetOperatorFromSymbol()
+        private static BinaryOperator GetOperatorFromSymbol()
         {
             throw new NotImplementedException();
         }
 
-        private void CleanLowerLevel(LevelKey myLevelKey, IExpressionGraph myGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private static void CleanLowerLevel(LevelKey myLevelKey, IExpressionGraph myGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             if (myLevelKey.Level > 0)
             {
@@ -506,7 +506,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             }
         }
 
-        private LevelKey CreateLevelKey(IDChainDefinition myIDChainDefinition, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private static LevelKey CreateLevelKey(IDChainDefinition myIDChainDefinition, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             if (myIDChainDefinition.Level == 0)
             {
@@ -534,9 +534,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             }
         }
 
-        private void IntegrateInGraph(IVertex myDBObjectStream, IExpressionGraph myExpressionGraph, LevelKey myLevelKey)
+        private static void IntegrateInGraph(IVertex myDBObjectStream, IExpressionGraph myExpressionGraph, LevelKey myLevelKey, TypesOfOperators myTypesOfOperators)
         {
-            if (this.Type == TypesOfOperators.AffectsLowerLevels)
+            if (myTypesOfOperators == TypesOfOperators.AffectsLowerLevels)
             {
                 myExpressionGraph.AddNode(myDBObjectStream, myLevelKey, 1);
             }

@@ -28,21 +28,21 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
         #endregion
 
-        #region (public) Methods
+        //#region (public) Methods
 
-        public abstract IExpressionGraph TypeOperation(
-            AExpressionDefinition myLeftValueObject, 
-            AExpressionDefinition myRightValueObject, 
-            GQLPluginManager myPluginManager,
-            IGraphDB myIGraphDB,
-            SecurityToken mySecurityToken,
-            TransactionToken myTransactionToken,
-            TypesOfBinaryExpression typeOfBinExpr, 
-            TypesOfAssociativity associativity, 
-            IExpressionGraph result, 
-            Boolean aggregateAllowed = true);
+        //public abstract IExpressionGraph TypeOperation(
+        //    AExpressionDefinition myLeftValueObject, 
+        //    AExpressionDefinition myRightValueObject, 
+        //    GQLPluginManager myPluginManager,
+        //    IGraphDB myIGraphDB,
+        //    SecurityToken mySecurityToken,
+        //    TransactionToken myTransactionToken,
+        //    TypesOfBinaryExpression typeOfBinExpr, 
+        //    TypesOfAssociativity associativity, 
+        //    IExpressionGraph result, 
+        //    Boolean aggregateAllowed = true);
 
-        #endregion
+        //#endregion
 
         public List<String> GetAttributeList(List<String> aList)
         {

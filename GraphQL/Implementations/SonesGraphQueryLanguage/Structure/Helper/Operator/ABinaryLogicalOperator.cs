@@ -14,10 +14,5 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
     public abstract class ABinaryLogicalOperator : ABinaryBaseOperator
     {
         public abstract IExpressionGraph TypeOperation(IExpressionGraph myLeftValueObject, IExpressionGraph myRightValueObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, bool aggregateAllowed = true);
-
-        public override IExpressionGraph TypeOperation(AExpressionDefinition myLeftValueObject, AExpressionDefinition myRightValueObject, GQLPluginManager myPluginManager, IGraphDB myIGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, bool aggregateAllowed = true)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
