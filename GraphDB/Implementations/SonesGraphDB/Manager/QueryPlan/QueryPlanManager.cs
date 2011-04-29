@@ -45,7 +45,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         {
             _vertexTypeManager = myVertexTypeManager;
             _vertexStore = myVertexStore;
-            _indexManager = myIndexManager;
+            _indexManager = null;
         }
 
         #endregion
@@ -322,7 +322,7 @@ namespace sones.GraphDB.Manager.QueryPlan
             FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
 
             //is there an index on this property?
-            if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
+            if (_indexManager != null && _indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
             {
                 return new QueryPlanEqualsWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
             }
@@ -354,7 +354,7 @@ namespace sones.GraphDB.Manager.QueryPlan
             }
 
             //is there an index on this property?
-            if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
+            if (_indexManager != null && _indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
             {
                 return new QueryPlanInRangeWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
             }
@@ -380,7 +380,7 @@ namespace sones.GraphDB.Manager.QueryPlan
             FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
 
             //is there an index on this property?
-            if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
+            if (_indexManager != null && _indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
             {
                 return new QueryPlanNotEqualsWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
             }
@@ -406,7 +406,7 @@ namespace sones.GraphDB.Manager.QueryPlan
             FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
 
             //is there an index on this property?
-            if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
+            if (_indexManager != null && _indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
             {
                 return new QueryPlanLessThanWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
             }
@@ -432,7 +432,7 @@ namespace sones.GraphDB.Manager.QueryPlan
             FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
 
             //is there an index on this property?
-            if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
+            if (_indexManager != null && _indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
             {
                 return new QueryPlanLessOrEqualsThanWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
             }
@@ -458,7 +458,7 @@ namespace sones.GraphDB.Manager.QueryPlan
             FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
 
             //is there an index on this property?
-            if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
+            if (_indexManager != null && _indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
             {
                 return new QueryPlanGreaterThanWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
             }
@@ -509,7 +509,7 @@ namespace sones.GraphDB.Manager.QueryPlan
             FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
 
             //is there an index on this property?
-            if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
+            if (_indexManager != null && _indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
             {
                 return new QueryPlanGreaterOrEqualsWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
             }

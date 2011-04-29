@@ -16,17 +16,17 @@ namespace sones.GraphFS.Element.Vertex
     {
         #region data
 
-        public readonly Boolean IsBulkVertex = true;
+        public Boolean IsBulkVertex = true;
 
         /// <summary>
         /// The binary properties of this vertex
         /// </summary>
-        private readonly IDictionary<Int64, Stream> _binaryProperties;
+        private IDictionary<Int64, Stream> _binaryProperties;
 
         /// <summary>
         /// The edition of the vertex
         /// </summary>
-        private readonly string _edition;
+        private string _edition;
 
         /// <summary>
         /// The incoming edges of the vertex
@@ -610,5 +610,31 @@ namespace sones.GraphFS.Element.Vertex
         }
 
         #endregion
+
+        /// <summary>
+        /// Activates a bulk vertex type
+        /// </summary>
+        /// <param name="binaryProperties"></param>
+        /// <param name="edges"></param>
+        /// <param name="Comment"></param>
+        /// <param name="CreationDate"></param>
+        /// <param name="ModificationDate"></param>
+        /// <param name="StructuredProperties"></param>
+        /// <param name="UnstructuredProperties"></param>
+        internal void Activate(Dictionary<long, Stream> binaryProperties, Dictionary<long, IEdge> edges, string Comment, long CreationDate, long ModificationDate, IDictionary<long, IComparable> StructuredProperties, IDictionary<string, object> UnstructuredProperties)
+        {
+            lock (this)
+            {
+                _binaryProperties = binaryProperties;
+                _comment = Comment;
+                _creationDate = CreationDate;
+                _modificationDate = ModificationDate;
+                _structuredProperties = StructuredProperties;
+                _unstructuredProperties = UnstructuredProperties;
+                OutgoingEdges = edges;
+
+                IsBulkVertex = false;
+            }
+        }
     }
 }

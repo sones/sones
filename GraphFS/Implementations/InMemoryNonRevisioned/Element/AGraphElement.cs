@@ -19,22 +19,22 @@ namespace sones.GraphFS.Element
         /// <summary>
         /// The creation date of the vertex
         /// </summary>
-        protected readonly long _creationDate;
+        protected long _creationDate;
 
         /// <summary>
         /// The modification date of the vertex
         /// </summary>
-        protected readonly long _modificationDate;
+        protected long _modificationDate;
 
         /// <summary>
         /// The structured properties
         /// </summary>
-        protected readonly IDictionary<Int64, IComparable> _structuredProperties;
+        protected IDictionary<Int64, IComparable> _structuredProperties;
 
         /// <summary>
         /// The unstructured properties
         /// </summary>
-        protected readonly IDictionary<String, Object> _unstructuredProperties;
+        protected IDictionary<String, Object> _unstructuredProperties;
 
         #endregion
 

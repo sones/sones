@@ -135,6 +135,8 @@ namespace sones.GraphFS.Element.Edge
             {
                 HashSet<InMemoryVertex> helper = new HashSet<InMemoryVertex>(_containedVertices);
 
+                helper.Remove(null);
+
                 _containedVertices = helper.ToArray();
 
                 _isDirty = false;

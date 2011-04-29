@@ -338,10 +338,10 @@ namespace sones.GraphFS
 
             return false;
         }
-        
+
 
         public IVertex AddVertex(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken,
             VertexAddDefinition myVertexDefinition,
             Int64 myVertexRevisionID = 0L,
             Boolean myCreateIncomingEdges = true)
@@ -373,56 +373,81 @@ namespace sones.GraphFS
             }
 
             Boolean addEdges = myVertexDefinition.OutgoingSingleEdges != null || myVertexDefinition.OutgoingHyperEdges != null;
-            Dictionary<Int64, IEdge> edges = null;
-            if (addEdges)
-            {
-                edges = new Dictionary<long, IEdge>();
-            }
-
-            InMemoryVertex toBeAddedVertex = new InMemoryVertex(
-                myVertexDefinition.VertexID, 
-                myVertexDefinition.VertexTypeID, 
-                vertexRevisionID, 
-                myVertexDefinition.Edition, 
-                binaryProperties, 
-                edges, 
-                myVertexDefinition.Comment, 
-                myVertexDefinition.CreationDate, 
-                myVertexDefinition.ModificationDate, 
-                myVertexDefinition.StructuredProperties, 
-                myVertexDefinition.UnstructuredProperties);
-
-            #endregion
-
-            #region process edges
-
-            if (addEdges)
-            {
-                AddEdgesToVertex(myVertexDefinition, toBeAddedVertex, edges);
-            }
 
             #endregion
 
             #region store the new vertex
 
+            InMemoryVertex createdVertex = null;
+
             _vertexStore[myVertexDefinition.VertexTypeID].
-                AddOrUpdate(toBeAddedVertex.VertexID,
-                            toBeAddedVertex,
+                AddOrUpdate(myVertexDefinition.VertexID,
+                (anotherLong) =>
+                {
+
+                    Dictionary<long, IEdge> newEdge = null;
+                    if (addEdges)
+                    {
+                        newEdge = new Dictionary<long, IEdge>();
+                    }
+
+                    InMemoryVertex toBeAddedVertex = new InMemoryVertex(
+                    myVertexDefinition.VertexID,
+                    myVertexDefinition.VertexTypeID,
+                    vertexRevisionID,
+                    myVertexDefinition.Edition,
+                    binaryProperties,
+                    newEdge,
+                    myVertexDefinition.Comment,
+                    myVertexDefinition.CreationDate,
+                    myVertexDefinition.ModificationDate,
+                    myVertexDefinition.StructuredProperties,
+                    myVertexDefinition.UnstructuredProperties);
+
+                    if (addEdges)
+                    {
+                        AddEdgesToVertex(myVertexDefinition, toBeAddedVertex, newEdge);
+                    }
+
+                    createdVertex = toBeAddedVertex;
+
+                    return toBeAddedVertex;
+                },
                             (id, oldVertex) =>
                             {
                                 if (!oldVertex.IsBulkVertex)
                                 {
                                     throw new VertexAlreadyExistException(myVertexDefinition.VertexTypeID, myVertexDefinition.VertexID);
                                 }
-                                
-                                toBeAddedVertex.IncomingEdges = oldVertex.IncomingEdges;
 
-                                return toBeAddedVertex;
+                                Dictionary<long, IEdge> oldEdge = null;
+                                if (addEdges)
+                                {
+                                    oldEdge = new Dictionary<long, IEdge>();
+                                }
+
+                                oldVertex.Activate(
+                                   binaryProperties,
+                                   oldEdge,
+                                   myVertexDefinition.Comment,
+                                   myVertexDefinition.CreationDate,
+                                   myVertexDefinition.ModificationDate,
+                                   myVertexDefinition.StructuredProperties,
+                                   myVertexDefinition.UnstructuredProperties);
+
+                                if (addEdges)
+                                {
+                                    AddEdgesToVertex(myVertexDefinition, oldVertex, oldEdge);
+                                }
+
+                                createdVertex = oldVertex;
+
+                                return oldVertex;
                             });
 
             #endregion
 
-            return toBeAddedVertex;
+            return createdVertex;
         }
 
         public IVertex UpdateVertex(
