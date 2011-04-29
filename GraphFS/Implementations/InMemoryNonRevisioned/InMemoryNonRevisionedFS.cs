@@ -654,7 +654,7 @@ namespace sones.GraphFS
             if (myVertexUpdate.UpdatedBinaryProperties != null)
             {
                 toBeUpdatedVertex.UpdateBinaryProperties(myVertexUpdate.UpdatedBinaryProperties.Updated,
-                                                         myVertexUpdate.UpdateHyperEdges.Deleted);
+                                                         myVertexUpdate.UpdatedBinaryProperties.Deleted);
             }
 
             #endregion
