@@ -167,7 +167,12 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <returns>The resulting vertex view</returns>
         private IVertexView GenerateAVertexView(IVertexType aCreatedVertes)
         {
-            throw new NotImplementedException();
+            IDictionary<String, Object> properties = new Dictionary<string,object>();
+            
+            properties.Add(SonesGQLConstants.GraphDBType, aCreatedVertes.Name);
+            properties.Add("ID", aCreatedVertes.ID);
+
+            return new VertexView(properties, null);
         }
 
         /// <summary>
@@ -240,7 +245,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             {
                 foreach (var aIncomingEdge in aDefinition.BackwardEdgeNodes)
                 {
-
+                    result.AddIncomingEdge(GenerateAIncomingEdge(aIncomingEdge));
                 }
             }
 
@@ -252,7 +257,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             {
                 foreach (var aIndex in aDefinition.Indices)
                 {
-
+                    result.AddIndex(GenerateIndex(aIndex));
                 }
             }
 
@@ -261,6 +266,56 @@ namespace sones.GraphQL.StatementNodes.DDL
             return result;
         }
 
+        /// <summary>
+        /// Generates a index predefinition
+        /// </summary>
+        /// <param name="aIndex">The index definition by the gql</param>
+        /// <returns>An IndexPredefinition</returns>
+        private IndexPredefinition GenerateIndex(IndexDefinition aIndex)
+        {
+            IndexPredefinition result;
+
+            if (String.IsNullOrEmpty(aIndex.IndexName))
+            {
+                result = new IndexPredefinition();
+            }
+            else
+            {
+                result = new IndexPredefinition(aIndex.IndexName);
+            }
+
+            if (!String.IsNullOrEmpty(aIndex.IndexType))
+            {
+                result.SetIndexType(aIndex.IndexType);
+            }
+
+            foreach (var aIndexProperty in aIndex.IndexAttributeDefinitions)
+            {
+                result.AddProperty(aIndexProperty.IndexAttribute.ContentString);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Generates an incoming edge attribute
+        /// </summary>
+        /// <param name="aIncomingEdge">The incoming edge definition by the gql</param>
+        /// <returns>An incoming edge predefinition</returns>
+        private IncomingEdgePredefinition GenerateAIncomingEdge(BackwardEdgeDefinition aIncomingEdge)
+        {
+            IncomingEdgePredefinition result = new IncomingEdgePredefinition(aIncomingEdge.AttributeName);
+
+            result.SetOutgoingEdge(aIncomingEdge.TypeName, aIncomingEdge.TypeAttributeName);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Generates a attribute definition
+        /// </summary>
+        /// <param name="aAttribute">The attribute that is going to be transfered</param>
+        /// <returns>A attribute predefinition</returns>
         private UnknownAttributePredefinition GenerateUnknownAttribute(KeyValuePair<AttributeDefinition, string> aAttribute)
         {
             UnknownAttributePredefinition result = new UnknownAttributePredefinition(aAttribute.Key.AttributeName);
