@@ -65,6 +65,7 @@
     <Compile Include="ErrorHandling\Attribute\AttributeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\Attribute\MandatoryConstraintViolationException.cs" />
     <Compile Include="ErrorHandling\Attribute\PropertyHasWrongTypeException.cs" />
+    <Compile Include="ErrorHandling\IndexErrors\RebuildIndicesFaildException.cs" />
     <Compile Include="ErrorHandling\Insert\AbstractConstraintViolationException.cs" />
     <Compile Include="ErrorHandling\Insert\AGraphDBInsertException.cs" />
     <Compile Include="ErrorHandling\QueryPlan\InvalidExpressionException.cs" />
@@ -149,6 +150,7 @@
     <Compile Include="Request\Insert\EdgeDefinition.cs" />
     <Compile Include="Request\Insert\RequestInsertVertex.cs" />
     <Compile Include="Request\IRequestStatistics.cs" />
+    <Compile Include="Request\RebuildIndices\RequestRebuildIndices.cs" />
     <Compile Include="Request\RequestStatistics.cs" />
     <Compile Include="IGraphDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

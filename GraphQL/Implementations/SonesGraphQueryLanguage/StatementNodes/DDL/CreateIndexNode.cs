@@ -13,6 +13,8 @@ using sones.GraphQL.Structure.Nodes.Misc;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.ErrorHandling;
+using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphQL.StatementNodes.DDL
 {
@@ -25,6 +27,8 @@ namespace sones.GraphQL.StatementNodes.DDL
         String _DBType = null;
         List<IndexAttributeDefinition> _AttributeList = null;
         String _IndexType;
+
+        public String Query;
 
         #endregion
 
@@ -96,6 +100,7 @@ namespace sones.GraphQL.StatementNodes.DDL
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             QueryResult qresult = null;
+            Query = myQuery;
 
             try
             {
@@ -103,9 +108,7 @@ namespace sones.GraphQL.StatementNodes.DDL
                 indexDef.SetIndexType(_IndexType);
                 indexDef.SetVertexType(_DBType);
 
-                var stat = myGraphDB.CreateIndex(mySecurityToken, myTransactionToken, new RequestCreateIndex(indexDef), (stats) => stats);
-
-                qresult = new QueryResult(myQuery, "sones.gql", Convert.ToUInt64(stat.ExecutionTime.Milliseconds), ResultType.Successful);
+                qresult = myGraphDB.CreateIndex<QueryResult>(mySecurityToken, myTransactionToken, new RequestCreateIndex(indexDef), GenerateResult);
             }
             catch (ASonesException e)
             {
@@ -117,5 +120,17 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         #endregion
 
+        private QueryResult GenerateResult(IRequestStatistics myStats, IIndexDefinition myIndexDefinition)
+        {
+            return new QueryResult(Query, 
+                                    "sones.gql", 
+                                    Convert.ToUInt64(myStats.ExecutionTime), 
+                                    ResultType.Successful, 
+                                    new List<IVertexView> { new VertexView(new Dictionary<String, object> { {"CreatedIndex", myIndexDefinition} } , 
+                                                                            new Dictionary<String, IEdgeView>()) });
+        }
+
     }
+
+    
 }

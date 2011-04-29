@@ -17,6 +17,7 @@ using sones.GraphDB.Request.Update;
 using sones.GraphDB.Request.DropType;
 using sones.GraphDB.Request.DropIndex;
 using sones.GraphDB.Request.CreateIndex;
+using sones.GraphDB.Request.RebuildIndices;
 
 namespace sones.GraphDS.GraphDSRESTClient
 {
@@ -183,6 +184,11 @@ namespace sones.GraphDS.GraphDSRESTClient
         }
 
         public TResult CreateIndex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateIndex myRequestCreateIndex, Converter.CreateIndexResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult RebuildIndices<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestRebuildIndices myRequestRebuildIndices, Converter.RebuildIndicesResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

@@ -10,6 +10,7 @@ using sones.GraphDB.Request.Update;
 using sones.GraphDB.Request.DropType;
 using sones.GraphDB.Request.DropIndex;
 using sones.GraphDB.Request.CreateIndex;
+using sones.GraphDB.Request.RebuildIndices;
 
 namespace sones.GraphDB
 {
@@ -160,6 +161,20 @@ namespace sones.GraphDB
                                         TransactionToken myTransactionToken,
                                         RequestCreateIndex myRequestCreateIndex,
                                         Converter.CreateIndexResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Rebuilds indeces of given types
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestRebuildIndices">The create index request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult RebuildIndices<TResult>(SecurityToken mySecurityToken,
+                                        TransactionToken myTransactionToken,
+                                        RequestRebuildIndices myRequestRebuildIndices,
+                                        Converter.RebuildIndicesResultConverter<TResult> myOutputconverter);
 
         #endregion
     }

@@ -3,6 +3,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Manager;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Request.CreateIndex
 {
@@ -11,6 +12,7 @@ namespace sones.GraphDB.Request.CreateIndex
         #region data
 
         private readonly RequestCreateIndex _request;
+        private IIndexDefinition IndexDef;
 
         #endregion
 
@@ -48,9 +50,9 @@ namespace sones.GraphDB.Request.CreateIndex
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            var indexDef = myMetaManager.IndexManager.CreateIndex(_request.IndexDefinition, SecurityToken, TransactionToken);
+            IndexDef = myMetaManager.IndexManager.CreateIndex(_request.IndexDefinition, SecurityToken, TransactionToken);
 
-            if (indexDef == null)
+            if (IndexDef == null)
             {
                 throw new IndexCreationException(_request.IndexDefinition, "");
             }
@@ -63,7 +65,7 @@ namespace sones.GraphDB.Request.CreateIndex
 
         internal TResult GenerateRequestResult<TResult>(Converter.CreateIndexResultConverter<TResult> myOutputconverter)
         {
-            return myOutputconverter(Statistics);
+            return myOutputconverter(Statistics, IndexDef);
         }
     }
 }

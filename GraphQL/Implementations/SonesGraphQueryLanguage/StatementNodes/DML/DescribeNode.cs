@@ -66,6 +66,8 @@ namespace sones.GraphQL.StatementNodes.DML
                 error = e;
             }
 
+            sw.Stop();
+
             return new QueryResult(myQuery, "sones.gql", (ulong)sw.ElapsedMilliseconds, qresult.TypeOfResult, qresult.Vertices, error);
         }
 

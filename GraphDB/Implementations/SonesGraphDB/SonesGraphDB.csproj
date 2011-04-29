@@ -107,6 +107,7 @@
     <Compile Include="Request\GetVertex\PipelineableGetVertexRequest.cs" />
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
     <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
+    <Compile Include="Request\RebuildIndices\PipelineableRebuildIndicesRequest.cs" />
     <Compile Include="Request\TraverseVertex\PipelineableTraverseVertexRequest.cs" />
     <Compile Include="Request\Truncate\PipelineableTruncateRequest.cs" />
     <Compile Include="Request\Update\PipelineableUpdateRequest.cs" />
