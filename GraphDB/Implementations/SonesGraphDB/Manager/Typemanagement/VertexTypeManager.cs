@@ -659,7 +659,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             foreach (var prop in myVertexTypeDefinition.BinaryProperties)
             {
                 prop.CheckNull("Binary Property in vertex type predefinition " + myVertexTypeDefinition.VertexTypeName);
-                if (myUniqueNameSet.Add(prop.AttributeName))
+                if (!myUniqueNameSet.Add(prop.AttributeName))
                     throw new DuplicatedAttributeNameException(myVertexTypeDefinition, prop.AttributeName);
             }
         }
@@ -674,7 +674,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             foreach (var prop in vertexTypeDefinition.Properties)
             {
                 prop.CheckNull("Property in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
-                if (myUniqueNameSet.Add(prop.AttributeName))
+                if (!myUniqueNameSet.Add(prop.AttributeName))
                     throw new DuplicatedAttributeNameException(vertexTypeDefinition, prop.AttributeName);
 
                 CheckPropertyType(vertexTypeDefinition, prop);
@@ -722,7 +722,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             foreach (var edge in vertexTypeDefinition.OutgoingEdges)
             {
                 edge.CheckNull("Outgoing myEdge in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
-                if (myUniqueNameSet.Add(edge.AttributeName))
+                if (!myUniqueNameSet.Add(edge.AttributeName))
                     throw new DuplicatedAttributeNameException(vertexTypeDefinition, edge.AttributeName);
 
                 CheckEdgeType(vertexTypeDefinition, edge);
@@ -752,7 +752,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             foreach (var edge in vertexTypeDefinition.IncomingEdges)
             {
                 edge.CheckNull("Incoming myEdge in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
-                if (myUniqueNameSet.Add(edge.AttributeName))
+                if (!myUniqueNameSet.Add(edge.AttributeName))
                     throw new DuplicatedAttributeNameException(vertexTypeDefinition, edge.AttributeName);
             }
         }
