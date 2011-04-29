@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Irony.Parsing;
-using sones.GraphQL.Result;
-using sones.GraphDB.Request;
-using sones.GraphQL.GQL.Manager.Plugin;
 using sones.GraphDB;
+using sones.GraphDB.Request;
+using sones.GraphDB.Request.GetVertexType;
+using sones.GraphDB.TypeSystem;
+using sones.GraphQL.GQL.ErrorHandling;
+using sones.GraphQL.GQL.Manager.Plugin;
+using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphDB.TypeSystem;
-using sones.GraphDB.Request.GetVertexType;
-using sones.GraphQL.GQL.ErrorHandling;
-using System.Diagnostics;
 using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition
@@ -48,8 +44,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                                                 SecurityToken mySecurityToken,
                                                 TransactionToken myTransactionToken)
         {
-            var sw = Stopwatch.StartNew();
-
             var resultingVertices = new List<IVertexView>();
             ASonesException error = null;
 
@@ -89,9 +83,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 #endregion
             }
 
-            sw.Stop();
-
-            return new QueryResult("", "GQL", (ulong)sw.ElapsedMilliseconds, ResultType.Successful, resultingVertices, error);
+            return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices, error);
 
         }
 

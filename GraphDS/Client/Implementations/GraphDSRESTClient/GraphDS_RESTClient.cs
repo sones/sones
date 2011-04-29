@@ -14,6 +14,7 @@ using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.Request.GetIndex;
 using sones.GraphDB.Request.Delete;
 using sones.GraphDB.Request.Update;
+using sones.GraphDB.Request.DropType;
 
 namespace sones.GraphDS.GraphDSRESTClient
 {
@@ -165,6 +166,11 @@ namespace sones.GraphDS.GraphDSRESTClient
         }
 
         public TResult Update<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestUpdate myRequestUpdate, Converter.UpdateResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult DropType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropType myRequestDropType, Converter.DropTypeResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

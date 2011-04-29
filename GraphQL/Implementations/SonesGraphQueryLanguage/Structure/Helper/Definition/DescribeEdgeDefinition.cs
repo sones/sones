@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Irony.Parsing;
 using sones.GraphDB;
 using sones.GraphDB.Request;
 using sones.GraphDB.Request.GetEdgeType;
@@ -10,7 +9,6 @@ using sones.GraphQL.GQL.Manager.Plugin;
 using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using System.Diagnostics;
 using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition
@@ -41,8 +39,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                                                 SecurityToken mySecurityToken,
                                                 TransactionToken myTransactionToken)
         {
-            var sw = Stopwatch.StartNew();
-
             var resultingVertices = new List<IVertexView>();
             ASonesException error = null;
 
@@ -84,9 +80,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             }
 
-            sw.Stop();
-
-            return new QueryResult("", "GQL", (ulong)sw.ElapsedMilliseconds, ResultType.Successful, resultingVertices, error);
+            return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices, error);
         }
 
         #region Output

@@ -7,6 +7,7 @@ using sones.Library.Commons.Transaction;
 using sones.Library.Commons.Security;
 using sones.GraphDB.Request.Delete;
 using sones.GraphDB.Request.Update;
+using sones.GraphDB.Request.DropType;
 
 namespace sones.GraphDB
 {
@@ -115,6 +116,20 @@ namespace sones.GraphDB
                                 TransactionToken myTransactionToken,
                                 RequestUpdate myRequestUpdate,
                                 Converter.UpdateResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Drops a type and all dbobjects of this type
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestInsert">The insert vertex request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult DropType<TResult>(  SecurityToken mySecurityToken,
+                                    TransactionToken myTransactionToken,
+                                    RequestDropType myRequestDropType,
+                                    Converter.DropTypeResultConverter<TResult> myOutputconverter);
 
         #endregion
     }

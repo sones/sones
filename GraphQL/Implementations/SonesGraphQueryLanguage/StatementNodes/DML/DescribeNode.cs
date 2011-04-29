@@ -8,6 +8,8 @@ using sones.Library.Commons.Transaction;
 using sones.GraphQL.GQL.Manager.Plugin;
 using sones.GraphQL.GQL.Structure.Helper.Definition;
 using sones.GraphQL.GQL.Structure.Nodes.DML;
+using System.Diagnostics;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -50,9 +52,21 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            var temp = _DescribeDefinition.GetResult(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken);
+            var sw = Stopwatch.StartNew();
 
-            return new QueryResult(myQuery, temp.NameOfQuerylanguage, temp.Duration, temp.TypeOfResult, temp.Vertices, temp.Error);
+            QueryResult qresult = null;
+            ASonesException error = null;
+
+            try
+            {
+                qresult = _DescribeDefinition.GetResult(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken);
+            }
+            catch (ASonesException e)
+            {
+                error = e;
+            }
+
+            return new QueryResult(myQuery, "sones.gql", (ulong)sw.ElapsedMilliseconds, qresult.TypeOfResult, qresult.Vertices, error);
         }
 
         #endregion
