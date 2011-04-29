@@ -105,7 +105,8 @@ namespace sones.GraphDB.Request
 
         public PropertyPredefinition SetAttributeType(String myTypeName)
         {
-            AttributeType = myTypeName;
+            if (myTypeName != null)
+                AttributeType = myTypeName;
 
             return this;
         }

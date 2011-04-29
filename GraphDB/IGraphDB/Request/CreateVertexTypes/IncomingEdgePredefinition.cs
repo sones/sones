@@ -22,7 +22,8 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public IncomingEdgePredefinition SetOutgoingEdge(VertexTypePredefinition myVertexType, OutgoingEdgePredefinition myOutgoingEdge)
         {
-            AttributeType = Combine(myVertexType.VertexTypeName, myOutgoingEdge.AttributeName);
+            if (myVertexType != null && myOutgoingEdge != null)
+                AttributeType = Combine(myVertexType.VertexTypeName, myOutgoingEdge.AttributeName);
 
             return this;
         }
@@ -35,7 +36,8 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public IncomingEdgePredefinition SetOutgoingEdge(VertexTypePredefinition myVertexType, String myOutgoingEdgeName)
         {
-            AttributeType = Combine(myVertexType.VertexTypeName, myOutgoingEdgeName);
+            if (myVertexType != null && myOutgoingEdgeName != null)
+                AttributeType = Combine(myVertexType.VertexTypeName, myOutgoingEdgeName);
 
             return this;            
         }
@@ -48,7 +50,8 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public IncomingEdgePredefinition SetOutgoingEdge(String myVertexTypeName, String myOutgoingEdgeName)
         {
-            AttributeType = Combine(myVertexTypeName, myOutgoingEdgeName);
+            if (myVertexTypeName != null && myOutgoingEdgeName != null)
+                AttributeType = Combine(myVertexTypeName, myOutgoingEdgeName);
 
             return this;
         }

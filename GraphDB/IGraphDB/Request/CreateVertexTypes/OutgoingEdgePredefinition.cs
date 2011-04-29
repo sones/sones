@@ -69,7 +69,8 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public OutgoingEdgePredefinition SetEdgeType(String myEdgeType)
         {
-            EdgeType = myEdgeType;
+            if (myEdgeType != null)
+                EdgeType = myEdgeType;
             return this;
         }
 
@@ -110,7 +111,8 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public OutgoingEdgePredefinition SetAttributeType(VertexTypePredefinition myTargetVertexType)
         {
-            AttributeType = myTargetVertexType.VertexTypeName;
+            if (myTargetVertexType != null)
+                AttributeType = myTargetVertexType.VertexTypeName;
 
             return this;
         }
@@ -124,7 +126,8 @@ namespace sones.GraphDB.Request
 
         public OutgoingEdgePredefinition SetAttributeType(String myTypeName)
         {
-            AttributeType = myTypeName;
+            if (myTypeName != null)
+                AttributeType = myTypeName;
 
             return this;
         }
