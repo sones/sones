@@ -37,7 +37,7 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
         {
             #region set type of binary expression
 
-            _OperatorSymbol = parseNode.ChildNodes[1].Term.Name;
+            _OperatorSymbol = parseNode.ChildNodes[1].FirstChild.Token.ValueString;
             _left = GetExpressionDefinition(parseNode.ChildNodes[0]);
             _right = GetExpressionDefinition(parseNode.ChildNodes[2]);
 

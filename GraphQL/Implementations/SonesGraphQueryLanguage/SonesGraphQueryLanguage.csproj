@@ -88,8 +88,12 @@
     <Compile Include="StatementNodes\Transactions\BeginTransactionNode.cs" />
     <Compile Include="StatementNodes\Transactions\CommitRollbackTransactionNode.cs" />
     <Compile Include="Structure\Helper\Definition\ADescribeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\AttributeAssignOrUpdateExpression.cs" />
+    <Compile Include="Structure\Helper\Definition\AttributeAssignOrUpdateList.cs" />
+    <Compile Include="Structure\Helper\Definition\AttributeAssignOrUpdateSetRef.cs" />
     <Compile Include="Structure\Helper\Definition\AttributeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\BackwardEdgeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\CollectionDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\DBTypeOfAttributeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\DescribeAggregateDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\DescribeEdgeDefinition.cs" />
@@ -100,6 +104,7 @@
     <Compile Include="Structure\Helper\Definition\GraphDBTypeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\IndexAttributeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\IndexDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\SetRefDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\TypeCharacteristics.cs" />
     <Compile Include="Structure\Helper\Definition\Update\AAttributeAssignOrUpdate.cs" />
     <Compile Include="Structure\Helper\Definition\Update\AAttributeAssignOrUpdateOrRemove.cs" />

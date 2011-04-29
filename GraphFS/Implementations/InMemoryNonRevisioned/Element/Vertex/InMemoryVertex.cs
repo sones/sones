@@ -625,6 +625,7 @@ namespace sones.GraphFS.Element.Vertex
         {
             lock (this)
             {
+                //copy the values
                 _binaryProperties = binaryProperties;
                 _comment = Comment;
                 _creationDate = CreationDate;
@@ -633,6 +634,7 @@ namespace sones.GraphFS.Element.Vertex
                 _unstructuredProperties = UnstructuredProperties;
                 OutgoingEdges = edges;
 
+                //so this is no bulk-vertex anymore
                 IsBulkVertex = false;
             }
         }

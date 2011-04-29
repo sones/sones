@@ -7,6 +7,7 @@ using sones.GraphDB.Request;
 using sones.Library.ErrorHandling;
 using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
+using System.Diagnostics;
 
 namespace sones.GraphDB.Manager
 {
@@ -384,14 +385,21 @@ namespace sones.GraphDB.Manager
         /// <param name="pipelineRequest">The request that is going to be executed</param>
         private void ExecuteRequest(ref APipelinableRequest pipelineRequest)
         {
+            Stopwatch sw = Stopwatch.StartNew();
+
             try
             {
                 pipelineRequest.Execute(_metaManager);
+
+                sw.Stop();
             }
             catch (Exception e)
             {
                 HandleErroneousRequest(ref pipelineRequest, e);
             }
+
+            //set the stats
+            pipelineRequest.Statistics = new RequestStatistics(sw.Elapsed);
         }
 
         #endregion

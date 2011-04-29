@@ -8,6 +8,7 @@ using sones.GraphQL.GQL.Structure.Nodes.Misc;
 using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 using sones.GraphQL.ErrorHandling;
 using sones.GraphQL.GQL.Structure.Helper.Definition.Update;
+using sones.GraphQL.GQL.Structure.Helper.Definition;
 
 namespace sones.GraphQL.Structure.Nodes.DML
 {
@@ -55,7 +56,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
             {
                 #region binary expression
 
-                //AttributeValue = new AttributeAssignOrUpdateExpression(_AttributeIDNode, (_Node.AstNode as BinaryExpressionNode).BinaryExpressionDefinition);
+                AttributeValue = new AttributeAssignOrUpdateExpression(_AttributeIDNode, (_Node.AstNode as BinaryExpressionNode).BinaryExpressionDefinition);
 
                 #endregion
             }
@@ -69,7 +70,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
                 {
                     if (tempTupleNode.TupleDefinition.First().Value is BinaryExpressionDefinition)
                     {
-                        //AttributeValue = new AttributeAssignOrUpdateExpression(_AttributeIDNode, tempTupleNode.TupleDefinition.First().Value as BinaryExpressionDefinition);
+                        AttributeValue = new AttributeAssignOrUpdateExpression(_AttributeIDNode, tempTupleNode.TupleDefinition.First().Value as BinaryExpressionDefinition);
                     }
                     else
                     {
@@ -91,7 +92,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
             {
                 #region setref
 
-                //AttributeValue = new AttributeAssignOrUpdateSetRef(_AttributeIDNode, (_Node.AstNode as SetRefNode).SetRefDefinition);
+                AttributeValue = new AttributeAssignOrUpdateSetRef(_AttributeIDNode, (_Node.AstNode as SetRefNode).SetRefDefinition);
 
                 #endregion
             }
@@ -99,7 +100,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
             {
                 #region collection like list
 
-                //AttributeValue = new AttributeAssignOrUpdateList((_Node.AstNode as CollectionOfDBObjectsNode).CollectionDefinition, _AttributeIDNode, true);
+                AttributeValue = new AttributeAssignOrUpdateList((_Node.AstNode as CollectionOfDBObjectsNode).CollectionDefinition, _AttributeIDNode, true);
 
                 #endregion
             }

@@ -30,7 +30,8 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            TupleDefinition = new TupleDefinition(GetKindOfTuple(context, parseNode));
+            //TupleDefinition = new TupleDefinition(GetKindOfTuple(context, parseNode));
+            TupleDefinition = new TupleDefinition();
 
             ParseTreeNodeList childNodes;
             if (parseNode.ChildNodes[0].AstNode == null && parseNode.ChildNodes[0].ChildNodes.Count > 0) // this is a not resolved node and has childNodes
@@ -160,62 +161,62 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
 
         #endregion
 
-        #region private methods
+        //#region private methods
 
-        private KindOfTuple GetKindOfTuple(ParsingContext context, ParseTreeNode parseNode)
-        {
+        //private KindOfTuple GetKindOfTuple(ParsingContext context, ParseTreeNode parseNode)
+        //{
 
-            var grammar = (SonesGQLGrammar)context.Language.Grammar;
+        //    var grammar = (SonesGQLGrammar)context.Language.Grammar;
 
-            var leftSymbol = ExtractBracket(parseNode.FirstChild);
-            var rightSymbol = ExtractBracket(parseNode.LastChild);
+        //    var leftSymbol = ExtractBracket(parseNode.FirstChild);
+        //    var rightSymbol = ExtractBracket(parseNode.LastChild);
 
-            KindOfTuple kindOfTuple;
+        //    KindOfTuple kindOfTuple;
 
-            if (leftSymbol == grammar.S_TUPLE_BRACKET_LEFT && rightSymbol == grammar.S_TUPLE_BRACKET_RIGHT)
-            {
-                kindOfTuple = KindOfTuple.Inclusive;
-            }
+        //    if (leftSymbol == grammar.S_TUPLE_BRACKET_LEFT && rightSymbol == grammar.S_TUPLE_BRACKET_RIGHT)
+        //    {
+        //        kindOfTuple = KindOfTuple.Inclusive;
+        //    }
 
-            else if (leftSymbol == grammar.S_TUPLE_BRACKET_LEFT_EXCLUSIVE && rightSymbol == grammar.S_TUPLE_BRACKET_RIGHT)
-            {
-                kindOfTuple = KindOfTuple.LeftExclusive;
-            }
+        //    else if (leftSymbol == grammar.S_TUPLE_BRACKET_LEFT_EXCLUSIVE && rightSymbol == grammar.S_TUPLE_BRACKET_RIGHT)
+        //    {
+        //        kindOfTuple = KindOfTuple.LeftExclusive;
+        //    }
 
-            else if (leftSymbol == grammar.S_TUPLE_BRACKET_LEFT && rightSymbol == grammar.S_TUPLE_BRACKET_RIGHT_EXCLUSIVE)
-            {
-                kindOfTuple = KindOfTuple.RightExclusive;
-            }
+        //    else if (leftSymbol == grammar.S_TUPLE_BRACKET_LEFT && rightSymbol == grammar.S_TUPLE_BRACKET_RIGHT_EXCLUSIVE)
+        //    {
+        //        kindOfTuple = KindOfTuple.RightExclusive;
+        //    }
 
-            else if (leftSymbol == grammar.S_TUPLE_BRACKET_LEFT_EXCLUSIVE && rightSymbol == grammar.S_TUPLE_BRACKET_RIGHT_EXCLUSIVE)
-            {
-                kindOfTuple = KindOfTuple.Exclusive;
-            }
+        //    else if (leftSymbol == grammar.S_TUPLE_BRACKET_LEFT_EXCLUSIVE && rightSymbol == grammar.S_TUPLE_BRACKET_RIGHT_EXCLUSIVE)
+        //    {
+        //        kindOfTuple = KindOfTuple.Exclusive;
+        //    }
 
-            else
-            {
-                throw new NotImplementedQLException("");
-            }
+        //    else
+        //    {
+        //        throw new NotImplementedQLException("");
+        //    }
 
-            return kindOfTuple;
+        //    return kindOfTuple;
 
-        }
+        //}
 
-        private KeyTerm ExtractBracket(ParseTreeNode parseTreeNode)
-        {
+        //private KeyTerm ExtractBracket(ParseTreeNode parseTreeNode)
+        //{
 
-            if (parseTreeNode.FirstChild != null)
-            {
-                return parseTreeNode.FirstChild.Token.KeyTerm;
-            }
+        //    if (parseTreeNode.FirstChild != null)
+        //    {
+        //        return parseTreeNode.FirstChild.Token.KeyTerm;
+        //    }
 
-            else
-            {
-                return parseTreeNode.Token.KeyTerm;
-            }
+        //    else
+        //    {
+        //        return parseTreeNode.Token.KeyTerm;
+        //    }
 
-        }
+        //}
         
-        #endregion
+        //#endregion
     }
 }

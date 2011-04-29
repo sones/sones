@@ -67,7 +67,7 @@ namespace sones.GraphQL.StatementNodes.DML
                 result = myGraphDB.Insert<QueryResult>(
                         mySecurityToken,
                         myTransactionToken,
-                        CreateRequest(),
+                        CreateRequest(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken),
                         CreateQueryResult);
             }
             catch (ASonesException e)
@@ -97,9 +97,21 @@ namespace sones.GraphQL.StatementNodes.DML
         /// Creates the request for the graphdb
         /// </summary>
         /// <returns>The created vertex</returns>
-        private RequestInsertVertex CreateRequest()
+        private RequestInsertVertex CreateRequest(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            return null;
+            var result = new RequestInsertVertex(_TypeName);
+
+            foreach (var aAttributeDefinition in _AttributeAssignList)
+            {
+                if (aAttributeDefinition is AttributeAssignOrUpdateValue)
+                {
+                    var value = aAttributeDefinition as AttributeAssignOrUpdateValue;
+
+                    value.AttributeIDChain.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, true);
+                }
+            }
+
+            return result;
         }
 
         #endregion
