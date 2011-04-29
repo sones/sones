@@ -83,7 +83,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 #endregion
             }
 
-            return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices, error);
+            if (error != null)
+                return new QueryResult("", "GQL", 0L, ResultType.Failed, resultingVertices, error);
+            else
+                return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices);
 
         }
 
@@ -120,24 +123,20 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 edges.Add("Properties", new EdgeView(null, GeneratePropertiesOutput(myType, myType.GetPropertyDefinitions(true))));
 
                 edges.Add("Edges", new EdgeView(null, GenerateEdgesOutput(myType, myType.GetOutgoingEdgeDefinitions(true))));
-                    
-                //    retVal.Add("Properties", GeneratePropertiesOutput(myType, myType.GetPropertyDefinitions(true)));
 
-                //retVal.Add("Edges", GenerateEdgesOutput(myType, myType.GetOutgoingEdgeDefinitions(true)));
+                edges.Add("BackwardEdges", new EdgeView(null, GenerateEdgesOutput(myType, myType.GetIncomingEdgeDefinitions(true))));
 
-                //retVal.Add("BackwardEdges", GenerateEdgesOutput(myType, myType.GetIncomingEdgeDefinitions(true)));
+                edges.Add("UniqueAttributes", new EdgeView(null, GenerateUniquePropertiesOutput(myType, myType.GetUniqueDefinitions(true))));
 
-                //retVal.Add("UniqueAttributes", GenerateUniquePropertiesOutput(myType, myType.GetUniqueDefinitions(true)));
+                edges.Add("Attributes", new EdgeView(null, GenerateAttributesOutput(myType, myType.GetAttributeDefinitions(true))));
 
-                //retVal.Add("Attributes", GenerateAttributesOutput(myType, myType.GetAttributeDefinitions(true)));
+                edges.Add("Indices", new EdgeView(null, GenerateIndicesOutput(myType)));
 
-                //retVal.Add("Indices", GenerateIndicesOutput(myType));
-
-                //if (myType.HasParentType)
-                //{
-                //    var _ParentType = myType.GetParentVertexType;
-                //    retVal.Add("Extends", GenerateOutput(_ParentType, myDepth - 1));
-                //}
+                if (myType.HasParentType)
+                {
+                    var _ParentType = myType.GetParentVertexType;
+                    edges.Add("Extends", new EdgeView(null, new List<IVertexView> { GenerateOutput(_ParentType, myDepth - 1) } ));
+                }
 
             }
 
@@ -196,8 +195,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 Attributes.Add("ID", attr.AttributeID);
                 Attributes.Add("TYPE", attr.Kind);
                 Attributes.Add("Name", attr.Name);
-                Attributes.Add("RelatedType", attr.RelatedType);
-
+                
                 _AttributeReadout.Add(new VertexView(Attributes, new Dictionary<String, IEdgeView>()));
 
             }

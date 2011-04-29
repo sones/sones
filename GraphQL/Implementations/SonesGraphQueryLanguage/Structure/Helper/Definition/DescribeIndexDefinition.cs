@@ -64,7 +64,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             #endregion
 
-            return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices, error);
+            if(error != null)
+                return new QueryResult("", "GQL", 0L, ResultType.Failed, resultingVertices, error);
+            else
+                return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices);
         }
 
         #region Output

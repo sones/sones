@@ -99,7 +99,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             }
 
-            return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices, error);
+            if(error != null)
+                return new QueryResult("", "GQL", 0L, ResultType.Failed, resultingVertices, error);
+            else
+                return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices);
         }
 
         #region Output
@@ -114,24 +117,29 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         private IVertexView GenerateOutput(IGQLFunction myFunc, String myFuncName)
         {
             var _Function = new Dictionary<String, Object>();
+            var temp = new Dictionary<String, object>();
+            var temp2 = new Dictionary<String, object>();
+            var edges = new Dictionary<String, IEdgeView>();
 
             _Function.Add("Function", myFunc.FunctionName);
             _Function.Add("Type", myFuncName);
 
             foreach (var parameter in ((IPluginable)myFunc).SetableParameters)
             {
-                _Function.Add("SetableParameter Key ", parameter.Key);
-                _Function.Add("SetableParameter Value ", parameter.Value);
+                temp.Add("Key ", parameter.Key);
+                temp.Add("Value ", parameter.Value);
             }
-
+            
             foreach (var parameter in myFunc.GetParameters())
             {
-                _Function.Add("Parameter Name", parameter.Name);
-                _Function.Add("Parameter Value ", parameter.Value);
+                temp2.Add("Name", parameter.Name);
+                temp2.Add("Value ", parameter.Value);
             }
 
-            return new VertexView(_Function, new Dictionary<String, IEdgeView>());
+            edges.Add("SetableParameters", new EdgeView(temp, null));
+            edges.Add("Parameters", new EdgeView(temp2, null));
 
+            return new VertexView(_Function, edges);
         }
 
         #endregion

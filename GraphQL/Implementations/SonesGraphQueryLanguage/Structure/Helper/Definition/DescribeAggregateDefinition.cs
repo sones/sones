@@ -105,7 +105,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             }
 
-            return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices, error);
+            if(error != null)
+                return new QueryResult("", "GQL", 0L, ResultType.Failed, resultingVertices, error);
+            else
+                return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices);
         }
 
         #region GenerateOutput
@@ -121,16 +124,21 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             var _Aggregate = new Dictionary<String, Object>();
 
+            var temp = new Dictionary<String, object>();
+            var edges = new Dictionary<String, IEdgeView>();
+
             _Aggregate.Add("Aggregate", myAggregate.AggregateName);
             _Aggregate.Add("Type", myAggrName);
 
             foreach (var parameter in ((IPluginable)myAggregate).SetableParameters)
             {
-                _Aggregate.Add("SetableParameter Key ", parameter.Key);
-                _Aggregate.Add("SetableParameter Value ", parameter.Value);
+                temp.Add("Key ", parameter.Key);
+                temp.Add("Value ", parameter.Value);
             }
 
-            return new VertexView(_Aggregate, new Dictionary<String, IEdgeView>());
+            edges.Add("SetableParameters", new EdgeView(temp, null));
+
+            return new VertexView(_Aggregate, edges);
 
         }
 
