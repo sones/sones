@@ -154,7 +154,7 @@ namespace sones.GraphFS.Element.Vertex
         {
             return HasIncomingVertices(myVertexTypeID, myEdgePropertyID)
                        ? IncomingEdges[myVertexTypeID][myEdgePropertyID]
-                       : new IncomingEdgeCollection(1);
+                       : new IncomingEdgeCollection(0);
         }
 
         public bool HasOutgoingEdge(long myEdgePropertyID)
