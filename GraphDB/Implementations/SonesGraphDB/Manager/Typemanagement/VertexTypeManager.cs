@@ -1204,11 +1204,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             TransactionToken myTransaction, 
             SecurityToken mySecurity)
         {
-            //At most all vertex types are needed.
             HashSet<String> neededVertexTypes = new HashSet<string>();
 
             foreach (var def in myDefsByName)
             {
+                neededVertexTypes.Add(def.Value.VertexTypeName);
                 neededVertexTypes.Add(def.Value.SuperVertexTypeName);
                 foreach (var edge in def.Value.OutgoingEdges)
                 {
@@ -1216,6 +1216,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 }
             }
 
+            //At most all vertex types are needed.
             var result = new Dictionary<String, TypeInfo>((int)(_LastTypeID - Int64.MinValue));
             foreach (var vertexType in neededVertexTypes)
             {
