@@ -202,7 +202,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Add
 
-        public void CanAddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
+        public void CanAddVertexTypes(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region check arguments
 
@@ -214,7 +214,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
 
-        public IEnumerable<IVertexType> AddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
+        public IEnumerable<IVertexType> AddVertexTypes(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             return Add(myVertexTypeDefinitions, myTransaction, mySecurity);
         }

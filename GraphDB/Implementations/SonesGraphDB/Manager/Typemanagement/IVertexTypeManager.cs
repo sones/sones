@@ -50,7 +50,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <paramref name="myVertexTypeDefinitions"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
-        void CanAddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
+        void CanAddVertexTypes(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Adds a bunch of new vertex types to the type manager.
@@ -58,7 +58,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypeDefinitions">The definition of the new vertex types.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        IEnumerable<IVertexType> AddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
+        IEnumerable<IVertexType> AddVertexTypes(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Checks if the execution of <see cref="RemoveVertexType(System.Collections.Generic.IEnumerable{sones.GraphDB.TypeSystem.IVertexType},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> will succeed, if no unexpected error occurs.

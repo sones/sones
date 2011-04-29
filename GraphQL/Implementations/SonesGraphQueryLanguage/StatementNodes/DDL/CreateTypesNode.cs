@@ -114,7 +114,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
             try
             {
-                result = myGraphDB.CreateVertexType<QueryResult>(
+                result = myGraphDB.CreateVertexTypes<QueryResult>(
                         mySecurityToken,
                         myTransactionToken,
                         new RequestCreateVertexTypes(GenerateVertexTypePredefinitions()),

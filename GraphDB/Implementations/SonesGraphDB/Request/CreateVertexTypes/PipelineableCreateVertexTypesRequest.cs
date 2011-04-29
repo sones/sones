@@ -9,7 +9,7 @@ namespace sones.GraphDB.Request
     /// <summary>
     /// This class is responsible for realizing a create parentVertex type on the database
     /// </summary>
-    public sealed class PipelineableCreateVertexTypeRequest : APipelinableRequest
+    public sealed class PipelineableCreateVertexTypesRequest : APipelinableRequest
     {
         #region data
 
@@ -33,7 +33,7 @@ namespace sones.GraphDB.Request
         /// <param name="myCreateVertexTypeRequest">The create parentVertex type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableCreateVertexTypeRequest(RequestCreateVertexTypes myCreateVertexTypeRequest,
+        public PipelineableCreateVertexTypesRequest(RequestCreateVertexTypes myCreateVertexTypeRequest,
                                                    SecurityToken mySecurity, TransactionToken myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
@@ -46,12 +46,12 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CanAddVertexType(_request.VertexTypeDefinitions, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.CanAddVertexTypes(_request.VertexTypeDefinitions, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _createdVertexType = myMetaManager.VertexTypeManager.AddVertexType(_request.VertexTypeDefinitions, TransactionToken, SecurityToken);
+            _createdVertexType = myMetaManager.VertexTypeManager.AddVertexTypes(_request.VertexTypeDefinitions, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

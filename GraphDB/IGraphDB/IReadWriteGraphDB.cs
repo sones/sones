@@ -17,7 +17,21 @@ namespace sones.GraphDB
         #region requests
 
         /// <summary>
-        /// Creates a new type of vertex
+        /// Creates new vertex types
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestCreateVertexTypes">The create vertex types request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult CreateVertexTypes<TResult>(SecurityToken mySecurityToken,
+                                          TransactionToken myTransactionToken,
+                                          RequestCreateVertexTypes myRequestCreateVertexTypes,
+                                          Converter.CreateVertexTypesResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Creates a new vertex type
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
@@ -27,8 +41,8 @@ namespace sones.GraphDB
         /// <returns>A generic result</returns>
         TResult CreateVertexType<TResult>(SecurityToken mySecurityToken,
                                           TransactionToken myTransactionToken,
-                                          RequestCreateVertexTypes myRequestCreateVertexType,
-                                          Converter.CreateVertexTypesResultConverter<TResult> myOutputconverter);
+                                          RequestCreateVertexType myRequestCreateVertexType,
+                                          Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter);
 
         /// <summary>
         /// Clears the graphdb entirely

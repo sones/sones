@@ -137,17 +137,27 @@ namespace sones.GraphDB
 
         #region requests
 
-        #region create VertexType
+        #region create VertexType(s)
 
-        public TResult CreateVertexType<TResult>(
+        public TResult CreateVertexTypes<TResult>(
             SecurityToken mySecurity, 
             TransactionToken myTransactionToken,
             RequestCreateVertexTypes myRequestCreateVertexType,
             Converter.CreateVertexTypesResultConverter<TResult> myOutputconverter)
         {
             var id =
-                _requestManager.RegisterRequest(new PipelineableCreateVertexTypeRequest(myRequestCreateVertexType,
+                _requestManager.RegisterRequest(new PipelineableCreateVertexTypesRequest(myRequestCreateVertexType,
                                                                                         mySecurity,
+                                                                                        myTransactionToken));
+
+            return ((PipelineableCreateVertexTypesRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
+
+        public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexType myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableCreateVertexTypeRequest(myRequestCreateVertexType,
+                                                                                        mySecurityToken,
                                                                                         myTransactionToken));
 
             return ((PipelineableCreateVertexTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
@@ -172,6 +182,8 @@ namespace sones.GraphDB
 
         #endregion
 
+        #region delete
+
         public TResult Delete<TResult>(
             SecurityToken mySecurity,
             TransactionToken myTransactionToken,
@@ -184,6 +196,9 @@ namespace sones.GraphDB
 
             return ((PipelineableDeleteRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
+
+        #endregion
+
 
         #region Insert
 
