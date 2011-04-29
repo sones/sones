@@ -26,7 +26,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            _DescribeTypeDefinition = new DescribeTypeDefinition(parseNode.ChildNodes[1].Token.ValueString);
+            _DescribeTypeDefinition = new DescribeTypeDefinition(parseNode.ChildNodes[2].Token.ValueString);
         }
 
         #endregion

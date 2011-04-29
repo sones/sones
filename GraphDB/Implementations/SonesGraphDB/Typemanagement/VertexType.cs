@@ -312,14 +312,14 @@ namespace sones.GraphDB.TypeManagement
 
         IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return (myIncludeAncestorDefinitions)
+            return (myIncludeAncestorDefinitions && GetHasParentType())
                 ? _uniques.Value.Union(_parent.Value.GetUniqueDefinitions(true))
                 : _uniques.Value;
         }
 
         IEnumerable<IIndexDefinition> IVertexType.GetIndexDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return (myIncludeAncestorDefinitions)
+            return (myIncludeAncestorDefinitions && GetHasParentType())
                 ? _indices.Value.Union(_parent.Value.GetIndexDefinitions(true))
                 : _indices.Value;
         }
@@ -753,7 +753,7 @@ namespace sones.GraphDB.TypeManagement
                 var indices = vertices.Select(x => BaseGraphStorageManager.CreateIndexDefinition(x, this));
                 return indices.Select(IIndexDefinitionToIUniqueDefinition).ToArray();
             }
-            return null;
+            return Enumerable.Empty<IUniqueDefinition>();
         }
 
 
@@ -764,7 +764,7 @@ namespace sones.GraphDB.TypeManagement
                 var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.Index, (long)AttributeDefinitions.InIndices);
                 var indices = vertices.Select(x => BaseGraphStorageManager.CreateIndexDefinition(x, this)).ToArray();
             }
-            return null;
+            return Enumerable.Empty<IIndexDefinition>();
         }
 
         private IUniqueDefinition IIndexDefinitionToIUniqueDefinition(IIndexDefinition myIndexDefinition)

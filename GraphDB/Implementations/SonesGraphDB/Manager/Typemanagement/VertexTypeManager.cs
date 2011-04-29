@@ -422,6 +422,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         private void CanAddCheckIncomingEdgeSources(VertexTypePredefinition myVertexTypePredefinition, IDictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            if (myVertexTypePredefinition.IncomingEdges == null)
+                return;
+
             var grouped = myVertexTypePredefinition.IncomingEdges.GroupBy(x => GetTargetVertexTypeFromAttributeType(x.AttributeType));
             foreach (var group in grouped)
             {
@@ -461,6 +464,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         private void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition, IDictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            if (myVertexTypePredefinition.OutgoingEdges == null)
+                return;
+
             var grouped = myVertexTypePredefinition.OutgoingEdges.GroupBy(x => x.AttributeType);
             foreach (var group in grouped)
             {
@@ -566,6 +572,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private static void ConvertUnknownAttributes(VertexTypePredefinition myVertexTypeDefinition)
         {
+            if (myVertexTypeDefinition.UnknownAttributes == null)
+                return;
+
             var toBeConverted = myVertexTypeDefinition.UnknownAttributes.ToArray();
             foreach (var unknown in toBeConverted)
             {
@@ -681,12 +690,13 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private static void CheckBinaryPropertiesUniqueName(VertexTypePredefinition myVertexTypeDefinition, HashSet<string> myUniqueNameSet)
         {
-            foreach (var prop in myVertexTypeDefinition.BinaryProperties)
-            {
-                prop.CheckNull("Binary Property in vertex type predefinition " + myVertexTypeDefinition.VertexTypeName);
-                if (!myUniqueNameSet.Add(prop.AttributeName))
-                    throw new DuplicatedAttributeNameException(myVertexTypeDefinition, prop.AttributeName);
-            }
+            if (myVertexTypeDefinition.BinaryProperties != null)
+                foreach (var prop in myVertexTypeDefinition.BinaryProperties)
+                {
+                    prop.CheckNull("Binary Property in vertex type predefinition " + myVertexTypeDefinition.VertexTypeName);
+                    if (!myUniqueNameSet.Add(prop.AttributeName))
+                        throw new DuplicatedAttributeNameException(myVertexTypeDefinition, prop.AttributeName);
+                }
         }
 
         /// <summary>
@@ -694,16 +704,17 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
         /// <param name="myUniqueNameSet">A set of attribute names defined on this vertex type predefinition.</param>
-        private static void CheckPropertiesUniqueName(VertexTypePredefinition vertexTypeDefinition, ISet<string> myUniqueNameSet)
+        private static void CheckPropertiesUniqueName(VertexTypePredefinition myVertexTypeDefinition, ISet<string> myUniqueNameSet)
         {
-            foreach (var prop in vertexTypeDefinition.Properties)
-            {
-                prop.CheckNull("Property in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
-                if (!myUniqueNameSet.Add(prop.AttributeName))
-                    throw new DuplicatedAttributeNameException(vertexTypeDefinition, prop.AttributeName);
+            if (myVertexTypeDefinition.Properties != null)
+                foreach (var prop in myVertexTypeDefinition.Properties)
+                {
+                    prop.CheckNull("Property in vertex type predefinition " + myVertexTypeDefinition.VertexTypeName);
+                    if (!myUniqueNameSet.Add(prop.AttributeName))
+                        throw new DuplicatedAttributeNameException(myVertexTypeDefinition, prop.AttributeName);
 
-                CheckPropertyType(vertexTypeDefinition, prop);
-            }
+                    CheckPropertyType(myVertexTypeDefinition, prop);
+                }
         }
 
         /// <summary>
@@ -742,16 +753,17 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
         /// <param name="myUniqueNameSet">A set of attribute names defined on this vertex type predefinition.</param>
-        private static void CheckOutgoingEdgesUniqueName(VertexTypePredefinition vertexTypeDefinition, ISet<string> myUniqueNameSet)
+        private static void CheckOutgoingEdgesUniqueName(VertexTypePredefinition myVertexTypeDefinition, ISet<string> myUniqueNameSet)
         {
-            foreach (var edge in vertexTypeDefinition.OutgoingEdges)
-            {
-                edge.CheckNull("Outgoing myEdge in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
-                if (!myUniqueNameSet.Add(edge.AttributeName))
-                    throw new DuplicatedAttributeNameException(vertexTypeDefinition, edge.AttributeName);
+            if (myVertexTypeDefinition.OutgoingEdges != null)
+                foreach (var edge in myVertexTypeDefinition.OutgoingEdges)
+                {
+                    edge.CheckNull("Outgoing myEdge in vertex type predefinition " + myVertexTypeDefinition.VertexTypeName);
+                    if (!myUniqueNameSet.Add(edge.AttributeName))
+                        throw new DuplicatedAttributeNameException(myVertexTypeDefinition, edge.AttributeName);
 
-                CheckEdgeType(vertexTypeDefinition, edge);
-            }
+                    CheckEdgeType(myVertexTypeDefinition, edge);
+                }
         }
 
         /// <summary>
@@ -772,14 +784,15 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
         /// <param name="myUniqueNameSet">A set of attribute names defined on this vertex type predefinition.</param>
-        private static void CheckIncomingEdgesUniqueName(VertexTypePredefinition vertexTypeDefinition, ISet<String> myUniqueNameSet)
+        private static void CheckIncomingEdgesUniqueName(VertexTypePredefinition myVertexTypeDefinition, ISet<String> myUniqueNameSet)
         {
-            foreach (var edge in vertexTypeDefinition.IncomingEdges)
-            {
-                edge.CheckNull("Incoming myEdge in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
-                if (!myUniqueNameSet.Add(edge.AttributeName))
-                    throw new DuplicatedAttributeNameException(vertexTypeDefinition, edge.AttributeName);
-            }
+            if (myVertexTypeDefinition.IncomingEdges != null)
+                foreach (var edge in myVertexTypeDefinition.IncomingEdges)
+                {
+                    edge.CheckNull("Incoming myEdge in vertex type predefinition " + myVertexTypeDefinition.VertexTypeName);
+                    if (!myUniqueNameSet.Add(edge.AttributeName))
+                        throw new DuplicatedAttributeNameException(myVertexTypeDefinition, edge.AttributeName);
+                }
         }
 
         /// <summary>
@@ -957,6 +970,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             for (var current = defsTopologically.First; current != null; current = current.Next)
             {
+                if (current.Value.Properties == null)
+                    continue;
+
                 var lastAttrID = Interlocked.Add(ref _LastAttrID, current.Value.PropertyCount);
                 var firstAttrID = lastAttrID - current.Value.PropertyCount;
                 var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - 1;    
@@ -987,6 +1003,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             for (var current = defsTopologically.First; current != null; current = current.Next)
             {
+                if (current.Value.BinaryProperties == null)
+                    continue;
+
                 var lastAttrID = Interlocked.Add(ref _LastAttrID, current.Value.BinaryPropertyCount);
                 var firstAttrID = lastAttrID - current.Value.BinaryPropertyCount;
                 var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.BinaryPropertyCount - 1;
@@ -1013,6 +1032,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             for (var current = defsTopologically.First; current != null; current = current.Next)
             {
+                if (current.Value.OutgoingEdges == null)
+                    continue;
+
                 var lastAttrID = Interlocked.Add(ref _LastAttrID, current.Value.OutgoingEdgeCount);
                 var firstAttrID = lastAttrID - current.Value.OutgoingEdgeCount;
                 var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.OutgoingEdgeCount - current.Value.BinaryPropertyCount - 1;
@@ -1043,6 +1065,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             for (var current = defsTopologically.First; current != null; current = current.Next)
             {
+                if (current.Value.IncomingEdges == null)
+                    continue;
+
                 var lastAttrID = Interlocked.Add(ref _LastAttrID, current.Value.IncomingEdgeCount);
                 var firstAttrID = lastAttrID - current.Value.IncomingEdgeCount;
                 var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.BinaryPropertyCount - current.Value.OutgoingEdgeCount - current.Value.IncomingEdgeCount - 1;
@@ -1210,10 +1235,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 neededVertexTypes.Add(def.Value.VertexTypeName);
                 neededVertexTypes.Add(def.Value.SuperVertexTypeName);
-                foreach (var edge in def.Value.OutgoingEdges)
-                {
-                    neededVertexTypes.Add(edge.AttributeType);
-                }
+                if (def.Value.OutgoingEdges != null)
+                    foreach (var edge in def.Value.OutgoingEdges)
+                    {
+                        neededVertexTypes.Add(edge.AttributeType);
+                    }
             }
 
             //At most all vertex types are needed.

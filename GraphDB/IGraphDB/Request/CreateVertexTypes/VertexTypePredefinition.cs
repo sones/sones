@@ -43,7 +43,7 @@ namespace sones.GraphDB.Request
 
         public int AttributeCount 
         {
-            get { return _attributes.Count; }
+            get { return (_attributes == null) ? 0 : _attributes.Count; }
         }
 
         public int BinaryPropertyCount 

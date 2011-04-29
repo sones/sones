@@ -121,9 +121,8 @@ namespace sones.GraphDB.Manager
                     if (token.IsCancellationRequested)
                         break;
 
-                    ValidateRequest(ref pipelineRequest);
-
-                    ProcessValidRequest(ref pipelineRequest, ref token);
+                    if (ValidateRequest(ref pipelineRequest))
+                        ProcessValidRequest(ref pipelineRequest, ref token);
                 }
             }
             catch (Exception e)
@@ -363,15 +362,17 @@ namespace sones.GraphDB.Manager
         /// Validates a single request and catches exceptions
         /// </summary>
         /// <param name="pipelineRequest">The request that is going to be validated</param>
-        private void ValidateRequest(ref APipelinableRequest pipelineRequest)
+        private Boolean ValidateRequest(ref APipelinableRequest pipelineRequest)
         {
             try
             {
                 pipelineRequest.Validate(_metaManager);
+                return true;
             }
             catch (Exception e)
             {
                 HandleErroneousRequest(ref pipelineRequest, e);
+                return false;
             }
         }
 
