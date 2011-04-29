@@ -367,7 +367,7 @@ namespace sones.GraphDB.Manager.Vertex
             return result;
         }
 
-        private IComparable CreateIndexEntry(IList<IPropertyDefinition> myIndexProps, IDictionary<string, IComparable> myProperties)
+        private static IComparable CreateIndexEntry(IList<IPropertyDefinition> myIndexProps, IDictionary<string, IComparable> myProperties)
         {
 
             if (myIndexProps.Count > 1)

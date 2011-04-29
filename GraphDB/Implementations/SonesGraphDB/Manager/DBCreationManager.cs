@@ -54,7 +54,7 @@ namespace sones.GraphDB.Manager
 
         #region Edge
 
-        private readonly VertexInformation _Edge = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.Edge);
+        private readonly VertexInformation _Edge = new VertexInformation((long)BaseTypes.EdgeType, (long)BaseTypes.Edge);
 
         #endregion
 
@@ -135,21 +135,21 @@ namespace sones.GraphDB.Manager
 
         #region WeightedEdge
 
-        private readonly VertexInformation _WeightedEdge          = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.WeightedEdge);
+        private readonly VertexInformation _WeightedEdge          = new VertexInformation((long)BaseTypes.EdgeType, (long)BaseTypes.WeightedEdge);
         private readonly VertexInformation _WeightedEdgeDotWeight = new VertexInformation((long)BaseTypes.Property  , 11 * Offset + (long)AttributeDefinitions.Weight);
 
         #endregion
 
         #region OrderableEdge
 
-        private readonly VertexInformation _OrderableEdge         = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.OrderableEdge);
+        private readonly VertexInformation _OrderableEdge         = new VertexInformation((long)BaseTypes.EdgeType, (long)BaseTypes.OrderableEdge);
         private readonly VertexInformation _OrderableEdgeDotOrder = new VertexInformation((long)BaseTypes.Property, 12 * Offset + (long)AttributeDefinitions.Order);
 
         #endregion
 
         #region BinaryProperty
 
-        private readonly VertexInformation _BinaryProperty = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.BinaryProperty);
+        private readonly VertexInformation _BinaryProperty = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.BinaryProperty);
 
         #endregion
 
@@ -395,7 +395,7 @@ namespace sones.GraphDB.Manager
         {
             #region Index vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _Index, BaseTypes.Index, "IndexComment", myCreationDate, false, true, _Vertex, null, _security, _transaction); //TODO uniques
+            BaseGraphStorageManager.StoreVertexType(myStore, _Index, BaseTypes.Index, "IndexComment", myCreationDate, false, true, _Vertex, new[] { _BaseUniqueIndexIndexDotID, _BaseUniqueIndexIndexDotName}, _security, _transaction); //TODO uniques
 
             #endregion
 
@@ -480,7 +480,7 @@ namespace sones.GraphDB.Manager
         {
             #region Attribute vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _Attribute, BaseTypes.Attribute, "AttributeComment", myCreationDate, true, false, _Vertex, null, _security, _transaction); //TODO uniques
+            BaseGraphStorageManager.StoreVertexType(myStore, _Attribute, BaseTypes.Attribute, "AttributeComment", myCreationDate, true, false, _Vertex, new[] { _BaseUniqueIndexAttributeDotID, _BaseUniqueIndexAttributeDotName }, _security, _transaction); //TODO uniques
 
             #endregion
 
@@ -534,7 +534,7 @@ namespace sones.GraphDB.Manager
         {
             #region BaseType vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _BaseType, BaseTypes.BaseType, "BaseTypeComment", myCreationDate, false, false, _Vertex, null, _security, _transaction); //TODO uniques
+            BaseGraphStorageManager.StoreVertexType(myStore, _BaseType, BaseTypes.BaseType, "BaseTypeComment", myCreationDate, false, false, _Vertex, new []{_BaseUniqueIndexBaseTypeDotID, _BaseUniqueIndexBaseTypeDotName}, _security, _transaction); //TODO uniques
 
 
             #endregion

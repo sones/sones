@@ -725,34 +725,39 @@ namespace sones.GraphDB.Manager.BaseGraph
                 return null;
 
             List<HyperEdgeAddDefinition> result = new List<HyperEdgeAddDefinition>(myEdges.Count);
+
+
             long edgeID;
             long edgeTypeID;
             foreach (var edge in myEdges)
             {
                 edgeID = edge.Key.Item1;
                 edgeTypeID = edge.Key.Item2;
-                
+
+                var singleEdges = (edge.Value == null)
+                ? null
+                : edge.Value.Select((vertexInfo, pos) => new SingleEdgeAddDefinition(
+                    edgeID,
+                    edgeTypeID,
+                    mySource,
+                    vertexInfo,
+                    null,
+                    myCreationDate,
+                    myCreationDate,
+                    (edge.Value is IList<VertexInformation>)
+                        ? new Dictionary<long, IComparable> 
+                            {
+                                { (long)AttributeDefinitions.Order, pos },
+                            }
+                        : null,
+                    null)).ToArray();
+
                 result.Add(
                     new HyperEdgeAddDefinition(
                         edgeID,
                         edgeTypeID,
                         mySource,
-                        (edge.Value == null) ? null : 
-                        edge.Value.Select((vertexInfo, pos) => new SingleEdgeAddDefinition(
-                            edgeID,
-                            edgeTypeID,
-                            mySource,
-                            vertexInfo,
-                            null,
-                            myCreationDate,
-                            myCreationDate,
-                            (edge.Value is IList<VertexInformation>)
-                                ? new Dictionary<long, IComparable> 
-                                    {
-                                        { (long)AttributeDefinitions.Order, pos },
-                                    }
-                                : null,
-                            null)),
+                        singleEdges,
                         null,
                         myCreationDate,
                         myCreationDate,
@@ -872,7 +877,7 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         private static Type GetBaseType(IVertex myVertex)
         {
-            var typeID = myVertex.GetProperty<long>((long)AttributeDefinitions.Type);
+            var typeID = GetID(myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.Type).GetTargetVertex());
             if (!Enum.IsDefined(typeof(BasicTypes), typeID))
                 throw new NotImplementedException("User defined base types are not implemented yet.");
 

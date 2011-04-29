@@ -367,7 +367,7 @@ namespace sones.GraphDB.TypeManagement
 
         bool IBaseType.HasParentType
         {
-            get { return _id != (long)BaseTypes.Vertex; }
+            get { return GetHasParentType(); }
         }
 
         bool IBaseType.HasChildTypes
@@ -505,7 +505,6 @@ namespace sones.GraphDB.TypeManagement
 
         private IEnumerable<IPropertyDefinition> GetPropertiesFromFS()
         {
-
             if (GetVertex().HasIncomingVertices((long)BaseTypes.Property, (long)AttributeDefinitions.DefiningType))
             {
                 var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.Property, (long)AttributeDefinitions.DefiningType);
@@ -572,12 +571,20 @@ namespace sones.GraphDB.TypeManagement
         {
             IAttributeDefinition result;
             _attributes.Value.TryGetValue(myAttributeName, out result);
-            return result;
+            if (result != null || !GetHasParentType() )
+                return result;
+            
+            return GetParentType().GetAttributeDefinition(myAttributeName);
         }
 
         private IAttributeDefinition GetAttribute(long myAttributeID)
         {
-            return _attributes.Value.Values.FirstOrDefault(x => x.AttributeID == myAttributeID);
+            var result = _attributes.Value.Values.FirstOrDefault(x => x.AttributeID == myAttributeID);
+            if (result != null || !GetHasParentType())
+                return result;
+
+            return GetParentType().GetAttributeDefinition(myAttributeID);
+
         }
 
         #endregion
@@ -808,6 +815,12 @@ namespace sones.GraphDB.TypeManagement
         #endregion
 
         #endregion
+
+        private bool GetHasParentType()
+        {
+            return _id != (long)BaseTypes.Vertex;
+        }
+
 
     }
 }
