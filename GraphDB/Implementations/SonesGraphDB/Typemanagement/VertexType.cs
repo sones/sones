@@ -474,47 +474,84 @@ namespace sones.GraphDB.TypeManagement
         #region Attributes
 
         /// <summary>
-        /// Transforms an IVertex in an attribute definition.
-        /// </summary>
-        /// <param name="myVertex">A vertex that represents an attribute definition (Either property, incoming edge or outgoing edge).</param>
-        /// <returns>An attribute definition.</returns>
-        private IAttributeDefinition CreateAttributeDefinition(IVertex myVertex)
-        {
-            switch ((BaseTypes)myVertex.VertexTypeID)
-            {
-                case BaseTypes.IncomingEdge:
-                    return BaseGraphStorageManager.CreateIncomingEdgeDefinition(myVertex);
-                case BaseTypes.OutgoingEdge:
-                    return BaseGraphStorageManager.CreateOutgoingEdgeDefinition(myVertex);
-                case BaseTypes.Property:
-                    return BaseGraphStorageManager.CreatePropertyDefinition(myVertex);
-                default:
-                    throw new UnknownDBException("The vertex does not represents an attribute");
-            }
-        }
-
-        /// <summary>
         /// Creates a list of attribute definitions of the vertex type indexed by the attribute name.
         /// </summary>
         /// <returns>A dictionary of attribute name to attribute definition.</returns>
         private Dictionary<String, IAttributeDefinition> GetAttributes()
         {
-            var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.Attribute, (long)AttributeDefinitions.DefiningType);
+            return GetBinaryPropertiesFromFS().Cast<IAttributeDefinition>()
+                .Union(GetPropertiesFromFS().Cast<IAttributeDefinition>())
+                .Union(GetOutgoingEdgesFromFS().Cast<IAttributeDefinition>())
+                .Union(GetIncomingEdgesFromFS().Cast<IAttributeDefinition>())
+                .ToDictionary(x => x.Name);
+        }
 
-            Dictionary<String, IAttributeDefinition> result = (vertices is ICollection)
-                ? new Dictionary<string, IAttributeDefinition>((vertices as ICollection).Count)
-                : new Dictionary<String, IAttributeDefinition>(ExpectedAttributes);
+        private IEnumerable<IBinaryPropertyDefinition> GetBinaryPropertiesFromFS()
+        {
 
-            foreach (var vertex in vertices)
+            if (GetVertex().HasIncomingVertices((long)BaseTypes.BinaryProperty, (long)AttributeDefinitions.DefiningType))
             {
-                if (vertex == null)
-                    throw new UnknownDBException("An element in attributes list is NULL.");
+                var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.BinaryProperty, (long)AttributeDefinitions.DefiningType);
+                foreach (var vertex in vertices)
+                {
+                    if (vertex == null)
+                        throw new UnknownDBException("An element in attributes list is NULL.");
 
-                IAttributeDefinition def = CreateAttributeDefinition(vertex);
-                result.Add(def.Name, def);
+                    yield return BaseGraphStorageManager.CreateBinaryPropertyDefinition(vertex);
+                }
             }
+            yield break;
+        }
 
-            return result;
+        private IEnumerable<IPropertyDefinition> GetPropertiesFromFS()
+        {
+
+            if (GetVertex().HasIncomingVertices((long)BaseTypes.Property, (long)AttributeDefinitions.DefiningType))
+            {
+                var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.Property, (long)AttributeDefinitions.DefiningType);
+                foreach (var vertex in vertices)
+                {
+                    if (vertex == null)
+                        throw new UnknownDBException("An element in attributes list is NULL.");
+
+                    yield return BaseGraphStorageManager.CreatePropertyDefinition(vertex);
+                }
+            }
+            yield break;
+        }
+
+        private IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgesFromFS()
+        {
+
+            if (GetVertex().HasIncomingVertices((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.DefiningType))
+            {
+                var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.DefiningType);
+                foreach (var vertex in vertices)
+                {
+                    if (vertex == null)
+                        throw new UnknownDBException("An element in attributes list is NULL.");
+
+                    yield return BaseGraphStorageManager.CreateOutgoingEdgeDefinition(vertex);
+                }
+            }
+            yield break;
+        }
+
+        private IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgesFromFS()
+        {
+
+            if (GetVertex().HasIncomingVertices((long)BaseTypes.IncomingEdge, (long)AttributeDefinitions.DefiningType))
+            {
+                var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.IncomingEdge, (long)AttributeDefinitions.DefiningType);
+                foreach (var vertex in vertices)
+                {
+                    if (vertex == null)
+                        throw new UnknownDBException("An element in attributes list is NULL.");
+
+                    yield return BaseGraphStorageManager.CreateIncomingEdgeDefinition(vertex);
+                }
+            }
+            yield break;
         }
 
         /// <summary>
