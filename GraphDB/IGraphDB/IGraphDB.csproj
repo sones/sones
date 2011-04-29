@@ -152,6 +152,7 @@
     <Compile Include="Request\TraverseVertex\TraversalState.cs" />
     <Compile Include="Request\TraverseVertex\TraverseVertexDefinition.cs" />
     <Compile Include="Request\Truncate\RequestTruncate.cs" />
+    <Compile Include="Request\Update\RequestUpdate.cs" />
     <Compile Include="TypeSystem\AttributeType.cs" />
     <Compile Include="TypeSystem\EdgeMultiplicity.cs" />
     <Compile Include="TypeSystem\IAttributeDefinition.cs" />
@@ -193,9 +194,7 @@
       <Name>ISonesIndex</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Request\Update\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="IGraphDB.cd" />
   </ItemGroup>

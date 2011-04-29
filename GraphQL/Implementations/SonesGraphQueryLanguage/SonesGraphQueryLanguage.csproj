@@ -49,6 +49,7 @@
     <Compile Include="ErrorHandling\ExpressionGraphInternalException.cs" />
     <Compile Include="ErrorHandling\GQLGrammarSetExtandableMemberException.cs" />
     <Compile Include="ErrorHandling\GQLParsingException.cs" />
+    <Compile Include="ErrorHandling\GQLStatementNodeExecutionException.cs" />
     <Compile Include="ErrorHandling\GqlSyntaxException.cs" />
     <Compile Include="ErrorHandling\IndexTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\InvalidBinaryExpressionException.cs" />

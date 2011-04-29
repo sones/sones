@@ -14,6 +14,7 @@ using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.Request.GetIndex;
 using sones.GraphDB.Request.Delete;
+using sones.GraphDB.Request.Update;
 
 namespace sones.Plugins.GraphDS.DrainPipeLog
 {
@@ -311,6 +312,11 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         }
 
         public TResult DescribeIndex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestGetAllEdgeTypes, Converter.DescribeIndexResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult Update<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestUpdate myRequestUpdate, Converter.UpdateResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

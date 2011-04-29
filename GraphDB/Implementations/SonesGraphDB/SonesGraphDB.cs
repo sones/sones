@@ -15,6 +15,7 @@ using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetIndex;
 using sones.GraphDB.Request.DecribeIndex;
 using sones.GraphDB.Request.Delete;
+using sones.GraphDB.Request.Update;
 
 namespace sones.GraphDB
 {
@@ -321,6 +322,18 @@ namespace sones.GraphDB
                 _requestManager.RegisterRequest(new PipelineableDescribeIndexRequest(myRequestDescribeIndex, mySecurityToken, myTransactionToken));
 
             return ((PipelineableDescribeIndexRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
+        #region Update
+
+        public TResult Update<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestUpdate myRequestUpdate, Converter.UpdateResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableUpdateRequest(myRequestUpdate, mySecurityToken, myTransactionToken));
+
+            return ((PipelineableUpdateRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion

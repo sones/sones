@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using sones.GraphQL.Structure.Nodes.DML;
 using sones.GraphQL.GQL.Manager.Plugin;
 using sones.Plugins.SonesGQL.DBImport;
+using System.Diagnostics;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -58,17 +59,28 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
+            var sw = Stopwatch.StartNew();
+
+            QueryResult result = null;
+
             if(ImportFormat.Equals("sones.gql"))
             {
                 var plugin = myPluginManager.GetAndInitializePlugin<IGraphDBImport>("sones.gqlimport");
 
                 if (plugin != null)
                 {
-                    return plugin.Import(SourceLocation, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, BreakOnError, ParallelTasks, Comments, Offset, Limit);
+                    result = plugin.Import(SourceLocation, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, BreakOnError, ParallelTasks, Comments, Offset, Limit);
                 }
             }
 
-            return null;
+            sw.Stop();
+
+            if(result != null)
+            {
+                return new QueryResult(myQuery, ImportFormat, (ulong)sw.ElapsedMilliseconds, result.TypeOfResult, result.Vertices, result.Error);
+            }
+            else
+                return null;
         }
 
         #endregion

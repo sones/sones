@@ -13,6 +13,7 @@ using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.Request.GetIndex;
 using sones.GraphDB.Request.Delete;
+using sones.GraphDB.Request.Update;
 
 namespace sones.GraphDS.GraphDSRESTClient
 {
@@ -159,6 +160,11 @@ namespace sones.GraphDS.GraphDSRESTClient
         }
 
         public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexType myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult Update<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestUpdate myRequestUpdate, Converter.UpdateResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

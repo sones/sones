@@ -6,6 +6,7 @@ using sones.GraphDB.Request;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.Security;
 using sones.GraphDB.Request.Delete;
+using sones.GraphDB.Request.Update;
 
 namespace sones.GraphDB
 {
@@ -58,10 +59,20 @@ namespace sones.GraphDB
                                RequestClear myRequestClear,
                                Converter.ClearResultConverter<TResult> myOutputconverter);
 
+
+        /// <summary>
+        /// Deletes the given type from graphdb
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestDelete">The delete request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic Result</returns>
         TResult Delete<TResult>(SecurityToken mySecurityToken,
-                               TransactionToken myTransactionToken,
-                               RequestDelete myRequestClear,
-                               Converter.DeleteResultConverter<TResult> myOutputconverter);
+                                TransactionToken myTransactionToken,
+                                RequestDelete myRequestDelete,
+                                Converter.DeleteResultConverter<TResult> myOutputconverter);
 
         /// <summary>
         /// Inserts a new vertex
@@ -78,7 +89,7 @@ namespace sones.GraphDB
                                 Converter.InsertResultConverter<TResult> myOutputconverter);
 
         /// <summary>
-        /// 
+        /// Truncate a given type
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
@@ -90,6 +101,20 @@ namespace sones.GraphDB
                                     TransactionToken myTransactionToken,
                                     RequestTruncate myRequestTruncate,
                                     Converter.TruncateResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Updates a given type
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestInsert">The insert vertex request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult Update<TResult>(SecurityToken mySecurityToken,
+                                TransactionToken myTransactionToken,
+                                RequestUpdate myRequestUpdate,
+                                Converter.UpdateResultConverter<TResult> myOutputconverter);
 
         #endregion
     }

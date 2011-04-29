@@ -50,7 +50,9 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            return _DescribeDefinition.GetResult(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken);
+            var temp = _DescribeDefinition.GetResult(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken);
+
+            return new QueryResult(myQuery, temp.NameOfQuerylanguage, temp.Duration, temp.TypeOfResult, temp.Vertices, temp.Error);
         }
 
         #endregion
