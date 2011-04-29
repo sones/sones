@@ -26,7 +26,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            throw new NotImplementedException();
+            _DescribeTypeDefinition = new DescribeTypeDefinition();
         }
 
         #endregion
