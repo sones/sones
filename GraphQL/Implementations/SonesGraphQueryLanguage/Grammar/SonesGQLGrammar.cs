@@ -957,7 +957,7 @@ namespace sones.GraphQL
 
             #region Tuple
 
-            tuple.Rule = bracketLeft + BNF_ExprList + bracketRight;
+            tuple.Rule = bracketLeft + expressionOfAList + bracketRight;
 
             bracketLeft.Rule = S_BRACKET_LEFT | S_TUPLE_BRACKET_LEFT;
             bracketRight.Rule = S_BRACKET_RIGHT | S_TUPLE_BRACKET_RIGHT;
@@ -1396,7 +1396,6 @@ namespace sones.GraphQL
             #endregion
 
             #region TRANSACTION
-
 
             #region BeginTransAction
 

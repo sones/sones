@@ -13,6 +13,8 @@ using sones.GraphQL.Structure.Nodes.DML;
 using sones.Library.ErrorHandling;
 using sones.GraphDB.Request;
 using sones.Library.PropertyHyperGraph;
+using sones.GraphQL.GQL.Structure.Helper.Definition;
+using sones.GraphQL.Structure.Nodes.Expressions;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -103,12 +105,45 @@ namespace sones.GraphQL.StatementNodes.DML
 
             foreach (var aAttributeDefinition in _AttributeAssignList)
             {
+                #region AttributeAssignOrUpdateValue
+
                 if (aAttributeDefinition is AttributeAssignOrUpdateValue)
                 {
                     var value = aAttributeDefinition as AttributeAssignOrUpdateValue;
 
-                    value.AttributeIDChain.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, true);
+                    result.AddStructuredProperty(value.AttributeIDChain.ContentString, (IComparable)value.Value);
+
+                    continue;
                 }
+
+                #endregion
+
+                #region AttributeAssignOrUpdateValue
+
+                if (aAttributeDefinition is AttributeAssignOrUpdateList)
+                {
+                    var value = aAttributeDefinition as AttributeAssignOrUpdateList;
+
+
+
+                    continue;
+                }
+
+                #endregion
+
+                #region SetRefNode
+
+                if (aAttributeDefinition is AttributeAssignOrUpdateSetRef)
+                {
+                    var value = aAttributeDefinition as AttributeAssignOrUpdateSetRef;
+
+
+
+                    continue;
+                }
+
+                #endregion
+
             }
 
             return result;
