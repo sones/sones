@@ -569,17 +569,18 @@ namespace sones.GraphDB.Manager.TypeManagement
                                    .SetAttributeType(unknown.AttributeType)
                                    .SetComment(unknown.Comment);
 
-                    switch (unknown.Multiplicity)
-                    {
-                        case UnknownAttributePredefinition.ListMultiplicity:
-                            prop.SetMultiplicityToList();
-                            break;
-                        case UnknownAttributePredefinition.SetMultiplicity:
-                            prop.SetMultiplicityToSet();
-                            break;
-                        default:
-                            throw new Exception("Unknown multiplicity for properties.");
-                    }
+                    if (unknown.Multiplicity != null)
+                        switch (unknown.Multiplicity)
+                        {
+                            case UnknownAttributePredefinition.ListMultiplicity:
+                                prop.SetMultiplicityToList();
+                                break;
+                            case UnknownAttributePredefinition.SetMultiplicity:
+                                prop.SetMultiplicityToSet();
+                                break;
+                            default:
+                                throw new Exception("Unknown multiplicity for properties.");
+                        }
 
                     myVertexTypeDefinition.AddProperty(prop);
                 }
