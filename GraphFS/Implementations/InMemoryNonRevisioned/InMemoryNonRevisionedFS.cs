@@ -821,6 +821,11 @@ namespace sones.GraphFS
             
             if (myVertexUpdate.UpdateHyperEdges != null)
             {
+                if (toBeUpdatedVertex.OutgoingEdges == null)
+                {
+                    toBeUpdatedVertex.OutgoingEdges = new Dictionary<long, IEdge>();
+                }
+                
                 lock (toBeUpdatedVertex.OutgoingEdges)
                 {
                     #region delete edges
@@ -1005,16 +1010,8 @@ namespace sones.GraphFS
                                                                                       toBeUpdatedVertex,
                                                                                       item.Value.CommentUpdate == null ? null : item.Value.CommentUpdate,
                                                                                       0, 0,
-                                                                                      item.Value.
-                                                                                          UpdatedStructuredProperties
-                                                                                          .Updated == null ? null : item.Value.
-                                                                                          UpdatedStructuredProperties
-                                                                                          .Updated,
-                                                                                      item.Value.
-                                                                                          UpdatedUnstructuredProperties.
-                                                                                          Updated == null ? null : item.Value.
-                                                                                          UpdatedUnstructuredProperties.
-                                                                                          Updated));
+                                                                                      item.Value.UpdatedStructuredProperties == null ? null : item.Value.UpdatedStructuredProperties.Updated,
+                                                                                          item.Value.UpdatedUnstructuredProperties == null ? null : item.Value.UpdatedUnstructuredProperties.Updated));
                                     
                                 }
                             }
