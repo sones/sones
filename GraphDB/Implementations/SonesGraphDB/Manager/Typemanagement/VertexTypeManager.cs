@@ -1010,7 +1010,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 var firstAttrID = lastAttrID - current.Value.BinaryPropertyCount;
                 var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.BinaryPropertyCount - 1;
 
-                foreach (var prop in current.Value.Properties)
+                foreach (var prop in current.Value.BinaryProperties)
                 {
                     BaseGraphStorageManager.StoreBinaryProperty(
                         _vertexManager.VertexStore,
