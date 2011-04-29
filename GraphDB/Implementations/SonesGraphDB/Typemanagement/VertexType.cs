@@ -403,7 +403,7 @@ namespace sones.GraphDB.TypeManagement
 
         IEnumerable<IAttributeDefinition> IBaseType.GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return (myIncludeAncestorDefinitions)
+            return (myIncludeAncestorDefinitions && GetHasParentType())
                 ? _attributes.Value.Values.Union(_parent.Value.GetAttributeDefinitions(true))
                 : _attributes.Value.Values;
         }

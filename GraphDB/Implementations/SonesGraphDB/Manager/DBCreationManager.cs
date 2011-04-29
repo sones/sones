@@ -155,6 +155,22 @@ namespace sones.GraphDB.Manager
 
         #region Basic types
 
+        private static readonly VertexInformation _BaseTypeInt32 = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Int32);
+        private static readonly VertexInformation _BaseTypeString = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.String);
+        private static readonly VertexInformation _BaseTypeDateTime = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.DateTime);
+        private static readonly VertexInformation _BaseTypeDouble = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Double);
+        private static readonly VertexInformation _BaseTypeBoolean = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Boolean);
+        private static readonly VertexInformation _BaseTypeInt64 = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Int64);
+        private static readonly VertexInformation _BaseTypeChar = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Char);
+        private static readonly VertexInformation _BaseTypeByte = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Byte);
+        private static readonly VertexInformation _BaseTypeSingle = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Single);
+        private static readonly VertexInformation _BaseTypeSByte = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.SByte);
+        private static readonly VertexInformation _BaseTypeInt16 = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Int16);
+        private static readonly VertexInformation _BaseTypeUInt32 = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt32);
+        private static readonly VertexInformation _BaseTypeUInt64 = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt64);
+        private static readonly VertexInformation _BaseTypeUInt16 = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt16);
+        private static readonly VertexInformation _BaseTypeTimeSpan = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.TimeSpan);
+
         public static readonly Dictionary<BasicTypes, VertexInformation> BasicTypesVertices = new Dictionary<BasicTypes, VertexInformation>
         {
             { BasicTypes.Boolean , _BaseTypeBoolean },
@@ -173,22 +189,6 @@ namespace sones.GraphDB.Manager
             { BasicTypes.UInt32  , _BaseTypeUInt32 },
             { BasicTypes.UInt64  , _BaseTypeUInt64 },
         };
-
-        private static readonly VertexInformation _BaseTypeInt32    = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Int32);
-        private static readonly VertexInformation _BaseTypeString   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.String);
-        private static readonly VertexInformation _BaseTypeDateTime = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.DateTime);
-        private static readonly VertexInformation _BaseTypeDouble   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Double);
-        private static readonly VertexInformation _BaseTypeBoolean  = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Boolean);
-        private static readonly VertexInformation _BaseTypeInt64    = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Int64);
-        private static readonly VertexInformation _BaseTypeChar     = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Char);
-        private static readonly VertexInformation _BaseTypeByte     = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Byte);
-        private static readonly VertexInformation _BaseTypeSingle   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Single);
-        private static readonly VertexInformation _BaseTypeSByte    = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.SByte);
-        private static readonly VertexInformation _BaseTypeInt16    = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Int16);
-        private static readonly VertexInformation _BaseTypeUInt32   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt32);
-        private static readonly VertexInformation _BaseTypeUInt64   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt64);
-        private static readonly VertexInformation _BaseTypeUInt16   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt16);
-        private static readonly VertexInformation _BaseTypeTimeSpan = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.TimeSpan);
 
         #endregion
 
@@ -373,7 +373,7 @@ namespace sones.GraphDB.Manager
         {
             #region Vertex vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _Vertex, BaseTypes.VertexType, "VertexComment", myCreationDate, true, false, null, null, _security, _transaction); //TODO uniques
+            BaseGraphStorageManager.StoreVertexType(myStore, _Vertex, BaseTypes.Vertex, "VertexComment", myCreationDate, true, false, null, null, _security, _transaction); //TODO uniques
                 
 
             #endregion

@@ -393,7 +393,7 @@ namespace sones.GraphDB.Manager
 
                 sw.Stop();
             }
-            catch (Exception e)
+             catch (Exception e)
             {
                 HandleErroneousRequest(ref pipelineRequest, e);
             }
