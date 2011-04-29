@@ -47,21 +47,21 @@ namespace sones.GraphDB.Manager.Vertex
         /// Gets all vertices for one vertex type.
         /// </summary>
         /// <param name="myVertexType">The interesting vertex type.</param>
-        /// <param name="myTransactionToken">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <returns>
         /// All vertices of the interesting vertex type.
         /// </returns>
-        IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+        IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Checks. whether it is possible to get the specified vertices 
         /// </summary>
         /// <param name="myExpression">An logical expression tree. Migth be unoptimized.</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer.</param>
-        /// <param name="myTransactionToken">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
-        void CanGetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        void CanGetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken myTransaction, SecurityToken mySecurity);
 
         #endregion
 
@@ -74,9 +74,9 @@ namespace sones.GraphDB.Manager.Vertex
         /// <param name="myVertexID">The id of the requested vertex</param>
         /// <param name="myEdition">The edition that should be processed</param>
         /// <param name="myTimespan">The timespan that should be processed</param>
-        /// <param name="TransactionToken">A transaction token for this operation.</param>
-        /// <param name="SecurityToken">A security token for this operation</param>
-        void CanGetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken);
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation</param>
+        void CanGetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Execution of the request
@@ -85,10 +85,10 @@ namespace sones.GraphDB.Manager.Vertex
         /// <param name="myVertexID">The id of the requested vertex</param>
         /// <param name="myEdition">The edition that should be processed</param>
         /// <param name="myTimespan">The timespan that should be processed</param>
-        /// <param name="TransactionToken">A transaction token for this operation.</param>
-        /// <param name="SecurityToken">A security token for this operation</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation</param>
         /// <returns>The requested vertex</returns>
-        IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken);
+        IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Checks whether the get vertex request is valid
@@ -97,9 +97,9 @@ namespace sones.GraphDB.Manager.Vertex
         /// <param name="myVertexID">The id of the requested vertex</param>
         /// <param name="myEdition">The edition that should be processed</param>
         /// <param name="myTimespan">The timespan that should be processed</param>
-        /// <param name="TransactionToken">A transaction token for this operation.</param>
-        /// <param name="SecurityToken">A security token for this operation</param>
-        void CanGetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken);
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation</param>
+        void CanGetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Execution of the request
@@ -108,14 +108,14 @@ namespace sones.GraphDB.Manager.Vertex
         /// <param name="myVertexID">The id of the requested vertex</param>
         /// <param name="myEdition">The edition that should be processed</param>
         /// <param name="myTimespan">The timespan that should be processed</param>
-        /// <param name="TransactionToken">A transaction token for this operation.</param>
-        /// <param name="SecurityToken">A security token for this operation</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation</param>
         /// <returns>The requested vertex</returns>
-        IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken);
+        IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity);
 
         #endregion
 
-        IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+        IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Adds a vertex to the FS.
@@ -124,15 +124,16 @@ namespace sones.GraphDB.Manager.Vertex
         /// <param name="TransactionToken">A transaction token for this operation.</param>
         /// <param name="SecurityToken">A security token for this operation.</param>
         /// <returns>The added vertex.</returns>
-        IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+        IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Checks if the <see cref="AddVertex"/> operation will succeed.
         /// </summary>
         /// <param name="myVertexDefinition">The definition of the vertex.</param>
-        /// <param name="TransactionToken">A transaction token for this operation.</param>
-        /// <param name="SecurityToken">A security token for this operation.</param>
-        void CanAddVertex(RequestInsertVertex myInsertDefinition, TransactionToken TransactionToken, SecurityToken SecurityToken);
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        void CanAddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity);
+
 
         /// <summary>
         /// Gets the vertex store this vertex manager is acting on.
