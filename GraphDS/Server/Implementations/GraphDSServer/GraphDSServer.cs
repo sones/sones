@@ -71,9 +71,9 @@ namespace sones.GraphDSServer
         /// <summary>
         /// The list of supported graph ql type instances
         /// </summary>
-        private readonly Dictionary<String, IGraphQL>   _QueryLanguages;
-        private readonly Dictionary<String, ISonesRESTService> _sonesRESTServices;
-        private readonly List<KeyValuePair<String,IDrainPipe>> _DrainPipes;
+        private readonly Dictionary<String, IGraphQL>   _QueryLanguages;            // dictionary because we can only have one query language instance per name
+        private readonly Dictionary<String, ISonesRESTService> _sonesRESTServices;  // dictionary because only one service per interface
+        private readonly List<KeyValuePair<String,IDrainPipe>> _DrainPipes;         // you could have multiple drainpipes with different parameters sporting the same name
 
         #endregion
 
