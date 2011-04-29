@@ -128,6 +128,7 @@
     <Compile Include="Request\CreateVertexTypes\VertexTypePredefinition.cs" />
     <Compile Include="Request\CreateVertexType\RequestCreateVertexType.cs" />
     <Compile Include="Request\Delete\RequestDelete.cs" />
+    <Compile Include="Request\DropIndex\RequestDropIndex.cs" />
     <Compile Include="Request\DropType\RequestDropType.cs" />
     <Compile Include="Request\GetEdgeType\RequestGetAllEdgeTypes.cs" />
     <Compile Include="Request\GetEdgeType\RequestGetEdgeType.cs" />

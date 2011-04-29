@@ -97,6 +97,7 @@
     </Compile>
     <Compile Include="Request\DecribeIndex\PipelineableDescribeIndexRequest.cs" />
     <Compile Include="Request\Delete\PipelineableDeleteRequest.cs" />
+    <Compile Include="Request\DropIndex\PipelineableDropIndexRequest.cs" />
     <Compile Include="Request\DropType\PipelineableDropTypeRequest.cs" />
     <Compile Include="Request\GetEdgeType\PipelineableGetAllEdgeTypesRequest.cs" />
     <Compile Include="Request\GetEdgeType\PipelineableGetEdgeTypeRequest.cs" />

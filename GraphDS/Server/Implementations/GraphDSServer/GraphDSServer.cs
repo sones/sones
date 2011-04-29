@@ -23,6 +23,7 @@ using sones.GraphDS.PluginManager;
 using sones.GraphDB.Request.Delete;
 using sones.GraphDB.Request.Update;
 using sones.GraphDB.Request.DropType;
+using sones.GraphDB.Request.DropIndex;
 
 namespace sones.GraphDSServer
 {
@@ -370,12 +371,26 @@ namespace sones.GraphDSServer
 
         public TResult Update<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestUpdate myRequestUpdate, Converter.UpdateResultConverter<TResult> myOutputconverter)
         {
-            return _iGraphDB.Update<TResult>(mySecurityToken, myTransactionToken, myRequestUpdate, myOutputconverter);
+            return _iGraphDB.Update<TResult>(mySecurityToken, 
+                                                myTransactionToken,     
+                                                myRequestUpdate, 
+                                                myOutputconverter);
         }
 
         public TResult DropType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropType myRequestDropType, Converter.DropTypeResultConverter<TResult> myOutputconverter)
         {
-            return _iGraphDB.DropType<TResult>(mySecurityToken, myTransactionToken, myRequestDropType, myOutputconverter);
+            return _iGraphDB.DropType<TResult>(mySecurityToken, 
+                                                myTransactionToken, 
+                                                myRequestDropType, 
+                                                myOutputconverter);
+        }
+
+        public TResult DropIndex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropIndex myRequestDropIndex, Converter.DropIndexResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.DropIndex<TResult>(mySecurityToken, 
+                                                myTransactionToken, 
+                                                myRequestDropIndex,     
+                                                myOutputconverter);
         }
 
         public Guid ID

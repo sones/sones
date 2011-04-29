@@ -8,16 +8,19 @@ namespace sones.GraphDB.ErrorHandling
     /// </summary>
     public sealed class IndexTypeDoesNotExistException : AGraphDBIndexException
     {
-        public String IndexTypeName { get; private set; }
+        public String IndexName { get; private set; }
+        public String TypeName { get; private set; }
 
         /// <summary>
         /// Creates a new IndexTypeDoesNotExistException exception
         /// </summary>
         /// <param name="myIndexTypeName"></param>
-        public IndexTypeDoesNotExistException(String myIndexTypeName)
+        public IndexTypeDoesNotExistException(String myType, String myIndexName)
         {
-            IndexTypeName = myIndexTypeName;
-            _msg = String.Format("The index type \"{0}\" does not exist!", IndexTypeName);
+            IndexName = myIndexName;
+            TypeName = myType;
+
+            _msg = String.Format("The index named \"{0}\" does not exist on type \"{1}\"!", IndexName, TypeName);
         }
       
     }

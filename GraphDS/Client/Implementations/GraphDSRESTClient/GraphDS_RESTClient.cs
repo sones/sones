@@ -15,6 +15,7 @@ using sones.GraphDB.Request.GetIndex;
 using sones.GraphDB.Request.Delete;
 using sones.GraphDB.Request.Update;
 using sones.GraphDB.Request.DropType;
+using sones.GraphDB.Request.DropIndex;
 
 namespace sones.GraphDS.GraphDSRESTClient
 {
@@ -171,6 +172,11 @@ namespace sones.GraphDS.GraphDSRESTClient
         }
 
         public TResult DropType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropType myRequestDropType, Converter.DropTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult DropIndex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropIndex myRequestDropIndex, Converter.DropIndexResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

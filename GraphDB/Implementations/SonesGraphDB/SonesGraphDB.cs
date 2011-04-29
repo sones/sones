@@ -17,6 +17,7 @@ using sones.GraphDB.Request.DecribeIndex;
 using sones.GraphDB.Request.Delete;
 using sones.GraphDB.Request.Update;
 using sones.GraphDB.Request.DropType;
+using sones.GraphDB.Request.DropIndex;
 
 namespace sones.GraphDB
 {
@@ -214,6 +215,23 @@ namespace sones.GraphDB
                                                                                 myTransactionToken));
 
             return ((PipelineableDropTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
+        #region drop index
+
+        public TResult DropIndex<TResult>(
+            SecurityToken mySecurity,
+            TransactionToken myTransactionToken,
+            RequestDropIndex myRequestDropIndex,
+            Converter.DropIndexResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableDropIndexRequest(myRequestDropIndex, mySecurity,
+                                                                                myTransactionToken));
+
+            return ((PipelineableDropIndexRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion

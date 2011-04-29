@@ -8,6 +8,7 @@ using sones.Library.Commons.Security;
 using sones.GraphDB.Request.Delete;
 using sones.GraphDB.Request.Update;
 using sones.GraphDB.Request.DropType;
+using sones.GraphDB.Request.DropIndex;
 
 namespace sones.GraphDB
 {
@@ -130,6 +131,20 @@ namespace sones.GraphDB
                                     TransactionToken myTransactionToken,
                                     RequestDropType myRequestDropType,
                                     Converter.DropTypeResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Drops a index on type
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestInsert">The insert vertex request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult DropIndex<TResult>(SecurityToken mySecurityToken,
+                                    TransactionToken myTransactionToken,
+                                    RequestDropIndex myRequestDropType,
+                                    Converter.DropIndexResultConverter<TResult> myOutputconverter);
 
         #endregion
     }
