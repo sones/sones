@@ -24,6 +24,7 @@ using sones.GraphDB.Request.Delete;
 using sones.GraphDB.Request.Update;
 using sones.GraphDB.Request.DropType;
 using sones.GraphDB.Request.DropIndex;
+using sones.GraphDB.Request.CreateIndex;
 
 namespace sones.GraphDSServer
 {
@@ -391,6 +392,14 @@ namespace sones.GraphDSServer
                                                 myTransactionToken, 
                                                 myRequestDropIndex,     
                                                 myOutputconverter);
+        }
+
+        public TResult CreateIndex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateIndex myRequestCreateIndex, Converter.CreateIndexResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.CreateIndex<TResult>(mySecurityToken, 
+                                                    myTransactionToken, 
+                                                    myRequestCreateIndex,     
+                                                    myOutputconverter);
         }
 
         public Guid ID

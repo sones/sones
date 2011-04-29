@@ -17,6 +17,7 @@ using sones.GraphDB.Request.Delete;
 using sones.GraphDB.Request.Update;
 using sones.GraphDB.Request.DropType;
 using sones.GraphDB.Request.DropIndex;
+using sones.GraphDB.Request.CreateIndex;
 
 namespace sones.Plugins.GraphDS.DrainPipeLog
 {
@@ -334,6 +335,11 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         }
 
         public TResult DropIndex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropIndex myRequestDropIndex, Converter.DropIndexResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult CreateIndex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateIndex myRequestCreateIndex, Converter.CreateIndexResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

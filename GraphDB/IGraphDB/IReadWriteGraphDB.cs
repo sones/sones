@@ -9,6 +9,7 @@ using sones.GraphDB.Request.Delete;
 using sones.GraphDB.Request.Update;
 using sones.GraphDB.Request.DropType;
 using sones.GraphDB.Request.DropIndex;
+using sones.GraphDB.Request.CreateIndex;
 
 namespace sones.GraphDB
 {
@@ -96,7 +97,7 @@ namespace sones.GraphDB
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
-        /// <param name="myRequestInsert">The insert vertex request</param>
+        /// <param name="myRequestTruncate">The truncate vertex request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult Truncate<TResult>(SecurityToken mySecurityToken,
@@ -110,7 +111,7 @@ namespace sones.GraphDB
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
-        /// <param name="myRequestInsert">The insert vertex request</param>
+        /// <param name="myRequestUpdate">The update request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult Update<TResult>(SecurityToken mySecurityToken,
@@ -124,7 +125,7 @@ namespace sones.GraphDB
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
-        /// <param name="myRequestInsert">The insert vertex request</param>
+        /// <param name="RequestDropType">The drop vertex type request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult DropType<TResult>(  SecurityToken mySecurityToken,
@@ -138,13 +139,27 @@ namespace sones.GraphDB
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
-        /// <param name="myRequestInsert">The insert vertex request</param>
+        /// <param name="RequestDropIndex">The drop index request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult DropIndex<TResult>(SecurityToken mySecurityToken,
                                     TransactionToken myTransactionToken,
-                                    RequestDropIndex myRequestDropType,
+                                    RequestDropIndex myRequestDropIndex,
                                     Converter.DropIndexResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Creates a index on type
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestCreateIndex">The create index request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult CreateIndex<TResult>(SecurityToken mySecurityToken,
+                                        TransactionToken myTransactionToken,
+                                        RequestCreateIndex myRequestCreateIndex,
+                                        Converter.CreateIndexResultConverter<TResult> myOutputconverter);
 
         #endregion
     }

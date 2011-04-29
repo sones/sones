@@ -51,6 +51,7 @@
     <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\Expression\InvalidCollectionComparismException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexAttributeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\IndexErrors\IndexCreationException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexUniqueConstrainViolationException.cs" />
     <Compile Include="ErrorHandling\Expression\InvalidExpressionException.cs" />
     <Compile Include="ErrorHandling\IncomingEdge\IncomingEdgeDestinationIsInvalidException.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="ErrorHandling\VertexTypeErrors\CircularTypeHierarchyException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\DuplicatedVertexTypeName.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\EmptyVertexTypeNameException.cs" />
+    <Compile Include="ErrorHandling\IndexErrors\InvalidIndexAttributeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\SealedBaseVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\TruncateNotAllowedOnInheritedTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\InvalidBaseVertexTypeException.cs" />
@@ -116,6 +118,7 @@
     <Compile Include="Request\Clear\RequestClear.cs" />
     <Compile Include="Request\Converter.cs" />
     <Compile Include="Request\CreateEdgeType\EdgeTypeDefinition.cs" />
+    <Compile Include="Request\CreateIndex\RequestCreateIndex.cs" />
     <Compile Include="Request\CreateVertexTypes\AttributePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\BinaryPropertyPredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\IncomingEdgePredefinition.cs" />
