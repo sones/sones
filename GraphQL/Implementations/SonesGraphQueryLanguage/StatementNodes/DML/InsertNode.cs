@@ -98,7 +98,18 @@ namespace sones.GraphQL.StatementNodes.DML
         /// <returns>The created query result</returns>
         private QueryResult CreateQueryResult(IRequestStatistics myStats, IVertex myCreatedVertex)
         {
-            return null;
+            return new QueryResult(_queryString, SonesGQLConstants.GQL,
+                                   Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), ResultType.Successful,
+                                   new List<IVertexView> {CreateAVertexView(myCreatedVertex)});
+        }
+
+        private IVertexView CreateAVertexView(IVertex myCreatedVertex)
+        {
+            return new VertexView(new Dictionary<string, object>
+                                                         {
+                                                             {"VertexID", myCreatedVertex.VertexID},
+                                                             {"VertexTypeID", myCreatedVertex.VertexTypeID}
+                                                         }, null);
         }
 
         /// <summary>
