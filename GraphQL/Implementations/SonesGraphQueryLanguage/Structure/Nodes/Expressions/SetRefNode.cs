@@ -16,7 +16,7 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
 
         #region Data
 
-        private Boolean _IsREFUUID = false;
+        public Boolean IsREFUUID = false;
 
         #endregion
 
@@ -37,7 +37,7 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
             var grammar = (SonesGQLGrammar)context.Language.Grammar;
             if (parseNode.ChildNodes[0].Term == grammar.S_REFUUID || parseNode.ChildNodes[0].Term == grammar.S_REFERENCEUUID)
             {
-                _IsREFUUID = true;
+                IsREFUUID = true;
             }
 
             var tupleNode = parseNode.ChildNodes[1].AstNode as TupleNode;
@@ -53,7 +53,7 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
                 parameters = (parseNode.ChildNodes[2].AstNode as ParametersNode).ParameterValues.ToArray();
             }
 
-            SetRefDefinition = new SetRefDefinition(tupleNode.TupleDefinition, _IsREFUUID, parameters);
+            SetRefDefinition = new SetRefDefinition(tupleNode.TupleDefinition, IsREFUUID, parameters);
         }
 
         #endregion

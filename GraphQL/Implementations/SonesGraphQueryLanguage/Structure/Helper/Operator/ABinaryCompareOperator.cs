@@ -348,7 +348,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
                     #region LeftComplex
 
-                    MatchData(data, typeOfBinExpr, resultGr, myGraphDB, mySecurityToken, myTransactionToken, mytypesOfOpertators, myOperator);
+                    MatchData(data, resultGr, myGraphDB, mySecurityToken, myTransactionToken, mytypesOfOpertators, myOperator);
 
                     #endregion
 
@@ -358,7 +358,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
                     #region RightComplex
 
-                    MatchData(data, typeOfBinExpr, resultGr, myGraphDB, mySecurityToken, myTransactionToken, mytypesOfOpertators, myOperator);
+                    MatchData(data, resultGr, myGraphDB, mySecurityToken, myTransactionToken, mytypesOfOpertators, myOperator);
 
                     #endregion
 
@@ -409,14 +409,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             return result;
         }
 
-        /// <param name="data">The DataContainer.</param>
-        /// <param name="dbContext">The TypeManager of the database.</param>
-        /// <param name="queryCache">The current query cache.</param>
-        /// <param name="typeOfBinExpr">The type of the binary expression.</param>
-        /// <param name="idx">The index for the complex part.</param>
-        /// <param name="errors">A list of errors.</param>
-        /// <param name="resultGraph">The IExpressionGraph that serves as result.</param>
-        private static void MatchData(DataContainer data, TypesOfBinaryExpression typeOfBinExpr, IExpressionGraph resultGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfOperators myTypeOfOperator, BinaryOperator myOperator)
+        private static void MatchData(DataContainer data, IExpressionGraph resultGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfOperators myTypeOfOperator, BinaryOperator myOperator)
         {
             #region data
 
@@ -431,7 +424,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                     new BinaryExpression(
                         new PropertyExpression(data.IDChainDefinitions.Item1.LastType.Name, data.IDChainDefinitions.Item1.LastAttribute.Name),
                         myOperator,
-                        GenerateLiteral(data.Operands.Item1))),
+                        GenerateLiteral(data.Operands.Item1, ((IPropertyDefinition)data.IDChainDefinitions.Item1.LastAttribute).BaseType))),
                         (stats, vertexEnumerable) => vertexEnumerable.ToList());
 
             foreach (var aVertex in vertices)
@@ -457,11 +450,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             }
         }
 
-        private static IExpression GenerateLiteral(AExpressionDefinition aExpressionDefinition)
+        private static IExpression GenerateLiteral(AExpressionDefinition aExpressionDefinition, Type myTypeOfLiteral)
         {
             if (aExpressionDefinition is ValueDefinition)
             {
-                return new SingleLiteralExpression((IComparable)((ValueDefinition) aExpressionDefinition).Value);
+                return new SingleLiteralExpression((IComparable)Convert.ChangeType(((ValueDefinition)aExpressionDefinition).Value, myTypeOfLiteral));
 
             }
             else

@@ -2,6 +2,7 @@
 using System.Linq;
 using Irony.Ast;
 using Irony.Parsing;
+using sones.GraphQL.ErrorHandling;
 using sones.GraphQL.Result;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
@@ -18,6 +19,7 @@ using sones.GraphQL.Structure.Nodes.Expressions;
 using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -104,6 +106,8 @@ namespace sones.GraphQL.StatementNodes.DML
         /// <returns>The created vertex</returns>
         private RequestInsertVertex CreateRequest(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
+            #region data
+
             var result = new RequestInsertVertex(_TypeName);
 
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
@@ -112,95 +116,177 @@ namespace sones.GraphQL.StatementNodes.DML
                 new RequestGetVertexType(_TypeName),
                 (stats, vtype) => vtype);
 
+            #endregion
+
             foreach (var aAttributeDefinition in _AttributeAssignList)
             {
-                #region AttributeAssignOrUpdateValue
-
-                if (aAttributeDefinition is AttributeAssignOrUpdateValue)
-                {
-                    var value = aAttributeDefinition as AttributeAssignOrUpdateValue;
-
-                    if (vertexType.HasAttribute(value.AttributeIDChain.ContentString))
-                    {
-                        result.AddStructuredProperty(value.AttributeIDChain.ContentString, (IComparable)value.Value);
-                    }
-                    else
-                    {
-                        result.AddUnstructuredProperty(value.AttributeIDChain.ContentString, value.Value);
-
-                    }
-
-                    continue;
-                }
-
-                #endregion
-
-                #region AttributeAssignOrUpdateValue
-
-                if (aAttributeDefinition is AttributeAssignOrUpdateList)
-                {
-                    var value = aAttributeDefinition as AttributeAssignOrUpdateList;
-
-                    switch (value.CollectionDefinition.CollectionType)
-                    {
-                        case CollectionType.Set:
-
-                            #region set
-
-                            EdgePredefinition edgeDefinition = new EdgePredefinition(value.AttributeIDChain.ContentString);
-
-                            foreach (var aTupleElement in value.CollectionDefinition.TupleDefinition)
-                            {
-                                if (aTupleElement.Value is BinaryExpressionDefinition)
-                                {
-                                    #region BinaryExpressionDefinition
-
-                                    var binExpression = (BinaryExpressionDefinition)aTupleElement.Value;
-
-                                    binExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
-
-                                    var expressionGraph = binExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
-
-                                    LevelKey interestingLevelKey = new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken);
-
-                                    edgeDefinition.AddVertexID(expressionGraph.SelectVertexIDs(interestingLevelKey, null, true));
-
-                                    #endregion
-                                }
-                            }
-
-                            #endregion
-
-                            break;
-                        case CollectionType.List:
-                            break;
-                        case CollectionType.SetOfUUIDs:
-                            break;
-                        default:
-                            break;
-                    }
-
-                    continue;
-                }
-
-                #endregion
-
-                #region SetRefNode
-
-                if (aAttributeDefinition is AttributeAssignOrUpdateSetRef)
-                {
-                    var value = aAttributeDefinition as AttributeAssignOrUpdateSetRef;
-
-
-
-                    continue;
-                }
-
-                #endregion
-
+                ProcessAAttributeDefinition(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType, aAttributeDefinition, ref result);
             }
 
             return result;
+        }
+
+        private static void ProcessAAttributeDefinition(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType, AAttributeAssignOrUpdate aAttributeDefinition, ref RequestInsertVertex result)
+        {
+            if (vertexType.HasAttribute(aAttributeDefinition.AttributeIDChain.ContentString))
+            {
+                ProcessStructuredProperty(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType, aAttributeDefinition, ref result);
+            }
+            else
+            {
+                ProcessUnstructuredAttribute(vertexType, aAttributeDefinition, ref result);                                
+            }
+        }
+
+        private static void ProcessStructuredProperty(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType, AAttributeAssignOrUpdate aAttributeDefinition, ref RequestInsertVertex result)
+        {
+            #region data
+
+            IAttributeDefinition attribute =
+                vertexType.GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString);
+
+            #endregion
+
+            #region AttributeAssignOrUpdateValue
+
+            if (aAttributeDefinition is AttributeAssignOrUpdateValue)
+            {
+                var value = aAttributeDefinition as AttributeAssignOrUpdateValue;
+                
+                result.AddStructuredProperty(value.AttributeIDChain.ContentString, (IComparable)Convert.ChangeType(value.Value, ((IPropertyDefinition)attribute).BaseType));
+
+                return;
+            }
+
+            #endregion
+
+            #region AttributeAssignOrUpdateValue
+
+            if (aAttributeDefinition is AttributeAssignOrUpdateList)
+            {
+                var value = aAttributeDefinition as AttributeAssignOrUpdateList;
+
+                switch (value.CollectionDefinition.CollectionType)
+                {
+                    case CollectionType.Set:
+
+                        #region set
+
+                        EdgePredefinition edgeDefinition = new EdgePredefinition(value.AttributeIDChain.ContentString);
+
+                        foreach (var aTupleElement in value.CollectionDefinition.TupleDefinition)
+                        {
+                            if (aTupleElement.Value is BinaryExpressionDefinition)
+                            {
+                                #region BinaryExpressionDefinition
+
+                                edgeDefinition.AddVertexID(
+                                    ProcessBinaryExpression(
+                                    (BinaryExpressionDefinition)aTupleElement.Value,
+                                    myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType));
+
+                                #endregion
+                            }
+                            else
+                            {
+                                throw new NotImplementedQLException("TODO");
+                            }
+                        }
+
+                        result.AddEdge(edgeDefinition);
+
+                        #endregion)
+
+                        return;
+                    case CollectionType.List:
+                        return;
+                    case CollectionType.SetOfUUIDs:
+                        return;
+                    default:
+                        return;
+                }
+
+            }
+
+            #endregion
+
+            #region SetRefNode
+
+            if (aAttributeDefinition is AttributeAssignOrUpdateSetRef)
+            {
+                var value = aAttributeDefinition as AttributeAssignOrUpdateSetRef;
+
+                var edgeDefinition = new EdgePredefinition(value.AttributeIDChain.ContentString);
+
+                if (value.SetRefDefinition.IsREFUUID)
+                {
+                    #region direct vertex ids
+                    #endregion
+                }
+                else
+                {
+                    #region expression
+
+                    foreach (var aTupleElement in value.SetRefDefinition.TupleDefinition)
+                    {
+                        if (aTupleElement.Value is BinaryExpressionDefinition)
+                        {
+                            #region BinaryExpressionDefinition
+
+                            edgeDefinition.AddVertexID(
+                                ProcessBinaryExpression(
+                                (BinaryExpressionDefinition)aTupleElement.Value,
+                                myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType));
+
+                            #endregion
+                        }
+                        else
+                        {
+                            throw new NotImplementedQLException("TODO");
+                        }
+                    }
+
+                    #endregion
+                }
+
+                result.AddEdge(edgeDefinition);
+
+                return;
+            }
+
+            #endregion
+        }
+
+        private static void ProcessUnstructuredAttribute(IVertexType vertexType, AAttributeAssignOrUpdate aAttributeDefinition, ref RequestInsertVertex result)
+        {
+            #region AttributeAssignOrUpdateValue
+
+            if (aAttributeDefinition is AttributeAssignOrUpdateValue)
+            {
+                var value = aAttributeDefinition as AttributeAssignOrUpdateValue;
+                
+                result.AddUnstructuredProperty(value.AttributeIDChain.ContentString, value.Value);
+
+                return;
+            }
+
+            #endregion
+
+            else
+            {
+                throw new NotImplementedQLException("TODO");
+            }
+        }
+
+        private static IEnumerable<long> ProcessBinaryExpression(BinaryExpressionDefinition binExpression, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType)
+        {
+            binExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+
+            var expressionGraph = binExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+
+            return
+                expressionGraph.SelectVertexIDs(
+                    new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
         }
 
         #endregion

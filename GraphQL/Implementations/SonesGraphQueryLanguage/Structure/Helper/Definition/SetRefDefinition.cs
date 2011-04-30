@@ -16,7 +16,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
         #region Fields
 
-        private Boolean _IsREFUUID;
+        public Boolean IsREFUUID;
 
         #endregion
 
@@ -41,7 +41,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         public SetRefDefinition(TupleDefinition tupleDefinition, bool myIsREFUUID, Object[] parameters)
         {
             TupleDefinition = tupleDefinition;
-            _IsREFUUID = myIsREFUUID;
+            IsREFUUID = myIsREFUUID;
             Parameters = parameters;
         }
 

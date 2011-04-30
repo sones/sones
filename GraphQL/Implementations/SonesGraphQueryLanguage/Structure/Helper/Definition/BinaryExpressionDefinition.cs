@@ -531,12 +531,6 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         /// <summary>
         /// This method evaluates binary expressions.
         /// </summary>
-        /// <param name="currentTypeDefinition">KeyValuePair of Reference and corresponding GraphType.</param>
-        /// <param name="referenceList">List of References.</param>
-        /// <param name="dbContext">The TypeManager of the GraphDB.</param>
-        /// <param name="queryCache">The current query cache.</param>
-        /// <param name="resultGraph">A template of the result graph</param>
-        /// <returns>A GraphResult container.</returns>
         public IExpressionGraph Calculon(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IExpressionGraph resultGraph, bool aggregateAllowed = true)
         {
             //a leaf expression is a expression without any recursive BinaryExpression
