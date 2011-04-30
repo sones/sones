@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{80D5F893-014A-4FA4-AD9B-CADEDABF0874}</ProjectGuid>
+    <ProjectGuid>{171350FD-4A94-498F-A8F3-3758038A92CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HTML_IO</RootNamespace>
-    <AssemblyName>HTML_IO</AssemblyName>
+    <RootNamespace>sones.Plugins.GraphDS.IO</RootNamespace>
+    <AssemblyName>TEXT_IO</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HTML_IO.cs" />
+    <Compile Include="TEXT_IO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

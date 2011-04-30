@@ -9,7 +9,6 @@ using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
 using System.Xml;
 using System.Reflection;
-using Newtonsoft.Json.Linq;
 using System.Text;
 
 namespace sones.Plugins.GraphDS.IO
@@ -101,10 +100,6 @@ namespace sones.Plugins.GraphDS.IO
             }
 
             Output.Append("</table>  <!-- MainTable -->");
-            // root element...
-            var _Query = new JObject();
-            // add the results to the query....
-
             return HTMLBuilder(myQueryResult,Output).ToString();
         }
 
@@ -164,7 +159,7 @@ namespace sones.Plugins.GraphDS.IO
             #region Edge Properties
             if (aEdge.GetCountOfProperties() > 0)
             {
-                Output.Append("<tr><td style=\"width:250px\">edges</td><td style=\"width:400px\">");
+                Output.Append("<tr><td style=\"width:250px\">properties</td><td style=\"width:400px\">");
                 Output.Append("<table class=\"gql_table\"border=\"1\"><tr><td style=\"width:400px\"> <!-- EdgeViewProperties -->");
 
                 foreach (var _property in aEdge.GetAllProperties())
@@ -208,7 +203,7 @@ namespace sones.Plugins.GraphDS.IO
 
         #endregion
 
-        #region Generate a QueryResult from JSON - not really needed right now
+        #region Generate a QueryResult from HTML - not really needed right now
         public QueryResult GenerateQueryResult(string myResult)
         {
             throw new NotImplementedException();

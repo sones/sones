@@ -65,8 +65,8 @@
             beforeSend: function (xhr) {
                 if (goosh.config.webservice_default_format == "xml")
                     xhr.setRequestHeader('Accept', 'application/xml');
-                else if (goosh.config.webservice_default_format == "gexf")
-                    xhr.setRequestHeader('Accept', 'application/gexf');
+                else if (goosh.config.webservice_default_format == "html")
+                    xhr.setRequestHeader('Accept', 'application/html');
                 else if (goosh.config.webservice_default_format == "text")
                     xhr.setRequestHeader('Accept', 'text/plain');
                 else
@@ -134,6 +134,10 @@
 
             // text
             else if (ContentType.indexOf("text/plain") > -1)
+                return '<pre>' + result + '</pre>';
+
+            // html
+            else if (ContentType.indexOf("text/html") > -1)
                 return '<pre class=\"AttrTagValue\">' + result + '</pre>';
 
             // error

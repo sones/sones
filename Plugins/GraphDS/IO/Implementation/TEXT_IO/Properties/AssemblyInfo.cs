@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("GraphDSREST")]
+[assembly: AssemblyTitle("TEXT_IO")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("sones GmbH")]
-[assembly: AssemblyProduct("GraphDSREST")]
-[assembly: AssemblyCopyright("Copyright © sones GmbH 2007-2010")]
+[assembly: AssemblyProduct("TEXT_IO")]
+[assembly: AssemblyCopyright("Copyright © sones GmbH 2007-2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("ef928766-04fd-4ca7-af3c-7c029e81cfea")]
+[assembly: Guid("1f2aa68f-f168-4dee-bf38-2a51b7bae21e")]
 
 // Version information for an assembly consists of the following four values:
 //

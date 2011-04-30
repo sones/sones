@@ -225,9 +225,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginDefinition", "Library
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTML_IO", "Plugins\GraphDS\IO\Implementation\HTML_IO\HTML_IO.csproj", "{80D5F893-014A-4FA4-AD9B-CADEDABF0874}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEXT_IO", "Plugins\GraphDS\IO\Implementation\TEXT_IO\TEXT_IO.csproj", "{171350FD-4A94-498F-A8F3-3758038A92CA}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 68
+		SccNumberOfProjects = 69
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -499,6 +501,10 @@ Global
 		SccProjectTopLevelParentUniqueName67 = CoreDeveloper.sln
 		SccProjectName67 = Plugins/GraphDS/IO/Implementation/HTML_IO
 		SccLocalPath67 = Plugins\\GraphDS\\IO\\Implementation\\HTML_IO
+		SccProjectUniqueName68 = Plugins\\GraphDS\\IO\\Implementation\\TEXT_IO\\TEXT_IO.csproj
+		SccProjectTopLevelParentUniqueName68 = CoreDeveloper.sln
+		SccProjectName68 = Plugins/GraphDS/IO/Implementation/TEXT_IO
+		SccLocalPath68 = Plugins\\GraphDS\\IO\\Implementation\\TEXT_IO
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1391,6 +1397,18 @@ Global
 		{80D5F893-014A-4FA4-AD9B-CADEDABF0874}.Release|x64.ActiveCfg = Release|Any CPU
 		{80D5F893-014A-4FA4-AD9B-CADEDABF0874}.Release|x64.Build.0 = Release|Any CPU
 		{80D5F893-014A-4FA4-AD9B-CADEDABF0874}.Release|x86.ActiveCfg = Release|Any CPU
+		{171350FD-4A94-498F-A8F3-3758038A92CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{171350FD-4A94-498F-A8F3-3758038A92CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{171350FD-4A94-498F-A8F3-3758038A92CA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{171350FD-4A94-498F-A8F3-3758038A92CA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{171350FD-4A94-498F-A8F3-3758038A92CA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{171350FD-4A94-498F-A8F3-3758038A92CA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{171350FD-4A94-498F-A8F3-3758038A92CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{171350FD-4A94-498F-A8F3-3758038A92CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{171350FD-4A94-498F-A8F3-3758038A92CA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{171350FD-4A94-498F-A8F3-3758038A92CA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{171350FD-4A94-498F-A8F3-3758038A92CA}.Release|x64.ActiveCfg = Release|Any CPU
+		{171350FD-4A94-498F-A8F3-3758038A92CA}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1485,6 +1503,7 @@ Global
 		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0} = {8E6C6894-AF41-4512-8393-760EEA190F1F}
 		{A820291C-1D86-42B7-9D97-F8C9A142E8D9} = {8E6C6894-AF41-4512-8393-760EEA190F1F}
 		{80D5F893-014A-4FA4-AD9B-CADEDABF0874} = {8E6C6894-AF41-4512-8393-760EEA190F1F}
+		{171350FD-4A94-498F-A8F3-3758038A92CA} = {8E6C6894-AF41-4512-8393-760EEA190F1F}
 		{C414410B-9F2F-4305-8ECD-2D1B91CD4CCA} = {DB4A2B8D-3E66-47A9-B12C-C030AA7F8AE1}
 		{253F947A-05A1-4112-9F75-DE4FE5392A97} = {DB4A2B8D-3E66-47A9-B12C-C030AA7F8AE1}
 		{4F163953-226E-4974-B35F-C4607CC7CA20} = {C414410B-9F2F-4305-8ECD-2D1B91CD4CCA}

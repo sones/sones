@@ -1,12 +1,8 @@
 /*
  * WebDAVExceptions
- * (c) Achim Friedland, 2009
  * 
  * This is a class for all Graph WebDAVException
- * 
- * Lead programmer:
- *      Achim Friedland
- * 
+ *  
  * */
 
 #region Usings

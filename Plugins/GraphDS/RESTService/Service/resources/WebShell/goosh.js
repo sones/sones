@@ -35,7 +35,7 @@ InitGoosh = function (goosh) {
 
     //config.js
     goosh.lib.namespace("goosh.config");
-    goosh.config.apikey = "ABQIAAAA0cXSEVCNSwf_x74KTtPJMRShYK5vgJfK0afUKMRqjECszDItkhTOIyZ74499O_ys5nJIQuP4sq4nZg";
+    goosh.config.apikey = "notnecessary";
     goosh.config.user = "GraphDB";
     goosh.config.host = jQuery.url.attr("host");
     goosh.config.mode = "gql";
@@ -45,7 +45,7 @@ InitGoosh = function (goosh) {
     goosh.config.webservice_path = jQuery.url.attr("directory").substring(0, jQuery.url.attr("directory").lastIndexOf('/'));
     goosh.config.webservice_port = jQuery.url.attr("port");
     goosh.config.webservice_default_format = "xml";
-    goosh.config.webservice_formats = new Array("xml", "json", "text");
+    goosh.config.webservice_formats = new Array("xml", "json", "text", "html");
     goosh.config.numres = 4;
     goosh.config.timeout = 4;
     goosh.config.start = 0;
@@ -602,7 +602,7 @@ InitGoosh = function (goosh) {
         this.name = "format";
         this.aliases = new Array("format");
         this.help = "sets the output-format  of query results default is " + goosh.config.webservice_default_format;
-        this.parameters = "[xml|json|text]";
+        this.parameters = "[xml|json|text|html]";
 
         this.call = function (args) {
             if ((args == undefined) || (args.length == 0)) {

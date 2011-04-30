@@ -150,7 +150,7 @@ namespace sones.Library.NewFastSerializer
         SurrogateHandledType,
         // Placeholders to indicate number of myObjectStream Codes remaining
         ObjectLocatorType,
-        StringType, // by ahzf!
+        StringType, 
         Reserved22,
         Reserved21,
         Reserved20,
