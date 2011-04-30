@@ -12,7 +12,7 @@ namespace sones.GraphQL.GQL.ErrorHandling
     {
         public InvalidBinaryExpressionException(BinaryExpressionDefinition myBinaryExpression)
         {
-            _msg = String.Format("The BinaryExpression is not valid: {0} {1} {2}", myBinaryExpression.Left.ToString(), myBinaryExpression.Operator.Symbol.First(), myBinaryExpression.Right.ToString());
+            _msg = String.Format("The BinaryExpression is not valid: {0} {1} {2}", myBinaryExpression.Left.ToString(), myBinaryExpression.Operator, myBinaryExpression.Right.ToString());
         }
     }
 }

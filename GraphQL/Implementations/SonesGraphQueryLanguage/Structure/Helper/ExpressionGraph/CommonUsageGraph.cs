@@ -1194,7 +1194,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                         //get next lower attribute (might be more than one step away)
                         int levelDistance = myCurrentLevelKey.Level - aLowerLevelKey.Level;
-                        //GraphDBType currentType = null;
+                        //VertexType currentType = null;
                         EdgeKey myCurrentBackwardEdgekey = null;
                         IAttributeDefinition currentAttribute = null;
 

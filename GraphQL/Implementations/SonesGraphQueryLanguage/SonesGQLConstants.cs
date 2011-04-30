@@ -48,7 +48,7 @@ namespace sones.GraphQL
 
         public const String BracketLeft                         = "bracketLeft";
         public const String BracketRight                        = "bracketRight";
-        public const String GraphDBType                         = "GraphDBType";
+        public const String VertexType                         = "VertexType";
 
 
         public const String INCOMINGEDGE                         = "INCOMINGEDGE";

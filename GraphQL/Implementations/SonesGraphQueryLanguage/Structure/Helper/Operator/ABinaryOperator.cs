@@ -28,22 +28,6 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
         #endregion
 
-        //#region (public) Methods
-
-        //public abstract IExpressionGraph TypeOperation(
-        //    AExpressionDefinition myLeftValueObject, 
-        //    AExpressionDefinition myRightValueObject, 
-        //    GQLPluginManager myPluginManager,
-        //    IGraphDB myIGraphDB,
-        //    SecurityToken mySecurityToken,
-        //    TransactionToken myTransactionToken,
-        //    TypesOfBinaryExpression typeOfBinExpr, 
-        //    TypesOfAssociativity associativity, 
-        //    IExpressionGraph result, 
-        //    Boolean aggregateAllowed = true);
-
-        //#endregion
-
         public List<String> GetAttributeList(List<String> aList)
         {
 
@@ -60,7 +44,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
         #region Get tuple based on the operator (InRange allows other tuples than + or = ...)
 
-        public virtual AOperationDefinition GetValidTupleReloaded(TupleDefinition myTupleDefinition,
+        public static AOperationDefinition GetValidTupleReloaded(TupleDefinition myTupleDefinition,
             IGraphDB myIGraphDB,
             SecurityToken mySecurityToken,
             TransactionToken myTransactionToken)

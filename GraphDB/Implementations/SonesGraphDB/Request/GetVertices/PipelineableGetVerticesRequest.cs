@@ -52,7 +52,7 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            if (myMetaManager.QueryPlanManager.IsValidExpression(_request.Expression))
+            if (!myMetaManager.QueryPlanManager.IsValidExpression(_request.Expression))
             {
                 throw new InvalidExpressionException(_request.Expression);
             }

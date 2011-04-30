@@ -224,18 +224,12 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// </summary>
         /// <param name="myLeftValueObject">The left value of a binary expression.</param>
         /// <param name="myRightValueObject">The right value of a binary expression.</param>
-        /// <param name="currentTypeDefinitione"></param>
-        /// <param name="dbContext">The TypeManager of the database.</param>
-        /// <param name="typeOfBinExpr">The type of the binary expression.</param>
-        /// <param name="associativity">The associativity of the binary expression.</param>
-        /// <param name="referenceList"></param>
-        /// <param name="queryCache">The per query DBObject/BackwardEdge cache.</param>
         /// <returns></returns>
         public static IExpressionGraph TypeOperation( 
             AExpressionDefinition myLeftValueObject, AExpressionDefinition myRightValueObject,
             GQLPluginManager myPluginManager,
             IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken,
-            TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph resultGr, TypesOfOperators mytypesOfOpertators, Boolean aggregateAllowed = true)
+            TypesOfBinaryExpression typeOfBinExpr, IExpressionGraph resultGr, TypesOfOperators mytypesOfOpertators, BinaryOperator myOperator, Boolean aggregateAllowed = true)
         {
             #region Data
 
@@ -354,7 +348,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
                     #region LeftComplex
 
-                    MatchData(data, typeOfBinExpr, resultGr, myGraphDB, mySecurityToken, myTransactionToken, mytypesOfOpertators);
+                    MatchData(data, typeOfBinExpr, resultGr, myGraphDB, mySecurityToken, myTransactionToken, mytypesOfOpertators, myOperator);
 
                     #endregion
 
@@ -364,7 +358,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
                     #region RightComplex
 
-                    MatchData(data, typeOfBinExpr, resultGr, myGraphDB, mySecurityToken, myTransactionToken, mytypesOfOpertators);
+                    MatchData(data, typeOfBinExpr, resultGr, myGraphDB, mySecurityToken, myTransactionToken, mytypesOfOpertators, myOperator);
 
                     #endregion
 
@@ -377,8 +371,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                     throw new NotImplementedQLException("");
 
                     #endregion
-
-                    break;
             }
 
             #endregion
@@ -424,7 +416,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// <param name="idx">The index for the complex part.</param>
         /// <param name="errors">A list of errors.</param>
         /// <param name="resultGraph">The IExpressionGraph that serves as result.</param>
-        private static void MatchData(DataContainer data, TypesOfBinaryExpression typeOfBinExpr, IExpressionGraph resultGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfOperators myTypeOfOperator)
+        private static void MatchData(DataContainer data, TypesOfBinaryExpression typeOfBinExpr, IExpressionGraph resultGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfOperators myTypeOfOperator, BinaryOperator myOperator)
         {
             #region data
 
@@ -438,7 +430,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                 new GraphDB.Request.RequestGetVertices(
                     new BinaryExpression(
                         new PropertyExpression(data.IDChainDefinitions.Item1.LastType.Name, data.IDChainDefinitions.Item1.LastAttribute.Name),
-                        GetOperatorFromSymbol(),
+                        myOperator,
                         GenerateLiteral(data.Operands.Item1))),
                         (stats, vertexEnumerable) => vertexEnumerable.ToList());
 
@@ -467,12 +459,15 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
         private static IExpression GenerateLiteral(AExpressionDefinition aExpressionDefinition)
         {
-            throw new NotImplementedException();
-        }
+            if (aExpressionDefinition is ValueDefinition)
+            {
+                return new SingleLiteralExpression((IComparable)((ValueDefinition) aExpressionDefinition).Value);
 
-        private static BinaryOperator GetOperatorFromSymbol()
-        {
-            throw new NotImplementedException();
+            }
+            else
+            {
+                throw new NotImplementedQLException("TODO");
+            }
         }
 
         private static void CleanLowerLevel(LevelKey myLevelKey, IExpressionGraph myGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)

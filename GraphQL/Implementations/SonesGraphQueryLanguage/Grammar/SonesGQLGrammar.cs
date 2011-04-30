@@ -587,7 +587,7 @@ namespace sones.GraphQL
             //var vertexType = new NonTerminal("vertexType");
             //BNF_VertexTypes = new NonTerminal("vertexTypes");
 
-            var GraphDBType = new NonTerminal(SonesGQLConstants.GraphDBType, CreateGraphDBTypeNode);
+            var GraphDBType = new NonTerminal(SonesGQLConstants.VertexType, CreateGraphDBTypeNode);
             var AttributeList = new NonTerminal("AttributeList");
             var AttrDefinition = new NonTerminal("AttrDefinition", CreateAttributeDefinitionNode);
             var ResultObject = new NonTerminal("ResultObject");
@@ -982,7 +982,6 @@ namespace sones.GraphQL
                             | "%" //arithmetic
                             | "&"
                             | "|"
-                            | "^"                     //bit
                             | "="
                             | ">"
                             | "<"
@@ -990,8 +989,6 @@ namespace sones.GraphQL
                             | "<="
                             | "<>"
                             | "!="
-                            | "!<"
-                            | "!>"
                             | "AND"
                             | "OR"
                             | "INRANGE";
@@ -1021,7 +1018,7 @@ namespace sones.GraphQL
             //Operators
             RegisterOperators(10, "*", "/", "%");
             RegisterOperators(9, "+", "-");
-            RegisterOperators(8, "=", ">", "<", ">=", "<=", "<>", "!=", "!<", "!>", "INRANGE", "LIKE", "IN", "NOTIN", "NOT_IN", "NIN", "!IN");
+            RegisterOperators(8, "=", ">", "<", ">=", "<=", "<>", "!=", "INRANGE");
             RegisterOperators(7, "^", "&", "|");
             RegisterOperators(6, "NOT");
             RegisterOperators(5, "AND", "OR");

@@ -167,12 +167,11 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <returns>The resulting vertex view</returns>
         private IVertexView GenerateAVertexView(IVertexType aCreatedVertes)
         {
-            IDictionary<String, Object> properties = new Dictionary<string,object>();
-            
-            properties.Add(SonesGQLConstants.GraphDBType, aCreatedVertes.Name);
-            properties.Add("ID", aCreatedVertes.ID);
-
-            return new VertexView(properties, null);
+            return new VertexView(new Dictionary<string,object>
+                                                         {
+                                                             {SonesGQLConstants.VertexType, aCreatedVertes.Name},
+                                                             {"VertexTypeID", aCreatedVertes.ID}
+                                                         }, null);
         }
 
         /// <summary>

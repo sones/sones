@@ -16,6 +16,7 @@ using sones.GraphQL.GQL.ErrorHandling;
 using sones.GraphQL.Result;
 using sones.GraphQL.GQL.Manager.Select;
 using sones.GraphQL.GQL.Structure.Helper.Operator;
+using sones.GraphDB.Expression;
 
 namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 {
@@ -26,7 +27,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
         public TypesOfBinaryExpression TypeOfBinaryExpression { get; private set; }
         public AOperationDefinition ResultValue { get; private set; }
-        public ABinaryOperator Operator { get; private set; }
+        public BinaryOperator Operator { get; private set; }
         private Boolean _isValidated = false;
 
         private String _OperatorSymbol;
@@ -366,10 +367,10 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         /// <summary>
         /// This will check all tupe value. If it contains only one value it will be converted to a ValueDefinition. If it contains a SelectDefinition it will be executed and the result added to the tuple.
         /// </summary>
-        private AOperationDefinition AssignCorrectTuple(TupleDefinition myTupleDefinition, ABinaryOperator myOperator, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private AOperationDefinition AssignCorrectTuple(TupleDefinition myTupleDefinition, BinaryOperator myOperator, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             var retVal = new TupleDefinition(myTupleDefinition.KindOfTuple);
-            var validTuple = myOperator.GetValidTupleReloaded(myTupleDefinition, myGraphDB, mySecurityToken, myTransactionToken);
+            var validTuple = ABinaryOperator.GetValidTupleReloaded(myTupleDefinition, myGraphDB, mySecurityToken, myTransactionToken);
 
             if (validTuple is TupleDefinition)
             {
@@ -546,9 +547,8 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
                 return ABinaryCompareOperator.TypeOperation(this.Left, this.Right,
                     myPluginManager, myGraphDB, mySecurityToken, myTransactionToken,
                     this.TypeOfBinaryExpression,
-                    GetAssociativityReloaded(ExtractIDNode(this.Left), ExtractIDNode(this.Right)),
                    resultGraph,
-                   TypesOfOperators.AffectsLocalLevelOnly,
+                   TypesOfOperators.AffectsLocalLevelOnly, Operator,
                    aggregateAllowed);
 
                 #endregion
@@ -607,11 +607,11 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
                         var left = ((BinaryExpressionDefinition)this.Left).Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
                         var right = ((BinaryExpressionDefinition)this.Right).Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
 
-                        return (this.Operator as ABinaryLogicalOperator).TypeOperation(
+                        return ABinaryLogicalOperator.TypeOperation(
                             left,
                             right,
                             myGraphDB, mySecurityToken, myTransactionToken,
-                            this.TypeOfBinaryExpression, TypesOfAssociativity.Neutral, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
+                            this.TypeOfBinaryExpression, TypesOfAssociativity.Neutral, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), Operator, aggregateAllowed);
 
                     default:
 
@@ -753,7 +753,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         private Boolean EvaluateHaving(IVertexView myDBObjectReadoutGroup, AExpressionDefinition complexValue, out String attributeName, out ValueDefinition simpleValue)
         {
 
-            //GraphDBType graphDBType = null;
+            //VertexType graphDBType = null;
             attributeName = null;
             simpleValue = null;
 

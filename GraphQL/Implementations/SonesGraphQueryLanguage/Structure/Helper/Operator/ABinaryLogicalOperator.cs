@@ -8,11 +8,15 @@ using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphQL.GQL.Manager.Plugin;
+using sones.GraphDB.Expression;
 
 namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 {
-    public abstract class ABinaryLogicalOperator : ABinaryBaseOperator
+    public static class ABinaryLogicalOperator
     {
-        public abstract IExpressionGraph TypeOperation(IExpressionGraph myLeftValueObject, IExpressionGraph myRightValueObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, bool aggregateAllowed = true);
+        public static IExpressionGraph TypeOperation(IExpressionGraph myLeftValueObject, IExpressionGraph myRightValueObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, BinaryOperator myOperator, bool aggregateAllowed = true)
+        {
+            return null;
+        }
     }
 }
