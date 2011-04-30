@@ -50,7 +50,7 @@ namespace sones.Library.Commons.VertexStore.Definitions
             VertexTypeID = myVertexTypeID;
             VertexID = myVertexID;
             VertexRevisionID = myVertexRevisionID;
-            VertexEditionName = myVertexEditionName;
+            VertexEditionName = myVertexEditionName ?? String.Empty;
         }
 
         #endregion

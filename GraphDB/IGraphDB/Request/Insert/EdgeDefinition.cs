@@ -118,8 +118,8 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public EdgePredefinition AddExpression(IExpression myExpression)
         {
-            var expressions = _expressions ?? new HashSet<IExpression>();
-            expressions.Add(myExpression);
+            _expressions = _expressions ?? new HashSet<IExpression>();
+            _expressions.Add(myExpression);
 
             return this;
         }
@@ -131,8 +131,8 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public EdgePredefinition AddExpression(IEnumerable<IExpression> myExpressions)
         {
-            var expressions = _expressions ?? new HashSet<IExpression>();
-            expressions.UnionWith(myExpressions);
+            _expressions = _expressions ?? new HashSet<IExpression>();
+            _expressions.UnionWith(myExpressions);
 
             return this;
         }
@@ -144,8 +144,8 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public EdgePredefinition AddVertexID(long myVertexID)
         {
-            var ids = _ids ?? new HashSet<long>();
-            ids.Add(myVertexID);
+            _ids = _ids ?? new HashSet<long>();
+            _ids.Add(myVertexID);
 
             return this;
         }
@@ -157,8 +157,8 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public EdgePredefinition AddVertexID(IEnumerable<long> myVertexID)
         {
-            var ids = _ids ?? new HashSet<long>();
-            ids.UnionWith(myVertexID);
+            _ids = _ids ?? new HashSet<long>();
+            _ids.UnionWith(myVertexID);
 
             return this;
         }
