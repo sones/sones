@@ -33,6 +33,30 @@ namespace sones.GraphDB.Expression.Tree.Literals
             Value = myCollection;
         }
 
+        /// <summary>
+        /// Creates a new collection wrapper
+        /// </summary>
+        public SetCollectionWrapper()
+        {
+            Value = new HashSet<IComparable>();
+        }
+
+        #endregion
+
+        #region fluent methods
+
+        /// <summary>
+        /// Fluent method to add a single element
+        /// </summary>
+        /// <param name="myToBeAddedElement">The IComparable element that should be added</param>
+        /// <returns>The element itself</returns>
+        public SetCollectionWrapper AddElement(IComparable myToBeAddedElement)
+        {
+            Value.Add(myToBeAddedElement);
+
+            return this;
+        }
+
         #endregion
 
 

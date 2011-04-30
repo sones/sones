@@ -34,6 +34,30 @@ namespace sones.GraphDB.Expression.Tree.Literals
             Value = myCollection;
         }
 
+        /// <summary>
+        /// Create a new list collection wrapper
+        /// </summary>
+        public ListCollectionWrapper()
+        {
+            Value = new List<IComparable>();
+        }
+
+        #endregion
+
+        #region fluent methods
+
+        /// <summary>
+        /// Fluent method to add a single element
+        /// </summary>
+        /// <param name="myToBeAddedElement">The IComparable element that should be added</param>
+        /// <returns>The element itself</returns>
+        public ListCollectionWrapper AddElement(IComparable myToBeAddedElement)
+        {
+            Value.Add(myToBeAddedElement);
+
+            return this;
+        }
+
         #endregion
 
         #region IComparable Members

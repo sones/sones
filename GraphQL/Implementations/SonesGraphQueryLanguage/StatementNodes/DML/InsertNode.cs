@@ -20,6 +20,7 @@ using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.ErrorHandling;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -199,6 +200,22 @@ namespace sones.GraphQL.StatementNodes.DML
 
                         return;
                     case CollectionType.List:
+
+                        #region list
+
+                        //has to be list of comparables
+                        var property = (IPropertyDefinition) attribute;
+                        ListCollectionWrapper listWrapper = new ListCollectionWrapper();
+
+                        foreach (var aTupleElement in value.CollectionDefinition.TupleDefinition)
+                        {
+                            listWrapper.AddElement((IComparable)Convert.ChangeType(((ValueDefinition)aTupleElement.Value).Value, property.BaseType));
+                        }
+
+                        result.AddStructuredProperty(aAttributeDefinition.AttributeIDChain.ContentString, listWrapper);
+
+                        #endregion)
+
                         return;
                     case CollectionType.SetOfUUIDs:
                         return;
