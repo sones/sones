@@ -598,20 +598,15 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
                             throw new InvalidBinaryExpressionException(this);
                         }
 
-                        if (!(this.Operator is ABinaryLogicalOperator))
+                        if (!(this.Operator == BinaryOperator.OR || this.Operator == BinaryOperator.AND))
                         {
-                            throw new NotImplementedQLException("");
+                            throw new InvalidBinaryExpressionException(this);                            
                         }
-
 
                         var left = ((BinaryExpressionDefinition)this.Left).Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
                         var right = ((BinaryExpressionDefinition)this.Right).Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
 
-                        return ABinaryLogicalOperator.TypeOperation(
-                            left,
-                            right,
-                            myGraphDB, mySecurityToken, myTransactionToken,
-                            this.TypeOfBinaryExpression, TypesOfAssociativity.Neutral, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), Operator, aggregateAllowed);
+                        return ABinaryLogicalOperator.TypeOperation(left, right, Operator);
 
                     default:
 

@@ -14,9 +14,31 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 {
     public static class ABinaryLogicalOperator
     {
-        public static IExpressionGraph TypeOperation(IExpressionGraph myLeftValueObject, IExpressionGraph myRightValueObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, BinaryOperator myOperator, bool aggregateAllowed = true)
+        public static IExpressionGraph TypeOperation(IExpressionGraph myLeftValueObject, IExpressionGraph myRightValueObject, BinaryOperator myOperator)
         {
-            return null;
+            switch (myOperator)
+            {
+                case BinaryOperator.AND:
+                    myLeftValueObject.IntersectWith(myRightValueObject);
+
+                    break;
+                case BinaryOperator.OR:
+                    
+                    myLeftValueObject.UnionWith(myRightValueObject);
+
+                    break;
+                case BinaryOperator.Equals:
+                case BinaryOperator.GreaterOrEqualsThan:
+                case BinaryOperator.GreaterThan:
+                case BinaryOperator.InRange:
+                case BinaryOperator.LessOrEqualsThan:
+                case BinaryOperator.LessThan:
+                case BinaryOperator.NotEquals:
+                default:
+                    throw new ArgumentOutOfRangeException("myOperator");
+            }
+
+            return myLeftValueObject;
         }
     }
 }
