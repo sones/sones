@@ -63,7 +63,7 @@ namespace sones.GraphDS.GraphDSRESTClient
 
         #region Constructors
 
-        public GraphDS_RESTClient(String myHost, String myUsername, String myPassword, uint myPort = 9975)
+        public GraphDS_RESTClient(String myHost, String myUsername, String myPassword, uint myPort = 9975U)
         {
             setHost(myHost);
             _Username = myUsername;

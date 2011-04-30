@@ -28,7 +28,7 @@ namespace sones.Plugins.SonesGQL.DBImport
             get { return "sones.gql"; }
         }
 
-        public QueryResult Import(String location, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 parallelTasks = 1, IEnumerable<string> comments = null, UInt64? offset = null, UInt64? limit = null)
+        public QueryResult Import(String location, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 parallelTasks = 1U, IEnumerable<string> comments = null, UInt64? offset = null, UInt64? limit = null)
         {
             ASonesException error;
             Stream stream = null;
@@ -77,7 +77,7 @@ namespace sones.Plugins.SonesGQL.DBImport
             #endregion
         }
         
-        public QueryResult Import(Stream myInputStream, IGraphDB myIGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 myParallelTasks = 1, IEnumerable<string> myComments = null, ulong? myOffset = null, ulong? myLimit = null)
+        public QueryResult Import(Stream myInputStream, IGraphDB myIGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, ulong? myOffset = null, ulong? myLimit = null)
         {
             var lines = ReadLinesFromStream(myInputStream);
 

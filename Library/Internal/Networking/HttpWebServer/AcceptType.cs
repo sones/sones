@@ -31,7 +31,7 @@ namespace sones.Networking.HTTP
 
         private UInt32 _PlaceOfOccurence;
 
-        public AcceptType(String accept, UInt32 placeOfOccurence = 0)
+        public AcceptType(String accept, UInt32 placeOfOccurence = 0U)
         {
 
             if (accept.Contains(";"))
