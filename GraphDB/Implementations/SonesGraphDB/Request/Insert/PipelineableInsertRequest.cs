@@ -54,7 +54,7 @@ namespace sones.GraphDB.Request
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexManager.AddVertex(_request, TransactionToken, SecurityToken);
+            _createdVertex =  myMetaManager.VertexManager.AddVertex(_request, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()
