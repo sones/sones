@@ -188,6 +188,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
                         foreach (var aTupleElement in value.CollectionDefinition.TupleDefinition)
                         {
+                            
                             if (aTupleElement.Value is BinaryExpressionDefinition)
                             {
                                 #region BinaryExpressionDefinition
@@ -317,6 +318,11 @@ namespace sones.GraphQL.StatementNodes.DML
             }
 
             #endregion
+        }
+
+        private static void AddParametersToEdge(Dictionary<string, object> dictionary, ref EdgePredefinition edgeDefinition)
+        {
+            throw new NotImplementedException();
         }
 
         private static void ProcessUnstructuredAttribute(IVertexType vertexType, AAttributeAssignOrUpdate aAttributeDefinition, ref RequestInsertVertex result)

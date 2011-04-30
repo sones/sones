@@ -10,8 +10,8 @@ namespace sones.GraphQL.Structure.Nodes.DML
     /// </summary>
     public sealed class ParametersNode : AStructureNode, IAstNodeInit
     {
-        private List<object> _ParameterValues;
-        public List<object> ParameterValues
+        private Dictionary<string, object> _ParameterValues;
+        public Dictionary<string, object> ParameterValues
         {
             get { return _ParameterValues; }
         }
@@ -20,12 +20,12 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            _ParameterValues = new List<Object>();
+            _ParameterValues = new Dictionary<string, object>();
             if (HasChildNodes(parseNode) && HasChildNodes(parseNode.ChildNodes[1]))
             {
                 foreach (var child in parseNode.ChildNodes[1].ChildNodes)
                 {
-                    _ParameterValues.Add(child.Token.Value);
+                    _ParameterValues.Add(child.FirstChild.Token.ValueString, child.LastChild.Token.Value);
                 }
             }
         }

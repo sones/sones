@@ -22,14 +22,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
         #region Properties
 
-        public Object[] Parameters { get; private set; }
+        public Dictionary<string, object> Parameters { get; private set; }
         public TupleDefinition TupleDefinition { get; private set; }
 
         #endregion
 
         #region Ctor
 
-        public SetRefDefinition(TupleDefinition tupleDefinition, Object[] myParameters)
+        public SetRefDefinition(TupleDefinition tupleDefinition, Dictionary<String, object> myParameters)
         {
 
             System.Diagnostics.Debug.Assert(tupleDefinition != null);
@@ -38,7 +38,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             this.Parameters = myParameters;
         }
 
-        public SetRefDefinition(TupleDefinition tupleDefinition, bool myIsREFUUID, Object[] parameters)
+        public SetRefDefinition(TupleDefinition tupleDefinition, bool myIsREFUUID, Dictionary<String, object> parameters)
         {
             TupleDefinition = tupleDefinition;
             IsREFUUID = myIsREFUUID;

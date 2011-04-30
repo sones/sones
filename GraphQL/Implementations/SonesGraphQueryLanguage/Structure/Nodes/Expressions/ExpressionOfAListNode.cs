@@ -23,7 +23,7 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
         /// A list of parameters which will be passed during an insert operation to the ListEdgeType
         /// Currently only ADBBaseObject is provided
         /// </summary>
-        public List<Object> Parameters { get; private set; }
+        public Dictionary<string, object> Parameters { get; private set; }
         public AExpressionDefinition ExpressionDefinition { get; private set; }
 
         #region IAstNodeInit Members

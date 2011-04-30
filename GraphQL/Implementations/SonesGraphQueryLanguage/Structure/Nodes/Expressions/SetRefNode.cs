@@ -4,6 +4,7 @@ using Irony.Parsing;
 using sones.GraphQL.GQL.Structure.Helper.Definition;
 using sones.GraphQL.ErrorHandling;
 using sones.GraphQL.Structure.Nodes.DML;
+using System.Collections.Generic;
 
 namespace sones.GraphQL.Structure.Nodes.Expressions
 {
@@ -47,10 +48,10 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
                 throw new NotImplementedQLException("");
             }
 
-            Object[] parameters = null;
+            Dictionary<string, object> parameters = null;
             if (parseNode.ChildNodes[2].AstNode is ParametersNode)
             {
-                parameters = (parseNode.ChildNodes[2].AstNode as ParametersNode).ParameterValues.ToArray();
+                parameters = (parseNode.ChildNodes[2].AstNode as ParametersNode).ParameterValues;
             }
 
             SetRefDefinition = new SetRefDefinition(tupleNode.TupleDefinition, IsREFUUID, parameters);

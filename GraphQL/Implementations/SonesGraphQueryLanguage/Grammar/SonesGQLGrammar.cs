@@ -535,7 +535,6 @@ namespace sones.GraphQL
             var BNF_Expression = new NonTerminal("expression", typeof(ExpressionNode));
             var expressionOfAList = new NonTerminal("expressionOfAList", typeof(ExpressionOfAListNode));
             var BNF_ExprList = new NonTerminal("exprList");
-            var exprListOfAList = new NonTerminal("exprListOfAList");
             var unExpr = new NonTerminal("unExpr", CreateUnExpressionNode);
             var unOp = new NonTerminal("unOp");
             var binExpr = new NonTerminal("binExpr", CreateBinaryExpressionNode);
@@ -645,7 +644,7 @@ namespace sones.GraphQL
 
             #endregion
 
-            var Value = new NonTerminal("Value");
+            var KeyValuePair = new NonTerminal("KeyValuePair");
             var ValueList = new NonTerminal("ValueList");
             var BooleanVal = new NonTerminal("BooleanVal");
 
@@ -858,9 +857,11 @@ namespace sones.GraphQL
 
             #region Value
 
-            Value.Rule = string_literal | number | BooleanVal;
+            KeyValuePair.Rule =     Id_simple + "=" + string_literal 
+                                |   Id_simple + "=" + number
+                                |   Id_simple + "=" + BooleanVal;
 
-            ValueList.Rule = MakeStarRule(ValueList, S_comma, Value);
+            ValueList.Rule = MakeStarRule(ValueList, S_comma, KeyValuePair);
 
             #endregion
 
@@ -898,7 +899,7 @@ namespace sones.GraphQL
 
             EdgeTypeParam.SetFlag(TermFlags.IsTransient, false);
 
-            DefaultValueDef.Rule = S_DEFAULT + "=" + Value;
+            DefaultValueDef.Rule = S_DEFAULT + "=" + KeyValuePair;
 
             GraphDBType.Rule =       Id_simple
                                    | S_LIST + S_ListTypePrefix + Id_simple + S_ListTypePostfix
@@ -935,8 +936,6 @@ namespace sones.GraphQL
 
             //Expression
             BNF_ExprList.Rule = MakeStarRule(BNF_ExprList, S_comma, BNF_Expression);
-
-            exprListOfAList.Rule = MakePlusRule(exprListOfAList, S_comma, expressionOfAList);
 
             BNF_Expression.Rule = term
                                 | unExpr
@@ -1120,7 +1119,7 @@ namespace sones.GraphQL
                                             | S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT;
 
             AttrDefaultOpValue.Rule = Empty
-                                    | "=" + Value;
+                                    | "=" + KeyValuePair;
 
             #endregion
 
@@ -1196,10 +1195,7 @@ namespace sones.GraphQL
             aliasOpt.Rule = Empty
                             | S_AS + aliasOptName;
 
-            var staticSelect = new NonTerminal("staticSelect", CreateSelectValueAssignmentNode);
-            staticSelect.Rule = Empty | S_EQUALS + Value | "?=" + Value;
-
-            selectionSource.Rule = BNF_Aggregate + aliasOpt | IdOrFuncList + staticSelect + aliasOpt;
+            selectionSource.Rule = BNF_Aggregate + aliasOpt;
             //|   funcCall
             //|   Id;
 
@@ -1498,7 +1494,7 @@ namespace sones.GraphQL
             base.MarkTransient(
                 singlestmt, Id_simple, selList, /* selectionSource, */BNF_Expression, term, BNF_FunArgs
                 , unOp, /*binOp, */ /*aliasOpt, */ aliasOptName, orderByAttributeListMember
-                , Value
+                //, KeyValuePair
                 //, EdgeTypeParam
                 , EdgeType_SortedMember, AttrUpdateOrAssign, ListAttrUpdate, DescrArgument,
                 TypeWrapper //is used as a wrapper for AType

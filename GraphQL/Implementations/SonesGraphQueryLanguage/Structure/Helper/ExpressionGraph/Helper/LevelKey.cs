@@ -75,7 +75,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                     var attribute = vertexType.GetAttributeDefinition(aEdgeKey.AttributeID);
 
-                    if (attribute.Kind != AttributeType.Property)
+                    if (attribute != null && attribute.Kind != AttributeType.Property)
                     {
                         //so there is an edge
                         Edges.Add(aEdgeKey);
