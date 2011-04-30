@@ -72,6 +72,10 @@ namespace sones.GraphQL.StatementNodes.Transactions
             get { return TypesOfStatements.Readonly; }
         }
 
+        /// <summary>
+        /// The returned QueryResult contains vertices which are null if no TransactionToken is created,
+        /// otherwise they contain a vertexview with a property dictionary, where in first position is the created TransactionToken
+        /// </summary>
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
