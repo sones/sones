@@ -229,6 +229,23 @@ namespace sones.GraphQL.StatementNodes.DML
 
                         return;
                     case CollectionType.SetOfUUIDs:
+
+                        EdgePredefinition anotheredgeDefinition = new EdgePredefinition(value.AttributeIDChain.ContentString);
+
+                        foreach (var aTupleElement in value.CollectionDefinition.TupleDefinition)
+                        {
+                            if (aTupleElement.Value is ValueDefinition)
+                            {
+                                anotheredgeDefinition.AddVertexID(Convert.ToInt64(((ValueDefinition) aTupleElement.Value).Value));
+                            }
+                            else
+                            {
+                                throw new NotImplementedQLException("TODO");
+                            }
+                        }
+
+                        result.AddEdge(anotheredgeDefinition);
+
                         return;
                     default:
                         return;
@@ -249,6 +266,23 @@ namespace sones.GraphQL.StatementNodes.DML
                 if (value.SetRefDefinition.IsREFUUID)
                 {
                     #region direct vertex ids
+
+                    foreach (var aTupleElement in value.SetRefDefinition.TupleDefinition)
+                    {
+                        if (aTupleElement.Value is ValueDefinition)
+                        {
+                            #region BinaryExpressionDefinition
+
+                            edgeDefinition.AddVertexID(Convert.ToInt64(((ValueDefinition) aTupleElement.Value).Value));
+
+                            #endregion
+                        }
+                        else
+                        {
+                            throw new NotImplementedQLException("TODO");
+                        }
+                    }
+
                     #endregion
                 }
                 else
