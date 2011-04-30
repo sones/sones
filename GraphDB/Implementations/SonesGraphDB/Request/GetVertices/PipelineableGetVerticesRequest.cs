@@ -22,7 +22,7 @@ namespace sones.GraphDB.Request
         private readonly RequestGetVertices _request;
 
         /// <summary>
-        /// The parentVertex that have been fetched by the Graphdb
+        /// The vertices that have been fetched by the Graphdb
         /// it is used for generating the output
         /// </summary>
         private IEnumerable<IVertex> _fetchedIVertices;

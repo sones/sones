@@ -188,7 +188,7 @@ namespace sones.GraphDB.Manager.Vertex
                     throw new AttributeDoesNotExistException(prop.Key, myInsertDefinition.VertexTypeName);
 
                 //Assign safty should be suffice.
-                if (propertyDef.BaseType.IsAssignableFrom(prop.Value.GetType()))
+                if (!propertyDef.BaseType.IsAssignableFrom(prop.Value.GetType()))
                     throw new PropertyHasWrongTypeException(myInsertDefinition.VertexTypeName, prop.Key, propertyDef.BaseType.Name, prop.Value.GetType().Name);
             }
         }
@@ -270,10 +270,16 @@ namespace sones.GraphDB.Manager.Vertex
 
             CreateEdgeAddDefinitions(myInsertDefinition, myVertexType, myTransaction, mySecurity, source, date, out singleEdges, out hyperEdges);
 
-            var binaries = myInsertDefinition.BinaryProperties.Select(x => new StreamAddDefinition(myVertexType.GetAttributeDefinition(x.Key).AttributeID, x.Value));
-            var structured = myInsertDefinition.StructuredProperties.ToDictionary(x => myVertexType.GetAttributeDefinition(x.Key).AttributeID, x=>x.Value);
+
+            var binaries = (myInsertDefinition.BinaryProperties == null)
+                            ? null
+                            : myInsertDefinition.BinaryProperties.Select(x => new StreamAddDefinition(myVertexType.GetAttributeDefinition(x.Key).AttributeID, x.Value));
+
+            var structured = (myInsertDefinition.StructuredProperties == null)
+                             ? null
+                             : myInsertDefinition.StructuredProperties.ToDictionary(x => myVertexType.GetAttributeDefinition(x.Key).AttributeID, x=>x.Value);
             
-            return new VertexAddDefinition(0L, myVertexType.ID, myInsertDefinition.Edition, hyperEdges, singleEdges, binaries, myInsertDefinition.Comment, date, date, structured, myInsertDefinition.UnstructuredProperties);
+            return new VertexAddDefinition(vertexID, myVertexType.ID, myInsertDefinition.Edition, hyperEdges, singleEdges, binaries, myInsertDefinition.Comment, date, date, structured, myInsertDefinition.UnstructuredProperties);
         }
 
         private void CreateEdgeAddDefinitions(
@@ -286,6 +292,11 @@ namespace sones.GraphDB.Manager.Vertex
             out IEnumerable<SingleEdgeAddDefinition> outSingleEdges, 
             out IEnumerable<HyperEdgeAddDefinition> outHyperEdges)
         {
+            outSingleEdges = null;
+            outHyperEdges = null;
+            if (myInsertDefinition.OutgoingEdges == null)
+                return;
+
             var singleEdges = new Dictionary<String, SingleEdgeAddDefinition>();
             var hyperEdges = new Dictionary<String, HyperEdgeAddDefinition>();
             foreach (var edgeDef in myInsertDefinition.OutgoingEdges)
