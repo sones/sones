@@ -482,8 +482,6 @@ namespace sones.GraphQL
             #region AStatements
 
             var singlestmt = new NonTerminal("singlestmt");
-            //            var stmt = new NonTerminal("stmt", typeof(StatementNode)); 
-            var createTableStmt = new NonTerminal("createTableStmt");
             var createIndexStmt = new NonTerminal("createIndexStmt", CreateCreateIndexStatementNode);
             var alterStmt = new NonTerminal("alterStmt", CreateAlterStmNode);
             var dropTypeStmt = new NonTerminal("dropTypeStmt", CreateDropTypeStmNode);
@@ -591,8 +589,6 @@ namespace sones.GraphQL
             var AttrDefinition = new NonTerminal("AttrDefinition", CreateAttributeDefinitionNode);
             var ResultObject = new NonTerminal("ResultObject");
             var ResultList = new NonTerminal("ResultList");
-            var MatchingClause = new NonTerminal("MatchingClause");
-            var Matching = new NonTerminal("MatchingClause");
             var PrefixOperation = new NonTerminal("PrefixOperation");
             var ParameterList = new NonTerminal("ParameterList");
             var TypeList = new NonTerminal("TypeList", CreateTypeListNode);
@@ -1156,12 +1152,7 @@ namespace sones.GraphQL
 
             #region SELECT
 
-            SelectStmtGraph.Rule = S_FROM + TypeList + S_SELECT + selList + whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + MatchingClause + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
-
-            MatchingClause.Rule = Empty
-                                    | MatchingClause + Matching;
-
-            Matching.Rule = S_MATCHES + S_BRACKET_LEFT + number + S_BRACKET_RIGHT + PrefixOperation;
+            SelectStmtGraph.Rule = S_FROM + TypeList + S_SELECT + selList + whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
 
             resolutionDepthOpt.Rule = Empty
                                         | S_DEPTH + number;

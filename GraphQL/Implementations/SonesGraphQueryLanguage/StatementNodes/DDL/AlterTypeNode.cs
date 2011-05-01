@@ -6,16 +6,69 @@ using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphQL.GQL.Manager.Plugin;
+using System.Collections.Generic;
+using sones.GraphQL.GQL.Structure.Helper.Definition.AlterType;
+using sones.GraphQL.Structure.Nodes.DDL;
 
 namespace sones.GraphQL.StatementNodes.DDL
 {
+    /// <summary>
+    /// This node is requested in case of an Alter Type statement.
+    /// </summary>
     public sealed class AlterTypeNode : AStatement, IAstNodeInit
     {
+        #region Data
+
+        String _TypeName = ""; //the name of the type that should be altered
+        List<AAlterTypeCommand> _AlterTypeCommand;
+
+        #endregion
+
         #region IAstNodeInit Members
 
-        public void Init(ParsingContext context, ParseTreeNode parseNode)
+        public void Init(ParsingContext context, ParseTreeNode myParseTreeNode)
         {
-            throw new NotImplementedException();
+
+            _AlterTypeCommand = new List<AAlterTypeCommand>();
+
+            _TypeName = myParseTreeNode.ChildNodes[2].Token.ValueString;
+
+            #region Get the AlterTypeCommand
+
+            foreach (var alterCmds in myParseTreeNode.ChildNodes[3].ChildNodes)
+            {
+                if (alterCmds.AstNode != null)
+                {
+                    var alterCommand = (AlterCommandNode) alterCmds.AstNode;
+
+                    if (alterCommand.AlterTypeCommand != null)
+                    {
+                        _AlterTypeCommand.Add(alterCommand.AlterTypeCommand);
+                    }
+                }
+            }
+
+            if (HasChildNodes(myParseTreeNode.ChildNodes[4]))
+            {
+                _AlterTypeCommand.Add(new AlterType_SetUnique()
+                                          {
+                                              UniqueAttributes =
+                                                  ((UniqueAttributesOptNode) myParseTreeNode.ChildNodes[4].AstNode).
+                                                  UniqueAttributes
+                                          });
+            }
+
+            if (HasChildNodes(myParseTreeNode.ChildNodes[5]))
+            {
+                _AlterTypeCommand.Add(new AlterType_SetMandatory()
+                                          {
+                                              MandatoryAttributes =
+                                                  ((MandatoryOptNode) myParseTreeNode.ChildNodes[5].AstNode).
+                                                  MandatoryAttribs
+                                          });
+            }
+
+            #endregion
         }
 
         #endregion
@@ -24,12 +77,12 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         public override string StatementName
         {
-            get { throw new NotImplementedException(); }
+            get { return "AlterType"; }
         }
 
         public override TypesOfStatements TypeOfStatement
         {
-            get { throw new NotImplementedException(); }
+            get { return TypesOfStatements.ReadWrite; }
         }
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
