@@ -92,5 +92,17 @@ namespace sones.GraphDB.Manager.Index
         }
 
         #endregion
+
+        #region IManager Members
+
+        void IManager.Initialize(IMetaManager myMetaManager)
+        {
+        }
+
+        void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+        }
+
+        #endregion
     }
 }

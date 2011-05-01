@@ -9,7 +9,7 @@ namespace sones.GraphDB.Manager.QueryPlan
     /// The interface for all query plan manager
     /// It's main task is to convert an expression into a queryplan
     /// </summary>
-    public interface IQueryPlanManager
+    public interface IQueryPlanManager: IManager
     {
         /// <summary>
         /// Creates a queryplan from an expression

@@ -20,33 +20,17 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <summary>
         /// A vertex type manager is needed to create certain query-plan structures
         /// </summary>
-        private readonly IVertexTypeManager _vertexTypeManager;
+        private IManagerOf<IVertexTypeManager> _vertexTypeManager;
 
         /// <summary>
         /// A vertex store
         /// </summary>
-        private readonly IVertexStore _vertexStore;
+        private IVertexStore _vertexStore;
 
         /// <summary>
         /// An index manager is needed to create certain query-plan structures
         /// </summary>
-        private readonly IIndexManager _indexManager;
-
-        #endregion
-
-        #region constructor
-
-        /// <summary>
-        /// Creates a new query plan manager
-        /// </summary>
-        /// <param name="myVertexTypeManager">A vertex type manager is needed to create certain query-plan structures</param>
-        /// <param name="myVertexStore">A vertex store</param>
-        public QueryPlanManager(IVertexTypeManager myVertexTypeManager, IVertexStore myVertexStore, IIndexManager myIndexManager)
-        {
-            _vertexTypeManager = myVertexTypeManager;
-            _vertexStore = myVertexStore;
-            _indexManager = null;
-        }
+        private IIndexManager _indexManager;
 
         #endregion
 
@@ -197,7 +181,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <returns>A property query plan</returns>
         private IQueryPlan GenerateFromPropertyExpression(PropertyExpression myPropertyExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var type = _vertexTypeManager.GetVertexType(myPropertyExpression.NameOfVertexType, myTransaction, mySecurity);
+            var type = _vertexTypeManager.ExecuteManager.GetVertexType(myPropertyExpression.NameOfVertexType, myTransaction, mySecurity);
 
             return new QueryPlanProperty(type, type.GetPropertyDefinition(myPropertyExpression.NameOfProperty),
                                          myPropertyExpression.Edition, myPropertyExpression.Timespan);
@@ -527,11 +511,24 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <returns>A Property query plan</returns>
         private QueryPlanProperty GenerateQueryPlanProperty(PropertyExpression propertyExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertexType = _vertexTypeManager.GetVertexType(propertyExpression.NameOfVertexType, myTransaction, mySecurity);
+            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(propertyExpression.NameOfVertexType, myTransaction, mySecurity);
             var property = vertexType.GetPropertyDefinition(propertyExpression.NameOfProperty);
 
             return new QueryPlanProperty(vertexType, property, propertyExpression.Edition, propertyExpression.Timespan);
         }
+
+        #endregion
+
+        #region IManager Members
+
+        void IManager.Initialize(IMetaManager myMetaManager)
+        {
+            _vertexTypeManager = myMetaManager.VertexTypeManager;
+            _vertexStore = myMetaManager.VertexStore;
+            _indexManager = myMetaManager.IndexManager;
+        }
+
+        void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity) { }
 
         #endregion
     }

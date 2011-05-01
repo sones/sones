@@ -197,7 +197,7 @@ namespace sones.GraphDB.Request
             {
                 //there is a match evaluator... use it
 
-                if (myMatchEvaluator(myCurrentVertex, myMetaManager.VertexTypeManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken)))
+                if (myMatchEvaluator(myCurrentVertex, myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken)))
                 {
                     match = true;
                 }
@@ -262,7 +262,7 @@ namespace sones.GraphDB.Request
                 if (myFollowThisEdge != null)
                 {
                     if (!myFollowThisEdge(myCurrentVertex,
-                                            myMetaManager.VertexTypeManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
+                                            myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
                                             outEdge,
                                             myMetaManager.EdgeTypeManager.GetEdgeType(outEdge.EdgeTypeID, TransactionToken, SecurityToken)))
                     {

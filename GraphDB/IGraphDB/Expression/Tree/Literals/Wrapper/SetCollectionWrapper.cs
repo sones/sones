@@ -127,5 +127,6 @@ namespace sones.GraphDB.Expression.Tree.Literals
         }
 
         #endregion
+
     }
 }

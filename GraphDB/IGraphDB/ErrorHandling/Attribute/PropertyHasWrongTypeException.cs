@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.GraphDB.TypeSystem;
 
 
 namespace sones.GraphDB.ErrorHandling
@@ -13,6 +14,9 @@ namespace sones.GraphDB.ErrorHandling
     {
         private string p;
         private string p_2;
+        private TypeSystem.PropertyMultiplicity propertyMultiplicity;
+        private string p_3;
+        private string p_4;
 
         /// <summary>
         /// The type that defines the property.
@@ -47,7 +51,15 @@ namespace sones.GraphDB.ErrorHandling
             PropertyName = myPropertyName;
             ExpectedTypeName = myExpectedTypeName;
             UnexpectedTypeName = myUnexpectedTypeName;
-            _msg = string.Format("The property {0}.[1} need a value of type {2} but was used with a value of type {3}", myDefiningTypeName, myPropertyName, myExpectedTypeName, myUnexpectedTypeName);
+            _msg = string.Format("The property {0}.[1} needs a value of type {2} but was used with a value of type {3}", myDefiningTypeName, myPropertyName, myExpectedTypeName, myUnexpectedTypeName);
+        }
+
+        public PropertyHasWrongTypeException(String myDefiningTypeName, String myPropertyName, PropertyMultiplicity myMultiplicity, String myExpectedTypeName)
+        {
+            DefiningTypeName = myDefiningTypeName;
+            PropertyName = myPropertyName;
+            ExpectedTypeName = myExpectedTypeName;
+            _msg = string.Format("The property {0}.[1} needs a {3} of type {2} but was no {3}", myDefiningTypeName, myPropertyName, myExpectedTypeName, myMultiplicity.ToString());
         }
     }
 }

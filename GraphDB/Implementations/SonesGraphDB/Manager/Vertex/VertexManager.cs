@@ -42,23 +42,12 @@ namespace sones.GraphDB.Manager.Vertex
         /// <summary>
         /// Needed for VertexType interaction
         /// </summary>
-        private IVertexTypeManager _vertexTypeManager;
+        private IManagerOf<IVertexTypeManager> _vertexTypeManager;
 
         /// <summary>
         /// Needed for transforming an expression into a query plan
         /// </summary>
         private IQueryPlanManager _queryPlanManager;
-
-        #endregion
-
-        #region constructor
-
-        /// <summary>
-        /// Creates a new vertex manager
-        /// </summary>
-        public VertexManager()
-        {
-        }
 
         #endregion
 
@@ -75,7 +64,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         public IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertextype = _vertexTypeManager.GetVertexType(myVertexType, myTransaction, mySecurity);
+            var vertextype = _vertexTypeManager.ExecuteManager.GetVertexType(myVertexType, myTransaction, mySecurity);
             return _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, vertextype.ID);
         }
 
@@ -187,18 +176,40 @@ namespace sones.GraphDB.Manager.Vertex
                 if (propertyDef == null)
                     throw new AttributeDoesNotExistException(prop.Key, myInsertDefinition.VertexTypeName);
 
-                //Assign safty should be suffice.
-                if (!propertyDef.BaseType.IsAssignableFrom(prop.Value.GetType()))
-                    throw new PropertyHasWrongTypeException(myInsertDefinition.VertexTypeName, prop.Key, propertyDef.BaseType.Name, prop.Value.GetType().Name);
+                if (propertyDef.Multiplicity == PropertyMultiplicity.Single)
+                {
+                    CheckPropertyType(myInsertDefinition, prop.Key, prop.Value, propertyDef);
+                }
+                else
+                {
+                    IEnumerable<IComparable> items = prop.Value as IEnumerable<IComparable>;
+                    if (items == null)
+                    {
+                        throw new PropertyHasWrongTypeException(myInsertDefinition.VertexTypeName, prop.Key, propertyDef.Multiplicity, propertyDef.BaseType.Name);
+                    }
+
+                    foreach (var item in items)
+                    {
+                        CheckPropertyType(myInsertDefinition, prop.Key, item, propertyDef);
+                    }
+                }
             }
         }
+
+        private static void CheckPropertyType(RequestInsertVertex myInsertDefinition, String myAttributeName, IComparable myValue, IPropertyDefinition propertyDef)
+        {
+            //Assign safty should be suffice.
+            if (!propertyDef.BaseType.IsAssignableFrom(myValue.GetType()))
+                throw new PropertyHasWrongTypeException(myInsertDefinition.VertexTypeName, myAttributeName, propertyDef.BaseType.Name, myValue.GetType().Name);
+        }
+
 
         private IVertexType GetVertexType(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             try
             {
                 //check if the vertex type exists.
-                return _vertexTypeManager.GetVertexType(myVertexTypeName, myTransaction, mySecurity);
+                return _vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeName, myTransaction, mySecurity);
             }
             catch (KeyNotFoundException)
             {
@@ -261,7 +272,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         private VertexAddDefinition RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            long vertexID = _vertexTypeManager.GetUniqueVertexID(myVertexType.ID);
+            long vertexID = _vertexTypeManager.ExecuteManager.GetUniqueVertexID(myVertexType.ID);
             var source = new VertexInformation(myVertexType.ID, vertexID);
             long date = DateTime.UtcNow.ToBinary();
 
@@ -411,45 +422,19 @@ namespace sones.GraphDB.Manager.Vertex
 
         #endregion
 
-        #region public methods
+        #region IManager Members
 
-        /// <summary>
-        /// Sets the vertex store
-        /// </summary>
-        /// <param name="myVertexStore">The vertex store that should be used within the vertex manager</param>
-        public void SetVertexStore(IVertexStore myVertexStore)
+        void IManager.Initialize(IMetaManager myMetaManager)
         {
-            _vertexStore = myVertexStore;
-        }
+            _indexManager      = myMetaManager.IndexManager;
+            _vertexTypeManager = myMetaManager.VertexTypeManager;
+            _vertexStore       = myMetaManager.VertexStore;
+            _queryPlanManager  = myMetaManager.QueryPlanManager;
 
-        /// <summary>
-        /// Sets the vertex type manager
-        /// </summary>
-        /// <param name="myVertexTypeManager">The vertex type manager that should be used within the vertex manager</param>
-        public void SetVertexTypeManager(IVertexTypeManager myVertexTypeManager)
-        {
-            _vertexTypeManager = myVertexTypeManager;
         }
 
-        /// <summary>
-        /// Sets the index manager
-        /// </summary>
-        /// <param name="myIndexManager">The index manager that should be used within the vertex manager</param>
-        public void SetIndexManager(IIndexManager myIndexManager)
-        {
-            _indexManager = myIndexManager;
-        }
-        
-        /// <summary>
-        /// Sets the query plan manager
-        /// </summary>
-        /// <param name="myQueryplanManager">The query plan manager that should be used within the vertex manager</param>
-        public void SetQueryPlanManager(IQueryPlanManager myQueryplanManager)
-        {
-            _queryPlanManager = myQueryplanManager;
-        }
+        void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity) {}
 
         #endregion
-
     }
 }

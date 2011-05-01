@@ -12,7 +12,7 @@ namespace sones.GraphDB.Manager.Index
     /// <summary>
     /// The interface for all index manager.
     /// </summary>
-    public interface IIndexManager
+    public interface IIndexManager: IManager
     {
         /// <summary>
         /// Creates an index corresponding to a definition

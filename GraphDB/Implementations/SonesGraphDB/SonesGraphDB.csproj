@@ -69,6 +69,8 @@
     <Compile Include="Manager\BaseGraph\BaseGraphStorageManager.cs" />
     <Compile Include="Manager\DBCreationManager.cs" />
     <Compile Include="Manager\Expression\BasicLogicExpressionOptimizer.cs" />
+    <Compile Include="Manager\IManager.cs" />
+    <Compile Include="Manager\IManagerOf.cs" />
     <Compile Include="Manager\IMetaManager.cs" />
     <Compile Include="Manager\Index\IIndexManager.cs" />
     <Compile Include="Manager\Index\IndexManager.cs" />
@@ -82,6 +84,9 @@
     <Compile Include="Manager\Request\BasicRequestScheduler.cs" />
     <Compile Include="Manager\Security\BasicSecurityManager.cs" />
     <Compile Include="Manager\Transaction\BasicTransactionManager.cs" />
+    <Compile Include="Manager\TypeManagement\AVertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\CanVertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\ExecuteVertexTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\IVertexTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\IEdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\UniqueID.cs" />

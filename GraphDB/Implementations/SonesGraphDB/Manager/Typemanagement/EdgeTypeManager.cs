@@ -239,5 +239,15 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         #endregion
+
+        #region IManager Members
+
+        void IManager.Initialize(IMetaManager myMetaManager)
+        {
+
+        }
+
+        void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity) {}
+        #endregion
     }
 }

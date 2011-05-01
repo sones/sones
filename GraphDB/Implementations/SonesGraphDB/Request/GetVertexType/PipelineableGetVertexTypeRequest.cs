@@ -57,11 +57,11 @@ namespace sones.GraphDB.Request
         {
             if (_request.VertexTypeName == null)
             {
-                _fetchedVertexType = myMetaManager.VertexTypeManager.GetVertexType(_request.VertexTypeID, TransactionToken, SecurityToken);   
+                _fetchedVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.VertexTypeID, TransactionToken, SecurityToken);   
             }
             else
             {
-                _fetchedVertexType = myMetaManager.VertexTypeManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);   
+                _fetchedVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);   
             }
         }
 

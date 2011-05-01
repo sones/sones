@@ -42,19 +42,19 @@ namespace sones.GraphDB.Request.DropType
         
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CanGetVertexType(_request.TypeName, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.CheckManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            IVertexType graphDBType = myMetaManager.VertexTypeManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
+            IVertexType graphDBType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
 
             if (graphDBType == null)
             {
                 throw new VertexTypeDoesNotExistException(_request.TypeName);
             }
 
-            myMetaManager.VertexTypeManager.RemoveVertexType(new List<IVertexType> {graphDBType}, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.ExecuteManager.RemoveVertexType(new List<IVertexType> {graphDBType}, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

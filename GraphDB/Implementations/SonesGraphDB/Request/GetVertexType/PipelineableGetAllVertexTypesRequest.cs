@@ -52,7 +52,7 @@ namespace sones.GraphDB.Request.GetVertexType
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _fetchedVertexTypes = myMetaManager.VertexTypeManager.GetAllVertexTypes(TransactionToken, SecurityToken);   
+            _fetchedVertexTypes = myMetaManager.VertexTypeManager.ExecuteManager.GetAllVertexTypes(TransactionToken, SecurityToken);   
         }
 
         public override IRequest GetRequest()

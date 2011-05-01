@@ -32,7 +32,7 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// Gets or sets the myOutgoingEdgeVertex instance of the type manager.
         /// </summary>
-        private readonly IVertexTypeManager _vertexTypeManager;
+        private readonly IManagerOf<IVertexTypeManager> _vertexTypeManager;
 
         /// <summary>
         /// Gets or sets the myOutgoingEdgeVertex instance of the parentVertex manager.
@@ -70,56 +70,53 @@ namespace sones.GraphDB.Manager
         /// <param name="myPlugins">The plugin definitions</param>
         /// <param name="myPluginManager">Used to load pluginable manager</param>
         /// <param name="myApplicationSettings">The current application settings</param>
-        public MetaManager(IVertexStore myVertexStore, GraphDBPlugins myPlugins, GraphDBPluginManager myPluginManager, GraphApplicationSettings myApplicationSettings, TransactionToken myTransaction, SecurityToken mySecurity)
+        private MetaManager(IVertexStore myVertexStore)
         {
-            _transaction = myTransaction;
-            _security = mySecurity;
-
             _vertexStore = myVertexStore;
-
-            #region IndexManager
-            //not implemented yet
-            //_indexManager = new IndexManager(_vertexStore, myPluginManager, myPlugins.IndexPlugins);
-
-            #endregion
-
-            #region vertex(Type)Manager
-
-            var vertexTypeManager = new VertexTypeManager();
-            var vertexManager = new VertexManager();
-            var edgeTypeManager = new EdgeTypeManager();
-
-            vertexManager.SetVertexStore(myVertexStore);
-            vertexManager.SetIndexManager(_indexManager);
-            vertexManager.SetVertexTypeManager(vertexTypeManager);
-            vertexManager.SetQueryPlanManager(new QueryPlanManager(vertexTypeManager, _vertexStore, _indexManager));
-
-            vertexTypeManager.Initialize(_indexManager, vertexManager, edgeTypeManager, _transaction, _security);
-            //edgeTypeManager.Initialize
-
-            _vertexTypeManager = vertexTypeManager;
-            _vertexManager = vertexManager;
-            _edgeTypeManager = edgeTypeManager;
-
-            #endregion
-
-            #region queryPlanManager
-
-            _queryPlanManager = new QueryPlanManager(_vertexTypeManager, _vertexStore, _indexManager);
-
-            #endregion
+            _vertexTypeManager = new VertexTypeManager();
+            _vertexManager = new VertexManager();
+            _edgeTypeManager = new EdgeTypeManager();
+            _queryPlanManager = new QueryPlanManager();
         }
 
         #endregion
 
         #region IMetaManager Members
 
+        public static IMetaManager CreateMetaManager(IVertexStore myVertexStore, GraphDBPlugins myPlugins, GraphDBPluginManager myPluginManager, GraphApplicationSettings myApplicationSettings, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            var result = new MetaManager(myVertexStore);
+
+            result.Initialize();
+            result.Load();
+
+            return result;
+        }
+
+        private void Initialize()
+        {
+            _vertexTypeManager.Initialize(this);
+            _vertexManager.Initialize(this);
+            _queryPlanManager.Initialize(this);
+
+            //_indexManager.Initialize(this);
+        }
+
+        private void Load()
+        {
+            _vertexTypeManager.Load(SystemTransactionToken, SystemSecurityToken);
+            _vertexManager.Load(SystemTransactionToken, SystemSecurityToken);
+            _queryPlanManager.Load(SystemTransactionToken, SystemSecurityToken);
+
+            //_indexManager.Load(SystemTransactionToken, SystemSecurityToken);
+        }
+
         public IIndexManager IndexManager
         {
             get { return _indexManager; }
         }
 
-        public IVertexTypeManager VertexTypeManager
+        public IManagerOf<IVertexTypeManager> VertexTypeManager
         {
             get { return _vertexTypeManager; }
         }

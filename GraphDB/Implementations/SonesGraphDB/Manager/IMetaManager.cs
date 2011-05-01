@@ -30,7 +30,7 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// The interface to the vertex types
         /// </summary>
-        IVertexTypeManager VertexTypeManager { get; }
+        IManagerOf<IVertexTypeManager> VertexTypeManager { get; }
 
         /// <summary>
         /// The managed interface to the vertices

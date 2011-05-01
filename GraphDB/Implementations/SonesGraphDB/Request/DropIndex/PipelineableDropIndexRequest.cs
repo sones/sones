@@ -38,12 +38,12 @@ namespace sones.GraphDB.Request.DropIndex
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CanGetVertexType(_request.TypeName, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.CheckManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            IVertexType graphDBType = myMetaManager.VertexTypeManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
+            IVertexType graphDBType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
             IVertexType indexType = null;
 
             if (graphDBType == null)
@@ -63,13 +63,13 @@ namespace sones.GraphDB.Request.DropIndex
                         //edition of searched index is null or empty
                         if (string.IsNullOrWhiteSpace(_request.Edition))
                         {
-                            indexType = myMetaManager.VertexTypeManager.GetVertexType(index.IndexTypeName, TransactionToken, SecurityToken);
+                            indexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(index.IndexTypeName, TransactionToken, SecurityToken);
                         }
                         else
                         {
                             if (index.Edition.Equals(_request.Edition))
                             {
-                                indexType = myMetaManager.VertexTypeManager.GetVertexType(index.IndexTypeName, TransactionToken, SecurityToken);
+                                indexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(index.IndexTypeName, TransactionToken, SecurityToken);
                             }
                         }
 
@@ -82,7 +82,7 @@ namespace sones.GraphDB.Request.DropIndex
                 throw new IndexTypeDoesNotExistException(_request.TypeName, _request.IndexName);
             }
             
-            myMetaManager.VertexTypeManager.RemoveVertexType(new List<IVertexType> { indexType }, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.ExecuteManager.RemoveVertexType(new List<IVertexType> { indexType }, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

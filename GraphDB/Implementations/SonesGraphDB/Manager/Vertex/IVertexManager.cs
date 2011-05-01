@@ -15,7 +15,7 @@ namespace sones.GraphDB.Manager.Vertex
     /// This interface represents a parentVertex manager.
     /// </summary>
     /// The responibilities of the parentVertex manager is an optimized access to the underlying parentVertex store (FS).
-    public interface IVertexManager
+    public interface IVertexManager: IManager
     {
         #region Get Vertices
 
