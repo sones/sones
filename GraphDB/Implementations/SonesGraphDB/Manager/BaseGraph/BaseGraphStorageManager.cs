@@ -75,6 +75,16 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #region Store
 
+        /// <summary>
+        /// Gets the vertex that represents the parent type.
+        /// </summary>
+        /// <returns>An IVertex that represents the parent type, if existing otherwise <c>NULL</c>.</returns>
+        public static IVertex GetParent(IVertex myVertex)
+        {
+            return myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.Parent).GetTargetVertex();
+        }
+
+
         public static Type GetBaseType(String myTypeName)
         {
             BasicTypes type;
@@ -109,6 +119,17 @@ namespace sones.GraphDB.Manager.BaseGraph
             return myVertex.GetPropertyAsString((long)AttributeDefinitions.Name);
         }
 
+        public static bool GetIsSealed(IVertex myVertex)
+        {
+            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsSealed);
+        }
+
+        public static bool GetIsAbstract(IVertex myVertex)
+        {
+            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsAbstract);
+        }
+
+
 
         #region Outgoing edge
 
@@ -124,7 +145,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             var name = GetName(myOutgoingEdgeVertex);
             var target = GetTargetVertexType(myOutgoingEdgeVertex);
             var multiplicity = GetEdgeMultiplicity(myOutgoingEdgeVertex);
-            var relatedType = myRelatedType ?? GetDefiningType(myOutgoingEdgeVertex);
+            var relatedType = myRelatedType ?? GetDefiningType(myOutgoingEdgeVertex) as VertexType;
 
             return new OutgoingEdgeDefinition
             {
@@ -204,7 +225,7 @@ namespace sones.GraphDB.Manager.BaseGraph
         /// </summary>
         /// <param name="myVertex">A vertex that represents an incoming edge definition.</param>
         /// <returns>An incoming edge definition.</returns>
-        public static IIncomingEdgeDefinition CreateIncomingEdgeDefinition(IVertex myVertex, IVertexType myDefiningType = null)
+        public static IIncomingEdgeDefinition CreateIncomingEdgeDefinition(IVertex myVertex, IBaseType myDefiningType = null)
         {
             var attributeID = GetID(myVertex);
             var name = GetName(myVertex);
@@ -376,7 +397,7 @@ namespace sones.GraphDB.Manager.BaseGraph
         {
             var attributeID = GetID(myVertex);
             var name = GetName(myVertex);
-            var definingType = myDefiningType ?? GetDefiningType(myVertex);
+            var definingType = myDefiningType ?? GetDefiningType(myVertex) as IVertexType;
 
             return new BinaryPropertyDefinition
             {
@@ -791,14 +812,19 @@ namespace sones.GraphDB.Manager.BaseGraph
             var edge = myAttributeVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.DefiningType);
 
             if (edge == null)
-                throw new UnknownDBException("An attribute has no vertex that represents its target vertex type.");
+                throw new UnknownDBException("An attribute has no vertex that represents its defining type.");
 
             var vertex = edge.GetTargetVertex();
 
             if (vertex == null)
-                throw new UnknownDBException("An attribute has no vertex that represents its target vertex type.");
+                throw new UnknownDBException("An attribute has no vertex that represents its defining type.");
 
-            return new VertexType(vertex);
+            switch (vertex.VertexTypeID)
+            {
+                case (long)BaseTypes.VertexType: return new VertexType(vertex);
+                case (long)BaseTypes.EdgeType: return new EdgeType(vertex);
+                default: throw new UnknownDBException("The defining attribute vertex neither point to an edge nor to an vertex type vertex.");
+            }
         }
 
         /// <summary>
@@ -941,6 +967,42 @@ namespace sones.GraphDB.Manager.BaseGraph
 
 
         #endregion
+
+        public static IEnumerable<IBinaryPropertyDefinition> GetBinaryPropertiesFromFS(IVertex myTypeVertex, IVertexType myBaseType = null)
+        {
+            return GetAttributeVertices(myTypeVertex, (long)BaseTypes.BinaryProperty).Select(x => CreateBinaryPropertyDefinition(x, myBaseType));
+        }
+
+        public static IEnumerable<IPropertyDefinition> GetPropertiesFromFS(IVertex myTypeVertex, IBaseType myBaseType = null)
+        {
+            return GetAttributeVertices(myTypeVertex, (long)BaseTypes.Property).Select(x => CreatePropertyDefinition(x, myBaseType));
+        }
+
+        public static IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgesFromFS(IVertex myTypeVertex, IVertexType myBaseType = null)
+        {
+            return GetAttributeVertices(myTypeVertex, (long)BaseTypes.OutgoingEdge).Select(x => CreateOutgoingEdgeDefinition(x, myBaseType));
+        }
+
+        public static IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgesFromFS(IVertex myTypeVertex, IVertexType myBaseType = null)
+        {
+            return GetAttributeVertices(myTypeVertex, (long)BaseTypes.IncomingEdge).Select(x => CreateIncomingEdgeDefinition(x, myBaseType));
+        }
+
+        private static IEnumerable<IVertex> GetAttributeVertices(IVertex myTypeVertex, long myAttributeVertexID)
+        {
+            if (myTypeVertex.HasIncomingVertices(myAttributeVertexID, (long)AttributeDefinitions.DefiningType))
+            {
+                var vertices = myTypeVertex.GetIncomingVertices(myAttributeVertexID, (long)AttributeDefinitions.DefiningType);
+                foreach (var vertex in vertices)
+                {
+                    if (vertex == null)
+                        throw new UnknownDBException("An element in attributes list is NULL.");
+
+                    yield return vertex;
+                }
+            }
+            yield break;
+        }
 
     }
 }

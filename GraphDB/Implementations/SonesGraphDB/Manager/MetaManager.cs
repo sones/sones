@@ -75,7 +75,7 @@ namespace sones.GraphDB.Manager
             _vertexStore = myVertexStore;
             _vertexTypeManager = new VertexTypeManager(myIDManager);
             _vertexManager = new VertexManager(myIDManager);
-            _edgeTypeManager = new EdgeTypeManager();
+            _edgeTypeManager = new EdgeTypeManager(myIDManager);
             _queryPlanManager = new QueryPlanManager();
         }
 
@@ -98,7 +98,7 @@ namespace sones.GraphDB.Manager
             _vertexTypeManager.Initialize(this);
             _vertexManager.Initialize(this);
             _queryPlanManager.Initialize(this);
-
+            _edgeTypeManager.Initialize(this);
             //_indexManager.Initialize(this);
         }
 
@@ -107,7 +107,7 @@ namespace sones.GraphDB.Manager
             _vertexTypeManager.Load(SystemTransactionToken, SystemSecurityToken);
             _vertexManager.Load(SystemTransactionToken, SystemSecurityToken);
             _queryPlanManager.Load(SystemTransactionToken, SystemSecurityToken);
-
+            _edgeTypeManager.Load(SystemTransactionToken, SystemSecurityToken);
             //_indexManager.Load(SystemTransactionToken, SystemSecurityToken);
         }
 

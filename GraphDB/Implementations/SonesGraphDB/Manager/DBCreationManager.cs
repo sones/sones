@@ -135,14 +135,14 @@ namespace sones.GraphDB.Manager
 
         #region WeightedEdge
 
-        private readonly VertexInformation _WeightedEdge          = new VertexInformation((long)BaseTypes.EdgeType, (long)BaseTypes.WeightedEdge);
+        private readonly VertexInformation _WeightedEdge          = new VertexInformation((long)BaseTypes.EdgeType, (long)BaseTypes.Weighted);
         private readonly VertexInformation _WeightedEdgeDotWeight = new VertexInformation((long)BaseTypes.Property  , 11 * Offset + (long)AttributeDefinitions.Weight);
 
         #endregion
 
         #region OrderableEdge
 
-        private readonly VertexInformation _OrderableEdge         = new VertexInformation((long)BaseTypes.EdgeType, (long)BaseTypes.OrderableEdge);
+        private readonly VertexInformation _OrderableEdge         = new VertexInformation((long)BaseTypes.EdgeType, (long)BaseTypes.Orderable);
         private readonly VertexInformation _OrderableEdgeDotOrder = new VertexInformation((long)BaseTypes.Property, 12 * Offset + (long)AttributeDefinitions.Order);
 
         #endregion
@@ -316,7 +316,7 @@ namespace sones.GraphDB.Manager
         {
             #region WeightedEdge vertex
 
-            BaseGraphStorageManager.StoreEdgeType(myStore, _OrderableEdge, BaseTypes.OrderableEdge, "OrderableEdgeEdgeComment", myCreationDate, false, true, _OrderableEdge, _security, _transaction);
+            BaseGraphStorageManager.StoreEdgeType(myStore, _OrderableEdge, BaseTypes.Orderable, "OrderableEdgeEdgeComment", myCreationDate, false, true, _OrderableEdge, _security, _transaction);
 
             #endregion
 
@@ -331,7 +331,7 @@ namespace sones.GraphDB.Manager
         {
             #region WeightedEdge vertex
 
-            BaseGraphStorageManager.StoreEdgeType(myStore, _WeightedEdge, BaseTypes.WeightedEdge, "WeightedEdgeComment", myCreationDate, false, true, _WeightedEdge, _security, _transaction);
+            BaseGraphStorageManager.StoreEdgeType(myStore, _WeightedEdge, BaseTypes.Weighted, "WeightedEdgeComment", myCreationDate, false, true, _WeightedEdge, _security, _transaction);
 
             #endregion
 

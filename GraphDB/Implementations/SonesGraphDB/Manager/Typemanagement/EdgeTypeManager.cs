@@ -13,12 +13,16 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         #region Data
 
-        private CheckEdgeTypeManager _check = new CheckEdgeTypeManager();
-        private ExecuteEdgeTypeManager _execute = new ExecuteEdgeTypeManager();
+        private CheckEdgeTypeManager _check;
+        private ExecuteEdgeTypeManager _execute;
 
         #endregion
 
-
+        public EdgeTypeManager(IDManager myIDManager)
+        {
+            _check = new CheckEdgeTypeManager();
+            _execute = new ExecuteEdgeTypeManager(myIDManager);
+        }
 
         #region IManagerOf<IEdgeTypeManager> Members
 
@@ -43,10 +47,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         void IManager.Initialize(IMetaManager myMetaManager)
         {
+            _execute.Initialize(myMetaManager);
         }
 
         void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            _execute.Load(myTransaction, mySecurity);
         }
 
         #endregion

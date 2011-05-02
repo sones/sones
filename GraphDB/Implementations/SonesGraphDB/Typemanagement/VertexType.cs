@@ -180,15 +180,6 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
-        #region IBaseType Members
-
-        bool IBaseType.IsUserDefined
-        {
-            get { return _IsUserDefined; }
-        }
-
-        #endregion
-
         #region IVertexType Members
 
         #region Inheritance
@@ -363,6 +354,11 @@ namespace sones.GraphDB.TypeManagement
             get { return _isSealed; }
         }
 
+        bool IBaseType.IsUserDefined
+        {
+            get { return _IsUserDefined; }
+        }
+
         #region Inheritance
 
         bool IBaseType.HasParentType
@@ -479,78 +475,11 @@ namespace sones.GraphDB.TypeManagement
         /// <returns>A dictionary of attribute name to attribute definition.</returns>
         private Dictionary<String, IAttributeDefinition> GetAttributes()
         {
-            return GetBinaryPropertiesFromFS().Cast<IAttributeDefinition>()
-                .Union(GetPropertiesFromFS().Cast<IAttributeDefinition>())
-                .Union(GetOutgoingEdgesFromFS().Cast<IAttributeDefinition>())
-                .Union(GetIncomingEdgesFromFS().Cast<IAttributeDefinition>())
+            return BaseGraphStorageManager.GetBinaryPropertiesFromFS(GetVertex(), this).Cast<IAttributeDefinition>()
+                .Union(BaseGraphStorageManager.GetPropertiesFromFS(GetVertex(), this).Cast<IAttributeDefinition>())
+                .Union(BaseGraphStorageManager.GetOutgoingEdgesFromFS(GetVertex(), this).Cast<IAttributeDefinition>())
+                .Union(BaseGraphStorageManager.GetIncomingEdgesFromFS(GetVertex(), this).Cast<IAttributeDefinition>())
                 .ToDictionary(x => x.Name);
-        }
-
-        private IEnumerable<IBinaryPropertyDefinition> GetBinaryPropertiesFromFS()
-        {
-
-            if (GetVertex().HasIncomingVertices((long)BaseTypes.BinaryProperty, (long)AttributeDefinitions.DefiningType))
-            {
-                var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.BinaryProperty, (long)AttributeDefinitions.DefiningType);
-                foreach (var vertex in vertices)
-                {
-                    if (vertex == null)
-                        throw new UnknownDBException("An element in attributes list is NULL.");
-
-                    yield return BaseGraphStorageManager.CreateBinaryPropertyDefinition(vertex);
-                }
-            }
-            yield break;
-        }
-
-        private IEnumerable<IPropertyDefinition> GetPropertiesFromFS()
-        {
-            if (GetVertex().HasIncomingVertices((long)BaseTypes.Property, (long)AttributeDefinitions.DefiningType))
-            {
-                var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.Property, (long)AttributeDefinitions.DefiningType);
-                foreach (var vertex in vertices)
-                {
-                    if (vertex == null)
-                        throw new UnknownDBException("An element in attributes list is NULL.");
-
-                    yield return BaseGraphStorageManager.CreatePropertyDefinition(vertex);
-                }
-            }
-            yield break;
-        }
-
-        private IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgesFromFS()
-        {
-
-            if (GetVertex().HasIncomingVertices((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.DefiningType))
-            {
-                var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.DefiningType);
-                foreach (var vertex in vertices)
-                {
-                    if (vertex == null)
-                        throw new UnknownDBException("An element in attributes list is NULL.");
-
-                    yield return BaseGraphStorageManager.CreateOutgoingEdgeDefinition(vertex);
-                }
-            }
-            yield break;
-        }
-
-        private IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgesFromFS()
-        {
-
-            if (GetVertex().HasIncomingVertices((long)BaseTypes.IncomingEdge, (long)AttributeDefinitions.DefiningType))
-            {
-                var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.IncomingEdge, (long)AttributeDefinitions.DefiningType);
-                foreach (var vertex in vertices)
-                {
-                    if (vertex == null)
-                        throw new UnknownDBException("An element in attributes list is NULL.");
-
-                    yield return BaseGraphStorageManager.CreateIncomingEdgeDefinition(vertex);
-                }
-            }
-            yield break;
         }
 
         /// <summary>
@@ -709,17 +638,8 @@ namespace sones.GraphDB.TypeManagement
         /// <returns>A new instance of the parent vertex type of this vertex type.</returns>
         private IVertexType GetParentType()
         {
-            var vertex = GetParent();
+            var vertex = BaseGraphStorageManager.GetParent(GetVertex());
             return (vertex == null) ? null : new VertexType(vertex);
-        }
-
-        /// <summary>
-        /// Gets the vertex that represents the parent vertex type.
-        /// </summary>
-        /// <returns>An IVertex that represents the parent vertex type, if existing otherwise <c>NULL</c>.</returns>
-        private IVertex GetParent()
-        {
-            return GetVertex().GetOutgoingSingleEdge((long)AttributeDefinitions.Parent).GetTargetVertex();
         }
 
         /// <summary>
@@ -796,31 +716,30 @@ namespace sones.GraphDB.TypeManagement
             return BaseGraphStorageManager.GetComment(GetVertex());
         }
 
-        private bool GetIsSealed()
-        {
-            return GetVertex().GetProperty<bool>((long)AttributeDefinitions.IsSealed);
-        }
-
-        private bool GetIsAbstract()
-        {
-            return GetVertex().GetProperty<bool>((long)AttributeDefinitions.IsAbstract);
-        }
-
         private bool GetIsUserDefined()
         {
             return BaseGraphStorageManager.GetIsUserDefined(GetVertex());
         }
-
-
-        #endregion
-
-        #endregion
 
         private bool GetHasParentType()
         {
             return _id != (long)BaseTypes.Vertex;
         }
 
+        #endregion
+
+        private bool GetIsAbstract()
+        {
+            return BaseGraphStorageManager.GetIsAbstract(GetVertex());
+        }
+
+        private bool GetIsSealed()
+        {
+            return BaseGraphStorageManager.GetIsSealed(GetVertex());
+        }
+
+
+        #endregion
 
     }
 }

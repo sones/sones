@@ -6,73 +6,98 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.Security;
 using sones.GraphDB.Request;
+using sones.GraphDB.TypeManagement.Base;
+using sones.GraphDB.TypeManagement;
+using sones.Library.PropertyHyperGraph;
+using sones.GraphDB.Expression;
+using sones.GraphDB.Manager.Vertex;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
     internal class ExecuteEdgeTypeManager: IEdgeTypeHandler
     {
-        private IDictionary<string, IVertexType> _baseTypes = new Dictionary<String, IVertexType>();
+        private IDictionary<string, IEdgeType> _baseTypes = new Dictionary<String, IEdgeType>();
+        private IDManager _idManager;
+        private IVertexManager _vertexManager;
         
+        /// <summary>
+        /// A property expression on EdgeType.Name
+        /// </summary>
+        private readonly IExpression _vertexTypeNameExpression = new PropertyExpression(BaseTypes.EdgeType.ToString(), AttributeDefinitions.Name.ToString());
+
+        /// <summary>
+        /// A property expression on EdgeType.ID
+        /// </summary>
+        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.EdgeType.ToString(), AttributeDefinitions.ID.ToString());
+
+
+        public ExecuteEdgeTypeManager(IDManager myIDManager)
+        {
+            _idManager = myIDManager;
+        }
 
         #region IEdgeTypeManager Members
 
         IEdgeType IEdgeTypeHandler.GetEdgeType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            //#region get static types
+            #region get static types
 
-            //if (Enum.IsDefined(typeof(BaseTypes), myTypeId) && _baseTypes.ContainsKey(((BaseTypes)myTypeId).ToString()))
-            //{
-            //    return _baseTypes[((BaseTypes)myTypeId).ToString()];
-            //}
+            if (Enum.IsDefined(typeof(BaseTypes), myTypeId) && _baseTypes.ContainsKey(((BaseTypes)myTypeId).ToString()))
+            {
+                return _baseTypes[((BaseTypes)myTypeId).ToString()];
+            }
 
-            //#endregion
+            #endregion
 
 
-            //#region get from fs
+            #region get from fs
 
-            //var vertex = Get(myTypeId, myTransaction, mySecurity);
+            var vertex = Get(myTypeId, myTransaction, mySecurity);
 
-            //if (vertex == null)
-            //    throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeId));
+            if (vertex == null)
+                throw new KeyNotFoundException(string.Format("A edg type with name {0} was not found.", myTypeId));
 
-            //return new EdgeType(vertex);
+            return new EdgeType(vertex);
 
-            //#endregion
-            throw new NotImplementedException();
+            #endregion
 
         }
 
         IEdgeType IEdgeTypeHandler.GetEdgeType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            //if (String.IsNullOrWhiteSpace(myTypeName))
-            //    throw new ErrorHandling.EmptyEdgeTypeNameException();
+            if (String.IsNullOrWhiteSpace(myTypeName))
+                throw new ErrorHandling.EmptyEdgeTypeNameException();
 
-            //#region get static types
+            #region get static types
 
-            //if (_baseTypes.ContainsKey(myTypeName))
-            //{
-            //    return _baseTypes[myTypeName];
-            //}
+            if (_baseTypes.ContainsKey(myTypeName))
+            {
+                return _baseTypes[myTypeName];
+            }
 
-            //#endregion
+            #endregion
 
-            //#region get from fs
+            #region get from fs
 
-            //var vertex = Get(myTypeName, myTransaction, mySecurity);
+            var vertex = Get(myTypeName, myTransaction, mySecurity);
 
-            //if (vertex == null)
-            //    throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeName));
+            if (vertex == null)
+                throw new KeyNotFoundException(string.Format("A edge type with name {0} was not found.", myTypeName));
 
-            //return new VertexType(vertex);
+            return new EdgeType(vertex);
 
-            //#endregion
-            throw new NotImplementedException();
+            #endregion
 
         }
 
         IEnumerable<IEdgeType> IEdgeTypeHandler.GetAllEdgeTypes(TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
+            var vertices = _vertexManager.GetVertices(BaseTypes.EdgeType.ToString(), myTransaction, mySecurity);
+
+            if (vertices == null)
+                return Enumerable.Empty<IEdgeType>();
+
+            return vertices.Select(x => new EdgeType(x));
         }
 
         IEdgeType IEdgeTypeHandler.AddEdgeType(IEnumerable<EdgeTypePredefinition> myEdgeTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
@@ -92,14 +117,69 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #endregion
 
-        #region IManager Members
-
-        void IManager.Initialize(IMetaManager myMetaManager)
+        public void Initialize(IMetaManager myMetaManager)
         {
+            _vertexManager = myMetaManager.VertexManager;
         }
 
-        void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        public void Load(TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            LoadBaseType(
+                myTransaction,
+                mySecurity,
+                BaseTypes.Edge,
+                BaseTypes.Weighted,
+                BaseTypes.Orderable);
+        }
+
+        #region GetEdgeType
+
+        /// <summary>
+        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeName"/>.
+        /// </summary>
+        /// <param name="myTypeName">The vertex type name.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>An IVertex instance, that represents the vertex type with the given name or <c>NULL</c>, if not present.</returns>
+        private IVertex Get(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            #region get the type from fs
+
+            return _vertexManager.GetSingleVertex(new BinaryExpression(_vertexTypeNameExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeName)), myTransaction, mySecurity);
+
+            #endregion
+        }
+
+        /// <summary>
+        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeID"/>.
+        /// </summary>
+        /// <param name="myTypeName">The vertex type ID.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>An IVertex instance, that represents the vertex type with the given ID or <c>NULL</c>, if not present.</returns>
+        private IVertex Get(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            #region get the type from fs
+
+            return _vertexManager.GetSingleVertex(new BinaryExpression(_vertexTypeIDExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeId)), myTransaction, mySecurity);
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Load
+
+        private void LoadBaseType(TransactionToken myTransaction, SecurityToken mySecurity, params BaseTypes[] myBaseTypes)
+        {
+            foreach (var baseType in myBaseTypes)
+            {
+                var vertex = _vertexManager.VertexStore.GetVertex(mySecurity, myTransaction, (long)baseType, (long)BaseTypes.EdgeType, String.Empty);
+                if (vertex == null)
+                    //TODO: better exception
+                    throw new Exception("Could not load base edge type.");
+                _baseTypes.Add(baseType.ToString(), new EdgeType(vertex));
+            }
         }
 
         #endregion

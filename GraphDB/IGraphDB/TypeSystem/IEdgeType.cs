@@ -12,39 +12,20 @@ namespace sones.GraphDB.TypeSystem
         #region Inheritance
 
         /// <summary>
-        /// Has this IncomingEdge type a parent IncomingEdge type?
-        /// </summary>
-        /// <returns>True, if this IncomingEdge type has a parent IncomingEdge type, otherwise false.</returns>
-        bool HasParentEdgeType { get; }
-
-        /// <summary>
         /// Gets the parent vertex type
         /// </summary>
         /// <returns>The parent vertex type</returns>
         IEdgeType GetParentEdgeType { get; }
 
         /// <summary>
-        /// Has this IncomingEdge type child IncomingEdge types?
+        /// Get all child edge types.
         /// </summary>
-        /// <returns>False, if this IncomingEdge type has no child IncomingEdge type, otherwise true.</returns>
-        bool HasChildEdgeTypes { get; }
-
-        /// <summary>
-        /// Get all child IncomingEdge types
-        /// </summary>
-        /// <returns>An enumerable of child IncomingEdge types, never <c>NULL</c>.</returns>
-        IEnumerable<IEdgeType> GetChildEdgeTypes { get; }
+        /// <param name="myRecursive">Include all dexcendant.</param>
+        /// <param name="myIncludeSelf">If true, this edge type will be included to the result list.</param>
+        /// <returns>An enumerable of child vertex types, never <c>NULL</c>.</returns>
+        IEnumerable<IEdgeType> GetChildEdgeTypes(bool myRecursive = true, bool myIncludeSelf = false);
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        /// Get all visible incoming edges
-        /// </summary>
-        /// <returns>An enumerable of incoming IncomingEdge attributes</returns>
-        IEnumerable<IPropertyDefinition> GetProperties { get; }
-
-        #endregion
     }
 }

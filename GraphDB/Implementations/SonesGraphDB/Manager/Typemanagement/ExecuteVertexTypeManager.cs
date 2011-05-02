@@ -694,7 +694,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 var vertex = _vertexManager.VertexStore.GetVertex(mySecurity, myTransaction, (long)baseType, (long)BaseTypes.VertexType, String.Empty);
                 if (vertex == null)
                     //TODO: better exception
-                    throw new Exception("Could not load base type.");
+                    throw new Exception("Could not load base vertex type.");
                 _baseTypes.Add(baseType.ToString(), new VertexType(vertex));
             }
         }
