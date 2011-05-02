@@ -72,6 +72,12 @@ namespace sones.GraphDB.Request
             EdgeName = myEdgeName;
         }
 
+        /// <summary>
+        /// Creates a new instance of EdgeDefinition.
+        /// </summary>
+        /// <remarks>Use this constructor, if a contained edge is to be created.</remarks>
+        public EdgePredefinition() { }
+
         #endregion
 
         #region fluent
