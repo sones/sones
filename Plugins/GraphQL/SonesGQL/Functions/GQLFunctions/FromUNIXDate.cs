@@ -11,6 +11,7 @@ using sones.Library.LanguageExtensions;
 using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.ErrorHandling.Type;
 using sones.Library.VersionedPluginManager;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
@@ -45,17 +46,17 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        public override FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
-            if (CallingObject != null)
+            if (myCallingObject != null)
             {
-                if (CallingObject.GetType().Name.Equals("Int64"))
+                if (myCallingObject.GetType().Name.Equals("Int64"))
                 {
                     return new FuncParameter(UNIXTimeConversionExtension.FromUnixTimeStamp(Convert.ToInt64(DateTime.Now)));
                 }
                 else
                 {
-                    throw new InvalidTypeException(CallingObject.GetType().Name, "Int64");
+                    throw new InvalidTypeException(myCallingObject.GetType().Name, "Int64");
                 }
             }
             else

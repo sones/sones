@@ -131,7 +131,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
         #endregion
 
-        internal void ConvertToAttributeType(IAttributeDefinition typeAttribute, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        internal void ConvertToAttributeType(GQLPluginManager myPluginManager, IAttributeDefinition typeAttribute, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             var newTuple = new List<TupleElement>();
 
@@ -144,8 +144,10 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
                     #region partial select
 
-                    var selectManager = new SelectManager();
-                    QueryResult qresult = selectManager.ExecuteSelect(myGraphDB, mySecurityToken, myTransactionToken, (tupleElement as SelectDefinition));
+                    var selectManager = new SelectManager(myGraphDB, myPluginManager);
+
+                    var selectDefinition = (tupleElement as SelectDefinition);
+                    QueryResult qresult = selectManager.ExecuteSelect(mySecurityToken, myTransactionToken, selectDefinition, String.Empty);
                     if (qresult.Error != null)
                     {
                         throw qresult.Error;

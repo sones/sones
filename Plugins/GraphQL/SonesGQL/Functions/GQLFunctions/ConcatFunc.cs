@@ -8,6 +8,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
 using sones.Library.VersionedPluginManager;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
@@ -40,15 +41,15 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        public override FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
             StringBuilder resString = new StringBuilder();
 
-            if (CallingObject != null)
+            if (myCallingObject != null)
             {
-                if (CallingObject.GetType().Name.Equals("String"))
+                if (myCallingObject is string)
                 {
-                    resString.Append(CallingObject as String);
+                    resString.Append(myCallingObject as String);
                 }
             }
 

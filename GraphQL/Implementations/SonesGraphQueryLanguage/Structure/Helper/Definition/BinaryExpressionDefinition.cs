@@ -111,7 +111,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
                 }
                 else
                 {
-                    _Left = AssignCorrectTuple((_Left as TupleDefinition), Operator, myGraphDB, mySecurityToken, myTransactionToken);
+                    _Left = AssignCorrectTuple(myPluginManager, (_Left as TupleDefinition), Operator, myGraphDB, mySecurityToken, myTransactionToken);
                     TypeOfBinaryExpression = TypesOfBinaryExpression.RightComplex;
                 }
 
@@ -180,7 +180,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
                 }
                 else
                 {
-                    _Right = AssignCorrectTuple((_Right as TupleDefinition), Operator, myGraphDB, mySecurityToken, myTransactionToken);
+                    _Right = AssignCorrectTuple(myPluginManager, (_Right as TupleDefinition), Operator, myGraphDB, mySecurityToken, myTransactionToken);
                     if (TypeOfBinaryExpression == TypesOfBinaryExpression.RightComplex)
                     {
                         TypeOfBinaryExpression = TypesOfBinaryExpression.Atom;
@@ -367,7 +367,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         /// <summary>
         /// This will check all tupe value. If it contains only one value it will be converted to a ValueDefinition. If it contains a SelectDefinition it will be executed and the result added to the tuple.
         /// </summary>
-        private AOperationDefinition AssignCorrectTuple(TupleDefinition myTupleDefinition, BinaryOperator myOperator, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private AOperationDefinition AssignCorrectTuple(GQLPluginManager myPluginManager, TupleDefinition myTupleDefinition, BinaryOperator myOperator, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             var retVal = new TupleDefinition(myTupleDefinition.KindOfTuple);
             var validTuple = ABinaryOperator.GetValidTupleReloaded(myTupleDefinition, myGraphDB, mySecurityToken, myTransactionToken);
@@ -385,8 +385,8 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
                         #region partial select
 
-                        var selectManager = new SelectManager();
-                        var qresult = selectManager.ExecuteSelect(myGraphDB, mySecurityToken, myTransactionToken, (tupleVal.Value as SelectDefinition));
+                        var selectManager = new SelectManager(myGraphDB, myPluginManager);
+                        var qresult = selectManager.ExecuteSelect(mySecurityToken, myTransactionToken, (tupleVal.Value as SelectDefinition), String.Empty);
                         if (qresult.Error !=  null)
                         {
                             throw qresult.Error;

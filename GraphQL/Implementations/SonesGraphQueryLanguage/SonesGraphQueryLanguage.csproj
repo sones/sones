@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\InvalidEdgeListOperationException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\ExpressionGraphInternalException.cs" />
     <Compile Include="ErrorHandling\GQLGrammarSetExtandableMemberException.cs" />
@@ -63,6 +64,9 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Grammar\SonesGQLGrammar.cs" />
     <Compile Include="Manager\Plugin\GQLPluginManager.cs" />
+    <Compile Include="Manager\Select\EdgeList.cs" />
+    <Compile Include="Manager\Select\GroupingKey.cs" />
+    <Compile Include="Manager\Select\SelectionElement.cs" />
     <Compile Include="Manager\Select\SelectManager.cs" />
     <Compile Include="Manager\Select\SelectResultManager.cs" />
     <Compile Include="SonesGQLConstants.cs" />
@@ -132,6 +136,7 @@
     <Compile Include="Structure\Helper\Enums\ParamType.cs" />
     <Compile Include="Structure\Helper\Enums\SelectOutputTypes.cs" />
     <Compile Include="Structure\Helper\Enums\SortDirection.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesOfSelect.cs" />
     <Compile Include="Structure\Helper\Enums\KindOfDelimiter.cs" />
     <Compile Include="Structure\Helper\Enums\TypesOfAlterCmd.cs" />
     <Compile Include="Structure\Helper\Enums\TypesOfAssociativity.cs" />
@@ -140,7 +145,6 @@
     <Compile Include="Structure\Helper\Enums\TypesOfBinaryExpression.cs" />
     <Compile Include="Structure\Helper\Enums\TypesOfColumnSource.cs" />
     <Compile Include="Structure\Helper\Enums\TypesOfOperators.cs" />
-    <Compile Include="Structure\Helper\Enums\TypesOfSelect.cs" />
     <Compile Include="Structure\Helper\Enums\TypesOfSettingOperation.cs" />
     <Compile Include="Structure\Helper\Enums\TypesOfStatements.cs" />
     <Compile Include="Structure\Helper\Enums\TypesOfUpdate.cs" />

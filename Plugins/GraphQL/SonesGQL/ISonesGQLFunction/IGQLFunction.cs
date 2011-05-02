@@ -6,6 +6,7 @@ using sones.Library.Commons.Transaction;
 using sones.Library.Commons.Security;
 using sones.GraphDB;
 using sones.GraphDB.TypeSystem;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
@@ -39,7 +40,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         List<ParameterValue> GetParameters();
 
-        FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams);
+        FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams);
 
         bool ValidateWorkingBase(Type myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 

@@ -10,6 +10,7 @@ using sones.Library.Commons.Transaction;
 using sones.Library.LanguageExtensions;
 using sones.GraphDB.ErrorHandling.Type;
 using sones.Library.VersionedPluginManager;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
@@ -51,20 +52,20 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        public override FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
-            if (CallingObject is UInt64)
+            if (myCallingObject is UInt64)
             {
-                var dtValue = new DateTime(System.Convert.ToInt64((UInt64)CallingObject));
+                var dtValue = new DateTime(System.Convert.ToInt64((UInt64)myCallingObject));
                 return new FuncParameter((Int64)UNIXTimeConversionExtension.ToUnixTimeStamp(dtValue));
             }
-            else if (CallingObject is DateTime)
+            else if (myCallingObject is DateTime)
             {
-                return new FuncParameter((Int64)(UNIXTimeConversionExtension.ToUnixTimeStamp((DateTime)CallingObject)));
+                return new FuncParameter((Int64)(UNIXTimeConversionExtension.ToUnixTimeStamp((DateTime)myCallingObject)));
             }
             else
             {
-                throw new InvalidTypeException(CallingObject.GetType().ToString(), "DateTime");
+                throw new InvalidTypeException(myCallingObject.GetType().ToString(), "DateTime");
             }
         }
 

@@ -40,11 +40,11 @@ namespace sones.Plugins.SonesGQL.Functions
         }
 
         //TODO: implement
-        public override FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
-            if (CallingObject is IHyperEdge)
+            if (myCallingObject is IHyperEdge)
             {
-                foreach (var edge in (CallingObject as IHyperEdge).GetAllEdges())
+                foreach (var edge in (myCallingObject as IHyperEdge).GetAllEdges())
                 {
                     //if (!edge.)
                     //{
@@ -52,16 +52,16 @@ namespace sones.Plugins.SonesGQL.Functions
                     //}
                 }
             }
-            else if (CallingObject is ISingleEdge)
+            else if (myCallingObject is ISingleEdge)
             {
  
             }
             else
             {
-                throw new InvalidTypeException(CallingObject.GetType().ToString(), "IHyperEdge or ISingleEdge");
+                throw new InvalidTypeException(myCallingObject.GetType().ToString(), "IHyperEdge or ISingleEdge");
             }
 
-            return new FuncParameter((CallingObject as IOutgoingEdgeDefinition).EdgeType.GetPropertyDefinition("Weight"));
+            return new FuncParameter((myCallingObject as IOutgoingEdgeDefinition).EdgeType.GetPropertyDefinition("Weight"));
         }
 
         public override string PluginName

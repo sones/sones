@@ -8,6 +8,8 @@ using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.VersionedPluginManager;
+using sones.Library.PropertyHyperGraph;
+using sones.Plugins.SonesGQL.Function.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
@@ -53,18 +55,16 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        public override FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
-            if (CallingObject is IBaseType)
+            if (!(myCallingObject is String))
             {
-                var substring = (CallingObject as IBaseType).ToString().Substring((Int32)myParams[0].Value, (Int32)myParams[1].Value);
+                throw new FunctionParameterTypeMismatchException(typeof(String), myCallingObject.GetType());
+            }
+
+            var substring = myCallingObject.ToString().Substring((Int32)myParams[0].Value, (Int32)myParams[1].Value);
                 
-                return new FuncParameter(substring);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
+            return new FuncParameter(substring);
         }
 
         public override string PluginName

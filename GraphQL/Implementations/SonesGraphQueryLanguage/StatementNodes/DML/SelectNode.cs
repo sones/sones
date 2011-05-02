@@ -73,9 +73,7 @@ namespace sones.GraphQL.StatementNodes.DML
         /// <summary>
         /// The type of the output
         /// </summary>
-        SelectOutputTypes _SelectOutputType = SelectOutputTypes.Tree;
-
-        SelectResultManager _SelectResultManager;
+        private SelectOutputTypes _SelectOutputType = SelectOutputTypes.Tree;
 
         #endregion
 
@@ -123,11 +121,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
                 if (aColumnItemNode.SelType != TypesOfSelect.None)
                 {
-                    if (aColumnItemNode.SelType == TypesOfSelect.Ad)
-                    {
-                        typeName = aColumnItemNode.TypeName;
-                    }
-
+                    
                     foreach (var reference in GetTypeReferenceDefinitions(context))
                     {
                         //SelectedElements.Add(new IDChainDefinition(new ChainPartTypeOrAttributeDefinition(reference.TypeName), aColumnItemNode.SelType, typeName), null);
@@ -189,36 +183,36 @@ namespace sones.GraphQL.StatementNodes.DML
 
             #region Offset
 
-            if (HasChildNodes(parseNode.ChildNodes[9]))
+            if (HasChildNodes(parseNode.ChildNodes[8]))
             {
-                Offset = ((OffsetNode)parseNode.ChildNodes[9].AstNode).Count;
+                Offset = ((OffsetNode)parseNode.ChildNodes[8].AstNode).Count;
             }
 
             #endregion
 
             #region Limit
 
-            if (HasChildNodes(parseNode.ChildNodes[10]))
+            if (HasChildNodes(parseNode.ChildNodes[9]))
             {
-                Limit = ((LimitNode)parseNode.ChildNodes[10].AstNode).Count;
+                Limit = ((LimitNode)parseNode.ChildNodes[9].AstNode).Count;
             }
 
             #endregion
 
             #region Depth
 
-            if (HasChildNodes(parseNode.ChildNodes[11]))
+            if (HasChildNodes(parseNode.ChildNodes[10]))
             {
-                ResolutionDepth = Convert.ToUInt16(parseNode.ChildNodes[11].ChildNodes[1].Token.Value);
+                ResolutionDepth = Convert.ToUInt16(parseNode.ChildNodes[10].ChildNodes[1].Token.Value);
             }
 
             #endregion
 
             #region Select Output
 
-            if (HasChildNodes(parseNode.ChildNodes[12]))
+            if (HasChildNodes(parseNode.ChildNodes[11]))
             {
-                _SelectOutputType = (parseNode.ChildNodes[12].AstNode as SelectOutputOptNode).SelectOutputType;
+                _SelectOutputType = (parseNode.ChildNodes[11].AstNode as SelectOutputOptNode).SelectOutputType;
             }
 
             #endregion
@@ -240,7 +234,12 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            throw new NotImplementedException();
+            var selectManager = new SelectManager(myGraphDB, myPluginManager);
+
+            return selectManager.ExecuteSelect(mySecurityToken, myTransactionToken,
+                                               new SelectDefinition(TypeList, SelectedElements,
+                                                                    WhereExpressionDefinition, GroupByIDs, Having, Limit,
+                                                                    Offset, OrderByDefinition, ResolutionDepth), myQuery);
         }
 
         #endregion

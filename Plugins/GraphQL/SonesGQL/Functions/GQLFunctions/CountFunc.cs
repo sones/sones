@@ -57,20 +57,20 @@ namespace sones.Plugins.SonesGQL.Functions
 
         #region execute
 
-        public override FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
-            if (CallingObject is IHyperEdge)
+            if (myCallingObject is IHyperEdge)
             {
-                return new FuncParameter((UInt64)((IHyperEdge)CallingObject).GetAllEdges().Count());
+                return new FuncParameter((UInt64)((IHyperEdge)myCallingObject).GetAllEdges().Count());
             }
-            else if (CallingObject is ISingleEdge)
+            else if (myCallingObject is ISingleEdge)
             {
                 UInt64 count = 1;
                 return new FuncParameter(count);
             }
-            else if (CallingObject is IEnumerable<long>)
+            else if (myCallingObject is IEnumerable<long>)
             {
-                return new FuncParameter((UInt64)(CallingObject as IEnumerable<long>).LongCount());
+                return new FuncParameter((UInt64)(myCallingObject as IEnumerable<long>).LongCount());
             }
             else
             {

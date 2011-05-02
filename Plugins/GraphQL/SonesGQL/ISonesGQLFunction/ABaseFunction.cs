@@ -67,20 +67,20 @@ namespace sones.Plugins.SonesGQL.Functions
         /// </summary>
         protected List<ParameterValue> Parameters;
 
-        /// <summary>
-        /// The Calling object. In case of User.Friends it is the edge 'Friends'
-        /// </summary>
-        public Object CallingObject { get; set; }
+        ///// <summary>
+        ///// The Calling object. In case of User.Friends it is the edge 'Friends'
+        ///// </summary>
+        //public Object CallingObject { get; set; }
 
-        /// <summary>
-        /// The calling TypeAttribute. In case of User.Friends it is the attribute 'Friends'
-        /// </summary>
-        public IAttributeDefinition CallingAttribute { get; set; }
+        ///// <summary>
+        ///// The calling TypeAttribute. In case of User.Friends it is the attribute 'Friends'
+        ///// </summary>
+        //public IAttributeDefinition CallingAttribute { get; set; }
 
-        /// <summary>
-        /// The Calling db Objectstream which contains the attribute. In case of User.Friends it is the user DBObject
-        /// </summary>
-        public IVertex CallingIVertex { get; set; }
+        ///// <summary>
+        ///// The Calling db Objectstream which contains the attribute. In case of User.Friends it is the user DBObject
+        ///// </summary>
+        //public IVertex CallingIVertex { get; set; }
 
         #endregion
 
@@ -111,7 +111,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return param;
         }
 
-        public virtual FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken , params FuncParameter[] myParams)
+        public virtual FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
             Boolean containsVariableNumOfParams = Parameters.Exists(p => p.VariableNumOfParams);
 
@@ -147,7 +147,6 @@ namespace sones.Plugins.SonesGQL.Functions
         }
 
         #endregion
-
 
         #region IPluginable Members
 

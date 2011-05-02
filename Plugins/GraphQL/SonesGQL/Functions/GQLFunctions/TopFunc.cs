@@ -41,13 +41,13 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        public override FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
             long propertyID = 0;
 
-            if (CallingObject is IHyperEdge)
+            if (myCallingObject is IHyperEdge)
             {
-                var hyperEdge = CallingObject as IHyperEdge;
+                var hyperEdge = myCallingObject as IHyperEdge;
 
                 var topVertices = hyperEdge.InvokeHyperEdgeFunc<IEnumerable<IVertex>>(singleEdges =>
                     {
@@ -59,7 +59,7 @@ namespace sones.Plugins.SonesGQL.Functions
                 return new FuncParameter(topVertices);
             }
 
-            throw new InvalidTypeException(CallingObject.GetType().ToString(), "IHyperEdge");
+            throw new InvalidTypeException(myCallingObject.GetType().ToString(), "IHyperEdge");
         }
 
         public override string PluginName

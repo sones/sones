@@ -2,14 +2,1829 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ISonesGQLFunction.Structure;
+using sones.GraphDB;
+using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
+using sones.GraphQL.GQL.Manager.Plugin;
+using sones.GraphQL.Result;
+using sones.GraphQL.Structure.Helper.Enums;
+using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
+using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph.Helper;
+using sones.Library.LanguageExtensions;
+using sones.GraphQL.ErrorHandling;
+using sones.Library.PropertyHyperGraph;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
+using sones.GraphQL.GQL.Structure.Nodes.Expressions;
+using System.Collections;
+using sones.GraphQL.GQL.Structure.Nodes.Misc;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphQL.GQL.Manager.Select
 {
     /// <summary>
     /// This will create the result of any kind of select - working on an IExpressionGraph.
     /// </summary>
-    public class SelectResultManager
+    public sealed class SelectResultManager
     {
+        #region data
 
+        /// <summary>
+        /// the selection element of _Selections , the aggregate selection element
+        /// </summary>
+        //List<SelectionElementAggregate> _Aggregates;
+        Dictionary<String, Dictionary<EdgeList, List<SelectionElementAggregate>>> _Aggregates;
+        Dictionary<String, List<SelectionElement>> _Groupings;
+
+        BinaryExpressionDefinition _HavingExpression;
+
+        private readonly IGraphDB _graphdb;
+        private readonly GQLPluginManager _pluginManager;
+
+        /// <summary>
+        /// Dictionary of the base type and the selections of this type: e.g. U.Name and U.Cars.Color are both of basetype User.
+        /// reference [LevelKey, [selection]]
+        /// With that, we need to 'work' on each attribute only one time!
+        /// </summary>
+        /// The Level is the Level of LevelKey: e.g. U.Name == 0 and U.Cars.Color == 1
+        /// If the User selected U.Name, U.Age than we have two SelectionElements in level 0 of type User
+        /// In case of: "FROM User SELECT Friends.TOP(2).TOP(1).Friends.TOP(2).Name, Friends.TOP(2).TOP(1).Name, Name WHERE Name = 'Lila'"
+        /// we have for reference 'User' the edgeList for Name, Friends (with Name and Friends) and Friends.Friends (with Name)
+        Dictionary<String, Dictionary<EdgeList, List<SelectionElement>>> _Selections;
+
+        #region ExpressionGraph
+
+        IExpressionGraph _ExpressionGraph;
+        public IExpressionGraph ExpressionGraph
+        {
+            set
+            {
+                _ExpressionGraph = value;
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region constrcutor
+
+        public SelectResultManager(IGraphDB myGraphDB, GQLPluginManager myPluginManager)
+        {
+            _Aggregates = new Dictionary<string, Dictionary<EdgeList, List<SelectionElementAggregate>>>();
+            _Groupings = new Dictionary<string, List<SelectionElement>>();
+            _Selections = new Dictionary<string, Dictionary<EdgeList, List<SelectionElement>>>();
+
+            _graphdb = myGraphDB;
+            _pluginManager = myPluginManager;
+        }
+
+        #endregion
+
+        #region public methods
+
+        /// <summary>
+        /// Single IDNode selection attribute
+        /// </summary>
+        public void AddElementToSelection(string myAlias, String myReference, IDChainDefinition myIDChainDefinition, Boolean myIsGroupedOrAggregated, SelectValueAssignment mySelectValueAssignment = null)
+        {
+            SelectionElement lastElem = null;
+
+            var curLevel = new EdgeList();
+            EdgeList preLevel = null;
+
+            if (myReference != null && _Selections.ContainsKey(myReference) && _Selections[myReference].Any(kv => kv.Value.Any(se => se.RelatedIDChainDefinition == myIDChainDefinition && se.Alias == myAlias)))
+            {
+                throw new DuplicateAttributeSelectionException(myAlias);
+            }
+
+            foreach (var nodeEdgeKey in myIDChainDefinition)
+            {
+
+                if (nodeEdgeKey is ChainPartTypeOrAttributeDefinition)
+                {
+
+                    #region Usual attribute
+
+                    preLevel = null;
+
+                    var selElem = new SelectionElement(myAlias, curLevel, myIsGroupedOrAggregated, myIDChainDefinition);
+
+                    var typeOrAttr = (nodeEdgeKey as ChainPartTypeOrAttributeDefinition);
+
+                    if (true || typeOrAttr.DBType != null && typeOrAttr.TypeAttribute != null)
+                    {
+                        #region defined
+
+                        var edgeKey = typeOrAttr.EdgeKey;
+                        selElem.Element = typeOrAttr.TypeAttribute; //_DBContext.DBTypeManager.GetTypeAttributeByEdge(edgeKey);
+
+                        if (String.IsNullOrEmpty(selElem.Alias) || (nodeEdgeKey.Next != null && !(nodeEdgeKey.Next is ChainPartFuncDefinition)))
+                        {
+                            selElem.Alias = typeOrAttr.TypeAttribute.Name;//_DBContext.DBTypeManager.GetTypeAttributeByEdge(edgeKey).Name;
+                        }
+
+                        curLevel += edgeKey;
+                        preLevel = curLevel.GetPredecessorLevel();
+
+                        #endregion
+                    }
+                    else
+                    {
+                        #region undefined attribute
+
+                        if (myIDChainDefinition.Level == 0)
+                        {
+                            preLevel = new EdgeList(myIDChainDefinition.LastType.ID);
+                        }
+                        else
+                        {
+                            var element = _Selections[myReference].Last();
+
+                            preLevel = curLevel.GetPredecessorLevel();
+                            //preLevel = curLevel;
+                        }
+                        selElem.Alias = typeOrAttr.TypeOrAttributeName;
+                        selElem.Element = new UnstructuredProperty(typeOrAttr.TypeOrAttributeName);
+
+                        #endregion
+                    }
+
+                    #region Add to _Selections if valid
+
+                    if (!_Selections.ContainsKey(myReference))
+                    {
+                        _Selections.Add(myReference, new Dictionary<EdgeList, List<SelectionElement>>());
+                    }
+
+                    if (!_Selections[myReference].ContainsKey(preLevel))
+                    {
+                        _Selections[myReference].Add(preLevel, new List<SelectionElement>());
+                    }
+
+                    ///
+                    /// Duplicate AttributeSelection is: "U.Name, U.Name" or "U.Name.TOUPPER(), U.Name" but not "U.Friends.TOP(1).Name, U.Friends.TOP(1).Age"
+                    if ((nodeEdgeKey.Next == null || (nodeEdgeKey.Next is ChainPartFuncDefinition && nodeEdgeKey.Next.Next == null))
+                        //                                                        U.Name, U.Name                  U.Name.TOUPPER, U.Name
+                        && _Selections[myReference][preLevel].Exists(item => item.Alias == selElem.Alias && selElem.EdgeList.Level == item.EdgeList.Level && item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth && item.Element != null) && !myIsGroupedOrAggregated)
+                    {
+                        throw new DuplicateAttributeSelectionException(selElem.Alias);
+                    }
+
+                    // Do not add again if:
+                    // - it is a defined attribute and there is an asterisk selection at this level
+                    // - it is not the last part AND
+                    // - there is already an item of this part with the same alias and the same Depth
+                    if (nodeEdgeKey.Next == null || _Selections[myReference][preLevel].Count == 0 || _Selections[myReference][preLevel].Any(item => IsNewSelectionElement(item, selElem)))
+                    {
+                        _Selections[myReference][preLevel].Add(selElem);
+                    }
+
+                    #endregion
+
+                    lastElem = selElem;
+
+                    #endregion
+
+                }
+                else if (nodeEdgeKey is ChainPartFuncDefinition)
+                {
+
+                    var chainPartFuncDefinition = (nodeEdgeKey as ChainPartFuncDefinition);
+
+                    #region Function
+
+                    if (myReference == null)
+                    {
+
+                        #region Type independent functions
+
+                        var selElem = new SelectionElement(myAlias, myIDChainDefinition);
+                        if (String.IsNullOrEmpty(selElem.Alias))
+                        {
+                            selElem.Alias = chainPartFuncDefinition.SourceParsedString;
+                        }
+                        var funcElem = new SelectionElementFunction(selElem, chainPartFuncDefinition, chainPartFuncDefinition.Parameters);
+
+                        if (lastElem is SelectionElementFunction)
+                        {
+                            (lastElem as SelectionElementFunction).AddFollowingFunction(funcElem);
+                            lastElem = funcElem;
+                        }
+                        
+                        #endregion
+
+                    }
+                    else
+                    {
+
+                        #region Type dependent function
+
+                        var funcElem = new SelectionElementFunction(lastElem, (nodeEdgeKey as ChainPartFuncDefinition), (nodeEdgeKey as ChainPartFuncDefinition).Parameters);
+                        funcElem.RelatedIDChainDefinition = myIDChainDefinition;
+
+                        if (!String.IsNullOrEmpty(myAlias) && nodeEdgeKey.Next == null)
+                        {
+                            funcElem.Alias = myAlias;
+                        }
+
+                        if (lastElem is SelectionElementFunction)
+                        {
+                            (lastElem as SelectionElementFunction).AddFollowingFunction(funcElem);
+                        }
+                        else if (_Selections[myReference][preLevel].Contains(lastElem))
+                        {
+
+                            #region Add function to the last selection element (replace it)
+
+                            _Selections[myReference][preLevel].Remove(lastElem);
+
+                            //lastElem = new SelectionElementFunction(lastElem, (nodeEdgeKey as ChainPartFuncDefinition), (nodeEdgeKey as ChainPartFuncDefinition).Parameters);
+                            //lastElem.RelatedIDChainDefinition = myIDChainDefinition;
+
+                            //if (!String.IsNullOrEmpty(alias) && nodeEdgeKey.Next == null)
+                            //{
+                            //    lastElem.Alias = alias;
+                            //}
+
+
+                            if (!_Selections[myReference][preLevel].Contains(funcElem)) // In case this Element with func is already in the selection list do nothing.
+                            {
+
+                                _Selections[myReference][preLevel].Add(funcElem);
+
+                            }
+
+                            #endregion
+
+                        }  //functions are not equal && it is the end of a function sequence
+                        else if (!_Selections[myReference][preLevel].Contains(funcElem) && !(nodeEdgeKey.Next is ChainPartFuncDefinition))
+                        {
+
+                            #region In this case we have a similar function but NOT THE SAME. Since we don't know what to do, return error.
+
+                            throw new InvalidVertexAttributeSelectionException(myIDChainDefinition.ContentString);
+
+                            #endregion
+
+                        }
+
+                        //always assign funcElem to lastElem, otherwise the part of add following functions doesn't work
+                        lastElem = funcElem;
+                        #endregion
+
+                    }
+
+                    #endregion
+
+                }
+
+            }
+
+            #region Set the SelectValueAssignment for the last element
+
+            if (lastElem != null && mySelectValueAssignment != null)
+            {
+
+                #region Error handling
+
+                System.Diagnostics.Debug.Assert(lastElem.Element != null);
+
+                if (lastElem.Element.Kind != AttributeType.Property && lastElem.Element.Kind != AttributeType.BinaryProperty)
+                {
+                    throw new InvalidSelectValueAssignmentException(lastElem.Element.Name);
+                }
+
+                if (!(mySelectValueAssignment.TermDefinition is ValueDefinition))
+                {
+                    throw new NotImplementedQLException("");
+                }
+
+                #endregion
+
+                #region Validate datatype if the attribute is a defined attribute
+
+                //if (!(lastElem.Element is UnstructuredProperty))
+                //{
+
+                //    if (!lastElem.Element.GetADBBaseObjectType(_DBContext.DBTypeManager).IsValidValue((mySelectValueAssignment.TermDefinition as ValueDefinition).Value.Value))
+                //    {
+                //        return new Exceptional(new Error_SelectValueAssignmentDataTypeDoesNotMatch(lastElem.Element.GetADBBaseObjectType(_DBContext.DBTypeManager).ObjectName, (mySelectValueAssignment.TermDefinition as ValueDefinition).Value.ObjectName));
+                //    }
+                //    var typedValue = new ValueDefinition(lastElem.Element.GetADBBaseObjectType(_DBContext.DBTypeManager).Clone((mySelectValueAssignment.TermDefinition as ValueDefinition).Value.Value));
+                //    mySelectValueAssignment.TermDefinition = typedValue;
+                //}
+
+                #endregion
+
+                lastElem.SelectValueAssignment = mySelectValueAssignment;
+            }
+
+
+            #endregion
+
+        }
+
+        /// <summary>
+        /// Adds an aggregate to the selection. It will check whether it is an index aggregate or not.
+        /// Aggregates on attributes with level > 1 will return an error.
+        /// </summary>
+        /// <param name="myReference"></param>
+        /// <param name="myAlias"></param>
+        /// <param name="myAStructureNode"></param>
+        /// <param name="myGraphType"></param>
+        public void AddAggregateElementToSelection(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myAlias, string myReference, SelectionElementAggregate mySelectionPartAggregate)
+        {
+
+            if (mySelectionPartAggregate.EdgeList.Level > 1)
+            {
+                throw new AggregateIsNotValidOnThisAttributeException(mySelectionPartAggregate.ToString());
+            }
+
+            #region Check for index aggregate
+
+            foreach (var edge in mySelectionPartAggregate.EdgeList.Edges)
+            {
+                var vertexType = _graphdb.GetVertexType<IVertexType>(
+                        mySecurityToken,
+                        myTransactionToken,
+                        new RequestGetVertexType(edge.VertexTypeID),
+                        (stats, vType) => vType);
+
+                #region COUNT(*)
+
+                if (!edge.IsAttributeSet)
+                {
+                    //mySelectionPartAggregate.Element = _DBContext.DBTypeManager.GetUUIDTypeAttribute();
+                    mySelectionPartAggregate.Element = vertexType.GetAttributeDefinition("UUID");
+                }
+
+                #endregion
+
+                else
+                {
+                    // if the GetAttributeIndex did not return null we will pass this as the aggregate operation value
+                    mySelectionPartAggregate.Element = vertexType.GetAttributeDefinition(edge.AttributeID);
+                }
+            }
+
+            #endregion
+
+            if (!_Aggregates.ContainsKey(myReference))
+            {
+                _Aggregates.Add(myReference, new Dictionary<EdgeList, List<SelectionElementAggregate>>());
+            }
+
+            var level = mySelectionPartAggregate.EdgeList.GetPredecessorLevel();
+            if (!_Aggregates[myReference].ContainsKey(level))
+            {
+                _Aggregates[myReference].Add(level, new List<SelectionElementAggregate>());
+            }
+
+            _Aggregates[myReference][level].Add(mySelectionPartAggregate);
+        }
+
+        /// <summary>
+        /// Adds a group element to the selection and validat it
+        /// </summary>
+        /// <param name="myReference"></param>
+        /// <param name="myIDChainDefinition"></param>
+        public void AddGroupElementToSelection(string myReference, IDChainDefinition myIDChainDefinition)
+        {
+
+            if (myIDChainDefinition.Edges.Count > 1)
+            {
+                throw new InvalidGroupByLevelException(myIDChainDefinition.Edges.Count.ToString(), myIDChainDefinition.ContentString);
+            }
+
+            // if the grouped attr is not selected
+            if ((!_Selections.ContainsKey(myReference) || !_Selections[myReference].Any(l => l.Value.Any(se => se.Element != null && se.Element == myIDChainDefinition.LastAttribute))) && !myIDChainDefinition.IsUndefinedAttribute)
+            {
+                throw new GroupedAttributeIsNotSelectedException(myIDChainDefinition.LastAttribute.Name);
+            }
+            else
+            {
+                if (!_Groupings.ContainsKey(myReference))
+                {
+                    _Groupings.Add(myReference, new List<SelectionElement>());
+                }
+                _Groupings[myReference].Add(new SelectionElement(myReference, new EdgeList(myIDChainDefinition.Edges), false, myIDChainDefinition, myIDChainDefinition.LastAttribute));
+            }
+        }
+
+        /// <summary>
+        /// Adds a having to the selection
+        /// </summary>
+        /// <param name="myHavingExpression"></param>
+        public void AddHavingToSelection(BinaryExpressionDefinition myHavingExpression)
+        {
+            _HavingExpression = myHavingExpression;
+        }
+
+
+        /// <summary>
+        /// Adds the typeNode as an asterisk *, rhomb # or minus - or ad
+        /// </summary>
+        public void AddSelectionType(string myReference, IVertexType myType, TypesOfSelect mySelType, long? myTypeID = null)
+        {
+            var selElem = new SelectionElement(mySelType, myTypeID);
+
+            if (!_Selections.ContainsKey(myReference))
+                _Selections.Add(myReference, new Dictionary<EdgeList, List<SelectionElement>>());
+
+            var level = new EdgeList(new EdgeKey(myType.ID));
+
+            if (!_Selections[myReference].ContainsKey(level))
+                _Selections[myReference].Add(level, new List<SelectionElement>());
+
+            if (!_Selections[myReference][level].Exists(item => item.Selection == mySelType))
+            {
+                _Selections[myReference][level].Add(selElem);
+            }
+        }
+
+        #region Validate Grouping, Selections and Aggregates
+
+        /// <summary>
+        /// Validates the groupings and aggregates
+        /// </summary>
+        /// <param name="myReference"></param>
+        /// <param name="myDBType"></param>
+        /// <returns></returns>
+        public void ValidateGroupingAndAggregate(String myReference, IVertexType myDBType)
+        {
+
+            #region No Aggregates nor Groupings
+
+            if (_Aggregates.IsNullOrEmpty() && _Groupings.IsNullOrEmpty())
+            {
+                return;
+            }
+
+            #endregion
+
+            #region No groupings <-> no selections
+
+            if (_Groupings.IsNullOrEmpty() && _Selections.IsNullOrEmpty())
+            {
+                return;
+            }
+
+            #endregion
+
+            if (!_Groupings.ContainsKey(myReference) && !_Selections.ContainsKey(myReference))
+            {
+
+                #region The reference is not existent in selections nor groupings
+
+                return;
+
+                #endregion
+
+            }
+            else if (_Selections.ContainsKey(myReference) && _Groupings.ContainsKey(myReference))
+            {
+
+                #region Verify that all selections match the groupings
+
+                foreach (var selectionEdge in _Selections[myReference])
+                {
+                    foreach (var selection in selectionEdge.Value)
+                    {
+                        if (!_Groupings[myReference].Any(ge => ge.RelatedIDChainDefinition.ContentString == selection.RelatedIDChainDefinition.ContentString))
+                        {
+                            throw new NoGroupingArgumentException(selection.RelatedIDChainDefinition.ContentString);
+                        }
+                    }
+                }
+
+                #endregion
+
+            }
+            else
+            {
+                #region Only one of the selections or the groupings contains the reference -> Error
+
+                throw new NoGroupingArgumentException("");
+
+                #endregion
+            }
+
+            #region Validate that aggregates and groups are of the same level
+
+            if (_Selections.ContainsKey(myReference) && _Aggregates.ContainsKey(myReference))
+            {
+                foreach (var selectionEdge in _Selections[myReference])
+                {
+                    if (!_Aggregates[myReference].Any(a => a.Key.Level == selectionEdge.Key.Level))
+                    {
+                        throw new AggregateDoesNotMatchGroupLevelException(_Aggregates[myReference].Where(a => a.Key.Level != selectionEdge.Key.Level).First().Value.First().Alias);
+                    }
+                }
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region GetResult
+
+        /// <summary>
+        /// This will return the result of all examined DBOs, including calculated aggregates and groupings.
+        /// The Value of the returned GraphResult is of type IEnumerable&lt;Vertex&gt;
+        /// </summary>
+        public IEnumerable<IVertexView> GetResult(IEnumerable<IVertexView> myVertices)
+        {
+
+            foreach (var _Vertex in myVertices)
+            {
+                yield return _Vertex;
+            }
+
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Examine a TypeNode to a specific <paramref name="myResolutionDepth"/> by using the underlying graph or the type guid index
+        /// </summary>
+        /// <param name="myResolutionDepth">The depth to which the reference attributes should be resolved</param>
+        /// <param name="myTypeNode">The type node which should be examined on selections</param>
+        /// <param name="myUsingGraph">True if there is a valid where expression of this typeNode</param>
+        /// <returns>True if succeeded, false if there was nothing to select for this type</returns>
+        public Boolean Examine(Int64 myResolutionDepth, String myReference, IVertexType myReferencedDBType, Boolean myUsingGraph, ref IEnumerable<IVertexView> myVertices, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+
+            if ((!_Selections.ContainsKey(myReference) || !_Selections[myReference].ContainsKey(new EdgeList(myReferencedDBType.ID))) && _Aggregates.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            var levelKey = new EdgeList(myReferencedDBType.ID);
+
+            myVertices = ExamineVertex(myResolutionDepth, myReference, myReferencedDBType, levelKey, myUsingGraph, mySecurityToken, myTransactionToken);
+
+            return true;
+        }
+
+        #endregion
+
+        #region private methods
+
+        /// <summary>
+        /// The element <paramref name="myNewElement"/> is new if
+        /// - it is not a special type attribute and there is an asterisk selection at this level
+        /// - it is not the last part AND there is already an item of this part with the same alias and the same Depth
+        /// </summary>
+        /// <param name="myExistingElement"></param>
+        /// <param name="myNewElement"></param>
+        /// <returns></returns>
+        private Boolean IsNewSelectionElement(SelectionElement myExistingElement, SelectionElement myNewElement)
+        {
+
+            #region The existing is an asterisk and the new one is NOT a SpecialTypeAttribute
+
+            if (myExistingElement.Selection == TypesOfSelect.Asterisk && !myNewElement.RelatedIDChainDefinition.IsSpecialTypeAttribute())
+            {
+                return false;
+            }
+
+            #endregion
+
+            #region The same level is already selected
+
+            var item = myExistingElement;
+            var selElem = myNewElement;
+
+            if (item.Alias == selElem.Alias// &&
+                // same depth                                                                 or Undefined and one lower depth Friends.Undefined is Depth 1 and Friends.Age is Depth 2 but at the same selection level
+                //	(item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth || (selElem.RelatedIDChainDefinition.IsUndefinedAttribute && item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth + 1))
+                )
+            {
+                return false;
+            }
+
+            #endregion
+
+            return true;
+
+        }
+
+        /// <summary>
+        /// This is the main function. It will check all selections on this type and will create the readouts
+        /// </summary>
+        private IEnumerable<IVertexView> ExamineVertex(long myResolutionDepth, String myReference, IVertexType myReferencedDBType, EdgeList myLevelKey, bool myUsingGraph, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+
+            #region Get all selections and aggregates for this reference, type and level
+
+            var _Selections = getAttributeSelections(myReference, myReferencedDBType, myLevelKey);
+            var aggregates = getAttributeAggregates(myReference, myReferencedDBType, myLevelKey);
+
+            #endregion
+
+            if (
+                (_Selections.IsNotNullOrEmpty() && _Selections.All(s => s.IsReferenceToSkip(myLevelKey)) && aggregates.IsNotNullOrEmpty() && aggregates.All(a => a.IsReferenceToSkip(myLevelKey)))
+                || (_Selections.IsNotNullOrEmpty() && _Selections.All(s => s.IsReferenceToSkip(myLevelKey)) && aggregates.IsNullOrEmpty())
+               )
+            {
+
+                #region If there are only references in this level, we will skip this level (and add the attribute as placeholder) and step to the next one
+
+                var Attributes = new Dictionary<String, IEdgeView>();
+
+                foreach (var _Selection in _Selections)
+                {
+
+                    var edgeKey = new EdgeKey(_Selection.Element.RelatedType.ID, _Selection.Element.AttributeID);
+
+                    Attributes.Add(
+                        _Selection.Alias, 
+                        new HyperEdgeView(
+                            null,
+                            ExamineVertex(myResolutionDepth, myReference, myReferencedDBType, myLevelKey + edgeKey, myUsingGraph, mySecurityToken, myTransactionToken)
+                            .Select(aVertex =>
+                                        {
+                                            return new SingleEdgeView(null, aVertex);
+                                        })));
+
+                }
+
+                yield return new VertexView(null, Attributes);
+
+                #endregion
+
+            }
+
+            else
+            {
+
+                #region Otherwise load all dbos until this level and return them
+
+                #region Get dbos enumerable of the first level - either from ExpressionGraph or via index
+
+                IEnumerable<IVertex> dbos;
+                if (myUsingGraph)
+                {
+                    dbos = _ExpressionGraph.Select(new LevelKey(myLevelKey.Edges, _graphdb, mySecurityToken, myTransactionToken), null, true);
+                }
+                else // using GUID index
+                {
+                    dbos = _graphdb.GetVertices<IEnumerable<IVertex>>(
+                        mySecurityToken,
+                        myTransactionToken,
+                        new RequestGetVertices(myLevelKey.Edges[0].VertexTypeID),
+                        (stats, vertices) => vertices);
+                }
+
+                #endregion
+
+                if (aggregates.IsNotNullOrEmpty())
+                {
+                    foreach (var val in ExamineDBO_Aggregates(dbos, aggregates, _Selections, myReferencedDBType, myUsingGraph, myResolutionDepth))
+                    {
+                        if (val != null)
+                        {
+                            yield return val;
+                        }
+                    }
+                }
+
+                else if (_Groupings.IsNotNullOrEmpty())
+                {
+                    foreach (var val in ExamineDBO_Groupings(dbos, _Selections, myReferencedDBType))
+                    {
+                        if (val != null)
+                        {
+                            yield return val;
+                        }
+                    }
+                }
+
+                else if (!_Selections.IsNullOrEmpty())
+                {
+
+                    #region Usually attribute selections
+
+                    foreach (var aDBObject in dbos)
+                    {
+                        #region Create a readoutObject for this DBO and yield it: on failure throw an exception
+
+                        Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> Attributes = GetAllSelectedAttributesFromVertex(mySecurityToken, myTransactionToken, aDBObject, myReferencedDBType, myResolutionDepth, myLevelKey, myReference, myUsingGraph);
+
+                        if (Attributes != null && (Attributes.Item1.Count > 0 || Attributes.Item2.Count > 0))
+                        {
+                            yield return new VertexView(Attributes.Item1, Attributes.Item2);
+                        }
+
+                        #endregion
+
+                    }
+
+                    #endregion
+
+                }
+
+                #endregion
+
+            }
+
+        }
+
+        /// <summary>
+        /// Gets all selected attributes of an <paramref name="aDBObject"/> or on asterisk all attributes
+        /// </summary>
+        /// <param name="aDBObject"></param>
+        /// <param name="typeOfAttribute"></param>
+        /// <param name="myDepth"></param>
+        /// <param name="myLevelKey"></param>
+        /// <param name="reference"></param>
+        /// <param name="myUsingGraph"></param>
+        /// <returns></returns>
+        public Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> GetAllSelectedAttributesFromVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertex myDBObject, IVertexType myDBType, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph, Boolean selectAllAttributes = false)
+        {
+            IDictionary<String, Object> properties = new Dictionary<string, object>();
+            IDictionary<String, IEdgeView> edges = new Dictionary<string, IEdgeView>();
+
+            var Attributes = new Tuple<IDictionary<string, object>, IDictionary<string, IEdgeView>>(properties, edges);
+            Int64 Depth;
+
+            var minDepth = 0;
+
+            IEnumerable<SelectionElement> attributeSelections = null;
+
+            if (!selectAllAttributes)
+            {
+                attributeSelections = getAttributeSelections(myReference, myDBType, myLevelKey);
+            }
+
+            if (attributeSelections.IsNullOrEmpty() || selectAllAttributes)// && myLevelKey.Level > 0)
+            {
+
+                #region Get all attributes from the DBO if nothing special was selected
+                if ((myDepth == -1) || (myDepth >= myLevelKey.Level))
+                {
+                    AddAttributesByDBO(mySecurityToken, myTransactionToken, ref Attributes, myDBType, myDBObject, myDepth, myLevelKey, myReference, myUsingGraph, TypesOfSelect.Asterisk);
+                }
+
+                #endregion
+
+            }
+            else
+            {
+
+                foreach (var attrSel in attributeSelections)
+                {
+
+                    #region extract the selected infos
+
+                    //myDepth = attrSel.EdgeList.Level;
+
+                    #region Some kind of asterisk - return all attributes
+
+                    if (attrSel.Selection == TypesOfSelect.Asterisk)
+                    {
+
+                        #region Asterisk (*), Rhomb (#), Minus (-), Ad (@) selection
+
+                        Depth = GetDepth(myDepth, 0, myDBType);
+
+                        AddAttributesByDBO(mySecurityToken, myTransactionToken, ref Attributes, myDBType, myDBObject, Depth, myLevelKey, myReference, myUsingGraph, attrSel.Selection, attrSel.TypeID);
+
+                        #endregion
+
+                        continue;
+
+                    }
+
+                    #endregion
+
+                    #region Alias
+
+                    String alias = String.Empty;
+
+                    if (attrSel.Element == null)
+                    {
+                        alias = (attrSel.Alias == null) ? attrSel.RelatedIDChainDefinition.UndefinedAttribute : attrSel.Alias;
+                    }
+                    else
+                    {
+                        alias = (attrSel.Alias == null) ? attrSel.Element.Name : attrSel.Alias;
+                    }
+
+                    #endregion
+
+                    if (Attributes.Item1.ContainsKey(alias) || Attributes.Item2.ContainsKey(alias))
+                    {
+                        // This is a bug in the attributeSelections add method. No attribute should be in the selected list twice. 
+                        // If one attribute was selected more than one, these information will be stored in the next level.
+                        //System.Diagnostics.Debug.Assert(false, "The attribute '" + alias + "' is selected twice in that level - this shouldnt!");
+                        continue;
+                    }
+
+                    if (attrSel is SelectionElementFunction)
+                    {
+
+                        #region Select a function
+
+                        var selectionElementFunction = (attrSel as SelectionElementFunction);
+
+                        if (selectionElementFunction.SelectValueAssignment != null && selectionElementFunction.SelectValueAssignment.ValueAssignmentType == SelectValueAssignment.ValueAssignmentTypes.Always)
+                        {
+                            Attributes.Item1.Add(alias, (selectionElementFunction.SelectValueAssignment.TermDefinition as ValueDefinition).Value);
+                            continue;
+                        }
+
+                        #region Get the CallingObject
+
+                        Object callingObject = null;
+
+                        if (myUsingGraph)
+                        {
+                            //a special attribute has no RelatedGraphDBTypeUUID. So use myDBType to create an EdgeKey
+                            //EdgeKey key = (selectionElementFunction.Element is ASpecialTypeAttribute) ? new EdgeKey(myDBType.UUID, selectionElementFunction.Element.UUID) : new EdgeKey(selectionElementFunction.Element);
+                            EdgeKey key = new EdgeKey(selectionElementFunction.Element.RelatedType.ID, selectionElementFunction.Element.AttributeID);
+                            myUsingGraph = _ExpressionGraph.IsGraphRelevant(new LevelKey((myLevelKey + key).Edges, _graphdb, mySecurityToken, myTransactionToken), myDBObject);
+                        }
+
+                        if (myUsingGraph && !(selectionElementFunction.Element.Kind != AttributeType.Property))
+                        {
+                            switch (selectionElementFunction.Element.Kind)
+                            {
+                                case AttributeType.IncomingEdge:
+                                    #region incoming edge
+
+                                    var incomingEdgeDefinition = (IIncomingEdgeDefinition)selectionElementFunction.Element;
+
+                                    if (myDBObject.HasIncomingVertices(incomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, incomingEdgeDefinition.RelatedEdgeDefinition.AttributeID)) 
+                                    {
+                                        callingObject = _ExpressionGraph.Select(
+                                            new LevelKey(
+                                                (myLevelKey + new EdgeKey(selectionElementFunction.Element.RelatedType.ID, selectionElementFunction.Element.AttributeID)).Edges,
+                                                _graphdb, mySecurityToken, myTransactionToken), myDBObject, true);
+                                    }
+                                    else
+                                    {
+                                        callingObject = null;
+                                    }
+
+                                    #endregion
+                                    break;
+
+                                case AttributeType.OutgoingEdge:
+                                    #region outgoing edge
+
+                                    if (myDBObject.HasOutgoingEdge(selectionElementFunction.Element.AttributeID))
+                                    {
+
+                                        callingObject = _ExpressionGraph.Select(
+                                            new LevelKey(
+                                                (myLevelKey + new EdgeKey(selectionElementFunction.Element.RelatedType.ID, selectionElementFunction.Element.AttributeID)).Edges, 
+                                                _graphdb, mySecurityToken, myTransactionToken), myDBObject, true);
+
+                                    }
+                                    else
+	                                {
+                                        callingObject = null;
+	                                }
+
+                                    #endregion
+
+                                    break;
+
+                                case AttributeType.Property:
+                                case AttributeType.BinaryProperty:
+                                default:
+                                    continue;
+                            }
+                        }
+                        else
+                        {
+                            callingObject = myDBObject.GetProperty(selectionElementFunction.Element.AttributeID);
+                        }
+
+                        #endregion
+
+                        #region Execute the function
+
+                        var res = ExecuteFunction(selectionElementFunction, myDBObject, callingObject, myDepth, myReference, myDBType, myLevelKey, myUsingGraph, mySecurityToken, myTransactionToken);
+
+                        if (res == null)
+                        {
+                            continue;
+                        }
+                        
+                        #endregion
+
+                        #region Add function return value to attributes
+
+                        if (res.Value is IHyperEdge)
+                        {
+
+                            #region Reference edge
+
+                            //minDepth = attrSel.EdgeList.Level + 1; // depth should be at least the depth of the selected element
+                            minDepth = (attrSel.RelatedIDChainDefinition != null) ? attrSel.RelatedIDChainDefinition.Edges.Count - 1 : 0;
+                            myUsingGraph = false;
+
+                            Depth = GetDepth(myDepth, minDepth, myDBType);
+
+                            var attr = (attrSel as SelectionElementFunction).Element;
+
+                            if (Depth > myLevelKey.Level || getAttributeSelections(myReference, myDBType, myLevelKey + new EdgeKey(attr.RelatedType.ID, attr.AttributeID)).IsNotNullOrEmpty())
+                            {
+
+                                myUsingGraph = false;
+
+                                #region Resolve DBReferences
+
+                                Attributes.Item2.Add(alias,
+                                    ResolveAttributeValue((IOutgoingEdgeDefinition)attr, (IHyperEdge)res.Value, Depth, myLevelKey, myDBObject, myReference, myUsingGraph, mySecurityToken, myTransactionToken));
+
+                                #endregion
+
+                            }
+                            else
+                            {
+                                Attributes.Item2.Add(alias, GetNotResolvedReferenceEdgeAttributeValue(((IHyperEdge)res.Value).GetTargetVertices()));
+                            }
+
+                            #endregion
+
+                        }
+                        else
+                        {
+
+                            Attributes.Item1.Add(alias, ((FuncParameter)res.Value).Value);
+
+                        }
+
+                        #endregion
+
+                        #endregion
+
+                    }
+                    else if (attrSel.Element is UnstructuredProperty)
+                    {
+
+                        #region undefined attribute selection
+
+                        var undef_alias = attrSel.Alias;
+
+                        if (!Attributes.Item1.ContainsKey(undef_alias))
+                        {
+                            Object attrValue = null;
+
+                            if (myDBObject.HasUnstructuredProperty(undef_alias))
+                            {
+                                Attributes.Item1.Add(undef_alias, attrValue);
+                            }
+                        }
+
+                        #endregion
+
+                    }
+                    else
+                    {
+
+                        #region Attribute selection
+
+                        minDepth = (attrSel.RelatedIDChainDefinition != null) ? attrSel.RelatedIDChainDefinition.Edges.Count - 1 : 0;
+
+                        //var alias = (attrSel.Alias == null) ? (attrSel.Element as TypeAttribute).Name : attrSel.Alias;
+
+                        Depth = GetDepth(myDepth, minDepth, myDBType, attrSel.Element);
+
+                        Object attrValue = null;
+
+                        if (GetAttributeValueAndResolve(mySecurityToken, myTransactionToken, myDBType, attrSel, myDBObject, Depth, myLevelKey, myReference, myUsingGraph, out attrValue))
+                        {
+                            if (attrValue is IEdgeView)
+                            {
+                                Attributes.Item2.Add(alias, (IEdgeView)attrValue);
+                            }
+                            else
+                            {
+                                Attributes.Item1.Add(alias, attrValue);
+                            }
+                        }
+
+                        #endregion
+
+                    }
+
+                    #endregion
+
+                }
+
+            }
+
+            return Attributes;
+        }
+
+        private IEdgeView GetNotResolvedReferenceEdgeAttributeValue(IEnumerable<IVertex> iEnumerable)
+        {
+            return new HyperEdgeView(
+                null, 
+                iEnumerable.Select(
+                aVertex => 
+                {
+                    return new SingleEdgeView(new Dictionary<String, Object> {{"VertexTypeID", aVertex.VertexTypeID}, {"VertexID", aVertex.VertexID}}, null); 
+                }));
+        }
+
+
+        /// <summary>   Gets an attribute value - references will be resolved. </summary>
+        ///
+        /// <remarks>   Stefan, 16.04.2010. </remarks>
+        ///
+        /// <param name="myType">           Type. </param>
+        /// <param name="myTypeAttribute">  my type attribute. </param>
+        /// <param name="myDBObject">       my database object. </param>
+        /// <param name="myDepth">          Depth of my. </param>
+        /// <param name="myLevelKey">       my level key. </param>
+        /// <param name="reference">        The reference. </param>
+        /// <param name="myUsingGraph">     true to my using graph. </param>
+        /// <param name="attributeValue">   [out] The attribute value. </param>
+        ///
+        /// <returns>   true if it succeeds, false if the DBO does not have the attribute. </returns>
+        private Boolean GetAttributeValueAndResolve(SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType myType, SelectionElement mySelectionelement, IVertex myDBObject, Int64 myDepth, EdgeList myLevelKey, String reference, Boolean myUsingGraph, out Object attributeValue, String myUndefAttrName = null)
+        {
+
+            var typeAttribute = mySelectionelement.Element;
+
+            switch (typeAttribute.Kind)
+            {
+                case AttributeType.Property:
+                    #region property
+
+                    if(myDBObject.HasProperty(typeAttribute.AttributeID))
+                    {
+                        attributeValue = myDBObject.GetProperty(typeAttribute.AttributeID);
+                        return true;
+                    }
+
+                    #endregion
+
+                    break;
+                case AttributeType.IncomingEdge:
+
+                    #region IsBackwardEdge
+
+                    var incomingEdgeAttribute = (IIncomingEdgeDefinition)typeAttribute;
+
+                    if (myDBObject.HasIncomingVertices(incomingEdgeAttribute.RelatedEdgeDefinition.RelatedType.ID, incomingEdgeAttribute.RelatedEdgeDefinition.AttributeID))
+	                {
+                        var dbos = myDBObject.GetIncomingVertices(incomingEdgeAttribute.RelatedEdgeDefinition.RelatedType.ID, incomingEdgeAttribute.RelatedEdgeDefinition.AttributeID);
+
+                        if (dbos != null)
+                        {
+                            if (myDepth > 0)
+					        {
+                                attributeValue = ResolveIncomingEdgeValue(incomingEdgeAttribute, dbos, myDepth, myLevelKey, myDBObject, reference, myUsingGraph, mySecurityToken, myTransactionToken);
+                            }
+                            else
+	                        {
+                                attributeValue = GetNotResolvedReferenceEdgeAttributeValue(dbos);
+	                        }
+
+                            return true;
+
+                        }
+                    }
+                    
+                    #endregion
+
+                    break;
+                case AttributeType.OutgoingEdge:
+                    #region outgoing edges
+
+                    if(myDBObject.HasOutgoingEdge(typeAttribute.AttributeID))
+                    {
+                        var dbos = myDBObject.GetOutgoingEdge(typeAttribute.AttributeID);
+
+                        if (dbos != null)
+                        {
+                            if (myDepth > 0)
+					        {
+                                attributeValue = ResolveAttributeValue((IOutgoingEdgeDefinition)typeAttribute, dbos,myDepth, myLevelKey, myDBObject, reference, myUsingGraph, mySecurityToken, myTransactionToken);
+                            }
+                            else
+	                        {
+                                attributeValue = GetNotResolvedReferenceEdgeAttributeValue(dbos.GetTargetVertices());
+	                        }
+
+                            return true;
+
+                        }
+                    }
+
+                    #endregion
+
+                    break;
+                case AttributeType.BinaryProperty:
+                default:
+                    break;
+            }
+
+            attributeValue = null;
+            return false;
+
+        }
+
+
+        /// <summary>
+        /// Executes the function and return the result - for concatenated functions this will be done recursively
+        /// </summary>
+        private FuncParameter ExecuteFunction(SelectionElementFunction mySelectionElementFunction, IVertex myDBObject, object myCallingObject, Int64 myDepth, String myReference, IVertexType myReferencedDBType, EdgeList myLevelKey, Boolean myUsingGraph, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+
+            #region Function
+
+            if (myCallingObject == null) // DBObject does not have the attribute
+            {
+
+                if (mySelectionElementFunction.SelectValueAssignment != null)
+                {
+                    return new FuncParameter((mySelectionElementFunction.SelectValueAssignment.TermDefinition as ValueDefinition).Value);
+                }
+
+                return null;
+            }
+
+            #region Get the FunctionNode and validate the Element
+
+            var func = mySelectionElementFunction.Function;
+
+            if (mySelectionElementFunction.Element == null)
+            {
+                return null;
+            }
+
+            #endregion
+
+            #region Execute the function
+
+            var res = func.Function.ExecFunc(
+                mySelectionElementFunction.Element, myCallingObject, myDBObject,
+                _graphdb, mySecurityToken, myTransactionToken);
+            
+            if (res.Value == null)
+            {
+                return null; // no result for this object because of not set attribute value
+            }
+
+            if (mySelectionElementFunction.FollowingFunction != null)
+            {
+                return ExecuteFunction(mySelectionElementFunction.FollowingFunction, myDBObject, res.Value, myDepth, myReference, myReferencedDBType, myLevelKey, myUsingGraph, mySecurityToken, myTransactionToken);
+            }
+            else
+            {
+                return res;
+            }
+
+            #endregion
+
+            #endregion
+        }
+		
+
+        /// <summary>
+        /// This will add all attributes of <paramref name="myDBObject"/> to the <paramref name="myAttributes"/> reference. Reference attributes will be resolved to the <paramref name="myDepth"/>
+        /// </summary>
+        private void AddAttributesByDBO(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
+            ref Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> myAttributes, 
+            IVertexType myType, 
+            IVertex myDBObject, 
+            Int64 myDepth, 
+            EdgeList myEdgeList, 
+            String myReference, 
+            Boolean myUsingGraph, 
+            TypesOfSelect mySelType, 
+            Int64? myTypeID = null)
+        {
+
+            #region Get all attributes which are stored at the DBO
+
+            #region properties
+
+            foreach (var aProperty in myType.GetPropertyDefinitions(true))
+            {
+                myAttributes.Item1.Add(aProperty.Name, aProperty.ExtractValue(myDBObject));
+            }
+
+            #endregion
+
+            #region unstructured data
+
+            foreach (var aUnstructuredProperty in myDBObject.GetAllUnstructuredProperties())
+            {
+                myAttributes.Item1.Add(aUnstructuredProperty.Item1, aUnstructuredProperty.Item2);
+            }
+
+            #endregion
+
+            #region outgoing edges
+
+            foreach (var outgoingEdgeDefinition in myType.GetOutgoingEdgeDefinitions(true))
+            {
+                if (myDBObject.HasOutgoingEdge(outgoingEdgeDefinition.AttributeID))
+                {
+                    // Since we can define special depth (via setting) for attributes we need to check them now
+                    myDepth = GetDepth(-1, myDepth, myType, outgoingEdgeDefinition);
+                    if ((myDepth > 0))
+                    {
+                        myAttributes.Item2.Add(
+                            outgoingEdgeDefinition.Name, 
+                            ResolveAttributeValue(
+                                outgoingEdgeDefinition, 
+                                myDBObject.GetOutgoingEdge(outgoingEdgeDefinition.AttributeID), 
+                                myDepth, 
+                                myEdgeList, 
+                                myDBObject, 
+                                myReference, 
+                                myUsingGraph,
+                                mySecurityToken,
+                                myTransactionToken));
+                    }
+                }
+            }
+
+            #endregion
+
+            #region incoming
+
+            foreach (var aIncomingEdgeDefinition in myType.GetIncomingEdgeDefinitions(true))
+            {
+                if (myDBObject.HasIncomingVertices(aIncomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, aIncomingEdgeDefinition.RelatedEdgeDefinition.AttributeID))
+                {
+                    if (myDepth > 0)
+                    {
+                        myAttributes.Item2.Add(
+                            aIncomingEdgeDefinition.Name, 
+                            ResolveIncomingEdgeValue(
+                                aIncomingEdgeDefinition, 
+                                myDBObject.GetIncomingVertices(aIncomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, aIncomingEdgeDefinition.RelatedEdgeDefinition.AttributeID), 
+                                myDepth, 
+                                myEdgeList, 
+                                myDBObject, 
+                                myReference, 
+                                myUsingGraph,
+                                mySecurityToken,
+                                myTransactionToken));
+                    }
+                }
+            }
+
+            #endregion
+
+            #endregion
+        }
+
+        /// <summary>
+        /// Resolves an attribute 
+        /// </summary>
+        private IEdgeView ResolveIncomingEdgeValue(IIncomingEdgeDefinition attrDefinition, IEnumerable<IVertex> myIncomingVertices, Int64 myDepth, EdgeList myEdgeList, IVertex mySourceDBObject, String reference, Boolean myUsingGraph, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            #region Get levelKey and UsingGraph
+
+            if (myEdgeList.Level == 0)
+            {
+                myEdgeList = new EdgeList(new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.AttributeID));
+            }
+            else
+            {
+                myEdgeList += new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.AttributeID);
+            }
+
+            // at some deeper level we could get into graph independend results. From this time, we can use the GUID index rather than asking the graph all the time
+            if (myUsingGraph)
+            {
+                myUsingGraph = _ExpressionGraph.IsGraphRelevant(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject);
+            }
+
+            #endregion
+
+            #region SetReference attribute -> return new Edge
+
+            IEnumerable<IVertexView> resultList = null;
+
+            if (myUsingGraph)
+            {
+                var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject, true);
+
+                resultList = GetVertices(mySecurityToken, myTransactionToken, attrDefinition.RelatedEdgeDefinition.SourceVertexType, dbos, myDepth, myEdgeList, reference, myUsingGraph);
+            }
+            else
+            {
+                resultList = GetVertices(mySecurityToken, myTransactionToken, attrDefinition.RelatedEdgeDefinition.SourceVertexType, myIncomingVertices, myDepth, myEdgeList, reference, myUsingGraph);
+            }
+
+            return new HyperEdgeView(null, resultList.Select(aTargetVertex => new SingleEdgeView(null, aTargetVertex)));
+            #endregion
+        }
+
+        /// <summary>
+        /// Resolve a AListReferenceEdgeType to a DBObjectReadouts. This will resolve each edge target using the 'GetAllAttributesFromDBO' method
+        /// </summary>
+
+        private IEnumerable<IVertexView> GetVertices(SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType myTypeOfAttribute, IEdge myVertices, IEnumerable<IVertex> myObjectUUIDs, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
+        {
+            //TODO:obey weighted edges here
+
+
+            foreach (var aVertex in myObjectUUIDs)
+            {
+                yield return LoadAndResolveVertex(mySecurityToken, myTransactionToken, aVertex, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph);
+            }
+
+            yield break;
+
+        }
+
+        /// <summary>
+        /// Resolve a AListReferenceEdgeType to a DBObjectReadouts. This will resolve each edge target using the 'GetAllAttributesFromDBO' method
+        /// </summary>
+        private IEnumerable<IVertexView> GetVertices(SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType myTypeOfAttribute, IEnumerable<IVertex> myObjectUUIDs, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
+        {
+            foreach (var aVertex in myObjectUUIDs)
+            {
+                yield return LoadAndResolveVertex(mySecurityToken, myTransactionToken, aVertex, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph);
+            }
+
+            yield break;
+
+        }
+
+        /// <summary>
+        /// Resolves an attribute 
+        /// </summary>
+        private IEdgeView ResolveAttributeValue(IOutgoingEdgeDefinition attrDefinition, IEdge attributeValue, Int64 myDepth, EdgeList myEdgeList, IVertex mySourceDBObject, String reference, Boolean myUsingGraph, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            #region Get levelKey and UsingGraph
+
+            if (myEdgeList.Level == 0)
+            {
+                myEdgeList = new EdgeList(new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.AttributeID));
+            }
+            else
+            {
+                myEdgeList += new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.AttributeID);
+            }
+
+            // at some deeper level we could get into graph independend results. From this time, we can use the GUID index rather than asking the graph all the time
+            if (myUsingGraph)
+            {
+                myUsingGraph = _ExpressionGraph.IsGraphRelevant(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject);
+            }
+
+            #endregion
+
+            if (attributeValue is IHyperEdge)
+            {
+
+                #region SetReference attribute -> return new Edge
+
+                IEnumerable<IVertexView> resultList = null;
+
+                var edge = ((IHyperEdge)attributeValue);
+
+                if (myUsingGraph)
+                {
+                    var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject, true);
+
+                    resultList = GetVertices(mySecurityToken, myTransactionToken, attrDefinition.SourceVertexType, edge, dbos, myDepth, myEdgeList, reference, myUsingGraph);
+                }
+                else
+                {
+                    resultList = GetVertices(mySecurityToken, myTransactionToken, attrDefinition.SourceVertexType, edge.GetTargetVertices(), myDepth, myEdgeList, reference, myUsingGraph);
+                }
+
+                return new HyperEdgeView(null, resultList.Select(aTargetVertex => new SingleEdgeView(null, aTargetVertex)));
+                #endregion
+
+            }
+            else
+            {
+
+                #region Single reference
+
+                var edge = ((ISingleEdge)attributeValue);
+
+                return new SingleEdgeView(null, LoadAndResolveVertex(mySecurityToken, myTransactionToken, edge.GetTargetVertex(), attrDefinition.SourceVertexType, myDepth, myEdgeList, reference, myUsingGraph));
+
+                #endregion
+
+            }
+        }
+
+        /// <summary>
+        /// This will load the vertex (check for load errors) and get all selected attributes of this vertex
+        /// </summary>
+        private VertexView LoadAndResolveVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertex myObjectUUID, IVertexType myTypeOfAttribute, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph, bool mySelectAllAttributes = false)
+        {
+            var tuple = GetAllSelectedAttributesFromVertex(mySecurityToken, myTransactionToken, myObjectUUID, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph, mySelectAllAttributes);
+            return new VertexView(tuple.Item1, tuple.Item2);
+        }
+
+        /// <summary>
+        /// Returns the depth based on the parameters and settings
+        /// </summary>
+        private long GetDepth(long myDepth, long minDepth, IVertexType myType, IAttributeDefinition myAttribute = null)
+        {
+            Int64 Depth = 0;
+
+            #region Get the depth for this type or from select
+
+            /// This results of all selected attributes and their LevelKey. If U.Friends.Friends.Name is selected, than the MinDepth is 3
+
+            if (myAttribute != null)
+            {
+
+                if (myDepth > -1)
+                    Depth = Math.Max(minDepth, myDepth);
+                else
+                    Depth = Math.Max(minDepth, 0L);
+
+            }
+            else
+            {
+
+                if (myDepth > -1)
+                    Depth = Math.Max(minDepth, myDepth);
+                else
+                    Depth = Math.Max(minDepth, 0L);
+
+            }
+
+            #endregion
+
+            return Depth;
+        }
+
+        /// <summary>
+        /// Get all selections on this <paramref name="myReference"/>, <paramref name="myType"/> and <paramref name="myLevelKey"/>
+        /// </summary>
+        /// <param name="myReference"></param>
+        /// <param name="myType"></param>
+        /// <param name="myLevelKey"></param>
+        /// <returns></returns>
+        private List<SelectionElement> getAttributeSelections(String myReference, IVertexType myType, EdgeList myLevelKey)
+        {
+            if (_Selections.ContainsKey(myReference) && (_Selections[myReference].ContainsKey(myLevelKey)))
+            {
+                return _Selections[myReference][myLevelKey];
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+        /// <summary>
+        /// Get all aggregates on this <paramref name="myReference"/>, <paramref name="myType"/> and <paramref name="myLevelKey"/>
+        /// </summary>
+        /// <param name="myReference"></param>
+        /// <param name="myType"></param>
+        /// <param name="myLevelKey"></param>
+        /// <returns></returns>
+        private List<SelectionElementAggregate> getAttributeAggregates(String myReference, IVertexType myType, EdgeList myLevelKey)
+        {
+            if (_Aggregates.ContainsKey(myReference) && (_Aggregates[myReference].ContainsKey(myLevelKey)))
+            {
+                return _Aggregates[myReference][myLevelKey];
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+        /// <summary>
+        /// Go through each DBO and aggregate them
+        /// </summary>
+        /// <param name="myAggregates"></param>
+        /// <param name="mySelections"></param>
+        /// <param name="myDBOs"></param>
+        /// <param name="myReferencedDBType"></param>
+        /// <returns></returns>
+        private IEnumerable<IVertexView> ExamineDBO_Aggregates(IEnumerable<IVertex> myDBOs, List<SelectionElementAggregate> myAggregates, List<SelectionElement> mySelections, IVertexType myReferencedDBType, Boolean myUsingGraph, Int64 myDepth)
+        {
+
+            #region Aggregate
+
+            if (mySelections.CountIsGreater(0))
+            {
+
+                #region Grouping - each selection is grouped (checked prior)
+
+                var aggregatedGroupings = new Dictionary<GroupingKey, SelectionElementAggregate>();
+
+                #region Create groupings using the ILookup
+
+                var groupedDBOs = myDBOs.ToLookup((dbo) =>
+                {
+                    CheckLoadedDBObjectStream(dbo, myReferencedDBType);
+
+                    #region Create GroupingKey based on the group values and attributes
+
+                    Dictionary<GroupingValuesKey, IComparable> groupingVals = new Dictionary<GroupingValuesKey, IComparable>();
+                    foreach (var selection in mySelections)
+                    {
+                        var attrValue = dbo.GetProperty(selection.Element.AttributeID);
+
+                        groupingVals.Add(new GroupingValuesKey(selection.Element, selection.Alias), attrValue);
+                    }
+                    GroupingKey groupingKey = new GroupingKey(groupingVals);
+
+                    #endregion
+
+                    return groupingKey;
+
+                }, (dbo) =>
+                {
+                    CheckLoadedDBObjectStream(dbo, myReferencedDBType);
+
+                    return dbo;
+                });
+
+                #endregion
+
+                foreach (var group in groupedDBOs)
+                {
+
+                    #region Create group readouts
+
+                    var aggregatedAttributes = new Dictionary<String, Object>();
+
+                    foreach (var aggr in myAggregates)
+                    {
+                        var aggrResult =
+                            aggr.Aggregate.Aggregate(
+                                (group as IEnumerable<IVertex>).Select(
+                                    aVertex => aVertex.GetProperty(aggr.Element.AttributeID)), (IPropertyDefinition)aggr.Element);
+                        
+                        if (aggrResult.Value != null)
+                        {
+                            //aggregatedAttributes.Add(aggr.Alias, aggrResult.Value.Value.GetReadoutValue());
+                            aggregatedAttributes.Add(aggr.Alias, ResolveAggregateResult(aggrResult, myDepth));
+                        }
+
+                    }
+
+                    foreach (var groupingKeyVal in group.Key.Values)
+                    {
+                        aggregatedAttributes.Add(groupingKeyVal.Key.AttributeAlias, groupingKeyVal.Value);
+                    }
+
+                    var dbObjectReadout = new VertexView(aggregatedAttributes, null);
+
+                    #endregion
+
+                    #region Evaluate having if exist and yield return
+
+                    if (_HavingExpression != null)
+                    {
+                        var res = _HavingExpression.IsSatisfyHaving(dbObjectReadout);
+                        if (res)
+                            yield return dbObjectReadout;
+                    }
+                    else
+                    {
+                        yield return dbObjectReadout;
+                    }
+
+                    #endregion
+
+                }
+
+                yield break;
+
+                #endregion
+
+            }
+            else
+            {
+
+                #region No grouping, just aggregates
+
+                var aggregatedAttributes = new Dictionary<String, Object>();
+                VertexView _Vertex;
+
+                #region OR Attribute aggregates
+
+                foreach (var aggr in myAggregates)
+                {
+                    var aggrResult =
+                        aggr.Aggregate.Aggregate(
+                            myDBOs.Where(aVertex => aVertex.HasProperty(aggr.Element.AttributeID)).Select(
+                                dbo => dbo.GetProperty(aggr.Element.AttributeID)), (IPropertyDefinition)aggr.Element);
+                    
+
+                    //aggregatedAttributes.Add(aggr.Alias, aggrResult.Value.GetReadoutValue());
+                    if (aggrResult.Value != null)
+                    {
+                        aggregatedAttributes.Add(aggr.Alias, ResolveAggregateResult(aggrResult, myDepth));
+                    }
+
+                }
+
+                _Vertex = new VertexView(aggregatedAttributes, null);
+
+                #endregion
+
+                #region Check having expression and yield return value
+
+                if (_HavingExpression != null)
+                {
+                    var res = _HavingExpression.IsSatisfyHaving(_Vertex);
+                    if (res)
+                        yield return _Vertex;
+                }
+                else
+                {
+                    yield return _Vertex;
+                }
+
+                #endregion
+
+                yield break;
+
+                #endregion
+
+            }
+
+            #endregion
+
+        }
+
+        /// <summary>
+        /// This will check the exceptional for errors. Depending on the SettingInvalidReferenceHandling an expcetion will be thrown or false will be return on any load error.
+        /// </summary>
+        /// <returns></returns>
+        private Boolean CheckLoadedDBObjectStream(IVertex dbStream, IVertexType myDBType, IAttributeDefinition myTypeAttribute = null)
+        {
+            return true;
+        }
+
+        private Object ResolveAggregateResult(FuncParameter aggrResult, Int64 myDepth)
+        {
+            #region Add aggregate return value to attributes
+
+            if (aggrResult.Value is IHyperEdge)
+            {
+                throw new NotImplementedQLException("TODO");
+
+                //#region Reference edge
+
+                ////myUsingGraph = false;
+
+                ////Depth = GetDepth(myDepth, minDepth, myDBType);
+                //var Depth = myDepth;
+
+                //if (myDepth > 0)
+                //{
+
+                //    var myLevelKey = new EdgeList(new EdgeKey(aggrResult.TypeAttribute));
+
+                //    #region Resolve DBReferences
+
+                //    return ResolveAttributeValue(aggrResult.TypeAttribute, aggrResult.Value, Depth, myLevelKey, null, null, false);
+
+                //    #endregion
+
+                //}
+                //else
+                //{
+                //    GraphDBType type;
+                //    if (aggrResult.TypeAttribute.IsBackwardEdge)
+                //    {
+                //        type = _DBContext.DBTypeManager.GetTypeByUUID(aggrResult.TypeAttribute.BackwardEdgeDefinition.TypeUUID);
+                //    }
+                //    else
+                //    {
+                //        type = aggrResult.TypeAttribute.GetDBType(_DBContext.DBTypeManager);
+                //    }
+
+                //    return GetNotResolvedReferenceEdgeAttributeValue(aggrResult.Value as IReferenceEdge, type, _DBContext);
+
+                //}
+
+                //#endregion
+
+            }
+            else
+            {
+
+                return aggrResult.Value;
+
+            }
+
+            #endregion
+        }
+
+        /// <summary>
+        ///  Group all DBOs and return the readouts
+        /// </summary>
+        /// <param name="myDBObjectStreams"></param>
+        /// <param name="mySelections"></param>
+        /// <param name="myReferencedDBType"></param>
+        /// <returns></returns>
+        private IEnumerable<IVertexView> ExamineDBO_Groupings(IEnumerable<IVertex> myDBObjectStreams, List<SelectionElement> mySelections, IVertexType myReferencedDBType)
+        {
+
+            #region Create groupings using the ILookup
+
+            var _GroupedVertices = myDBObjectStreams.ToLookup((dbo) =>
+            {
+
+                CheckLoadedDBObjectStream(dbo, myReferencedDBType);
+
+                #region Create GroupingKey based on the group values and attributes
+
+                var groupingVals = new Dictionary<GroupingValuesKey, IComparable>();
+
+                foreach (var selection in mySelections)
+                {
+
+                    if (!dbo.HasProperty(selection.Element.AttributeID))
+                    {
+                        continue;
+                    }
+
+                    var attrValue = dbo.GetProperty(selection.Element.AttributeID);
+                    
+
+                    groupingVals.Add(new GroupingValuesKey(selection.Element, selection.Alias), attrValue);
+
+                }
+
+                GroupingKey groupingKey = new GroupingKey(groupingVals);
+
+                #endregion
+
+                return groupingKey;
+
+            }, (dbo) =>
+            {
+                CheckLoadedDBObjectStream(dbo, myReferencedDBType);
+
+                return dbo;
+            });
+
+            #endregion
+
+            foreach (var group in _GroupedVertices)
+            {
+
+                #region No valid grouping keys found
+
+                if (group.Key.Values.IsNullOrEmpty())
+                {
+                    continue;
+                }
+
+                #endregion
+
+                var groupedAttributes = new Dictionary<String, Object>();
+
+                foreach (var groupingKeyVal in group.Key.Values)
+                {
+                    groupedAttributes.Add(groupingKeyVal.Key.AttributeAlias, groupingKeyVal.Value);
+                }
+
+                var _VertexGroup = new VertexView(groupedAttributes, null);
+
+                #region Check having
+
+                if (_HavingExpression != null)
+                {
+
+                    var res = _HavingExpression.IsSatisfyHaving(_VertexGroup);
+
+                    if (res)
+                        yield return _VertexGroup;
+
+                }
+
+                else
+                {
+                    yield return _VertexGroup;
+                }
+
+                #endregion
+
+            }
+
+        }
+
+
+        #endregion
     }
 }

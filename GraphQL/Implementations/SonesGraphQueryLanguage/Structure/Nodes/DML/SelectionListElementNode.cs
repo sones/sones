@@ -45,22 +45,6 @@ namespace sones.GraphQL.Structure.Nodes.DML
                 {
                     SelType = TypesOfSelect.Asterisk;
                 }
-                else if (parseNode.ChildNodes[0].Token.Text == SonesGQLConstants.RHOMBSYMBOL)
-                {
-                    SelType = TypesOfSelect.Rhomb;
-                }
-                else if (parseNode.ChildNodes[0].Token.Text == SonesGQLConstants.MINUSSYMBOL)
-                {
-                    SelType = TypesOfSelect.Minus;
-                }
-                else if (parseNode.ChildNodes[0].Token.Text == SonesGQLConstants.Comperator_Greater)
-                {
-                    SelType = TypesOfSelect.Gt;
-                }
-                else if (parseNode.ChildNodes[0].Token.Text == SonesGQLConstants.Comperator_Smaller)
-                {
-                    SelType = TypesOfSelect.Lt;
-                }
                 else
                 {
                     throw new NotImplementedQLException(parseNode.ChildNodes[0].Token.Text);
@@ -68,7 +52,6 @@ namespace sones.GraphQL.Structure.Nodes.DML
             }
             else if (parseNode.ChildNodes[0].AstNode is SelByTypeNode)
             {
-                SelType = TypesOfSelect.Ad;
                 TypeName = ((SelByTypeNode)parseNode.ChildNodes[0].AstNode).TypeName;
             }
             else

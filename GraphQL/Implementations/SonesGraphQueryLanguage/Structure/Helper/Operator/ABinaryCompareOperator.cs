@@ -84,7 +84,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                             throw new FunctionDoesNotExistException(fcn.FuncName);
                         }
 
-                        FuncParameter pResult = fcn.Function.ExecFunc(myGraphDB, mySecurityToken, myTransactionToken);
+                        FuncParameter pResult = fcn.Function.ExecFunc(null, null, null, myGraphDB, mySecurityToken, myTransactionToken);
 
                         //simpleValue = new AtomValue(fcn.Function.TypeOfResult, ((FuncParameter)pResult.Value).Value); //the new simple value extraced from the function
                         simpleValue = new ValueDefinition(((FuncParameter)pResult).Value);
@@ -126,7 +126,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                     {
                         if (mySimpleValue is TupleDefinition)
                         {
-                            ((TupleDefinition)mySimpleValue).ConvertToAttributeType(complexIDNode.LastAttribute, myGraphDB, mySecurityToken, myTransactionToken);
+                            ((TupleDefinition)mySimpleValue).ConvertToAttributeType(myPluginManager, complexIDNode.LastAttribute, myGraphDB, mySecurityToken, myTransactionToken);
 
                             simpleValue = mySimpleValue;
                         }

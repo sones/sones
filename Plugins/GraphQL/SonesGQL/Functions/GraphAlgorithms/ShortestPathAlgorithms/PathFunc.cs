@@ -62,14 +62,14 @@ namespace ShortestPathAlgorithms
             }
         }
 
-        public override FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
             #region initialize data
 
             // The edge we starting of (e.g. Friends)
-            var typeAttribute = CallingAttribute;
+            var typeAttribute = myAttributeDefinition;
 
-            var startNode = CallingIVertex;
+            var startNode = myDBObject;
 
             var targetNode = (myParams[0].Value as IVertex);
 

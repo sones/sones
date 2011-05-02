@@ -9,6 +9,8 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.ErrorHandling;
 using sones.Library.VersionedPluginManager;
+using sones.Library.PropertyHyperGraph;
+using sones.Plugins.SonesGQL.Function.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
@@ -56,23 +58,23 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        public override FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
-            if (!(CallingObject.GetType().Name.Equals("String")))
+            if (!(myCallingObject is String))
             {
-                throw new InvalidVertexTypeException(CallingObject.GetType().ToString(), "String");
+                throw new FunctionParameterTypeMismatchException(typeof(String), myCallingObject.GetType());
             }
 
             var pos = (Int32)myParams[0].Value;
 
-            StringBuilder resString = new StringBuilder((CallingObject as String).ToString().Substring(0, pos));
+            StringBuilder resString = new StringBuilder((myCallingObject as String).ToString().Substring(0, pos));
             
             foreach (FuncParameter fp in myParams.Skip(1))
             {
                 resString.Append(fp.Value as String);
             }
 
-            resString.Append((CallingObject as String).ToString().Substring(pos));
+            resString.Append((myCallingObject as String).ToString().Substring(pos));
 
             return new FuncParameter(resString.ToString());
         }

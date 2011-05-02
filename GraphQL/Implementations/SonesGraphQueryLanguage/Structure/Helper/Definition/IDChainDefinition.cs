@@ -311,7 +311,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
             }
 
-            var result = Function.ExecFunc(myGraphDB, mySecurityToken, myTransactionToken, evaluatedParams.ToArray());
+            var result = Function.ExecFunc(null, null, null, myGraphDB, mySecurityToken, myTransactionToken, evaluatedParams.ToArray());
 
             return result;
 
@@ -596,11 +596,6 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
             IsValidated = true;
             SelectType = mySelType;
-
-            if (SelectType == TypesOfSelect.Ad)
-            {
-                TypeName = myTypeName;
-            }
 
             _Edges = new List<EdgeKey>();
             LevelKey = new LevelKey();

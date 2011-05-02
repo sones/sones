@@ -8,6 +8,8 @@ using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.VersionedPluginManager;
+using sones.Library.PropertyHyperGraph;
+using sones.Plugins.SonesGQL.Function.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
@@ -48,15 +50,15 @@ namespace sones.Plugins.SonesGQL.Functions
             throw new NotImplementedException();
         }
 
-        public override FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
-            if (CallingObject is IAttributeDefinition)
+            if (myCallingObject is String)
             {
-                return new FuncParameter((CallingObject as IBaseType).ToString().ToLower());
+                return new FuncParameter(((String)myCallingObject).ToLower());
             }
             else
             {
-                throw new NotImplementedException();
+                throw new FunctionParameterTypeMismatchException(typeof(String), myCallingObject.GetType());
             }
         }
 
