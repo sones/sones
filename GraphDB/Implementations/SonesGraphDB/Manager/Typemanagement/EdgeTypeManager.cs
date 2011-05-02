@@ -13,7 +13,7 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         #region Data
 
-        private CanEdgeTypeManager _check = new CanEdgeTypeManager();
+        private CheckEdgeTypeManager _check = new CheckEdgeTypeManager();
         private ExecuteEdgeTypeManager _execute = new ExecuteEdgeTypeManager();
 
         #endregion

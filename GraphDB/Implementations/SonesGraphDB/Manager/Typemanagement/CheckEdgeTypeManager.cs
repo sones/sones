@@ -9,7 +9,7 @@ using sones.GraphDB.Request;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    public class CanEdgeTypeManager: IEdgeTypeHandler
+    public class CheckEdgeTypeManager: IEdgeTypeHandler
     {
         #region IEdgeTypeManager Members
 

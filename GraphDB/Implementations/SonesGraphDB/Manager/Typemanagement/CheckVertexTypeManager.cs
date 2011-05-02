@@ -13,7 +13,7 @@ using sones.GraphDB.Request.CreateVertexTypes;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    internal sealed class CanVertexTypeManager: AVertexTypeManager
+    internal sealed class CheckVertexTypeManager: AVertexTypeManager
     {
 
         #region IVertexTypeManager Members

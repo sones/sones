@@ -59,7 +59,7 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         #region Data
 
-        private CanVertexTypeManager _check = new CanVertexTypeManager();
+        private CheckVertexTypeManager _check = new CheckVertexTypeManager();
         private ExecuteVertexTypeManager _execute = new ExecuteVertexTypeManager();
 
         private IVertexManager _vertexManager;
