@@ -207,11 +207,6 @@ namespace sones.GraphQL.StatementNodes.DML
                                     edgeDefinition.AddEdge(inneredge);
                                 }
 
-                                edgeDefinition.AddVertexID(
-                                    ProcessBinaryExpression(
-                                    (BinaryExpressionDefinition)aTupleElement.Value,
-                                    myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType));
-
                                 #endregion
                             }
                             else
@@ -251,7 +246,16 @@ namespace sones.GraphQL.StatementNodes.DML
                         {
                             if (aTupleElement.Value is ValueDefinition)
                             {
-                                anotheredgeDefinition.AddVertexID(Convert.ToInt64(((ValueDefinition) aTupleElement.Value).Value));
+                                var innerEdge = new EdgePredefinition();
+
+                                foreach (var aStructuredProperty in aTupleElement.Parameters)
+                                {
+                                    innerEdge.AddUnknownProperty(aStructuredProperty.Key, aStructuredProperty.Value);
+                                }
+
+                                innerEdge.AddVertexID(Convert.ToInt64(((ValueDefinition)aTupleElement.Value).Value));
+
+                                anotheredgeDefinition.AddEdge(innerEdge);
                             }
                             else
                             {
@@ -286,7 +290,12 @@ namespace sones.GraphQL.StatementNodes.DML
                     {
                         if (aTupleElement.Value is ValueDefinition)
                         {
-                            #region BinaryExpressionDefinition
+                            #region ValueDefinition
+
+                            foreach (var aProperty in aTupleElement.Parameters)
+                            {
+                                edgeDefinition.AddUnknownProperty(aProperty.Key, aProperty.Value);
+                            }
 
                             edgeDefinition.AddVertexID(Convert.ToInt64(((ValueDefinition) aTupleElement.Value).Value));
 
@@ -310,10 +319,19 @@ namespace sones.GraphQL.StatementNodes.DML
                         {
                             #region BinaryExpressionDefinition
 
-                            edgeDefinition.AddVertexID(
-                                ProcessBinaryExpression(
+                            foreach (var aVertexID in ProcessBinaryExpression(
                                 (BinaryExpressionDefinition)aTupleElement.Value,
-                                myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType));
+                                myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType))
+                            {
+                                var inneredge = new EdgePredefinition();
+
+                                foreach (var aStructuredProperty in aTupleElement.Parameters)
+                                {
+                                    inneredge.AddUnknownProperty(aStructuredProperty.Key, aStructuredProperty.Value);
+                                }
+
+                                edgeDefinition.AddEdge(inneredge);
+                            }
 
                             #endregion
                         }
@@ -332,15 +350,6 @@ namespace sones.GraphQL.StatementNodes.DML
             }
 
             #endregion
-        }
-
-        private static void AddParametersToEdge(Dictionary<string, object> dictionary, ref EdgePredefinition edgeDefinition)
-        {
-            foreach (var aStructuredProperty in dictionary)
-            {
-                edgeDefinition.AddStructuredProperty(aStructuredProperty.Key, Convert.ToDouble(aStructuredProperty.Value));
-            }
-            
         }
 
         private static void ProcessUnstructuredAttribute(IVertexType vertexType, AAttributeAssignOrUpdate aAttributeDefinition, ref RequestInsertVertex result)
