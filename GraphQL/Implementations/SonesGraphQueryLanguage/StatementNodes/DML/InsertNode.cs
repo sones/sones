@@ -193,6 +193,20 @@ namespace sones.GraphQL.StatementNodes.DML
                             {
                                 #region BinaryExpressionDefinition
 
+                                foreach (var aVertexID in ProcessBinaryExpression(
+                                    (BinaryExpressionDefinition)aTupleElement.Value,
+                                    myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType))
+                                {
+                                    var inneredge = new EdgePredefinition();
+                                    
+                                    foreach (var aStructuredProperty in aTupleElement.Parameters)
+	                                {
+                                        inneredge.AddUnknownProperty(aStructuredProperty.Key, aStructuredProperty.Value);
+	                                }
+
+                                    edgeDefinition.AddEdge(inneredge);
+                                }
+
                                 edgeDefinition.AddVertexID(
                                     ProcessBinaryExpression(
                                     (BinaryExpressionDefinition)aTupleElement.Value,
@@ -322,7 +336,11 @@ namespace sones.GraphQL.StatementNodes.DML
 
         private static void AddParametersToEdge(Dictionary<string, object> dictionary, ref EdgePredefinition edgeDefinition)
         {
-            throw new NotImplementedException();
+            foreach (var aStructuredProperty in dictionary)
+            {
+                edgeDefinition.AddStructuredProperty(aStructuredProperty.Key, Convert.ToDouble(aStructuredProperty.Value));
+            }
+            
         }
 
         private static void ProcessUnstructuredAttribute(IVertexType vertexType, AAttributeAssignOrUpdate aAttributeDefinition, ref RequestInsertVertex result)
