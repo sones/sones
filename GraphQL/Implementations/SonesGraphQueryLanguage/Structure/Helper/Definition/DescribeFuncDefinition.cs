@@ -44,24 +44,49 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             if (!String.IsNullOrEmpty(_FuncName))
             {
 
-                #region Specific aggregate
+                #region Specific function
 
-                try
+                //aggregate is user defined
+                if (_FuncName.Contains("."))
                 {
-                    var func = myPluginManager.GetAndInitializePlugin<IGQLFunction>(_FuncName);
+                    try
+                    {
+                        var aggregate = myPluginManager.GetAndInitializePlugin<IGQLFunction>(_FuncName);
 
-                    if (func != null)
-                    {
-                        resultingVertices = new List<IVertexView>() { GenerateOutput(func, _FuncName) };
+                        if (aggregate != null)
+                        {
+                            resultingVertices = new List<IVertexView>() { GenerateOutput(aggregate, _FuncName) };
+                        }
+                        else
+                        {
+                            error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "");
+                        }
                     }
-                    else
+                    catch (ASonesException e)
                     {
-                        error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "");
+                        error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "", e);
                     }
                 }
-                catch (ASonesException e)
+                //maybe user forgot prefix "sones."
+                else
                 {
-                    error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "", e);
+                    try
+                    {
+                        var aggregate = myPluginManager.GetAndInitializePlugin<IGQLFunction>("SONES." + _FuncName);
+
+                        if (aggregate != null)
+                        {
+                            resultingVertices = new List<IVertexView>() { GenerateOutput(aggregate, "SONES." + _FuncName) };
+                        }
+                        else
+                        {
+                            error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "");
+                        }
+                    }
+                    catch (ASonesException e)
+                    {
+                        error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "", e);
+                    }
                 }
 
                 #endregion
@@ -124,16 +149,20 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             _Function.Add("Function", myFunc.FunctionName);
             _Function.Add("Type", myFuncName);
 
+            int count = 1;
             foreach (var parameter in ((IPluginable)myFunc).SetableParameters)
             {
-                temp.Add("Key ", parameter.Key);
-                temp.Add("Value ", parameter.Value);
+                temp.Add("Parameter " + count.ToString() + " Key: ", parameter.Key);
+
+                count++;
             }
-            
+
+            count = 1;
             foreach (var parameter in myFunc.GetParameters())
             {
-                temp2.Add("Name", parameter.Name);
-                temp2.Add("Value ", parameter.Value);
+                temp2.Add("Parameter " + count.ToString() + " Name: ", parameter.Name);
+
+                count++;
             }
 
             edges.Add("SetableParameters", new EdgeView(temp, null));

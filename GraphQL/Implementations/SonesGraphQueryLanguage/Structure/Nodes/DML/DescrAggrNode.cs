@@ -4,6 +4,7 @@ using Irony.Parsing;
 using sones.GraphQL.GQL.Structure.Nodes.DML;
 using sones.GraphQL.GQL.Structure.Helper.Definition;
 using System.Diagnostics;
+using System.Linq;
 using sones.GraphQL.Result;
 
 namespace sones.GraphQL.Structure.Nodes.DML
@@ -20,10 +21,9 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            if (parseNode.ChildNodes != null && parseNode.ChildNodes.Count != 0)
-            {
-                _DescrAggrDefinition = new DescribeAggregateDefinition(parseNode.ChildNodes[1].Token.ValueString.ToUpper());
-            }
+
+            _DescrAggrDefinition = new DescribeAggregateDefinition(parseNode.ChildNodes[1].Token.ValueString.ToUpper());
+
         }
 
         #endregion

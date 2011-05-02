@@ -36,11 +36,12 @@ namespace sones.GraphQL.StatementNodes.DML
             SourceLocation = parseNode.ChildNodes[2].Token.ValueString;
             // parseNode.ChildNodes[3] - format symbol
             ImportFormat = parseNode.ChildNodes[4].Token.Text;
-            ParallelTasks = (parseNode.ChildNodes[5].AstNode as ParallelTasksNode).ParallelTasks;
-            Comments = (parseNode.ChildNodes[6].AstNode as CommentsNode).Comments;
-            Offset = (parseNode.ChildNodes[7].AstNode as OffsetNode).Count;
-            Limit = (parseNode.ChildNodes[8].AstNode as LimitNode).Count;
-            BreakOnError = (bool)parseNode.ChildNodes[9].AstNode;
+
+            //ParallelTasks = (parseNode.ChildNodes[5].AstNode as ParallelTasksNode).ParallelTasks;
+            //Comments = (parseNode.ChildNodes[6].AstNode as CommentsNode).Comments;
+            //Offset = (parseNode.ChildNodes[7].AstNode as OffsetNode).Count;
+            //Limit = (parseNode.ChildNodes[8].AstNode as LimitNode).Count;
+            //BreakOnError = (bool)parseNode.ChildNodes[9].AstNode;
         }
 
         #endregion

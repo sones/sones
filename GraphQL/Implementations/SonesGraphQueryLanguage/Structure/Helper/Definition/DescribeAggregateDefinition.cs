@@ -52,22 +52,47 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 #region Specific aggregate
 
-                try
+                //aggregate is user defined
+                if (_AggregateName.Contains("."))
                 {
-                    var aggregate = myPluginManager.GetAndInitializePlugin<IGQLAggregate>(_AggregateName);
+                    try
+                    {
+                        var aggregate = myPluginManager.GetAndInitializePlugin<IGQLAggregate>(_AggregateName);
 
-                    if (aggregate != null)
-                    {
-                        resultingVertices = new List<IVertexView>() { GenerateOutput(aggregate, _AggregateName) };
+                        if (aggregate != null)
+                        {
+                            resultingVertices = new List<IVertexView>() { GenerateOutput(aggregate, _AggregateName) };
+                        }
+                        else
+                        {
+                            error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "");
+                        }
                     }
-                    else
+                    catch (ASonesException e)
                     {
-                        error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "");
+                        error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "", e);
                     }
                 }
-                catch (ASonesException e)
+                //maybe user forgot prefix "sones."
+                else
                 {
-                    error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "", e);
+                    try
+                    {
+                        var aggregate = myPluginManager.GetAndInitializePlugin<IGQLAggregate>("SONES." + _AggregateName);
+
+                        if (aggregate != null)
+                        {
+                            resultingVertices = new List<IVertexView>() { GenerateOutput(aggregate, "SONES." + _AggregateName) };
+                        }
+                        else
+                        {
+                            error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "");
+                        }
+                    }
+                    catch (ASonesException e)
+                    {
+                        error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "", e);
+                    }
                 }
 
                 #endregion
@@ -130,10 +155,12 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             _Aggregate.Add("Aggregate", myAggregate.AggregateName);
             _Aggregate.Add("Type", myAggrName);
 
+            int count = 1;
             foreach (var parameter in ((IPluginable)myAggregate).SetableParameters)
             {
-                temp.Add("Key ", parameter.Key);
-                temp.Add("Value ", parameter.Value);
+                temp.Add("Parameter " + count.ToString() + " Key: ", parameter.Key);
+
+                count++;
             }
 
             edges.Add("SetableParameters", new EdgeView(temp, null));

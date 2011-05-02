@@ -228,7 +228,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             BaseTypes type;
             if (!Enum.TryParse(myTypeName, out type))
-                return false;
+                return true;
 
             return type == BaseTypes.Vertex;
         }

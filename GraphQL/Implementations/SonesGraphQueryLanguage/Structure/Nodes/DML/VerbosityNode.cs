@@ -10,7 +10,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         #endregion

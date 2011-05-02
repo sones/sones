@@ -1335,7 +1335,7 @@ namespace sones.GraphQL
 
             DescrArgument.Rule = DescrAggrStmt | DescrAggrsStmt | DescrEdgeStmt | DescrEdgesStmt | DescrTypeStmt | DescrTypesStmt | DescrFuncStmt | DescrFunctionsStmt | DescrIdxStmt | DescrIdxsStmt;
 
-            DescrAggrStmt.Rule = S_AGGREGATE + Id_simple;
+            DescrAggrStmt.Rule = S_AGGREGATE + string_literal;
 
             DescrAggrsStmt.Rule = S_AGGREGATES;
 
@@ -1347,7 +1347,7 @@ namespace sones.GraphQL
 
             DescrTypesStmt.Rule = S_VERTEX + S_TYPES;
 
-            DescrFuncStmt.Rule = S_FUNCTION + Id_simple;
+            DescrFuncStmt.Rule = S_FUNCTION + string_literal;
 
             DescrFunctionsStmt.Rule = S_FUNCTIONS;
 
