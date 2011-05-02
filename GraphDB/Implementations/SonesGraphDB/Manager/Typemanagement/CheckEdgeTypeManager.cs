@@ -15,32 +15,30 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         IEdgeType IEdgeTypeHandler.GetEdgeType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         IEdgeType IEdgeTypeHandler.GetEdgeType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         IEnumerable<IEdgeType> IEdgeTypeHandler.GetAllEdgeTypes(TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         IEdgeType IEdgeTypeHandler.AddEdgeType(IEnumerable<EdgeTypePredefinition> myEdgeTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         void IEdgeTypeHandler.RemoveEdgeTypes(IEnumerable<IEdgeType> myEdgeTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
         }
 
         void IEdgeTypeHandler.UpdateEdgeType(IEnumerable<EdgeTypePredefinition> myEdgeTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
         }
 
         #endregion

@@ -15,11 +15,55 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         IEdgeType IEdgeTypeHandler.GetEdgeType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            //#region get static types
+
+            //if (Enum.IsDefined(typeof(BaseTypes), myTypeId) && _baseTypes.ContainsKey(((BaseTypes)myTypeId).ToString()))
+            //{
+            //    return _baseTypes[((BaseTypes)myTypeId).ToString()];
+            //}
+
+            //#endregion
+
+
+            //#region get from fs
+
+            //var vertex = Get(myTypeId, myTransaction, mySecurity);
+
+            //if (vertex == null)
+            //    throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeId));
+
+            //return new VertexType(vertex);
+
+            //#endregion
             throw new NotImplementedException();
+
         }
 
         IEdgeType IEdgeTypeHandler.GetEdgeType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            //if (String.IsNullOrWhiteSpace(myTypeName))
+            //    throw new ErrorHandling.EmptyEdgeTypeNameException();
+
+            //#region get static types
+
+            //if (_baseTypes.ContainsKey(myTypeName))
+            //{
+            //    return _baseTypes[myTypeName];
+            //}
+
+            //#endregion
+
+            //#region get from fs
+
+            //var vertex = Get(myTypeName, myTransaction, mySecurity);
+
+            //if (vertex == null)
+            //    throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeName));
+
+            //return new VertexType(vertex);
+
+            //#endregion
+
             throw new NotImplementedException();
         }
 
