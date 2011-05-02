@@ -337,7 +337,7 @@ namespace sones.GraphQL.StatementNodes.DML
                         }
                         else
                         {
-                            throw new NotImplementedQLException("TODO");
+                            throw new NotImplementedQLException("");
                         }
                     }
 
