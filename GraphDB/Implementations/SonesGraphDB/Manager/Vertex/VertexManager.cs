@@ -49,6 +49,17 @@ namespace sones.GraphDB.Manager.Vertex
         /// </summary>
         private IQueryPlanManager _queryPlanManager;
 
+        private IDManager _idManager;
+
+        #endregion
+
+        #region c'tor
+
+        public VertexManager(IDManager myIDManager)
+        {
+            _idManager = myIDManager;
+        }
+
         #endregion
 
         #region IVertexManager Members
@@ -272,7 +283,17 @@ namespace sones.GraphDB.Manager.Vertex
 
         private VertexAddDefinition RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            long vertexID = _vertexTypeManager.ExecuteManager.GetUniqueVertexID(myVertexType.ID).GetNextID();
+            long vertexID;
+            if (myInsertDefinition.VertexUUID.HasValue)
+            {
+                _idManager[myVertexType.ID].SetToMaxID(myInsertDefinition.VertexUUID.Value);
+                vertexID = myInsertDefinition.VertexUUID.Value;
+            }
+            else
+            {
+                vertexID = _idManager[myVertexType.ID].GetNextID();
+            }
+
             var source = new VertexInformation(myVertexType.ID, vertexID);
             long date = DateTime.UtcNow.ToBinary();
 

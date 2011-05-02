@@ -29,10 +29,6 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public abstract void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
 
-        public abstract UniqueID GetUniqueVertexID(IVertexType vertexType);
-
-        public abstract UniqueID GetUniqueVertexID(long myVertexTypeID);
-
         #endregion
 
         /// <summary>

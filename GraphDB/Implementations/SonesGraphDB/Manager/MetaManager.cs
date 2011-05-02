@@ -70,11 +70,11 @@ namespace sones.GraphDB.Manager
         /// <param name="myPlugins">The plugin definitions</param>
         /// <param name="myPluginManager">Used to load pluginable manager</param>
         /// <param name="myApplicationSettings">The current application settings</param>
-        private MetaManager(IVertexStore myVertexStore)
+        private MetaManager(IVertexStore myVertexStore, IDManager myIDManager)
         {
             _vertexStore = myVertexStore;
-            _vertexTypeManager = new VertexTypeManager();
-            _vertexManager = new VertexManager();
+            _vertexTypeManager = new VertexTypeManager(myIDManager);
+            _vertexManager = new VertexManager(myIDManager);
             _edgeTypeManager = new EdgeTypeManager();
             _queryPlanManager = new QueryPlanManager();
         }
@@ -83,9 +83,9 @@ namespace sones.GraphDB.Manager
 
         #region IMetaManager Members
 
-        public static IMetaManager CreateMetaManager(IVertexStore myVertexStore, GraphDBPlugins myPlugins, GraphDBPluginManager myPluginManager, GraphApplicationSettings myApplicationSettings, TransactionToken myTransaction, SecurityToken mySecurity)
+        public static IMetaManager CreateMetaManager(IVertexStore myVertexStore, IDManager myIDManager, GraphDBPlugins myPlugins, GraphDBPluginManager myPluginManager, GraphApplicationSettings myApplicationSettings, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var result = new MetaManager(myVertexStore);
+            var result = new MetaManager(myVertexStore, myIDManager);
 
             result.Initialize();
             result.Load();

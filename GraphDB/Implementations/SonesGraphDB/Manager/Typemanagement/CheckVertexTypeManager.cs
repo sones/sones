@@ -18,16 +18,6 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region IVertexTypeManager Members
 
-        public override UniqueID GetUniqueVertexID(IVertexType vertexType)
-        {
-            return null;
-        }
-
-        public override UniqueID GetUniqueVertexID(long myVertexTypeID)
-        {
-            return null;
-        }
-
         public override IVertexType GetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             return null;

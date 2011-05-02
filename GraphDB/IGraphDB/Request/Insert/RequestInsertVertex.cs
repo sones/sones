@@ -27,6 +27,11 @@ namespace sones.GraphDB.Request
         /// </summary>
         public string Edition { get; private set; }
 
+        /// <summary>
+        /// The UUID of the vertex.
+        /// </summary>
+        public long? VertexUUID { get; private set; }
+
         //TODO: make dictionaries readonly
         /// <summary>
         /// The well defined properties of a vertex.
@@ -78,6 +83,20 @@ namespace sones.GraphDB.Request
             Edition = myEdition;
 
             return this;
+        }
+
+
+        /// <summary>
+        /// Sets the UUID of the vertex. If this is not done, an ID is creted by the system.
+        /// </summary>
+        /// <param name="myID">The ID of the vertex.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestInsertVertex SetUUID(long myID)
+        {
+            VertexUUID = myID;
+
+            return this;
+            
         }
 
         /// <summary>

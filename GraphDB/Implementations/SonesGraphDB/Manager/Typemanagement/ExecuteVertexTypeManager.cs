@@ -24,14 +24,15 @@ namespace sones.GraphDB.Manager.TypeManagement
     internal class ExecuteVertexTypeManager: AVertexTypeManager
     {
         private IDictionary<string, IVertexType> _baseTypes = new Dictionary<String, IVertexType>();
-        private IDictionary<long, UniqueID> _vertexIDs = new Dictionary<long, UniqueID>();
         private IVertexManager _vertexManager;
         private IIndexManager _indexManager;
-        private UniqueID _LastAttrID;
-        private UniqueID _LastTypeID;
         private IManagerOf<IEdgeTypeHandler> _edgeManager;
+        private IDManager _idManager;
 
-
+        public ExecuteVertexTypeManager(IDManager myIDManager)
+        {
+            _idManager = myIDManager;
+        }
 
         /// <summary>
         /// A property expression on VertexType.Name
@@ -50,13 +51,6 @@ namespace sones.GraphDB.Manager.TypeManagement
 
 
         #region IVertexTypeManager Members
-
-       
-        public override UniqueID GetUniqueVertexID(IVertexType myVertexType)
-        {
-            myVertexType.CheckNull("myVertexType");
-            return _vertexIDs[myVertexType.ID];
-        }
 
         public override IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
@@ -109,11 +103,6 @@ namespace sones.GraphDB.Manager.TypeManagement
             Update(myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
-        public override UniqueID GetUniqueVertexID(long myVertexTypeID)
-        {
-            return _vertexIDs[myVertexTypeID];
-        }
-
         public override IVertexType GetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region get static types
@@ -146,7 +135,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             var count = myVertexTypeDefinitions.Count();
 
             //This operation reserves #count ids for this operation.
-            var firstTypeID = _LastTypeID.ReserveIDs(count);
+            var firstTypeID = _idManager.VertexTypeID.ReserveIDs(count);
 
             //Contains dictionary of vertex name to vertex predefinition.
             var defsByVertexName = CanAddCheckDuplicates(myVertexTypeDefinitions);
@@ -185,8 +174,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                     mySecurity,
                     myTransaction));
 
-                _vertexIDs.Add(result[resultPos].ID, new UniqueID());
-
             }
 
             #region Store Attributes
@@ -201,7 +188,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 if (current.Value.Properties == null)
                     continue;
 
-                var firstAttrID = _LastAttrID.ReserveIDs(current.Value.PropertyCount);
+                var firstAttrID = _idManager[(long)BaseTypes.Attribute].ReserveIDs(current.Value.PropertyCount);
                 var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - 1;
 
                 foreach (var prop in current.Value.Properties)
@@ -233,7 +220,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 if (current.Value.BinaryProperties == null)
                     continue;
 
-                var firstAttrID =_LastAttrID.ReserveIDs( current.Value.BinaryPropertyCount);
+                var firstAttrID = _idManager[(long)BaseTypes.Attribute].ReserveIDs(current.Value.BinaryPropertyCount);
                 var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.BinaryPropertyCount - 1;
 
                 foreach (var prop in current.Value.BinaryProperties)
@@ -261,7 +248,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 if (current.Value.OutgoingEdges == null)
                     continue;
 
-                var firstAttrID = _LastAttrID.ReserveIDs(current.Value.OutgoingEdgeCount);
+                var firstAttrID = _idManager[(long)BaseTypes.Attribute].ReserveIDs(current.Value.OutgoingEdgeCount);
                 var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.OutgoingEdgeCount - current.Value.BinaryPropertyCount - 1;
 
                 foreach (var edge in current.Value.OutgoingEdges)
@@ -293,7 +280,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 if (current.Value.IncomingEdges == null)
                     continue;
 
-                var firstAttrID = _LastAttrID.ReserveIDs( current.Value.IncomingEdgeCount);
+                var firstAttrID = _idManager[(long)BaseTypes.Attribute].ReserveIDs(current.Value.IncomingEdgeCount);
                 var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.BinaryPropertyCount - current.Value.OutgoingEdgeCount - current.Value.IncomingEdgeCount - 1;
 
                 foreach (var edge in current.Value.IncomingEdges)
@@ -733,8 +720,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public void Load(TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            _LastTypeID = new UniqueID(GetMaxID((long)BaseTypes.VertexType, myTransaction, mySecurity) + 1);
-            _LastAttrID = new UniqueID(Math.Max(
+            _idManager.VertexTypeID.SetToMaxID(GetMaxID((long)BaseTypes.VertexType, myTransaction, mySecurity) + 1);
+            _idManager[(long)BaseTypes.Attribute].SetToMaxID(
+                        Math.Max(
                             GetMaxID((long)BaseTypes.Property, myTransaction, mySecurity),
                             Math.Max(
                                 GetMaxID((long)BaseTypes.OutgoingEdge, myTransaction, mySecurity),

@@ -9,20 +9,6 @@ namespace sones.GraphDB.Manager.TypeManagement
     public interface IVertexTypeHandler
     {
         /// <summary>
-        /// Returns an threadsafe auto-incremented ID.
-        /// </summary>
-        /// <param name="vertexType">The vertex type for that the ID is needed.</param>
-        /// <returns>An ID that is unique for the given vertex type.</returns>
-        UniqueID GetUniqueVertexID(IVertexType vertexType);
-
-        /// <summary>
-        /// Returns an threadsafe auto-incremented ID.
-        /// </summary>
-        /// <param name="myVertexTypeID">The ID of the vertex type for that the ID is needed.</param>
-        /// <returns>An ID that is unique for the given vertex type.</returns>
-        UniqueID GetUniqueVertexID(long myVertexTypeID);
-
-        /// <summary>
         /// Gets a vertex type by id.
         /// </summary>
         /// <param name="myTypeId">The id of the vertex type.</param>
