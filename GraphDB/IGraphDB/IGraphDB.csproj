@@ -149,9 +149,11 @@
     <Compile Include="Expression\Tree\Literals\SingleLiteralExpression.cs" />
     <Compile Include="Expression\Tree\IExpression.cs" />
     <Compile Include="Expression\Tree\UnaryExpression.cs" />
-    <Compile Include="Request\Insert\EdgeDefinition.cs" />
+    <Compile Include="Request\Insert\EdgePredefinition.cs" />
+    <Compile Include="Request\Insert\IPropertyProvider.cs" />
     <Compile Include="Request\Insert\RequestInsertVertex.cs" />
     <Compile Include="Request\IRequestStatistics.cs" />
+    <Compile Include="Request\IUnknownProvider.cs" />
     <Compile Include="Request\RebuildIndices\RequestRebuildIndices.cs" />
     <Compile Include="Request\RequestStatistics.cs" />
     <Compile Include="IGraphDB.cs" />

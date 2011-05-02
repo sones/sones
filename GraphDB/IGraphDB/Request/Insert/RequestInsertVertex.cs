@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using sones.GraphDB.Request.Insert;
 
 
 namespace sones.GraphDB.Request
@@ -8,7 +9,7 @@ namespace sones.GraphDB.Request
     /// <summary>
     /// A request for insterting a new vertex.
     /// </summary>
-    public sealed class RequestInsertVertex : IRequest
+    public sealed class RequestInsertVertex : IRequest, IPropertyProvider
     {
         #region data
 
@@ -56,6 +57,12 @@ namespace sones.GraphDB.Request
         /// </summary>
         public IEnumerable<EdgePredefinition> OutgoingEdges { get { return _edges; } }
         private HashSet<EdgePredefinition> _edges;
+
+        /// <summary>
+        /// The unknwon properties.
+        /// </summary>
+        public IDictionary<string, object> UnknownProperties { get { return _unknown; } }
+        private IDictionary<string, object> _unknown;
 
         #endregion
 
@@ -128,6 +135,19 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
+        /// Adds a new unstructured property
+        /// </summary>
+        /// <param name="myPropertyName">The name of the property</param>
+        /// <param name="myProperty">The value of the property</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestInsertVertex AddUnknownProperty(String myPropertyName, Object myProperty)
+        {
+            _unknown = _unknown ?? new Dictionary<String, Object>();
+            _unknown.Add(myPropertyName, myProperty);
+
+            return this;
+        }
+        /// <summary>
         /// Adds a new binary property
         /// </summary>
         /// <param name="myPropertyName">The name of the property</param>
@@ -189,6 +209,39 @@ namespace sones.GraphDB.Request
         GraphDBAccessMode IRequest.AccessMode
         {
             get { return GraphDBAccessMode.ReadWrite; }
+        }
+
+        #endregion
+
+
+        #region IUnknownProvider Members
+
+        #endregion
+
+        #region IPropertyProvider Members
+
+        IPropertyProvider IPropertyProvider.AddStructuredProperty(string myPropertyName, IComparable myProperty)
+        {
+            return AddStructuredProperty(myPropertyName, myProperty);
+        }
+
+        IPropertyProvider IPropertyProvider.AddUnstructuredProperty(string myPropertyName, object myProperty)
+        {
+            return AddUnstructuredProperty(myPropertyName, myProperty);
+        }
+
+        IPropertyProvider IPropertyProvider.AddUnknownProperty(string myPropertyName, object myProperty)
+        {
+            return AddUnknownProperty(myPropertyName, myProperty);
+        }
+
+        #endregion
+
+        #region IUnknownProvider Members
+
+        void IUnknownProvider.ClearUnknown()
+        {
+            _unknown = null;
         }
 
         #endregion

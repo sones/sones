@@ -28,12 +28,12 @@ namespace sones.Library.Commons.VertexStore.Definitions
         /// <summary>
         /// The structured properties
         /// </summary>
-        public readonly Dictionary<Int64, IComparable> StructuredProperties;
+        public readonly IDictionary<Int64, IComparable> StructuredProperties;
 
         /// <summary>
         /// The unstructured properties
         /// </summary>
-        public readonly Dictionary<String, Object> UnstructuredProperties;
+        public readonly IDictionary<String, Object> UnstructuredProperties;
 
         /// <summary>
         /// The property id of the edge
@@ -79,8 +79,8 @@ namespace sones.Library.Commons.VertexStore.Definitions
             String myComment,
             long myCreationDate,
             long myModificationDate,
-            Dictionary<Int64, IComparable> myStructuredProperties,
-            Dictionary<String, Object> myUnstructuredProperties)
+            IDictionary<Int64, IComparable> myStructuredProperties,
+            IDictionary<String, Object> myUnstructuredProperties)
         {
             PropertyID = myPropertyID;
             EdgeTypeID = myEdgeTypeID;

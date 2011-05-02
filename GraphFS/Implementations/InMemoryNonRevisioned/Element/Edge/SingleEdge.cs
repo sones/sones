@@ -51,8 +51,8 @@ namespace sones.GraphFS.Element.Edge
             String myComment,
             long myCreationDate,
             long myModificationDate,
-            Dictionary<Int64, IComparable> myStructuredProperties,
-            Dictionary<String, Object> myUnstructuredProperties)
+            IDictionary<Int64, IComparable> myStructuredProperties,
+            IDictionary<String, Object> myUnstructuredProperties)
             : base(myComment, myCreationDate, myModificationDate, myStructuredProperties, myUnstructuredProperties)
         {
             _edgeTypeID = myEdgeTypeID;

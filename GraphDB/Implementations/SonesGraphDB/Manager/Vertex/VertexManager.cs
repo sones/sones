@@ -18,6 +18,8 @@ using sones.GraphDB.TypeSystem;
 using sones.Plugins.Index.Interfaces;
 using sones.Library.LanguageExtensions;
 using sones.GraphDB.Expression.Tree.Literals;
+using System.Collections;
+using sones.GraphDB.Request.Insert;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -122,6 +124,9 @@ namespace sones.GraphDB.Manager.Vertex
             if (vertexType.IsAbstract)
                 throw new AbstractConstraintViolationException(myInsertDefinition.VertexTypeName);
 
+            ConvertUnknownProperties(myInsertDefinition, vertexType);
+
+
             var mandatoryProps = vertexType.GetPropertyDefinitions(true).Where(IsMustSetProperty).ToArray();
 
 
@@ -140,6 +145,33 @@ namespace sones.GraphDB.Manager.Vertex
 
             if (myInsertDefinition.BinaryProperties != null)
                 CheckAddBinaryProperties(myInsertDefinition, vertexType);
+        }
+
+        private void ConvertUnknownProperties(IPropertyProvider myPropertyProvider, IBaseType myBaseType)
+        {
+            if (myPropertyProvider.UnknownProperties != null)
+            {
+                foreach (var unknownProp in myPropertyProvider.UnknownProperties)
+                {
+                    if (myBaseType.HasProperty(unknownProp.Key))
+                    {
+                        if (unknownProp.Value is IComparable)
+                        {
+                            myPropertyProvider.AddStructuredProperty(unknownProp.Key, (IComparable)unknownProp.Value);
+                        }
+                        else
+                        {
+                            //TODO: better exception
+                            throw new Exception("Type of property does not match.");
+                        }
+                    }
+                    else
+                    {
+                        myPropertyProvider.AddUnstructuredProperty(unknownProp.Key, unknownProp.Value);
+                    }
+                }
+                myPropertyProvider.ClearUnknown();
+            }
         }
 
         private void CheckMandatoryConstraint(RequestInsertVertex myInsertDefinition, IEnumerable<IPropertyDefinition> myMandatoryProperties)
@@ -300,22 +332,27 @@ namespace sones.GraphDB.Manager.Vertex
             IEnumerable<SingleEdgeAddDefinition> singleEdges;
             IEnumerable<HyperEdgeAddDefinition> hyperEdges;
 
-            CreateEdgeAddDefinitions(myInsertDefinition, myVertexType, myTransaction, mySecurity, source, date, out singleEdges, out hyperEdges);
+            CreateEdgeAddDefinitions(myInsertDefinition.OutgoingEdges, myVertexType, myTransaction, mySecurity, source, date, out singleEdges, out hyperEdges);
 
 
             var binaries = (myInsertDefinition.BinaryProperties == null)
                             ? null
                             : myInsertDefinition.BinaryProperties.Select(x => new StreamAddDefinition(myVertexType.GetAttributeDefinition(x.Key).AttributeID, x.Value));
 
-            var structured = (myInsertDefinition.StructuredProperties == null)
-                             ? null
-                             : myInsertDefinition.StructuredProperties.ToDictionary(x => myVertexType.GetAttributeDefinition(x.Key).AttributeID, x=>x.Value);
+            var structured = ConvertStructuredProperties(myInsertDefinition, myVertexType);
             
             return new VertexAddDefinition(vertexID, myVertexType.ID, myInsertDefinition.Edition, hyperEdges, singleEdges, binaries, myInsertDefinition.Comment, date, date, structured, myInsertDefinition.UnstructuredProperties);
         }
 
+        private static Dictionary<long, IComparable> ConvertStructuredProperties(IPropertyProvider myInsertDefinition, IBaseType myType)
+        {
+            return  (myInsertDefinition.StructuredProperties == null)
+                             ? null
+                             : myInsertDefinition.StructuredProperties.ToDictionary(x => myType.GetAttributeDefinition(x.Key).AttributeID, x => x.Value);
+        }
+
         private void CreateEdgeAddDefinitions(
-            RequestInsertVertex myInsertDefinition, 
+            IEnumerable<EdgePredefinition> myOutgoingEdges, 
             IVertexType myVertexType, 
             TransactionToken myTransaction, 
             SecurityToken mySecurity, 
@@ -326,12 +363,12 @@ namespace sones.GraphDB.Manager.Vertex
         {
             outSingleEdges = null;
             outHyperEdges = null;
-            if (myInsertDefinition.OutgoingEdges == null)
+            if (myOutgoingEdges == null)
                 return;
 
             var singleEdges = new Dictionary<String, SingleEdgeAddDefinition>();
             var hyperEdges = new Dictionary<String, HyperEdgeAddDefinition>();
-            foreach (var edgeDef in myInsertDefinition.OutgoingEdges)
+            foreach (var edgeDef in myOutgoingEdges)
             {
                 var attrDef = myVertexType.GetOutgoingEdgeDefinition(edgeDef.EdgeName);
 
@@ -372,14 +409,12 @@ namespace sones.GraphDB.Manager.Vertex
 
         private static HyperEdgeAddDefinition CreateHyperEdgeAddDefinition(VertexInformation source, long date, EdgePredefinition edgeDef, IOutgoingEdgeDefinition attrDef, ISet<VertexInformation> vertexIDs)
         {
-            //TODO properties
-            return new HyperEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, vertexIDs.Select(x => CreateSingleEdgeAddDefinition(date, edgeDef, attrDef, source, x)), edgeDef.Comment, date, date, null, null);
+            return new HyperEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, vertexIDs.Select(x => CreateSingleEdgeAddDefinition(date, edgeDef, attrDef, source, x)), edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef,attrDef.EdgeType), edgeDef.UnstructuredProperties);
         }
 
         private static SingleEdgeAddDefinition CreateSingleEdgeAddDefinition(long date, EdgePredefinition edgeDef, IOutgoingEdgeDefinition attrDef, VertexInformation source, VertexInformation target)
         {
-            //TODO set structured properties on edge
-            return new SingleEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, target, edgeDef.Comment, date, date, null, null);
+            return new SingleEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, target, edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, attrDef.EdgeType), edgeDef.UnstructuredProperties);
         }
 
         private static void CheckTargetVertices(IOutgoingEdgeDefinition attrDef, IEnumerable<VertexInformation> vertexIDs)

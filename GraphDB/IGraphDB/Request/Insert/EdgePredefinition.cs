@@ -2,13 +2,14 @@
 using sones.GraphDB.Expression;
 using System.Collections.Generic;
 using System.IO;
+using sones.GraphDB.Request.Insert;
 
 namespace sones.GraphDB.Request
 {
     /// <summary>
     /// The definition of an edge.
     /// </summary>
-    public sealed class EdgePredefinition
+    public sealed class EdgePredefinition: IPropertyProvider
     {
         #region data
 
@@ -37,20 +38,26 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The well defined properties of a vertex.
         /// </summary>
-        public IEnumerable<KeyValuePair<String, IComparable>> StructuredProperties { get { return _structured; } }
-        private Dictionary<string, IComparable> _structured;
+        public IDictionary<String, IComparable> StructuredProperties { get { return _structured; } }
+        private Dictionary<String, IComparable> _structured;
 
         /// <summary>
         /// The unstructured part of a vertex.
         /// </summary>
-        public IEnumerable<KeyValuePair<String, Object>> UnstructuredProperties { get { return _unstructured; } }
-        private Dictionary<string, object> _unstructured;
+        public IDictionary<String, Object> UnstructuredProperties { get { return _unstructured; } }
+        private Dictionary<String, Object> _unstructured;
 
         /// <summary>
-        /// The binaries of a vertex.
+        /// The properties where the user does not know if it is structured or not.
         /// </summary>
-        public IEnumerable<KeyValuePair<String, Stream>> BinaryProperties { get { return _binaries; } }
-        private Dictionary<string, Stream> _binaries;
+        public IDictionary<String, Object> UnknownProperties { get { return _unknown; } }
+        private Dictionary<String, Object> _unknown;
+
+        /// <summary>
+        /// The edges contained by this hyper edge.
+        /// </summary>
+        public IEnumerable<EdgePredefinition> ContainedEdges { get { return _edges; } }
+        private List<EdgePredefinition> _edges;
 
         #endregion
 
@@ -98,17 +105,31 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds a new binary property
+        /// Adds a new unknown property
         /// </summary>
         /// <param name="myPropertyName">The name of the property</param>
-        /// <param name="myStream">The value of the property</param>
+        /// <param name="myProperty">The value of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgePredefinition AddBinaryProperty(String myPropertyName, Stream myStream)
+        public EdgePredefinition AddUnknownProperty(String myPropertyName, Object myProperty)
         {
-            _binaries = _binaries ?? new Dictionary<String, Stream>();
-            _binaries.Add(myPropertyName, myStream);
+            _unknown = _unknown ?? new Dictionary<String, Object>();
+            _unknown.Add(myPropertyName, myProperty);
 
             return this;
+        }
+
+        /// <summary>
+        /// Adds an edge to this edge.
+        /// </summary>
+        /// <param name="myContainedEdge">The edges that will be contained by this hyper edge.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public EdgePredefinition AddEdge(EdgePredefinition myContainedEdge)
+        {
+            _edges = _edges ?? new List<EdgePredefinition>();
+            _edges.Add(myContainedEdge);
+
+            return this;
+
         }
 
         /// <summary>
@@ -161,6 +182,34 @@ namespace sones.GraphDB.Request
             _ids.UnionWith(myVertexID);
 
             return this;
+        }
+
+        #endregion
+
+        #region IPropertyProvider Members
+
+        IPropertyProvider IPropertyProvider.AddStructuredProperty(string myPropertyName, IComparable myProperty)
+        {
+            return AddStructuredProperty(myPropertyName, myProperty);
+        }
+
+        IPropertyProvider IPropertyProvider.AddUnstructuredProperty(string myPropertyName, object myProperty)
+        {
+            return AddUnstructuredProperty(myPropertyName, myProperty);
+        }
+
+        IPropertyProvider IPropertyProvider.AddUnknownProperty(string myPropertyName, object myProperty)
+        {
+            return AddUnknownProperty(myPropertyName, myProperty);
+        }
+
+        #endregion
+
+        #region IUnknownProvider Members
+
+        void IUnknownProvider.ClearUnknown()
+        {
+            _unknown = null;
         }
 
         #endregion
