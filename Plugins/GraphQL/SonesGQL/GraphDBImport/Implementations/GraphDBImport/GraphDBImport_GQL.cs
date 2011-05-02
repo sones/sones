@@ -10,8 +10,9 @@ using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.ErrorHandling;
-using sones.Plugins.SonesGQL.DBImport.ErrorHandling;
 using sones.Library.VersionedPluginManager;
+using sones.Plugins.SonesGQL.DBImport.ErrorHandling;
+using sones.Library.DataStructures;
 
 namespace sones.Plugins.SonesGQL.DBImport
 {
@@ -25,10 +26,10 @@ namespace sones.Plugins.SonesGQL.DBImport
 
         public string ImportFormat
         {
-            get { return "sones.gql"; }
+            get { return "GQL"; }
         }
 
-        public QueryResult Import(String myLocation, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, UInt64? myOffset = null, UInt64? myLimit = null)
+        public QueryResult Import(String myLocation, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, UInt64? myOffset = null, UInt64? myLimit = null, VerbosityTypes myVerbosityType = VerbosityTypes.Silent)
         {
             ASonesException error;
             Stream stream = null;
@@ -56,7 +57,7 @@ namespace sones.Plugins.SonesGQL.DBImport
 
                 #region Start import using the AGraphDBImport implementation and return the result
 
-                return Import(stream, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, myBreakOnError, myParallelTasks, myComments, myOffset, myLimit);
+                return Import(stream, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, myParallelTasks, myComments, myOffset, myLimit, myVerbosityType);
 
                 #endregion
             }
@@ -77,7 +78,7 @@ namespace sones.Plugins.SonesGQL.DBImport
             #endregion
         }
         
-        private QueryResult Import(Stream myInputStream, IGraphDB myIGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, ulong? myOffset = null, ulong? myLimit = null)
+        private QueryResult Import(Stream myInputStream, IGraphDB myIGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, ulong? myOffset = null, ulong? myLimit = null, VerbosityTypes myVerbosityType = VerbosityTypes.Silent)
         {
             var lines = ReadLinesFromStream(myInputStream);
 
@@ -104,7 +105,7 @@ namespace sones.Plugins.SonesGQL.DBImport
             //}
             //else
             //{
-            var queryResult = ExecuteAsSingleThread(lines, myGraphQL, mySecurityToken, myTransactionToken, myBreakOnError, myComments);
+            var queryResult = ExecuteAsSingleThread(lines, myGraphQL, mySecurityToken, myTransactionToken, myVerbosityType, myComments);
             //}
 
             #endregion
@@ -185,7 +186,7 @@ namespace sones.Plugins.SonesGQL.DBImport
 
         //}
 
-        private QueryResult ExecuteAsSingleThread(IEnumerable<String> myLines, IGraphQL myIGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, IEnumerable<String> comments = null)
+        private QueryResult ExecuteAsSingleThread(IEnumerable<String> myLines, IGraphQL myIGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, VerbosityTypes myVerbosityType, IEnumerable<String> comments = null)
         {
 
             QueryResult queryResult = new QueryResult("", ImportFormat, 0L, ResultType.Failed);
@@ -226,7 +227,7 @@ namespace sones.Plugins.SonesGQL.DBImport
                         Debug.WriteLine("Query at line [" + numberOfLine + "] [" + query + "] failed with " + tempResult.Error.ToString() + " add next line...");
                     }
 
-                    if (myBreakOnError)
+                    if (myVerbosityType == VerbosityTypes.Errors)
                     {
                         queryResult = tempResult;
 

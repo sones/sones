@@ -9,6 +9,7 @@ using sones.Plugins.SonesGQL;
 using sones.Plugins.SonesGQL.Functions;
 using sones.Plugins.SonesGQL.Aggregates;
 using sones.Plugins.SonesGQL.DBImport;
+using sones.Plugins.SonesGQL.DBExport;
 
 namespace sones.GraphQL.GQL.Manager.Plugin
 {
@@ -44,7 +45,13 @@ namespace sones.GraphQL.GQL.Manager.Plugin
 
             #region importer
 
-                .Register<IGraphDBImport>(IGraphDBImportVersionCompatibility.MaxVersion, IGraphDBImportVersionCompatibility.MaxVersion)
+                .Register<IGraphDBImport>(IGraphDBImportVersionCompatibility.MinVersion, IGraphDBImportVersionCompatibility.MaxVersion)
+
+            #endregion
+
+            #region exporter
+
+                .Register<IGraphDBExport>(IGraphDBExportVersionCompatibility.MinVersion, IGraphDBExportVersionCompatibility.MaxVersion)
 
             #endregion
 
@@ -70,6 +77,7 @@ namespace sones.GraphQL.GQL.Manager.Plugin
             FillLookup<IGQLAggregate>(componentName);
             FillLookup<IGQLFunction>(componentName);
             FillLookup<IGraphDBImport>(componentName);
+            FillLookup<IGraphDBExport>(componentName);
 
             #endregion
         }

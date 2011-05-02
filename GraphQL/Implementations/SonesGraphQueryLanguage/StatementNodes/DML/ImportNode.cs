@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Irony.Ast;
 using Irony.Parsing;
-using sones.GraphQL.Result;
 using sones.GraphDB;
+using sones.GraphQL.GQL.Manager.Plugin;
+using sones.GraphQL.Result;
+using sones.GraphQL.Structure.Nodes.DML;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using System.Collections.Generic;
-using sones.GraphQL.Structure.Nodes.DML;
-using sones.GraphQL.GQL.Manager.Plugin;
+using sones.Library.DataStructures;
 using sones.Plugins.SonesGQL.DBImport;
-using System.Diagnostics;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -23,7 +24,7 @@ namespace sones.GraphQL.StatementNodes.DML
         public List<String> Comments { get; private set; }
         public UInt64? Offset { get; private set; }
         public UInt64? Limit { get; private set; }
-        public Boolean BreakOnError { get; private set; }
+        public VerbosityTypes VerbosityType { get; private set; }
 
         #endregion
 
@@ -37,11 +38,11 @@ namespace sones.GraphQL.StatementNodes.DML
             // parseNode.ChildNodes[3] - format symbol
             ImportFormat = parseNode.ChildNodes[4].Token.Text;
 
-            //ParallelTasks = (parseNode.ChildNodes[5].AstNode as ParallelTasksNode).ParallelTasks;
-            //Comments = (parseNode.ChildNodes[6].AstNode as CommentsNode).Comments;
-            //Offset = (parseNode.ChildNodes[7].AstNode as OffsetNode).Count;
-            //Limit = (parseNode.ChildNodes[8].AstNode as LimitNode).Count;
-            //BreakOnError = (bool)parseNode.ChildNodes[9].AstNode;
+            ParallelTasks = (parseNode.ChildNodes[5].AstNode as ParallelTasksNode).ParallelTasks;
+            Comments = (parseNode.ChildNodes[6].AstNode as CommentsNode).Comments;
+            Offset = (parseNode.ChildNodes[7].AstNode as OffsetNode).Count;
+            Limit = (parseNode.ChildNodes[8].AstNode as LimitNode).Count;
+            VerbosityType = (parseNode.ChildNodes[9].AstNode as VerbosityNode).VerbosityType;
         }
 
         #endregion
@@ -64,13 +65,13 @@ namespace sones.GraphQL.StatementNodes.DML
 
             QueryResult result = null;
 
-            if(ImportFormat.Equals("sones.gql"))
+            if(ImportFormat.ToUpper().Equals("GQL"))
             {
                 var plugin = myPluginManager.GetAndInitializePlugin<IGraphDBImport>("sones.gqlimport");
 
                 if (plugin != null)
                 {
-                    result = plugin.Import(SourceLocation, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, BreakOnError, ParallelTasks, Comments, Offset, Limit);
+                    result = plugin.Import(SourceLocation, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, ParallelTasks, Comments, Offset, Limit, VerbosityType);
                 }
             }
 

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using sones.GraphDB;
+using sones.GraphQL;
 using sones.GraphQL.Result;
-using sones.Library.VersionedPluginManager;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphQL;
+using sones.Library.DataStructures;
 
 namespace sones.Plugins.SonesGQL.DBImport
 {
@@ -38,6 +37,6 @@ namespace sones.Plugins.SonesGQL.DBImport
     {
         string ImportFormat { get; }
 
-        QueryResult Import(String myLocation, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, UInt64? myOffset = null, UInt64? myLimit = null);
+        QueryResult Import(String myLocation, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, UInt64? myOffset = null, UInt64? myLimit = null, VerbosityTypes myVerbosityTypes = VerbosityTypes.Silent);
     }
 }

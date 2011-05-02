@@ -233,11 +233,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISonesGraphDBExport", "Plug
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementations", "Implementations", "{ABE22B73-279C-4DC0-A875-CE357EFB2BFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesGraphDBExport", "Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\SonesGraphDBExport\SonesGraphDBExport.csproj", "{CE230938-2B36-47D1-A73A-C560FB3AB5BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesGraphDBExport", "Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\GraphDBExport\SonesGraphDBExport.csproj", "{CE230938-2B36-47D1-A73A-C560FB3AB5BB}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 69
+		SccNumberOfProjects = 70
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -513,6 +513,10 @@ Global
 		SccProjectTopLevelParentUniqueName68 = CoreDeveloper.sln
 		SccProjectName68 = Plugins/GraphDS/IO/Implementation/TEXT_IO
 		SccLocalPath68 = Plugins\\GraphDS\\IO\\Implementation\\TEXT_IO
+		SccProjectUniqueName69 = Plugins\\GraphQL\\SonesGQL\\GraphDBExport\\Implementations\\GraphDBExport\\SonesGraphDBExport.csproj
+		SccProjectTopLevelParentUniqueName69 = CoreDeveloper.sln
+		SccProjectName69 = Plugins/GraphQL/SonesGQL/GraphDBExport/Implementations/GraphDBExport
+		SccLocalPath69 = Plugins\\GraphQL\\SonesGQL\\GraphDBExport\\Implementations\\GraphDBExport
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

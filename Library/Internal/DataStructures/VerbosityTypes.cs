@@ -1,4 +1,4 @@
-﻿namespace sones.GraphQL.Structure.Helper.Enums
+﻿namespace sones.Library.DataStructures
 {
     public enum VerbosityTypes
     {

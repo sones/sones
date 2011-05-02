@@ -311,17 +311,17 @@ namespace sones.GraphQL
             }
             myGQLGrammar.SetGraphDBImporter(importer);
 
-            //List<IGraphDBExport> exporter = new List<IGraphDBExport>();
-            //foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGraphDBExport>())
-            //{
-            //    exporter.Add(_GQLPluginManager.GetAndInitializePlugin<IGraphDBExport>(plugin));
-            //}
+            List<IGraphDBExport> exporter = new List<IGraphDBExport>();
+            foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGraphDBExport>())
+            {
+                exporter.Add(_GQLPluginManager.GetAndInitializePlugin<IGraphDBExport>(plugin));
+            }
 
-            //if (exporter.Count == 0)
-            //{
-            //    throw new GQLGrammarSetExtandableMemberException(typeof(IGraphDBExport), "There is no plugin found to set in GQL grammar.");
-            //}
-            //myGQLGrammar.SetGraphDBExporter(exporter);
+            if (exporter.Count == 0)
+            {
+                throw new GQLGrammarSetExtandableMemberException(typeof(IGraphDBExport), "There is no plugin found to set in GQL grammar.");
+            }
+            myGQLGrammar.SetGraphDBExporter(exporter);
         }
 
         #endregion

@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{51C8E5F7-F888-4500-B1EE-D20337FA451F}</ProjectGuid>
+    <ProjectGuid>{CE230938-2B36-47D1-A73A-C560FB3AB5BB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GraphDBImport</RootNamespace>
-    <AssemblyName>GraphDBImport</AssemblyName>
+    <RootNamespace>GraphDBExport</RootNamespace>
+    <AssemblyName>GraphDBExport</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GraphDBImport_GQL.cs" />
+    <Compile Include="GraphDBExport_GQL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +55,10 @@
     <ProjectReference Include="..\..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
       <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\GraphQL\QueryResult\QueryResult.csproj">
+      <Project>{BE2A2669-CCDE-40A8-AEAB-673260D7260A}</Project>
+      <Name>QueryResult</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
@@ -80,9 +84,9 @@
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\IGraphDBImport\ISonesGraphDBImport.csproj">
-      <Project>{3B43C10E-28AE-42E5-9B9B-08F2B4153951}</Project>
-      <Name>ISonesGraphDBImport</Name>
+    <ProjectReference Include="..\..\IGraphDBExport\ISonesGraphDBExport.csproj">
+      <Project>{6E39BF75-0E8B-47A5-997A-CF62183BF1FC}</Project>
+      <Name>ISonesGraphDBExport</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

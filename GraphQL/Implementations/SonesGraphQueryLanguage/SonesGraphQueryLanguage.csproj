@@ -132,7 +132,6 @@
     <Compile Include="Structure\Helper\Enums\ParamType.cs" />
     <Compile Include="Structure\Helper\Enums\SelectOutputTypes.cs" />
     <Compile Include="Structure\Helper\Enums\SortDirection.cs" />
-    <Compile Include="Structure\Helper\Enums\VerbosityTypes.cs" />
     <Compile Include="Structure\Helper\Enums\KindOfDelimiter.cs" />
     <Compile Include="Structure\Helper\Enums\TypesOfAlterCmd.cs" />
     <Compile Include="Structure\Helper\Enums\TypesOfAssociativity.cs" />
@@ -309,10 +308,6 @@
     <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\IGraphDBExport\ISonesGraphDBExport.csproj">
       <Project>{6E39BF75-0E8B-47A5-997A-CF62183BF1FC}</Project>
       <Name>ISonesGraphDBExport</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\SonesGraphDBExport\SonesGraphDBExport.csproj">
-      <Project>{CE230938-2B36-47D1-A73A-C560FB3AB5BB}</Project>
-      <Name>SonesGraphDBExport</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\IGraphDBImport\ISonesGraphDBImport.csproj">
       <Project>{3B43C10E-28AE-42E5-9B9B-08F2B4153951}</Project>
