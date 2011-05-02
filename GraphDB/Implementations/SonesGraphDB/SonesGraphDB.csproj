@@ -89,6 +89,7 @@
     <Compile Include="Manager\TypeManagement\CheckVertexTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\ExecuteEdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\ExecuteVertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\IAttributeHandler.cs" />
     <Compile Include="Manager\TypeManagement\IVertexTypeHandler.cs" />
     <Compile Include="Manager\TypeManagement\IEdgeTypeHandler.cs" />
     <Compile Include="Manager\TypeManagement\UniqueID.cs" />
