@@ -52,10 +52,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region IVertexTypeManager Members
 
        
-        public override long GetUniqueVertexID(IVertexType myVertexType)
+        public override UniqueID GetUniqueVertexID(IVertexType myVertexType)
         {
             myVertexType.CheckNull("myVertexType");
-            return _vertexIDs[myVertexType.ID].GetNextID();
+            return _vertexIDs[myVertexType.ID];
         }
 
         public override IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
@@ -109,9 +109,9 @@ namespace sones.GraphDB.Manager.TypeManagement
             Update(myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
-        public override long GetUniqueVertexID(long myVertexTypeID)
+        public override UniqueID GetUniqueVertexID(long myVertexTypeID)
         {
-            return _vertexIDs[myVertexTypeID].GetNextID();
+            return _vertexIDs[myVertexTypeID];
         }
 
         public override IVertexType GetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)

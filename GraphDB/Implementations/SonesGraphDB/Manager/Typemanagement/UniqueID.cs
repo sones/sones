@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    internal class UniqueID
+    public class UniqueID
     {
         private long _id = Int64.MinValue;
 

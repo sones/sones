@@ -272,7 +272,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         private VertexAddDefinition RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            long vertexID = _vertexTypeManager.ExecuteManager.GetUniqueVertexID(myVertexType.ID);
+            long vertexID = _vertexTypeManager.ExecuteManager.GetUniqueVertexID(myVertexType.ID).GetNextID();
             var source = new VertexInformation(myVertexType.ID, vertexID);
             long date = DateTime.UtcNow.ToBinary();
 
