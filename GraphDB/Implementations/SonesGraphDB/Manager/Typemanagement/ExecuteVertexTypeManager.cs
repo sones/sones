@@ -21,7 +21,7 @@ using sones.GraphDB.TypeManagement;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    class ExecuteVertexTypeManager: AVertexTypeManager
+    internal class ExecuteVertexTypeManager: AVertexTypeManager
     {
         private IDictionary<string, IVertexType> _baseTypes = new Dictionary<String, IVertexType>();
         private IDictionary<long, UniqueID> _vertexIDs = new Dictionary<long, UniqueID>();

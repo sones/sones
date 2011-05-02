@@ -11,6 +11,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 {
     internal class ExecuteEdgeTypeManager: IEdgeTypeHandler
     {
+        private IDictionary<string, IVertexType> _baseTypes = new Dictionary<String, IVertexType>();
+        
+
         #region IEdgeTypeManager Members
 
         IEdgeType IEdgeTypeHandler.GetEdgeType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
@@ -32,7 +35,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             //if (vertex == null)
             //    throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeId));
 
-            //return new VertexType(vertex);
+            //return new EdgeType(vertex);
 
             //#endregion
             throw new NotImplementedException();
@@ -63,8 +66,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             //return new VertexType(vertex);
 
             //#endregion
-
             throw new NotImplementedException();
+
         }
 
         IEnumerable<IEdgeType> IEdgeTypeHandler.GetAllEdgeTypes(TransactionToken myTransaction, SecurityToken mySecurity)
