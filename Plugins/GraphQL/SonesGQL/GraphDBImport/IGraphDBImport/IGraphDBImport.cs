@@ -32,14 +32,12 @@ namespace sones.Plugins.SonesGQL.DBImport
     #endregion
 
     /// <summary>
-    /// The interface for all GQL functions
+    /// The interface for a GraphDBImporter
     /// </summary>
     public interface IGraphDBImport
     {
         string ImportFormat { get; }
 
-        QueryResult Import(String location, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 parallelTasks = 1U, IEnumerable<string> comments = null, UInt64? offset = null, UInt64? limit = null);
-
-        QueryResult Import(Stream myInputStream, IGraphDB myIGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, ulong? myOffset = null, ulong? myLimit = null);
+        QueryResult Import(String myLocation, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, UInt64? myOffset = null, UInt64? myLimit = null);
     }
 }

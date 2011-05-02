@@ -41,7 +41,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
             #region get myAttributes
 
-            if (parseNode.ChildNodes[3].ChildNodes != null && parseNode.ChildNodes[3].ChildNodes.Count != 0)
+            if (HasChildNodes(parseNode.ChildNodes[3]))
             {
                 //var AttrUpdateOrAssign = (AttrUpdateOrAssignListNode)parseNode.ChildNodes[3].AstNode;
                 //_listOfUpdates = AttrUpdateOrAssign.ListOfUpdate;

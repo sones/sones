@@ -32,7 +32,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
             _IndexName = parseNode.ChildNodes[4].Token.ValueString;
             
-            if (parseNode.ChildNodes[5].ChildNodes != null && parseNode.ChildNodes[5].ChildNodes.Count != 0)
+            if (HasChildNodes(parseNode.ChildNodes[5]))
             {
                 _IndexEdition = parseNode.ChildNodes[5].ChildNodes[1].Token.ValueString;
             }

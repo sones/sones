@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphDB;
 using sones.GraphDB.TypeSystem;
+using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 using sones.GraphQL.StatementNodes.DDL;
 using sones.GraphQL.StatementNodes.DML;
 using sones.GraphQL.StatementNodes.Settings;
@@ -15,18 +17,18 @@ using sones.GraphQL.Structure.Nodes.DDL;
 using sones.GraphQL.Structure.Nodes.DML;
 using sones.GraphQL.Structure.Nodes.Expressions;
 using sones.GraphQL.Structure.Nodes.Misc;
+using sones.Library.DataStructures;
 using sones.Library.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
 using sones.Plugins.Index.Interfaces;
 using sones.Plugins.SonesGQL.Aggregates;
-using sones.Plugins.SonesGQL.Functions;
+using sones.Plugins.SonesGQL.DBExport;
 using sones.Plugins.SonesGQL.DBImport;
-using System;
-using sones.GraphQL.GQL.Structure.Nodes.Expressions;
+using sones.Plugins.SonesGQL.Functions;
 
 namespace sones.GraphQL
 {
-    public sealed class SonesGQLGrammar : Grammar //, IDumpable, 
+    public sealed class SonesGQLGrammar : Grammar , IDumpable
     {
         #region Data
 
@@ -2215,7 +2217,7 @@ namespace sones.GraphQL
 
         #region Export GraphDDL
 
-        public List<String> ExportGraphDDL(IEnumerable<IVertexType> myTypesToDump)
+        public IEnumerable<String> ExportGraphDDL(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump)
         {
 
             var stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_TYPES.ToUpperString(), " "));
@@ -2503,7 +2505,7 @@ namespace sones.GraphQL
         /// <param name="dbContext"></param>
         /// <param name="objectManager"></param>
         /// <returns></returns>
-        public List<String> ExportGraphDML(IEnumerable<IVertexType> myTypesToDump)
+        public IEnumerable<String> ExportGraphDML(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump)
         {
             var queries = new List<String>();
 
@@ -2857,6 +2859,34 @@ namespace sones.GraphQL
                     else
                     {
                         BNF_ImportFormat.Rule |= ToTerm(importer.ImportFormat);
+                    }
+                }
+            }
+
+            #endregion
+        }
+
+        public void SetGraphDBExporter(IEnumerable<IGraphDBExport> graphDBExporter)
+        {
+            #region Add all plugins to the grammar
+
+            if (graphDBExporter == null || graphDBExporter.Count() == 0)
+            {
+                /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
+                BNF_ImportFormat.Rule = Empty;
+                BNF_ImportStmt.Rule = Empty;
+            }
+            else
+            {
+                foreach (var importer in graphDBExporter)
+                {
+                    if (BNF_ImportFormat.Rule == null)
+                    {
+                        BNF_ImportFormat.Rule = ToTerm(importer.ExportFormat);
+                    }
+                    else
+                    {
+                        BNF_ImportFormat.Rule |= ToTerm(importer.ExportFormat);
                     }
                 }
             }

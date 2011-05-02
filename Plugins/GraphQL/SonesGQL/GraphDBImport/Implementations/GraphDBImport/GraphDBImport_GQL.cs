@@ -28,7 +28,7 @@ namespace sones.Plugins.SonesGQL.DBImport
             get { return "sones.gql"; }
         }
 
-        public QueryResult Import(String location, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 parallelTasks = 1U, IEnumerable<string> comments = null, UInt64? offset = null, UInt64? limit = null)
+        public QueryResult Import(String myLocation, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, UInt64? myOffset = null, UInt64? myLimit = null)
         {
             ASonesException error;
             Stream stream = null;
@@ -38,25 +38,25 @@ namespace sones.Plugins.SonesGQL.DBImport
 
             try
             {
-                if (location.ToLower().StartsWith(@"file:\\"))
+                if (myLocation.ToLower().StartsWith(@"file:\\"))
                 {
                     //lines = ReadFile(location.Substring(@"file:\\".Length));
-                    stream = GetStreamFromFile(location.Substring(@"file:\\".Length));
+                    stream = GetStreamFromFile(myLocation.Substring(@"file:\\".Length));
                 }
-                else if (location.ToLower().StartsWith("http://"))
+                else if (myLocation.ToLower().StartsWith("http://"))
                 {
-                    stream = GetStreamFromHttp(location);
+                    stream = GetStreamFromHttp(myLocation);
                 }
                 else
                 {
-                    error = new InvalidImportLocationException(location, @"file:\\", "http://");
+                    error = new InvalidImportLocationException(myLocation, @"file:\\", "http://");
                     result = new QueryResult("", ImportFormat, 0L, ResultType.Failed, null, error);
                     return result;
                 }
 
                 #region Start import using the AGraphDBImport implementation and return the result
 
-                return Import(stream, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, myBreakOnError, parallelTasks, comments, offset, limit);
+                return Import(stream, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, myBreakOnError, myParallelTasks, myComments, myOffset, myLimit);
 
                 #endregion
             }
@@ -77,7 +77,7 @@ namespace sones.Plugins.SonesGQL.DBImport
             #endregion
         }
         
-        public QueryResult Import(Stream myInputStream, IGraphDB myIGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, ulong? myOffset = null, ulong? myLimit = null)
+        private QueryResult Import(Stream myInputStream, IGraphDB myIGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, ulong? myOffset = null, ulong? myLimit = null)
         {
             var lines = ReadLinesFromStream(myInputStream);
 
@@ -189,7 +189,6 @@ namespace sones.Plugins.SonesGQL.DBImport
         {
 
             QueryResult queryResult = new QueryResult("", ImportFormat, 0L, ResultType.Failed);
-            ASonesException error;
             Int64 numberOfLine = 0;
             var query = String.Empty;
             var aggregatedResults = new List<IEnumerable<IVertexView>>();
@@ -338,7 +337,7 @@ namespace sones.Plugins.SonesGQL.DBImport
             get { return new Dictionary<string, Type>(); }
         }
 
-        public Library.VersionedPluginManager.IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new GraphDBImport_GQL();
         }

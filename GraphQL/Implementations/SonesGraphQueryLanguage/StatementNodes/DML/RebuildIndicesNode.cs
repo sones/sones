@@ -38,7 +38,7 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             _Types = new HashSet<string>();
 
-            if (parseNode.ChildNodes[2].ChildNodes != null && parseNode.ChildNodes[2].ChildNodes.Count != 0)
+            if (HasChildNodes(parseNode.ChildNodes[2]))
             {
                 parseNode.ChildNodes[2].ChildNodes[0].ChildNodes.ForEach(item => _Types.Add(((ATypeNode)item.AstNode).ReferenceAndType.TypeName));
             }

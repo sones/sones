@@ -106,6 +106,7 @@ namespace Irony.Parsing {
     public ParseTreeNode LastChild {
       get { return ChildNodes[ChildNodes.Count -1]; }
     }
+    
 
   }//class
 

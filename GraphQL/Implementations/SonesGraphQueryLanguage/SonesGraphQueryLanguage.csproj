@@ -53,9 +53,12 @@
     <Compile Include="ErrorHandling\GqlSyntaxException.cs" />
     <Compile Include="ErrorHandling\IndexTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\InvalidBinaryExpressionException.cs" />
+    <Compile Include="ErrorHandling\InvalidDumpFormatException.cs" />
+    <Compile Include="ErrorHandling\InvalidDumpTypeException.cs" />
     <Compile Include="ErrorHandling\InvalidLevelKeyOperationException.cs" />
     <Compile Include="ErrorHandling\InvalidTransactionIsolationLevelException.cs" />
     <Compile Include="ErrorHandling\IronyInitializeGrammarException.cs" />
+    <Compile Include="ErrorHandling\NotADumpableGrammarException.cs" />
     <Compile Include="ErrorHandling\VertexTypeDoesNotExistException.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Grammar\SonesGQLGrammar.cs" />
@@ -275,6 +278,10 @@
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\DataStructures\DataStructures.csproj">
+      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
+      <Name>DataStructures</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
@@ -298,6 +305,14 @@
     <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
       <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\IGraphDBExport\ISonesGraphDBExport.csproj">
+      <Project>{6E39BF75-0E8B-47A5-997A-CF62183BF1FC}</Project>
+      <Name>ISonesGraphDBExport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\SonesGraphDBExport\SonesGraphDBExport.csproj">
+      <Project>{CE230938-2B36-47D1-A73A-C560FB3AB5BB}</Project>
+      <Name>SonesGraphDBExport</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\IGraphDBImport\ISonesGraphDBImport.csproj">
       <Project>{3B43C10E-28AE-42E5-9B9B-08F2B4153951}</Project>

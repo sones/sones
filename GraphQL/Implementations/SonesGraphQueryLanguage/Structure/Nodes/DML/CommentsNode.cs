@@ -20,7 +20,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            if (parseNode.ChildNodes != null && parseNode.ChildNodes.Count != 0)
+            if (HasChildNodes(parseNode))
             {
                 foreach (var child in (parseNode.ChildNodes[1].AstNode as TupleNode).TupleDefinition)
                 {

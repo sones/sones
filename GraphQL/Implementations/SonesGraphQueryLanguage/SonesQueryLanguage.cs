@@ -17,6 +17,9 @@ using sones.Plugins.Index.Interfaces;
 using sones.Plugins.SonesGQL.Aggregates;
 using sones.Plugins.SonesGQL.Functions;
 using sones.Plugins.SonesGQL.DBImport;
+using sones.GraphDB.TypeSystem;
+using sones.Library.DataStructures;
+using sones.Plugins.SonesGQL.DBExport;
 
 namespace sones.GraphQL
 {
@@ -190,12 +193,12 @@ namespace sones.GraphQL
             return queryResult;
         }
 
-        public IEnumerable<string> ExportGraphDDL(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IEnumerable<string> ExportGraphDDL(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDML(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IEnumerable<string> ExportGraphDML(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump)
         {
             throw new NotImplementedException();
         }
@@ -307,6 +310,18 @@ namespace sones.GraphQL
                 throw new GQLGrammarSetExtandableMemberException(typeof(IGraphDBImport), "There is no plugin found to set in GQL grammar.");
             }
             myGQLGrammar.SetGraphDBImporter(importer);
+
+            //List<IGraphDBExport> exporter = new List<IGraphDBExport>();
+            //foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGraphDBExport>())
+            //{
+            //    exporter.Add(_GQLPluginManager.GetAndInitializePlugin<IGraphDBExport>(plugin));
+            //}
+
+            //if (exporter.Count == 0)
+            //{
+            //    throw new GQLGrammarSetExtandableMemberException(typeof(IGraphDBExport), "There is no plugin found to set in GQL grammar.");
+            //}
+            //myGQLGrammar.SetGraphDBExporter(exporter);
         }
 
         #endregion

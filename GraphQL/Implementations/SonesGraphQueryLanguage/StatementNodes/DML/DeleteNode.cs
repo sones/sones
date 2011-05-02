@@ -36,7 +36,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
             _TypeReferenceDefinitions = (parseNode.ChildNodes[1].AstNode as TypeListNode).Types;
 
-            if (parseNode.ChildNodes[3].ChildNodes != null && parseNode.ChildNodes[3].ChildNodes.Count != 0)
+            if (HasChildNodes(parseNode.ChildNodes[3]))
             {
                 IDNode tempIDNode;
                 foreach (var _ParseTreeNode in parseNode.ChildNodes[3].ChildNodes[0].ChildNodes)
