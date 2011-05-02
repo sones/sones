@@ -1325,7 +1325,7 @@ namespace sones.GraphQL
             #region DELETE
 
             deleteStmtMember.Rule = Empty | idlist;
-            deleteStmt.Rule = S_FROM + TypeList + S_DELETE + deleteStmtMember + whereClauseOpt;
+            deleteStmt.Rule = S_FROM + Id_simple + S_DELETE + deleteStmtMember + whereClauseOpt;
 
             #endregion
 

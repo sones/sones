@@ -19,7 +19,7 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            if (parseNode.ChildNodes != null && parseNode.ChildNodes.Count > 0)
+            if (HasChildNodes(parseNode))
             {
 
                 if (parseNode.ChildNodes[1].AstNode is TupleNode && (parseNode.ChildNodes[1].AstNode as TupleNode).TupleDefinition.TupleElements.Count == 1)

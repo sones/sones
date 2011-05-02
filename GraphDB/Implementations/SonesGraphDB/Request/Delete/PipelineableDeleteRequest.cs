@@ -35,7 +35,8 @@ namespace sones.GraphDB.Request.Delete
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            //_request.
+            //myMetaManager.VertexTypeManager.CanGetVertexType(_request.TypeName, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
