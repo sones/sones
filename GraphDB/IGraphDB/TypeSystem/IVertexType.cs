@@ -130,6 +130,8 @@ namespace sones.GraphDB.TypeSystem
 
         #region Uniques
 
+        bool HasUniqueDefinitions(bool myIncludeAncestorDefinitions);
+
         /// <summary>
         /// A set of uniqueness definitions.
         /// </summary>

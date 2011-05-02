@@ -24,6 +24,6 @@ namespace sones.GraphQL
         /// </summary>
         /// <param name="myTypesToDump">The types to dump</param>
         /// <returns>A list of strings, containing the GDML statments</returns>
-        IEnumerable<String> ExportGraphDML(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump);
+        IEnumerable<String> ExportGraphDML(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
     }
 }

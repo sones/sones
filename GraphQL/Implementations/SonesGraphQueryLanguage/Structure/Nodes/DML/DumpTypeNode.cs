@@ -22,23 +22,23 @@ namespace sones.GraphQL.Structure.Nodes.DML
             if (HasChildNodes(parseNode))
             {
 
-                var _KeyTerm = parseNode.ChildNodes[0].Token.KeyTerm;
+                var _Terminal = parseNode.ChildNodes[0].Token.Terminal;
 
-                if (_KeyTerm.Text.Equals("S_ALL"))
+                if (_Terminal == _GraphQL.ToTerm("ALL"))
                 {
                     DumpType = DumpTypes.GDDL | DumpTypes.GDML;
                 }
-                else if (_KeyTerm.Text.Equals("S_GDDL"))
+                else if (_Terminal == _GraphQL.ToTerm("GDDL"))
                 {
                     DumpType = DumpTypes.GDDL;
                 }
-                else if (_KeyTerm.Text.Equals("S_GDML"))
+                else if (_Terminal == _GraphQL.ToTerm("GDML"))
                 {
                     DumpType = DumpTypes.GDML;
                 }
                 else
                 {
-                    throw new InvalidDumpTypeException(_KeyTerm.Text, "");
+                    throw new InvalidDumpTypeException(_Terminal.ToString(), "");
                 }
 
             }

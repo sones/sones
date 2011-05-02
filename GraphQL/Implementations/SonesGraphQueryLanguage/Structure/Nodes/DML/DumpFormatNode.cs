@@ -24,15 +24,15 @@ namespace sones.GraphQL.Structure.Nodes.DML
             if (HasChildNodes(parseNode))
             {
 
-                var _KeyTerm = parseNode.ChildNodes[1].Token.KeyTerm;
+                var _Terminal = parseNode.ChildNodes[1].Token.Terminal;
 
-                if (_KeyTerm.Text.Equals("S_GQL"))
+                if (_Terminal == _GraphQL.ToTerm("GQL"))
                 {
                     DumpFormat = DumpFormats.GQL;
                 }
                 else
                 {
-                    throw new InvalidDumpFormatException(_KeyTerm.Text, "");
+                    throw new InvalidDumpFormatException(_Terminal.ToString(), "");
                 }
 
             }

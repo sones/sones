@@ -103,8 +103,8 @@ namespace sones.Plugins.SonesGQL.DBExport
 
                 if (graphDDL == null)
                 {
-                    //throw Exception
-                    //return new Exceptional(graphDDL);
+                    throw new ExportFailedException(myDumpType.ToString(), "");
+                    
                 }
 
                 dumpReadout.Add("GDDL", graphDDL);
@@ -123,12 +123,11 @@ namespace sones.Plugins.SonesGQL.DBExport
             if ((myDumpType & DumpTypes.GDML) == DumpTypes.GDML)
             {
 
-                var graphDML = myGrammar.ExportGraphDML(DumpFormats.GQL, myTypes);
+                var graphDML = myGrammar.ExportGraphDML(DumpFormats.GQL, myTypes, mySecurityToken, myTransactionToken);
 
                 if (graphDML == null)
                 {
-                    //throw Exception
-                    //return new Exceptional(graphDML);
+                    throw new ExportFailedException(myDumpType.ToString(), "");
                 }
 
                 dumpReadout.Add("GDML", graphDML);
@@ -182,8 +181,7 @@ namespace sones.Plugins.SonesGQL.DBExport
 
             if (_DumpReadout.ContainsKey(myDumpType.ToString()))
             {
-                //throw Exception
-                //return new Exceptional(new Error_ArgumentException(myDumpType.ToString() + " already added"));
+                throw new ArgumentException(myDumpType.ToString() + " already added");
             }
 
             switch (_TypeOfOutputDestination)
@@ -228,8 +226,7 @@ namespace sones.Plugins.SonesGQL.DBExport
                 }
                 catch (Exception ex)
                 {
-                    //throw Esxcception
-                    //return new Exceptional(new Error_UnknownDBError(ex));
+                    throw new StreamWriterException("System.IO.StreamWriter", "Error create File.", ex);
                 }
 
                 #endregion
@@ -248,16 +245,14 @@ namespace sones.Plugins.SonesGQL.DBExport
                 }
                 catch (Exception ex)
                 {
-                    //thrwo Exception
-                    //return new Exceptional(new Error_UnknownDBError(ex));
+                    throw new StreamWriterException("System.IO.StreamWriter", "Error on HttpWebRequest.", ex);
                 }
 
                 #endregion
             }
             else
             {
-                //throw Exception
-                //return new Exceptional(new Error_InvalidDumpLocation(destination, @"file:\\", "http://"));
+                throw new InvalidDumpLocationException(destination, @"file:\\", "http://", "");
             }
 
         }
@@ -292,8 +287,7 @@ namespace sones.Plugins.SonesGQL.DBExport
 
                             if (!String.IsNullOrEmpty(errors))
                             {
-                                //thrwo Exception
-                                //return new Exceptional(new Error_UnknownDBError(errors));
+                                throw new StreamReaderException("System.IO.StreamReader", "", null);
                             }
 
                         }
@@ -307,8 +301,7 @@ namespace sones.Plugins.SonesGQL.DBExport
             }
             catch (Exception ex)
             {
-                //thrwo Exception
-                //return new Exceptional(new Error_UnknownDBError(ex));
+                throw new StreamReaderException("System.IO.StreamReader", "", ex);
             }
 
         }
@@ -338,8 +331,7 @@ namespace sones.Plugins.SonesGQL.DBExport
                     
                     if (type == null)
                     {
-                        //thrwo new Exception
-                        //throw new GraphDBException(new Errors.Error_TypeDoesNotExist(stringType));
+                        throw new TypeDoesNotExistException(stringType, "");
                     }
 
                     //typesToDumpHash.UnionWith(myDBContext.DBTypeManager.GetAllParentTypes(type, true, false));
@@ -377,7 +369,6 @@ namespace sones.Plugins.SonesGQL.DBExport
         }
 
         #endregion
-
 
         #region IDisposable Members
 

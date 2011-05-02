@@ -25,6 +25,9 @@ using sones.Plugins.SonesGQL.Aggregates;
 using sones.Plugins.SonesGQL.DBExport;
 using sones.Plugins.SonesGQL.DBImport;
 using sones.Plugins.SonesGQL.Functions;
+using sones.GraphDB.Request;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace sones.GraphQL
 {
@@ -2258,7 +2261,7 @@ namespace sones.GraphQL
 
             #region attributes
 
-            if (myVertexType.GetAttributeDefinitions(false).Count() > 0)
+            if (myVertexType.HasAttributes(false))
             {
                 #region !incomingEdges
 
@@ -2306,18 +2309,24 @@ namespace sones.GraphQL
 
             #region Uniques
 
-            if (myVertexType.GetUniqueDefinitions(false).Count() > 0)
+            if (myVertexType.HasUniqueDefinitions(false))
             {
-                stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfUniqueAttributes(myVertexType.GetUniqueDefinitions(false)) + S_BRACKET_RIGHT.Symbol + " ");
+                if (myVertexType.GetUniqueDefinitions(false).Count() > 0)
+                {
+                    stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfUniqueAttributes(myVertexType.GetUniqueDefinitions(false)) + S_BRACKET_RIGHT.Symbol + " ");
+                }
             }
 
             #endregion
 
             #region Mandatory attributes
 
-            if (myVertexType.GetPropertyDefinitions(false).Any(aProperty => aProperty.IsMandatory))
+            if (myVertexType.HasProperties(false))
             {
-                stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfMandatoryAttributes(myVertexType.GetPropertyDefinitions(false).Where(aProperty => aProperty.IsMandatory)) + S_BRACKET_RIGHT.Symbol + " ");
+                if (myVertexType.GetPropertyDefinitions(false).Any(aProperty => aProperty.IsMandatory))
+                {
+                    stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfMandatoryAttributes(myVertexType.GetPropertyDefinitions(false).Where(aProperty => aProperty.IsMandatory)) + S_BRACKET_RIGHT.Symbol + " ");
+                }
             }
 
             #endregion
@@ -2454,7 +2463,7 @@ namespace sones.GraphQL
 
             foreach (var aOutgoingEdgeDefinition in myOutgoingEdgeDefinitions)
             {
-                stringBuilder.Append(String.Concat(GetGraphDDL(aOutgoingEdgeDefinition.EdgeType, myIVertexType), " ", aOutgoingEdgeDefinition.Name));
+                stringBuilder.Append(String.Concat(GetGraphDDL(aOutgoingEdgeDefinition, myIVertexType), " ", aOutgoingEdgeDefinition.Name));
 
                 stringBuilder.Append(delimiter);
             }
@@ -2467,9 +2476,42 @@ namespace sones.GraphQL
             return stringBuilder.ToString();
         }
 
-        private string GetGraphDDL(IEdgeType iEdgeType, IVertexType myIVertexType)
+        private string GetGraphDDL(IOutgoingEdgeDefinition myOutgoingEdgeDefinition, IVertexType myIVertexType)
         {
-            throw new NotImplementedException();
+            var stringBuilder = new StringBuilder();
+            
+            switch (myOutgoingEdgeDefinition.Multiplicity)
+            {
+                case EdgeMultiplicity.SingleEdge:
+                    {
+                        //e.g. User
+                        stringBuilder.Append(myOutgoingEdgeDefinition.TargetVertexType.Name + 
+                                                S_BRACKET_LEFT + 
+                                                myOutgoingEdgeDefinition.EdgeType.Name +
+                                                S_BRACKET_RIGHT);
+                    
+                        break;
+                    }
+                case EdgeMultiplicity.HyperEdge:
+                    {
+                        //e.g. Set<User(e.g. Weighted)>
+                        stringBuilder.Append(TERMINAL_SET + 
+                                                TERMINAL_LT + 
+                                                myOutgoingEdgeDefinition.TargetVertexType.Name + 
+                                                S_BRACKET_LEFT + 
+                                                myOutgoingEdgeDefinition.EdgeType.Name + 
+                                                S_BRACKET_RIGHT + 
+                                                TERMINAL_GT);
+
+                        break;
+                    }
+                default:
+                    {
+                        throw new UnknownException(new NotImplementedException("This should never happen"));
+                    }
+            }
+
+            return stringBuilder.ToString();
         }
 
         private String CreateGraphDDLOfProperties(IEnumerable<IPropertyDefinition> myPropertyDefinitions)
@@ -2505,7 +2547,7 @@ namespace sones.GraphQL
         /// <param name="dbContext"></param>
         /// <param name="objectManager"></param>
         /// <returns></returns>
-        public IEnumerable<String> ExportGraphDML(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump)
+        public IEnumerable<String> ExportGraphDML(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             var queries = new List<String>();
 
@@ -2516,9 +2558,9 @@ namespace sones.GraphQL
                 var propertyDefinitions = aVertexType.GetPropertyDefinitions(true).ToDictionary(key => key.AttributeID, value => value);
 
 
-                foreach (var aVertex in GetAllVertices(aVertexType))
+                foreach (var aVertex in GetAllVertices(aVertexType, mySecurityToken, myTransactionToken))
                 {
-                    queries.Add(CreateGraphDMLforIVertex(aVertexType, aVertex, propertyDefinitions));
+                    queries.Add(CreateGraphDMLforIVertex(aVertexType, aVertex, propertyDefinitions, mySecurityToken, myTransactionToken));
                 }
             }
 
@@ -2527,8 +2569,12 @@ namespace sones.GraphQL
             return queries;
         }
 
-        private string CreateGraphDMLforIVertex(IVertexType myVertexType, IVertex myVertex,
-             Dictionary<long, IPropertyDefinition> myPropertyDefinitions)
+        private string CreateGraphDMLforIVertex(
+            IVertexType myVertexType, 
+            IVertex myVertex,
+            Dictionary<long, IPropertyDefinition> myPropertyDefinitions,
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken)
         {
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
@@ -2553,9 +2599,30 @@ namespace sones.GraphQL
             #endregion
 
             #region unstructured data
+
+            string unstrProperties = CreateGraphDMLforVertexUnstructuredProperties(myVertex.GetAllUnstructuredProperties(), myPropertyDefinitions);
+
+            stringBuilder.Append(unstrProperties);
+
             #endregion
 
             #region outgoing edges
+
+            #region singleEdge
+
+            string outgoingEdges = CreateGraphDMLforVertexOutgoingSingleEdges(myVertex.GetAllOutgoingSingleEdges(), 
+                                                                                myVertexType.GetOutgoingEdgeDefinitions(true).ToDictionary(key => key.AttributeID, value => value), 
+                                                                                mySecurityToken, 
+                                                                                myTransactionToken);
+
+            stringBuilder.Append(outgoingEdges);
+
+            #endregion
+
+            #region hyperEdge
+
+
+            #endregion
 
             #endregion
 
@@ -2591,6 +2658,9 @@ namespace sones.GraphQL
 
             //return new Exceptional<String>(stringBuilder.ToString());
 
+            stringBuilder.RemoveSuffix(delimiter);
+            stringBuilder.Append(S_BRACKET_RIGHT);
+
             return stringBuilder.ToString();
         }
 
@@ -2601,21 +2671,35 @@ namespace sones.GraphQL
 
             #region Comment
 
+            if(!String.IsNullOrWhiteSpace(myVertex.Comment))
+                stringBuilder.Append(String.Concat(S_COMMENT.ToUpperString(), " = '", myVertex.Comment, "'", delimiter));
+
             #endregion
 
             #region Creation date
+
+            if (myVertex.CreationDate != 0)
+                stringBuilder.Append(String.Concat("CREATIONDATE", " = '", myVertex.CreationDate, "'", delimiter));
 
             #endregion
 
             #region Modification date
 
+            if (myVertex.ModificationDate != 0)
+                stringBuilder.Append(String.Concat("MODIFICATIONDATE", " = '", myVertex.ModificationDate, "'", delimiter));
+
             #endregion
 
             #region RevisionID
 
+            stringBuilder.Append(String.Concat("REVISIONID", " = '", myVertex.VertexRevisionID, "'", delimiter));
+
             #endregion
 
             #region Edition
+
+            if (!String.IsNullOrWhiteSpace(myVertex.EditionName))
+                stringBuilder.Append(String.Concat(S_EDITION.ToUpperString(), " = '", myVertex.EditionName, "'", delimiter));
 
             #endregion
 
@@ -2693,12 +2777,207 @@ namespace sones.GraphQL
 
         private string CreateGraphDMLforSingleAttribute(object mySingleAttribute)
         {
-            throw new NotImplementedException();
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            stringBuilder.Append(String.Concat((String)mySingleAttribute, delimiter));
+
+            return stringBuilder.ToString();
         }
 
-        private IEnumerable<IVertex> GetAllVertices(IVertexType myVertexType)
+        private string CreateGraphDMLforVertexUnstructuredProperties(
+            IEnumerable<Tuple<string, object>> myUnstructuredProperties,
+            Dictionary<long, IPropertyDefinition> myPropertyDefinitions)
         {
-            throw new NotImplementedException();
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            foreach (var attribute in myUnstructuredProperties)
+            {
+                if (attribute.Item2 == null)
+                {
+                    continue;
+                }
+
+                #region Single
+
+                stringBuilder.Append(String.Concat(attribute.Item1, " = ", CreateGraphDMLforSingleAttribute(attribute.Item2)));
+
+                #endregion
+
+                stringBuilder.Append(delimiter);
+            }
+
+            stringBuilder.RemoveSuffix(delimiter);
+
+            return stringBuilder.ToString();
+        }
+
+        private string CreateGraphDMLforVertexOutgoingSingleEdges(
+            IEnumerable<Tuple<long, ISingleEdge>> myEdges,
+            Dictionary<long, IOutgoingEdgeDefinition> myOutgoingEdgeDefinitions,
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken)
+        {
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            foreach (var edge in myEdges)
+            {
+                if (edge.Item2 == null)
+                {
+                    continue;
+                }
+
+                var edgeT = _iGraphDB.GetEdgeType<IEdgeType>(mySecurityToken, myTransactionToken, new RequestGetEdgeType(edge.Item2.EdgeTypeID), (stats, edgeType) => edgeType);
+                
+                if (edgeT.HasProperties(false))
+                {
+
+                    var typeAttribute = myOutgoingEdgeDefinitions[edge.Item1];
+
+                    switch (typeAttribute.Multiplicity)
+                    {
+                        case EdgeMultiplicity.SingleEdge:
+
+                            #region Single
+
+                            stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", CreateGraphDMLforSingleAttribute(edge.Item2)));
+
+                            #endregion
+
+                            break;
+
+                        case EdgeMultiplicity.HyperEdge:
+
+                            #region Set
+
+                            stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
+                            foreach (var val in (edge.Item2 as ICollection))
+                            {
+                                stringBuilder.Append(CreateGraphDMLforSingleAttribute(val) + delimiter);
+                            }
+                            
+                            stringBuilder.RemoveSuffix(delimiter);
+                            stringBuilder.Append(S_BRACKET_RIGHT);
+
+                            #endregion
+
+                            break;
+                        default:
+
+                            throw new UnknownException(new NotImplementedException("This should never happen"));
+                    }
+                }
+
+                stringBuilder.Append(delimiter);
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        private string CreateGraphDMLforVertexOutgoingHyperEdges(
+            IEnumerable<Tuple<long, IHyperEdge>> myEdges,
+            Dictionary<long, IOutgoingEdgeDefinition> myOutgoingEdgeDefinitions)
+        {
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            foreach (var hyperEdge in myEdges)
+            {
+                if (hyperEdge.Item2 == null)
+                {
+                    continue;
+                }
+
+                var outgoingEdgeDef = myOutgoingEdgeDefinitions[hyperEdge.Item1];
+
+                stringBuilder.Append(String.Concat(outgoingEdgeDef.Name, " = ", S_SETOFUUIDS.ToUpperString(), " ", S_BRACKET_LEFT));
+
+                foreach (var edge in hyperEdge.Item2.GetAllEdges())
+                {
+                    stringBuilder.Append(String.Concat(edge.GetTargetVertex().VertexID, " "));
+
+                    if (edge.GetAllProperties().Count() > 0)
+                    {
+                        stringBuilder.Append(CreateGraphDMLforVertexDefinedProperties(edge.GetAllProperties(), myOutgoingEdgeDefinitions));
+                    }
+
+                    stringBuilder.Append(delimiter);
+                }
+
+                stringBuilder.RemoveSuffix(delimiter);
+                stringBuilder.Append(S_BRACKET_RIGHT);
+
+                stringBuilder.Append(delimiter);
+            }
+
+            stringBuilder.RemoveSuffix(delimiter);
+
+            return stringBuilder.ToString();
+        }
+
+        private string CreateGraphDMLforVertexDefinedProperties(
+            IEnumerable<Tuple<long, IComparable>> myStructuredProperties,
+            Dictionary<long, IOutgoingEdgeDefinition> myOutgoingEdgeDefinitions)
+        {
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            foreach (var attribute in myStructuredProperties)
+            {
+                if (attribute.Item2 == null)
+                {
+                    continue;
+                }
+
+                var typeAttribute = myOutgoingEdgeDefinitions[attribute.Item1];
+
+                switch (typeAttribute.Multiplicity)
+                {
+                    case EdgeMultiplicity.SingleEdge:
+
+                        #region Single
+
+                        stringBuilder.Append(String.Concat(S_BRACKET_LEFT, typeAttribute.Name, " = ", CreateGraphDMLforSingleAttribute(attribute.Item2), S_BRACKET_RIGHT));
+
+                        #endregion
+
+                        break;
+
+                    case EdgeMultiplicity.HyperEdge:
+
+                        #region Set
+
+                        stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
+                        
+                        foreach (var val in (attribute.Item2 as ICollection))
+                        {
+                            stringBuilder.Append(CreateGraphDMLforSingleAttribute(val) + delimiter);
+                        }
+                        
+                        stringBuilder.RemoveSuffix(delimiter);
+                        stringBuilder.Append(S_BRACKET_RIGHT);
+
+                        #endregion
+
+                        break;
+                    default:
+
+                        throw new UnknownException(new NotImplementedException("This should never happen"));
+                }
+
+                stringBuilder.Append(delimiter);
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        private IEnumerable<IVertex> GetAllVertices(IVertexType myVertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            var request = new RequestGetVertices(myVertexType.ID);
+
+            return _iGraphDB.GetVertices<IEnumerable<IVertex>>(mySecurityToken, myTransactionToken, request, (stats, vertices) => vertices);
         }
 
         #endregion

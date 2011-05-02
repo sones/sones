@@ -301,6 +301,13 @@ namespace sones.GraphDB.TypeManagement
 
         #region Index
 
+        public bool HasUniqueDefinitions(bool myIncludeAncestorDefinitions)
+        {
+            return (myIncludeAncestorDefinitions && GetHasParentType())
+                ? (!_uniques.Value.IsNotNullOrEmpty() || _parent.Value.HasUniqueDefinitions(true))
+                : false;
+        }
+        
         IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)
         {
             return (myIncludeAncestorDefinitions && GetHasParentType())

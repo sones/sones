@@ -198,7 +198,7 @@ namespace sones.GraphQL
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDML(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump)
+        public IEnumerable<string> ExportGraphDML(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
