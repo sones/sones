@@ -6,6 +6,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDB.Manager.TypeManagement;
 
 namespace sones.GraphDB.Request
 {
@@ -51,17 +52,23 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
+            DoExecute(myMetaManager.EdgeTypeManager.CheckManager);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
+            _fetchedEdgeType = DoExecute(myMetaManager.EdgeTypeManager.ExecuteManager);
+        }
+
+        private IEdgeType DoExecute(IEdgeTypeHandler myManager)
+        {
             if (_request.EdgeTypeName == null)
             {
-                _fetchedEdgeType = myMetaManager.EdgeTypeManager.GetEdgeType(_request.EdgeTypeID, TransactionToken, SecurityToken);                
+                return myManager.GetEdgeType(_request.EdgeTypeID, TransactionToken, SecurityToken);
             }
             else
             {
-                _fetchedEdgeType = myMetaManager.EdgeTypeManager.GetEdgeType(_request.EdgeTypeName, TransactionToken, SecurityToken);                
+                return myManager.GetEdgeType(_request.EdgeTypeName, TransactionToken, SecurityToken);
             }
         }
 

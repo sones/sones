@@ -55,7 +55,7 @@ using sones.GraphDB.Request.CreateVertexTypes;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    public sealed class VertexTypeManager : IManagerOf<IVertexTypeManager>
+    public sealed class VertexTypeManager : IManagerOf<IVertexTypeHandler>
     {
         #region Data
 
@@ -64,23 +64,23 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private IVertexManager _vertexManager;
         private IIndexManager _indexManager;
-        private IEdgeTypeManager _edgeManager;
+        private IEdgeTypeHandler _edgeManager;
 
         #endregion
 
         #region IManagerOf<IVertexTypeManager> Members
 
-        public IVertexTypeManager CheckManager
+        public IVertexTypeHandler CheckManager
         {
             get {  return _check; }
         }
 
-        public IVertexTypeManager ExecuteManager
+        public IVertexTypeHandler ExecuteManager
         {
             get { return _execute; }
         }
 
-        public IVertexTypeManager UndoManager
+        public IVertexTypeHandler UndoManager
         {
             get { throw new NotImplementedException(); }
         }

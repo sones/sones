@@ -20,7 +20,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <summary>
         /// A vertex type manager is needed to create certain query-plan structures
         /// </summary>
-        private IManagerOf<IVertexTypeManager> _vertexTypeManager;
+        private IManagerOf<IVertexTypeHandler> _vertexTypeManager;
 
         /// <summary>
         /// A vertex store

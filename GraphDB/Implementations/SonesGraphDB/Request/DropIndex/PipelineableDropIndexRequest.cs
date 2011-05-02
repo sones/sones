@@ -82,7 +82,7 @@ namespace sones.GraphDB.Request.DropIndex
                 throw new IndexTypeDoesNotExistException(_request.TypeName, _request.IndexName);
             }
             
-            myMetaManager.VertexTypeManager.ExecuteManager.RemoveVertexType(new List<IVertexType> { indexType }, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.ExecuteManager.RemoveVertexTypes(new List<IVertexType> { indexType }, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

@@ -42,7 +42,7 @@ namespace sones.GraphDB.Manager.Vertex
         /// <summary>
         /// Needed for VertexType interaction
         /// </summary>
-        private IManagerOf<IVertexTypeManager> _vertexTypeManager;
+        private IManagerOf<IVertexTypeHandler> _vertexTypeManager;
 
         /// <summary>
         /// Needed for transforming an expression into a query plan

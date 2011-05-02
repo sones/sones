@@ -54,7 +54,7 @@ namespace sones.GraphDB.Request.DropType
                 throw new VertexTypeDoesNotExistException(_request.TypeName);
             }
 
-            myMetaManager.VertexTypeManager.ExecuteManager.RemoveVertexType(new List<IVertexType> {graphDBType}, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.ExecuteManager.RemoveVertexTypes(new List<IVertexType> {graphDBType}, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

@@ -48,11 +48,12 @@ namespace sones.GraphDB.Request.GetEdgeType
 
         public override void Validate(IMetaManager myMetaManager)
         {
+            myMetaManager.EdgeTypeManager.CheckManager.GetAllEdgeTypes(TransactionToken, SecurityToken);                
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _fetchedEdgeTypes = myMetaManager.EdgeTypeManager.GetAllEdgeTypes(TransactionToken, SecurityToken);                
+            _fetchedEdgeTypes = myMetaManager.EdgeTypeManager.ExecuteManager.GetAllEdgeTypes(TransactionToken, SecurityToken);                
         }
 
         public override IRequest GetRequest()

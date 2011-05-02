@@ -16,10 +16,6 @@ namespace sones.GraphDB.Manager.TypeManagement
     internal sealed class CanVertexTypeManager: AVertexTypeManager
     {
 
-        public CanVertexTypeManager()
-        {
-        }
-
         #region IVertexTypeManager Members
 
         public override long GetUniqueVertexID(IVertexType vertexType)
@@ -66,7 +62,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             return null;
         }
 
-        public override void RemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override void RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region check arguments
 

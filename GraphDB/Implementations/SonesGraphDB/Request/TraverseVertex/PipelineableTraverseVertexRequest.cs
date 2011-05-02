@@ -264,7 +264,7 @@ namespace sones.GraphDB.Request
                     if (!myFollowThisEdge(myCurrentVertex,
                                             myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
                                             outEdge,
-                                            myMetaManager.EdgeTypeManager.GetEdgeType(outEdge.EdgeTypeID, TransactionToken, SecurityToken)))
+                                            myMetaManager.EdgeTypeManager.ExecuteManager.GetEdgeType(outEdge.EdgeTypeID, TransactionToken, SecurityToken)))
                     {
                         continue;
                     }

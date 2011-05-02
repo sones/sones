@@ -29,7 +29,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         private IIndexManager _indexManager;
         private UniqueID _LastAttrID;
         private UniqueID _LastTypeID;
-        private IEdgeTypeManager _edgeManager;
+        private IManagerOf<IEdgeTypeHandler> _edgeManager;
 
 
 
@@ -99,7 +99,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             return Add(myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
-        public override void RemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override void RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             Remove(myVertexTypes, myTransaction, mySecurity);
         }
@@ -276,7 +276,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         creationDate,
                         edge.Multiplicity,
                         typeInfos[current.Value.VertexTypeName].VertexInfo,
-                        new VertexInformation((long)BaseTypes.EdgeType, _edgeManager.GetEdgeType(edge.EdgeType, myTransaction, mySecurity).ID),
+                        new VertexInformation((long)BaseTypes.EdgeType, _edgeManager.ExecuteManager.GetEdgeType(edge.EdgeType, myTransaction, mySecurity).ID),
                         typeInfos[edge.AttributeType].VertexInfo,
                         mySecurity,
                         myTransaction);
@@ -700,42 +700,6 @@ namespace sones.GraphDB.Manager.TypeManagement
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Initializes this manager.
-        /// </summary>
-        /// <param name="myIndexManager">The index manager that should be used within the vertex type manager</param>
-        /// <param name="myVertexManager">The vertex manager that should be used within the vertex type manager</param>
-        private void Load(IIndexManager myIndexManager, IVertexManager myVertexManager, IEdgeTypeManager myEdgeTypeManager, TransactionToken myTransaction, SecurityToken mySecurity)
-        {
-            _indexManager = myIndexManager;
-            _vertexManager = myVertexManager;
-            _edgeManager = myEdgeTypeManager;
-
-            _LastTypeID = new UniqueID(GetMaxID((long)BaseTypes.VertexType, myTransaction, mySecurity) + 1);
-            _LastAttrID = new UniqueID(Math.Max(
-                            GetMaxID((long)BaseTypes.Property, myTransaction, mySecurity),
-                            Math.Max(
-                                GetMaxID((long)BaseTypes.OutgoingEdge, myTransaction, mySecurity),
-                                Math.Max(
-                                    GetMaxID((long)BaseTypes.IncomingEdge, myTransaction, mySecurity),
-                                    GetMaxID((long)BaseTypes.BinaryProperty, myTransaction, mySecurity)))) + 1);
-
-
-            LoadBaseType(
-                myTransaction,
-                mySecurity,
-                BaseTypes.Attribute,
-                BaseTypes.BaseType,
-                BaseTypes.BinaryProperty,
-                BaseTypes.EdgeType,
-                BaseTypes.IncomingEdge,
-                BaseTypes.Index,
-                BaseTypes.OutgoingEdge,
-                BaseTypes.Property,
-                BaseTypes.VertexType);
-
-        }
-
         private void LoadBaseType(TransactionToken myTransaction, SecurityToken mySecurity, params BaseTypes[] myBaseTypes)
         {
             foreach (var baseType in myBaseTypes)
@@ -769,7 +733,29 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public void Load(TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            Load(_indexManager, _vertexManager, _edgeManager, myTransaction, mySecurity);
+            _LastTypeID = new UniqueID(GetMaxID((long)BaseTypes.VertexType, myTransaction, mySecurity) + 1);
+            _LastAttrID = new UniqueID(Math.Max(
+                            GetMaxID((long)BaseTypes.Property, myTransaction, mySecurity),
+                            Math.Max(
+                                GetMaxID((long)BaseTypes.OutgoingEdge, myTransaction, mySecurity),
+                                Math.Max(
+                                    GetMaxID((long)BaseTypes.IncomingEdge, myTransaction, mySecurity),
+                                    GetMaxID((long)BaseTypes.BinaryProperty, myTransaction, mySecurity)))) + 1);
+
+
+            LoadBaseType(
+                myTransaction,
+                mySecurity,
+                BaseTypes.Attribute,
+                BaseTypes.BaseType,
+                BaseTypes.BinaryProperty,
+                BaseTypes.EdgeType,
+                BaseTypes.IncomingEdge,
+                BaseTypes.Index,
+                BaseTypes.OutgoingEdge,
+                BaseTypes.Property,
+                BaseTypes.VertexType);
+
         }
     }
 

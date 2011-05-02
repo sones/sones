@@ -32,7 +32,12 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// Gets or sets the myOutgoingEdgeVertex instance of the type manager.
         /// </summary>
-        private readonly IManagerOf<IVertexTypeManager> _vertexTypeManager;
+        private readonly IManagerOf<IVertexTypeHandler> _vertexTypeManager;
+
+        /// <summary>
+        /// The edge type manager
+        /// </summary>
+        private readonly IManagerOf<IEdgeTypeHandler> _edgeTypeManager;
 
         /// <summary>
         /// Gets or sets the myOutgoingEdgeVertex instance of the parentVertex manager.
@@ -43,11 +48,6 @@ namespace sones.GraphDB.Manager
         /// Gets or sets the myOutgoingEdgeVertex instance of parentVertex store.
         /// </summary>
         private readonly IVertexStore _vertexStore;
-
-        /// <summary>
-        /// The edge type manager
-        /// </summary>
-        private readonly IEdgeTypeManager _edgeTypeManager;
 
         /// <summary>
         /// The system security token.
@@ -116,9 +116,14 @@ namespace sones.GraphDB.Manager
             get { return _indexManager; }
         }
 
-        public IManagerOf<IVertexTypeManager> VertexTypeManager
+        public IManagerOf<IVertexTypeHandler> VertexTypeManager
         {
             get { return _vertexTypeManager; }
+        }
+
+        public IManagerOf<IEdgeTypeHandler> EdgeTypeManager
+        {
+            get { return _edgeTypeManager; }
         }
 
         public IVertexManager VertexManager
@@ -129,11 +134,6 @@ namespace sones.GraphDB.Manager
         public IVertexStore VertexStore
         {
             get { return _vertexStore; }
-        }
-
-        public IEdgeTypeManager EdgeTypeManager
-        {
-            get { return _edgeTypeManager; }
         }
 
         public IQueryPlanManager QueryPlanManager

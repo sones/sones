@@ -85,7 +85,9 @@
     <Compile Include="Manager\Security\BasicSecurityManager.cs" />
     <Compile Include="Manager\Transaction\BasicTransactionManager.cs" />
     <Compile Include="Manager\TypeManagement\AVertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\CanEdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\CanVertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\ExecuteEdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\ExecuteVertexTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\IVertexTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\IEdgeTypeManager.cs" />

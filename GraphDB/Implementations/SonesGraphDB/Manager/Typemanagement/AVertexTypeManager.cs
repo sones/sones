@@ -13,7 +13,7 @@ using System.Collections;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    internal abstract class AVertexTypeManager: IVertexTypeManager
+    internal abstract class AVertexTypeManager: IVertexTypeHandler
     {
         #region IVertexTypeManager Members
 
@@ -25,7 +25,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public abstract IEnumerable<IVertexType> AddVertexTypes(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
 
-        public abstract void RemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity);
+        public abstract void RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity);
 
         public abstract void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
 
