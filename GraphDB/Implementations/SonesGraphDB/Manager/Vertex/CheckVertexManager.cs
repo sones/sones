@@ -149,7 +149,7 @@ namespace sones.GraphDB.Manager.Vertex
         {
             foreach (var mand in myMandatoryProperties)
             {
-                if (mand.RelatedType.ID == (long)BaseTypes.VertexType)
+                if (mand.RelatedType.ID == (long)BaseTypes.Vertex)
                     if (!myInsertDefinition.StructuredProperties.Any(x => mand.Name.Equals(x)))
                     {
                         throw new MandatoryConstraintViolationException(mand.Name);
