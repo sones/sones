@@ -374,7 +374,6 @@ namespace sones.GraphDB.Manager.Vertex
 
                 var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, attrDef);
                 CheckTargetVertices(attrDef, vertexIDs);
-
                 switch (attrDef.Multiplicity)
                 {
                     case EdgeMultiplicity.SingleEdge:

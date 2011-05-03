@@ -75,16 +75,16 @@ namespace sones.GraphDB.Manager
 
         #region Index
 
-        private readonly VertexInformation _Index                      = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.Index);
-        private readonly VertexInformation _IndexDotIndexedProperties  = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.IndexedProperties);
-        private readonly VertexInformation _IndexDotDefiningVertexType = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.DefiningVertexType);
-        private readonly VertexInformation _IndexDotID                 = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.ID);
-        private readonly VertexInformation _IndexDotName               = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.Name);
-        private readonly VertexInformation _IndexDotIsUserDefined      = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.IsUserDefined);
-        private readonly VertexInformation _IndexDotIndexClass         = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.IndexClass);
-        private readonly VertexInformation _IndexDotIsSingleValue      = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.IsSingleValue);
-        private readonly VertexInformation _IndexDotIsRange            = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.IsRange);
-        private readonly VertexInformation _IndexDotIsVersioned        = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.IsVersioned);
+        private readonly VertexInformation _Index                      = new VertexInformation((long)BaseTypes.VertexType   , (long)BaseTypes.Index);
+        private readonly VertexInformation _IndexDotIndexedProperties  = new VertexInformation((long)BaseTypes.OutgoingEdge , 6 * Offset + (long)AttributeDefinitions.IndexedProperties);
+        private readonly VertexInformation _IndexDotDefiningVertexType = new VertexInformation((long)BaseTypes.OutgoingEdge , 6 * Offset + (long)AttributeDefinitions.DefiningVertexType);
+        private readonly VertexInformation _IndexDotID                 = new VertexInformation((long)BaseTypes.Property     , 6 * Offset + (long)AttributeDefinitions.ID);
+        private readonly VertexInformation _IndexDotName               = new VertexInformation((long)BaseTypes.Property     , 6 * Offset + (long)AttributeDefinitions.Name);
+        private readonly VertexInformation _IndexDotIsUserDefined      = new VertexInformation((long)BaseTypes.Property     , 6 * Offset + (long)AttributeDefinitions.IsUserDefined);
+        private readonly VertexInformation _IndexDotIndexClass         = new VertexInformation((long)BaseTypes.Property     , 6 * Offset + (long)AttributeDefinitions.IndexClass);
+        private readonly VertexInformation _IndexDotIsSingleValue      = new VertexInformation((long)BaseTypes.Property     , 6 * Offset + (long)AttributeDefinitions.IsSingleValue);
+        private readonly VertexInformation _IndexDotIsRange            = new VertexInformation((long)BaseTypes.Property     , 6 * Offset + (long)AttributeDefinitions.IsRange);
+        private readonly VertexInformation _IndexDotIsVersioned        = new VertexInformation((long)BaseTypes.Property     , 6 * Offset + (long)AttributeDefinitions.IsVersioned);
 
         #endregion
 

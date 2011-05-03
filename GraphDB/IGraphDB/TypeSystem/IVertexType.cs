@@ -130,6 +130,11 @@ namespace sones.GraphDB.TypeSystem
 
         #region Uniques
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="myIncludeAncestorDefinitions"></param>
+        /// <returns></returns>
         bool HasUniqueDefinitions(bool myIncludeAncestorDefinitions);
 
         /// <summary>

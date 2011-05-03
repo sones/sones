@@ -226,17 +226,12 @@ namespace sones.GraphDB.TypeManagement
 
         bool IVertexType.HasBinaryProperties(bool myIncludeAncestorDefinitions)
         {
-            if (!_hasBinaryProperties.HasValue)
-            {
-                _hasBinaryProperties = GetHasBinaryProperties();
-            }
-
-            return _hasBinaryProperties.Value || (myIncludeAncestorDefinitions && _parent.Value.HasBinaryProperties(true));
+            return HasBinaryProperties_private(myIncludeAncestorDefinitions);
         }
 
         IEnumerable<IBinaryPropertyDefinition> IVertexType.GetBinaryProperties(bool myIncludeAncestorDefinitions)
         {
-            return _attributes.Value.OfType<IBinaryPropertyDefinition>();
+            return _attributes.Value.Values.OfType<IBinaryPropertyDefinition>();
         }
 
         #endregion
@@ -255,17 +250,12 @@ namespace sones.GraphDB.TypeManagement
 
         bool IVertexType.HasIncomingEdges(bool myIncludeAncestorDefinitions)
         {
-            if (!_hasIncomingEdges.HasValue)
-            {
-                _hasIncomingEdges = GetHasIncomingEdges();
-            }
-
-            return _hasIncomingEdges.Value || (myIncludeAncestorDefinitions && _parent.Value.HasIncomingEdges(true));
+            return HasIncomingEdges_private(myIncludeAncestorDefinitions);
         }
 
         IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return _attributes.Value.OfType<IIncomingEdgeDefinition>();
+            return _attributes.Value.Values.OfType<IIncomingEdgeDefinition>();
         }
 
         #endregion
@@ -284,17 +274,12 @@ namespace sones.GraphDB.TypeManagement
 
         bool IVertexType.HasOutgoingEdges(bool myIncludeAncestorDefinitions)
         {
-            if (!_hasOutgoingEdges.HasValue)
-            {
-                _hasOutgoingEdges = GetHasOutgoingEdges();
-            }
-
-            return _hasOutgoingEdges.Value || (myIncludeAncestorDefinitions && _parent.Value.HasOutgoingEdges(true));
+            return HasOutgoingEdges_private(myIncludeAncestorDefinitions);
         }
 
         IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return _attributes.Value.OfType<IOutgoingEdgeDefinition>();
+            return _attributes.Value.Values.OfType<IOutgoingEdgeDefinition>();
         }
 
         #endregion
@@ -390,13 +375,7 @@ namespace sones.GraphDB.TypeManagement
 
         bool IBaseType.HasAttributes(bool myIncludeAncestorDefinitions)
         {
-            if (!_hasAttributes.HasValue)
-            {
-                _hasAttributes = GetHasAttributes();
-            }
-
-            //Perf: Use of "short-circuit" evaluation. Do not exchange operators!
-            return _hasAttributes.Value || (myIncludeAncestorDefinitions && _parent.Value.HasAttributes(true));
+            return HasAttributes_private(myIncludeAncestorDefinitions);
         }
 
         IAttributeDefinition IBaseType.GetAttributeDefinition(string myAttributeName)
@@ -432,17 +411,12 @@ namespace sones.GraphDB.TypeManagement
 
         bool IBaseType.HasProperties(bool myIncludeAncestorDefinitions)
         {
-            if (!_hasProperties.HasValue)
-            {
-                _hasProperties = GetHasProperties();
-            }
-
-            return _hasProperties.Value || (myIncludeAncestorDefinitions && _parent.Value.HasProperties(true));
+            return HasProperties_private(myIncludeAncestorDefinitions);
         }
 
         IEnumerable<IPropertyDefinition> IBaseType.GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return _attributes.Value.OfType<IPropertyDefinition>();
+            return _attributes.Value.Values.OfType<IPropertyDefinition>();
         }
 
         IPropertyDefinition IBaseType.GetPropertyDefinition(long myPropertyID)
@@ -745,6 +719,53 @@ namespace sones.GraphDB.TypeManagement
             return BaseGraphStorageManager.GetIsSealed(GetVertex());
         }
 
+        private bool HasProperties_private(bool myIncludeAncestorDefinitions)
+        {
+            if (!_hasProperties.HasValue)
+            {
+                _hasProperties = GetHasProperties();
+            }
+
+            return _hasProperties.Value || (myIncludeAncestorDefinitions && _parent.Value.HasProperties(true));
+        }
+
+        private bool HasOutgoingEdges_private(bool myIncludeAncestorDefinitions)
+        {
+            if (!_hasOutgoingEdges.HasValue)
+            {
+                _hasOutgoingEdges = GetHasOutgoingEdges();
+            }
+
+            return _hasOutgoingEdges.Value || (myIncludeAncestorDefinitions && _parent.Value.HasOutgoingEdges(true));
+        }
+
+        private bool HasIncomingEdges_private(bool myIncludeAncestorDefinitions)
+        {
+            if (!_hasIncomingEdges.HasValue)
+            {
+                _hasIncomingEdges = GetHasIncomingEdges();
+            }
+
+            return _hasIncomingEdges.Value || (myIncludeAncestorDefinitions && _parent.Value.HasIncomingEdges(true));
+        }
+
+        private bool HasBinaryProperties_private(bool myIncludeAncestorDefinitions)
+        {
+            if (!_hasBinaryProperties.HasValue)
+            {
+                _hasBinaryProperties = GetHasBinaryProperties();
+            }
+
+            return _hasBinaryProperties.Value || (myIncludeAncestorDefinitions && _parent.Value.HasBinaryProperties(true));
+        }
+
+        private bool HasAttributes_private(bool myIncludeAncestorDefinitions)
+        {
+            return HasProperties_private(myIncludeAncestorDefinitions)
+                || HasOutgoingEdges_private(myIncludeAncestorDefinitions)
+                || HasIncomingEdges_private(myIncludeAncestorDefinitions)
+                || HasBinaryProperties_private(myIncludeAncestorDefinitions);
+        }
 
         #endregion
 
