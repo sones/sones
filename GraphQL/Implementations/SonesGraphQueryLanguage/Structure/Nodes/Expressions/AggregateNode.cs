@@ -19,13 +19,11 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
 
         #endregion
 
-        public new void GetContent(ParsingContext context, ParseTreeNode parseNode)
+        public void Aggregate_Init(ParsingContext context, ParseTreeNode parseNode)
         {
-
             base.Init(context, parseNode);
 
             AggregateDefinition = new AggregateDefinition(new ChainPartAggregateDefinition(base.FuncDefinition));
-
         }
     }
 }

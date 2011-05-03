@@ -22,52 +22,48 @@ namespace sones.Library.Arithmetics
             if ((myLeft != null) &&
                 (myRight != null))
             {
-                try
-                {
-                    #region check types and calculate
 
-                    if (myType == typeof(Int16))
-                    {
-                        return ((Int16)myLeft) + ((Int16)myRight);
-                    }
-                    else if (myType == typeof(UInt16))
-                    {
-                        return ((UInt16)myLeft) + ((UInt16)myRight);
-                    }
-                    else if (myType == typeof(Int32))
-                    {
-                        return ((Int32)myLeft) + ((Int32)myRight);
-                    }
-                    else if (myType == typeof(UInt32))
-                    {
-                        return ((UInt32)myLeft) + ((UInt32)myRight);
-                    }
-                    else if (myType == typeof(Int64))
-                    {
-                        return ((Int64)myLeft) + ((Int64)myRight);
-                    }
-                    else if (myType == typeof(UInt64))
-                    {
-                        return ((UInt64)myLeft) + ((UInt64)myRight);
-                    }
-                    else if (myType == typeof(Double))
-                    {
-                        return ((Double)myLeft) + ((Double)myRight);
-                    }
-                    else if (myType == typeof(Single))
-                    {
-                        return ((Single)myLeft) + ((Single)myRight);
-                    }
+                #region check types and calculate
 
-                    #endregion
-                }
-                catch (Exception e)
+                if (myType == typeof(Int16))
                 {
-                    if (!(e is ASonesException))
-                    {
-                        throw new InvalidCastException("A cast to the given type " + myType.Name + " failed!");
-                    }
+                    return Convert.ToInt16(myLeft) + Convert.ToInt16(myRight);
                 }
+                else if (myType == typeof(UInt16))
+                {
+                    return Convert.ToUInt16(myLeft) + Convert.ToUInt16(myRight);
+                }
+                else if (myType == typeof(Int32))
+                {
+                    return Convert.ToInt32(myLeft) + Convert.ToInt32(myRight);
+                }
+                else if (myType == typeof(UInt32))
+                {
+                    return Convert.ToUInt32(myLeft) + Convert.ToUInt32(myRight);
+                }
+                else if (myType == typeof(Int64))
+                {
+                    return Convert.ToInt64(myLeft) + Convert.ToInt64(myRight);
+                }
+                else if (myType == typeof(UInt64))
+                {
+                    return Convert.ToUInt64(myLeft) + Convert.ToUInt64(myRight);
+                }
+                else if (myType == typeof(Double))
+                {
+                    return Convert.ToDouble(myLeft) + Convert.ToDouble(myRight);
+                }
+                else if (myType == typeof(Single))
+                {
+                    return Convert.ToSingle(myLeft) + Convert.ToSingle(myRight);
+                }
+                else
+                {
+                    throw new ArithmeticException();
+                }
+
+                #endregion
+
             }
 
             return null;
@@ -87,64 +83,60 @@ namespace sones.Library.Arithmetics
         /// Divides the given operands, depending on the type
         /// </summary>
         /// <param name="myType">The type of the operand</param>
-        /// <param name="myDividend">The Dividend of the operation</param>
+        /// <param name="myDivident">The Dividend of the operation</param>
         /// <param name="myDivisor">The Divisor of the operation</param>
         /// <exception cref="InvalidCastException">Is thrown if operation fails</exception>
         /// <returns>Result of the operation in case of valid type, else NULL or an Exception is thrown</returns>
-        public static IComparable Div(Type myType, IComparable myDividend, IComparable myDivisor)
+        public static IComparable Div(Type myType, IComparable myDivident, IComparable myDivisor)
         {
             //make sure that either the dividend and the divisor are not NULL and not 0
-            if ((myDividend != null) && 
-                (myDivisor != null) && 
-                (myDividend.CompareTo(0) != 0) && 
+            if ((myDivident != null) &&
+                (myDivisor != null) &&
+                (myDivident.CompareTo(0) != 0) &&
                 (myDivisor.CompareTo(0) != 0))
             {
-                try
-                {
-                    #region check types and calculate
 
-                    if (myType == typeof(Int16))
-                    {
-                        return ((Int16)myDividend) / ((Int16)myDivisor);
-                    }
-                    else if (myType == typeof(UInt16))
-                    {
-                        return ((UInt16)myDividend) / ((UInt16)myDivisor);
-                    }
-                    else if (myType == typeof(Int32))
-                    {
-                        return ((Int32)myDividend) / ((Int32)myDivisor);
-                    }
-                    else if (myType == typeof(UInt32))
-                    {
-                        return ((UInt32)myDividend) / ((UInt32)myDivisor);
-                    }
-                    else if (myType == typeof(Int64))
-                    {
-                        return ((Int64)myDividend) / ((Int64)myDivisor);
-                    }
-                    else if (myType == typeof(UInt64))
-                    {
-                        return ((UInt64)myDividend) / ((UInt64)myDivisor);
-                    }
-                    else if (myType == typeof(Double))
-                    {
-                        return ((Double)myDividend) / ((Double)myDivisor);
-                    }
-                    else if (myType == typeof(Single))
-                    {
-                        return ((Single)myDividend) / ((Single)myDivisor);
-                    }
+                #region check types and calculate
 
-                    #endregion
-                }
-                catch (Exception e)
+
+                if (myType == typeof(Int16))
                 {
-                    if (!(e is ASonesException))
-                    {
-                        throw new InvalidCastException("A cast to the given type " + myType.Name + " failed!");
-                    }
+                    return Convert.ToInt16(myDivident) / Convert.ToInt16(myDivisor);
                 }
+                else if (myType == typeof(UInt16))
+                {
+                    return Convert.ToUInt16(myDivident) / Convert.ToUInt16(myDivisor);
+                }
+                else if (myType == typeof(Int32))
+                {
+                    return Convert.ToInt32(myDivident) / Convert.ToInt32(myDivisor);
+                }
+                else if (myType == typeof(UInt32))
+                {
+                    return Convert.ToUInt32(myDivident) / Convert.ToUInt32(myDivisor);
+                }
+                else if (myType == typeof(Int64))
+                {
+                    return Convert.ToInt64(myDivident) / Convert.ToInt64(myDivisor);
+                }
+                else if (myType == typeof(UInt64))
+                {
+                    return Convert.ToUInt64(myDivident) / Convert.ToUInt64(myDivisor);
+                }
+                else if (myType == typeof(Double))
+                {
+                    return Convert.ToDouble(myDivident) / Convert.ToDouble(myDivisor);
+                }
+                else if (myType == typeof(Single))
+                {
+                    return Convert.ToSingle(myDivident) / Convert.ToSingle(myDivisor);
+                }
+                else
+                {
+                    throw new ArithmeticException();
+                }
+                #endregion
+
             }
 
             return null;

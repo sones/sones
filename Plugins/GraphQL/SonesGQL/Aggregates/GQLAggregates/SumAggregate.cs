@@ -9,6 +9,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.Index.Interfaces;
 using sones.Library.Arithmetics;
+using sones.Plugins.SonesGQL.Aggregates.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Aggregates
 {
@@ -38,17 +39,24 @@ namespace sones.Plugins.SonesGQL.Aggregates
         {
             var sumType = myPropertyDefinition.BaseType;
             IComparable sum = null;
-                        
-            foreach (var value in myValues)
+
+            try
             {
-                if (sum == null)
+                foreach (var value in myValues)
                 {
-                    sum = ArithmeticOperations.Add(sumType, 0, value);
+                    if (sum == null)
+                    {
+                        sum = ArithmeticOperations.Add(sumType, 0, value);
+                    }
+                    else
+                    {
+                        sum = ArithmeticOperations.Add(sumType, sum, value);
+                    }
                 }
-                else
-                {
-                    sum = ArithmeticOperations.Add(sumType, sum, value);
-                }
+            }
+            catch (ArithmeticException)
+            {
+                throw new InvalidArithmeticAggregationException(sumType, this.AggregateName);
             }
 
             return new FuncParameter(sum, myPropertyDefinition);

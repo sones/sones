@@ -1801,7 +1801,7 @@ namespace sones.GraphQL
         {
             AggregateNode aAggregateNode = new AggregateNode();
 
-            aAggregateNode.Init(context, parseNode);
+            aAggregateNode.Aggregate_Init(context, parseNode);
 
             parseNode.AstNode = aAggregateNode;
         }

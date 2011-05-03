@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="AvgAggregate.cs" />
     <Compile Include="CountAggregate.cs" />
+    <Compile Include="ErrorHandling\InvalidArithmeticAggregationException.cs" />
     <Compile Include="MaxAggregate.cs" />
     <Compile Include="MinAggregate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
