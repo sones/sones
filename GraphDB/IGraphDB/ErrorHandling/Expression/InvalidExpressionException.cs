@@ -15,6 +15,9 @@ namespace sones.GraphDB.ErrorHandling.Expression
         /// </summary>
         public readonly IExpression InvalidExpression;
 
+        String VertexTypeName;
+        long VertexID;
+
         #endregion
 
         #region Constructor
@@ -28,11 +31,21 @@ namespace sones.GraphDB.ErrorHandling.Expression
             InvalidExpression = myInvalidExpression;
         }
 
+        public InvalidExpressionException(String myVertexTypeName, long myVertexID)
+        {
+            VertexTypeName = myVertexTypeName;
+            VertexID = myVertexID;
+            InvalidExpression = null;
+        }
+
         #endregion
 
         public override string ToString()
         {
-            return String.Format("The expression {0} is invalid.", InvalidExpression);
+            if(InvalidExpression != null)
+                return String.Format("The expression {0} is invalid.", InvalidExpression);
+            else
+                return String.Format("The expression or VertexTypeName and VertexID must be set");
         }
     }
 }

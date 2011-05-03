@@ -2,25 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using sones.Library.PropertyHyperGraph;
+using sones.GraphDB.Expression;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDB.Request
 {
-    /// <summary>
-    /// This class holds statistical informations of traversion
-    /// </summary>
     public sealed class TraversalState
     {
         #region Properties
 
         /// <summary>
-        /// The starting vertex of the traversal
+        /// The starting vertices of the traversion
         /// </summary>
-        public IEnumerable<IVertex> StartNodes { get; private set; }
+        public readonly IEnumerable<IVertex> StartNodes;
 
         /// <summary>
         /// The current distance from the StartNode
+        /// Note! Currently not used Note!
         /// </summary>
-        public UInt64 Depth { get; private set; }
+        public readonly UInt64 Depth;
 
         /// <summary>
         /// The number of visited vertices
@@ -30,7 +31,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The number of visited edges
         /// </summary>
-        //public UInt64 NumberOfVisitedEdges { get { return Convert.ToUInt64(VisitedVertices.Values.Sum(item => item.Count)); } }
+        public UInt64 NumberOfVisitedEdges { get { return Convert.ToUInt64(VisitedVertices.Values.Sum(item => item.Count)); } }
 
         /// <summary>
         /// The number of found vertices/paths/...
@@ -38,14 +39,17 @@ namespace sones.GraphDB.Request
         public UInt64 NumberOfFoundElements { get; private set; }
 
         /// <summary>
-        /// The datastructure that is responsible for counting the visited vertices and edges (avoidance of circles).
+        /// The datastructure that is responsible for counting the visited vertices and the elements from which they come (vertices or edges) to avoide circles.
         /// 
-        /// Key(ObjectUUID): The ID of the already visited DBVertex
-        /// Value(HashSet<ObjectUUID>): A set of ObjectUUIDs which represent IDs of DBEdges via the Key has been reached
+        /// Key(ID): The ID of the already visited element
+        /// Value(HashSet<ID>): A set of IDs which represent IDs of DBEdges or DBVertex via the Key has been reached
         /// </summary>
-        public Dictionary<long, HashSet<long>> VisitedVertices { get; private set; }
+        public readonly Dictionary<long, HashSet<long>> VisitedVertices;
 
-        public HashSet<long> Visited { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public readonly HashSet<long> Visited;
 
         #endregion
 
@@ -54,7 +58,9 @@ namespace sones.GraphDB.Request
         public TraversalState(IEnumerable<IVertex> myStartNodes)
         {
             StartNodes = myStartNodes;
+            
             VisitedVertices = new Dictionary<long, HashSet<long>>();
+            
             Visited = new HashSet<long>();
         }
 
@@ -71,28 +77,25 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds a vertex via vertex to the traversalstate
+        /// Adds a element ID and the via element ID to the traversalstate
         /// </summary>
-        /// <param name="aVertex">The vertex that has been traversed</param>
-        /// <param name="viaVertex">The vertex via the aVertex has been traversed</param>
-        public void AddVisitedVertexViaVertex(IVertex aVertex, IVertex viaVertex)
+        /// <param name="myVisited">The element ID that has been traversed</param>
+        /// <param name="myVia">The element ID via the myVisited has been traversed</param>
+        public void AddVisitedVia(long myVisited, long myVia)
         {
-            if (aVertex != null && viaVertex != null)
+            if (VisitedVertices.ContainsKey(myVisited))
             {
-                if (VisitedVertices.ContainsKey(aVertex.VertexID))
-                {
-                    VisitedVertices[aVertex.VertexID].Add(viaVertex.VertexID);
-                }
-                else if (VisitedVertices.ContainsKey(viaVertex.VertexID))
-                {
-                    VisitedVertices[viaVertex.VertexID].Add(aVertex.VertexID);
-                }
-                else
-                {
-                    VisitedVertices.Add(aVertex.VertexID, new HashSet<long>());
+                VisitedVertices[myVisited].Add(myVia);
+            }
+            else if (VisitedVertices.ContainsKey(myVia))
+            {
+                VisitedVertices[myVia].Add(myVisited);
+            }
+            else
+            {
+                VisitedVertices.Add(myVisited, new HashSet<long>());
 
-                    VisitedVertices[aVertex.VertexID].Add(viaVertex.VertexID);
-                }
+                VisitedVertices[myVisited].Add(myVia);
             }
         }
 
@@ -102,25 +105,25 @@ namespace sones.GraphDB.Request
         /// <param name="myIVertex">The vertex to be checked</param>
         /// <param name="myViaVertex">The "via" vertex</param>
         /// <returns></returns>
-        public bool AlreadyVisitedVertexViaVertex(IVertex myIVertex, IVertex myViaVertex)
+        public bool AlreadyVisited(long myVisitID, long myViaID)
         {
             //if myIVertex is already visited via myViaVertex OR myViaVertex is already visited via myIVertex return true
             //else false
-            return ((VisitedVertices.ContainsKey(myIVertex.VertexID) && VisitedVertices[myIVertex.VertexID].Contains(myViaVertex.VertexID)) ||
-                    (VisitedVertices.ContainsKey(myViaVertex.VertexID) && VisitedVertices[myViaVertex.VertexID].Contains(myIVertex.VertexID)));
+            return ((VisitedVertices.ContainsKey(myVisitID) && VisitedVertices[myVisitID].Contains(myViaID)) ||
+                    (VisitedVertices.ContainsKey(myViaID) && VisitedVertices[myViaID].Contains(myVisitID)));
         }
 
-        public void AddVisitedVertex(IVertex myIVertex)
+        public void AddVisited(long myVisitID)
         {
-            if(!Visited.Contains(myIVertex.VertexID))
+            if (!Visited.Contains(myVisitID))
             {
-                Visited.Add(myIVertex.VertexID);
+                Visited.Add(myVisitID);
             }
         }
 
-        public bool AlreadyVisitedVertex(IVertex myIVertex)
+        public bool AlreadyVisited(long myVisitID)
         {
-            return Visited.Contains(myIVertex.VertexID);
+            return Visited.Contains(myVisitID);
         }
 
         #endregion

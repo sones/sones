@@ -8,6 +8,7 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
+using sones.GraphDB.Expression.Tree;
 
 namespace sones.GraphDB.Request
 {
@@ -70,8 +71,19 @@ namespace sones.GraphDB.Request
         /// <param name="myMetaManager">Provides all important manager</param>
         public override void Validate(IMetaManager myMetaManager)
         {
-            if ((_request == null) || (!IsValidExpression(_request.Expression)))
-                throw new InvalidExpressionException(_request.Expression);
+            if (_request != null && _request.Expression != null)
+            {
+                if(IsValidExpression(_request.Expression))
+                {
+                    return;
+                }
+            }
+            else if (_request != null && !String.IsNullOrWhiteSpace(_request.VertexTypeName))
+            {
+                return;
+            }
+
+            throw new InvalidExpressionException(_request.Expression);
         }
 
         /// <summary>
@@ -80,8 +92,11 @@ namespace sones.GraphDB.Request
         /// <param name="myMetaManager">Provides all important manager</param>
         public override void Execute(IMetaManager myMetaManager)
         {
-            //create traversal state an get start node
-            _traversalState = new TraversalState(myMetaManager.VertexManager.GetVertices(_request.Expression, true, _transactionToken, _securityToken));
+            if(_request.Expression != null)
+                //create traversal state an get start node
+                _traversalState = new TraversalState(myMetaManager.VertexManager.GetVertices(_request.Expression, true, _transactionToken, _securityToken));
+            else
+                _traversalState = new TraversalState(new List<IVertex> { myMetaManager.VertexManager.GetVertex(_request.VertexTypeName, _request.VertexID, "", null, _transactionToken, _securityToken) });
 
             //do traversion
             _fetchedIVertices = TraverseStartNodes(_traversalState.StartNodes,
@@ -235,84 +250,88 @@ namespace sones.GraphDB.Request
 
             #region update statistics on traversal state
 
-            _traversalState.AddVisitedVertexViaVertex(myCurrentVertex, myViaVertex);
+            if (!_traversalState.AlreadyVisited(myCurrentVertex.VertexID))
+            {
+                if (myViaVertex != null)
+                    _traversalState.AddVisitedVia(myCurrentVertex.VertexID, myViaVertex.VertexID);
 
             #endregion
 
-            #region return and traverse
-            //get all edges and try to traverse them
-            //return results
+                #region return and traverse
+                //get all edges and try to traverse them
+                //return results
 
-            if (match)
-            {
-                //return the current vertex if it matched
-                yield return myCurrentVertex;
-            }
-
-            #region traverse by using outgoing edges
-            //first do recursive search by using the outgoing edges
-
-            foreach (var _OutEdge in myCurrentVertex.GetAllOutgoingEdges())
-            {
-                var outEdge = _OutEdge.Item2;
-
-                #region check edge
-                //check if the edge should be followed... if not, continue!
-
-                if (myFollowThisEdge != null)
+                if (match)
                 {
-                    if (!myFollowThisEdge(myCurrentVertex,
-                                            myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
-                                            outEdge,
-                                            myMetaManager.EdgeTypeManager.ExecuteManager.GetEdgeType(outEdge.EdgeTypeID, TransactionToken, SecurityToken)))
-                    {
-                        continue;
-                    }
+                    //return the current vertex if it matched
+                    yield return myCurrentVertex;
                 }
 
-                #endregion
+                #region traverse by using outgoing edges
+                //first do recursive search by using the outgoing edges
 
-                var nextVerticies = outEdge.GetTargetVertices();
-
-                #region take every vertex and do recursion
-
-                foreach (var nextVertex in nextVerticies)
+                foreach (var _OutEdge in myCurrentVertex.GetAllOutgoingEdges())
                 {
-                    //check for circle avoidance
-                    if (myAvoidCircles)
-                    {
-                        #region check traversal state
-                        //check the traversal state for circles... if there is one, break!
+                    var outEdge = _OutEdge.Item2;
 
-                        if (_traversalState.AlreadyVisitedVertexViaVertex(nextVertex, myCurrentVertex))
+                    #region check edge
+                    //check if the edge should be followed... if not, continue!
+
+                    if (myFollowThisEdge != null)
+                    {
+                        if (!myFollowThisEdge(myCurrentVertex,
+                                                myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
+                                                outEdge,
+                                                myMetaManager.EdgeTypeManager.ExecuteManager.GetEdgeType(outEdge.EdgeTypeID, TransactionToken, SecurityToken)))
                         {
                             continue;
                         }
-
-                        #endregion
                     }
 
-                    //move recursive in depth
-                    foreach (var vertex in TraverseVertex_private(nextVertex,
-                                                                    myCurrentVertex,
-                                                                    myMetaManager,
-                                                                    myAvoidCircles,
-                                                                    myFollowThisEdge,
-                                                                    myMatchEvaluator,
-                                                                    myMatchAction,
-                                                                    myStopEvaluator))
+                    #endregion
+
+                    var nextVerticies = outEdge.GetTargetVertices();
+
+                    #region take every vertex and do recursion
+
+                    foreach (var nextVertex in nextVerticies)
                     {
-                        yield return vertex;
+                        //check for circle avoidance
+                        if (myAvoidCircles)
+                        {
+                            #region check traversal state
+                            //check the traversal state for circles... if there is one, break!
+
+                            if (_traversalState.AlreadyVisited(nextVertex.VertexID, myCurrentVertex.VertexID))
+                            {
+                                continue;
+                            }
+
+                            #endregion
+                        }
+
+                        //move recursive in depth
+                        foreach (var vertex in TraverseVertex_private(nextVertex,
+                                                                        myCurrentVertex,
+                                                                        myMetaManager,
+                                                                        myAvoidCircles,
+                                                                        myFollowThisEdge,
+                                                                        myMatchEvaluator,
+                                                                        myMatchAction,
+                                                                        myStopEvaluator))
+                        {
+                            yield return vertex;
+                        }
+
                     }
 
+                    #endregion
                 }
 
                 #endregion
+
+                #endregion
             }
-
-            #endregion
-
-            #endregion
         }
                 
         #endregion

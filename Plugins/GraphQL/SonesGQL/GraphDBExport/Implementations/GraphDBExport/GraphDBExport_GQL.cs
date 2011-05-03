@@ -316,11 +316,17 @@ namespace sones.Plugins.SonesGQL.DBExport
 
             #region GetTypeToDump
 
-            IEnumerable<IVertexType> typesToDump;
+            List<IVertexType> typesToDump = new List<IVertexType>();
 
             if (myTypes.IsNullOrEmpty())
             {
-                typesToDump = myGraphDB.GetAllVertexTypes(mySecurityToken, myTransactionToken, new RequestGetAllVertexTypes(), (stats, vertexTypes) => vertexTypes);
+                foreach (var type in myGraphDB.GetAllVertexTypes(mySecurityToken, myTransactionToken, new RequestGetAllVertexTypes(), (stats, vertexTypes) => vertexTypes))
+                { 
+                    if(type.IsUserDefined)
+                    {
+                        typesToDump.Add(type);
+                    }
+                }
             }
             else
             {
@@ -338,7 +344,8 @@ namespace sones.Plugins.SonesGQL.DBExport
                     AddTypeAndAttributesRecursivly(ref myGraphDB, ref mySecurityToken, ref myTransactionToken, type, ref typesToDumpHash);
 
                 }
-                typesToDump = typesToDumpHash;
+
+                typesToDump = typesToDumpHash.ToList();
             }
 
             #endregion

@@ -2228,9 +2228,19 @@ namespace sones.GraphQL
 
             var retString = stringBuilder.ToString();
 
+            if (retString.EndsWith(" "))
+            {
+                retString = retString.Substring(0, retString.Length - 1);
+            }
+
             if (retString.EndsWith(delimiter))
             {
                 retString = retString.Substring(0, retString.Length - delimiter.Length);
+            }
+
+            if (retString.EndsWith("TYPES"))
+            {
+                retString = String.Empty;
             }
 
             return new List<String> { retString };
