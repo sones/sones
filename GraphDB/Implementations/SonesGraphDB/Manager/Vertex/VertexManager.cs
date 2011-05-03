@@ -62,25 +62,6 @@ namespace sones.GraphDB.Manager.Vertex
 
         #endregion
 
-        #region IManagerOf<IVertexHandler> Members
-
-        IVertexHandler IManagerOf<IVertexHandler>.CheckManager
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        IVertexHandler IManagerOf<IVertexHandler>.ExecuteManager
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        IVertexHandler IManagerOf<IVertexHandler>.UndoManager
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        #endregion
-
         #region IManager Members
 
         void IManager.Initialize(IMetaManager myMetaManager)

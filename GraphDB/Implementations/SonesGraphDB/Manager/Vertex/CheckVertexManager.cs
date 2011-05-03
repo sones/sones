@@ -12,6 +12,7 @@ using sones.GraphDB.Request;
 using sones.Library.Commons.VertexStore;
 using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Request.Insert;
+using sones.GraphDB.TypeManagement.Base;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -148,10 +149,11 @@ namespace sones.GraphDB.Manager.Vertex
         {
             foreach (var mand in myMandatoryProperties)
             {
-                if (!myInsertDefinition.StructuredProperties.Any(x => mand.Name.Equals(x)))
-                {
-                    throw new MandatoryConstraintViolationException(mand.Name);
-                }
+                if (mand.RelatedType.ID == (long)BaseTypes.VertexType)
+                    if (!myInsertDefinition.StructuredProperties.Any(x => mand.Name.Equals(x)))
+                    {
+                        throw new MandatoryConstraintViolationException(mand.Name);
+                    }
             }
         }
 
