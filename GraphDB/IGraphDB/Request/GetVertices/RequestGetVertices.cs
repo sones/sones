@@ -14,7 +14,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The interesting vertex type 
         /// </summary>
-        public readonly String VertexType;
+        public readonly String VertexTypeName;
 
         /// <summary>
         /// The interesting vertex type 
@@ -70,7 +70,7 @@ namespace sones.GraphDB.Request
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
         public RequestGetVertices(String myVertexType, IEnumerable<Int64> myVertexIDs, Boolean myIsLongrunning = false)
         {
-            VertexType = myVertexType;
+            VertexTypeName = myVertexType;
             VertexIDs = myVertexIDs;
 
             Expression = null;
@@ -84,7 +84,7 @@ namespace sones.GraphDB.Request
         /// <param name="myVertexType">The interesting vertex type.</param>
         public RequestGetVertices(String myVertexType)
         {
-            VertexType = myVertexType;
+            VertexTypeName = myVertexType;
             
             VertexIDs = null;
             Expression = null;

@@ -1214,7 +1214,10 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             foreach (var aProperty in myType.GetPropertyDefinitions(true))
             {
-                myAttributes.Item1.Add(aProperty.Name, aProperty.ExtractValue(myDBObject));
+                if (myDBObject.HasProperty(aProperty.AttributeID))
+                {
+                    myAttributes.Item1.Add(aProperty.Name, aProperty.ExtractValue(myDBObject));
+                }
             }
 
             #endregion

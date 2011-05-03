@@ -132,7 +132,7 @@ namespace sones.GraphQL.GQL.Manager.Select
             }
             else
             {
-                if (!myEdgeKey.IsAttributeSet)
+                if (myEdgeKey.IsAttributeSet)
                 {
                     edgeList.Add(myEdgeKey);
                     return new EdgeList(edgeList);

@@ -1175,13 +1175,8 @@ namespace sones.GraphQL
 
             selectionList.Rule = MakePlusRule(selectionList, S_comma, selectionListElement);
 
-            selectionListElement.Rule = S_ASTERISK
-                                        | S_RHOMB
-                                        | S_MINUS
-                                        | TERMINAL_LT
-                                        | TERMINAL_GT
-                                        | selByType
-                                        | selectionSource;
+            selectionListElement.Rule =     S_ASTERISK
+                                        |   selectionSource;
 
             selByType.Rule = Empty
                             | S_AD + Id_simple;
@@ -1191,7 +1186,7 @@ namespace sones.GraphQL
             aliasOpt.Rule = Empty
                             | S_AS + aliasOptName;
 
-            selectionSource.Rule = BNF_Aggregate + aliasOpt;
+            selectionSource.Rule = BNF_Aggregate + aliasOpt | IdOrFuncList + aliasOpt;
             //|   funcCall
             //|   Id;
 
