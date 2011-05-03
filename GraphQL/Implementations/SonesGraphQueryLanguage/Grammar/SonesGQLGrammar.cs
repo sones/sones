@@ -80,8 +80,6 @@ namespace sones.GraphQL
         private readonly NonTerminal BNF_Aggregate;
         private readonly NonTerminal BNF_AggregateArg;
 
-        private readonly NonTerminal selectionSource;    // If no aggregates where found we must remove them from selectionSource;
-
         private readonly NonTerminal BNF_IndexTypeOpt;
 
         #endregion
@@ -555,7 +553,6 @@ namespace sones.GraphQL
             var orderClauseOpt = new NonTerminal("orderClauseOpt", typeof(OrderByNode));
             var selectionList = new NonTerminal("selectionList");
             var selectionListElement = new NonTerminal("selectionListElement", typeof(SelectionListElementNode));
-            selectionSource = new NonTerminal("selectionSource");
             var selByType = new NonTerminal("selByType", CreateSelByTypeNode);
             var aliasOpt = new NonTerminal("aliasOpt");
             var aliasOptName = new NonTerminal("aliasOptName");
@@ -1176,7 +1173,8 @@ namespace sones.GraphQL
             selectionList.Rule = MakePlusRule(selectionList, S_comma, selectionListElement);
 
             selectionListElement.Rule =     S_ASTERISK
-                                        |   selectionSource;
+                                        |   BNF_Aggregate + aliasOpt
+                                        |   IdOrFuncList + aliasOpt;
 
             selByType.Rule = Empty
                             | S_AD + Id_simple;
@@ -1185,10 +1183,6 @@ namespace sones.GraphQL
 
             aliasOpt.Rule = Empty
                             | S_AS + aliasOptName;
-
-            selectionSource.Rule = BNF_Aggregate + aliasOpt | IdOrFuncList + aliasOpt;
-            //|   funcCall
-            //|   Id;
 
 
             #region Aggregate

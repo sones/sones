@@ -33,7 +33,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
         {
             Delimiter = (SelectionDelimiterNode)parseNode.FirstChild.AstNode;
 
-            if (parseNode.ChildNodes[1].AstNode == null)
+            if (parseNode.ChildNodes[1].AstNode is AstNode)
             {
                 //AttributeName
                 AttributeName = parseNode.ChildNodes[1].Token.ValueString;
