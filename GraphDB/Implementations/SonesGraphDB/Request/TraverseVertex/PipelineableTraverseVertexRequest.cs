@@ -98,6 +98,7 @@ namespace sones.GraphDB.Request
             else
                 _traversalState = new TraversalState(new List<IVertex> { myMetaManager.VertexManager.ExecuteManager.GetVertex(_request.VertexTypeName, _request.VertexID, "", null, _transactionToken, _securityToken) });
 
+
             //do traversion
             _fetchedIVertices = TraverseStartNodes(_traversalState.StartNodes,
                                                     myMetaManager,
@@ -259,7 +260,6 @@ namespace sones.GraphDB.Request
 
                 #region return and traverse
                 //get all edges and try to traverse them
-                //return results
 
                 if (match)
                 {
