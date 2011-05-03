@@ -226,7 +226,7 @@ namespace sones.GraphDB.Manager.Vertex
                             singleEdges.Add(attrDef.Name, edge);
                         }
                         break;
-                    case EdgeMultiplicity.HyperEdge:
+                    case EdgeMultiplicity.MultiEdge:
                         {
                             var edge = CreateHyperEdgeAddDefinition(source, date, edgeDef, attrDef, vertexIDs);
                             hyperEdges.Add(attrDef.Name, edge);
