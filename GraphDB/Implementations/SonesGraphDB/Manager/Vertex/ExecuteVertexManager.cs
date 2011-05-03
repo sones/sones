@@ -208,7 +208,6 @@ namespace sones.GraphDB.Manager.Vertex
                 var attrDef = myVertexType.GetOutgoingEdgeDefinition(edgeDef.EdgeName);
 
                 var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, attrDef);
-                CheckTargetVertices(attrDef, vertexIDs);
                 switch (attrDef.Multiplicity)
                 {
                     case EdgeMultiplicity.SingleEdge:
@@ -221,14 +220,21 @@ namespace sones.GraphDB.Manager.Vertex
                                 //TODO: better exception here
                                 throw new Exception("A single edge needs at least one target.");
 
+                            CheckTargetVertices(attrDef, vertexIDs);
 
-                            var edge = CreateSingleEdgeAddDefinition(date, edgeDef, attrDef, source, vertexIDs.First());
+                            var edge = CreateSingleEdgeAddDefinition(date, attrDef.AttributeID, edgeDef, attrDef.EdgeType, source, vertexIDs.First());
                             singleEdges.Add(attrDef.Name, edge);
                         }
                         break;
+
+                    case EdgeMultiplicity.HyperEdge:
+                        {
+                            break;
+                        }
                     case EdgeMultiplicity.MultiEdge:
                         {
-                            var edge = CreateHyperEdgeAddDefinition(source, date, edgeDef, attrDef, vertexIDs);
+                            CheckTargetVertices(attrDef, vertexIDs);
+                            var edge = CreateMultiEdgeAddDefinition(source, date, edgeDef, attrDef, vertexIDs);
                             hyperEdges.Add(attrDef.Name, edge);
                         }
                         break;
@@ -241,14 +247,14 @@ namespace sones.GraphDB.Manager.Vertex
             outHyperEdges = hyperEdges.Select(x => x.Value);
         }
 
-        private static HyperEdgeAddDefinition CreateHyperEdgeAddDefinition(VertexInformation source, long date, EdgePredefinition edgeDef, IOutgoingEdgeDefinition attrDef, ISet<VertexInformation> vertexIDs)
+        private static HyperEdgeAddDefinition CreateMultiEdgeAddDefinition(VertexInformation source, long date, EdgePredefinition edgeDef, IOutgoingEdgeDefinition attrDef, ISet<VertexInformation> vertexIDs)
         {
-            return new HyperEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, vertexIDs.Select(x => CreateSingleEdgeAddDefinition(date, edgeDef, attrDef, source, x)), edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef,attrDef.EdgeType), edgeDef.UnstructuredProperties);
+            return new HyperEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, vertexIDs.Select(x => CreateSingleEdgeAddDefinition(date, attrDef.AttributeID, edgeDef, attrDef.InnerEdgeType, source, x)), edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef,attrDef.EdgeType), edgeDef.UnstructuredProperties);
         }
 
-        private static SingleEdgeAddDefinition CreateSingleEdgeAddDefinition(long date, EdgePredefinition edgeDef, IOutgoingEdgeDefinition attrDef, VertexInformation source, VertexInformation target)
+        private static SingleEdgeAddDefinition CreateSingleEdgeAddDefinition(long date, long myAttributeID, EdgePredefinition edgeDef, IEdgeType myEdgeType, VertexInformation source, VertexInformation target)
         {
-            return new SingleEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, target, edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, attrDef.EdgeType), edgeDef.UnstructuredProperties);
+            return new SingleEdgeAddDefinition(myAttributeID, myEdgeType.ID, source, target, edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, myEdgeType), edgeDef.UnstructuredProperties);
         }
 
         private static void CheckTargetVertices(IOutgoingEdgeDefinition attrDef, IEnumerable<VertexInformation> vertexIDs)
