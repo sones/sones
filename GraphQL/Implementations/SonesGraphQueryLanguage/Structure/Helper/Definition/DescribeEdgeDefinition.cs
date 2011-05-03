@@ -105,7 +105,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             var Edge = new Dictionary<String, Object>();
 
-            if (myEdgeName != "")
+            if (!String.IsNullOrWhiteSpace(myEdgeName))
                 Edge.Add("Name", myEdgeName);
             else
                 Edge.Add("Name", Temp.Substring(Pos + 1, Temp.Length - (Pos + 1)));

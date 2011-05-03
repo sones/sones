@@ -82,6 +82,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         {
 
             var _Index = new Dictionary<String, Object>();
+            var _Prop = new Dictionary<String, Object>();
 
             foreach (var index in myIndices)
             {
@@ -94,13 +95,16 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 foreach (var prop in index.IndexedProperties)
                 {
-                    _Index.Add("IndexedProperty", prop);
+                    _Prop.Add("Name", prop.Name);
+                    _Prop.Add("DefaultValue", prop.DefaultValue);
+                    _Prop.Add("IsUserDefined", prop.IsUserDefinedType);
+                    _Prop.Add("Multiplicity", prop.Multiplicity);
                 }
 
+                var temp = new Dictionary<String, IEdgeView> { {"IndexedProperty", new EdgeView(_Prop, null)} };
             }
 
             return new VertexView(_Index, new Dictionary<String, IEdgeView>());
-
         }
 
         #endregion
