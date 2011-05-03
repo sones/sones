@@ -32,7 +32,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         #region validate
 
-        public override bool ValidateWorkingBase(Type myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             if (myWorkingBase != null)
             {

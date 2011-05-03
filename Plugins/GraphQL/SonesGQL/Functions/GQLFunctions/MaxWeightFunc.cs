@@ -26,7 +26,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return "This function is valid for weighted edges and will return the maximum weight.";
         }
 
-        public override bool ValidateWorkingBase(Type myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             if ((myWorkingBase is IAttributeDefinition) && 
                 (((myWorkingBase as IAttributeDefinition).Kind == AttributeType.OutgoingEdge) && (myWorkingBase as IOutgoingEdgeDefinition).EdgeType.Name == "Weighted"))

@@ -30,7 +30,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return "Retrieves a substring from the attribute value. The substring starts at a specified character position and has a specified length.";
         }
 
-        public override bool ValidateWorkingBase(Type myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
         {
             if (myWorkingBase != null)
             {
@@ -40,7 +40,7 @@ namespace sones.Plugins.SonesGQL.Functions
                 {
                     return false;
                 }
-                else if (myWorkingBase.Name.Equals("String"))
+                else if (myWorkingBase is Type &&  ((Type)myWorkingBase).Name.Equals("String"))
                 {
                     return true;
                 }

@@ -29,7 +29,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return "Convert from unix datime format to DBDateTime format.";
         }
 
-        public override bool ValidateWorkingBase(Type myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
         {
             if (myWorkingBase == typeof(Int64))
             {

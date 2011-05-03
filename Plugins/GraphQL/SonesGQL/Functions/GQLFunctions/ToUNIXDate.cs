@@ -28,7 +28,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return "Convert the datetime value to the unix datetime format.";
         }
 
-        public override bool ValidateWorkingBase(Type myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             if (myWorkingBase == typeof(UInt64) || myWorkingBase == typeof(DateTime))
             {

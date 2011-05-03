@@ -26,7 +26,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return "Return true if an DBObject contains this attribute.";
         }
 
-        public override bool ValidateWorkingBase(Type myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
         {
             if (myWorkingBase != null)
             {

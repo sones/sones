@@ -33,7 +33,7 @@ namespace sones.GraphDS.PluginManager.RESTServicePluginManager
 
             var componentName = this.GetType().Assembly.GetName().Name;
 
-            FillLookup<IOInterface>(componentName);
+            FillLookup<IOInterface>(componentName, _ => _.PluginName);
             
             #endregion
 

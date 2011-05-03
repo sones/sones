@@ -319,19 +319,22 @@ namespace sones.GraphQL.StatementNodes.DML
                         {
                             #region BinaryExpressionDefinition
 
-                            foreach (var aVertexID in ProcessBinaryExpression(
+                            var vertexIDs = ProcessBinaryExpression(
                                 (BinaryExpressionDefinition)aTupleElement.Value,
-                                myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType))
+                                myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType).ToList();
+
+                            if (vertexIDs.Count > 1)
                             {
-                                var inneredge = new EdgePredefinition();
-
-                                foreach (var aStructuredProperty in aTupleElement.Parameters)
-                                {
-                                    inneredge.AddUnknownProperty(aStructuredProperty.Key, aStructuredProperty.Value);
-                                }
-
-                                edgeDefinition.AddEdge(inneredge);
                             }
+
+                            var inneredge = new EdgePredefinition();
+
+                            foreach (var aStructuredProperty in aTupleElement.Parameters)
+                            {
+                                edgeDefinition.AddUnknownProperty(aStructuredProperty.Key, aStructuredProperty.Value);
+                            }
+
+                            edgeDefinition.AddVertexID(vertexIDs.FirstOrDefault());
 
                             #endregion
                         }

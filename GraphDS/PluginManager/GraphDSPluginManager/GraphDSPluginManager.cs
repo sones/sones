@@ -36,9 +36,9 @@ namespace sones.GraphDS.PluginManager.GraphDSPluginManager
 
             var componentName = this.GetType().Assembly.GetName().Name;
 
-            FillLookup<IGraphQL>(componentName);
-            FillLookup<ISonesRESTService>(componentName);   // not yet used
-            FillLookup<IDrainPipe>(componentName);
+            FillLookup<IGraphQL>(componentName, _ => _.PluginName);
+            FillLookup<ISonesRESTService>(componentName, _ => _.ID);   // not yet used
+            FillLookup<IDrainPipe>(componentName, _ => _.PluginName);
 
             #endregion   
         

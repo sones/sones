@@ -27,7 +27,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return "Returns a copy of this attribute value converted to lowercase.";
         }
 
-        public override bool ValidateWorkingBase(Type myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
         {
             if (myWorkingBase != null)
             {

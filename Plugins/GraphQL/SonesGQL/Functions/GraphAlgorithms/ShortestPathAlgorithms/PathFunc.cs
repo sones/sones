@@ -37,7 +37,7 @@ namespace ShortestPathAlgorithms
             return "A path algorithm.";
         }
 
-        public override bool ValidateWorkingBase(Type myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             if (myWorkingBase is IAttributeDefinition)
             {

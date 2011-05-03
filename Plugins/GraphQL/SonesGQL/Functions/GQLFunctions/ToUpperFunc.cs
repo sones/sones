@@ -27,29 +27,12 @@ namespace sones.Plugins.SonesGQL.Functions
             return "Returns a copy of this attribute value converted to uppercase.";
         }
 
-        public override bool ValidateWorkingBase(Type myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
         {
             if (myWorkingBase != null)
             {
-                if (myWorkingBase is IAttributeDefinition)
-                {
-                    if ((myWorkingBase is IAttributeDefinition) && (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && (myWorkingBase as IPropertyDefinition).IsUserDefinedType)
-                    {
-                        return false;
-                    }
-                    else if ((myWorkingBase is IAttributeDefinition) && (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && (myWorkingBase as IPropertyDefinition).BaseType.Name.Equals("String"))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
+                return (myWorkingBase is IPropertyDefinition) && 
+                       (myWorkingBase as IPropertyDefinition).BaseType == typeof(String);
             }
             else
             {

@@ -722,7 +722,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
                     var funcPart = (curPart as ChainPartFuncDefinition);
                     funcPart.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken);
 
-                    if (!funcPart.Function.ValidateWorkingBase(funcWorkingBase.GetType(), myGraphDB, mySecurityToken, myTransactionToken))
+                    if (!funcPart.Function.ValidateWorkingBase(funcWorkingBase, myGraphDB, mySecurityToken, myTransactionToken))
                     {
                         throw new InvalidFunctionBaseException(_LastAttribute.Name, funcPart.FuncName);
                     }

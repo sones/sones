@@ -140,7 +140,7 @@ namespace sones.Library.VersionedPluginManager
         /// Fill a certain lookup dictionary
         /// </summary>
         /// <typeparam name="T1">The type of the plugin</typeparam>
-        protected void FillLookup<T1>(String myRequestingComponent)
+        protected void FillLookup<T1>(String myRequestingComponent, Func<T1, String> myConverter = null)
         {
             var type = typeof(T1);
             Dictionary<string, IPluginable> interestingLookup;
@@ -169,7 +169,7 @@ namespace sones.Library.VersionedPluginManager
 
                     #region Add function if the name does not exist
 
-                    interestingLookup.Add(pluginName, ((IPluginable)aPlugin));
+                    interestingLookup.Add((myConverter != null ? myConverter(aPlugin) : pluginName).ToUpper(), ((IPluginable)aPlugin));
 
                     #endregion
 

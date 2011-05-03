@@ -71,13 +71,13 @@ namespace sones.GraphQL.GQL.Manager.Plugin
 
             var componentName = this.GetType().Assembly.GetName().Name;
 
-            FillLookup<ISingleValueIndex<IComparable, Int64>>(componentName);
-            FillLookup<IVersionedIndex<IComparable, Int64, Int64>>(componentName);
-            FillLookup<IMultipleValueIndex<IComparable, Int64>>(componentName);
-            FillLookup<IGQLAggregate>(componentName);
-            FillLookup<IGQLFunction>(componentName);
-            FillLookup<IGraphDBImport>(componentName);
-            FillLookup<IGraphDBExport>(componentName);
+            FillLookup<ISingleValueIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
+            FillLookup<IVersionedIndex<IComparable, Int64, Int64>>(componentName, _ => _.IndexName);
+            FillLookup<IMultipleValueIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
+            FillLookup<IGQLAggregate>(componentName, _ => _.AggregateName);
+            FillLookup<IGQLFunction>(componentName, _ => _.FunctionName);
+            FillLookup<IGraphDBImport>(componentName, _ => _.ImportFormat);
+            FillLookup<IGraphDBExport>(componentName, _ => _.ExportFormat);
 
             #endregion
         }

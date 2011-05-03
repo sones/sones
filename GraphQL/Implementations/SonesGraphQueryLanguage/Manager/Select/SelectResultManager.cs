@@ -957,7 +957,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                         else
                         {
 
-                            Attributes.Item1.Add(alias, ((FuncParameter)res.Value).Value);
+                            Attributes.Item1.Add(alias, ((FuncParameter)res).Value);
 
                         }
 

@@ -43,13 +43,13 @@ namespace sones.GraphDB.Manager.Plugin
 
             var componentName = this.GetType().Assembly.GetName().Name;
 
-            FillLookup<IGraphFS>(componentName);
-            FillLookup<ITransactionManager>(componentName);
-            FillLookup<ISecurityManager>(componentName);
-            FillLookup<ILogicExpressionOptimizer>(componentName);
-            FillLookup<ISingleValueIndex<IComparable, Int64>>(componentName);
-            FillLookup<IVersionedIndex<IComparable, Int64, Int64>>(componentName);
-            FillLookup<IMultipleValueIndex<IComparable, Int64>>(componentName);
+            FillLookup<IGraphFS>(componentName, _ => _.PluginName);
+            FillLookup<ITransactionManager>(componentName, _ => _.PluginName);
+            FillLookup<ISecurityManager>(componentName, _ => _.PluginName);
+            FillLookup<ILogicExpressionOptimizer>(componentName, _ => _.PluginName);
+            FillLookup<ISingleValueIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
+            FillLookup<IVersionedIndex<IComparable, Int64, Int64>>(componentName, _ => _.IndexName);
+            FillLookup<IMultipleValueIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
 
             #endregion   
         }
