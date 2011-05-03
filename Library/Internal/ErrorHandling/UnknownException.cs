@@ -7,20 +7,15 @@ namespace sones.Library.ErrorHandling
     /// </summary>
     public sealed class UnknownException : ASonesException
     {
-        /// <summary>
-        /// The exception that has been thrown
-        /// </summary>
-        public Exception ThrownException { get; private set; }
-                
         #region constructor
 
         /// <summary>
         /// Creates a new unknown exception
         /// </summary>
         /// <param name="e">The thrown exception</param>
-        public UnknownException(Exception e)
+        public UnknownException(Exception e):base(e)
         {
-            ThrownException = e;
+            _msg = "An unknown exception was thrown. See InnerException for further information.";
         }
 
         #endregion

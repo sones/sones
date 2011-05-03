@@ -61,27 +61,72 @@ namespace sones.GraphDB.Manager.Vertex
 
             ConvertUnknownProperties(myInsertDefinition, vertexType);
 
-
-            var mandatoryProps = vertexType.GetPropertyDefinitions(true).Where(IsMustSetProperty).ToArray();
+            if (myInsertDefinition.OutgoingEdges != null)
+                CheckOutgoingEdges(myInsertDefinition.OutgoingEdges, vertexType);
 
 
             if (myInsertDefinition.StructuredProperties != null)
             {
                 CheckAddStructuredProperties(myInsertDefinition, vertexType);
-                CheckMandatoryConstraint(myInsertDefinition, mandatoryProps);
             }
-            else
-            {
-                if (mandatoryProps.Length > 0)
-                {
-                    throw new MandatoryConstraintViolationException(String.Join(",", mandatoryProps.Select(x => x.Name)));
-                }
-            }
+
+            CheckMandatoryConstraint(myInsertDefinition, vertexType);
 
             if (myInsertDefinition.BinaryProperties != null)
                 CheckAddBinaryProperties(myInsertDefinition, vertexType);
 
             return null;
+        }
+
+        private void CheckOutgoingEdges(IEnumerable<EdgePredefinition> myEdges, IVertexType myVertexType)
+        {
+            foreach (var edge in myEdges)
+            {
+                var edgeDef = myVertexType.GetOutgoingEdgeDefinition(edge.EdgeName);
+                switch (edgeDef.Multiplicity)
+                {
+                    case EdgeMultiplicity.SingleEdge:
+                        {
+                            CheckSingleEdge(edge, edgeDef.EdgeType);
+                            break;
+                        }
+                    case EdgeMultiplicity.MultiEdge:
+                        {
+                            if (edge.ContainedEdgeCount > 0)
+                            {
+                                foreach (var innerEdge in edge.ContainedEdges)
+                                {
+                                    CheckSingleEdge(innerEdge, edgeDef.InnerEdgeType);
+                                }
+                            } 
+                            break;
+                        }
+                    case EdgeMultiplicity.HyperEdge:
+                        {
+                            break;
+                        }
+                }
+
+            }
+        }
+
+        private void CheckSingleEdge(EdgePredefinition edge, IBaseType myTargetType)
+        {
+            if (edge.ContainedEdgeCount > 0)
+            {
+                //TODO better exception here.
+                throw new Exception("A single edge can not contain other edges.");
+            }
+
+            if (edge.ContainedEdgeCount > 1)
+                //TODO: better exception here
+                throw new Exception("More than one target vertices for a single edge is not allowed.");
+
+            if (edge.VertexIDCount == 0 && edge.Expressions == null)
+                //TODO: better exception here
+                throw new Exception("A single edge needs at least one target.");
+
+            ConvertUnknownProperties(edge, myTargetType);
         }
 
         public IVertexStore VertexStore
@@ -90,21 +135,6 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         #endregion
-
-        private static bool IsMustSetProperty(IPropertyDefinition myPropertyDefinition)
-        {
-            return IsMandatoryProperty(myPropertyDefinition) && !HasDefaultValue(myPropertyDefinition);
-        }
-
-        private static bool IsMandatoryProperty(IPropertyDefinition myPropertyDefinition)
-        {
-            return myPropertyDefinition.IsMandatory;
-        }
-
-        private static bool HasDefaultValue(IPropertyDefinition myPropertyDefinition)
-        {
-            return myPropertyDefinition.DefaultValue != null;
-        }
 
         private static void ConvertUnknownProperties(IPropertyProvider myPropertyProvider, IBaseType myBaseType)
         {
@@ -130,18 +160,6 @@ namespace sones.GraphDB.Manager.Vertex
                     }
                 }
                 myPropertyProvider.ClearUnknown();
-            }
-        }
-
-        private static void CheckMandatoryConstraint(RequestInsertVertex myInsertDefinition, IEnumerable<IPropertyDefinition> myMandatoryProperties)
-        {
-            foreach (var mand in myMandatoryProperties)
-            {
-                if (mand.RelatedType.ID != (long)BaseTypes.Vertex)
-                    if (!myInsertDefinition.StructuredProperties.Any(x => mand.Name.Equals(x)))
-                    {
-                        throw new MandatoryConstraintViolationException(mand.Name);
-                    }
             }
         }
 

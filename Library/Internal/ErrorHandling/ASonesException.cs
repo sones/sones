@@ -7,6 +7,8 @@ namespace sones.Library.ErrorHandling
     /// </summary>
     public abstract class ASonesException : Exception
     {
+        protected ASonesException(Exception innerException = null) : base(String.Empty, innerException) { }
+
         /// <summary>
         /// The message which is associated to this Exception
         /// </summary>

@@ -12,6 +12,8 @@ using sones.Library.Commons.VertexStore;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Manager.TypeManagement;
+using sones.GraphDB.Request.Insert;
+using sones.GraphDB.TypeManagement.Base;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -35,6 +37,34 @@ namespace sones.GraphDB.Manager.Vertex
             {
                 throw new EmptyVertexTypeNameException();
             }
+        }
+
+        protected void CheckMandatoryConstraint(IPropertyProvider myPropertyProvider, IBaseType myType)
+        {
+            var mandatories = myType.GetPropertyDefinitions(true).Where(IsMustSetProperty).ToArray();
+
+            foreach (var mand in mandatories)
+            {
+                if ( myPropertyProvider == null || myPropertyProvider.StructuredProperties == null || !myPropertyProvider.StructuredProperties.Any(x => mand.Name.Equals(x)))
+                {
+                    throw new MandatoryConstraintViolationException(mand.Name);
+                }
+            }
+        }
+
+        private static bool IsMustSetProperty(IPropertyDefinition myPropertyDefinition)
+        {
+            return IsMandatoryProperty(myPropertyDefinition) && !HasDefaultValue(myPropertyDefinition) && myPropertyDefinition.RelatedType.ID != (long)BaseTypes.Vertex;
+        }
+
+        private static bool IsMandatoryProperty(IPropertyDefinition myPropertyDefinition)
+        {
+            return myPropertyDefinition.IsMandatory;
+        }
+
+        private static bool HasDefaultValue(IPropertyDefinition myPropertyDefinition)
+        {
+            return myPropertyDefinition.DefaultValue != null;
         }
 
 

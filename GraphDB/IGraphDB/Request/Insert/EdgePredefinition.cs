@@ -34,6 +34,7 @@ namespace sones.GraphDB.Request
         public IEnumerable<long> VertexIDs { get { return _ids; } }
         private HashSet<long> _ids;
 
+        public int VertexIDCount { get { return (_ids == null) ? 0 : _ids.Count; } }
 
         /// <summary>
         /// The well defined properties of a vertex.
@@ -59,6 +60,7 @@ namespace sones.GraphDB.Request
         public IEnumerable<EdgePredefinition> ContainedEdges { get { return _edges; } }
         private List<EdgePredefinition> _edges;
 
+        public int ContainedEdgeCount { get { return (_edges == null)? 0 :_edges.Count; } }
         #endregion
 
         #region constructor

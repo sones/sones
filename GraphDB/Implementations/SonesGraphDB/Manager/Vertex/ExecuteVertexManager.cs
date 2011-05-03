@@ -21,7 +21,7 @@ using sones.Plugins.Index.Interfaces;
 
 namespace sones.GraphDB.Manager.Vertex
 {
-    internal class ExecuteVertexManager: AVertexHandler, IVertexHandler
+    internal class ExecuteVertexManager : AVertexHandler, IVertexHandler
     {
         #region data
 
@@ -77,7 +77,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         public void CanGetVertices(IExpression iExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            
+
         }
 
         #endregion
@@ -107,7 +107,7 @@ namespace sones.GraphDB.Manager.Vertex
             foreach (var unique in vertexType.GetUniqueDefinitions(true))
             {
                 var key = CreateIndexEntry(unique.CorrespondingIndex.IndexedProperties, myInsertDefinition.StructuredProperties);
-                
+
                 var definingVertexType = unique.DefiningVertexType;
 
                 foreach (var vtype in definingVertexType.GetChildVertexTypes(true, true))
@@ -130,13 +130,13 @@ namespace sones.GraphDB.Manager.Vertex
                 if (index is ISingleValueIndex<IComparable, Int64>)
                 {
                     (index as ISingleValueIndex<IComparable, Int64>).Add(key, result.VertexID);
-                } 
+                }
                 else if (index is IMultipleValueIndex<IComparable, Int64>)
                 {
                     //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
                     //TODO: Refactor IIndex structure
-                    (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64>{ result.VertexID });
-                } 
+                    (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> { result.VertexID });
+                }
                 else
                 {
                     throw new NotImplementedException("Indices other than single or multiple value indices are not supported yet.");
@@ -146,7 +146,7 @@ namespace sones.GraphDB.Manager.Vertex
             return result;
         }
 
-        
+
 
         private VertexAddDefinition RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
         {
@@ -175,25 +175,25 @@ namespace sones.GraphDB.Manager.Vertex
                             : myInsertDefinition.BinaryProperties.Select(x => new StreamAddDefinition(myVertexType.GetAttributeDefinition(x.Key).AttributeID, x.Value));
 
             var structured = ConvertStructuredProperties(myInsertDefinition, myVertexType);
-            
+
             return new VertexAddDefinition(vertexID, myVertexType.ID, myInsertDefinition.Edition, hyperEdges, singleEdges, binaries, myInsertDefinition.Comment, date, date, structured, myInsertDefinition.UnstructuredProperties);
         }
 
         private static Dictionary<long, IComparable> ConvertStructuredProperties(IPropertyProvider myInsertDefinition, IBaseType myType)
         {
-            return  (myInsertDefinition.StructuredProperties == null)
+            return (myInsertDefinition.StructuredProperties == null)
                              ? null
                              : myInsertDefinition.StructuredProperties.ToDictionary(x => myType.GetAttributeDefinition(x.Key).AttributeID, x => x.Value);
         }
 
         private void CreateEdgeAddDefinitions(
-            IEnumerable<EdgePredefinition> myOutgoingEdges, 
-            IVertexType myVertexType, 
-            TransactionToken myTransaction, 
-            SecurityToken mySecurity, 
-            VertexInformation source, 
-            long date, 
-            out IEnumerable<SingleEdgeAddDefinition> outSingleEdges, 
+            IEnumerable<EdgePredefinition> myOutgoingEdges,
+            IVertexType myVertexType,
+            TransactionToken myTransaction,
+            SecurityToken mySecurity,
+            VertexInformation source,
+            long date,
+            out IEnumerable<SingleEdgeAddDefinition> outSingleEdges,
             out IEnumerable<HyperEdgeAddDefinition> outHyperEdges)
         {
             outSingleEdges = null;
@@ -207,23 +207,11 @@ namespace sones.GraphDB.Manager.Vertex
             {
                 var attrDef = myVertexType.GetOutgoingEdgeDefinition(edgeDef.EdgeName);
 
-                var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, attrDef);
                 switch (attrDef.Multiplicity)
                 {
                     case EdgeMultiplicity.SingleEdge:
                         {
-                            if (vertexIDs.Count > 1)
-                                //TODO: better exception here
-                                throw new Exception("More than one target vertices for a single edge is not allowed.");
-
-                            if (vertexIDs.Count == 0)
-                                //TODO: better exception here
-                                throw new Exception("A single edge needs at least one target.");
-
-                            CheckTargetVertices(attrDef, vertexIDs);
-
-                            var edge = CreateSingleEdgeAddDefinition(date, attrDef.AttributeID, edgeDef, attrDef.EdgeType, source, vertexIDs.First());
-                            singleEdges.Add(attrDef.Name, edge);
+                            singleEdges.Add(edgeDef.EdgeName, CreateSingleEdgeAddDefinition(myTransaction, mySecurity, date, attrDef.AttributeID, edgeDef, attrDef.EdgeType, source, attrDef.TargetVertexType));
                         }
                         break;
 
@@ -233,8 +221,7 @@ namespace sones.GraphDB.Manager.Vertex
                         }
                     case EdgeMultiplicity.MultiEdge:
                         {
-                            CheckTargetVertices(attrDef, vertexIDs);
-                            var edge = CreateMultiEdgeAddDefinition(source, date, edgeDef, attrDef, vertexIDs);
+                            var edge = CreateMultiEdgeAddDefinition(myTransaction, mySecurity, source, date, edgeDef, attrDef);
                             hyperEdges.Add(attrDef.Name, edge);
                         }
                         break;
@@ -247,32 +234,106 @@ namespace sones.GraphDB.Manager.Vertex
             outHyperEdges = hyperEdges.Select(x => x.Value);
         }
 
-        private static HyperEdgeAddDefinition CreateMultiEdgeAddDefinition(VertexInformation source, long date, EdgePredefinition edgeDef, IOutgoingEdgeDefinition attrDef, ISet<VertexInformation> vertexIDs)
+        private HyperEdgeAddDefinition CreateMultiEdgeAddDefinition(
+            TransactionToken myTransaction,
+            SecurityToken mySecurity, 
+            VertexInformation source, 
+            long date, 
+            EdgePredefinition edgeDef, 
+            IOutgoingEdgeDefinition attrDef)
         {
-            return new HyperEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, vertexIDs.Select(x => CreateSingleEdgeAddDefinition(date, attrDef.AttributeID, edgeDef, attrDef.InnerEdgeType, source, x)), edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef,attrDef.EdgeType), edgeDef.UnstructuredProperties);
+            var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, attrDef.TargetVertexType);
+            var contained = CreateContainedEdges(myTransaction, mySecurity, date, vertexIDs, edgeDef, attrDef, source);
+            return new HyperEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, contained, edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, attrDef.EdgeType), edgeDef.UnstructuredProperties);
         }
 
-        private static SingleEdgeAddDefinition CreateSingleEdgeAddDefinition(long date, long myAttributeID, EdgePredefinition edgeDef, IEdgeType myEdgeType, VertexInformation source, VertexInformation target)
+        private IEnumerable<SingleEdgeAddDefinition> CreateContainedEdges(
+            TransactionToken myTransaction, 
+            SecurityToken mySecurity, 
+            long myDate,
+            ISet<VertexInformation> vertexIDs, 
+            EdgePredefinition edgeDef,
+            IOutgoingEdgeDefinition attrDef,
+            VertexInformation mySource)
         {
-            return new SingleEdgeAddDefinition(myAttributeID, myEdgeType.ID, source, target, edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, myEdgeType), edgeDef.UnstructuredProperties);
+            List<SingleEdgeAddDefinition> result = new List<SingleEdgeAddDefinition>();
+            foreach (var vertex in vertexIDs)
+            {
+                //single edges from VertexIDs or expression does not have user properties
+                //TODO they can have default values
+                CheckMandatoryConstraint(null, attrDef.InnerEdgeType);
+                result.Add(new SingleEdgeAddDefinition(Int64.MinValue, attrDef.InnerEdgeType.ID, mySource, vertex, null, myDate, myDate, null, null));
+            }
+
+            if (edgeDef.ContainedEdgeCount > 0)
+            {
+                foreach (var edge in edgeDef.ContainedEdges)
+                {
+                    if (edge.ContainedEdgeCount > 0)
+                        //TODO a better exception here
+                        throw new Exception("An edge within a multi edge cannot have contained edges.");
+
+                    result.Add(CreateSingleEdgeAddDefinition(myTransaction, mySecurity, myDate, Int64.MinValue, edge, attrDef.InnerEdgeType, mySource, attrDef.TargetVertexType));
+                }
+            }
+            return result;
         }
 
-        private static void CheckTargetVertices(IOutgoingEdgeDefinition attrDef, IEnumerable<VertexInformation> vertexIDs)
+        private SingleEdgeAddDefinition CreateSingleEdgeAddDefinition(
+            TransactionToken myTransaction,
+            SecurityToken mySecurity, 
+            long date, 
+            long myAttributeID, 
+            EdgePredefinition edgeDef, 
+            IEdgeType myEdgeType, 
+            VertexInformation source, 
+            IVertexType myTargetType = null)
+        {
+            var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, myTargetType);
+
+            if (edgeDef.Expressions != null)
+            {
+                //only checks with expession, other are done in check manager.
+                if (vertexIDs.Count > 1)
+                    //TODO: better exception here
+                    throw new Exception("More than one target vertices for a single edge is not allowed.");
+
+                if (vertexIDs.Count > 0)
+                    //TODO: better exception here
+                    throw new Exception("A single edge needs at least one target.");
+            }
+            CheckMandatoryConstraint(edgeDef, myEdgeType);
+            CheckTargetVertices(myTargetType, vertexIDs);
+
+            return new SingleEdgeAddDefinition(myAttributeID, myEdgeType.ID, source, vertexIDs.First(), edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, myEdgeType), edgeDef.UnstructuredProperties);
+        }
+
+        private static void CheckTargetVertices(IVertexType myTargetVertexType, IEnumerable<VertexInformation> vertexIDs)
         {
             var distinctTypeIDS = new HashSet<Int64>(vertexIDs.Select(x => x.VertexTypeID));
-            var allowedTypeIDs = new HashSet<Int64>(attrDef.TargetVertexType.GetChildVertexTypes(true, true).Select(x => x.ID));
+            var allowedTypeIDs = new HashSet<Int64>(myTargetVertexType.GetChildVertexTypes(true, true).Select(x => x.ID));
             distinctTypeIDS.ExceptWith(allowedTypeIDs);
             if (distinctTypeIDS.Count > 0)
                 throw new Exception("A target vertex has a type, that is not assignable to the target vertex type of the edge.");
         }
 
-        private ISet<VertexInformation> GetResultingVertexIDs(TransactionToken myTransaction, SecurityToken mySecurity, EdgePredefinition myEdgeDef, IOutgoingEdgeDefinition myAttributeDef)
+        private ISet<VertexInformation> GetResultingVertexIDs(TransactionToken myTransaction, SecurityToken mySecurity, EdgePredefinition myEdgeDef, IVertexType myTargetType = null)
         {
             HashSet<VertexInformation> result = new HashSet<VertexInformation>();
-            if (myEdgeDef.VertexIDs != null)
+            if (myTargetType != null)
             {
-                result.UnionWith(myEdgeDef.VertexIDs.Select(x=>new VertexInformation(myAttributeDef.TargetVertexType.ID, x)));
+                if (myEdgeDef.VertexIDs != null)
+                {
+                    result.UnionWith(myEdgeDef.VertexIDs.Select(x => new VertexInformation(myTargetType.ID, x)));
+                }
             }
+            else
+            {
+                if (myEdgeDef.VertexIDCount > 0)
+                    //TODO a better exception here.
+                    throw new Exception("An edge definition without a target type can not contain target IDs");
+            }
+                
             if (myEdgeDef.Expressions != null)
             {
                 foreach (var expr in myEdgeDef.Expressions)
@@ -295,7 +356,7 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     values[i] = myProperties[myIndexProps[i].Name];
                 }
-                
+
                 //using ListCollectionWrapper from Expressions, maybe this class should go to Lib
                 return new ListCollectionWrapper(values);
             }
@@ -324,9 +385,9 @@ namespace sones.GraphDB.Manager.Vertex
         {
             base.Initialize(myMetaManager);
 
-            _indexManager      = myMetaManager.IndexManager;
-            _vertexStore       = myMetaManager.VertexStore;
-            _queryPlanManager  = myMetaManager.QueryPlanManager;
+            _indexManager = myMetaManager.IndexManager;
+            _vertexStore = myMetaManager.VertexStore;
+            _queryPlanManager = myMetaManager.QueryPlanManager;
         }
 
         #endregion

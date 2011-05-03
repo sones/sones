@@ -311,7 +311,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 switch (unknown.Multiplicity)
                 {
                     case UnknownAttributePredefinition.SETMultiplicity:
-                        prop.SetMultiplicityAsMultiEdge(prop.InnerEdgeType);
+                        prop.SetMultiplicityAsMultiEdge(unknown.InnerEdgeType);
                         break;
                     default:
                         throw new Exception("Unknown multiplicity for edges.");
