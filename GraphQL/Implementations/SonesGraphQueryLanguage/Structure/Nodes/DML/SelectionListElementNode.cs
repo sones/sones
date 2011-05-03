@@ -123,13 +123,13 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
                     #region Alias handling
 
-                    if (parseNode.ChildNodes.Count > 1)//Last().AstNode is AliasNode)
+                    if (HasChildNodes(parseNode.ChildNodes[1]))//Last().AstNode is AliasNode)
                     {
-                        AliasId = parseNode.ChildNodes[2].Token.ValueString;//(parseNode.ChildNodes.Last().AstNode as AliasNode).AliasId;
+                        AliasId = parseNode.ChildNodes[1].ChildNodes[1].Token.ValueString;//(parseNode.ChildNodes.Last().AstNode as AliasNode).AliasId;
                     }
                     else
                     {
-                        AliasId = aAggregateNode.AggregateDefinition.ChainPartAggregateDefinition.SourceParsedString;
+                        AliasId = aAggregateNode.FuncDefinition.SourceParsedString;
                     }
 
                     #endregion

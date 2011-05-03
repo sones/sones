@@ -197,7 +197,7 @@ namespace sones.GraphQL.StatementNodes.DML
                                     (BinaryExpressionDefinition)aTupleElement.Value,
                                     myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType))
                                 {
-                                    var inneredge = new EdgePredefinition();
+                                    var inneredge = new EdgePredefinition().AddVertexID(aVertexID);
                                     
                                     foreach (var aStructuredProperty in aTupleElement.Parameters)
 	                                {
