@@ -21,7 +21,7 @@ using sones.Plugins.Index.Interfaces;
 
 namespace sones.GraphDB.Manager.Vertex
 {
-    internal class ExecuteVertexManager: AVertexHandler, IVertexHandler, IManager
+    internal class ExecuteVertexManager: AVertexHandler, IVertexHandler
     {
         #region data
 
@@ -314,15 +314,14 @@ namespace sones.GraphDB.Manager.Vertex
 
         #region IManager Members
 
-        public void Initialize(IMetaManager myMetaManager)
+        public override void Initialize(IMetaManager myMetaManager)
         {
+            base.Initialize(myMetaManager);
+
             _indexManager      = myMetaManager.IndexManager;
             _vertexStore       = myMetaManager.VertexStore;
             _queryPlanManager  = myMetaManager.QueryPlanManager;
-
         }
-
-        public void Load(TransactionToken myTransaction, SecurityToken mySecurity) {}
 
         #endregion
 
