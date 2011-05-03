@@ -902,7 +902,10 @@ namespace sones.GraphQL.GQL.Manager.Select
                         }
                         else
                         {
-                            callingObject = myDBObject.GetProperty(selectionElementFunction.Element.AttributeID);
+                            if (myDBObject.HasProperty(selectionElementFunction.Element.AttributeID))
+                            {
+                                callingObject = myDBObject.GetProperty(selectionElementFunction.Element.AttributeID);                                
+                            }
                         }
 
                         #endregion
