@@ -480,7 +480,7 @@ namespace sones.GraphDB
         /// <param name="myMetaManager">The meta manager of the graphdb</param>
         private IRequestManager LoadRequestManager(IMetaManager myMetaManager)
         {
-            return new RequestManagerReloaded(myMetaManager);
+            return new SimpleRequestManager(myMetaManager);
         }
 
         /// <summary>

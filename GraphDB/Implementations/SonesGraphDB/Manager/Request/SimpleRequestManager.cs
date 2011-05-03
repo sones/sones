@@ -12,9 +12,9 @@ using System.Diagnostics;
 namespace sones.GraphDB.Manager
 {
     /// <summary>
-    /// A manager that handles requests in a pipeline
+    /// A manager that handles requests
     /// </summary>
-    public sealed class RequestManagerReloaded : IRequestManager
+    public sealed class SimpleRequestManager : IRequestManager
     {
         #region data
 
@@ -37,7 +37,7 @@ namespace sones.GraphDB.Manager
         /// BEWARE!!! This constructor is necessary for plugin-functionality.
         /// DO NOT USE THIS ONE IF YOU DIRECTLY INITIALIZE THIS COMPONENT
         /// </summary>
-        public RequestManagerReloaded()
+        public SimpleRequestManager()
         {
 
         }
@@ -46,7 +46,7 @@ namespace sones.GraphDB.Manager
         /// Creates a new request manager
         /// </summary>
         /// <param name="myMetaManager">The meta mananger of the graphdb</param>
-        public RequestManagerReloaded(IMetaManager myMetaManager)
+        public SimpleRequestManager(IMetaManager myMetaManager)
         {
             _metaManager = myMetaManager;
         }
@@ -60,18 +60,11 @@ namespace sones.GraphDB.Manager
         {
             Stopwatch sw = Stopwatch.StartNew();
 
-            try
-            {
-                myToBeExecutedRequest.Validate(_metaManager);
+            myToBeExecutedRequest.Validate(_metaManager);
 
-                myToBeExecutedRequest.Execute(_metaManager);
+            myToBeExecutedRequest.Execute(_metaManager);
 
-                sw.Stop();
-            }
-            catch (Exception e)
-            {
-                HandleErroneousRequest(ref myToBeExecutedRequest, e);
-            }
+            sw.Stop();
 
             //set the stats
             myToBeExecutedRequest.Statistics = new RequestStatistics(sw.Elapsed);
@@ -99,7 +92,7 @@ namespace sones.GraphDB.Manager
 
         public IPluginable InitializePlugin(Dictionary<String, Object> myParameters)
         {
-            var result =  new RequestManagerReloaded();
+            var result =  new SimpleRequestManager();
 
             return result;
         }
