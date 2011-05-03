@@ -13,9 +13,7 @@ namespace sones.GraphDB.Manager.Plugin
         public readonly PluginDefinition IGraphFSDefinition;
         public readonly PluginDefinition TransactionManagerPlugin;
         public readonly PluginDefinition SecurityManagerPlugin;
-        public readonly PluginDefinition RequestSchedulerPlugin;
         public readonly PluginDefinition LogicExpressionOptimizerPlugin;
-        public readonly PluginDefinition RequestManagerPlugin;
         public readonly List<PluginDefinition> IndexPlugins;
 
         #endregion
@@ -28,24 +26,18 @@ namespace sones.GraphDB.Manager.Plugin
         /// <param name="myIGraphFSDefinition">The definition of the IGraphFS plugin</param>
         /// <param name="myTransactionManagerPlugin">The definition of the transaction manager plugin</param>
         /// <param name="mySecurityManagerPlugin">The definition of the transaction manager plugin</param>
-        /// <param name="myRequestSchedulerPlugin">The definition of the request scheduler plugin</param>
         /// <param name="myLogicExpressionOptimizerPlugin">The definition of the logic expression optimizer plugin</param>
-        /// <param name="myRequestManagerPlugin">The definition of the request manager plugin</param>
         public GraphDBPlugins(
             PluginDefinition myIGraphFSDefinition = null,
             PluginDefinition myTransactionManagerPlugin = null,
             PluginDefinition mySecurityManagerPlugin = null,
-            PluginDefinition myRequestSchedulerPlugin = null,
             PluginDefinition myLogicExpressionOptimizerPlugin = null,
-            PluginDefinition myRequestManagerPlugin = null,
             List<PluginDefinition> myIndexPlugins = null)
         {
             IGraphFSDefinition = myIGraphFSDefinition;
             TransactionManagerPlugin = myTransactionManagerPlugin;
             SecurityManagerPlugin = mySecurityManagerPlugin;
-            RequestSchedulerPlugin = myRequestSchedulerPlugin;
             LogicExpressionOptimizerPlugin = myLogicExpressionOptimizerPlugin;
-            RequestManagerPlugin = myRequestManagerPlugin;
             IndexPlugins = myIndexPlugins;
         }
 

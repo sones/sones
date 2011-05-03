@@ -79,9 +79,8 @@
     <Compile Include="Manager\Plugin\GraphDBPluginManager.cs" />
     <Compile Include="Manager\QueryPlan\QueryPlanManager.cs" />
     <Compile Include="Manager\QueryPlan\IQueryPlanManager.cs" />
+    <Compile Include="Manager\Request\RequestManagerReloaded.cs" />
     <Compile Include="Manager\Request\IRequestManager.cs" />
-    <Compile Include="Manager\Request\RequestManager.cs" />
-    <Compile Include="Manager\Request\BasicRequestScheduler.cs" />
     <Compile Include="Manager\Security\BasicSecurityManager.cs" />
     <Compile Include="Manager\Transaction\BasicTransactionManager.cs" />
     <Compile Include="Manager\TypeManagement\AVertexTypeManager.cs" />

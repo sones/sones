@@ -10,7 +10,7 @@ namespace sones.GraphDB
     {
         #region data
 
-        public String TypeName;
+        public String VertexTypeName;
 
         #endregion
 
@@ -18,7 +18,7 @@ namespace sones.GraphDB
 
         public RequestTruncate(String myTypeName)
         {
-            TypeName = myTypeName;
+            VertexTypeName = myTypeName;
         }
 
         #endregion

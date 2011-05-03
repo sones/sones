@@ -139,7 +139,7 @@ namespace sones.GraphDB
 
             #region requests
 
-            _requestManager = LoadRequestManager(myPlugins.RequestManagerPlugin, myPlugins.RequestSchedulerPlugin, CreateMetamanager(myPlugins));
+            _requestManager = LoadRequestManager(CreateMetamanager(myPlugins));
 
             #endregion
         }
@@ -158,22 +158,20 @@ namespace sones.GraphDB
             RequestCreateVertexTypes myRequestCreateVertexType,
             Converter.CreateVertexTypesResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableCreateVertexTypesRequest(myRequestCreateVertexType,
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableCreateVertexTypesRequest(myRequestCreateVertexType,
                                                                                         mySecurity,
                                                                                         myTransactionToken));
 
-            return ((PipelineableCreateVertexTypesRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableCreateVertexTypesRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexType myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableCreateVertexTypeRequest(myRequestCreateVertexType,
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableCreateVertexTypeRequest(myRequestCreateVertexType,
                                                                                         mySecurityToken,
                                                                                         myTransactionToken));
 
-            return ((PipelineableCreateVertexTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableCreateVertexTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -186,11 +184,11 @@ namespace sones.GraphDB
             RequestClear myRequestClear, 
             Converter.ClearResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableClearRequest(myRequestClear, mySecurity,
-                                                                             myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableClearRequest(myRequestClear,
+                                                                                        mySecurity,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableClearRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableClearRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -203,11 +201,11 @@ namespace sones.GraphDB
             RequestDelete myRequestDelete,
             Converter.DeleteResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableDeleteRequest(myRequestDelete, mySecurity,
-                                                                             myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableDeleteRequest(myRequestDelete,
+                                                                                        mySecurity,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableDeleteRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableDeleteRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -220,11 +218,11 @@ namespace sones.GraphDB
             RequestDropType myRequestDropType,
             Converter.DropTypeResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableDropTypeRequest(myRequestDropType, mySecurity,
-                                                                                myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableDropTypeRequest(myRequestDropType,
+                                                                                        mySecurity,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableDropTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableDropTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -237,11 +235,11 @@ namespace sones.GraphDB
             RequestCreateIndex myRequestCreateIndex,
             Converter.CreateIndexResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableCreateIndexRequest(myRequestCreateIndex, mySecurity,
-                                                                                myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableCreateIndexRequest(myRequestCreateIndex,
+                                                                                        mySecurity,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableCreateIndexRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableCreateIndexRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -254,11 +252,11 @@ namespace sones.GraphDB
             RequestDropIndex myRequestDropIndex,
             Converter.DropIndexResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableDropIndexRequest(myRequestDropIndex, mySecurity,
-                                                                                myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableDropIndexRequest(myRequestDropIndex,
+                                                                                        mySecurity,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableDropIndexRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableDropIndexRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -271,11 +269,11 @@ namespace sones.GraphDB
             RequestRebuildIndices myRequestRebuildIndices,
             Converter.RebuildIndicesResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableRebuildIndicesRequest(myRequestRebuildIndices, mySecurity,
-                                                                                myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableRebuildIndicesRequest(myRequestRebuildIndices,
+                                                                                        mySecurity,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableRebuildIndicesRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableRebuildIndicesRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -288,11 +286,12 @@ namespace sones.GraphDB
             RequestInsertVertex myRequestInsert,
             Converter.InsertResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableInsertRequest(myRequestInsert, mySecurity,
-                                                                              myTransactionToken));
 
-            return ((PipelineableInsertRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableInsertRequest(myRequestInsert,
+                                                                                        mySecurity,
+                                                                                        myTransactionToken));
+
+            return ((PipelineableInsertRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -305,10 +304,11 @@ namespace sones.GraphDB
             RequestGetVertices myRequestGetVertices,
             Converter.GetVerticesResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableGetVerticesRequest(myRequestGetVertices, mySecurity, myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableGetVerticesRequest(myRequestGetVertices,
+                                                                                        mySecurity,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableGetVerticesRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableGetVerticesRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -321,10 +321,11 @@ namespace sones.GraphDB
             RequestTraverseVertex myRequestTraverseVertex,
             Converter.TraverseVertexResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableTraverseVertexRequest(myRequestTraverseVertex, mySecurity, myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableTraverseVertexRequest(myRequestTraverseVertex,
+                                                                                        mySecurity,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableTraverseVertexRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableTraverseVertexRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -333,18 +334,20 @@ namespace sones.GraphDB
 
         public TResult GetVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexType myRequestGetVertexType, Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableGetVertexTypeRequest(myRequestGetVertexType, mySecurityToken, myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableGetVertexTypeRequest(myRequestGetVertexType,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableGetVertexTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableGetVertexTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         public TResult GetAllVertexTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllVertexTypes myRequestGetVertexType, Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableGetAllVertexTypesRequest(myRequestGetVertexType, mySecurityToken, myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableGetAllVertexTypesRequest(myRequestGetVertexType,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableGetAllVertexTypesRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableGetAllVertexTypesRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -353,18 +356,20 @@ namespace sones.GraphDB
 
         public TResult GetEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetEdgeType myRequestGetEdgeType, Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableGetEdgeTypeRequest(myRequestGetEdgeType, mySecurityToken, myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableGetEdgeTypeRequest(myRequestGetEdgeType,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableGetEdgeTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableGetEdgeTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         public TResult GetAllEdgeTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllEdgeTypes myRequestGetEdgeType, Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableGetAllEdgeTypesRequest(myRequestGetEdgeType, mySecurityToken, myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableGetAllEdgeTypesRequest(myRequestGetEdgeType,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableGetAllEdgeTypesRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableGetAllEdgeTypesRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -373,10 +378,11 @@ namespace sones.GraphDB
 
         public TResult GetVertex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertex myRequestGetVertex, Converter.GetVertexResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableGetVertexRequest(myRequestGetVertex, mySecurityToken, myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableGetVertexRequest(myRequestGetVertex,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableGetVertexRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableGetVertexRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -385,10 +391,11 @@ namespace sones.GraphDB
 
         public TResult Truncate<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableTruncateRequest(myRequestTruncate, mySecurityToken, myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableTruncateRequest(myRequestTruncate,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableTruncateRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableTruncateRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -397,10 +404,11 @@ namespace sones.GraphDB
 
         public TResult DescribeIndex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndexResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableDescribeIndexRequest(myRequestDescribeIndex, mySecurityToken, myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableDescribeIndexRequest(myRequestDescribeIndex,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableDescribeIndexRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableDescribeIndexRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -409,10 +417,11 @@ namespace sones.GraphDB
 
         public TResult Update<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestUpdate myRequestUpdate, Converter.UpdateResultConverter<TResult> myOutputconverter)
         {
-            var id =
-                _requestManager.RegisterRequest(new PipelineableUpdateRequest(myRequestUpdate, mySecurityToken, myTransactionToken));
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableUpdateRequest(myRequestUpdate,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
 
-            return ((PipelineableUpdateRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableUpdateRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -468,72 +477,10 @@ namespace sones.GraphDB
         /// <summary>
         /// Load a request manager
         /// </summary>
-        /// <param name="myRequestManagerPlugin">The actual request manager plugin definition</param>
-        /// <param name="myRequestSchedulerPlugin">The request scheduler plugin that is needed for the request manager</param>
         /// <param name="myMetaManager">The meta manager of the graphdb</param>
-        private IRequestManager LoadRequestManager(PluginDefinition myRequestManagerPlugin, PluginDefinition myRequestSchedulerPlugin, IMetaManager myMetaManager)
+        private IRequestManager LoadRequestManager(IMetaManager myMetaManager)
         {
-            #region user defined
-
-            var requestScheduler = LoadRequestScheduler(myRequestSchedulerPlugin);
-
-            if (myRequestManagerPlugin != null)
-            {
-                return _graphDBPluginManager.GetAndInitializePlugin<IRequestManager>(myRequestManagerPlugin.NameOfPlugin, myRequestManagerPlugin.PluginParameter);
-            }
-
-            #endregion
-
-            #region default
-
-            //so lets take the default one
-            var defaultRequestManagerName = _applicationSettings.Get<DefaultRequestManagerImplementation>();
-
-            #region set some parameters
-
-            int queueLengthForIncomingRequests = 10000;
-            int executionQueueLength = 10000;
-
-            //the CPU*1,5
-            //decreased by one, because of one validation task
-            var numberOfOptimalTasks = ((Environment.ProcessorCount * 3) / 2) - 1;
-
-            //use at least 2 tasks
-            numberOfOptimalTasks = numberOfOptimalTasks > 1 ? numberOfOptimalTasks : 2;
-
-            #endregion
-
-            return _graphDBPluginManager.
-                GetAndInitializePlugin<IRequestManager>(
-                    defaultRequestManagerName,
-                    new Dictionary<String, Object>
-                    {
-                        {"queueLengthForIncomingRequests", queueLengthForIncomingRequests},
-                        {"executionQueueLength", executionQueueLength},
-                        {"executionTaskCount", numberOfOptimalTasks},
-                        {"metaManager", myMetaManager},
-                        {"requestScheduler", requestScheduler},
-                        {"cts", _cts},
-                    });
-            
-            #endregion
-        }
-
-        /// <summary>
-        /// Load a request scheduler
-        /// </summary>
-        /// <param name="myRequestSchedulerPlugin">The scheduler plugin definition</param>
-        /// <returns>A request scheduler</returns>
-        private IRequestScheduler LoadRequestScheduler(PluginDefinition myRequestSchedulerPlugin)
-        {
-            if (myRequestSchedulerPlugin != null)
-            {
-                return _graphDBPluginManager.GetAndInitializePlugin<IRequestScheduler>(myRequestSchedulerPlugin.NameOfPlugin, myRequestSchedulerPlugin.PluginParameter);
-            }
-
-            //so lets take the default one
-            var defaultRequestSchedulerName = _applicationSettings.Get<DefaultRequestSchedulerImplementation>();
-            return _graphDBPluginManager.GetAndInitializePlugin<IRequestScheduler>(defaultRequestSchedulerName);
+            return new RequestManagerReloaded(myMetaManager);
         }
 
         /// <summary>

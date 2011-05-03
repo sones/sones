@@ -30,8 +30,6 @@ namespace sones.GraphDB.Manager.Plugin
                 .Register<IGraphFS>(IGraphFSVersionCompatibility.MinVersion, IGraphFSVersionCompatibility.MaxVersion)
                 .Register<ITransactionManager>(ITransactionManagerVersionCompatibility.MinVersion, ITransactionManagerVersionCompatibility.MaxVersion)
                 .Register<ISecurityManager>(ISecurityManagerVersionCompatibility.MinVersion, ISecurityManagerVersionCompatibility.MaxVersion)
-                .Register<IRequestScheduler>(IRequestSchedulerVersionCompatibility.MinVersion, IRequestSchedulerVersionCompatibility.MaxVersion)
-                .Register<IRequestManager>(IRequestManagerVersionCompatibility.MinVersion, IRequestManagerVersionCompatibility.MaxVersion)
                 .Register<ILogicExpressionOptimizer>(ILogicExpressionOptimizerVersionCompatibility.MinVersion, ILogicExpressionOptimizerVersionCompatibility.MaxVersion)
                 .Register<ISingleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
                 .Register<IVersionedIndex<IComparable, Int64, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
@@ -48,8 +46,6 @@ namespace sones.GraphDB.Manager.Plugin
             FillLookup<IGraphFS>(componentName);
             FillLookup<ITransactionManager>(componentName);
             FillLookup<ISecurityManager>(componentName);
-            FillLookup<IRequestScheduler>(componentName);
-            FillLookup<IRequestManager>(componentName);
             FillLookup<ILogicExpressionOptimizer>(componentName);
             FillLookup<ISingleValueIndex<IComparable, Int64>>(componentName);
             FillLookup<IVersionedIndex<IComparable, Int64, Int64>>(componentName);
