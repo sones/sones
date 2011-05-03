@@ -2268,7 +2268,7 @@ namespace sones.GraphQL
                 {
                     //so, there are attributes that are no incoming edges
 
-                    stringBuilder.Append(S_ATTRIBUTES.ToUpperString() + S_BRACKET_LEFT.ToUpperString());
+                    stringBuilder.Append(S_ATTRIBUTES.ToUpperString() + S_BRACKET_LEFT);
 
                     #region properties
 
@@ -2288,7 +2288,8 @@ namespace sones.GraphQL
 
                     #endregion
 
-                    stringBuilder.Append(S_BRACKET_RIGHT.ToUpperString() + " ");
+                    stringBuilder.RemoveSuffix(" ");
+                    stringBuilder.Append(S_BRACKET_RIGHT);
 
                 }
 

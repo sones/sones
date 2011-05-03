@@ -12,6 +12,8 @@ using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
 using sones.Plugins.SonesGQL.Function.ErrorHandling;
 using ShortestPathAlgorithms.BreathFirstSearch;
+using sones.GraphQL.Result;
+using sones.GraphDB.Request;
 
 namespace ShortestPathAlgorithms
 {
@@ -112,18 +114,32 @@ namespace ShortestPathAlgorithms
 
             //bidirectional BFS
             paths = new BidirectionalBFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
-            
+                                
 
             if (paths != null)
             {
-                //TODO
+                #region create outputted vertexviews
+
+                var props = new Dictionary<String, object>();                
+                var edges = new Dictionary<String, IEdgeView>();
+
+                foreach (var vertex in paths)
+                {
+                    #region get properties
+                    #endregion
+                }
+
+                var vertexView = new VertexView(props, edges);
+
+                #endregion
+
+                
                 //ALT
                 //return new FuncParameter(new EdgeTypePath(paths, typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
                 return new FuncParameter(paths);
             }
             else
             {
-                //TODO
                 //ALT
                 //return new FuncParameter(new EdgeTypePath(new HashSet<List<long>>(), typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
                 return new FuncParameter(new HashSet<List<long>>());
