@@ -97,22 +97,22 @@ namespace sones.GraphDB.Manager.Vertex
 
         public void CanGetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            throw new NotImplementedException();
+            _vertexTypeManager.CheckManager.GetVertexType(myVertexTypeName, myTransactionToken, mySecurityToken);
         }
 
         public IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            throw new NotImplementedException();
+            return _vertexStore.GetVertex(mySecurityToken, myTransactionToken, myVertexID, _vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeName, myTransactionToken, mySecurityToken).ID, myEdition);
         }
 
         public void CanGetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken)
         {
-            throw new NotImplementedException();
+            _vertexTypeManager.CheckManager.GetVertexType(myVertexTypeID, TransactionToken, SecurityToken);
         }
 
         public IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken)
         {
-            throw new NotImplementedException();
+            return _vertexStore.GetVertex(SecurityToken, TransactionToken, myVertexID, myVertexTypeID, myEdition);
         }
 
         #endregion
