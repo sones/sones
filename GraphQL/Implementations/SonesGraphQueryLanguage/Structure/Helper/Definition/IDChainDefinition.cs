@@ -131,7 +131,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
         }
 
 
-        public FuncParameter Execute(IVertexType myTypeOfDBObject, IVertex myDBObject, String myReference, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public List<FuncParameter> Execute(IVertexType myTypeOfDBObject, IVertex myDBObject, String myReference, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
 
             List<FuncParameter> evaluatedParams = new List<FuncParameter>();
@@ -311,9 +311,8 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
             }
 
-            var result = Function.ExecFunc(null, null, null, myGraphDB, mySecurityToken, myTransactionToken, evaluatedParams.ToArray());
 
-            return result;
+            return evaluatedParams;
 
         }
       

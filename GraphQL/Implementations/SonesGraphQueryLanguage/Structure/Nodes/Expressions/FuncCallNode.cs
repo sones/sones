@@ -89,23 +89,28 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
 
             foreach (ParseTreeNode node in parseNodes)
             {
-
-                if (node.AstNode is IDNode)
+                if (node.AstNode == null && HasChildNodes(node))
                 {
-                    FuncDefinition.Parameters.Add((node.AstNode as IDNode).IDChainDefinition); // new
-                }
+                    foreach (var aExpressionNode in node.ChildNodes)
+                    {
+                        if (aExpressionNode.AstNode is IDNode)
+                        {
+                            FuncDefinition.Parameters.Add((aExpressionNode.AstNode as IDNode).IDChainDefinition); // new
+                        }
 
-                else if (node.AstNode is BinaryExpressionNode)
-                {
-                    FuncDefinition.Parameters.Add((node.AstNode as BinaryExpressionNode).BinaryExpressionDefinition); // new
-                }
+                        else if (aExpressionNode.AstNode is BinaryExpressionNode)
+                        {
+                            FuncDefinition.Parameters.Add((aExpressionNode.AstNode as BinaryExpressionNode).BinaryExpressionDefinition); // new
+                        }
 
-                else
-                {
-                    FuncDefinition.Parameters.Add(new ValueDefinition(node.Token.Value)); // new
-                }
+                        else
+                        {
+                            FuncDefinition.Parameters.Add(new ValueDefinition(aExpressionNode.Token.Value)); // new
+                        }
 
-                paramNum++;
+                        paramNum++;
+                    }
+                }
 
             }
 

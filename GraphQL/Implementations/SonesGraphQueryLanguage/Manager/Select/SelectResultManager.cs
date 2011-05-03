@@ -1170,22 +1170,21 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             #region Execute the function
 
-            var res = func.Function.ExecFunc(
-                mySelectionElementFunction.Element, myCallingObject, myDBObject,
-                _graphdb, mySecurityToken, myTransactionToken);
-            
-            if (res.Value == null)
+            var parameters = func.Execute(myReferencedDBType, myDBObject, myReference, _pluginManager, _graphdb, mySecurityToken, myTransactionToken);
+            var result = func.Function.ExecFunc(mySelectionElementFunction.Element, myCallingObject, myDBObject, _graphdb, mySecurityToken, myTransactionToken, parameters.ToArray());
+
+            if (result.Value == null)
             {
                 return null; // no result for this object because of not set attribute value
             }
 
             if (mySelectionElementFunction.FollowingFunction != null)
             {
-                return ExecuteFunction(mySelectionElementFunction.FollowingFunction, myDBObject, res.Value, myDepth, myReference, myReferencedDBType, myLevelKey, myUsingGraph, mySecurityToken, myTransactionToken);
+                return ExecuteFunction(mySelectionElementFunction.FollowingFunction, myDBObject, result.Value, myDepth, myReference, myReferencedDBType, myLevelKey, myUsingGraph, mySecurityToken, myTransactionToken);
             }
             else
             {
-                return res;
+                return result;
             }
 
             #endregion
