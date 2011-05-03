@@ -99,9 +99,9 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
                     #region Alias handling
 
-                    if (parseNode.ChildNodes.Count > 2)// && parseNode.ChildNodes.Last().AstNode is AliasNode)
+                    if (HasChildNodes(parseNode.ChildNodes[1]))// && parseNode.ChildNodes.Last().AstNode is AliasNode)
                     {
-                        AliasId = parseNode.ChildNodes[3].Token.ValueString; //(parseNode.ChildNodes.Last().AstNode as AliasNode).AliasId;
+                        AliasId = parseNode.ChildNodes[1].ChildNodes[1].Token.ValueString; //(parseNode.ChildNodes.Last().AstNode as AliasNode).AliasId;
                     }
 
                     #endregion
@@ -141,22 +141,6 @@ namespace sones.GraphQL.Structure.Nodes.DML
                 }
 
                 #endregion
-
-                if (parseNode.ChildNodes.Count > 1)
-                {
-
-                    #region SelectValueAssignmentNode
-
-                    if (parseNode.ChildNodes[1].AstNode is SelectValueAssignmentNode)
-                    {
-                        ValueAssignment = (parseNode.ChildNodes[1].AstNode as SelectValueAssignmentNode).ValueAssignment;
-                        //ValueAssignment = new Tuple<ValueAssignmentType, object>(ValueAssignmentType.Always, parseNode.ChildNodes[2].Token.Value);
-                    }
-
-                    #endregion
-
-                }
-
             }
         }
 
