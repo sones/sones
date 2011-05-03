@@ -35,7 +35,7 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// The managed interface to the vertices
         /// </summary>
-        IVertexManager VertexManager { get; }
+        IManagerOf<IVertexHandler> VertexManager { get; }
 
         /// <summary>
         /// The raw interface to the interfaces

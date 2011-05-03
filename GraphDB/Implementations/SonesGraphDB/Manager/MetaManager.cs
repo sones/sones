@@ -42,7 +42,7 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// Gets or sets the myOutgoingEdgeVertex instance of the parentVertex manager.
         /// </summary>
-        private readonly IVertexManager _vertexManager;
+        private readonly IManagerOf<IVertexHandler> _vertexManager;
 
         /// <summary>
         /// Gets or sets the myOutgoingEdgeVertex instance of parentVertex store.
@@ -126,7 +126,7 @@ namespace sones.GraphDB.Manager
             get { return _edgeTypeManager; }
         }
 
-        public IVertexManager VertexManager
+        public IManagerOf<IVertexHandler> VertexManager
         {
             get { return _vertexManager; }
         }

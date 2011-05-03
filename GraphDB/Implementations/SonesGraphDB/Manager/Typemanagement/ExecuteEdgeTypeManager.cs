@@ -18,7 +18,7 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         private IDictionary<string, IEdgeType> _baseTypes = new Dictionary<String, IEdgeType>();
         private IDManager _idManager;
-        private IVertexManager _vertexManager;
+        private IManagerOf<IVertexHandler> _vertexManager;
         
         /// <summary>
         /// A property expression on EdgeType.Name
@@ -92,7 +92,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         IEnumerable<IEdgeType> IEdgeTypeHandler.GetAllEdgeTypes(TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertices = _vertexManager.GetVertices(BaseTypes.EdgeType.ToString(), myTransaction, mySecurity);
+            var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.EdgeType.ToString(), myTransaction, mySecurity);
 
             if (vertices == null)
                 return Enumerable.Empty<IEdgeType>();
@@ -145,7 +145,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             #region get the type from fs
 
-            return _vertexManager.GetSingleVertex(new BinaryExpression(_vertexTypeNameExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeName)), myTransaction, mySecurity);
+            return _vertexManager.ExecuteManager.GetSingleVertex(new BinaryExpression(_vertexTypeNameExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeName)), myTransaction, mySecurity);
 
             #endregion
         }
@@ -161,7 +161,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             #region get the type from fs
 
-            return _vertexManager.GetSingleVertex(new BinaryExpression(_vertexTypeIDExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeId)), myTransaction, mySecurity);
+            return _vertexManager.ExecuteManager.GetSingleVertex(new BinaryExpression(_vertexTypeIDExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeId)), myTransaction, mySecurity);
 
             #endregion
         }
@@ -174,7 +174,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             foreach (var baseType in myBaseTypes)
             {
-                var vertex = _vertexManager.VertexStore.GetVertex(mySecurity, myTransaction, (long)baseType, (long)BaseTypes.EdgeType, String.Empty);
+                var vertex = _vertexManager.ExecuteManager.VertexStore.GetVertex(mySecurity, myTransaction, (long)baseType, (long)BaseTypes.EdgeType, String.Empty);
                 if (vertex == null)
                     //TODO: better exception
                     throw new Exception("Could not load base edge type.");

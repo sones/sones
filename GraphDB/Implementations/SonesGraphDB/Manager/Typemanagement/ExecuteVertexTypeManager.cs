@@ -24,7 +24,7 @@ namespace sones.GraphDB.Manager.TypeManagement
     internal class ExecuteVertexTypeManager: AVertexTypeManager
     {
         private IDictionary<string, IVertexType> _baseTypes = new Dictionary<String, IVertexType>();
-        private IVertexManager _vertexManager;
+        private IManagerOf<IVertexHandler> _vertexManager;
         private IIndexManager _indexManager;
         private IManagerOf<IEdgeTypeHandler> _edgeManager;
         private IDManager _idManager;
@@ -80,7 +80,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override IEnumerable<IVertexType> GetAllVertexTypes(TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertices = _vertexManager.GetVertices(BaseTypes.VertexType.ToString(), myTransaction, mySecurity);
+            var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.VertexType.ToString(), myTransaction, mySecurity);
 
             if (vertices == null)
                 return Enumerable.Empty<IVertexType>();
@@ -162,7 +162,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             for (var current = defsTopologically.First; current != null; current = current.Next)
             {
                 result[resultPos] = new VertexType(BaseGraphStorageManager.StoreVertexType(
-                    _vertexManager.VertexStore,
+                    _vertexManager.ExecuteManager.VertexStore,
                     typeInfos[current.Value.VertexTypeName].VertexInfo,
                     current.Value.VertexTypeName,
                     current.Value.Comment,
@@ -195,7 +195,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 foreach (var prop in current.Value.Properties)
                 {
                     BaseGraphStorageManager.StoreProperty(
-                        _vertexManager.VertexStore,
+                        _vertexManager.ExecuteManager.VertexStore,
                         new VertexInformation((long)BaseTypes.Property, firstAttrID++),
                         currentExternID++,
                         prop.AttributeName,
@@ -227,7 +227,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 foreach (var prop in current.Value.BinaryProperties)
                 {
                     BaseGraphStorageManager.StoreBinaryProperty(
-                        _vertexManager.VertexStore,
+                        _vertexManager.ExecuteManager.VertexStore,
                         new VertexInformation((long)BaseTypes.BinaryProperty, firstAttrID++),
                         currentExternID++,
                         prop.AttributeName,
@@ -260,7 +260,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         innerEdgeType = new VertexInformation((long)BaseTypes.EdgeType, _edgeManager.ExecuteManager.GetEdgeType(edge.InnerEdgeType, myTransaction, mySecurity).ID);
                     }
                     BaseGraphStorageManager.StoreOutgoingEdge(
-                        _vertexManager.VertexStore,
+                        _vertexManager.ExecuteManager.VertexStore,
                         new VertexInformation((long)BaseTypes.OutgoingEdge, firstAttrID++),
                         currentExternID++,
                         edge.AttributeName,
@@ -293,7 +293,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 {
 
                     BaseGraphStorageManager.StoreIncomingEdge(
-                        _vertexManager.VertexStore,
+                        _vertexManager.ExecuteManager.VertexStore,
                         new VertexInformation((long)BaseTypes.IncomingEdge, firstAttrID++),
                         currentExternID++,
                         edge.AttributeName,
@@ -527,7 +527,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private void ConnectVertexToUniqueIndex(TypeInfo myTypeInfo, IIndexDefinition[] myIndexDefinitions, SecurityToken mySecurity, TransactionToken myTransaction)
         {
-            _vertexManager.VertexStore.UpdateVertex(
+            _vertexManager.ExecuteManager.VertexStore.UpdateVertex(
                             mySecurity,
                             myTransaction,
                             myTypeInfo.VertexInfo.VertexID,
@@ -584,7 +584,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 }
                 else
                 {
-                    var vertex = _vertexManager.GetSingleVertex(new BinaryExpression(new Expression.SingleLiteralExpression(vertexType), BinaryOperator.Equals, _vertexTypeNameExpression), myTransaction, mySecurity);
+                    var vertex = _vertexManager.ExecuteManager.GetSingleVertex(new BinaryExpression(new Expression.SingleLiteralExpression(vertexType), BinaryOperator.Equals, _vertexTypeNameExpression), myTransaction, mySecurity);
                     IVertexType neededVertexType = new VertexType(vertex);
                     result.Add(vertexType, new TypeInfo
                     {
@@ -620,7 +620,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             #region get the type from fs
 
-            return _vertexManager.GetSingleVertex(new BinaryExpression(_vertexTypeNameExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeName)), myTransaction, mySecurity);
+            return _vertexManager.ExecuteManager.GetSingleVertex(new BinaryExpression(_vertexTypeNameExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeName)), myTransaction, mySecurity);
 
             #endregion
         }
@@ -636,14 +636,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             #region get the type from fs
 
-            return _vertexManager.GetSingleVertex(new BinaryExpression(_vertexTypeIDExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeId)), myTransaction, mySecurity);
+            return _vertexManager.ExecuteManager.GetSingleVertex(new BinaryExpression(_vertexTypeIDExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeId)), myTransaction, mySecurity);
 
             #endregion
         }
 
         private VertexInformation GetOutgoingEdgeVertexInformation(string myVertexType, string myEdgeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertices = _vertexManager.GetVertices(new BinaryExpression(new SingleLiteralExpression(myEdgeName), BinaryOperator.Equals, _attributeNameExpression), false, myTransaction, mySecurity).ToArray();
+            var vertices = _vertexManager.ExecuteManager.GetVertices(new BinaryExpression(new SingleLiteralExpression(myEdgeName), BinaryOperator.Equals, _attributeNameExpression), false, myTransaction, mySecurity).ToArray();
             var vertex = vertices.First(x => IsAttributeOnVertexType(myVertexType, x));
             return new VertexInformation(vertex.VertexTypeID, vertex.VertexID);
         }
@@ -697,7 +697,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             foreach (var baseType in myBaseTypes)
             {
-                var vertex = _vertexManager.VertexStore.GetVertex(mySecurity, myTransaction, (long)baseType, (long)BaseTypes.VertexType, String.Empty);
+                var vertex = _vertexManager.ExecuteManager.VertexStore.GetVertex(mySecurity, myTransaction, (long)baseType, (long)BaseTypes.VertexType, String.Empty);
                 if (vertex == null)
                     //TODO: better exception
                     throw new Exception("Could not load base vertex type.");
@@ -707,7 +707,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private long GetMaxID(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertices = _vertexManager.GetVertices(myTypeID, myTransaction, mySecurity);
+            var vertices = _vertexManager.ExecuteManager.GetVertices(myTypeID, myTransaction, mySecurity);
             if (vertices == null)
                 //TODO better exception here
                 throw new Exception("The base vertex types are not available.");

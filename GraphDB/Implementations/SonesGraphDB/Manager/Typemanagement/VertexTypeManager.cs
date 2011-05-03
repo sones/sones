@@ -62,17 +62,17 @@ namespace sones.GraphDB.Manager.TypeManagement
         private CheckVertexTypeManager _check;
         private ExecuteVertexTypeManager _execute;
 
-        private IVertexManager _vertexManager;
-        private IIndexManager _indexManager;
-        private IEdgeTypeHandler _edgeManager;
-
         #endregion
+
+        #region c'tor
 
         public VertexTypeManager(IDManager myIDManager)
         {
             _check = new CheckVertexTypeManager();
             _execute = new ExecuteVertexTypeManager(myIDManager);
         }
+
+        #endregion
 
         #region IManagerOf<IVertexTypeManager> Members
 

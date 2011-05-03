@@ -55,7 +55,7 @@ namespace sones.GraphDB.Request
             if (_request.VertexTypeName == null)
             {
                 //1. Vertex type by ID
-                myMetaManager.VertexManager.CanGetVertex(
+                myMetaManager.VertexManager.CheckManager.GetVertex(
                     _request.VertexTypeID,
                     _request.VertexID,
                     _request.Edition,
@@ -65,7 +65,7 @@ namespace sones.GraphDB.Request
             else
             {
                 //2. Vertex type by Name
-                myMetaManager.VertexManager.CanGetVertex(
+                myMetaManager.VertexManager.CheckManager.GetVertex(
                     _request.VertexTypeName,
                     _request.VertexID,
                     _request.Edition,
@@ -79,7 +79,7 @@ namespace sones.GraphDB.Request
             if (_request.VertexTypeName == null)
             {
                 //1. Vertex type by ID
-                _fetchedVertex = myMetaManager.VertexManager.GetVertex(
+                _fetchedVertex = myMetaManager.VertexManager.ExecuteManager.GetVertex(
                     _request.VertexTypeID,
                     _request.VertexID,
                     _request.Edition,
@@ -89,7 +89,7 @@ namespace sones.GraphDB.Request
             else
             {
                 //2. Vertex type by Name
-                _fetchedVertex = myMetaManager.VertexManager.GetVertex(
+                _fetchedVertex = myMetaManager.VertexManager.ExecuteManager.GetVertex(
                     _request.VertexTypeName,
                     _request.VertexID,
                     _request.Edition,

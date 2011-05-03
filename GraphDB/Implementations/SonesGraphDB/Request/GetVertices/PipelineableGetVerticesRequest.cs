@@ -86,7 +86,7 @@ namespace sones.GraphDB.Request
 
             if (_request.Expression != null)
             {
-                _fetchedIVertices = myMetaManager.VertexManager.GetVertices(_request.Expression, _request.IsLongrunning, TransactionToken, SecurityToken);
+                _fetchedIVertices = myMetaManager.VertexManager.ExecuteManager.GetVertices(_request.Expression, _request.IsLongrunning, TransactionToken, SecurityToken);
             }
 
             #endregion
@@ -103,7 +103,7 @@ namespace sones.GraphDB.Request
 
                     foreach (var item in _request.VertexIDs)
                     {
-                        fetchedVertices.Add(myMetaManager.VertexManager.GetVertex(_request.VertexTypeName, item, null, null, TransactionToken, SecurityToken));
+                        fetchedVertices.Add(myMetaManager.VertexManager.ExecuteManager.GetVertex(_request.VertexTypeName, item, null, null, TransactionToken, SecurityToken));
                     }
 
                     _fetchedIVertices = fetchedVertices;
@@ -111,7 +111,7 @@ namespace sones.GraphDB.Request
                 else
                 {
                     //2.1.2 no vertex ids ... take all
-                    _fetchedIVertices = myMetaManager.VertexManager.GetVertices(_request.VertexTypeName, TransactionToken, SecurityToken);
+                    _fetchedIVertices = myMetaManager.VertexManager.ExecuteManager.GetVertices(_request.VertexTypeName, TransactionToken, SecurityToken);
                 }
             }
             else
@@ -124,7 +124,7 @@ namespace sones.GraphDB.Request
 
                     foreach (var item in _request.VertexIDs)
                     {
-                        fetchedVertices.Add(myMetaManager.VertexManager.GetVertex(_request.VertexTypeID, item, null, null, TransactionToken, SecurityToken));
+                        fetchedVertices.Add(myMetaManager.VertexManager.ExecuteManager.GetVertex(_request.VertexTypeID, item, null, null, TransactionToken, SecurityToken));
                     }
 
                     _fetchedIVertices = fetchedVertices;
@@ -132,7 +132,7 @@ namespace sones.GraphDB.Request
                 else
                 {
                     //2.2.2 no vertex ids ... take all
-                    _fetchedIVertices = myMetaManager.VertexManager.GetVertices(_request.VertexTypeID, TransactionToken, SecurityToken);
+                    _fetchedIVertices = myMetaManager.VertexManager.ExecuteManager.GetVertices(_request.VertexTypeID, TransactionToken, SecurityToken);
                 }
             }
 

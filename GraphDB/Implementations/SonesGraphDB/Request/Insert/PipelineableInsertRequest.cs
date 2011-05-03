@@ -49,12 +49,12 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexManager.CanAddVertex(_request, TransactionToken, SecurityToken);
+            myMetaManager.VertexManager.CheckManager.AddVertex(_request, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _createdVertex =  myMetaManager.VertexManager.AddVertex(_request, TransactionToken, SecurityToken);
+            _createdVertex = myMetaManager.VertexManager.ExecuteManager.AddVertex(_request, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

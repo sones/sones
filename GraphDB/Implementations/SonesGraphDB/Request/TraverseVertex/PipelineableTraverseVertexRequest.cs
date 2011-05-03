@@ -94,9 +94,9 @@ namespace sones.GraphDB.Request
         {
             if(_request.Expression != null)
                 //create traversal state an get start node
-                _traversalState = new TraversalState(myMetaManager.VertexManager.GetVertices(_request.Expression, true, _transactionToken, _securityToken));
+                _traversalState = new TraversalState(myMetaManager.VertexManager.ExecuteManager.GetVertices(_request.Expression, true, _transactionToken, _securityToken));
             else
-                _traversalState = new TraversalState(new List<IVertex> { myMetaManager.VertexManager.GetVertex(_request.VertexTypeName, _request.VertexID, "", null, _transactionToken, _securityToken) });
+                _traversalState = new TraversalState(new List<IVertex> { myMetaManager.VertexManager.ExecuteManager.GetVertex(_request.VertexTypeName, _request.VertexID, "", null, _transactionToken, _securityToken) });
 
             //do traversion
             _fetchedIVertices = TraverseStartNodes(_traversalState.StartNodes,
