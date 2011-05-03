@@ -325,6 +325,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
                             if (vertexIDs.Count > 1)
                             {
+                                throw new ReferenceAssignmentExpectedException(String.Format("It is not possible to create a single edge pointing to {0} vertices", vertexIDs.Count));
                             }
 
                             var inneredge = new EdgePredefinition();
