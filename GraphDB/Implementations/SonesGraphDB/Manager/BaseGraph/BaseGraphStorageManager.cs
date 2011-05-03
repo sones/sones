@@ -52,9 +52,10 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #region OutgoingEdge
 
-        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotEdgeType = Tuple.Create((long)AttributeDefinitions.EdgeType, _EdgeEdgeType);
-        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotSource = Tuple.Create((long)AttributeDefinitions.Source, _EdgeEdgeType);
-        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotTarget = Tuple.Create((long)AttributeDefinitions.Target, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotEdgeType      = Tuple.Create((long)AttributeDefinitions.EdgeType, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotInnerEdgeType = Tuple.Create((long)AttributeDefinitions.InnerEdgeType, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotSource        = Tuple.Create((long)AttributeDefinitions.Source, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotTarget        = Tuple.Create((long)AttributeDefinitions.Target, _EdgeEdgeType);
 
         #endregion
 
@@ -146,14 +147,18 @@ namespace sones.GraphDB.Manager.BaseGraph
             var target = GetTargetVertexType(myOutgoingEdgeVertex);
             var multiplicity = GetEdgeMultiplicity(myOutgoingEdgeVertex);
             var relatedType = myRelatedType ?? GetDefiningType(myOutgoingEdgeVertex) as VertexType;
+            var innerEdgeType = (multiplicity == EdgeMultiplicity.MultiEdge)
+                ? GetInnerEdgeType(myOutgoingEdgeVertex)
+                : null;
 
             return new OutgoingEdgeDefinition
             {
                 AttributeID = attributeID,
                 EdgeType = edgeType,
+                InnerEdgeType = innerEdgeType,
                 Multiplicity = multiplicity,
                 Name = name,
-                SourceVertexType = myRelatedType,
+                SourceVertexType = relatedType,
                 TargetVertexType = target,
                 RelatedType = relatedType,
                 
@@ -169,11 +174,12 @@ namespace sones.GraphDB.Manager.BaseGraph
             EdgeMultiplicity myMultiplicity,
             VertexInformation myDefiningType,
             VertexInformation myEdgeType,
+            VertexInformation? myInnerEdgeType,
             VertexInformation myTarget,
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
-            StoreOutgoingEdge(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myCreationDate, myMultiplicity, myDefiningType, myEdgeType, myTarget, mySecurity, myTransaction);
+            StoreOutgoingEdge(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myCreationDate, myMultiplicity, myDefiningType, myEdgeType, myInnerEdgeType, myTarget, mySecurity, myTransaction);
         }
 
         public static void StoreOutgoingEdge(
@@ -186,22 +192,30 @@ namespace sones.GraphDB.Manager.BaseGraph
             EdgeMultiplicity myMultiplicity,
             VertexInformation myDefiningType,
             VertexInformation myEdgeType,
+            VertexInformation? myInnerEdgeType, //not mandatory, might be null
             VertexInformation myTarget,
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
-            Store(
-                myStore,
-                myVertex,
-                myComment,
-                myCreationDate,
-                new Dictionary<Tuple<long, long>, VertexInformation>
+            var singleEdges = new Dictionary<Tuple<long, long>, VertexInformation>
                 {
                     { _EdgeAttributeDotDefiningType, myDefiningType },
                     { _EdgeOutgoingEdgeDotSource, myDefiningType },
                     { _EdgeOutgoingEdgeDotEdgeType, myEdgeType },
                     { _EdgeOutgoingEdgeDotTarget, myTarget }
-                },
+                };
+
+            if (myMultiplicity == EdgeMultiplicity.MultiEdge)
+            {
+                singleEdges.Add(_EdgeOutgoingEdgeDotInnerEdgeType, myInnerEdgeType.Value);
+            }
+
+            Store(
+                myStore,
+                myVertex,
+                myComment,
+                myCreationDate,
+                singleEdges,
                 null,
                 new Dictionary<long, IComparable>
                 {
@@ -486,12 +500,13 @@ namespace sones.GraphDB.Manager.BaseGraph
             Int64 myCreationDate,
             bool myIsAbstract,
             bool myIsSealed,
+            bool myIsUserDefined,
             VertexInformation? myParent,
             IEnumerable<VertexInformation> myUniques,
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
-            return StoreVertexType(myStore, myVertex, myType.ToString(), myComment, myCreationDate, myIsAbstract, myIsSealed, myParent, myUniques, mySecurity, myTransaction);
+            return StoreVertexType(myStore, myVertex, myType.ToString(), myComment, myCreationDate, myIsAbstract, myIsSealed, myIsUserDefined, myParent, myUniques, mySecurity, myTransaction);
         }
 
         public static IVertex StoreVertexType(
@@ -502,6 +517,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             Int64 myCreationDate,
             bool myIsAbstract,
             bool myIsSealed,
+            bool myIsUserDefined,
             VertexInformation? myParent,
             IEnumerable<VertexInformation> myUniques,
             SecurityToken mySecurity,
@@ -528,7 +544,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 {
                     { (long) AttributeDefinitions.ID, myVertex.VertexID },
                     { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
                     { (long) AttributeDefinitions.IsAbstract, myIsAbstract },
                     { (long) AttributeDefinitions.IsSealed, myIsSealed },
                     //{ (long) AttributeDefinitions.Behaviour, null },
@@ -827,6 +843,15 @@ namespace sones.GraphDB.Manager.BaseGraph
             }
         }
 
+        private static IEdgeType GetInnerEdgeType(IVertex myOutgoingEdgeVertex)
+        {
+            var vertex = myOutgoingEdgeVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.InnerEdgeType).GetTargetVertex();
+            if (vertex == null)
+                throw new UnknownDBException("An outgoing edge has no vertex that represents its inner edge type.");
+
+            return new EdgeType(vertex);
+        }
+        
         /// <summary>
         /// </summary>
         /// <param name="myOutgoingEdge">A vertex that represents an outgoing edge.</param>

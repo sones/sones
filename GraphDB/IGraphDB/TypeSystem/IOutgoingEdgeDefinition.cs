@@ -6,9 +6,14 @@
     public interface IOutgoingEdgeDefinition : IAttributeDefinition
     {
         /// <summary>
-        /// The type of the IncomingEdge. Never <c>NULL</c>.
+        /// The type of the edge. Never <c>NULL</c>.
         /// </summary>
         IEdgeType EdgeType { get; }
+
+        /// <summary>
+        /// The type of the inner edges of an multi edge. Might be <c>NULL</c>.
+        /// </summary>
+        IEdgeType InnerEdgeType { get; }
 
         /// <summary>
         /// The source vertex type. Never <c>NULL</c>.

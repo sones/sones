@@ -231,7 +231,7 @@ namespace sones.GraphDB.TypeManagement
 
         IEnumerable<IBinaryPropertyDefinition> IVertexType.GetBinaryProperties(bool myIncludeAncestorDefinitions)
         {
-            return _attributes.Value.Values.OfType<IBinaryPropertyDefinition>();
+            return GetAttributes(myIncludeAncestorDefinitions).OfType<IBinaryPropertyDefinition>();
         }
 
         #endregion
@@ -255,7 +255,7 @@ namespace sones.GraphDB.TypeManagement
 
         IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return _attributes.Value.Values.OfType<IIncomingEdgeDefinition>();
+            return GetAttributes(myIncludeAncestorDefinitions).OfType<IIncomingEdgeDefinition>();
         }
 
         #endregion
@@ -279,7 +279,7 @@ namespace sones.GraphDB.TypeManagement
 
         IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return _attributes.Value.Values.OfType<IOutgoingEdgeDefinition>();
+            return GetAttributes(myIncludeAncestorDefinitions).OfType<IOutgoingEdgeDefinition>();
         }
 
         #endregion
@@ -385,6 +385,11 @@ namespace sones.GraphDB.TypeManagement
 
         IEnumerable<IAttributeDefinition> IBaseType.GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
         {
+            return GetAttributes(myIncludeAncestorDefinitions);
+        }
+
+        private IEnumerable<IAttributeDefinition> GetAttributes(bool myIncludeAncestorDefinitions)
+        {
             return (myIncludeAncestorDefinitions && GetHasParentType())
                 ? _attributes.Value.Values.Union(_parent.Value.GetAttributeDefinitions(true))
                 : _attributes.Value.Values;
@@ -416,7 +421,7 @@ namespace sones.GraphDB.TypeManagement
 
         IEnumerable<IPropertyDefinition> IBaseType.GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return _attributes.Value.Values.OfType<IPropertyDefinition>();
+            return GetAttributes(myIncludeAncestorDefinitions).OfType<IPropertyDefinition>();
         }
 
         IPropertyDefinition IBaseType.GetPropertyDefinition(long myPropertyID)

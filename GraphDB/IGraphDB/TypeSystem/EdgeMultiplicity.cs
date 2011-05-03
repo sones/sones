@@ -9,9 +9,14 @@
         /// The edge is a single edge.
         /// </summary>
         SingleEdge,
+
+        /// <summary>
+        /// A set of typed single edges.
+        /// </summary>
+        MultiEdge,
         
         /// <summary>
-        /// The edge is organized as a set.
+        /// A set of untyped single edges
         /// </summary>
         HyperEdge
     }

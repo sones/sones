@@ -41,6 +41,10 @@ namespace sones.GraphDB.Request
         /// </summary>
         public EdgeMultiplicity Multiplicity { get; private set; }
 
+        /// <summary>
+        /// The inner edge type of a multi edge.
+        /// </summary>
+        public string InnerEdgeType { get; set; }
 
         #endregion
 
@@ -64,8 +68,8 @@ namespace sones.GraphDB.Request
         /// The name of the edge type. 
         /// </param>
         /// <seealso cref="SetAsSingleEdge"/>
-        /// <seealso cref="SetAsHyperEdge"/>
-        /// <seealso cref="SetAsWeightedEdge"/>
+        /// <seealso cref="SetMultiplicityAsHyperEdge"/>
+        /// <seealso cref="SetEdgeTypeAsWeighted"/>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public OutgoingEdgePredefinition SetEdgeType(String myEdgeType)
         {
@@ -75,12 +79,24 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Sets the edge type of this edge definition to 'Set'.
+        /// Sets the edge multiplicity of this edge to HyperEdge.
         /// </summary>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public OutgoingEdgePredefinition SetAsHyperEdge()
+        public OutgoingEdgePredefinition SetMultiplicityAsHyperEdge()
         {
+            InnerEdgeType = null;
             Multiplicity = EdgeMultiplicity.HyperEdge;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the edge multiplicity of this edge to MultiEdge.
+        /// </summary>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public OutgoingEdgePredefinition SetMultiplicityAsMultiEdge(String myInnerEdgeType = null)
+        {
+            InnerEdgeType = myInnerEdgeType ?? Edge;
+            Multiplicity = EdgeMultiplicity.MultiEdge;
             return this;
         }
 
@@ -88,7 +104,7 @@ namespace sones.GraphDB.Request
         /// Sets the edge type of this edge definition to 'Weighted'.
         /// </summary>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public OutgoingEdgePredefinition SetAsWeightedEdge()
+        public OutgoingEdgePredefinition SetEdgeTypeAsWeighted()
         {
             EdgeType = WeightedEdge;
             return this;
@@ -98,7 +114,7 @@ namespace sones.GraphDB.Request
         /// Sets the edge type of this edge definition to 'Ordered'.
         /// </summary>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public OutgoingEdgePredefinition SetAsOrderedEdge()
+        public OutgoingEdgePredefinition SetEdgeTypeAsOrdered()
         {
             EdgeType = OrderedEdge;
             return this;
@@ -134,6 +150,7 @@ namespace sones.GraphDB.Request
 
 
         #endregion
+
 
 
     }

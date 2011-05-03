@@ -64,10 +64,11 @@ namespace sones.GraphDB.TypeManagement.Base
 
         #region OutgoingEdge
 
-        EdgeType = Int64.MinValue + 70,
-        Source = Int64.MinValue + 71,
-        Target = Int64.MinValue + 72,
-        RelatedIncomingEdges = Int64.MinValue + 73,
+        EdgeType             = Int64.MinValue + 70,
+        InnerEdgeType        = Int64.MinValue + 71,
+        Source               = Int64.MinValue + 72,
+        Target               = Int64.MinValue + 73,
+        RelatedIncomingEdges = Int64.MinValue + 74,
 
         #endregion
 
@@ -79,8 +80,8 @@ namespace sones.GraphDB.TypeManagement.Base
 
         #region Property
 
-        IsMandatory  = Int64.MinValue + 90,
-        InIndices    = Int64.MinValue + 91,
+        IsMandatory = Int64.MinValue + 90,
+        InIndices = Int64.MinValue + 91,
         DefaultValue = Int64.MinValue + 92,
 
         #endregion

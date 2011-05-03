@@ -13,9 +13,9 @@ namespace sones.GraphDB.Request.CreateVertexTypes
     /// Properties that are not needed from this predefinitions will be ignored, e.g. a property predefinition will ignore the edge type.
     public class UnknownAttributePredefinition: AttributePredefinition
     {
-        public const String ListMultiplicity = "LIST";
+        public const String LISTMultiplicity = "LIST";
 
-        public const String SetMultiplicity = "SET";
+        public const String SETMultiplicity = "SET";
 
         public String Multiplicity { get; private set; }
 
@@ -23,22 +23,31 @@ namespace sones.GraphDB.Request.CreateVertexTypes
 
         public String EdgeType { get; private set; }
 
+        public String InnerEdgeType { get; private set; }
+
         public UnknownAttributePredefinition(String myAttributeName)
             : base(myAttributeName)
         {
 
         }
 
+        public UnknownAttributePredefinition SetMultiplicity(String myMultiplicity)
+        {
+            Multiplicity = myMultiplicity;
+
+            return this;
+        }
+
         public UnknownAttributePredefinition SetMultiplicityAsList()
         {
-            Multiplicity = ListMultiplicity;
+            Multiplicity = LISTMultiplicity;
 
             return this;
         }
 
         public UnknownAttributePredefinition SetMultiplicityAsSet()
         {
-            Multiplicity = SetMultiplicity;
+            Multiplicity = SETMultiplicity;
 
             return this;
         }
@@ -46,6 +55,13 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         public UnknownAttributePredefinition SetDefaultValue(String myDefaultValue)
         {
             DefaultValue = myDefaultValue;
+
+            return this;
+        }
+
+        public UnknownAttributePredefinition SetInnerEdgeType(String myEdgeType)
+        {
+            InnerEdgeType = myEdgeType;
 
             return this;
         }
@@ -63,6 +79,7 @@ namespace sones.GraphDB.Request.CreateVertexTypes
 
             return this;
         }
+
 
     }
 }

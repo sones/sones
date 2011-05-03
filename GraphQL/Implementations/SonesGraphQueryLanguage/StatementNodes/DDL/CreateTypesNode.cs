@@ -323,7 +323,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
             if (aAttribute.Key.AttributeType.EdgeType != null)
             {
-                result.SetEdgeType(aAttribute.Key.AttributeType.EdgeType);
+                result.SetInnerEdgeType(aAttribute.Key.AttributeType.EdgeType);
             }
 
             if (aAttribute.Key.DefaultValue != null)

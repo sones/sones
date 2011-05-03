@@ -2484,28 +2484,33 @@ namespace sones.GraphQL
         private string GetGraphDDL(IOutgoingEdgeDefinition myOutgoingEdgeDefinition, IVertexType myIVertexType)
         {
             var stringBuilder = new StringBuilder();
-            
+
             switch (myOutgoingEdgeDefinition.Multiplicity)
             {
                 case EdgeMultiplicity.SingleEdge:
                     {
                         //e.g. User
-                        stringBuilder.Append(myOutgoingEdgeDefinition.TargetVertexType.Name + 
-                                                S_BRACKET_LEFT + 
+                        stringBuilder.Append(myOutgoingEdgeDefinition.TargetVertexType.Name +
+                                                S_BRACKET_LEFT +
                                                 myOutgoingEdgeDefinition.EdgeType.Name +
                                                 S_BRACKET_RIGHT);
-                    
+
                         break;
                     }
                 case EdgeMultiplicity.HyperEdge:
                     {
+                        //TODO if GQL supports hyper edges, implement this.
+                        break;
+                    }
+                case EdgeMultiplicity.MultiEdge:
+                    {
                         //e.g. Set<User(e.g. Weighted)>
-                        stringBuilder.Append(TERMINAL_SET + 
-                                                TERMINAL_LT + 
-                                                myOutgoingEdgeDefinition.TargetVertexType.Name + 
-                                                S_BRACKET_LEFT + 
-                                                myOutgoingEdgeDefinition.EdgeType.Name + 
-                                                S_BRACKET_RIGHT + 
+                        stringBuilder.Append(TERMINAL_SET +
+                                                TERMINAL_LT +
+                                                myOutgoingEdgeDefinition.TargetVertexType.Name +
+                                                S_BRACKET_LEFT +
+                                                myOutgoingEdgeDefinition.EdgeType.Name +
+                                                S_BRACKET_RIGHT +
                                                 TERMINAL_GT);
 
                         break;
@@ -2785,7 +2790,7 @@ namespace sones.GraphQL
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
-            stringBuilder.Append(String.Concat((String)mySingleAttribute, delimiter));
+            stringBuilder.Append(String.Concat(mySingleAttribute.ToString(), delimiter));
 
             return stringBuilder.ToString();
         }

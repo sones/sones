@@ -8,6 +8,8 @@ namespace sones.GraphDB.TypeManagement
 
         public IEdgeType EdgeType { get; internal set; }
 
+        public IEdgeType InnerEdgeType { get; internal set; }
+
         public EdgeMultiplicity Multiplicity { get; internal set; }
 
         public IVertexType SourceVertexType { get; internal set; }

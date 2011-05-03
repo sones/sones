@@ -169,6 +169,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     creationDate,
                     current.Value.IsAbstract,
                     current.Value.IsSealed,
+                    true,
                     typeInfos[current.Value.SuperVertexTypeName].VertexInfo,
                     null, //TODO uniques
                     mySecurity,
@@ -253,7 +254,11 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 foreach (var edge in current.Value.OutgoingEdges)
                 {
-
+                    VertexInformation? innerEdgeType = null;
+                    if (edge.Multiplicity == EdgeMultiplicity.MultiEdge)
+                    {
+                        innerEdgeType = new VertexInformation((long)BaseTypes.EdgeType, _edgeManager.ExecuteManager.GetEdgeType(edge.InnerEdgeType, myTransaction, mySecurity).ID);
+                    }
                     BaseGraphStorageManager.StoreOutgoingEdge(
                         _vertexManager.VertexStore,
                         new VertexInformation((long)BaseTypes.OutgoingEdge, firstAttrID++),
@@ -264,6 +269,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         edge.Multiplicity,
                         typeInfos[current.Value.VertexTypeName].VertexInfo,
                         new VertexInformation((long)BaseTypes.EdgeType, _edgeManager.ExecuteManager.GetEdgeType(edge.EdgeType, myTransaction, mySecurity).ID),
+                        innerEdgeType,
                         typeInfos[edge.AttributeType].VertexInfo,
                         mySecurity,
                         myTransaction);
