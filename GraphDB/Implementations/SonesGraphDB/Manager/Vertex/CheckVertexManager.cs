@@ -91,18 +91,6 @@ namespace sones.GraphDB.Manager.Vertex
 
         #endregion
 
-        #region IManager Members
-
-        public void Initialize(IMetaManager myMetaManager)
-        {
-        }
-
-        public void Load(TransactionToken myTransaction, SecurityToken mySecurity)
-        {
-        }
-
-        #endregion
-
         private static bool IsMustSetProperty(IPropertyDefinition myPropertyDefinition)
         {
             return IsMandatoryProperty(myPropertyDefinition) && !HasDefaultValue(myPropertyDefinition);
