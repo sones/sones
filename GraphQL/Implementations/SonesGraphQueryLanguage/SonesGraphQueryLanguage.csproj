@@ -309,9 +309,9 @@
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
       <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\IGraphDBExport\ISonesGraphDBExport.csproj">
-      <Project>{6E39BF75-0E8B-47A5-997A-CF62183BF1FC}</Project>
-      <Name>ISonesGraphDBExport</Name>
+    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\IGraphDBExport\IGraphDBExport.csproj">
+      <Project>{80934A33-3BCB-4732-AA2D-02D8925336C9}</Project>
+      <Name>IGraphDBExport</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\IGraphDBImport\ISonesGraphDBImport.csproj">
       <Project>{3B43C10E-28AE-42E5-9B9B-08F2B4153951}</Project>
