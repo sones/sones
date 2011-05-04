@@ -12,7 +12,7 @@ namespace sones.GraphDB.Request.AlterType
         /// <summary>
         /// The request which is executet
         /// </summary>
-        public RequestAlterType _request;
+        public RequestAlterVertexType _request;
 
         //some more data, which henning won't say me
 
@@ -26,7 +26,7 @@ namespace sones.GraphDB.Request.AlterType
         /// <param name="myRequest">The alter type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableAlterTypeRequest(RequestAlterType myRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public PipelineableAlterTypeRequest(RequestAlterVertexType myRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
             :base(mySecurityToken, myTransactionToken)
         {
             _request = myRequest;
