@@ -1,6 +1,7 @@
 ﻿using System;
 using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
+using sones.GraphDB.TypeManagement.Base;
 
 namespace sones.GraphDB.TypeManagement
 {
@@ -14,8 +15,38 @@ namespace sones.GraphDB.TypeManagement
 
         public IComparable ExtractValue(IVertex aVertex)
         {
-            //A usual property like Age or Name...
-            return aVertex.GetProperty(AttributeID);
+            if (RelatedType.ID == (long)BaseTypes.Vertex)
+            {
+                switch (AttributeID)
+                {
+                    case (long)AttributeDefinitions.UUID:
+                        return aVertex.VertexID;
+                    case (long)AttributeDefinitions.CreationDate:
+                        return aVertex.CreationDate;
+                    case (long)AttributeDefinitions.ModificationDate:
+                        return aVertex.ModificationDate;
+                    case (long)AttributeDefinitions.Comment:
+                        return aVertex.Comment;
+                    case (long)AttributeDefinitions.Edition:
+                        return aVertex.EditionName;
+                    case (long)AttributeDefinitions.Revision:
+                        return aVertex.VertexRevisionID;
+                    case (long)AttributeDefinitions.TypeID:
+                        return aVertex.VertexTypeID;
+                    default:
+                        return null;
+                }
+            }
+            else
+            {
+                //A usual property like Age or Name...
+                if (aVertex.HasProperty(AttributeID))
+                {
+                    return aVertex.GetProperty(AttributeID);                    
+                }
+                
+                return null;
+            }
         }
 
         public bool IsMandatory { get; internal set; }

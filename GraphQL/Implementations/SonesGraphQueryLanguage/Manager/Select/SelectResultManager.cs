@@ -1129,15 +1129,14 @@ namespace sones.GraphQL.GQL.Manager.Select
                 case AttributeType.Property:
                     #region property
 
-                    if(myDBObject.HasProperty(typeAttribute.AttributeID))
-                    {
-                        attributeValue = myDBObject.GetProperty(typeAttribute.AttributeID);
-                        return true;
-                    }
+                    var property = (IPropertyDefinition)typeAttribute;
+                    
+                    attributeValue = property.ExtractValue(myDBObject);
+
+                    return attributeValue != null;
 
                     #endregion
 
-                    break;
                 case AttributeType.IncomingEdge:
 
                     #region IsBackwardEdge
@@ -1282,7 +1281,9 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             foreach (var aProperty in myType.GetPropertyDefinitions(true))
             {
-                if (myDBObject.HasProperty(aProperty.AttributeID))
+                var tempResult = aProperty.ExtractValue(myDBObject);
+
+                if (tempResult != null)
                 {
                     myAttributes.Item1.Add(aProperty.Name, aProperty.ExtractValue(myDBObject));
                 }
