@@ -18,9 +18,12 @@ namespace sones.Plugins.SonesGQL.DBImport
 {
     public sealed class GraphDBImport_GQL : IGraphDBImport, IPluginable
     {
+        #region constructor
 
         public GraphDBImport_GQL()
         { }
+
+        #endregion
 
         #region IGraphDBImport Members
 
@@ -44,15 +47,19 @@ namespace sones.Plugins.SonesGQL.DBImport
 
             try
             {
+                #region file
                 if (myLocation.ToLower().StartsWith(@"file:\\"))
                 {
                     //lines = ReadFile(location.Substring(@"file:\\".Length));
                     stream = GetStreamFromFile(myLocation.Substring(@"file:\\".Length));
-                }
+                } 
+                #endregion
+                #region http
                 else if (myLocation.ToLower().StartsWith("http://"))
                 {
                     stream = GetStreamFromHttp(myLocation);
-                }
+                } 
+                #endregion
                 else
                 {
                     error = new InvalidImportLocationException(myLocation, @"file:\\", "http://");
@@ -68,9 +75,11 @@ namespace sones.Plugins.SonesGQL.DBImport
             }
             catch (Exception ex)
             {
+                #region thrwo new exception
                 error = new ImportFailedException(ex);
                 result = new QueryResult("", ImportFormat, 0L, ResultType.Failed, null, error);
-                return result;
+                return result; 
+                #endregion
             }
             finally
             {
@@ -194,11 +203,14 @@ namespace sones.Plugins.SonesGQL.DBImport
         private QueryResult ExecuteAsSingleThread(IEnumerable<String> myLines, IGraphQL myIGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, VerbosityTypes myVerbosityType, IEnumerable<String> comments = null)
         {
 
+            #region data
             QueryResult queryResult = new QueryResult("", ImportFormat, 0L, ResultType.Failed);
             Int64 numberOfLine = 0;
             var query = String.Empty;
-            var aggregatedResults = new List<IEnumerable<IVertexView>>();
+            var aggregatedResults = new List<IEnumerable<IVertexView>>(); 
+            #endregion
 
+            #region check lines and execute query
             foreach (var _Line in myLines)
             {
                 numberOfLine++;
@@ -219,10 +231,12 @@ namespace sones.Plugins.SonesGQL.DBImport
 
                 query += _Line;
 
+                #region execute query
                 var tempResult = ExecuteQuery(query, myIGraphQL, mySecurityToken, myTransactionToken);
+                #endregion
 
                 aggregatedResults.Add(tempResult.Vertices);
-                
+
                 #region Add errors and break execution
 
                 if (tempResult.TypeOfResult == ResultType.Failed)
@@ -239,12 +253,13 @@ namespace sones.Plugins.SonesGQL.DBImport
                         break;
                     }
                 }
-                
+
                 #endregion
 
                 query = String.Empty;
                 queryResult = tempResult;
-            }
+            } 
+            #endregion
 
             //add the results of each query into the queryResult
             queryResult.Vertices = AggregateListOfListOfVertices(aggregatedResults);

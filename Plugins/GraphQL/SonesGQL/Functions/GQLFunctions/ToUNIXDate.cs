@@ -80,7 +80,7 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return new Dictionary<string,Type>(); }
         }
 
-        public override Library.VersionedPluginManager.IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
+        public override IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
             return new ToUNIXDate();
         }
@@ -88,6 +88,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override string FunctionName
         {
             get { return "tounixdate"; }
+        }
+
+        public override Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            return typeof(Int64);
         }
     }
 }

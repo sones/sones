@@ -52,7 +52,7 @@ namespace sones.Plugins.SonesGQL.Functions
             {
                 if (myCallingObject.GetType().Name.Equals("Int64"))
                 {
-                    return new FuncParameter(UNIXTimeConversionExtension.FromUnixTimeStamp(Convert.ToInt64(DateTime.Now)));
+                    return new FuncParameter(UNIXTimeConversionExtension.FromUnixTimeStamp(Convert.ToInt64(DateTime.Now.Millisecond)));
                 }
                 else
                 {
@@ -83,6 +83,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override string FunctionName
         {
             get { return "fromunixdate"; }
+        }
+
+        public override Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            return typeof(DateTime);
         }
     }
 }

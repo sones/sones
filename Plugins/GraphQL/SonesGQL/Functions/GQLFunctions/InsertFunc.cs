@@ -65,7 +65,7 @@ namespace sones.Plugins.SonesGQL.Functions
                 throw new FunctionParameterTypeMismatchException(typeof(String), myCallingObject.GetType());
             }
 
-            var pos = (Int32)myParams[0].Value;
+            var pos = Convert.ToInt32(myParams[0].Value);
 
             StringBuilder resString = new StringBuilder((myCallingObject as String).ToString().Substring(0, pos));
             
