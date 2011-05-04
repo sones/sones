@@ -42,14 +42,15 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             get { return new Dictionary<string, Type>(); }
         }
 
+        /* ASK: whats this?
         public IPluginable InitializePlugin(Dictionary<string, object> myParameters, GraphApplicationSettings myApplicationSetting)
         {
             return InitializePlugin();
         }
-
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        */
+        public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
-            object result = Activator.CreateInstance(typeof(JSON_IO));
+            var result = new JSON_IO();
 
             return (IPluginable)result;
         }

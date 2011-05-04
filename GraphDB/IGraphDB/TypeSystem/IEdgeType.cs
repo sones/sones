@@ -15,7 +15,7 @@ namespace sones.GraphDB.TypeSystem
         /// Gets the parent vertex type
         /// </summary>
         /// <returns>The parent vertex type</returns>
-        IEdgeType GetParentEdgeType { get; }
+        IEdgeType ParentEdgeType { get; }
 
         /// <summary>
         /// Get all child edge types.

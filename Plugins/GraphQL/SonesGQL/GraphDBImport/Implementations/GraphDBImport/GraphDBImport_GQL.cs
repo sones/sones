@@ -343,7 +343,7 @@ namespace sones.Plugins.SonesGQL.DBImport
             get { return new Dictionary<string, Type>(); }
         }
 
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
             return new GraphDBImport_GQL();
         }

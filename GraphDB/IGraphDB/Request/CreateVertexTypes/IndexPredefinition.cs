@@ -30,16 +30,18 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         /// <summary>
         /// The vertexTypeName that defines the index.
         /// </summary>
-        public string VertexTypeName { get; set; }
+        public string VertexTypeName { get; private set; }
         /// <summary>
         /// Creates a new instance of IndexPredefinition.
         /// </summary>
         public IndexPredefinition() { }
 
+        public string Comment { get; private set; }
+
         /// <summary>
         /// Creates a new instance of IndexPredefinition.
         /// </summary>
-        /// <param name="myName">The property that will be indexed.</param>
+        /// <param name="myName">The name of the index.</param>
         public IndexPredefinition(String myName) 
         {
             Name = myName;
@@ -83,6 +85,13 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         public IndexPredefinition SetVertexType(String myVertexTypeName)
         {
             VertexTypeName = myVertexTypeName;
+
+            return this;
+        }
+
+        public IndexPredefinition SetComment(String myComment)
+        {
+            Comment = myComment;
 
             return this;
         }

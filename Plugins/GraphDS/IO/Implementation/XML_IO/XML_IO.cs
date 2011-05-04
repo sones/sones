@@ -523,11 +523,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
         {
             get { return new Dictionary<string, Type>(); }
         }
-               
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+
+        public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
-            
-            object result = typeof(XML_IO).GetConstructor(new Type[] { }).Invoke(new object[] { });            
+
+            var result = new XML_IO();
 
             return (IPluginable)result;
         }

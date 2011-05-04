@@ -184,7 +184,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region Inheritance
 
-        IVertexType IVertexType.GetParentVertexType
+        IVertexType IVertexType.ParentVertexType
         {
             get { return _parent.Value; }
         }
@@ -774,5 +774,58 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
+
+        #region IVertexType Members
+
+
+        bool IVertexType.HasUniqueDefinitions(bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IBaseType Members
+
+
+        public bool IsAncestor(IBaseType myOtherType)
+        {
+            for (var current = this.GetParentType(); current != null; current = current.ParentVertexType)
+            {
+                if (Equals(current, myOtherType))
+                    return true;
+            }
+            return false;
+        }
+
+        public bool IsAncestorOrSelf(IBaseType myOtherType)
+        {
+            return Equals(myOtherType) || IsAncestor(myOtherType);
+        }
+
+        public bool IsDescendant(IBaseType myOtherType)
+        {
+            if (myOtherType == null)
+                return false;
+
+            return myOtherType.IsAncestor(this);
+        }
+
+        public bool IsDescendantOrSelf(IBaseType myOtherType)
+        {
+            return Equals(myOtherType) || IsDescendant(myOtherType);
+        }
+
+        #endregion
+
+
+        #region IEquatable<IBaseType> Members
+
+        public bool Equals(IBaseType other)
+        {
+            return (other != null) && this._id == other.ID;
+        }
+
+        #endregion
     }
 }

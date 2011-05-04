@@ -72,7 +72,7 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return new Dictionary<string,Type>(); }
         }
 
-        public override Library.VersionedPluginManager.IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        public override Library.VersionedPluginManager.IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
             return new ToLowerFunc();
         }

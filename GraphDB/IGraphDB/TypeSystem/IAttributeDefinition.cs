@@ -5,8 +5,13 @@ namespace sones.GraphDB.TypeSystem
     /// <summary>
     /// The sub type of all 
     /// </summary>
-    public interface IAttributeDefinition
+    public interface IAttributeDefinition: IEquatable<IAttributeDefinition>
     {
+        /// <summary>
+        /// The Vertex ID of the vertex that represents this attribute.
+        /// </summary>
+        Int64 ID { get; }
+
         /// <summary>
         /// The name, that is unique for all attributes on a vertex type.
         /// </summary>

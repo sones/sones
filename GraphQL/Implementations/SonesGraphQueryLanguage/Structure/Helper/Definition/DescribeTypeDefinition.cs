@@ -134,7 +134,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 if (myType.HasParentType)
                 {
-                    var _ParentType = myType.GetParentVertexType;
+                    var _ParentType = myType.ParentVertexType;
                     edges.Add("Extends", new EdgeView(null, new List<IVertexView> { GenerateOutput(_ParentType, myDepth - 1) } ));
                 }
 

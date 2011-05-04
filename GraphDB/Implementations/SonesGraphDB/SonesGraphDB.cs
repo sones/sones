@@ -501,12 +501,12 @@ namespace sones.GraphDB
         {
             if (mySecurityManagerPlugin != null)
             {
-                return _graphDBPluginManager.GetAndInitializePlugin<ISecurityManager>(mySecurityManagerPlugin.NameOfPlugin, mySecurityManagerPlugin.PluginParameter);
+                return _graphDBPluginManager.GetAndInitializePlugin<ISecurityManager>(mySecurityManagerPlugin.NameOfPlugin, myParameter: mySecurityManagerPlugin.PluginParameter);
             }
 
             //so lets take the default one
             var defaultSecurityManagerName = _applicationSettings.Get<DefaultSecurityManagerImplementation>();
-            return _graphDBPluginManager.GetAndInitializePlugin<ISecurityManager>(defaultSecurityManagerName, new Dictionary<string, object> { { "vertexStore", _transactionManager } });
+            return _graphDBPluginManager.GetAndInitializePlugin<ISecurityManager>(defaultSecurityManagerName, myParameter: new Dictionary<string, object> { { "vertexStore", _transactionManager } });
         }
 
         /// <summary>
@@ -517,7 +517,7 @@ namespace sones.GraphDB
         {
             if (myTransactionManagerPlugin != null)
             {
-                return _graphDBPluginManager.GetAndInitializePlugin<ITransactionManager>(myTransactionManagerPlugin.NameOfPlugin, myTransactionManagerPlugin.PluginParameter);
+                return _graphDBPluginManager.GetAndInitializePlugin<ITransactionManager>(myTransactionManagerPlugin.NameOfPlugin, myParameter: myTransactionManagerPlugin.PluginParameter);
             }
             
             //so there is no given plugin... lets try the IGraphFS
@@ -528,7 +528,7 @@ namespace sones.GraphDB
             
             //so lets take the default one
             var defaultTransactionManagerName = _applicationSettings.Get<DefaultTransactionManagerImplementation>();
-            return _graphDBPluginManager.GetAndInitializePlugin<ITransactionManager>(defaultTransactionManagerName, new Dictionary<string, object> { { "vertexStore", _iGraphFS } });
+            return _graphDBPluginManager.GetAndInitializePlugin<ITransactionManager>(defaultTransactionManagerName, myParameter: new Dictionary<string, object> { { "vertexStore", _iGraphFS } });
         }
 
         /// <summary>
@@ -539,7 +539,7 @@ namespace sones.GraphDB
         {
             if (myIGraphFSDefinition != null)
             {
-                return _graphDBPluginManager.GetAndInitializePlugin<IGraphFS>(myIGraphFSDefinition.NameOfPlugin, myIGraphFSDefinition.PluginParameter);
+                return _graphDBPluginManager.GetAndInitializePlugin<IGraphFS>(myIGraphFSDefinition.NameOfPlugin, myParameter: myIGraphFSDefinition.PluginParameter);
             }
 
             //return the default fs

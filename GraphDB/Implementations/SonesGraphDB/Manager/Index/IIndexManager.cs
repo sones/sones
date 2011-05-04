@@ -12,7 +12,7 @@ namespace sones.GraphDB.Manager.Index
     /// <summary>
     /// The interface for all index manager.
     /// </summary>
-    public interface IIndexManager: IManager
+    public interface IIndexManager
     {
         /// <summary>
         /// Creates an index corresponding to a definition
@@ -25,12 +25,11 @@ namespace sones.GraphDB.Manager.Index
         /// <summary>
         /// Determines if there are one or more indices for a given property
         /// </summary>
-        /// <param name="myVertexType">The vertex type that corresponds to the property</param>
         /// <param name="myPropertyDefinition">The interesting property</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <returns>True or false</returns>
-        bool HasIndex(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        bool HasIndex(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
         /// <summary>
         /// 
@@ -40,7 +39,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken"></param>
         /// <param name="myTransactionToken"></param>
         /// <returns></returns>
-        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
         /// <summary>
         /// Returns all indices
@@ -60,6 +59,15 @@ namespace sones.GraphDB.Manager.Index
         /// <returns></returns>
         String GetBestMatchingIndexName(bool myIsSingleValue, bool myIsRange, bool myIsVersioned);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="myTypeName"></param>
+        /// <param name="myIndexName"></param>
+        /// <param name="myEdition"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="mySecurityToken"></param>
+        /// <returns></returns>
         IEnumerable<IIndexDefinition> DescribeIndex(String myTypeName, String myIndexName, String myEdition, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
 
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
+using System.Collections.Generic;
 using sones.GraphDB.TypeManagement.Base;
 
 namespace sones.GraphDB.TypeManagement
@@ -57,11 +58,15 @@ namespace sones.GraphDB.TypeManagement
 
         public PropertyMultiplicity Multiplicity { get; internal set; }
 
+        public IEnumerable<IIndexDefinition> InIndices { get; internal set; }
+
         public IComparable DefaultValue { get; internal set; }
 
         #endregion
 
         #region IAttributeDefinition Members
+
+        public long ID { get; internal set; }
 
         public string Name { get; internal set; }
 
@@ -73,5 +78,14 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
+
+        #region IEquatable<IAttributeDefinition> Members
+
+        public bool Equals(IAttributeDefinition myOther)
+        {
+            return myOther != null && myOther.AttributeID == AttributeID && EqualityComparer<IBaseType>.Default.Equals(RelatedType, myOther.RelatedType);
+        }
+
+        #endregion
     }
 }

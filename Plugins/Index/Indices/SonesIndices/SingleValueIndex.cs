@@ -234,10 +234,10 @@ namespace sones.Plugins.Index
             }
         }
 
-        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters)
+        public IPluginable InitializePlugin(String myUniqueString, Dictionary<String, Object> myParameters)
         {
 
-            object result = typeof(SingleValueIndex<TKey, TValue>).GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
+            var result = new SingleValueIndex<TKey, TValue>();
 
             return (IPluginable)result;
         }

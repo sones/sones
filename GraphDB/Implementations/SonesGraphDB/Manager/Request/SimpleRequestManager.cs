@@ -90,7 +90,7 @@ namespace sones.GraphDB.Manager
             }
         }
 
-        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters)
+        public IPluginable InitializePlugin(String myUniqueString, Dictionary<String, Object> myParameters)
         {
             var result =  new SimpleRequestManager();
 

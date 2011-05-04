@@ -223,7 +223,7 @@ namespace sones.GraphQL
             }
         }
 
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
             IGraphDB dbInstance = null;
 
@@ -235,8 +235,7 @@ namespace sones.GraphQL
                 }
             }
 
-            object result = typeof(SonesQueryLanguage).
-                GetConstructor(new Type[] { typeof(IGraphDB) }).Invoke(new object[] { dbInstance });
+            var  result = new SonesQueryLanguage(dbInstance);
 
             return (IPluginable)result;
         }

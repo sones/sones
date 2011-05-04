@@ -17,7 +17,7 @@ namespace sones.GraphDB.TypeSystem
         /// Gets the parent vertex type
         /// </summary>
         /// <returns>The parent vertex type</returns>
-        IVertexType GetParentVertexType { get; }
+        IVertexType ParentVertexType { get; }
 
 
         /// <summary>

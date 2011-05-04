@@ -5,7 +5,7 @@ using System.Text;
 
 namespace sones.GraphDB.TypeSystem
 {
-    public interface IBaseType
+    public interface IBaseType: IEquatable<IBaseType>
     {
         /// <summary>
         /// The ID of the type.
@@ -68,6 +68,34 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         /// <returns>False, if this type has no child types, otherwise true.</returns>
         bool HasChildTypes { get; }
+
+        /// <summary>
+        /// Returns if the given type is an ancestor of the current type.
+        /// </summary>
+        /// <param name="myOtherType">The given type.</param>
+        /// <returns>True, if the given type is an ancestor of the current type, otherwise false.</returns>
+        bool IsAncestor(IBaseType myOtherType);
+
+        /// <summary>
+        /// Returns if the given type is an ancestor of or the current itself.
+        /// </summary>
+        /// <param name="myOtherType">The given type.</param>
+        /// <returns>True, if the given type is an ancestor of the current type or the current type itself, otherwise false.</returns>
+        bool IsAncestorOrSelf(IBaseType myOtherType);
+
+        /// <summary>
+        /// Returns if the given type is a descendant of the current type.
+        /// </summary>
+        /// <param name="myOtherType">The given type.</param>
+        /// <returns>True, if the given type is a descendant of the current type, otherwise false.</returns>
+        bool IsDescendant(IBaseType myOtherType);
+
+        /// <summary>
+        /// Returns if the given type is a descendant of or the current type itself.
+        /// </summary>
+        /// <param name="myOtherType">The given type.</param>
+        /// <returns>True, if the given type is a descendant of the current type or the current type itself, otherwise false.</returns>
+        bool IsDescendantOrSelf(IBaseType myOtherType);
 
         #endregion
 

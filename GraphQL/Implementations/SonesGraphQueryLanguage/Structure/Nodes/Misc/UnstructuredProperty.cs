@@ -9,7 +9,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
     /// <summary>
     /// This class represents an unstructured property
     /// </summary>
-    public sealed class UnstructuredProperty : IAttributeDefinition
+    public sealed class UnstructuredProperty : IAttributeDefinition, IEquatable<UnstructuredProperty>
     {
         #region Data
 
@@ -41,6 +41,11 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
             get { return _name; }
         }
 
+        public long ID
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         public long AttributeID
         {
             get { return Int64.MaxValue; }
@@ -57,5 +62,28 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
         }
 
         #endregion
+
+        #region IEquatable<UnstructuredProperty> Members
+
+        public bool Equals(UnstructuredProperty other)
+        {
+            return (other != null) && (_name == other.Name);
+        }
+
+        #endregion
+
+        #region IEquatable<IAttributeDefinition> Members
+
+        public bool Equals(IAttributeDefinition other)
+        {
+            if (other is UnstructuredProperty)
+                return Equals(other as UnstructuredProperty);
+
+            return false;
+        }
+
+        #endregion
+
+
     }
 }

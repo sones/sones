@@ -42,15 +42,15 @@ namespace sones.Plugins.GraphDS.IO
         {
             get { return new Dictionary<string, Type>(); }
         }
-
+        /* ASK what's this?
         public IPluginable InitializePlugin(Dictionary<string, object> myParameters, GraphApplicationSettings myApplicationSetting)
         {
             return InitializePlugin();
         }
-
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        */
+        public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
-            object result = Activator.CreateInstance(typeof(HTML_IO));
+            var result = new HTML_IO();
 
             return (IPluginable)result;
         }

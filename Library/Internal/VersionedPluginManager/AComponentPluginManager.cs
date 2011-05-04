@@ -105,8 +105,9 @@ namespace sones.Library.VersionedPluginManager
         /// <param name="myPluginName">The name of the plugin</param>
         /// <param name="myParameter">The parameters that are necessary to initialize an IPluginable</param>
         /// <param name="myApplicationSetting">The application settings that are necessary to initialize an IPluginable</param>
+        /// <param name="UniqueID">An ID that is unique for the combination <paramref name="myPluginName"/> and <typeparamref name="T"/>.</param>
         /// <returns>A T</returns>
-        public T GetAndInitializePlugin<T>(String myPluginName, Dictionary<String, Object> myParameter = null)
+        public T GetAndInitializePlugin<T>(String myPluginName, Dictionary<String, Object> myParameter = null, long? UniqueID = null)
         {
             var type = typeof(T);
             Dictionary<string, IPluginable> interestingLookup;
@@ -127,8 +128,12 @@ namespace sones.Library.VersionedPluginManager
                 {
                     throw new UnknownPluginException(myPluginName, type);
                 }
+                var uniqueString = String.Join("-", 
+                    typeof(T).Name, 
+                    myPluginName, 
+                    (UniqueID == null) ? Guid.NewGuid().ToString() : UniqueID.ToString());
 
-                return (T)interestingLookup[myPluginName.ToUpper()].InitializePlugin(myParameter);
+                return (T)interestingLookup[myPluginName.ToUpper()].InitializePlugin(uniqueString, myParameter);
             }
         }
 

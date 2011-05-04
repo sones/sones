@@ -118,7 +118,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         {
             #region current type
 
-            var idx = GetBestMatchingIdx(_indexManager.GetIndices(myVertexType, _property.Property, _securityToken, _transactionToken));
+            var idx = GetBestMatchingIdx(_indexManager.GetIndices(_property.Property, _securityToken, _transactionToken));
 
             foreach (var aVertex in GetValues(idx, _constant)
                 .Select(aId => _vertexStore.GetVertex(_securityToken, _transactionToken, aId, myVertexType.ID, VertexEditionFilter, VertexRevisionFilter)))

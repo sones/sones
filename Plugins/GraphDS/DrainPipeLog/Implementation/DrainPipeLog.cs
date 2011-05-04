@@ -19,6 +19,7 @@ using sones.GraphDB.Request.DropType;
 using sones.GraphDB.Request.DropIndex;
 using sones.GraphDB.Request.CreateIndex;
 using sones.GraphDB.Request.RebuildIndices;
+using System.IO;
 
 namespace sones.Plugins.GraphDS.DrainPipeLog
 {
@@ -43,7 +44,7 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
 
         }
 
-        public DrainPipeLog(Dictionary<string, object> myParameters = null)
+        public DrainPipeLog(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
             #region handle parameters
             String AppendLogPathAndName = "";
@@ -73,14 +74,16 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             #endregion
 
             #region AppendLogPathAndName
-            if (myParameters.ContainsKey("AppendLogPathAndName"))
+            if (myParameters.ContainsKey("AppendLogPath"))
             {
-                AppendLogPathAndName = (String)myParameters["AppendLogPathAndName"];
+                AppendLogPathAndName = (String)myParameters["AppendLogPath"];
             }
             else
             {
                 AppendLogPathAndName = "sones.drainpipelog";
             }
+
+            AppendLogPathAndName = Path.Combine(AppendLogPathAndName, myUniqueString);
             #endregion
 
             #region CreateNew
@@ -125,17 +128,16 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
                 { 
                     { "AsynchronousMode", typeof(Boolean) },
                     { "MaximumAsyncBufferSize", typeof(Int32) },
-                    { "AppendLogPathAndName", typeof(String) },
+                    { "AppendLogPath", typeof(String) },
                     { "CreateNew", typeof(Boolean) },
                     { "FlushOnWrite", typeof(Boolean) },                    
                 };
             }
         }
 
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
-            object result = typeof(DrainPipeLog).
-                GetConstructor(new Type[] { typeof(Dictionary<string, object>) }).Invoke(new object[] { myParameters });
+            var result = new DrainPipeLog(myUniqueString, myParameters);
             return (IPluginable)result;
         }
         #endregion

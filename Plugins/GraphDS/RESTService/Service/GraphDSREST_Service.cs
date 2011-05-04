@@ -55,7 +55,7 @@ namespace sones.Plugins.GraphDS.RESTService
 
             foreach (var item in _RestPluginManager.GetPluginsForType<IOInterface>())
             {
-                var plugin =  _RestPluginManager.GetAndInitializePlugin<IOInterface>(item);
+                var plugin = _RestPluginManager.GetAndInitializePlugin<IOInterface>(item);
                 _IOPlugins.Add(plugin.ContentType.MediaType,plugin);
             }
         }

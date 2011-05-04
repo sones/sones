@@ -165,7 +165,7 @@ namespace sones.Plugins.SonesGQL.DBExport
             get { return new Dictionary<string,Type>(); }
         }
 
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
             return new GraphDBExport_GQL();
         }
@@ -365,9 +365,9 @@ namespace sones.Plugins.SonesGQL.DBExport
 
             if (type.HasParentType)
             {
-                if (!types.Contains(type.GetParentVertexType))
+                if (!types.Contains(type.ParentVertexType))
                 {
-                    types.Add(type.GetParentVertexType);
+                    types.Add(type.ParentVertexType);
                     foreach (var attr in (type.GetAttributeDefinitions(false)).Where(attrDef => attrDef.Kind == AttributeType.Property))
                     {
                         var attrType = myGraphDB.GetVertexType<IVertexType>(mySecurityToken, myTransactionToken, new RequestGetVertexType(attr.AttributeID), (stats, vertex) => vertex);

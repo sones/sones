@@ -22,7 +22,8 @@ namespace sones.Library.VersionedPluginManager
         /// A method to initialize a plugin
         /// </summary>
         /// <param name="myParameters">The parameters for the plugin</param>
+        /// <param name="UniqueString">A string, that is unique for all plugins in the system.</param>
         /// <returns>A new instance of the plugin</returns>
-        IPluginable InitializePlugin(Dictionary<String, Object> myParameters = null);
+        IPluginable InitializePlugin(String UniqueString, Dictionary<String, Object> myParameters = null);
     }
 }

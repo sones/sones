@@ -484,7 +484,7 @@ namespace sones.GraphFS
             get { return new Dictionary<string, Type>(); }
         }
 
-        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters)
+        public IPluginable InitializePlugin(String myUniqueString, Dictionary<String, Object> myParameters)
         {
             return new InMemoryNonRevisionedFS();
         }

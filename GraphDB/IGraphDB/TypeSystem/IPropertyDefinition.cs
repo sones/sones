@@ -1,5 +1,6 @@
 ﻿using System;
 using sones.Library.PropertyHyperGraph;
+using System.Collections.Generic;
 
 namespace sones.GraphDB.TypeSystem
 {
@@ -32,6 +33,11 @@ namespace sones.GraphDB.TypeSystem
         /// The default value for this property.
         /// </summary>
         IComparable DefaultValue { get; }
+
+        /// <summary>
+        /// Returns the list of index definitions the property is involved.
+        /// </summary>
+        IEnumerable<IIndexDefinition> InIndices { get; }
 
         /// <summary>
         /// Extracts the this property from a given vertex...

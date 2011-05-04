@@ -161,7 +161,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 SourceVertexType = relatedType,
                 TargetVertexType = target,
                 RelatedType = relatedType,
-                
+                ID = myOutgoingEdgeVertex.VertexID,
             };
         }
 
@@ -252,6 +252,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 Name = name,
                 RelatedEdgeDefinition = related,
                 RelatedType = definingType,
+                ID = myVertex.VertexID
             };
         }
 
@@ -322,6 +323,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             var name = GetName(myVertex);
             var defaultValue = GetDefaultValue(myVertex, baseType);
             var definingType = myDefiningType ?? GetDefiningType(myVertex);
+            var inIndices = GetInIndices(myVertex);
 
             return new PropertyDefinition
             {
@@ -331,10 +333,11 @@ namespace sones.GraphDB.Manager.BaseGraph
                 Multiplicity = multiplicity,
                 Name = name,
                 RelatedType = definingType,
-                DefaultValue = defaultValue
+                DefaultValue = defaultValue,
+                InIndices = inIndices,
+                ID = myVertex.VertexID
             };
         }
-
 
         public static void StoreProperty(
             IVertexStore myStore,
@@ -417,7 +420,8 @@ namespace sones.GraphDB.Manager.BaseGraph
             {
                 AttributeID = attributeID,
                 Name = name,
-                RelatedType = definingType
+                RelatedType = definingType,
+                ID = myVertex.VertexID,
             };
         }
 
@@ -621,7 +625,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             };
         }
 
-        public static void StoreIndex(
+        public static IVertex StoreIndex(
             IVertexStore myStore,
             VertexInformation myVertex,
             BaseTypes myType,
@@ -636,10 +640,29 @@ namespace sones.GraphDB.Manager.BaseGraph
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
+            return StoreIndex(myStore, myVertex, (long)myType, myType.ToString(), myComment, myCreationDate, myIndexClass, myIsSingleValue, myIsRange, myIsVersioned, myDefiningVertexType, myIndexedProperties, mySecurity, myTransaction);
+        }
+
+        public static IVertex StoreIndex(
+            IVertexStore myStore,
+            VertexInformation myVertex,
+            long myID,
+            String myName,
+            String myComment,
+            Int64 myCreationDate,
+            String myIndexClass,
+            bool myIsSingleValue,
+            bool myIsRange,
+            bool myIsVersioned,
+            VertexInformation myDefiningVertexType,
+            IList<VertexInformation> myIndexedProperties,
+            SecurityToken mySecurity,
+            TransactionToken myTransaction)
+        {
             var props = new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, (long) myType },
-                    { (long) AttributeDefinitions.Name, myType.ToString() },
+                    { (long) AttributeDefinitions.ID, myID },
+                    { (long) AttributeDefinitions.Name, myName },
                     { (long) AttributeDefinitions.IsUserDefined, false },
                     { (long) AttributeDefinitions.IsSingleValue, myIsSingleValue},
                     { (long) AttributeDefinitions.IsRange, myIsRange },
@@ -649,7 +672,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             if (myIndexClass == null)
                 props.Add((long) AttributeDefinitions.IndexClass, myIndexClass);
 
-            Store(
+            return Store(
                 myStore,
                 myVertex,
                 myComment,
@@ -950,6 +973,18 @@ namespace sones.GraphDB.Manager.BaseGraph
 
             return CreateOutgoingEdgeDefinition(vertex);
         }
+
+        private static IEnumerable<IIndexDefinition> GetInIndices(IVertex myVertex)
+        {
+            if (myVertex.HasIncomingVertices((long)BaseTypes.Index, (long)AttributeDefinitions.IndexedProperties))
+            {
+                var indices = myVertex.GetIncomingVertices((long)BaseTypes.Index, (long)AttributeDefinitions.IndexedProperties);
+
+                return indices.Select(_ => CreateIndexDefinition(_));
+            }
+            return Enumerable.Empty<IIndexDefinition>();
+        }
+
 
         private static IVertexType GetDefiningVertexType(IVertex myIndexVertex)
         {

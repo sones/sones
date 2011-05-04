@@ -10,6 +10,12 @@ using sones.Library.Commons.Transaction;
 using sones.Library.Commons.VertexStore;
 using sones.Plugins.Index.Interfaces;
 using sones.GraphDB.Request.CreateVertexTypes;
+using sones.GraphDB.Manager.BaseGraph;
+using sones.GraphDB.Manager.TypeManagement;
+using sones.Library.LanguageExtensions;
+using sones.GraphDB.ErrorHandling;
+using sones.GraphDB.TypeManagement.Base;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -18,7 +24,7 @@ namespace sones.GraphDB.Manager.Index
     /// </summary>
     /// The responsibilities of the index manager are creating, removing und retrieving of indices.
     /// Each database has one index manager.
-    public sealed class IndexManager : IIndexManager
+    public sealed class IndexManager : IIndexManager, IManager
     {
         #region data
 
@@ -32,7 +38,12 @@ namespace sones.GraphDB.Manager.Index
         /// </summary>
         private readonly Dictionary<string, PluginDefinition> _indexPluginParameter;
 
-        private readonly IVertexStore _vertexStore;
+        private IVertexStore _vertexStore;
+
+        private IManagerOf<IVertexTypeHandler> _vertexTypeManager;
+
+        private Dictionary<long, IIndex<IComparable, Int64>> _indices;
+        private IDManager _idManager;
 
         #endregion
 
@@ -44,10 +55,9 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myVertexStore">The vertex store of the graphDB</param>
         /// <param name="myPluginManager">The sones graphDB plugin manager</param>
         /// <param name="myPluginDefinitions">The parameters for plugin-indices</param>
-        public IndexManager(IVertexStore myVertexStore, GraphDBPluginManager myPluginManager, List<PluginDefinition> myPluginDefinitions = null)
+        public IndexManager(IDManager myIDManager, GraphDBPluginManager myPluginManager, List<PluginDefinition> myPluginDefinitions = null)
         {
-            _vertexStore = myVertexStore;
-
+            _idManager = myIDManager;
             _pluginManager = myPluginManager;
 
             _indexPluginParameter = myPluginDefinitions != null 
@@ -59,36 +69,125 @@ namespace sones.GraphDB.Manager.Index
 
         #region IIndexManager Members
 
-        public IIndexDefinition CreateIndex(IndexPredefinition myIndexDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myIsUserDefined = true)
+        public IIndexDefinition CreateIndex(IndexPredefinition myIndexDefinition, SecurityToken mySecurity, TransactionToken myTransaction, bool myIsUserDefined = true)
         {
-            throw new NotImplementedException();
+            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myIndexDefinition.VertexTypeName, myTransaction, mySecurity);
+            var indexID = _idManager[(long)BaseTypes.Index].GetNextID();
+            var info = new VertexInformation((long)BaseTypes.Index, indexID);
+
+            var index = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(myIndexDefinition.TypeName, _indexPluginParameter[myIndexDefinition.TypeName].PluginParameter, indexID);
+
+            var indexVertex = BaseGraphStorageManager.StoreIndex(
+                _vertexStore,
+                info,
+                indexID,
+                myIndexDefinition.Name,
+                myIndexDefinition.Comment,
+                DateTime.UtcNow.ToBinary(),
+                myIndexDefinition.TypeName,
+                GetIsSingleValue(index),
+                GetIsRangeValue(index),
+                GetIsVersionedValue(index),
+                new VertexInformation((long)BaseTypes.VertexType, vertexType.ID),
+                null,
+                mySecurity,
+                myTransaction);
+
+            _indices.Add(indexID, index);
+
+            return BaseGraphStorageManager.CreateIndexDefinition(indexVertex, vertexType);
         }
 
-        public bool HasIndex(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public bool HasIndex(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            throw new NotImplementedException();
+            return myPropertyDefinition.InIndices.CountIsGreater(0);
         }
 
-        public IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IEnumerable<IIndex<IComparable, long>> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            throw new NotImplementedException();
+            return myPropertyDefinition.InIndices.Select(_ => _indices[_.ID]);
         }
 
         public IIndex<IComparable, long> GetIndex(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            throw new NotImplementedException();
+            myVertexType.CheckNull("myVertexType");
+            myPropertyDefinition.CheckNull("myPropertyDefinition");
+            
+            if (myPropertyDefinition.Count == 0)
+                throw new ArgumentOutOfRangeException("myPropertyDefinition", "At least one property must be given.");
+
+            var propertyTypes = myPropertyDefinition.GroupBy(_ => _.RelatedType);
+            foreach (var group in propertyTypes)
+            {
+                if (!myVertexType.IsAncestorOrSelf(group.Key))
+                {
+                    throw new ArgumentException(string.Format("The properties ({0}) defined on type {1} is not part of inheritance hierarchy of {2}.", 
+                        string.Join(",", group.Select(_ => _.Name)), 
+                        group.Key.Name, 
+                        myVertexType.Name));
+                }
+            }
+
+            var result = myVertexType.GetIndexDefinitions(true).Where(_ => myPropertyDefinition.SequenceEqual(_.IndexedProperties));
+
+            if (!result.CountIsGreater(0))
+                return null;
+
+            if (result.CountIsGreater(1))
+                //TODO better exception here.
+                throw new UnknownDBException("There are more than one indices on the same sequence of properties.");
+
+            return _indices[result.First().ID];
+
         }
 
         public string GetBestMatchingIndexName(bool myIsSingleValue, bool myIsRange, bool myIsVersioned)
         {
-            throw new NotImplementedException();
+            IEnumerable<String> result;
+            if (myIsSingleValue)
+            {
+                result = _pluginManager.GetPluginsForType<ISingleValueIndex<IComparable, Int64>>();
+            }
+            else 
+            {
+                result = _pluginManager.GetPluginsForType<IMultipleValueIndex<IComparable, Int64>>();
+            }
+
+            if (myIsRange)
+            {
+                result = result.Where(_ => _ is IRangeIndex<IComparable, Int64>);
+            }
+            else
+            {
+                result = result.Where(_ => !(_ is IRangeIndex<IComparable, Int64>));
+            }
+
+            if (myIsVersioned)
+            {
+                result = result.Where(_ => _ is IVersionedIndex<IComparable, Int64, Int64>);
+            }
+            else
+            {
+                result = result.Where(_ => !(_ is IVersionedIndex<IComparable, Int64, Int64>));
+            }
+
+            //ASK: Should this throw an exception, if no index is available?
+            return result.First();
         }
 
-        public IEnumerable<IIndexDefinition> DescribeIndex(String myTypeName, String myIndexName, String myEdition, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
-        {
-            //Remember is IndexName is empty return all indices on Type else return index with indexName on type
 
-            throw new NotImplementedException();
+        public IEnumerable<IIndexDefinition> DescribeIndex(String myTypeName, String myIndexName, String myEdition, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            var vertextype = _vertexTypeManager.ExecuteManager.GetVertexType(myTypeName, myTransaction, mySecurity);
+
+            var indices = vertextype.GetIndexDefinitions(true);
+
+            if (!string.IsNullOrWhiteSpace(myIndexName))
+            {
+                indices = indices.Where(x => myIndexName.Equals(x.Name));
+            }
+            
+            return indices;
         }
 
         #endregion
@@ -97,6 +196,8 @@ namespace sones.GraphDB.Manager.Index
 
         void IManager.Initialize(IMetaManager myMetaManager)
         {
+            _vertexTypeManager = myMetaManager.VertexTypeManager;
+            _vertexStore = myMetaManager.VertexStore;
         }
 
         void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity)
@@ -104,5 +205,22 @@ namespace sones.GraphDB.Manager.Index
         }
 
         #endregion
+
+        private static bool GetIsVersionedValue(IIndex<IComparable, Int64> index)
+        {
+            return index is IVersionedIndex<IComparable, Int64, Int64>;
+        }
+
+        private bool GetIsRangeValue(IIndex<IComparable, Int64> index)
+        {
+            return index is IRangeIndex<IComparable, Int64>;
+        }
+
+        private bool GetIsSingleValue(IIndex<IComparable, long> index)
+        {
+            return index is ISingleValueIndex<IComparable, Int64>;
+        }
+
+        
     }
 }

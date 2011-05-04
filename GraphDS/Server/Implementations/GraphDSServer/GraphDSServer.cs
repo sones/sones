@@ -219,7 +219,7 @@ namespace sones.GraphDSServer
         /// </summary>
         private IDrainPipe LoadIDrainPipes(PluginDefinition myIDrainPipesPlugin)
         {
-            return _pluginManager.GetAndInitializePlugin<IDrainPipe>(myIDrainPipesPlugin.NameOfPlugin, myIDrainPipesPlugin.PluginParameter);
+            return _pluginManager.GetAndInitializePlugin<IDrainPipe>(myIDrainPipesPlugin.NameOfPlugin, myParameter: myIDrainPipesPlugin.PluginParameter);
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace sones.GraphDSServer
         /// </summary>
         private IGraphQL LoadIGraphQLPlugins(PluginDefinition myIGraphQLPlugin)
         {
-            return _pluginManager.GetAndInitializePlugin<IGraphQL>(myIGraphQLPlugin.NameOfPlugin, myIGraphQLPlugin.PluginParameter);
+            return _pluginManager.GetAndInitializePlugin<IGraphQL>(myIGraphQLPlugin.NameOfPlugin, myParameter: myIGraphQLPlugin.PluginParameter);
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace sones.GraphDSServer
         /// </summary>
         private ISonesRESTService LoadISonesRESTServicePlugins(PluginDefinition myISonesRESTServicePlugin)
         {
-            return _pluginManager.GetAndInitializePlugin<ISonesRESTService>(myISonesRESTServicePlugin.NameOfPlugin, myISonesRESTServicePlugin.PluginParameter);
+            return _pluginManager.GetAndInitializePlugin<ISonesRESTService>(myISonesRESTServicePlugin.NameOfPlugin, myParameter: myISonesRESTServicePlugin.PluginParameter);
         }
 
         #endregion

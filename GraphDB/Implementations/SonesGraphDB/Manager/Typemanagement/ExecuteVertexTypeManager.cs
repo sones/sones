@@ -340,7 +340,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                     #region parent uniques
 
-                    foreach (var unique in result[resultPos].GetParentVertexType.GetUniqueDefinitions(true))
+                    foreach (var unique in result[resultPos].ParentVertexType.GetUniqueDefinitions(true))
                     {
                         _indexManager.CreateIndex(
                             new IndexPredefinition().AddProperty(unique.UniquePropertyDefinitions.Select(x => x.Name)).SetIndexType(uniqueIdx).SetVertexType(unique.DefiningVertexType.Name),
@@ -360,7 +360,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         _indexManager.CreateIndex(index, mySecurity, myTransaction);
                     }
 
-                    foreach (var index in result[resultPos].GetParentVertexType.GetIndexDefinitions(true))
+                    foreach (var index in result[resultPos].ParentVertexType.GetIndexDefinitions(true))
                     {
                         _indexManager.CreateIndex(
                             new IndexPredefinition(index.Name).AddProperty(index.IndexedProperties.Select(x => x.Name)).SetVertexType(current.Value.VertexTypeName).SetIndexType(index.IndexTypeName),

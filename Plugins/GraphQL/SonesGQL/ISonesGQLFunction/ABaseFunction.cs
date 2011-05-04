@@ -154,7 +154,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public abstract Dictionary<string, Type> SetableParameters { get; }
 
-        public abstract IPluginable InitializePlugin(Dictionary<string, object> myParameters = null);
+        public abstract IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null);
 
         #endregion
 

@@ -98,7 +98,7 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        public override IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        public override IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
             return new CountFunc();
         }

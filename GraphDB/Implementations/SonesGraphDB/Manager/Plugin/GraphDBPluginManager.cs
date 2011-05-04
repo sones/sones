@@ -33,7 +33,8 @@ namespace sones.GraphDB.Manager.Plugin
                 .Register<ILogicExpressionOptimizer>(ILogicExpressionOptimizerVersionCompatibility.MinVersion, ILogicExpressionOptimizerVersionCompatibility.MaxVersion)
                 .Register<ISingleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
                 .Register<IVersionedIndex<IComparable, Int64, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
-                .Register<IMultipleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion);
+                .Register<IMultipleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
+                .Register<IIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion);
 
             _pluginManager.Discover();
 
@@ -50,7 +51,7 @@ namespace sones.GraphDB.Manager.Plugin
             FillLookup<ISingleValueIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
             FillLookup<IVersionedIndex<IComparable, Int64, Int64>>(componentName, _ => _.IndexName);
             FillLookup<IMultipleValueIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
-
+            FillLookup<IIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
             #endregion   
         }
 
