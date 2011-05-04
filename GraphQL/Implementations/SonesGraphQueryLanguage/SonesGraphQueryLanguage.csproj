@@ -131,7 +131,10 @@
     <Compile Include="Structure\Helper\Definition\TypeCharacteristics.cs" />
     <Compile Include="Structure\Helper\Definition\Update\AAttributeAssignOrUpdate.cs" />
     <Compile Include="Structure\Helper\Definition\Update\AAttributeAssignOrUpdateOrRemove.cs" />
+    <Compile Include="Structure\Helper\Definition\Update\AAttributeRemove.cs" />
     <Compile Include="Structure\Helper\Definition\Update\AttributeAssignOrUpdateValue.cs" />
+    <Compile Include="Structure\Helper\Definition\Update\AttributeRemove.cs" />
+    <Compile Include="Structure\Helper\Definition\Update\AttributeRemoveList.cs" />
     <Compile Include="Structure\Helper\Enums\KindOfTuple.cs" />
     <Compile Include="Structure\Helper\Enums\ParamType.cs" />
     <Compile Include="Structure\Helper\Enums\SelectOutputTypes.cs" />

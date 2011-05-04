@@ -14,6 +14,8 @@ using sones.GraphQL.GQL.ErrorHandling;
 using System.Collections.Generic;
 using sones.Library.ErrorHandling;
 using sones.GraphDB.Request.Update;
+using sones.GraphQL.GQL.Structure.Helper.Definition.Update;
+using sones.GraphQL.Structure.Nodes.DML;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -21,7 +23,7 @@ namespace sones.GraphQL.StatementNodes.DML
     {
         #region Data
 
-        //private HashSet<AAttributeAssignOrUpdateOrRemove> _listOfUpdates;
+        private HashSet<AAttributeAssignOrUpdateOrRemove> _listOfUpdates;
 
         private BinaryExpressionDefinition _WhereExpression;
 
@@ -43,9 +45,8 @@ namespace sones.GraphQL.StatementNodes.DML
 
             if (HasChildNodes(parseNode.ChildNodes[3]))
             {
-                //var AttrUpdateOrAssign = (AttrUpdateOrAssignListNode)parseNode.ChildNodes[3].AstNode;
-                //_listOfUpdates = AttrUpdateOrAssign.ListOfUpdate;
-                //base.ParsingResult.PushIExceptional(AttrUpdateOrAssign.ParsingResult);
+                var AttrUpdateOrAssign = (AttrUpdateOrAssignListNode)parseNode.ChildNodes[3].AstNode;
+                _listOfUpdates = AttrUpdateOrAssign.ListOfUpdate;
             }
 
             #endregion

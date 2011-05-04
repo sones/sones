@@ -49,7 +49,6 @@ namespace sones.GraphQL
         public const String TERMINAL_WEIGHTED = "WEIGHTED";
         public const String TERMINAL_UNIQUE = "UNIQUE";
         public const String TERMINAL_MANDATORY = "MANDATORY";
-        public const String TERMINAL_SORTED = "SORTED";
         public const String TERMINAL_ASC = "ASC";
         public const String TERMINAL_DESC = "DESC";
         public const String TERMINAL_TRUE = "TRUE";
@@ -92,9 +91,6 @@ namespace sones.GraphQL
         public KeyTerm S_comma { get; private set; }
         public KeyTerm S_dot { get; private set; }
         public KeyTerm S_ASTERISK { get; private set; }
-        public KeyTerm S_RHOMB { get; private set; }
-        public KeyTerm S_MINUS { get; private set; }
-        public KeyTerm S_AD { get; private set; }
         public KeyTerm S_colon { get; private set; }
         public KeyTerm S_EQUALS { get; private set; }
         public KeyTerm S_QUESTIONMARK_EQUALS { get; private set; }
@@ -122,7 +118,6 @@ namespace sones.GraphQL
         public KeyTerm S_NOT { get; private set; }
         public KeyTerm S_UNIQUE { get; private set; }
         public KeyTerm S_WITH { get; private set; }
-        public KeyTerm S_TABLE { get; private set; }
         public KeyTerm S_ALTER { get; private set; }
         public KeyTerm S_ADD { get; private set; }
         public KeyTerm S_TO { get; private set; }
@@ -134,7 +129,6 @@ namespace sones.GraphQL
         public KeyTerm S_INDICES { get; private set; }
         public KeyTerm S_ON { get; private set; }
         public KeyTerm S_KEY { get; private set; }
-        public KeyTerm S_PRIMARY { get; private set; }
         public KeyTerm S_INSERT { get; private set; }
         public KeyTerm S_INTO { get; private set; }
         public KeyTerm S_UPDATE { get; private set; }
@@ -163,12 +157,10 @@ namespace sones.GraphQL
         public KeyTerm S_ListTypePostfix { get; private set; }
         public KeyTerm S_EXTENDS { get; private set; }
         public KeyTerm S_ATTRIBUTES { get; private set; }
-        public KeyTerm S_MATCHES { get; private set; }
         public KeyTerm S_LIMIT { get; private set; }
         public KeyTerm S_DEPTH { get; private set; }
         public KeyTerm S_DEFINE { get; private set; }
         public KeyTerm S_UNDEFINE { get; private set; }
-        public KeyTerm S_SHARDS { get; private set; }
 
         #region REF/REFUUID/...
 
@@ -326,9 +318,6 @@ namespace sones.GraphQL
             S_comma = ToTerm(",");
             S_dot = ToTerm(".");
             S_ASTERISK = ToTerm("*");
-            S_MINUS = ToTerm("-");
-            S_RHOMB = ToTerm("#");
-            S_AD = ToTerm("@");
             S_EQUALS = ToTerm("=");
             S_QUESTIONMARK_EQUALS = ToTerm("?=");
 
@@ -343,7 +332,6 @@ namespace sones.GraphQL
             S_NOT = ToTerm("NOT");
             S_UNIQUE = ToTerm("UNIQUE");
             S_WITH = ToTerm("WITH");
-            S_TABLE = ToTerm("TABLE");
             S_ALTER = ToTerm("ALTER");
             S_ADD = ToTerm("ADD");
             S_TO = ToTerm("TO");
@@ -355,7 +343,6 @@ namespace sones.GraphQL
             S_INDICES = ToTerm("INDICES");
             S_ON = ToTerm("ON");
             S_KEY = ToTerm("KEY");
-            S_PRIMARY = ToTerm("PRIMARY");
             S_INSERT = ToTerm("INSERT");
             S_INTO = ToTerm("INTO");
             S_UPDATE = ToTerm("UPDATE");
@@ -384,7 +371,6 @@ namespace sones.GraphQL
             S_ListTypePostfix = ToTerm(TERMINAL_GT);
             S_EXTENDS = ToTerm("EXTENDS");
             S_ATTRIBUTES = ToTerm("ATTRIBUTES");
-            S_MATCHES = ToTerm("MATCHES");
             S_LIMIT = ToTerm("LIMIT");
             S_DEPTH = ToTerm("DEPTH");
             S_REFERENCE = ToTerm("REFERENCE");
@@ -399,7 +385,6 @@ namespace sones.GraphQL
             S_TRUNCATE = ToTerm("TRUNCATE");
             S_TRUE = ToTerm(TERMINAL_TRUE);
             S_FALSE = ToTerm(TERMINAL_FALSE);
-            S_SORTED = ToTerm(TERMINAL_SORTED);
             S_ASC = ToTerm(TERMINAL_ASC);
             S_DESC = ToTerm(TERMINAL_DESC);
             S_QUEUESIZE = ToTerm(TERMINAL_QUEUESIZE);
@@ -445,7 +430,6 @@ namespace sones.GraphQL
             S_VIA = ToTerm("VIA");
             S_LINK = ToTerm("LINK");
             S_UNLINK = ToTerm("UNLINK");
-            S_SHARDS = ToTerm("SHARDS");
 
             #region IMPORT
 
@@ -553,7 +537,6 @@ namespace sones.GraphQL
             var orderClauseOpt = new NonTerminal("orderClauseOpt", typeof(OrderByNode));
             var selectionList = new NonTerminal("selectionList");
             var selectionListElement = new NonTerminal("selectionListElement", typeof(SelectionListElementNode));
-            var selByType = new NonTerminal("selByType", CreateSelByTypeNode);
             var aliasOpt = new NonTerminal("aliasOpt");
             var aliasOptName = new NonTerminal("aliasOptName");
             var selectOutputOpt = new NonTerminal("selectOutputOpt", typeof(SelectOutputOptNode));
@@ -1175,9 +1158,6 @@ namespace sones.GraphQL
             selectionListElement.Rule =     S_ASTERISK
                                         |   BNF_Aggregate + aliasOpt
                                         |   IdOrFuncList + aliasOpt;
-
-            selByType.Rule = Empty
-                            | S_AD + Id_simple;
 
             aliasOptName.Rule = Id_simple | string_literal;
 
