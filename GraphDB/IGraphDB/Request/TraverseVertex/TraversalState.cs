@@ -8,6 +8,14 @@ using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDB.Request
 {
+
+    public enum Avoidance
+    {
+        None,
+        avoidMultiVertexVisit,
+        avoidMultiEdgeVisit
+    }
+
     public sealed class TraversalState
     {
         #region Properties
@@ -76,12 +84,20 @@ namespace sones.GraphDB.Request
             NumberOfFoundElements++;
         }
 
+        public void AddVisited(long myVisitID)
+        {
+            if (!Visited.Contains(myVisitID))
+            {
+                Visited.Add(myVisitID);
+            }
+        }
+
         /// <summary>
         /// Adds a element ID and the via element ID to the traversalstate
         /// </summary>
         /// <param name="myVisited">The element ID that has been traversed</param>
         /// <param name="myVia">The element ID via the myVisited has been traversed</param>
-        public void AddVisitedVia(long myVisited, long myVia)
+        public void AddVisited(long myVisited, long myVia)
         {
             if (VisitedVertices.ContainsKey(myVisited))
             {
@@ -99,6 +115,11 @@ namespace sones.GraphDB.Request
             }
         }
 
+        public bool AlreadyVisited(long myVisitID)
+        {
+            return Visited.Contains(myVisitID);
+        }
+
         /// <summary>
         /// Checks whether a vertex has been visited via a certain edge
         /// </summary>
@@ -111,19 +132,6 @@ namespace sones.GraphDB.Request
             //else false
             return ((VisitedVertices.ContainsKey(myVisitID) && VisitedVertices[myVisitID].Contains(myViaID)) ||
                     (VisitedVertices.ContainsKey(myViaID) && VisitedVertices[myViaID].Contains(myVisitID)));
-        }
-
-        public void AddVisited(long myVisitID)
-        {
-            if (!Visited.Contains(myVisitID))
-            {
-                Visited.Add(myVisitID);
-            }
-        }
-
-        public bool AlreadyVisited(long myVisitID)
-        {
-            return Visited.Contains(myVisitID);
         }
 
         #endregion

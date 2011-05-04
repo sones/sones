@@ -82,7 +82,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
             if (_DumpFormat.ToString().ToUpper().Equals("GQL"))
             {
-                var plugin = myPluginManager.GetAndInitializePlugin<IGraphDBExport>("sones.gqlexport");
+                var plugin = myPluginManager.GetAndInitializePlugin<IGraphDBExport>("GQLEXPORT");
 
                 if (plugin != null)
                 {

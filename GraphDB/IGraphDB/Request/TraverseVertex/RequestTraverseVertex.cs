@@ -20,7 +20,7 @@ namespace sones.GraphDB.Request
 
         public readonly long                                                                VertexID;
 
-        public readonly Boolean                                                             AvoidCircles;
+        public readonly Avoidance                                                           Avoid;
 
         public readonly Func<IVertex, IVertexType, IEdge, IAttributeDefinition, Boolean>    FollowThisEdge;
 
@@ -38,7 +38,7 @@ namespace sones.GraphDB.Request
         /// Creates a new request that traverses verticies
         /// </summary>
         public RequestTraverseVertex(IExpression                                                            myExpression,
-                                        Boolean                                                             myAvoidCircles   = true,
+                                        Avoidance                                                           myAvoid          = Avoidance.None,
                                         Func<IVertex, IVertexType, IEdge, IAttributeDefinition, Boolean>    myFollowThisEdge = null,
                                         Func<IVertex, IVertexType, Boolean>                                 myMatchEvaluator = null,
                                         Action<IVertex>                                                     myMatchAction    = null,
@@ -46,7 +46,7 @@ namespace sones.GraphDB.Request
         {
             Expression = myExpression;
 
-            AvoidCircles = myAvoidCircles;
+            Avoid = myAvoid;
 
             FollowThisEdge = myFollowThisEdge;
 
@@ -62,11 +62,11 @@ namespace sones.GraphDB.Request
         /// </summary>
         public RequestTraverseVertex(String                                                                 myVerexTypeName,
                                         long                                                                myVertexID,
-                                        Boolean                                                             myAvoidCircles = true,
-                                        Func<IVertex, IVertexType, IEdge, IAttributeDefinition, Boolean>    myFollowThisEdge = null,
-                                        Func<IVertex, IVertexType, Boolean>                                 myMatchEvaluator = null,
-                                        Action<IVertex>                                                     myMatchAction = null,
-                                        Func<TraversalState, Boolean>                                       myStopEvaluator = null)
+                                        Avoidance                                                           myAvoid             = Avoidance.None,
+                                        Func<IVertex, IVertexType, IEdge, IAttributeDefinition, Boolean>    myFollowThisEdge    = null,
+                                        Func<IVertex, IVertexType, Boolean>                                 myMatchEvaluator    = null,
+                                        Action<IVertex>                                                     myMatchAction       = null,
+                                        Func<TraversalState, Boolean>                                       myStopEvaluator     = null)
         {
             VertexTypeName = myVerexTypeName;
 
@@ -74,7 +74,7 @@ namespace sones.GraphDB.Request
 
             Expression = null;
 
-            AvoidCircles = myAvoidCircles;
+            Avoid = myAvoid;
 
             FollowThisEdge = myFollowThisEdge;
 

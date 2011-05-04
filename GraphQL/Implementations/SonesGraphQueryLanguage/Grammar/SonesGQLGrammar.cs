@@ -2244,7 +2244,7 @@ namespace sones.GraphQL
                 {
                     //so, there are attributes that are no incoming edges
 
-                    stringBuilder.Append(S_ATTRIBUTES.ToUpperString() + S_BRACKET_LEFT);
+                    stringBuilder.Append(S_ATTRIBUTES.ToUpperString() + " " + S_BRACKET_LEFT);
 
                     #region properties
 
@@ -2609,12 +2609,12 @@ namespace sones.GraphQL
 
             #region singleEdge
 
-            string outgoingEdges = CreateGraphDMLforVertexOutgoingSingleEdges(myVertex.GetAllOutgoingSingleEdges(), 
+            string outgoingSingleEdges = CreateGraphDMLforVertexOutgoingSingleEdges(myVertex.GetAllOutgoingSingleEdges(), 
                                                                                 myVertexType.GetOutgoingEdgeDefinitions(true).ToDictionary(key => key.AttributeID, value => value), 
                                                                                 mySecurityToken, 
                                                                                 myTransactionToken);
 
-            stringBuilder.Append(outgoingEdges);
+            stringBuilder.Append(outgoingSingleEdges);
 
             #endregion
 
@@ -2696,7 +2696,10 @@ namespace sones.GraphQL
 
                         #region Single
 
-                        stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", CreateGraphDMLforSingleAttribute(attribute.Item2), delimiter));
+                        if (typeAttribute.BaseType == typeof(String))
+                            stringBuilder.Append(String.Concat(typeAttribute.Name, " = '", CreateGraphDMLforSingleAttribute(attribute.Item2), "'", delimiter));
+                        else
+                            stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", CreateGraphDMLforSingleAttribute(attribute.Item2), delimiter));
 
                         #endregion
 

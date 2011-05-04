@@ -12,6 +12,7 @@ using sones.GraphDB.Expression.Tree;
 
 namespace sones.GraphDB.Request
 {
+
     /// <summary>
     /// This class is responsible for realizing a traverse on verticies on the database
     /// </summary>
@@ -49,7 +50,7 @@ namespace sones.GraphDB.Request
         /// <param name="myTraverseVertexRequest">The traverse vertex options request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableTraverseVertexRequest( RequestTraverseVertex myTraverseVertexRequest, 
+        public PipelineableTraverseVertexRequest(RequestTraverseVertex myTraverseVertexRequest,
                                                   SecurityToken mySecurityToken,
                                                   TransactionToken myTransactionToken)
             : base(mySecurityToken, myTransactionToken)
@@ -73,7 +74,7 @@ namespace sones.GraphDB.Request
         {
             if (_request != null && _request.Expression != null)
             {
-                if(IsValidExpression(_request.Expression))
+                if (IsValidExpression(_request.Expression))
                 {
                     return;
                 }
@@ -92,7 +93,7 @@ namespace sones.GraphDB.Request
         /// <param name="myMetaManager">Provides all important manager</param>
         public override void Execute(IMetaManager myMetaManager)
         {
-            if(_request.Expression != null)
+            if (_request.Expression != null)
                 //create traversal state an get start node
                 _traversalState = new TraversalState(myMetaManager.VertexManager.ExecuteManager.GetVertices(_request.Expression, true, _transactionToken, _securityToken));
             else
@@ -102,7 +103,7 @@ namespace sones.GraphDB.Request
             //do traversion
             _fetchedIVertices = TraverseStartNodes(_traversalState.StartNodes,
                                                     myMetaManager,
-                                                    _request.AvoidCircles,
+                                                    _request.Avoid,
                                                     _request.FollowThisEdge,
                                                     _request.MatchEvaluator,
                                                     _request.MatchAction,
@@ -143,13 +144,13 @@ namespace sones.GraphDB.Request
         /// <param name="myMatchAction">A Action to perform on each match found</param>
         /// <param name="myStopEvaluator">Evaluator to stop traversion</param>
         /// <returns>Enumerable of verticies</returns>
-        private IEnumerable<IVertex> TraverseStartNodes(IEnumerable<IVertex>                                                myStartNodes,
-                                                        IMetaManager                                                        myMetaManager,
-                                                        Boolean                                                             myAvoidCircles,
-                                                        Func<IVertex, IVertexType, IEdge, IAttributeDefinition, Boolean>    myFollowThisEdge,
-                                                        Func<IVertex, IVertexType, Boolean>                                 myMatchEvaluator,
-                                                        Action<IVertex>                                                     myMatchAction,
-                                                        Func<TraversalState, Boolean>                                       myStopEvaluator)
+        private IEnumerable<IVertex> TraverseStartNodes(IEnumerable<IVertex> myStartNodes,
+                                                        IMetaManager myMetaManager,
+                                                        Avoidance myAvoid,
+                                                        Func<IVertex, IVertexType, IEdge, IAttributeDefinition, Boolean> myFollowThisEdge,
+                                                        Func<IVertex, IVertexType, Boolean> myMatchEvaluator,
+                                                        Action<IVertex> myMatchAction,
+                                                        Func<TraversalState, Boolean> myStopEvaluator)
         {
             //start a traversion from each start node
             foreach (var node in myStartNodes)
@@ -157,7 +158,7 @@ namespace sones.GraphDB.Request
                 foreach (var vertex in TraverseVertex_private(node,
                                                                 null,
                                                                 myMetaManager,
-                                                                _request.AvoidCircles,
+                                                                _request.Avoid,
                                                                 _request.FollowThisEdge,
                                                                 _request.MatchEvaluator,
                                                                 _request.MatchAction,
@@ -180,14 +181,14 @@ namespace sones.GraphDB.Request
         /// <param name="myMatchAction">A Action to perform on each match found</param>
         /// <param name="myStopEvaluator">Evaluator to stop traversion</param>
         /// <returns>Enumerable of verticies</returns>
-        private IEnumerable<IVertex> TraverseVertex_private( IVertex                                                            myCurrentVertex,
-                                                             IVertex                                                            myViaVertex,
-                                                             IMetaManager                                                       myMetaManager,
-                                                             Boolean                                                            myAvoidCircles,
-                                                             Func<IVertex, IVertexType, IEdge, IAttributeDefinition, Boolean>   myFollowThisEdge,
-                                                             Func<IVertex, IVertexType, Boolean>                                myMatchEvaluator,
-                                                             Action<IVertex>                                                    myMatchAction,
-                                                             Func<TraversalState, Boolean>                                      myStopEvaluator )
+        private IEnumerable<IVertex> TraverseVertex_private(IVertex myCurrentVertex,
+                                                             IVertex myViaVertex,
+                                                             IMetaManager myMetaManager,
+                                                             Avoidance myAvoid,
+                                                             Func<IVertex, IVertexType, IEdge, IAttributeDefinition, Boolean> myFollowThisEdge,
+                                                             Func<IVertex, IVertexType, Boolean> myMatchEvaluator,
+                                                             Action<IVertex> myMatchAction,
+                                                             Func<TraversalState, Boolean> myStopEvaluator)
         {
             #region stop evaluation?
             //are we allowed to stop the current traversal
@@ -212,7 +213,6 @@ namespace sones.GraphDB.Request
             if (myMatchEvaluator != null)
             {
                 //there is a match evaluator... use it
-
                 if (myMatchEvaluator(myCurrentVertex, myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken)))
                 {
                     match = true;
@@ -221,7 +221,6 @@ namespace sones.GraphDB.Request
             else
             {
                 //there is no special function that evaluates if the current vertex matches... so EVERY Vertex matches
-
                 match = true;
             }
 
@@ -249,97 +248,107 @@ namespace sones.GraphDB.Request
 
             #endregion
 
-            #region update statistics on traversal state
+            #region return and traverse
+            //get all edges and try to traverse them
 
-            if (!_traversalState.AlreadyVisited(myCurrentVertex.VertexID))
+            if (match)
             {
-                if (myViaVertex != null)
-                    _traversalState.AddVisitedVia(myCurrentVertex.VertexID, myViaVertex.VertexID);
+                //return the current vertex if it matched
+                yield return myCurrentVertex;
+            }
 
-            #endregion
+            #region traverse by using outgoing edges
+            //first do recursive search by using the outgoing edges
 
-                #region return and traverse
-                //get all edges and try to traverse them
+            //get vertex type of myCurrentVetex
+            var currVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken);
 
-                if (match)
+            foreach (var _OutEdgeDef in currVertexType.GetOutgoingEdgeDefinitions(true))
+            {
+                var outEdge = myCurrentVertex.GetOutgoingEdge(_OutEdgeDef.AttributeID);
+
+                if (outEdge == null)
+                    continue;
+
+                #region avoidance
+
+                //check if vertex could be visited multiple times
+                if (myAvoid == Avoidance.avoidMultiEdgeVisit)
                 {
-                    //return the current vertex if it matched
-                    yield return myCurrentVertex;
+                    if (_traversalState.AlreadyVisited(myCurrentVertex.VertexID, _OutEdgeDef.AttributeID))
+                    {
+                        continue;
+                    }
                 }
 
-                #region traverse by using outgoing edges
-                //first do recursive search by using the outgoing edges
+                //add vertex to visited
+                _traversalState.AddVisited(myCurrentVertex.VertexID, _OutEdgeDef.AttributeID);
 
-                //get vertex type of myCurrentVetex
-                var currVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken);
+                #endregion
 
-                foreach (var _OutEdgeDef in currVertexType.GetOutgoingEdgeDefinitions(true))
+                #region check edge
+                //check if the edge should be followed... if not, continue!
+
+                if (myFollowThisEdge != null)
                 {
-                    var outEdge = myCurrentVertex.GetOutgoingEdge(_OutEdgeDef.AttributeID);
-
-                    if (outEdge == null)
-                        continue;
-
-                    #region check edge
-                    //check if the edge should be followed... if not, continue!
-
-                    if (myFollowThisEdge != null)
+                    if (!myFollowThisEdge(myCurrentVertex,
+                                            myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
+                                            outEdge,
+                                            _OutEdgeDef))
                     {
-                        if (!myFollowThisEdge(myCurrentVertex,
-                                                myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
-                                                outEdge,
-                                                _OutEdgeDef))
+                        continue;
+                    }
+                }
+
+                #endregion
+
+                var nextVerticies = outEdge.GetTargetVertices();
+
+                #region take every vertex and do recursion
+
+                foreach (var nextVertex in nextVerticies)
+                {
+                    //check for circle avoidance
+                    #region avoidance
+
+                    //check if vertex could be visited multiple times
+                    if (myAvoid == Avoidance.avoidMultiVertexVisit)
+                    {
+                        if (_traversalState.AlreadyVisited(myCurrentVertex.VertexID))
                         {
                             continue;
                         }
                     }
 
+                    //add vertex to visited
+                    _traversalState.AddVisited(myCurrentVertex.VertexID);
+
                     #endregion
 
-                    var nextVerticies = outEdge.GetTargetVertices();
-
-                    #region take every vertex and do recursion
-
-                    foreach (var nextVertex in nextVerticies)
+                    //move recursive in depth
+                    foreach (var vertex in TraverseVertex_private(nextVertex,
+                                                                    myCurrentVertex,
+                                                                    myMetaManager,
+                                                                    myAvoid,
+                                                                    myFollowThisEdge,
+                                                                    myMatchEvaluator,
+                                                                    myMatchAction,
+                                                                    myStopEvaluator))
                     {
-                        //check for circle avoidance
-                        if (myAvoidCircles)
-                        {
-                            #region check traversal state
-                            //check the traversal state for circles... if there is one, break!
-
-                            if (_traversalState.AlreadyVisited(nextVertex.VertexID, myCurrentVertex.VertexID))
-                            {
-                                continue;
-                            }
-
-                            #endregion
-                        }
-
-                        //move recursive in depth
-                        foreach (var vertex in TraverseVertex_private(nextVertex,
-                                                                        myCurrentVertex,
-                                                                        myMetaManager,
-                                                                        myAvoidCircles,
-                                                                        myFollowThisEdge,
-                                                                        myMatchEvaluator,
-                                                                        myMatchAction,
-                                                                        myStopEvaluator))
-                        {
-                            yield return vertex;
-                        }
-
+                        yield return vertex;
                     }
 
-                    #endregion
                 }
 
                 #endregion
-
-                #endregion
             }
+
+            #endregion
+
+            #endregion
+
         }
-                
+
         #endregion
 
         #region private helper
@@ -386,7 +395,7 @@ namespace sones.GraphDB.Request
         {
             return (constantExpression != null);
         }
-        
+
         #endregion
 
         #endregion
