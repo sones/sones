@@ -80,7 +80,6 @@ namespace sones.GraphDB.Manager.Index
             var indexVertex = BaseGraphStorageManager.StoreIndex(
                 _vertexStore,
                 info,
-                indexID,
                 myIndexDefinition.Name,
                 myIndexDefinition.Comment,
                 DateTime.UtcNow.ToBinary(),

@@ -37,17 +37,17 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// A property expression on VertexType.Name
         /// </summary>
-        private readonly IExpression _vertexTypeNameExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), AttributeDefinitions.Name.ToString());
+        private readonly IExpression _vertexTypeNameExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), "Name");
 
         /// <summary>
         /// A property expression on VertexType.ID
         /// </summary>
-        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), AttributeDefinitions.ID.ToString());
+        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), "UUID");
 
         /// <summary>
         /// A property expression on OutgoingEdge.Name
         /// </summary>
-        private readonly IExpression _attributeNameExpression = new PropertyExpression(BaseTypes.OutgoingEdge.ToString(), AttributeDefinitions.Name.ToString());
+        private readonly IExpression _attributeNameExpression = new PropertyExpression(BaseTypes.OutgoingEdge.ToString(), "Name");
 
 
         #region IVertexTypeManager Members
@@ -120,7 +120,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             var vertex = Get(myTypeId, myTransaction, mySecurity);
 
             if (vertex == null)
-                throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeId));
+                throw new KeyNotFoundException(string.Format("A vertex type with ID {0} was not found.", myTypeId));
 
             return new VertexType(vertex);
         
@@ -197,7 +197,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                     BaseGraphStorageManager.StoreProperty(
                         _vertexManager.ExecuteManager.VertexStore,
                         new VertexInformation((long)BaseTypes.Property, firstAttrID++),
-                        currentExternID++,
                         prop.AttributeName,
                         prop.Comment,
                         creationDate,
@@ -230,7 +229,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                     BaseGraphStorageManager.StoreBinaryProperty(
                         _vertexManager.ExecuteManager.VertexStore,
                         new VertexInformation((long)BaseTypes.BinaryProperty, firstAttrID++),
-                        currentExternID++,
                         prop.AttributeName,
                         prop.Comment,
                         true,
@@ -264,7 +262,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                     BaseGraphStorageManager.StoreOutgoingEdge(
                         _vertexManager.ExecuteManager.VertexStore,
                         new VertexInformation((long)BaseTypes.OutgoingEdge, firstAttrID++),
-                        currentExternID++,
                         edge.AttributeName,
                         edge.Comment,
                         true,
@@ -298,7 +295,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                     BaseGraphStorageManager.StoreIncomingEdge(
                         _vertexManager.ExecuteManager.VertexStore,
                         new VertexInformation((long)BaseTypes.IncomingEdge, firstAttrID++),
-                        currentExternID++,
                         edge.AttributeName,
                         edge.Comment,
                         true,
@@ -428,13 +424,13 @@ namespace sones.GraphDB.Manager.TypeManagement
                     //No parent type was found.
                     throw new InvalidBaseVertexTypeException(myTopologicallySortedPointer.Value.SuperVertexTypeName);
 
-                if (parent.GetProperty<bool>((long)AttributeDefinitions.IsSealed))
+                if (parent.GetProperty<bool>((long)AttributeDefinitions.BaseTypeDotIsSealed))
                     //The parent type is sealed.
-                    throw new SealedBaseVertexTypeException(myTopologicallySortedPointer.Value.VertexTypeName, parent.GetPropertyAsString((long)AttributeDefinitions.Name));
+                    throw new SealedBaseVertexTypeException(myTopologicallySortedPointer.Value.VertexTypeName, parent.GetPropertyAsString((long)AttributeDefinitions.AttributeDotName));
 
                 var attributeNames = parent.GetIncomingVertices(
                     (long)BaseTypes.Attribute,
-                    (long)AttributeDefinitions.DefiningType).Select(vertex => vertex.GetPropertyAsString((long)AttributeDefinitions.Name));
+                    (long)AttributeDefinitions.AttributeDotDefiningType).Select(vertex => vertex.GetPropertyAsString((long)AttributeDefinitions.AttributeDotName));
 
                 myAttributes[myTopologicallySortedPointer.Value.VertexTypeName] = new HashSet<string>(attributeNames);
             }
@@ -471,10 +467,10 @@ namespace sones.GraphDB.Manager.TypeManagement
                     if (vertex == null)
                         throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, group.Key, group.Select(x => x.AttributeName));
 
-                    var attributes = vertex.GetIncomingVertices((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.DefiningType);
+                    var attributes = vertex.GetIncomingVertices((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.AttributeDotDefiningType);
                     foreach (var edge in group)
                     {
-                        if (!attributes.Any(outgoing => GetTargetVertexTypeFromAttributeType(edge.AttributeName).Equals(outgoing.GetPropertyAsString((long)AttributeDefinitions.Name))))
+                        if (!attributes.Any(outgoing => GetTargetVertexTypeFromAttributeType(edge.AttributeName).Equals(outgoing.GetPropertyAsString((long)AttributeDefinitions.AttributeDotName))))
                             throw new OutgoingEdgeNotFoundException(myVertexTypePredefinition, edge);
                     }
                 }
@@ -541,7 +537,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                                     myUpdated: new Dictionary<long, HyperEdgeUpdateDefinition>
                                 {
                                     {
-                                        (long)AttributeDefinitions.UniquenessDefinitions, 
+                                        (long)AttributeDefinitions.VertexTypeDotUniquenessDefinitions, 
                                         new HyperEdgeUpdateDefinition((long)BaseTypes.Edge, myToBeUpdatedSingleEdges: myIndexDefinitions.Select(x=>IndexDefinitionToSingleEdgeUpdate(myTypeInfo.VertexInfo, x)))
                                     }
                                 }
@@ -593,7 +589,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     result.Add(vertexType, new TypeInfo
                     {
                         AttributeCountWithParents = neededVertexType.GetAttributeDefinitions(true).LongCount(),
-                        VertexInfo = new VertexInformation((long)BaseTypes.VertexType, BaseGraphStorageManager.GetID(vertex))
+                        VertexInfo = new VertexInformation((long)BaseTypes.VertexType, BaseGraphStorageManager.GetUUID(vertex))
                     });
                 }
             }
@@ -684,8 +680,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private static bool IsAttributeOnVertexType(String myVertexTypeName, IVertex myAttributeVertex)
         {
-            var vertexTypeName = BaseGraphStorageManager.GetName(myAttributeVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.DefiningType).GetTargetVertex());
-            return myVertexTypeName.Equals(vertexTypeName);
+            var vertexTypeVertex = myAttributeVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.AttributeDotDefiningType).GetTargetVertex();
+            var name = vertexTypeVertex.GetPropertyAsString((long)AttributeDefinitions.BaseTypeDotName);
+            return name.Equals(myVertexTypeName);
         }
 
         private void Remove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)

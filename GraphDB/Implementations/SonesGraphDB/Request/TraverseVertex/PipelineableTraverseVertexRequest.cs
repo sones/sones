@@ -265,7 +265,7 @@ namespace sones.GraphDB.Request
 
             foreach (var _OutEdgeDef in currVertexType.GetOutgoingEdgeDefinitions(true))
             {
-                var outEdge = myCurrentVertex.GetOutgoingEdge(_OutEdgeDef.AttributeID);
+                var outEdge = myCurrentVertex.GetOutgoingEdge(_OutEdgeDef.ID);
 
                 if (outEdge == null)
                     continue;
@@ -275,14 +275,14 @@ namespace sones.GraphDB.Request
                 //check if vertex could be visited multiple times
                 if (myAvoid == Avoidance.avoidMultiEdgeVisit)
                 {
-                    if (_traversalState.AlreadyVisited(myCurrentVertex.VertexID, _OutEdgeDef.AttributeID))
+                    if (_traversalState.AlreadyVisited(myCurrentVertex.VertexID, _OutEdgeDef.ID))
                     {
                         continue;
                     }
                 }
 
                 //add vertex to visited
-                _traversalState.AddVisited(myCurrentVertex.VertexID, _OutEdgeDef.AttributeID);
+                _traversalState.AddVisited(myCurrentVertex.VertexID, _OutEdgeDef.ID);
 
                 #endregion
 

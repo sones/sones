@@ -18,21 +18,21 @@ namespace sones.GraphDB.TypeManagement
         {
             if (RelatedType.ID == (long)BaseTypes.Vertex)
             {
-                switch (AttributeID)
+                switch (ID)
                 {
-                    case (long)AttributeDefinitions.UUID:
+                    case (long)AttributeDefinitions.VertexDotUUID:
                         return aVertex.VertexID;
-                    case (long)AttributeDefinitions.CreationDate:
+                    case (long)AttributeDefinitions.VertexDotCreationDate:
                         return aVertex.CreationDate;
-                    case (long)AttributeDefinitions.ModificationDate:
+                    case (long)AttributeDefinitions.VertexDotModificationDate:
                         return aVertex.ModificationDate;
-                    case (long)AttributeDefinitions.Comment:
+                    case (long)AttributeDefinitions.VertexDotComment:
                         return aVertex.Comment;
-                    case (long)AttributeDefinitions.Edition:
+                    case (long)AttributeDefinitions.VertexDotEdition:
                         return aVertex.EditionName;
-                    case (long)AttributeDefinitions.Revision:
+                    case (long)AttributeDefinitions.VertexDotRevision:
                         return aVertex.VertexRevisionID;
-                    case (long)AttributeDefinitions.TypeID:
+                    case (long)AttributeDefinitions.VertexDotTypeID:
                         return aVertex.VertexTypeID;
                     default:
                         return null;
@@ -41,9 +41,9 @@ namespace sones.GraphDB.TypeManagement
             else
             {
                 //A usual property like Age or Name...
-                if (aVertex.HasProperty(AttributeID))
+                if (aVertex.HasProperty(ID))
                 {
-                    return aVertex.GetProperty(AttributeID);                    
+                    return aVertex.GetProperty(ID);                    
                 }
                 
                 return null;
@@ -62,6 +62,8 @@ namespace sones.GraphDB.TypeManagement
 
         public IComparable DefaultValue { get; internal set; }
 
+        public bool IsUserDefined { get; internal set; }
+
         #endregion
 
         #region IAttributeDefinition Members
@@ -69,8 +71,6 @@ namespace sones.GraphDB.TypeManagement
         public long ID { get; internal set; }
 
         public string Name { get; internal set; }
-
-        public long AttributeID { get; internal set; }
 
         public AttributeType Kind { get { return AttributeType.Property; } }
 
@@ -83,7 +83,7 @@ namespace sones.GraphDB.TypeManagement
 
         public bool Equals(IAttributeDefinition myOther)
         {
-            return myOther != null && myOther.AttributeID == AttributeID && EqualityComparer<IBaseType>.Default.Equals(RelatedType, myOther.RelatedType);
+            return myOther != null && myOther.ID == ID;
         }
 
         #endregion

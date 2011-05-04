@@ -23,12 +23,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// A property expression on EdgeType.Name
         /// </summary>
-        private readonly IExpression _vertexTypeNameExpression = new PropertyExpression(BaseTypes.EdgeType.ToString(), AttributeDefinitions.Name.ToString());
+        private readonly IExpression _vertexTypeNameExpression = new PropertyExpression(BaseTypes.EdgeType.ToString(), "Name");
 
         /// <summary>
-        /// A property expression on EdgeType.ID
+        /// A property expression on UUID
         /// </summary>
-        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.EdgeType.ToString(), AttributeDefinitions.ID.ToString());
+        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.EdgeType.ToString(), "UUID");
 
 
         public ExecuteEdgeTypeManager(IDManager myIDManager)

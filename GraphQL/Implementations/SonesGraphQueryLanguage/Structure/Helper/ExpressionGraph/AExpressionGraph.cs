@@ -103,13 +103,13 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
             if (tempAttr.Kind != AttributeType.IncomingEdge)
             {
-                return new EdgeKey(tempType.ID, tempAttr.AttributeID);
+                return new EdgeKey(tempType.ID, tempAttr.ID);
             }
             else
             {
                 IIncomingEdgeDefinition incomingEdgeDefinition = tempAttr as IIncomingEdgeDefinition;
 
-                return new EdgeKey(incomingEdgeDefinition.RelatedEdgeDefinition.SourceVertexType.ID, incomingEdgeDefinition.RelatedEdgeDefinition.AttributeID);
+                return new EdgeKey(incomingEdgeDefinition.RelatedEdgeDefinition.SourceVertexType.ID, incomingEdgeDefinition.RelatedEdgeDefinition.ID);
             }
         }
 

@@ -17,10 +17,9 @@ namespace sones.GraphDB.TypeManagement
 
         public long ID { get; internal set; }
 
-        public long AttributeID { get; internal set; }
-
         public AttributeType Kind { get { return AttributeType.IncomingEdge; } }
 
+        public bool IsUserDefined { get; internal set; }
 
         public IBaseType RelatedType { get; internal set;}
 
@@ -30,7 +29,7 @@ namespace sones.GraphDB.TypeManagement
 
         public bool Equals(IAttributeDefinition myOther)
         {
-            return myOther != null && myOther.AttributeID == AttributeID && EqualityComparer<IBaseType>.Default.Equals(RelatedType, myOther.RelatedType);
+            return myOther != null && myOther.ID == ID;
         }
 
         #endregion

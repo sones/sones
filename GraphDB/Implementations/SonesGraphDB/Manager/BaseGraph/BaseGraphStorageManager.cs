@@ -27,48 +27,48 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #region Attribute
 
-        private static readonly Tuple<Int64, Int64> _EdgeAttributeDotDefiningType = Tuple.Create((long)AttributeDefinitions.DefiningType, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeAttributeDotDefiningType = Tuple.Create((long)AttributeDefinitions.AttributeDotDefiningType, _EdgeEdgeType);
 
         #endregion
 
         #region EdgeType
 
-        private static readonly Tuple<Int64, Int64> _EdgeEdgeTypeDotParent = Tuple.Create((long)AttributeDefinitions.Parent, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeEdgeTypeDotParent = Tuple.Create((long)AttributeDefinitions.EdgeTypeDotParent, _EdgeEdgeType);
 
         #endregion
 
         #region IncomingEdge
 
-        private static readonly Tuple<Int64, Int64> _EdgeIncomingEdgeDotRelatedEdge = Tuple.Create((long)AttributeDefinitions.RelatedEgde, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeIncomingEdgeDotRelatedEdge = Tuple.Create((long)AttributeDefinitions.IncomingEdgeDotRelatedEgde, _EdgeEdgeType);
 
         #endregion
 
         #region Index
 
-        private static readonly Tuple<Int64, Int64> _EdgeIndexDotIndexedProperties = Tuple.Create((long)AttributeDefinitions.IndexedProperties, _EdgeEdgeType);
-        private static readonly Tuple<Int64, Int64> _EdgeIndexDotDefiningVertexType = Tuple.Create((long)AttributeDefinitions.DefiningVertexType, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeIndexDotIndexedProperties = Tuple.Create((long)AttributeDefinitions.IndexDotIndexedProperties, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeIndexDotDefiningVertexType = Tuple.Create((long)AttributeDefinitions.IndexDotDefiningVertexType, _EdgeEdgeType);
 
         #endregion
 
         #region OutgoingEdge
 
-        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotEdgeType      = Tuple.Create((long)AttributeDefinitions.EdgeType, _EdgeEdgeType);
-        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotInnerEdgeType = Tuple.Create((long)AttributeDefinitions.InnerEdgeType, _EdgeEdgeType);
-        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotSource        = Tuple.Create((long)AttributeDefinitions.Source, _EdgeEdgeType);
-        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotTarget        = Tuple.Create((long)AttributeDefinitions.Target, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotEdgeType      = Tuple.Create((long)AttributeDefinitions.OutgoingEdgeDotEdgeType, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotInnerEdgeType = Tuple.Create((long)AttributeDefinitions.OutgoingEdgeDotInnerEdgeType, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotSource        = Tuple.Create((long)AttributeDefinitions.OutgoingEdgeDotSource, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotTarget        = Tuple.Create((long)AttributeDefinitions.OutgoingEdgeDotTarget, _EdgeEdgeType);
 
         #endregion
 
         #region Property
 
-        private static readonly Tuple<Int64, Int64> _EdgePropertyDotType = Tuple.Create((long)AttributeDefinitions.Type, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgePropertyDotBaseType = Tuple.Create((long)AttributeDefinitions.PropertyDotBaseType, _EdgeEdgeType);
 
         #endregion
 
         #region VertexType
 
-        private static readonly Tuple<Int64, Int64> _EdgeVertexTypeDotParent = Tuple.Create((long)AttributeDefinitions.Parent, _EdgeEdgeType);
-        private static readonly Tuple<Int64, Int64> _EdgeVertexTypeDotUniqueDefinitions = Tuple.Create((long)AttributeDefinitions.UniquenessDefinitions, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeVertexTypeDotParent            = Tuple.Create((long)AttributeDefinitions.VertexTypeDotParent, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeVertexTypeDotUniqueDefinitions = Tuple.Create((long)AttributeDefinitions.VertexTypeDotUniquenessDefinitions, _EdgeEdgeType);
 
         #endregion
 
@@ -80,9 +80,9 @@ namespace sones.GraphDB.Manager.BaseGraph
         /// Gets the vertex that represents the parent type.
         /// </summary>
         /// <returns>An IVertex that represents the parent type, if existing otherwise <c>NULL</c>.</returns>
-        public static IVertex GetParent(IVertex myVertex)
+        public static IVertex GetParentVertexType(IVertex myVertex)
         {
-            return myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.Parent).GetTargetVertex();
+            return myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.VertexTypeDotParent).GetTargetVertex();
         }
 
 
@@ -93,41 +93,6 @@ namespace sones.GraphDB.Manager.BaseGraph
                 throw new NotImplementedException("User defined base types are not implemented yet.");
 
             return GetBaseType(type);
-        }
-
-        public static bool GetIsUserDefined(IVertex myVertex)
-        {
-            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsUserDefined);
-        }
-
-        public static string GetComment(IVertex myVertex)
-        {
-            if (myVertex.HasProperty((long)AttributeDefinitions.Comment))
-            {
-                return myVertex.GetPropertyAsString((long)AttributeDefinitions.Comment);                
-            }
-
-            return null;
-        }
-
-        public static long GetID(IVertex myVertex)
-        {
-            return myVertex.GetProperty<long>((long)AttributeDefinitions.ID);
-        }
-
-        public static String GetName(IVertex myVertex)
-        {
-            return myVertex.GetPropertyAsString((long)AttributeDefinitions.Name);
-        }
-
-        public static bool GetIsSealed(IVertex myVertex)
-        {
-            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsSealed);
-        }
-
-        public static bool GetIsAbstract(IVertex myVertex)
-        {
-            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsAbstract);
         }
 
 
@@ -141,19 +106,18 @@ namespace sones.GraphDB.Manager.BaseGraph
         /// <returns>An outgoing edge definition.</returns>
         public static IOutgoingEdgeDefinition CreateOutgoingEdgeDefinition(IVertex myOutgoingEdgeVertex, IVertexType myRelatedType = null)
         {
-            var attributeID = GetID(myOutgoingEdgeVertex);
             var edgeType = GetEdgeType(myOutgoingEdgeVertex);
-            var name = GetName(myOutgoingEdgeVertex);
+            var name = GetAttributeDotName(myOutgoingEdgeVertex);
             var target = GetTargetVertexType(myOutgoingEdgeVertex);
             var multiplicity = GetEdgeMultiplicity(myOutgoingEdgeVertex);
             var relatedType = myRelatedType ?? GetDefiningType(myOutgoingEdgeVertex) as VertexType;
             var innerEdgeType = (multiplicity == EdgeMultiplicity.MultiEdge)
                 ? GetInnerEdgeType(myOutgoingEdgeVertex)
                 : null;
+            var isUserDefined = GetAttributeDotIsUserDefined(myOutgoingEdgeVertex);
 
             return new OutgoingEdgeDefinition
             {
-                AttributeID = attributeID,
                 EdgeType = edgeType,
                 InnerEdgeType = innerEdgeType,
                 Multiplicity = multiplicity,
@@ -162,31 +126,18 @@ namespace sones.GraphDB.Manager.BaseGraph
                 TargetVertexType = target,
                 RelatedType = relatedType,
                 ID = myOutgoingEdgeVertex.VertexID,
+                IsUserDefined = isUserDefined,
             };
         }
 
-        public static void StoreOutgoingEdge(
-            IVertexStore myStore,
-            VertexInformation myVertex,
-            AttributeDefinitions myAttribute,
-            String myComment,
-            bool myIsUserDefined,
-            Int64 myCreationDate,
-            EdgeMultiplicity myMultiplicity,
-            VertexInformation myDefiningType,
-            VertexInformation myEdgeType,
-            VertexInformation? myInnerEdgeType,
-            VertexInformation myTarget,
-            SecurityToken mySecurity,
-            TransactionToken myTransaction)
+        private static String GetAttributeDotName(IVertex myAttributeVertex)
         {
-            StoreOutgoingEdge(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myIsUserDefined, myCreationDate, myMultiplicity, myDefiningType, myEdgeType, myInnerEdgeType, myTarget, mySecurity, myTransaction);
+            return myAttributeVertex.GetPropertyAsString((long)AttributeDefinitions.AttributeDotName);
         }
 
         public static void StoreOutgoingEdge(
             IVertexStore myStore,
             VertexInformation myVertex,
-            long myID,
             String myName,
             String myComment,
             bool myIsUserDefined,
@@ -221,10 +172,9 @@ namespace sones.GraphDB.Manager.BaseGraph
                 null,
                 new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, myID },
-                    { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
-                    { (long) AttributeDefinitions.Multiplicity, (byte) myMultiplicity },
+                    { (long) AttributeDefinitions.AttributeDotName, myName },
+                    { (long) AttributeDefinitions.AttributeDotIsUserDefined, myIsUserDefined },
+                    { (long) AttributeDefinitions.OutgoingEdgeDotMultiplicity, (byte) myMultiplicity },
                 },
                 null,
                 mySecurity,
@@ -243,18 +193,19 @@ namespace sones.GraphDB.Manager.BaseGraph
         /// <returns>An incoming edge definition.</returns>
         public static IIncomingEdgeDefinition CreateIncomingEdgeDefinition(IVertex myVertex, IBaseType myDefiningType = null)
         {
-            var attributeID = GetID(myVertex);
-            var name = GetName(myVertex);
+            var attributeID = GetUUID(myVertex);
+            var name = GetAttributeDotName(myVertex);
             var related = GetRelatedOutgoingEdgeDefinition(myVertex);
             var definingType = myDefiningType ?? GetDefiningType(myVertex);
+            var isUserDefined = GetAttributeDotIsUserDefined(myVertex);
 
             return new IncomingEdgeDefinition
             {
-                AttributeID = attributeID,
                 Name = name,
                 RelatedEdgeDefinition = related,
                 RelatedType = definingType,
-                ID = myVertex.VertexID
+                ID = myVertex.VertexID,
+                IsUserDefined = isUserDefined,
             };
         }
 
@@ -262,22 +213,6 @@ namespace sones.GraphDB.Manager.BaseGraph
         public static void StoreIncomingEdge(
             IVertexStore myStore,
             VertexInformation myVertex,
-            AttributeDefinitions myAttribute,
-            String myComment,
-            bool myIsUserDefined,
-            Int64 myCreationDate,
-            VertexInformation myDefiningType,
-            VertexInformation myRelatedIncomingEdge,
-            SecurityToken mySecurity,
-            TransactionToken myTransaction)
-        {
-            StoreIncomingEdge(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myIsUserDefined, myCreationDate, myDefiningType, myRelatedIncomingEdge, mySecurity, myTransaction);
-        }
-
-        public static void StoreIncomingEdge(
-            IVertexStore myStore,
-            VertexInformation myVertex,
-            long myID,
             String myName,
             String myComment,
             bool myIsUserDefined,
@@ -300,9 +235,8 @@ namespace sones.GraphDB.Manager.BaseGraph
                 null,
                 new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, myID },
-                    { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
+                    { (long) AttributeDefinitions.AttributeDotName, myName },
+                    { (long) AttributeDefinitions.AttributeDotIsUserDefined, myIsUserDefined },
                 },
                 null,
                 mySecurity,
@@ -320,18 +254,18 @@ namespace sones.GraphDB.Manager.BaseGraph
         /// <returns>A property definition.</returns>
         public static IPropertyDefinition CreatePropertyDefinition(IVertex myVertex, IBaseType myDefiningType = null)
         {
-            var attributeID = GetID(myVertex);
+            var attributeID = GetUUID(myVertex);
             var baseType = GetBaseType(myVertex);
             var isMandatory = GetIsMandatory(myVertex);
             var multiplicity = GetPropertyMultiplicity(myVertex);
-            var name = GetName(myVertex);
+            var name = GetAttributeDotName(myVertex);
             var defaultValue = GetDefaultValue(myVertex, baseType);
             var definingType = myDefiningType ?? GetDefiningType(myVertex);
             var inIndices = GetInIndices(myVertex);
+            var isUserDefined = GetAttributeDotIsUserDefined(myVertex);
 
             return new PropertyDefinition
             {
-                AttributeID = attributeID,
                 BaseType = baseType,
                 IsMandatory = isMandatory,
                 Multiplicity = multiplicity,
@@ -339,32 +273,14 @@ namespace sones.GraphDB.Manager.BaseGraph
                 RelatedType = definingType,
                 DefaultValue = defaultValue,
                 InIndices = inIndices,
-                ID = myVertex.VertexID
+                ID = myVertex.VertexID,
+                IsUserDefined = isUserDefined,
             };
         }
 
         public static void StoreProperty(
             IVertexStore myStore,
             VertexInformation myVertex,
-            AttributeDefinitions myAttribute,
-            String myComment,
-            Int64 myCreationDate,
-            bool myIsMandatory,
-            PropertyMultiplicity myMultiplicity,
-            String myDefaultValue,
-            bool myIsUserDefined,
-            VertexInformation myDefiningType,
-            VertexInformation myBasicType,
-            SecurityToken mySecurity,
-            TransactionToken myTransaction)
-        {
-            StoreProperty(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myCreationDate, myIsMandatory, myMultiplicity, myDefaultValue, myIsUserDefined, myDefiningType, myBasicType, mySecurity, myTransaction);
-        }
-
-        public static void StoreProperty(
-            IVertexStore myStore,
-            VertexInformation myVertex,
-            long myID,
             String myName,
             String myComment,
             Int64 myCreationDate,
@@ -379,15 +295,14 @@ namespace sones.GraphDB.Manager.BaseGraph
         {
             var props = new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, myID},
-                    { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
-                    { (long) AttributeDefinitions.IsMandatory, myIsMandatory },
-                    { (long) AttributeDefinitions.Multiplicity, (byte) myMultiplicity },
+                    { (long) AttributeDefinitions.AttributeDotName, myName },
+                    { (long) AttributeDefinitions.AttributeDotIsUserDefined, myIsUserDefined },
+                    { (long) AttributeDefinitions.PropertyDotIsMandatory, myIsMandatory },
+                    { (long) AttributeDefinitions.PropertyDotMultiplicity, (byte) myMultiplicity },
                 };
 
             if (myDefaultValue != null)
-                props.Add((long) AttributeDefinitions.DefaultValue, myDefaultValue);
+                props.Add((long) AttributeDefinitions.PropertyDotDefaultValue, myDefaultValue);
 
             Store(
                 myStore,
@@ -397,7 +312,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 new Dictionary<Tuple<long, long>, VertexInformation>
                 {
                     { _EdgeAttributeDotDefiningType, myDefiningType },
-                    { _EdgePropertyDotType, myBasicType },
+                    { _EdgePropertyDotBaseType, myBasicType },
                 },
                 null,
                 props,
@@ -418,13 +333,14 @@ namespace sones.GraphDB.Manager.BaseGraph
         /// <returns>A property definition.</returns>
         public static IBinaryPropertyDefinition CreateBinaryPropertyDefinition(IVertex myVertex, IVertexType myDefiningType = null)
         {
-            var attributeID = GetID(myVertex);
-            var name = GetName(myVertex);
+            var attributeID = GetUUID(myVertex);
+            var name = GetAttributeDotName(myVertex);
             var definingType = myDefiningType ?? GetDefiningType(myVertex) as IVertexType;
+            var isUserDefined = GetAttributeDotIsUserDefined(myVertex);
 
             return new BinaryPropertyDefinition
             {
-                AttributeID = attributeID,
+                IsUserDefined = isUserDefined,
                 Name = name,
                 RelatedType = definingType,
                 ID = myVertex.VertexID,
@@ -434,7 +350,6 @@ namespace sones.GraphDB.Manager.BaseGraph
         public static void StoreBinaryProperty(
             IVertexStore myStore,
             VertexInformation myVertex,
-            long myID,
             String myName,
             String myComment,
             bool myIsUserDefined,
@@ -455,9 +370,8 @@ namespace sones.GraphDB.Manager.BaseGraph
                 null,
                 new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, myID},
-                    { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
+                    { (long) AttributeDefinitions.AttributeDotName, myName },
+                    { (long) AttributeDefinitions.AttributeDotIsUserDefined, myIsUserDefined },
                 },
                 null,
                 mySecurity,
@@ -471,7 +385,7 @@ namespace sones.GraphDB.Manager.BaseGraph
         public static IVertex StoreBasicType(
             IVertexStore myStore,
             VertexInformation myVertex,
-            BasicTypes myType,
+            String myName,
             bool myIsUserDefined,
             String myComment,
             Int64 myCreationDate,
@@ -487,11 +401,10 @@ namespace sones.GraphDB.Manager.BaseGraph
                 null,
                 new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, (long) myType },
-                    { (long) AttributeDefinitions.Name, myType.ToString() },
-                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
-                    { (long) AttributeDefinitions.IsAbstract, false },
-                    { (long) AttributeDefinitions.IsSealed, true },
+                    { (long) AttributeDefinitions.BaseTypeDotName, myName },
+                    { (long) AttributeDefinitions.BaseTypeDotIsUserDefined, myIsUserDefined },
+                    { (long) AttributeDefinitions.BaseTypeDotIsAbstract, false },
+                    { (long) AttributeDefinitions.BaseTypeDotIsSealed, true },
                     //{ (long) AttributeDefinitions.Behaviour, null },
                 },
                 null,
@@ -554,11 +467,10 @@ namespace sones.GraphDB.Manager.BaseGraph
                     },
                 new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, myVertex.VertexID },
-                    { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
-                    { (long) AttributeDefinitions.IsAbstract, myIsAbstract },
-                    { (long) AttributeDefinitions.IsSealed, myIsSealed },
+                    { (long) AttributeDefinitions.BaseTypeDotName, myName },
+                    { (long) AttributeDefinitions.BaseTypeDotIsUserDefined, myIsUserDefined },
+                    { (long) AttributeDefinitions.BaseTypeDotIsAbstract, myIsAbstract },
+                    { (long) AttributeDefinitions.BaseTypeDotIsSealed, myIsSealed },
                     //{ (long) AttributeDefinitions.Behaviour, null },
                 },
                 null,
@@ -574,7 +486,7 @@ namespace sones.GraphDB.Manager.BaseGraph
         public static void StoreEdgeType(
             IVertexStore myStore,
             VertexInformation myVertex,
-            BaseTypes myType,
+            String myName,
             String myComment,
             bool myIsUserDefined,
             Int64 myCreationDate,
@@ -593,16 +505,15 @@ namespace sones.GraphDB.Manager.BaseGraph
                     ? null
                     : new Dictionary<Tuple<long, long>, VertexInformation>
                     {
-                        { _EdgeVertexTypeDotParent, myParent.Value },
+                        { _EdgeEdgeTypeDotParent, myParent.Value },
                     },
                 null,
                 new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, (long) myType },
-                    { (long) AttributeDefinitions.Name, myType.ToString() },
-                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
-                    { (long) AttributeDefinitions.IsAbstract, myIsAbstract },
-                    { (long) AttributeDefinitions.IsSealed, myIsSealed },
+                    { (long) AttributeDefinitions.BaseTypeDotName, myName },
+                    { (long) AttributeDefinitions.BaseTypeDotIsUserDefined, myIsUserDefined },
+                    { (long) AttributeDefinitions.BaseTypeDotIsAbstract, myIsAbstract },
+                    { (long) AttributeDefinitions.BaseTypeDotIsSealed, myIsSealed },
                     //{ (long) AttributeDefinitions.Behaviour, null },
                 },
                 null,
@@ -616,11 +527,11 @@ namespace sones.GraphDB.Manager.BaseGraph
         
         public static IIndexDefinition CreateIndexDefinition(IVertex myIndexVertex, IVertexType myDefiningVertexType = null)
         {
-            var id = GetID(myIndexVertex);
+            var id = GetUUID(myIndexVertex);
             var props = GetIndexedProperties(myIndexVertex);
             var typeName = GetIndexTypeName(myIndexVertex);
-            var isUserDefined = GetIsUserDefined(myIndexVertex);
-            var name = GetName(myIndexVertex);
+            var isUserDefined = GetIndexDotIsUserDefined(myIndexVertex);
+            var name = GetIndexDotName(myIndexVertex);
             myDefiningVertexType = myDefiningVertexType ?? GetDefiningVertexType(myIndexVertex);
 
             return new IndexDefinition
@@ -634,29 +545,19 @@ namespace sones.GraphDB.Manager.BaseGraph
             };
         }
 
-        public static IVertex StoreIndex(
-            IVertexStore myStore,
-            VertexInformation myVertex,
-            BaseTypes myType,
-            String myComment,
-            Int64 myCreationDate,
-            String myIndexClass,
-            bool myIsSingleValue,
-            bool myIsRange,
-            bool myIsVersioned,
-            bool myIsUserDefined,
-            VertexInformation myDefiningVertexType,
-            IList<VertexInformation> myIndexedProperties,
-            SecurityToken mySecurity,
-            TransactionToken myTransaction)
+        private static bool GetIndexDotIsUserDefined(IVertex myIndexVertex)
         {
-            return StoreIndex(myStore, myVertex, (long)myType, myType.ToString(), myComment, myCreationDate, myIndexClass, myIsSingleValue, myIsRange, myIsVersioned, myIsUserDefined, myDefiningVertexType, myIndexedProperties, mySecurity, myTransaction);
+            return myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsUserDefined);
+        }
+
+        private static String GetIndexDotName(IVertex myIndexVertex)
+        {
+            return myIndexVertex.GetPropertyAsString((long)AttributeDefinitions.IndexDotName);
         }
 
         public static IVertex StoreIndex(
             IVertexStore myStore,
             VertexInformation myVertex,
-            long myID,
             String myName,
             String myComment,
             Int64 myCreationDate,
@@ -672,16 +573,15 @@ namespace sones.GraphDB.Manager.BaseGraph
         {
             var props = new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, myID },
-                    { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
-                    { (long) AttributeDefinitions.IsSingleValue, myIsSingleValue},
-                    { (long) AttributeDefinitions.IsRange, myIsRange },
-                    { (long) AttributeDefinitions.IsVersioned, myIsVersioned },
+                    { (long) AttributeDefinitions.IndexDotName, myName },
+                    { (long) AttributeDefinitions.IndexDotIsUserDefined, myIsUserDefined },
+                    { (long) AttributeDefinitions.IndexDotIsSingleValue, myIsSingleValue},
+                    { (long) AttributeDefinitions.IndexDotIsRange, myIsRange },
+                    { (long) AttributeDefinitions.IndexDotIsVersioned, myIsVersioned },
                 };
 
             if (myIndexClass == null)
-                props.Add((long) AttributeDefinitions.IndexClass, myIndexClass);
+                props.Add((long) AttributeDefinitions.IndexDotIndexClass, myIndexClass);
 
             return Store(
                 myStore,
@@ -818,7 +718,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                     (edge.Value is IList<VertexInformation>)
                         ? new Dictionary<long, IComparable> 
                             {
-                                { (long)AttributeDefinitions.Order, pos },
+                                { (long)AttributeDefinitions.OrderableEdgeDotOrder, pos },
                             }
                         : null,
                     null)).ToArray();
@@ -849,7 +749,7 @@ namespace sones.GraphDB.Manager.BaseGraph
         /// <returns>The target vertex type of the outgoing edge.</returns>
         private static IVertexType GetTargetVertexType(IVertex myOutgoingEdge)
         {
-            var vertex = myOutgoingEdge.GetOutgoingSingleEdge((long)AttributeDefinitions.Target).GetTargetVertex();
+            var vertex = myOutgoingEdge.GetOutgoingSingleEdge((long)AttributeDefinitions.OutgoingEdgeDotTarget).GetTargetVertex();
 
             if (vertex == null)
                 throw new UnknownDBException("An outgoing edge has no vertex that represents its target vertex type.");
@@ -859,7 +759,7 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         private static IBaseType GetDefiningType(IVertex myAttributeVertex)
         {
-            var edge = myAttributeVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.DefiningType);
+            var edge = myAttributeVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.AttributeDotDefiningType);
 
             if (edge == null)
                 throw new UnknownDBException("An attribute has no vertex that represents its defining type.");
@@ -879,7 +779,7 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         private static IEdgeType GetInnerEdgeType(IVertex myOutgoingEdgeVertex)
         {
-            var vertex = myOutgoingEdgeVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.InnerEdgeType).GetTargetVertex();
+            var vertex = myOutgoingEdgeVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.OutgoingEdgeDotInnerEdgeType).GetTargetVertex();
             if (vertex == null)
                 throw new UnknownDBException("An outgoing edge has no vertex that represents its inner edge type.");
 
@@ -892,7 +792,7 @@ namespace sones.GraphDB.Manager.BaseGraph
         /// <returns>The edge type of the outgoing edge.</returns>
         private static IEdgeType GetEdgeType(IVertex myOutgoingEdge)
         {
-            var vertex = myOutgoingEdge.GetOutgoingSingleEdge((long)AttributeDefinitions.EdgeType).GetTargetVertex();
+            var vertex = myOutgoingEdge.GetOutgoingSingleEdge((long)AttributeDefinitions.OutgoingEdgeDotEdgeType).GetTargetVertex();
 
             if (vertex == null)
                 throw new UnknownDBException("An outgoing edge has no vertex that represents its edge type.");
@@ -903,7 +803,7 @@ namespace sones.GraphDB.Manager.BaseGraph
         
         private static EdgeMultiplicity GetEdgeMultiplicity(IVertex myOutgoingEdgeVertex)
         {
-            var multID = myOutgoingEdgeVertex.GetProperty<Byte>((long)AttributeDefinitions.Multiplicity);
+            var multID = myOutgoingEdgeVertex.GetProperty<Byte>((long)AttributeDefinitions.OutgoingEdgeDotMultiplicity);
 
             if (!Enum.IsDefined(typeof(EdgeMultiplicity), multID))
                 throw new UnknownDBException("The value for the edge multiplicity is incorrect.");
@@ -914,7 +814,7 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         private static PropertyMultiplicity GetPropertyMultiplicity(IVertex myVertex)
         {
-            var multID = myVertex.GetProperty<Byte>((long)AttributeDefinitions.Multiplicity);
+            var multID = myVertex.GetProperty<Byte>((long)AttributeDefinitions.PropertyDotMultiplicity);
 
             if (!Enum.IsDefined(typeof(PropertyMultiplicity), multID))
                 throw new UnknownDBException("The value for the property multiplicity is incorrect.");
@@ -924,15 +824,15 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         private static bool GetIsMandatory(IVertex myVertex)
         {
-            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsMandatory);
+            return myVertex.GetProperty<bool>((long)AttributeDefinitions.PropertyDotIsMandatory);
         }
 
         private static IComparable GetDefaultValue(IVertex myPropertyVertex, Type myPropertyType)
         {
-            if (!myPropertyVertex.HasProperty((long)AttributeDefinitions.DefaultValue))
+            if (!myPropertyVertex.HasProperty((long)AttributeDefinitions.PropertyDotDefaultValue))
                 return null;
 
-            var val = myPropertyVertex.GetPropertyAsString((long)AttributeDefinitions.DefaultValue);
+            var val = myPropertyVertex.GetPropertyAsString((long)AttributeDefinitions.PropertyDotDefaultValue);
 
             return (IComparable)Convert.ChangeType(val, myPropertyType);
         }
@@ -960,9 +860,14 @@ namespace sones.GraphDB.Manager.BaseGraph
             }
         }
 
+        private static bool GetAttributeDotIsUserDefined(IVertex myVertex)
+        {
+            return myVertex.GetProperty<bool>((long)AttributeDefinitions.AttributeDotIsUserDefined);
+        }
+
         private static Type GetBaseType(IVertex myVertex)
         {
-            var typeID = GetID(myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.Type).GetTargetVertex());
+            var typeID = GetUUID(myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.PropertyDotBaseType).GetTargetVertex());
             if (!Enum.IsDefined(typeof(BasicTypes), typeID))
                 throw new NotImplementedException("User defined base types are not implemented yet.");
 
@@ -977,7 +882,7 @@ namespace sones.GraphDB.Manager.BaseGraph
         /// <returns>An outgoing edge definition.</returns>
         private static IOutgoingEdgeDefinition GetRelatedOutgoingEdgeDefinition(IVertex myVertex)
         {
-            var vertex = myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.RelatedEgde).GetTargetVertex();
+            var vertex = myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.IncomingEdgeDotRelatedEgde).GetTargetVertex();
 
             if (vertex == null)
                 throw new UnknownDBException("An incoming edge definition has no vertex that represents its related outgoing edge definition.");
@@ -987,9 +892,9 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         private static IEnumerable<IIndexDefinition> GetInIndices(IVertex myVertex)
         {
-            if (myVertex.HasIncomingVertices((long)BaseTypes.Index, (long)AttributeDefinitions.IndexedProperties))
+            if (myVertex.HasIncomingVertices((long)BaseTypes.Index, (long)AttributeDefinitions.IndexDotIndexedProperties))
             {
-                var indices = myVertex.GetIncomingVertices((long)BaseTypes.Index, (long)AttributeDefinitions.IndexedProperties);
+                var indices = myVertex.GetIncomingVertices((long)BaseTypes.Index, (long)AttributeDefinitions.IndexDotIndexedProperties);
 
                 return indices.Select(_ => CreateIndexDefinition(_));
             }
@@ -999,7 +904,7 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         private static IVertexType GetDefiningVertexType(IVertex myIndexVertex)
         {
-            var edge = myIndexVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.DefiningVertexType);
+            var edge = myIndexVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.IndexDotDefiningVertexType);
 
             if (edge == null)
                 throw new UnknownDBException("An index has no vertex that represents its defining vertex type.");
@@ -1014,12 +919,12 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         private static String GetIndexTypeName(IVertex myIndexVertex)
         {
-            return myIndexVertex.GetPropertyAsString((long)AttributeDefinitions.IndexClass);
+            return myIndexVertex.GetPropertyAsString((long)AttributeDefinitions.IndexDotIndexClass);
         }
 
         private static IList<IPropertyDefinition> GetIndexedProperties(IVertex myIndexVertex)
         {
-            var edge = myIndexVertex.GetOutgoingHyperEdge((long)AttributeDefinitions.IndexedProperties);
+            var edge = myIndexVertex.GetOutgoingHyperEdge((long)AttributeDefinitions.IndexDotIndexedProperties);
             if (edge == null)
                 throw new UnknownDBException("An index has no vertex that represents its indexed properties.");
 
@@ -1028,7 +933,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             if (vertices == null)
                 throw new UnknownDBException("An index has no vertex that represents its indexed properties.");
 
-            vertices = vertices.OrderBy(x => x.GetProperty<int>((long)AttributeDefinitions.Order));
+            vertices = vertices.OrderBy(x => x.GetProperty<int>((long)AttributeDefinitions.OrderableEdgeDotOrder));
 
             return vertices.Select(x=> CreatePropertyDefinition(x)).ToArray();
 
@@ -1061,9 +966,9 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         private static IEnumerable<IVertex> GetAttributeVertices(IVertex myTypeVertex, long myAttributeVertexID)
         {
-            if (myTypeVertex.HasIncomingVertices(myAttributeVertexID, (long)AttributeDefinitions.DefiningType))
+            if (myTypeVertex.HasIncomingVertices(myAttributeVertexID, (long)AttributeDefinitions.AttributeDotDefiningType))
             {
-                var vertices = myTypeVertex.GetIncomingVertices(myAttributeVertexID, (long)AttributeDefinitions.DefiningType);
+                var vertices = myTypeVertex.GetIncomingVertices(myAttributeVertexID, (long)AttributeDefinitions.AttributeDotDefiningType);
                 foreach (var vertex in vertices)
                 {
                     if (vertex == null)
@@ -1074,6 +979,23 @@ namespace sones.GraphDB.Manager.BaseGraph
             }
             yield break;
         }
+
+
+        #region Get attributes
+
+        public static string GetComment(IVertex myVertex)
+        {
+            return myVertex.Comment;
+        }
+
+        public static long GetUUID(IVertex myVertex)
+        {
+            return myVertex.VertexID;
+        }
+
+        #endregion
+
+
 
     }
 }

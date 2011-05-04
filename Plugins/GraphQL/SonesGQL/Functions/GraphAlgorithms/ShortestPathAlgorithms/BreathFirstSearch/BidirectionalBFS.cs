@@ -105,11 +105,11 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
 
             #region check if start has outgoing and target has incoming edge
 
-            if (!myStart.HasOutgoingEdge(myTypeAttribute.AttributeID))
+            if (!myStart.HasOutgoingEdge(myTypeAttribute.ID))
             {
                 return null;
             }
-            if (!myEnd.HasIncomingVertices(myEnd.VertexTypeID, myTypeAttribute.AttributeID))
+            if (!myEnd.HasIncomingVertices(myEnd.VertexTypeID, myTypeAttribute.ID))
             {
                 return null;
             }
@@ -232,11 +232,11 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
                     #endregion 
                     
                     #region the edge and the backwardedge are existing
-                    if (currentVertexLeft.HasOutgoingEdge(myTypeAttribute.AttributeID)
-                        && currentVertexRight.HasIncomingVertices(currentVertexRight.VertexTypeID, myTypeAttribute.AttributeID))
+                    if (currentVertexLeft.HasOutgoingEdge(myTypeAttribute.ID)
+                        && currentVertexRight.HasIncomingVertices(currentVertexRight.VertexTypeID, myTypeAttribute.ID))
                     {
                         //get all referenced ObjectUUIDs using the given Edge                                                
-                        var leftVertices = currentVertexLeft.GetOutgoingEdge(myTypeAttribute.AttributeID).GetTargetVertices();
+                        var leftVertices = currentVertexLeft.GetOutgoingEdge(myTypeAttribute.ID).GetTargetVertices();
                         
                         #region check left friends
                         foreach (var nextLeftVertex in leftVertices)
@@ -344,7 +344,7 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
                         #endregion check left friends
 
                         //get all referenced ObjectUUIDs using the given Edge                                                
-                        var rightVertices = currentVertexRight.GetIncomingVertices(currentVertexRight.VertexTypeID, myTypeAttribute.AttributeID);
+                        var rightVertices = currentVertexRight.GetIncomingVertices(currentVertexRight.VertexTypeID, myTypeAttribute.ID);
                         
                         #region check right friends
                         foreach (var nextRightVertex in rightVertices)
@@ -509,10 +509,10 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
                     }
                     #endregion the edge and the backwardedge are existing
                     #region only the edge exists
-                    else if (currentVertexLeft.HasOutgoingEdge(myTypeAttribute.AttributeID))
+                    else if (currentVertexLeft.HasOutgoingEdge(myTypeAttribute.ID))
                     {
                         //get all referenced ObjectUUIDs using the given Edge                                                
-                        var leftVertices = currentVertexLeft.GetOutgoingEdge(myTypeAttribute.AttributeID).GetTargetVertices();
+                        var leftVertices = currentVertexLeft.GetOutgoingEdge(myTypeAttribute.ID).GetTargetVertices();
 
                         #region check left friends
                         foreach (var nextLeftVertex in leftVertices)
@@ -657,10 +657,10 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
                     }
                     #endregion only the edge exists
                     #region only the backwardedge exists
-                    else if (currentVertexRight.HasIncomingVertices(currentVertexRight.VertexTypeID, myTypeAttribute.AttributeID))
+                    else if (currentVertexRight.HasIncomingVertices(currentVertexRight.VertexTypeID, myTypeAttribute.ID))
                     {
                         //get all referenced ObjectUUIDs using the given Edge                                                
-                        var rightVertices = currentVertexRight.GetIncomingVertices(currentVertexRight.VertexTypeID, myTypeAttribute.AttributeID);
+                        var rightVertices = currentVertexRight.GetIncomingVertices(currentVertexRight.VertexTypeID, myTypeAttribute.ID);
 
                         #region check right friends
                         foreach (var nextRightVertex in rightVertices)
@@ -851,10 +851,10 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
                     }
                     #endregion 
 
-                    if (currentVertexLeft.HasOutgoingEdge(myTypeAttribute.AttributeID))
+                    if (currentVertexLeft.HasOutgoingEdge(myTypeAttribute.ID))
                     {
                         //get all referenced ObjectUUIDs using the given Edge                                                
-                        var leftVertices = currentVertexLeft.GetOutgoingEdge(myTypeAttribute.AttributeID).GetTargetVertices();
+                        var leftVertices = currentVertexLeft.GetOutgoingEdge(myTypeAttribute.ID).GetTargetVertices();
 
                         #region check left friends
                         foreach (var nextLeftVertex in leftVertices)
@@ -1044,10 +1044,10 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
                     }
                     #endregion
 
-                    if (currentVertexRight.HasIncomingVertices(currentVertexRight.VertexTypeID, myTypeAttribute.AttributeID))
+                    if (currentVertexRight.HasIncomingVertices(currentVertexRight.VertexTypeID, myTypeAttribute.ID))
                     {
                         //get all referenced ObjectUUIDs using the given Edge                                                
-                        var rightVertices = currentVertexRight.GetIncomingVertices(currentVertexRight.VertexTypeID, myTypeAttribute.AttributeID);
+                        var rightVertices = currentVertexRight.GetIncomingVertices(currentVertexRight.VertexTypeID, myTypeAttribute.ID);
 
                         #region check right friends
                         foreach (var nextRightVertex in rightVertices)

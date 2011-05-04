@@ -20,7 +20,7 @@ namespace sones.GraphDB.TypeManagement
     /// This means equal queries to the FS are only done one time per object.
     /// The object also does most of its queries lazy. This means the queries are executed only if the result is needed.
     /// </remarks>
-    internal class VertexType: IVertexType
+    internal class VertexType: BaseType, IVertexType
     {
         #region Constants
 
@@ -38,95 +38,12 @@ namespace sones.GraphDB.TypeManagement
 
         #region Data
 
-        /// <summary>
-        /// Stores the FS vertex.
-        /// </summary>
-        private readonly IVertex _vertex;
-
-        /// <summary>
-        /// Stores the list of attributes indexed by the attribute name.
-        /// </summary>
-        private readonly Lazy<Dictionary<String, IAttributeDefinition>> _attributes;
-
-        /// <summary>
-        /// Stores the parent vertex type.
-        /// </summary>
-        private readonly Lazy<IVertexType> _parent;
-
-        /// <summary>
-        /// Stores the list of child vertex types.
-        /// </summary>
-        private readonly Lazy<List<IVertexType>> _childs;
-
-        /// <summary>
-        /// Stores the comment of the vertex type.
-        /// </summary>
-        private readonly Lazy<string> _comment;
-
-        /// <summary>
-        /// Stores the unique definitions of this vertex type.
-        /// </summary>
-        private readonly Lazy<IEnumerable<IUniqueDefinition>> _uniques;
-
-        /// <summary>
-        /// Stores the index definitions of this vertex type.
-        /// </summary>
-        private readonly Lazy<IEnumerable<IIndexDefinition>> _indices;
-
-        /// <summary>
-        /// Stores the ID of this vertex type.
-        /// </summary>
-        private readonly long _id;
-
-        /// <summary>
-        /// Stores the name of this vertex type.
-        /// </summary>
-        private readonly string _name;
-
-        /// <summary>
-        /// Stores whether this vertex type can be a parent vertex type.
-        /// </summary>
-        private readonly bool _isSealed;
-
-        /// <summary>
-        /// Stores whether this vertex type can have vertices.
-        /// </summary>
-        private readonly bool _isAbstract;
-
-        /// <summary>
-        /// Stores whether this vertex type has child vertex types.
-        /// </summary>
-        private readonly bool _hasChilds;
-
-        /// <summary>
-        /// Stores whether incoming edges were queried (<see cref="Nullable.HasValue"/> equals true) and if true, whether this vertex type has incoming edges.
-        /// </summary>
-        private bool? _hasIncomingEdges;
-
-        /// <summary>
-        /// Stores whether outgoing edges were queried (<see cref="Nullable.HasValue"/> equals true) and if true, whether this vertex type has outgoing edges.
-        /// </summary>
-        private bool? _hasOutgoingEdges;
-
-        /// <summary>
-        /// Stores whether properties were queried (<see cref="Nullable.HasValue"/> equals true) and if true, whether this vertex type has properties.
-        /// </summary>
-        private bool? _hasProperties;
-
-        /// <summary>
-        /// Stores whether binary properties were queried (<see cref="Nullable.HasValue"/> equals true) and if true, whether this vertex type has binary properties.
-        /// </summary>
-        private bool? _hasBinaryProperties;
-
-        /// <summary>
-        /// Stores whether attributes were queried (<see cref="Nullable.HasValue"/> equals true) and if true, whether this vertex type has attributes.
-        /// </summary>
-        private bool? _hasAttributes;
-
-        /// <summary>
-        /// Stores whether this type is user defined.
-        /// </summary>
-        private bool _IsUserDefined;
+        private IEnumerable<IUniqueDefinition> _uniques;
+        private bool _hasOwnUniques;
+        private IEnumerable<IIndexDefinition> _indices;
+        private bool _hasOwnIndices;
+        private IEnumerable<IVertexType> _childs;
+        private bool _hasChilds;
 
         #endregion
 
@@ -136,46 +53,43 @@ namespace sones.GraphDB.TypeManagement
         /// Creates a new instance of VertexType.
         /// </summary>
         /// <param name="myVertex">An IVertex that represents the vertex type.</param>
-        internal VertexType(IVertex myVertex)
+        internal VertexType(IVertex myVertexTypeVertex)
+            : base(myVertexTypeVertex)
         {
-            #region checks
+            _hasOwnUniques = HasOutgoingEdge(AttributeDefinitions.VertexTypeDotUniquenessDefinitions);
+            _hasOwnIndices = HasIncomingVertices(BaseTypes.Index, AttributeDefinitions.PropertyDotInIndices);
+            _hasChilds = HasIncomingVertices(BaseTypes.VertexType, AttributeDefinitions.VertexTypeDotParent);
+        }
 
-            myVertex.CheckNull("myVertex");
+        #endregion
 
-            #endregion
+        #region BaseType members
 
-            #region set data
+        public override bool HasParentType
+        {
+            get { return ID != (long)BaseTypes.Vertex; }
+        }
 
-            _vertex = myVertex;
+        public override bool HasChildTypes
+        {
+            get { return _hasChilds; }
+        }
 
-            #endregion
+        protected override BaseType GetParentType()
+        {
+            if (HasParentType)
+                return new VertexType(GetOutgoingSingleEdge(AttributeDefinitions.VertexTypeDotParent).GetTargetVertex());
 
-            #region set lazy stuff
+            return null;
+        }
 
-            _parent = new Lazy<IVertexType>(GetParentType);
-
-            _childs = new Lazy<List<IVertexType>>(GetChildTypes);
-
-            _attributes = new Lazy<Dictionary<String, IAttributeDefinition>>(GetAttributes);
-
-            _comment = new Lazy<String>(GetComment);
-
-            _uniques = new Lazy<IEnumerable<IUniqueDefinition>>(GetUniques);
-
-            _indices = new Lazy<IEnumerable<IIndexDefinition>>(GetIndices);
-
-            #endregion
-
-            #region set direct stuff
-
-            _id = GetID();
-            _name = GetName();
-            _isSealed = GetIsSealed();
-            _isAbstract = GetIsAbstract();
-            _hasChilds = GetHasChilds();
-            _IsUserDefined = GetIsUserDefined();
-            #endregion
-
+        protected override IDictionary<string, IAttributeDefinition> RetrieveAttributes()
+        {
+            return BaseGraphStorageManager.GetBinaryPropertiesFromFS(_vertex, this).Cast<IAttributeDefinition>()
+                .Union(BaseGraphStorageManager.GetPropertiesFromFS(_vertex, this).Cast<IAttributeDefinition>())
+                .Union(BaseGraphStorageManager.GetOutgoingEdgesFromFS(_vertex, this).Cast<IAttributeDefinition>())
+                .Union(BaseGraphStorageManager.GetIncomingEdgesFromFS(_vertex, this).Cast<IAttributeDefinition>())
+                .ToDictionary(x => x.Name);
         }
 
         #endregion
@@ -184,23 +98,26 @@ namespace sones.GraphDB.TypeManagement
 
         #region Inheritance
 
-        IVertexType IVertexType.ParentVertexType
+        public IVertexType ParentVertexType
         {
-            get { return _parent.Value; }
+            get 
+            {
+                return GetParentType() as IVertexType;
+            }
         }
 
-        IEnumerable<IVertexType> IVertexType.GetChildVertexTypes(bool myRecursive = true, bool myIncludeSelf = false)
+        public IEnumerable<IVertexType> GetChildVertexTypes(bool myRecursive = true, bool myIncludeSelf = false)
         {
             if (myIncludeSelf)
                 yield return this;
 
-            foreach (var aChildVertexType in _childs.Value)
+            foreach (var aChildVertexType in GetChilds())
             {
                 yield return aChildVertexType;
 
                 if (myRecursive)
                 {
-                    foreach (var aVertex in aChildVertexType.GetChildVertexTypes(myRecursive))
+                    foreach (var aVertex in aChildVertexType.GetChildVertexTypes(true))
                     {
                         yield return aVertex;
                     }
@@ -208,230 +125,115 @@ namespace sones.GraphDB.TypeManagement
             }
 
             yield break;
+
         }
 
         #endregion
 
         #region Binary Properties
 
-        bool IVertexType.HasBinaryProperty(string myEdgeName)
+        public bool HasBinaryProperty(string myEdgeName)
         {
-            return GetAttributeAsBinaryProperty(myEdgeName) != null;
+            return HasTypedAttribute<IBinaryPropertyDefinition>(myEdgeName);
         }
 
-        IBinaryPropertyDefinition IVertexType.GetBinaryPropertyDefinition(string myEdgeName)
+        public IBinaryPropertyDefinition GetBinaryPropertyDefinition(string myEdgeName)
         {
-            return GetAttributeAsBinaryProperty(myEdgeName);
+            return GetTypedAttributeDefinition<IBinaryPropertyDefinition>(myEdgeName);
         }
 
-        bool IVertexType.HasBinaryProperties(bool myIncludeAncestorDefinitions)
+        public bool HasBinaryProperties(bool myIncludeAncestorDefinitions)
         {
-            return HasBinaryProperties_private(myIncludeAncestorDefinitions);
+            return HasTypedAttributes<IBinaryPropertyDefinition>(myIncludeAncestorDefinitions);
         }
 
-        IEnumerable<IBinaryPropertyDefinition> IVertexType.GetBinaryProperties(bool myIncludeAncestorDefinitions)
+        public IEnumerable<IBinaryPropertyDefinition> GetBinaryProperties(bool myIncludeAncestorDefinitions)
         {
-            return GetAttributes(myIncludeAncestorDefinitions).OfType<IBinaryPropertyDefinition>();
-        }
-
-        #endregion
-
-        #region Incoming Edge
-
-        bool IVertexType.HasIncomingEdge(string myEdgeName)
-        {
-            return GetAttributeAsIncomingEdge(myEdgeName) != null;
-        }
-
-        IIncomingEdgeDefinition IVertexType.GetIncomingEdgeDefinition(string myEdgeName)
-        {
-            return GetAttributeAsIncomingEdge(myEdgeName);
-        }
-
-        bool IVertexType.HasIncomingEdges(bool myIncludeAncestorDefinitions)
-        {
-            return HasIncomingEdges_private(myIncludeAncestorDefinitions);
-        }
-
-        IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeAncestorDefinitions)
-        {
-            return GetAttributes(myIncludeAncestorDefinitions).OfType<IIncomingEdgeDefinition>();
+            return GetTypedAttributeDefinitions<IBinaryPropertyDefinition>(myIncludeAncestorDefinitions);
         }
 
         #endregion
 
-        #region Outgoing Edge
+        #region Incoming Edges
 
-        bool IVertexType.HasOutgoingEdge(string myEdgeName)
+        public bool HasIncomingEdge(string myEdgeName)
         {
-            return GetAttributeAsOutgoingEdge(myEdgeName) != null;
+            return HasTypedAttribute<IIncomingEdgeDefinition>(myEdgeName);
         }
 
-        IOutgoingEdgeDefinition IVertexType.GetOutgoingEdgeDefinition(string myEdgeName)
+        public IIncomingEdgeDefinition GetIncomingEdgeDefinition(string myEdgeName)
         {
-            return GetAttributeAsOutgoingEdge(myEdgeName);
+            return GetTypedAttributeDefinition<IIncomingEdgeDefinition>(myEdgeName);
         }
 
-        bool IVertexType.HasOutgoingEdges(bool myIncludeAncestorDefinitions)
+        public bool HasIncomingEdges(bool myIncludeAncestorDefinitions)
         {
-            return HasOutgoingEdges_private(myIncludeAncestorDefinitions);
+            return HasTypedAttributes<IIncomingEdgeDefinition>(myIncludeAncestorDefinitions);
         }
 
-        IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeAncestorDefinitions)
+        public IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return GetAttributes(myIncludeAncestorDefinitions).OfType<IOutgoingEdgeDefinition>();
+            return GetTypedAttributeDefinitions<IIncomingEdgeDefinition>(myIncludeAncestorDefinitions);
         }
 
         #endregion
 
-        #region Index
+        #region Outgoing Edges
+
+        public bool HasOutgoingEdge(string myEdgeName)
+        {
+            return HasTypedAttribute<IOutgoingEdgeDefinition>(myEdgeName);
+        }
+
+        public IOutgoingEdgeDefinition GetOutgoingEdgeDefinition(string myEdgeName)
+        {
+            return GetTypedAttributeDefinition<IOutgoingEdgeDefinition>(myEdgeName);
+        }
+
+        public bool HasOutgoingEdges(bool myIncludeAncestorDefinitions)
+        {
+            return HasTypedAttributes<IOutgoingEdgeDefinition>(myIncludeAncestorDefinitions);
+        }
+
+        public IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(bool myIncludeAncestorDefinitions)
+        {
+            return GetTypedAttributeDefinitions<IOutgoingEdgeDefinition>(myIncludeAncestorDefinitions);
+        }
+
+        #endregion
+
+        #region Uniques
 
         public bool HasUniqueDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return (myIncludeAncestorDefinitions && GetHasParentType())
-                ? (!_uniques.Value.IsNotNullOrEmpty() || _parent.Value.HasUniqueDefinitions(true))
-                : false;
-        }
-        
-        IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)
-        {
-            return (myIncludeAncestorDefinitions && GetHasParentType())
-                ? _uniques.Value.Union(_parent.Value.GetUniqueDefinitions(true))
-                : _uniques.Value;
+            return (myIncludeAncestorDefinitions && HasParentType)
+                ? _hasOwnUniques || ParentVertexType.HasUniqueDefinitions(true)
+                : _hasOwnUniques;
         }
 
-        IEnumerable<IIndexDefinition> IVertexType.GetIndexDefinitions(bool myIncludeAncestorDefinitions)
+        public IEnumerable<IUniqueDefinition> GetUniqueDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return (myIncludeAncestorDefinitions && GetHasParentType())
-                ? _indices.Value.Union(_parent.Value.GetIndexDefinitions(true))
-                : _indices.Value;
+            return (myIncludeAncestorDefinitions && HasParentType)
+                ? GetUniques().Union(ParentVertexType.GetUniqueDefinitions(true))
+                : GetUniques();
         }
 
         #endregion
 
-        #endregion
+        #region Indices
 
-        #region IBaseType Members
-
-        long IBaseType.ID
+        public bool HasIndexDefinitions(bool myIncludeAncestorDefinitions)
         {
-            get { return _id; }
+            return (myIncludeAncestorDefinitions && HasParentType)
+                ? _hasOwnIndices || ParentVertexType.HasIndexDefinitions(true)
+                : _hasOwnIndices;
         }
 
-        string IBaseType.Name
+        public IEnumerable<IIndexDefinition> GetIndexDefinitions(bool myIncludeAncestorDefinitions)
         {
-            get { return _name; }
-        }
-
-        IBehaviour IBaseType.Behaviour
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        string IBaseType.Comment
-        {
-            get { return _comment.Value; }
-        }
-
-        bool IBaseType.IsAbstract
-        {
-            get { return _isAbstract; }
-        }
-
-        bool IBaseType.IsSealed
-        {
-            get { return _isSealed; }
-        }
-
-        bool IBaseType.IsUserDefined
-        {
-            get { return _IsUserDefined; }
-        }
-
-        #region Inheritance
-
-        bool IBaseType.HasParentType
-        {
-            get { return GetHasParentType(); }
-        }
-
-        bool IBaseType.HasChildTypes
-        {
-            get { return _hasChilds; }
-        }
-
-
-        #endregion
-
-        #region Attributes
-
-        bool IBaseType.HasAttribute(string myAttributeName)
-        {
-            return GetAttribute(myAttributeName) != null;
-        }
-
-        bool IBaseType.HasAttributes(bool myIncludeAncestorDefinitions)
-        {
-            return HasAttributes_private(myIncludeAncestorDefinitions);
-        }
-
-        IAttributeDefinition IBaseType.GetAttributeDefinition(string myAttributeName)
-        {
-            return GetAttribute(myAttributeName);
-        }
-
-        IEnumerable<IAttributeDefinition> IBaseType.GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
-        {
-            return GetAttributes(myIncludeAncestorDefinitions);
-        }
-
-        private IEnumerable<IAttributeDefinition> GetAttributes(bool myIncludeAncestorDefinitions)
-        {
-            return (myIncludeAncestorDefinitions && GetHasParentType())
-                ? _attributes.Value.Values.Union(_parent.Value.GetAttributeDefinitions(true))
-                : _attributes.Value.Values;
-        }
-
-        IAttributeDefinition IBaseType.GetAttributeDefinition(long myAttributeID)
-        {
-            return GetAttribute(myAttributeID);
-        }
-
-        #endregion
-
-        #region Property
-
-        bool IBaseType.HasProperty(string myPropertyName)
-        {
-            return GetAttributeAsProperty(myPropertyName) != null;
-        }
-
-        IPropertyDefinition IBaseType.GetPropertyDefinition(string myPropertyName)
-        {
-            return GetAttributeAsProperty(myPropertyName);
-        }
-
-        bool IBaseType.HasProperties(bool myIncludeAncestorDefinitions)
-        {
-            return HasProperties_private(myIncludeAncestorDefinitions);
-        }
-
-        IEnumerable<IPropertyDefinition> IBaseType.GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
-        {
-            return GetAttributes(myIncludeAncestorDefinitions).OfType<IPropertyDefinition>();
-        }
-
-        IPropertyDefinition IBaseType.GetPropertyDefinition(long myPropertyID)
-        {
-            return GetAttribute(myPropertyID) as IPropertyDefinition;
-        }
-
-        IEnumerable<IPropertyDefinition> IBaseType.GetPropertyDefinitions(IEnumerable<string> myPropertyNames)
-        {
-            return myPropertyNames.Select(x => GetAttributeAsProperty(x));
+            return (myIncludeAncestorDefinitions && HasParentType)
+                ? GetIndices().Union(ParentVertexType.GetIndexDefinitions(true))
+                : GetIndices();
         }
 
         #endregion
@@ -440,237 +242,50 @@ namespace sones.GraphDB.TypeManagement
 
         #region private members
 
-        #region GetVertex
-
-        /// <summary>
-        /// Gets the IVertex that represents this vertex type.
-        /// </summary>
-        /// <returns>An IVertex that represents this vertex type.</returns>
-        private IVertex GetVertex()
+        private IEnumerable<IVertexType> GetChilds()
         {
-            return _vertex;
+            if (_childs == null)
+                lock (_lock)
+                {
+                    if (_childs == null)
+                        _childs = RetrieveChilds();
+                }
+
+            return _childs;
         }
 
-        #endregion
-
-        #region Attributes
-
-        /// <summary>
-        /// Creates a list of attribute definitions of the vertex type indexed by the attribute name.
-        /// </summary>
-        /// <returns>A dictionary of attribute name to attribute definition.</returns>
-        private Dictionary<String, IAttributeDefinition> GetAttributes()
+        private IEnumerable<IVertexType> RetrieveChilds()
         {
-            return BaseGraphStorageManager.GetBinaryPropertiesFromFS(GetVertex(), this).Cast<IAttributeDefinition>()
-                .Union(BaseGraphStorageManager.GetPropertiesFromFS(GetVertex(), this).Cast<IAttributeDefinition>())
-                .Union(BaseGraphStorageManager.GetOutgoingEdgesFromFS(GetVertex(), this).Cast<IAttributeDefinition>())
-                .Union(BaseGraphStorageManager.GetIncomingEdgesFromFS(GetVertex(), this).Cast<IAttributeDefinition>())
-                .ToDictionary(x => x.Name);
+            if (!HasChildTypes)
+                return Enumerable.Empty<IVertexType>();
+
+            var vertices = GetIncomingVertices(BaseTypes.VertexType, AttributeDefinitions.VertexTypeDotParent);
+
+            return vertices.Select(vertex => new VertexType(vertex)).ToArray();
         }
-
-        /// <summary>
-        /// Gets whether this vertex type has attributes.
-        /// </summary>
-        /// <returns>True, if this vertex type has attribute otherwise false.</returns>
-        private bool GetHasAttributes()
-        {
-            return GetVertex().HasIncomingVertices((long)BaseTypes.Attribute, (long)AttributeDefinitions.DefiningType);
-        }
-
-        /// <summary>
-        /// Gets the attribute with the given attribute name, if existing.
-        /// </summary>
-        /// <param name="myAttributeName">The attribute name of the attribute.</param>
-        /// <returns>An attribute definition of the attribute with the given attribute name, if existing otherwise <c>NULL</c>.</returns>
-        private IAttributeDefinition GetAttribute(string myAttributeName)
-        {
-            IAttributeDefinition result;
-            _attributes.Value.TryGetValue(myAttributeName, out result);
-            if (result != null || !GetHasParentType() )
-                return result;
-            
-            return GetParentType().GetAttributeDefinition(myAttributeName);
-        }
-
-        private IAttributeDefinition GetAttribute(long myAttributeID)
-        {
-            var result = _attributes.Value.Values.FirstOrDefault(x => x.AttributeID == myAttributeID);
-            if (result != null || !GetHasParentType())
-                return result;
-
-            return GetParentType().GetAttributeDefinition(myAttributeID);
-
-        }
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// Gets whether this vertex type has properties.
-        /// </summary>
-        /// <returns>True, if this vertex type has properties otherwise false.</returns>
-        private bool GetHasProperties()
-        {
-            return GetVertex().HasIncomingVertices((long)BaseTypes.Property, (long)AttributeDefinitions.DefiningType);
-        }
-
-        /// <summary>
-        /// Gets the property with the given attribute name, if existing.
-        /// </summary>
-        /// <param name="myPropertyName">The attribute name of the property.</param>
-        /// <returns>A property definition of the property with the given attribute name, if existing otherwise <c>NULL</c>.</returns>
-        private IPropertyDefinition GetAttributeAsProperty(string myPropertyName)
-        {
-            return GetAttribute(myPropertyName) as IPropertyDefinition;
-        }
-
-        #endregion
-
-        #region Binary Properties
-
-        /// <summary>
-        /// Gets whether this vertex type has binary properties.
-        /// </summary>
-        /// <returns>True, if this vertex type has binary properties otherwise false.</returns>
-        private bool GetHasBinaryProperties()
-        {
-            return GetVertex().HasIncomingVertices((long)BaseTypes.BinaryProperty, (long)AttributeDefinitions.DefiningType);
-        }
-
-        /// <summary>
-        /// Gets the binary property with the given attribute name, if existing.
-        /// </summary>
-        /// <param name="myPropertyName">The attribute name of the binary property.</param>
-        /// <returns>A binary property definition of the property with the given attribute name, if existing otherwise <c>NULL</c>.</returns>
-        private IBinaryPropertyDefinition GetAttributeAsBinaryProperty(string myPropertyName)
-        {
-            return GetAttribute(myPropertyName) as IBinaryPropertyDefinition;
-        }
-
-
-        #endregion
-
-        #region Incoming Edges
-
-        /// <summary>
-        /// Gets whether this vertex type has incoming edges.
-        /// </summary>
-        /// <returns>True, if this vertex type has incoming edges otherwise false.</returns>
-        private bool GetHasIncomingEdges()
-        {
-            return GetVertex().HasIncomingVertices((long)BaseTypes.IncomingEdge, (long)AttributeDefinitions.DefiningType);
-        }
-
-        /// <summary>
-        /// Gets the incoming edge with the given attribute name, if existing.
-        /// </summary>
-        /// <param name="myPropertyName">The attribute name of the incoming edge.</param>
-        /// <returns>An incoming edge definition of the incoming edge with the given attribute name, if existing otherwise <c>NULL</c>.</returns>
-        private IIncomingEdgeDefinition GetAttributeAsIncomingEdge(string myEdgeName)
-        {
-            return GetAttribute(myEdgeName) as IIncomingEdgeDefinition;
-        }
-
-        #endregion
-
-        #region Outgoing Edges
-
-        /// <summary>
-        /// Transforms an IVertex in an outgoing edge definition.
-        /// </summary>
-        /// <param name="myVertex">A vertex that represents an outgoing edge definition.</param>
-        /// <returns>An outgoing edge definition.</returns>
-        private IOutgoingEdgeDefinition CreateOutgoingEdgeDefinition(IVertex myOutgoingEdgeVertex)
-        {
-            return BaseGraphStorageManager.CreateOutgoingEdgeDefinition(myOutgoingEdgeVertex);
-        }
-
-        /// <summary>
-        /// Gets whether this vertex type has outgoing edges.
-        /// </summary>
-        /// <returns>True, if this vertex type has outgoing edges otherwise false.</returns>
-        private bool GetHasOutgoingEdges()
-        {
-            return GetVertex().HasIncomingVertices((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.DefiningType);
-        }
-
-        /// <summary>
-        /// Gets the outgoing edge with the given attribute name, if existing.
-        /// </summary>
-        /// <param name="myEdgeName">The attribute name of the outgoing edge.</param>
-        /// <returns>An outgoing edge definition of the outgoing edge with the given attribute name, if existing otherwise <c>NULL</c>.</returns>
-        private IOutgoingEdgeDefinition GetAttributeAsOutgoingEdge(string myEdgeName)
-        {
-            return GetAttribute(myEdgeName) as IOutgoingEdgeDefinition;
-        }
-
-        #endregion
-
-        #region Inheritance
-
-        /// <summary>
-        /// Gets whether this vertex type has child vertex types.
-        /// </summary>
-        /// <returns>True if this vertex type has child vertex types.</returns>
-        private bool GetHasChilds()
-        {
-            return GetVertex().HasIncomingVertices((long)BaseTypes.VertexType, (long)AttributeDefinitions.Parent);
-        }
-
-        /// <summary>
-        /// Creates the parent vertex type of this vertex type.
-        /// </summary>
-        /// <returns>A new instance of the parent vertex type of this vertex type.</returns>
-        private IVertexType GetParentType()
-        {
-            var vertex = BaseGraphStorageManager.GetParent(GetVertex());
-            return (vertex == null) ? null : new VertexType(vertex);
-        }
-
-        /// <summary>
-        /// Creates the list of child vertex types of this vertex type.
-        /// </summary>
-        /// <returns>A possible empty list of child vertex types.</returns>
-        private List<IVertexType> GetChildTypes()
-        {
-            var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.VertexType, (long)AttributeDefinitions.Parent);
-
-            //Perf: initialize the result list with a size
-            List<IVertexType> result = (vertices is ICollection)
-                ? new List<IVertexType>((vertices as ICollection).Count)
-                : new List<IVertexType>(ExpectedChildTypes);
-
-            result.AddRange(vertices.Select(vertex => new VertexType(vertex)));
-
-            return result;
-        }
-
-        #endregion
-
-        #region Index
 
         private IEnumerable<IUniqueDefinition> GetUniques()
         {
-            if (GetVertex().HasOutgoingEdge((long)AttributeDefinitions.UniquenessDefinitions))
+            if (_uniques == null)
+                lock (_lock)
+                {
+                    if (_uniques == null)
+                        _uniques = RetrieveUniques();
+                }
+
+            return _uniques;
+        }
+
+        private IEnumerable<IUniqueDefinition> RetrieveUniques()
+        {
+            if (HasOutgoingEdge(AttributeDefinitions.VertexTypeDotUniquenessDefinitions))
             {
-                var edge = GetVertex().GetOutgoingHyperEdge((long)AttributeDefinitions.UniquenessDefinitions);
+                var edge = GetOutgoingHyperEdge(AttributeDefinitions.VertexTypeDotUniquenessDefinitions);
                 var vertices = edge.GetTargetVertices();
                 var indices = vertices.Select(x => BaseGraphStorageManager.CreateIndexDefinition(x, this));
                 return indices.Select(IIndexDefinitionToIUniqueDefinition).ToArray();
             }
             return Enumerable.Empty<IUniqueDefinition>();
-        }
-
-
-        private IEnumerable<IIndexDefinition> GetIndices()
-        {
-            if (GetVertex().HasIncomingVertices((long)BaseTypes.Index, (long)AttributeDefinitions.InIndices))
-            {
-                var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.Index, (long)AttributeDefinitions.InIndices);
-                var indices = vertices.Select(x => BaseGraphStorageManager.CreateIndexDefinition(x, this)).ToArray();
-            }
-            return Enumerable.Empty<IIndexDefinition>();
         }
 
         private IUniqueDefinition IIndexDefinitionToIUniqueDefinition(IIndexDefinition myIndexDefinition)
@@ -683,138 +298,30 @@ namespace sones.GraphDB.TypeManagement
             };
         }
 
-        #endregion
-
-        #region Vertex type
-
-        private long GetID()
+        private IEnumerable<IIndexDefinition> GetIndices()
         {
-            return BaseGraphStorageManager.GetID(GetVertex());
+            if (_indices == null)
+                lock (_lock)
+                {
+                    if (_indices == null)
+                        _indices = RetrieveIndices();
+                }
+
+            return _indices;
         }
 
-        private string GetName()
+        private IEnumerable<IIndexDefinition> RetrieveIndices()
         {
-            return BaseGraphStorageManager.GetName(GetVertex());
-        }
+            if (_hasOwnIndices)
+            {
+                var vertices = GetIncomingVertices(BaseTypes.Index, AttributeDefinitions.PropertyDotInIndices);
+                var indices = vertices.Select(x => BaseGraphStorageManager.CreateIndexDefinition(x, this)).ToArray();
+            }
+            return Enumerable.Empty<IIndexDefinition>();
 
-        private String GetComment()
-        {
-            return BaseGraphStorageManager.GetComment(GetVertex());
-        }
-
-        private bool GetIsUserDefined()
-        {
-            return BaseGraphStorageManager.GetIsUserDefined(GetVertex());
-        }
-
-        private bool GetHasParentType()
-        {
-            return _id != (long)BaseTypes.Vertex;
         }
 
         #endregion
 
-        private bool GetIsAbstract()
-        {
-            return BaseGraphStorageManager.GetIsAbstract(GetVertex());
-        }
-
-        private bool GetIsSealed()
-        {
-            return BaseGraphStorageManager.GetIsSealed(GetVertex());
-        }
-
-        private bool HasProperties_private(bool myIncludeAncestorDefinitions)
-        {
-            if (!_hasProperties.HasValue)
-            {
-                _hasProperties = GetHasProperties();
-            }
-
-            return _hasProperties.Value || (myIncludeAncestorDefinitions && _parent.Value.HasProperties(true));
-        }
-
-        private bool HasOutgoingEdges_private(bool myIncludeAncestorDefinitions)
-        {
-            if (!_hasOutgoingEdges.HasValue)
-            {
-                _hasOutgoingEdges = GetHasOutgoingEdges();
-            }
-
-            return _hasOutgoingEdges.Value || (myIncludeAncestorDefinitions && _parent.Value.HasOutgoingEdges(true));
-        }
-
-        private bool HasIncomingEdges_private(bool myIncludeAncestorDefinitions)
-        {
-            if (!_hasIncomingEdges.HasValue)
-            {
-                _hasIncomingEdges = GetHasIncomingEdges();
-            }
-
-            return _hasIncomingEdges.Value || (myIncludeAncestorDefinitions && _parent.Value.HasIncomingEdges(true));
-        }
-
-        private bool HasBinaryProperties_private(bool myIncludeAncestorDefinitions)
-        {
-            if (!_hasBinaryProperties.HasValue)
-            {
-                _hasBinaryProperties = GetHasBinaryProperties();
-            }
-
-            return _hasBinaryProperties.Value || (myIncludeAncestorDefinitions && _parent.Value.HasBinaryProperties(true));
-        }
-
-        private bool HasAttributes_private(bool myIncludeAncestorDefinitions)
-        {
-            return HasProperties_private(myIncludeAncestorDefinitions)
-                || HasOutgoingEdges_private(myIncludeAncestorDefinitions)
-                || HasIncomingEdges_private(myIncludeAncestorDefinitions)
-                || HasBinaryProperties_private(myIncludeAncestorDefinitions);
-        }
-
-        #endregion
-
-        #region IBaseType Members
-
-
-        public bool IsAncestor(IBaseType myOtherType)
-        {
-            for (var current = this.GetParentType(); current != null; current = current.ParentVertexType)
-            {
-                if (Equals(current, myOtherType))
-                    return true;
-            }
-            return false;
-        }
-
-        public bool IsAncestorOrSelf(IBaseType myOtherType)
-        {
-            return Equals(myOtherType) || IsAncestor(myOtherType);
-        }
-
-        public bool IsDescendant(IBaseType myOtherType)
-        {
-            if (myOtherType == null)
-                return false;
-
-            return myOtherType.IsAncestor(this);
-        }
-
-        public bool IsDescendantOrSelf(IBaseType myOtherType)
-        {
-            return Equals(myOtherType) || IsDescendant(myOtherType);
-        }
-
-        #endregion
-
-
-        #region IEquatable<IBaseType> Members
-
-        public bool Equals(IBaseType other)
-        {
-            return (other != null) && this._id == other.ID;
-        }
-
-        #endregion
     }
 }

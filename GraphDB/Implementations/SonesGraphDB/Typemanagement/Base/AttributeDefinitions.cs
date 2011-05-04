@@ -3,104 +3,109 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.TypeManagement.Base
 {
+
     internal enum AttributeDefinitions : long
     {
         #region Vertex
 
-        UUID = Int64.MinValue,
-        CreationDate = Int64.MinValue + 1,
-        ModificationDate = Int64.MinValue + 2,
-        Revision = Int64.MinValue + 3,
-        Edition = Int64.MinValue + 4,
-        Comment = Int64.MinValue + 5,
-        TypeID = Int64.MinValue + 6,
-        TypeName = Int64.MinValue + 7,
-
-        #endregion
-
-        #region BaseType, Attribute, Index
-
-        ID = Int64.MinValue + 10,
-        Name = Int64.MinValue + 11,
-        IsUserDefined = Int64.MinValue + 12,
+        VertexDotUUID = Int64.MinValue,
+        VertexDotCreationDate,
+        VertexDotModificationDate,
+        VertexDotRevision,
+        VertexDotEdition,
+        VertexDotComment,
+        VertexDotTypeID,
+        VertexDotTypeName,
 
         #endregion
 
         #region BaseType
 
-        IsAbstract = Int64.MinValue + 20,
-        IsSealed = Int64.MinValue + 21,
-        Attributes = Int64.MinValue + 22,
-        Behaviour = Int64.MinValue + 23,
-
-        #endregion
-
-        #region VertexType, EdgeType
-
-        Parent = Int64.MinValue + 30,
-        Children = Int64.MinValue + 31,
+        BaseTypeDotName = Int64.MinValue + 16,
+        BaseTypeDotIsUserDefined,
+        BaseTypeDotIsAbstract,
+        BaseTypeDotIsSealed,
+        BaseTypeDotAttributes,
+        BaseTypeDotBehaviour,
 
         #endregion
 
         #region VertexType
 
-        UniquenessDefinitions = Int64.MinValue + 40,
-        Indices = Int64.MinValue + 41,
+        VertexTypeDotParent = Int64.MinValue + 16 * 2,
+        VertexTypeDotChildren,
+        VertexTypeDotUniquenessDefinitions,
+        VertexTypeDotIndices,
+
+        #endregion
+
+        #region EdgeType
+
+        EdgeTypeDotParent = Int64.MinValue + 16 * 3,
+        EdgeTypeDotChildren,
 
         #endregion
 
         #region Attribute
 
-        Type = Int64.MinValue + 50,
-        DefiningType = Int64.MinValue + 51,
-
-        #endregion
-
-        #region IncomingEdge, Property
-
-        Multiplicity = Int64.MinValue + 60,
+        AttributeDotName = Int64.MinValue + 16 * 4,
+        AttributeDotIsUserDefined,
+        AttributeDotType,
+        AttributeDotDefiningType,
 
         #endregion
 
         #region OutgoingEdge
 
-        EdgeType             = Int64.MinValue + 70,
-        InnerEdgeType        = Int64.MinValue + 71,
-        Source               = Int64.MinValue + 72,
-        Target               = Int64.MinValue + 73,
-        RelatedIncomingEdges = Int64.MinValue + 74,
+        OutgoingEdgeDotEdgeType = Int64.MinValue + 16 * 5,
+        OutgoingEdgeDotInnerEdgeType,
+        OutgoingEdgeDotSource,
+        OutgoingEdgeDotTarget,
+        OutgoingEdgeDotRelatedIncomingEdges,
+        OutgoingEdgeDotMultiplicity,
 
         #endregion
 
         #region IncomingEdge
 
-        RelatedEgde = Int64.MinValue + 80,
+        IncomingEdgeDotRelatedEgde = Int64.MinValue + 16 * 6,
 
         #endregion
 
         #region Property
 
-        IsMandatory = Int64.MinValue + 90,
-        InIndices = Int64.MinValue + 91,
-        DefaultValue = Int64.MinValue + 92,
+        PropertyDotIsMandatory = Int64.MinValue + 16 * 7,
+        PropertyDotInIndices,
+        PropertyDotDefaultValue,
+        PropertyDotMultiplicity,
+        PropertyDotBaseType,
+
 
         #endregion
 
         #region Index
 
-        IndexedProperties = Int64.MinValue + 100,
-        DefiningVertexType = Int64.MinValue + 101,
-        IndexClass = Int64.MinValue + 102,
-        IsSingleValue = Int64.MinValue + 103,
-        IsRange = Int64.MinValue + 104,
-        IsVersioned = Int64.MinValue + 105,
+        IndexDotName = Int64.MinValue + 16 * 8,
+        IndexDotIsUserDefined,
+        IndexDotIndexedProperties,
+        IndexDotDefiningVertexType,
+        IndexDotIndexClass,
+        IndexDotIsSingleValue,
+        IndexDotIsRange,
+        IndexDotIsVersioned,
 
         #endregion
 
         #region WeightedEdge
 
-        Weight = Int64.MinValue + 110,
-        Order = Int64.MinValue + 111,
+        WeightedEdgeDotWeight = Int64.MinValue + 16 * 9,
+
+        #endregion
+
+
+        #region Orderable
+
+        OrderableEdgeDotOrder = Int64.MinValue + 16 * 10,
 
         #endregion
     }

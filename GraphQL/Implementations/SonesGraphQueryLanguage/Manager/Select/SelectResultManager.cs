@@ -651,7 +651,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                 foreach (var _Selection in _Selections)
                 {
 
-                    var edgeKey = new EdgeKey(_Selection.Element.RelatedType.ID, _Selection.Element.AttributeID);
+                    var edgeKey = new EdgeKey(_Selection.Element.RelatedType.ID, _Selection.Element.ID);
 
                     Attributes.Add(
                         _Selection.Alias, 
@@ -911,7 +911,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                         {
                             //a special attribute has no RelatedGraphDBTypeUUID. So use myDBType to create an EdgeKey
                             //EdgeKey key = (selectionElementFunction.Element is ASpecialTypeAttribute) ? new EdgeKey(myDBType.UUID, selectionElementFunction.Element.UUID) : new EdgeKey(selectionElementFunction.Element);
-                            EdgeKey key = new EdgeKey(selectionElementFunction.Element.RelatedType.ID, selectionElementFunction.Element.AttributeID);
+                            EdgeKey key = new EdgeKey(selectionElementFunction.Element.RelatedType.ID, selectionElementFunction.Element.ID);
                             myUsingGraph = _ExpressionGraph.IsGraphRelevant(new LevelKey((myLevelKey + key).Edges, _graphdb, mySecurityToken, myTransactionToken), myDBObject);
                         }
 
@@ -924,11 +924,11 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                                     var incomingEdgeDefinition = (IIncomingEdgeDefinition)selectionElementFunction.Element;
 
-                                    if (myDBObject.HasIncomingVertices(incomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, incomingEdgeDefinition.RelatedEdgeDefinition.AttributeID)) 
+                                    if (myDBObject.HasIncomingVertices(incomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, incomingEdgeDefinition.RelatedEdgeDefinition.ID)) 
                                     {
                                         callingObject = _ExpressionGraph.Select(
                                             new LevelKey(
-                                                (myLevelKey + new EdgeKey(selectionElementFunction.Element.RelatedType.ID, selectionElementFunction.Element.AttributeID)).Edges,
+                                                (myLevelKey + new EdgeKey(selectionElementFunction.Element.RelatedType.ID, selectionElementFunction.Element.ID)).Edges,
                                                 _graphdb, mySecurityToken, myTransactionToken), myDBObject, true);
                                     }
                                     else
@@ -942,12 +942,12 @@ namespace sones.GraphQL.GQL.Manager.Select
                                 case AttributeType.OutgoingEdge:
                                     #region outgoing edge
 
-                                    if (myDBObject.HasOutgoingEdge(selectionElementFunction.Element.AttributeID))
+                                    if (myDBObject.HasOutgoingEdge(selectionElementFunction.Element.ID))
                                     {
 
                                         callingObject = _ExpressionGraph.Select(
                                             new LevelKey(
-                                                (myLevelKey + new EdgeKey(selectionElementFunction.Element.RelatedType.ID, selectionElementFunction.Element.AttributeID)).Edges, 
+                                                (myLevelKey + new EdgeKey(selectionElementFunction.Element.RelatedType.ID, selectionElementFunction.Element.ID)).Edges, 
                                                 _graphdb, mySecurityToken, myTransactionToken), myDBObject, true);
 
                                     }
@@ -968,9 +968,9 @@ namespace sones.GraphQL.GQL.Manager.Select
                         }
                         else
                         {
-                            if (myDBObject.HasProperty(selectionElementFunction.Element.AttributeID))
+                            if (myDBObject.HasProperty(selectionElementFunction.Element.ID))
                             {
-                                callingObject = myDBObject.GetProperty(selectionElementFunction.Element.AttributeID);                                
+                                callingObject = myDBObject.GetProperty(selectionElementFunction.Element.ID);                                
                             }
                         }
 
@@ -1002,7 +1002,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                             var attr = (attrSel as SelectionElementFunction).Element;
 
-                            if (Depth > myLevelKey.Level || getAttributeSelections(myReference, myDBType, myLevelKey + new EdgeKey(attr.RelatedType.ID, attr.AttributeID)).IsNotNullOrEmpty())
+                            if (Depth > myLevelKey.Level || getAttributeSelections(myReference, myDBType, myLevelKey + new EdgeKey(attr.RelatedType.ID, attr.ID)).IsNotNullOrEmpty())
                             {
 
                                 myUsingGraph = false;
@@ -1143,9 +1143,9 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                     var incomingEdgeAttribute = (IIncomingEdgeDefinition)typeAttribute;
 
-                    if (myDBObject.HasIncomingVertices(incomingEdgeAttribute.RelatedEdgeDefinition.RelatedType.ID, incomingEdgeAttribute.RelatedEdgeDefinition.AttributeID))
+                    if (myDBObject.HasIncomingVertices(incomingEdgeAttribute.RelatedEdgeDefinition.RelatedType.ID, incomingEdgeAttribute.RelatedEdgeDefinition.ID))
 	                {
-                        var dbos = myDBObject.GetIncomingVertices(incomingEdgeAttribute.RelatedEdgeDefinition.RelatedType.ID, incomingEdgeAttribute.RelatedEdgeDefinition.AttributeID);
+                        var dbos = myDBObject.GetIncomingVertices(incomingEdgeAttribute.RelatedEdgeDefinition.RelatedType.ID, incomingEdgeAttribute.RelatedEdgeDefinition.ID);
 
                         if (dbos != null)
                         {
@@ -1169,9 +1169,9 @@ namespace sones.GraphQL.GQL.Manager.Select
                 case AttributeType.OutgoingEdge:
                     #region outgoing edges
 
-                    if(myDBObject.HasOutgoingEdge(typeAttribute.AttributeID))
+                    if(myDBObject.HasOutgoingEdge(typeAttribute.ID))
                     {
-                        var dbos = myDBObject.GetOutgoingEdge(typeAttribute.AttributeID);
+                        var dbos = myDBObject.GetOutgoingEdge(typeAttribute.ID);
 
                         if (dbos != null)
                         {
@@ -1304,7 +1304,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             foreach (var outgoingEdgeDefinition in myType.GetOutgoingEdgeDefinitions(true))
             {
-                if (myDBObject.HasOutgoingEdge(outgoingEdgeDefinition.AttributeID))
+                if (myDBObject.HasOutgoingEdge(outgoingEdgeDefinition.ID))
                 {
                     // Since we can define special depth (via setting) for attributes we need to check them now
                     myDepth = GetDepth(-1, myDepth, myType, outgoingEdgeDefinition);
@@ -1314,7 +1314,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                             outgoingEdgeDefinition.Name, 
                             ResolveAttributeValue(
                                 outgoingEdgeDefinition, 
-                                myDBObject.GetOutgoingEdge(outgoingEdgeDefinition.AttributeID), 
+                                myDBObject.GetOutgoingEdge(outgoingEdgeDefinition.ID), 
                                 myDepth, 
                                 myEdgeList, 
                                 myDBObject, 
@@ -1332,7 +1332,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             foreach (var aIncomingEdgeDefinition in myType.GetIncomingEdgeDefinitions(true))
             {
-                if (myDBObject.HasIncomingVertices(aIncomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, aIncomingEdgeDefinition.RelatedEdgeDefinition.AttributeID))
+                if (myDBObject.HasIncomingVertices(aIncomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, aIncomingEdgeDefinition.RelatedEdgeDefinition.ID))
                 {
                     if (myDepth > 0)
                     {
@@ -1340,7 +1340,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                             aIncomingEdgeDefinition.Name, 
                             ResolveIncomingEdgeValue(
                                 aIncomingEdgeDefinition, 
-                                myDBObject.GetIncomingVertices(aIncomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, aIncomingEdgeDefinition.RelatedEdgeDefinition.AttributeID), 
+                                myDBObject.GetIncomingVertices(aIncomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, aIncomingEdgeDefinition.RelatedEdgeDefinition.ID), 
                                 myDepth, 
                                 myEdgeList, 
                                 myDBObject, 
@@ -1366,11 +1366,11 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             if (myEdgeList.Level == 0)
             {
-                myEdgeList = new EdgeList(new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.AttributeID));
+                myEdgeList = new EdgeList(new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.ID));
             }
             else
             {
-                myEdgeList += new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.AttributeID);
+                myEdgeList += new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.ID);
             }
 
             // at some deeper level we could get into graph independend results. From this time, we can use the GUID index rather than asking the graph all the time
@@ -1441,11 +1441,11 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             if (myEdgeList.Level == 0)
             {
-                myEdgeList = new EdgeList(new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.AttributeID));
+                myEdgeList = new EdgeList(new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.ID));
             }
             else
             {
-                myEdgeList += new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.AttributeID);
+                myEdgeList += new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.ID);
             }
 
             // at some deeper level we could get into graph independend results. From this time, we can use the GUID index rather than asking the graph all the time
@@ -1609,7 +1609,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                     Dictionary<GroupingValuesKey, IComparable> groupingVals = new Dictionary<GroupingValuesKey, IComparable>();
                     foreach (var selection in mySelections)
                     {
-                        var attrValue = dbo.GetProperty(selection.Element.AttributeID);
+                        var attrValue = dbo.GetProperty(selection.Element.ID);
 
                         groupingVals.Add(new GroupingValuesKey(selection.Element, selection.Alias), attrValue);
                     }
@@ -1640,7 +1640,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                         var aggrResult =
                             aggr.Aggregate.Aggregate(
                                 (group as IEnumerable<IVertex>).Select(
-                                    aVertex => aVertex.GetProperty(aggr.Element.AttributeID)), (IPropertyDefinition)aggr.Element);
+                                    aVertex => aVertex.GetProperty(aggr.Element.ID)), (IPropertyDefinition)aggr.Element);
                         
                         if (aggrResult.Value != null)
                         {
@@ -1695,8 +1695,8 @@ namespace sones.GraphQL.GQL.Manager.Select
                 {
                     var aggrResult =
                         aggr.Aggregate.Aggregate(
-                            myDBOs.Where(aVertex => aVertex.HasProperty(aggr.Element.AttributeID)).Select(
-                                dbo => dbo.GetProperty(aggr.Element.AttributeID)), (IPropertyDefinition)aggr.Element);
+                            myDBOs.Where(aVertex => aVertex.HasProperty(aggr.Element.ID)).Select(
+                                dbo => dbo.GetProperty(aggr.Element.ID)), (IPropertyDefinition)aggr.Element);
                     
 
                     //aggregatedAttributes.Add(aggr.Alias, aggrResult.Value.GetReadoutValue());
@@ -1825,12 +1825,12 @@ namespace sones.GraphQL.GQL.Manager.Select
                 foreach (var selection in mySelections)
                 {
 
-                    if (!dbo.HasProperty(selection.Element.AttributeID))
+                    if (!dbo.HasProperty(selection.Element.ID))
                     {
                         continue;
                     }
 
-                    var attrValue = dbo.GetProperty(selection.Element.AttributeID);
+                    var attrValue = dbo.GetProperty(selection.Element.ID);
                     
 
                     groupingVals.Add(new GroupingValuesKey(selection.Element, selection.Alias), attrValue);

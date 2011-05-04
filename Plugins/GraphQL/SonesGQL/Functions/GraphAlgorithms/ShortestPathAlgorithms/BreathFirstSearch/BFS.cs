@@ -430,12 +430,12 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
             #region BFS
 
             //check if root node has edge and target has backwardedge
-            if (!myStart.HasOutgoingEdge(myTypeAttribute.AttributeID))
+            if (!myStart.HasOutgoingEdge(myTypeAttribute.ID))
             {
                 return null;
             }
 
-            if (!myEnd.HasIncomingVertices(myEnd.VertexTypeID, myTypeAttribute.AttributeID))
+            if (!myEnd.HasIncomingVertices(myEnd.VertexTypeID, myTypeAttribute.ID))
             {
                 return null;
             }
@@ -465,9 +465,9 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
                     currentNode = new Node(currentVertex.VertexID);
                 }
 
-                if (currentVertex.HasOutgoingEdge(myTypeAttribute.AttributeID))
+                if (currentVertex.HasOutgoingEdge(myTypeAttribute.ID))
                 {
-                    var vertices = currentVertex.GetOutgoingEdge(myTypeAttribute.AttributeID).GetTargetVertices();
+                    var vertices = currentVertex.GetOutgoingEdge(myTypeAttribute.ID).GetTargetVertices();
 
                     Node nextNode;
 

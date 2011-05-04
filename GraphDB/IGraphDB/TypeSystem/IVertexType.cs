@@ -147,6 +147,8 @@ namespace sones.GraphDB.TypeSystem
 
         #region Indices
 
+        bool HasIndexDefinitions(bool myIncludeAncestorDefinitions);
+
         /// <summary>
         /// A set of index definitions.
         /// </summary>

@@ -47,9 +47,11 @@ namespace sones.GraphDB.Expression.QueryPlan
         {
             foreach (var aVertex in _vertexStore.GetVerticesByTypeID(_securityToken, _transactionToken, myInterestingVertexType.ID, _property.Edition, VertexRevisionFilter))
             {
-                if (aVertex.HasProperty(_property.Property.AttributeID))
+                var result = _property.Property.ExtractValue(aVertex);
+                
+                if (result != null)
                 {
-                    if (_property.Property.ExtractValue(aVertex).CompareTo(_constant.Value) == 0)
+                    if (_constant.Value.CompareTo(result) == 0)
                     {
                         yield return aVertex;
                     }

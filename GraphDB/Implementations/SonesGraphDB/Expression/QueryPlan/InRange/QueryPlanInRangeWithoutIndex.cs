@@ -59,7 +59,7 @@ namespace sones.GraphDB.Expression.QueryPlan
             {
                 foreach (var aVertex in _vertexStore.GetVerticesByTypeID(_securityToken, _transactionToken, myInterestingVertexType.ID, _property.Edition, VertexRevisionFilter))
                 {
-                    if (aVertex.HasProperty(_property.Property.AttributeID))
+                    if (aVertex.HasProperty(_property.Property.ID))
                     {
                         if (
                             (_property.Property.ExtractValue(aVertex).CompareTo(_constantRange.Lower) >= 0) &&
@@ -74,7 +74,7 @@ namespace sones.GraphDB.Expression.QueryPlan
             {
                 foreach (var aVertex in _vertexStore.GetVerticesByTypeID(_securityToken, _transactionToken, myInterestingVertexType.ID, _property.Edition, VertexRevisionFilter))
                 {
-                    if (aVertex.HasProperty(_property.Property.AttributeID))
+                    if (aVertex.HasProperty(_property.Property.ID))
                     {
                         if (
                             (_property.Property.ExtractValue(aVertex).CompareTo(_constantRange.Lower) > 0) &&

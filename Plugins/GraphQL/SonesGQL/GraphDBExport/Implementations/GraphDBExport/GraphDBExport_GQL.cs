@@ -370,7 +370,7 @@ namespace sones.Plugins.SonesGQL.DBExport
                     types.Add(type.ParentVertexType);
                     foreach (var attr in (type.GetAttributeDefinitions(false)).Where(attrDef => attrDef.Kind == AttributeType.Property))
                     {
-                        var attrType = myGraphDB.GetVertexType<IVertexType>(mySecurityToken, myTransactionToken, new RequestGetVertexType(attr.AttributeID), (stats, vertex) => vertex);
+                        var attrType = myGraphDB.GetVertexType<IVertexType>(mySecurityToken, myTransactionToken, new RequestGetVertexType(attr.ID), (stats, vertex) => vertex);
                         AddTypeAndAttributesRecursivly(ref myGraphDB, ref mySecurityToken, ref myTransactionToken, attrType, ref types);
                     }
                 }

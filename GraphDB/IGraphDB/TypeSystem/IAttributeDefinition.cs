@@ -18,10 +18,9 @@ namespace sones.GraphDB.TypeSystem
         String Name { get; }
         
         /// <summary>
-        /// A identifier, that is unique for all attributes on a vertex type.
+        /// Returns if the attribute was created by the user.
         /// </summary>
-        Int64 AttributeID { get; }
-
+        bool IsUserDefined { get; }
         /// <summary>
         /// The type of the attribute        
         /// </summary>

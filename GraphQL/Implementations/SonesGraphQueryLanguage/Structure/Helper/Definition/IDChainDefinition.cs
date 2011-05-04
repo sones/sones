@@ -212,9 +212,9 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
                                         IComparable value = null;
 
-                                        if (myDBObject.HasProperty(propertyDefinition.AttributeID))
+                                        if (myDBObject.HasProperty(propertyDefinition.ID))
 	                                    {
-                                            value = myDBObject.GetProperty(propertyDefinition.AttributeID);
+                                            value = myDBObject.GetProperty(propertyDefinition.ID);
 	                                    }
 
                                         #region validation
@@ -236,9 +236,9 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
                                         IEnumerable<IVertex> dbos = new List<IVertex>();
 
-                                        if (myDBObject.HasIncomingVertices(incomingEdgeAttribute.RelatedEdgeDefinition.SourceVertexType.ID, incomingEdgeAttribute.RelatedEdgeDefinition.AttributeID))
+                                        if (myDBObject.HasIncomingVertices(incomingEdgeAttribute.RelatedEdgeDefinition.SourceVertexType.ID, incomingEdgeAttribute.RelatedEdgeDefinition.ID))
 	                                    {
-                                            dbos = myDBObject.GetIncomingVertices(incomingEdgeAttribute.RelatedEdgeDefinition.SourceVertexType.ID, incomingEdgeAttribute.RelatedEdgeDefinition.AttributeID);
+                                            dbos = myDBObject.GetIncomingVertices(incomingEdgeAttribute.RelatedEdgeDefinition.SourceVertexType.ID, incomingEdgeAttribute.RelatedEdgeDefinition.ID);
 	                                    }
 
                                         #region validation
@@ -260,9 +260,9 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
                                         IEnumerable<IVertex> outgoingDBOs = new List<IVertex>();
 
-                                        if (myDBObject.HasOutgoingEdge(outgoingEdgeAttribute.AttributeID))
+                                        if (myDBObject.HasOutgoingEdge(outgoingEdgeAttribute.ID))
 	                                    {
-                                            outgoingDBOs = myDBObject.GetOutgoingEdge(outgoingEdgeAttribute.AttributeID).GetTargetVertices();
+                                            outgoingDBOs = myDBObject.GetOutgoingEdge(outgoingEdgeAttribute.ID).GetTargetVertices();
 	                                    }
 
                                         #region validation
@@ -374,7 +374,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
             get
             {
                 System.Diagnostics.Debug.Assert(TypeAttribute != null);
-                return new EdgeKey(DBType.ID, TypeAttribute.AttributeID);
+                return new EdgeKey(DBType.ID, TypeAttribute.ID);
             }
         }
 
@@ -795,7 +795,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
                                 UndefinedAttribute = typeOrAttr.TypeOrAttributeName;
                                 _LastAttribute = new UnstructuredProperty(UndefinedAttribute);
                                 typeOrAttr.TypeAttribute = _LastAttribute;
-                                AddNewEdgeKey(_LastType, _LastAttribute.AttributeID);
+                                AddNewEdgeKey(_LastType, _LastAttribute.ID);
                             }
                             else
                             {
@@ -808,7 +808,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
                         else
                         {
 
-                            AddNewEdgeKey(_LastType, _LastAttribute.AttributeID);
+                            AddNewEdgeKey(_LastType, _LastAttribute.ID);
 
                         }
 
@@ -916,7 +916,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
                                 _Reference = new Tuple<string, IVertexType>(reference, typeOrAttr.DBType); //T1 -->key in context dictionary
 
                                 _Edges.ForEach(item => _HashCode = _HashCode ^ item.GetHashCode());
-                                AddNewEdgeKey(_LastType, _LastAttribute.AttributeID);
+                                AddNewEdgeKey(_LastType, _LastAttribute.ID);
 
                                 #endregion
 
@@ -957,7 +957,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
                                         typeOrAttr.TypeAttribute = _LastAttribute;
                                         typeOrAttr.DBType = _LastType;
 
-                                        AddNewEdgeKey(_LastType, _LastAttribute.AttributeID);
+                                        AddNewEdgeKey(_LastType, _LastAttribute.ID);
                                     }
 
                                     #endregion
@@ -1005,14 +1005,14 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
                                 UndefinedAttribute = typeOrAttr.TypeOrAttributeName;
                                 _LastAttribute = new UnstructuredProperty(UndefinedAttribute);
                                 typeOrAttr.TypeAttribute = _LastAttribute;
-                                AddNewEdgeKey(_LastType, _LastAttribute.AttributeID);
+                                AddNewEdgeKey(_LastType, _LastAttribute.ID);
                             }
 
                         }
                         else
                         {
 
-                            AddNewEdgeKey(_LastType, _LastAttribute.AttributeID);
+                            AddNewEdgeKey(_LastType, _LastAttribute.ID);
 
                         }
 

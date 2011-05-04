@@ -460,7 +460,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
         private ValueDefinition GetAtomValue(IDChainDefinition iDNode, IVertex aDBObject)
         {
-            return new ValueDefinition(aDBObject.GetProperty(iDNode.LastAttribute.AttributeID));
+            return new ValueDefinition(aDBObject.GetProperty(iDNode.LastAttribute.ID));
         }
 
         /// <summary>

@@ -631,9 +631,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                     var incomingEdgeAttribute = tempTypeAttribute as IIncomingEdgeDefinition;
                     
-                    if (aDBObject.HasOutgoingEdge(incomingEdgeAttribute.RelatedEdgeDefinition.AttributeID))
+                    if (aDBObject.HasOutgoingEdge(incomingEdgeAttribute.RelatedEdgeDefinition.ID))
                     {
-                        referenceUUIDs = aDBObject.GetOutgoingEdge(incomingEdgeAttribute.RelatedEdgeDefinition.AttributeID).GetTargetVertices();
+                        referenceUUIDs = aDBObject.GetOutgoingEdge(incomingEdgeAttribute.RelatedEdgeDefinition.ID).GetTargetVertices();
                         //GetUUIDsForAttribute(aDBObject, incomingEdgeAttribute.RelatedEdgeDefinition, tempTypeAttribute.BackwardEdgeDefinition.GetTypeAndAttributeInformation(_DBContext.DBTypeManager).Item2, _DBContext.DBTypeManager.GetTypeByUUID(aDBObject.TypeUUID));
                     }
 
@@ -1232,9 +1232,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                             var IVertex = myNode.GetIVertex(_iGraphDB, incomingAttribite.RelatedEdgeDefinition.SourceVertexType.ID, _securityToken, _transactionToken);
 
-                            if (IVertex.HasOutgoingEdge(incomingAttribite.RelatedEdgeDefinition.AttributeID))
+                            if (IVertex.HasOutgoingEdge(incomingAttribite.RelatedEdgeDefinition.ID))
                             {
-                                referencedUUIDs = IVertex.GetOutgoingEdge(incomingAttribite.RelatedEdgeDefinition.AttributeID).GetTargetVertices();
+                                referencedUUIDs = IVertex.GetOutgoingEdge(incomingAttribite.RelatedEdgeDefinition.ID).GetTargetVertices();
                             }
                         }
                         else
@@ -1456,9 +1456,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                                 var incomingAttribute = (IIncomingEdgeDefinition)interestingAttribute;
 
-                                if (currentDBObject.HasIncomingVertices(incomingAttribute.RelatedEdgeDefinition.SourceVertexType.ID, incomingAttribute.RelatedEdgeDefinition.AttributeID))
+                                if (currentDBObject.HasIncomingVertices(incomingAttribute.RelatedEdgeDefinition.SourceVertexType.ID, incomingAttribute.RelatedEdgeDefinition.ID))
                                 {
-                                    foreach (var aIncomingVertex in currentDBObject.GetIncomingVertices(incomingAttribute.RelatedEdgeDefinition.SourceVertexType.ID, incomingAttribute.RelatedEdgeDefinition.AttributeID))
+                                    foreach (var aIncomingVertex in currentDBObject.GetIncomingVertices(incomingAttribute.RelatedEdgeDefinition.SourceVertexType.ID, incomingAttribute.RelatedEdgeDefinition.ID))
                                     {
                                         //add backwardEdge to node (and itself)
                                         aGraph.Levels[nextHigherLevelKey.Level].AddNodeAndBackwardEdge(nextHigherLevelKey, aIncomingVertex, startLevelKey.LastEdge, currentDBObject.VertexID, null, null);
@@ -1474,9 +1474,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                                 var outgoingEdgeAttribute = (IOutgoingEdgeDefinition)interestingAttribute;
 
-                                if (currentDBObject.HasOutgoingEdge(outgoingEdgeAttribute.AttributeID))
+                                if (currentDBObject.HasOutgoingEdge(outgoingEdgeAttribute.ID))
                                 {
-                                    foreach (var aOutgoingVertex in currentDBObject.GetOutgoingEdge(outgoingEdgeAttribute.AttributeID).GetTargetVertices())
+                                    foreach (var aOutgoingVertex in currentDBObject.GetOutgoingEdge(outgoingEdgeAttribute.ID).GetTargetVertices())
                                     {
                                         //add backwardEdge to node (and itself)
                                         aGraph.Levels[nextHigherLevelKey.Level].AddNodeAndBackwardEdge(nextHigherLevelKey, aOutgoingVertex, startLevelKey.LastEdge, currentDBObject.VertexID, null, null);

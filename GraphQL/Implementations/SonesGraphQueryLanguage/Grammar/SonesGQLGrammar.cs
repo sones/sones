@@ -2554,7 +2554,7 @@ namespace sones.GraphQL
 
             foreach (var aVertexType in myTypesToDump)
             {
-                var propertyDefinitions = aVertexType.GetPropertyDefinitions(true).ToDictionary(key => key.AttributeID, value => value);
+                var propertyDefinitions = aVertexType.GetPropertyDefinitions(true).ToDictionary(key => key.ID, value => value);
 
                 foreach (var aVertex in GetAllVertices(aVertexType, mySecurityToken, myTransactionToken))
                 {
@@ -2609,7 +2609,7 @@ namespace sones.GraphQL
             #region singleEdge
 
             string outgoingSingleEdges = CreateGraphDMLforVertexOutgoingSingleEdges(myVertex.GetAllOutgoingSingleEdges(), 
-                                                                                myVertexType.GetOutgoingEdgeDefinitions(true).ToDictionary(key => key.AttributeID, value => value), 
+                                                                                myVertexType.GetOutgoingEdgeDefinitions(true).ToDictionary(key => key.ID, value => value), 
                                                                                 mySecurityToken, 
                                                                                 myTransactionToken);
 
@@ -2620,7 +2620,7 @@ namespace sones.GraphQL
             #region hyperEdge
 
             string outgoingHyperEdges = CreateGraphDMLforVertexOutgoingHyperEdges(myVertex.GetAllOutgoingHyperEdges(),
-                                                                                    myVertexType.GetOutgoingEdgeDefinitions(true).ToDictionary(key => key.AttributeID, value => value));
+                                                                                    myVertexType.GetOutgoingEdgeDefinitions(true).ToDictionary(key => key.ID, value => value));
 
             stringBuilder.Append(outgoingHyperEdges);
 

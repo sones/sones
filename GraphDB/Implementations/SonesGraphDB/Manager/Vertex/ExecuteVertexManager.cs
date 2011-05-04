@@ -173,7 +173,7 @@ namespace sones.GraphDB.Manager.Vertex
 
             var binaries = (myInsertDefinition.BinaryProperties == null)
                             ? null
-                            : myInsertDefinition.BinaryProperties.Select(x => new StreamAddDefinition(myVertexType.GetAttributeDefinition(x.Key).AttributeID, x.Value));
+                            : myInsertDefinition.BinaryProperties.Select(x => new StreamAddDefinition(myVertexType.GetAttributeDefinition(x.Key).ID, x.Value));
 
             var structured = ConvertStructuredProperties(myInsertDefinition, myVertexType);
 
@@ -184,7 +184,7 @@ namespace sones.GraphDB.Manager.Vertex
         {
             return (myInsertDefinition.StructuredProperties == null)
                              ? null
-                             : myInsertDefinition.StructuredProperties.ToDictionary(x => myType.GetAttributeDefinition(x.Key).AttributeID, x => x.Value);
+                             : myInsertDefinition.StructuredProperties.ToDictionary(x => myType.GetAttributeDefinition(x.Key).ID, x => x.Value);
         }
 
         private void CreateEdgeAddDefinitions(
@@ -212,7 +212,7 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     case EdgeMultiplicity.SingleEdge:
                         {
-                            var edge = CreateSingleEdgeAddDefinition(myTransaction, mySecurity, date, attrDef.AttributeID, edgeDef, attrDef.EdgeType, source, attrDef.TargetVertexType);
+                            var edge = CreateSingleEdgeAddDefinition(myTransaction, mySecurity, date, attrDef.ID, edgeDef, attrDef.EdgeType, source, attrDef.TargetVertexType);
                             if (edge.HasValue)
                                 singleEdges.Add(edgeDef.EdgeName, edge.Value);
                         }
@@ -251,7 +251,7 @@ namespace sones.GraphDB.Manager.Vertex
             if (contained == null)
                 return null;
 
-            return new HyperEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, contained, edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, attrDef.EdgeType), edgeDef.UnstructuredProperties);
+            return new HyperEdgeAddDefinition(attrDef.ID, attrDef.EdgeType.ID, source, contained, edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, attrDef.EdgeType), edgeDef.UnstructuredProperties);
         }
 
         private IEnumerable<SingleEdgeAddDefinition> CreateContainedEdges(

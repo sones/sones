@@ -43,11 +43,6 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
         public long ID
         {
-            get { throw new NotImplementedException(); }
-        }
-
-        public long AttributeID
-        {
             get { return Int64.MaxValue; }
         }
 
@@ -59,6 +54,11 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
         public IBaseType RelatedType
         {
             get { return null; }
+        }
+
+        public bool IsUserDefined
+        {
+            get { throw new NotImplementedException(); }
         }
 
         #endregion
@@ -83,7 +83,6 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
         }
 
         #endregion
-
 
     }
 }

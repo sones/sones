@@ -129,6 +129,7 @@
     <Compile Include="Settings\DefaultSecurityManagerImplementation.cs" />
     <Compile Include="Settings\DefaultTransactionManagerImplementation.cs" />
     <Compile Include="Settings\DefaultGraphFSImplementation.cs" />
+    <Compile Include="TypeManagement\BaseType.cs" />
     <Compile Include="TypeManagement\Base\BaseTypes.cs" />
     <Compile Include="TypeManagement\Base\AttributeDefinitions.cs" />
     <Compile Include="TypeManagement\Base\BasicTypes.cs" />

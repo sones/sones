@@ -161,7 +161,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 var Attributes = new Dictionary<String, Object>();
 
-                Attributes.Add("ID", property.AttributeID);
+                Attributes.Add("ID", property.ID);
                 Attributes.Add("TYPE", property.BaseType);
                 Attributes.Add("Name", property.Name);
                 Attributes.Add("UserDefined", property.IsUserDefinedType);
@@ -192,7 +192,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 var Attributes = new Dictionary<String, Object>();
 
-                Attributes.Add("ID", attr.AttributeID);
+                Attributes.Add("ID", attr.ID);
                 Attributes.Add("TYPE", attr.Kind);
                 Attributes.Add("Name", attr.Name);
                 
@@ -290,7 +290,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                     Attributes.Add("TargetVertexType", (edge as IOutgoingEdgeDefinition).TargetVertexType);
                 }
 
-                Attributes.Add("UUID", edge.AttributeID);
+                Attributes.Add("UUID", edge.ID);
                 Attributes.Add("Name", edge.Name);
                 
                 _AttributeReadout.Add(new VertexView(Attributes, new Dictionary<String, IEdgeView>()));
