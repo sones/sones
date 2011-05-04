@@ -1,18 +1,23 @@
 ﻿using System;
 using Irony.Ast;
 using Irony.Parsing;
+using sones.GraphQL.Structure.Nodes.Misc;
+using sones.GraphQL.GQL.Structure.Helper.Definition.Update;
 
 namespace sones.GraphQL.Structure.Nodes.DML
 {
-    public sealed class RemoveFromListAttrUpdateAddToOperatorNode : AStructureNode, IAstNodeInit
+    public sealed class RemoveFromListAttrUpdateAddToOperatorNode : RemoveFromListAttrUpdateNode
     {
-        #region IAstNodeInit Members
+        public RemoveFromListAttrUpdateAddToOperatorNode()
+        { }
 
-        public void Init(ParsingContext context, ParseTreeNode parseNode)
+        public void DirectInit(ParsingContext context, ParseTreeNode parseNode)
         {
-            throw new NotImplementedException();
+            var idChain = ((IDNode)parseNode.ChildNodes[0].AstNode).IDChainDefinition;
+            var AttrName = parseNode.ChildNodes[0].FirstChild.FirstChild.Token.ValueString;
+            var definition = ((RemoveFromListAttrUpdateScopeNode)parseNode.ChildNodes[1].AstNode).TupleDefinition;
+            ToBeRemovedList = new AttributeRemoveList(idChain, AttrName, definition);
         }
 
-        #endregion
     }
 }

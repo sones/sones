@@ -10,7 +10,7 @@ namespace sones.GraphQL.Structure.Nodes.Misc
     /// <summary>
     /// This node is requested in case of a GraphType statement.
     /// </summary>
-    public sealed class GraphDBTypeNode : AStructureNode, IAstNodeInit
+    public sealed class VertexTypeNode : AStructureNode, IAstNodeInit
     {
         #region Data
 
@@ -20,7 +20,7 @@ namespace sones.GraphQL.Structure.Nodes.Misc
 
         #region constructor
 
-        public GraphDBTypeNode()
+        public VertexTypeNode()
         {
 
         }

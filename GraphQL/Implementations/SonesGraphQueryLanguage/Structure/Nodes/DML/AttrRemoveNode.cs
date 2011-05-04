@@ -9,7 +9,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
     /// <summary>
     /// This node is requested in case of an AttrRemove node.
     /// </summary>
-    public sealed class AttrRemoveNode : AStructureNode, IAstNodeInit
+    public sealed class AttributeRemoveNode : AStructureNode, IAstNodeInit
     {
         #region properties
 
@@ -19,7 +19,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
         #region constructor
 
-        public AttrRemoveNode()
+        public AttributeRemoveNode()
         {
 
         }

@@ -135,6 +135,7 @@
     <Compile Include="Structure\Helper\Definition\Update\AttributeAssignOrUpdateValue.cs" />
     <Compile Include="Structure\Helper\Definition\Update\AttributeRemove.cs" />
     <Compile Include="Structure\Helper\Definition\Update\AttributeRemoveList.cs" />
+    <Compile Include="Structure\Helper\Definition\Update\RemoveFromListAttrUpdateNode.cs" />
     <Compile Include="Structure\Helper\Enums\KindOfTuple.cs" />
     <Compile Include="Structure\Helper\Enums\ParamType.cs" />
     <Compile Include="Structure\Helper\Enums\SelectOutputTypes.cs" />
@@ -171,8 +172,8 @@
     <Compile Include="Structure\Nodes\DDL\BulkTypeListMemberNode.cs" />
     <Compile Include="Structure\Nodes\DDL\BulkTypeNode.cs" />
     <Compile Include="Structure\Nodes\DDL\AttributeDefinitionNode.cs" />
-    <Compile Include="Structure\Nodes\DDL\BackwardEdgesNode.cs" />
-    <Compile Include="Structure\Nodes\DDL\BackwardEdgeNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\IncomingEdgesNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\IncomingEdgeNode.cs" />
     <Compile Include="Structure\Nodes\DDL\SingleEdgeTypeDefNode.cs" />
     <Compile Include="Structure\Nodes\DDL\EdgeTypeDefNode.cs" />
     <Compile Include="Structure\Nodes\DDL\IndexOptOnCreateTypeMemberNode.cs" />

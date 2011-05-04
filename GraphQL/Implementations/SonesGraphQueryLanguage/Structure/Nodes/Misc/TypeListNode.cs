@@ -7,7 +7,7 @@ using sones.GraphQL.ErrorHandling;
 
 namespace sones.GraphQL.Structure.Nodes.Misc
 {
-    public sealed class TypeListNode : AStructureNode, IAstNodeInit
+    public sealed class VertexTypeListNode : AStructureNode, IAstNodeInit
     {
         #region Properties
 
@@ -17,7 +17,7 @@ namespace sones.GraphQL.Structure.Nodes.Misc
 
         #region Constructor
 
-        public TypeListNode()
+        public VertexTypeListNode()
         {
             Types = new List<TypeReferenceDefinition>();
         }

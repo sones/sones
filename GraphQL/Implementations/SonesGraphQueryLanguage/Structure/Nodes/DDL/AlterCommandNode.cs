@@ -93,7 +93,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
                             #region data
 
                             var listOfToBeAddedAttributes = new List<AttributeDefinition>();
-                            var _BackwardEdgeInformation = new List<BackwardEdgeDefinition>();
+                            var _BackwardEdgeInformation = new List<IncomingEdgeDefinition>();
 
                             #endregion
 
@@ -105,9 +105,9 @@ namespace sones.GraphQL.Structure.Nodes.DDL
                                 {
                                     listOfToBeAddedAttributes.Add(((AttributeDefinitionNode)aNode.AstNode).AttributeDefinition);
                                 }
-                                else if (aNode.AstNode is BackwardEdgeNode)
+                                else if (aNode.AstNode is IncomingEdgeNode)
                                 {
-                                    _BackwardEdgeInformation.Add((aNode.AstNode as BackwardEdgeNode).BackwardEdgeDefinition);
+                                    _BackwardEdgeInformation.Add((aNode.AstNode as IncomingEdgeNode).BackwardEdgeDefinition);
                                 }
                                 else
                                 {

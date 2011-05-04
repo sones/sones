@@ -5,10 +5,10 @@ using System.Text;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition
 {
-    public sealed class BackwardEdgeDefinition
+    public sealed class IncomingEdgeDefinition
     {
 
-        public BackwardEdgeDefinition(string myAttributeName, string myTypeName, string myTypeAttributeName)
+        public IncomingEdgeDefinition(string myAttributeName, string myTypeName, string myTypeAttributeName)
         {
             AttributeName = myAttributeName;
             TypeName = myTypeName;

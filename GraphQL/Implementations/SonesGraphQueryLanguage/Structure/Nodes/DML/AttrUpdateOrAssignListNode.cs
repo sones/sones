@@ -10,7 +10,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
     /// <summary>
     /// This node is requested in case of an AttrUpdateOrAssignListNode Node.
     /// </summary>
-    public sealed class AttrUpdateOrAssignListNode : AStructureNode, IAstNodeInit
+    public sealed class AttributeUpdateOrAssignListNode : AStructureNode, IAstNodeInit
     {
         #region Properties
 
@@ -20,7 +20,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
         #region constructor
 
-        public AttrUpdateOrAssignListNode()
+        public AttributeUpdateOrAssignListNode()
         {
             ListOfUpdate = new HashSet<AAttributeAssignOrUpdateOrRemove>();
         }
@@ -59,17 +59,17 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
                         if (aChild.AstNode is RemoveFromListAttrUpdateNode)
                         {
-                            ListOfUpdate.Add((aChild.AstNode as RemoveFromListAttrUpdateNode).AttributeRemoveList);
+                            ListOfUpdate.Add((aChild.AstNode as RemoveFromListAttrUpdateNode).ToBeRemovedList);
                         }
                     }
                     else
                     {
-                        if (aChild.AstNode is AttrRemoveNode)
+                        if (aChild.AstNode is AttributeRemoveNode)
                         {
 
                             #region remove attribute
 
-                            ListOfUpdate.Add((aChild.AstNode as AttrRemoveNode).AttributeRemove);
+                            ListOfUpdate.Add((aChild.AstNode as AttributeRemoveNode).AttributeRemove);
 
                             #endregion
 

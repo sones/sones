@@ -512,7 +512,6 @@ namespace sones.GraphQL
             var bulkTypeList = new NonTerminal("bulkTypeList");
             var attributesOpt = new NonTerminal("attributesOpt");
             var insertValuesOpt = new NonTerminal("insertValuesOpt");
-            var optionalShards = new NonTerminal("optionalShards", typeof(ShardsNode));
             
 
             #region Expression
@@ -566,26 +565,23 @@ namespace sones.GraphQL
             var term = new NonTerminal("term");
             var notOpt = new NonTerminal("notOpt");
 
-            //var vertexType = new NonTerminal("vertexType");
-            //BNF_VertexTypes = new NonTerminal("vertexTypes");
-
-            var GraphDBType = new NonTerminal(SonesGQLConstants.VertexType, CreateGraphDBTypeNode);
+            var VertexType = new NonTerminal(SonesGQLConstants.VertexType, CreateGraphDBTypeNode);
             var AttributeList = new NonTerminal("AttributeList");
             var AttrDefinition = new NonTerminal("AttrDefinition", CreateAttributeDefinitionNode);
             var ResultObject = new NonTerminal("ResultObject");
             var ResultList = new NonTerminal("ResultList");
             var PrefixOperation = new NonTerminal("PrefixOperation");
             var ParameterList = new NonTerminal("ParameterList");
-            var TypeList = new NonTerminal("TypeList", CreateTypeListNode);
+            var VertexTypeList = new NonTerminal("TypeList", CreateVertexTypeListNode);
             var AType = new NonTerminal("AType", CreateATypeNode);
-            var TypeWrapper = new NonTerminal("TypeWrapper");
+            var VertexTypeWrapper = new NonTerminal("TypeWrapper");
 
             #region Attribute changes
 
             var AttrAssignList = new NonTerminal("AttrAssignList", CreateAttrAssignListNode);
-            var AttrUpdateList = new NonTerminal("AttrUpdateList", typeof(AttrUpdateOrAssignListNode));
+            var AttrUpdateList = new NonTerminal("AttrUpdateList", typeof(AttributeUpdateOrAssignListNode));
             var AttrAssign = new NonTerminal("AttrAssign", typeof(AttributeAssignNode));
-            var AttrRemove = new NonTerminal("AttrRemove", typeof(AttrRemoveNode));
+            var AttrRemove = new NonTerminal("AttrRemove", typeof(AttributeRemoveNode));
             var ListAttrUpdate = new NonTerminal("AttrUpdate");
             var AddToListAttrUpdate = new NonTerminal("AddToListAttrUpdate", typeof(AddToListAttrUpdateNode));
             var AddToListAttrUpdateAddTo = new NonTerminal("AddToListAttrUpdateAddTo", CreateAddToListAttrUpdateAddToNode);
@@ -646,11 +642,11 @@ namespace sones.GraphQL
 
             #endregion
 
-            #region BackwardEdges
+            #region IncomingEdges
 
-            var backwardEdgesOpt = new NonTerminal("BackwardEdges", CreateBackwardEdgesNode);
-            var BackwardEdgesSingleDef = new NonTerminal("BackwardEdgesSingleDef", CreateBackwardEdgeNode);
-            var BackwardEdgesList = new NonTerminal("BackwardEdgesList");
+            var incomingEdgesOpt = new NonTerminal("IncomingEdges", CreateIncomingEdgesNode);
+            var IncomingEdgesSingleDef = new NonTerminal("IncomingEdgesSingleDef", CreateBackwardEdgeNode);
+            var IncomingEdgesList = new NonTerminal("IncomingEdgesList");
 
             #endregion
 
@@ -766,7 +762,7 @@ namespace sones.GraphQL
             idlist.Rule = MakePlusRule(idlist, S_comma, Id);
             id_simpleList.Rule = MakePlusRule(id_simpleList, S_comma, Id_simple);
             id_simpleDotList.Rule = MakePlusRule(id_simpleDotList, S_dot, Id_simple);
-            id_typeAndAttribute.Rule = TypeWrapper + S_dot + Id;
+            id_typeAndAttribute.Rule = VertexTypeWrapper + S_dot + Id;
 
             #endregion
 
@@ -800,7 +796,7 @@ namespace sones.GraphQL
 
             #region typeList
 
-            TypeList.Rule = MakePlusRule(TypeList, S_comma, AType);
+            VertexTypeList.Rule = MakePlusRule(VertexTypeList, S_comma, AType);
 
             AType.Rule = Id_simple + Id_simple
                         | Id_simple;
@@ -808,7 +804,7 @@ namespace sones.GraphQL
             //AType.Rule = Id + Id_simple
             //                | Id;
 
-            TypeWrapper.Rule = AType;
+            VertexTypeWrapper.Rule = AType;
 
             #endregion
 
@@ -882,7 +878,7 @@ namespace sones.GraphQL
 
             DefaultValueDef.Rule = S_DEFAULT + "=" + KeyValuePair;
 
-            GraphDBType.Rule =       Id_simple
+            VertexType.Rule =       Id_simple
                                    | S_LIST + S_ListTypePrefix + Id_simple + S_ListTypePostfix
                                    | S_SET + S_ListTypePrefix + Id_simple + S_ListTypePostfix
                                    | EdgeTypeDef
@@ -894,15 +890,15 @@ namespace sones.GraphQL
 
             AttributeList.Rule = MakePlusRule(AttributeList, S_comma, AttrDefinition);
 
-            AttrDefinition.Rule = GraphDBType + Id_simple + AttrDefaultOpValue;
+            AttrDefinition.Rule = VertexType + Id_simple + AttrDefaultOpValue;
 
             #endregion
 
-            #region BackwardEdgesList
+            #region IncomingEdgesList
 
-            BackwardEdgesList.Rule = MakePlusRule(BackwardEdgesList, S_comma, BackwardEdgesSingleDef);
+            IncomingEdgesList.Rule = MakePlusRule(IncomingEdgesList, S_comma, IncomingEdgesSingleDef);
 
-            BackwardEdgesSingleDef.Rule = Id_simple + S_dot + Id_simple + Id_simple;
+            IncomingEdgesSingleDef.Rule = Id_simple + S_dot + Id_simple + Id_simple;
             //| Id_simple + S_dot + Id_simple + S_ListTypePrefix + Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePostfix + Id_simple;
 
             #endregion
@@ -1027,8 +1023,8 @@ namespace sones.GraphQL
 
             #region CREATE INDEX
 
-            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + S_VERTEX + S_TYPE + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt
-                | S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt; // due to compatibility the  + S_TYPE is optional
+            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + S_VERTEX + S_TYPE + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt
+                | S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt; // due to compatibility the  + S_TYPE is optional
 
             uniqueOpt.Rule = Empty | S_UNIQUE;
 
@@ -1047,7 +1043,7 @@ namespace sones.GraphQL
 
             rebuildIndicesStmt.Rule = S_REBUILD + S_INDICES + rebuildIndicesTypes;
 
-            rebuildIndicesTypes.Rule = Empty | TypeList;
+            rebuildIndicesTypes.Rule = Empty | VertexTypeList;
 
             #endregion
 
@@ -1064,7 +1060,7 @@ namespace sones.GraphQL
 
             bulkTypeListMember.Rule = abstractOpt + bulkType;
 
-            bulkType.Rule = Id_simple + extendsOpt + attributesOpt + backwardEdgesOpt + uniquenessOpt + mandatoryOpt + indexOptOnCreateType + commentOpt;
+            bulkType.Rule = Id_simple + extendsOpt + attributesOpt + incomingEdgesOpt + uniquenessOpt + mandatoryOpt + indexOptOnCreateType + commentOpt;
 
             commentOpt.Rule = Empty
                                     | S_COMMENT + "=" + string_literal;
@@ -1078,8 +1074,8 @@ namespace sones.GraphQL
             attributesOpt.Rule = Empty
                                     | S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT;
 
-            backwardEdgesOpt.Rule = Empty
-                                    | S_INCOMINGEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT;
+            incomingEdgesOpt.Rule = Empty
+                                    | S_INCOMINGEDGES + S_BRACKET_LEFT + IncomingEdgesList + S_BRACKET_RIGHT;
 
             uniquenessOpt.Rule = Empty
                                     | S_UNIQUE + S_BRACKET_LEFT + id_simpleList + S_BRACKET_RIGHT;
@@ -1111,7 +1107,7 @@ namespace sones.GraphQL
             alterCmd.Rule = Empty
                             | S_ADD + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
                             | S_DROP + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
-                            | S_ADD + S_INCOMINGEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT
+                            | S_ADD + S_INCOMINGEDGES + S_BRACKET_LEFT + IncomingEdgesList + S_BRACKET_RIGHT
                             | S_DROP + S_INCOMINGEDGES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
                             | S_ADD + indexOnCreateType
                             | S_DROP + IndexDropOnAlterType
@@ -1137,7 +1133,7 @@ namespace sones.GraphQL
 
             #region SELECT
 
-            SelectStmtGraph.Rule = S_FROM + TypeList + S_SELECT + selList + whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
+            SelectStmtGraph.Rule = S_FROM + VertexTypeList + S_SELECT + selList + whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
 
             resolutionDepthOpt.Rule = Empty
                                         | S_DEPTH + number;
@@ -1214,7 +1210,7 @@ namespace sones.GraphQL
 
             #region INSERT
 
-            InsertStmt.Rule = S_INSERT + S_INTO + TypeWrapper + insertValuesOpt;
+            InsertStmt.Rule = S_INSERT + S_INTO + VertexTypeWrapper + insertValuesOpt;
 
             insertValuesOpt.Rule = Empty
                                     | S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT;
@@ -1248,7 +1244,7 @@ namespace sones.GraphQL
 
             #region UPDATE
 
-            updateStmt.Rule = S_UPDATE + TypeWrapper + S_SET + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + whereClauseOpt;
+            updateStmt.Rule = S_UPDATE + VertexTypeWrapper + S_SET + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + whereClauseOpt;
 
             AttrUpdateList.Rule = MakePlusRule(AttrUpdateList, S_comma, AttrUpdateOrAssign);
 
@@ -1284,7 +1280,7 @@ namespace sones.GraphQL
 
             #region DROP INDEX
 
-            dropIndexStmt.Rule = S_FROM + TypeWrapper + S_DROP + S_INDEX + Id_simple + editionOpt;
+            dropIndexStmt.Rule = S_FROM + VertexTypeWrapper + S_DROP + S_INDEX + Id_simple + editionOpt;
 
             #endregion
 
@@ -1337,19 +1333,19 @@ namespace sones.GraphQL
 
             #region INSERTORUPDATE
 
-            insertorupdateStmt.Rule = S_INSERTORUPDATE + TypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + whereClauseOpt;
+            insertorupdateStmt.Rule = S_INSERTORUPDATE + VertexTypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + whereClauseOpt;
 
             #endregion
 
             #region INSERTORREPLACE
 
-            insertorreplaceStmt.Rule = S_INSERTORREPLACE + TypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + whereClauseOpt;
+            insertorreplaceStmt.Rule = S_INSERTORREPLACE + VertexTypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + whereClauseOpt;
 
             #endregion
 
             #region REPLACE
 
-            replaceStmt.Rule = S_REPLACE + TypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + S_WHERE + BNF_Expression;
+            replaceStmt.Rule = S_REPLACE + VertexTypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + S_WHERE + BNF_Expression;
 
             #endregion
 
@@ -1400,7 +1396,7 @@ namespace sones.GraphQL
 
             dumpType.Rule = Empty | S_ALL | S_GDDL | S_GDML;      // If empty => create both
             dumpFormat.Rule = Empty | S_AS + S_GQL;                 // If empty => create GQL
-            typeOptionalList.Rule = Empty | S_VERTEX + S_TYPES + TypeList;
+            typeOptionalList.Rule = Empty | S_VERTEX + S_TYPES + VertexTypeList;
 
             dumpDestination.Rule = Empty | S_INTO + location_literal | S_TO + location_literal;
 
@@ -1425,17 +1421,17 @@ namespace sones.GraphQL
             #region LINK
 
             // Semantic Web Yoda-Style and human language style
-            linkStmt.Rule = S_LINK + TypeWrapper + CollectionTuple + S_VIA + Id + S_TO + LinkCondition |
-                            S_LINK + TypeWrapper + CollectionTuple + S_TO + LinkCondition + S_VIA + Id;
+            linkStmt.Rule = S_LINK + VertexTypeWrapper + CollectionTuple + S_VIA + Id + S_TO + LinkCondition |
+                            S_LINK + VertexTypeWrapper + CollectionTuple + S_TO + LinkCondition + S_VIA + Id;
 
-            LinkCondition.Rule = TypeWrapper + CollectionTuple;
+            LinkCondition.Rule = VertexTypeWrapper + CollectionTuple;
 
             #endregion
 
             #region UNLINK
 
-            unlinkStmt.Rule = S_UNLINK + TypeWrapper + CollectionTuple + S_VIA + Id + S_FROM + LinkCondition |
-                              S_UNLINK + TypeWrapper + CollectionTuple + S_FROM + LinkCondition + S_VIA + Id;
+            unlinkStmt.Rule = S_UNLINK + VertexTypeWrapper + CollectionTuple + S_VIA + Id + S_FROM + LinkCondition |
+                              S_UNLINK + VertexTypeWrapper + CollectionTuple + S_FROM + LinkCondition + S_VIA + Id;
 
             #endregion
 
@@ -1462,7 +1458,7 @@ namespace sones.GraphQL
                 //, KeyValuePair
                 //, EdgeTypeParam
                 , EdgeType_SortedMember, AttrUpdateOrAssign, ListAttrUpdate, DescrArgument,
-                TypeWrapper //is used as a wrapper for AType
+                VertexTypeWrapper //is used as a wrapper for AType
                 , IdOrFunc //, IdOrFuncList
                 , BNF_ExprList, BNF_AggregateArg,
                 //ExtendedExpressionList,
@@ -1478,7 +1474,7 @@ namespace sones.GraphQL
 
         private void CreateTypeList(ParsingContext context, ParseTreeNode parseNode)
         {
-            var node = new TypeListNode();
+            var node = new VertexTypeListNode();
 
             node.Init(context, parseNode);
 
@@ -1514,7 +1510,7 @@ namespace sones.GraphQL
 
         private void CreateAttrAssignListNode(ParsingContext context, ParseTreeNode parseNode)
         {
-            var attrAssignListNode = new AttrAssignListNode();
+            var attrAssignListNode = new AttributeAssignListNode();
 
             attrAssignListNode.Init(context, parseNode);
 
@@ -1532,7 +1528,7 @@ namespace sones.GraphQL
 
         private void CreateGraphDBTypeNode(ParsingContext context, ParseTreeNode parseNode)
         {
-            GraphDBTypeNode aGraphTypeNode = new GraphDBTypeNode();
+            VertexTypeNode aGraphTypeNode = new VertexTypeNode();
 
             aGraphTypeNode.Init(context, parseNode);
 
@@ -1786,9 +1782,9 @@ namespace sones.GraphQL
             parseNode.AstNode = aAggregateNode;
         }
 
-        private void CreateTypeListNode(ParsingContext context, ParseTreeNode parseNode)
+        private void CreateVertexTypeListNode(ParsingContext context, ParseTreeNode parseNode)
         {
-            TypeListNode aNode = new TypeListNode();
+            VertexTypeListNode aNode = new VertexTypeListNode();
 
             aNode.Init(context, parseNode);
 
@@ -1858,9 +1854,9 @@ namespace sones.GraphQL
 
         #endregion
 
-        private void CreateBackwardEdgesNode(ParsingContext context, ParseTreeNode parseNode)
+        private void CreateIncomingEdgesNode(ParsingContext context, ParseTreeNode parseNode)
         {
-            BackwardEdgesNode backwardEdgesNode = new BackwardEdgesNode();
+            IncomingEdgesNode backwardEdgesNode = new IncomingEdgesNode();
 
             backwardEdgesNode.Init(context, parseNode);
 
@@ -1869,7 +1865,7 @@ namespace sones.GraphQL
 
         private void CreateBackwardEdgeNode(ParsingContext context, ParseTreeNode parseNode)
         {
-            BackwardEdgeNode backwardEdgeNode = new BackwardEdgeNode();
+            IncomingEdgeNode backwardEdgeNode = new IncomingEdgeNode();
 
             backwardEdgeNode.Init(context, parseNode);
 
@@ -1927,9 +1923,9 @@ namespace sones.GraphQL
 
         private void CreateAddToListAttrUpdateAddToNode(ParsingContext context, ParseTreeNode parseNode)
         {
-            var addToListAttrUpdateAddToNode = new AddToListAttrUpdateAddToNode();
+            var addToListAttrUpdateAddToNode = new AddToListAttributeUpdateAddToNode();
 
-            addToListAttrUpdateAddToNode.Init(context, parseNode);
+            addToListAttrUpdateAddToNode.DirectInit(context, parseNode);
 
             parseNode.AstNode = addToListAttrUpdateAddToNode;
         }
@@ -1938,7 +1934,7 @@ namespace sones.GraphQL
         {
             var addToListAttrUpdateOperatorNode = new AddToListAttrUpdateOperatorNode();
 
-            addToListAttrUpdateOperatorNode.Init(context, parseNode);
+            addToListAttrUpdateOperatorNode.DirectInit(context, parseNode);
 
             parseNode.AstNode = addToListAttrUpdateOperatorNode;
         }
@@ -1947,7 +1943,7 @@ namespace sones.GraphQL
         {
             var removeFromListAttrUpdateAddToRemoveFromNode = new RemoveFromListAttrUpdateAddToRemoveFromNode();
 
-            removeFromListAttrUpdateAddToRemoveFromNode.Init(context, parseNode);
+            removeFromListAttrUpdateAddToRemoveFromNode.DirectInit(context, parseNode);
 
             parseNode.AstNode = removeFromListAttrUpdateAddToRemoveFromNode;
         }
@@ -1956,7 +1952,7 @@ namespace sones.GraphQL
         {
             var removeFromListAttrUpdateAddToOperatorNode = new RemoveFromListAttrUpdateAddToOperatorNode();
 
-            removeFromListAttrUpdateAddToOperatorNode.Init(context, parseNode);
+            removeFromListAttrUpdateAddToOperatorNode.DirectInit(context, parseNode);
 
             parseNode.AstNode = removeFromListAttrUpdateAddToOperatorNode;
         }
@@ -1974,7 +1970,7 @@ namespace sones.GraphQL
         {
             var removeFromListAttrUpdateScopeNode = new RemoveFromListAttrUpdateScopeNode();
 
-            removeFromListAttrUpdateScopeNode.Init(context, parseNode);
+            removeFromListAttrUpdateScopeNode.DirectInit(context, parseNode);
 
             parseNode.AstNode = removeFromListAttrUpdateScopeNode;
         }

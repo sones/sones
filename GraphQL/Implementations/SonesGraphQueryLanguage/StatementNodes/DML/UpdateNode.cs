@@ -45,7 +45,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
             if (HasChildNodes(parseNode.ChildNodes[3]))
             {
-                var AttrUpdateOrAssign = (AttrUpdateOrAssignListNode)parseNode.ChildNodes[3].AstNode;
+                var AttrUpdateOrAssign = (AttributeUpdateOrAssignListNode)parseNode.ChildNodes[3].AstNode;
                 _listOfUpdates = AttrUpdateOrAssign.ListOfUpdate;
             }
 

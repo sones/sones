@@ -8,11 +8,11 @@ namespace sones.GraphQL.Structure.Nodes.DDL
     /// <summary>
     /// One single BackwardEdge definition node.
     /// </summary>
-    public sealed class BackwardEdgeNode : AStructureNode, IAstNodeInit
+    public sealed class IncomingEdgeNode : AStructureNode, IAstNodeInit
     {
         #region Data
 
-        public BackwardEdgeDefinition BackwardEdgeDefinition { get; private set; }
+        public IncomingEdgeDefinition BackwardEdgeDefinition { get; private set; }
 
         /// <summary>
         /// The destination type of the backwardedge
@@ -33,7 +33,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 
         #region constructor
 
-        public BackwardEdgeNode()
+        public IncomingEdgeNode()
         {
 
         }
@@ -56,7 +56,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 
             _AttributeName = parseNode.ChildNodes[3].Token.ValueString;
 
-            BackwardEdgeDefinition = new BackwardEdgeDefinition(_AttributeName, _TypeName, _TypeAttributeName);
+            BackwardEdgeDefinition = new IncomingEdgeDefinition(_AttributeName, _TypeName, _TypeAttributeName);
 
         }
 

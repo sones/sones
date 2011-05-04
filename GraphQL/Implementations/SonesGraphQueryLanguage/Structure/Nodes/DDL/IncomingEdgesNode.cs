@@ -9,26 +9,26 @@ namespace sones.GraphQL.Structure.Nodes.DDL
     /// <summary>
     /// A list of single BackwardEdge definition nodes.
     /// </summary>
-    public sealed class BackwardEdgesNode : AStructureNode, IAstNodeInit
+    public sealed class IncomingEdgesNode : AStructureNode, IAstNodeInit
     {
         #region Data
 
         /// <summary>
         /// The information about the BackwardEdge: &lt;Type, Attribute, Visible AttributeName&gt;
         /// </summary>
-        public List<BackwardEdgeDefinition> BackwardEdgeInformation
+        public List<IncomingEdgeDefinition> BackwardEdgeInformation
         {
             get { return _BackwardEdgeInformation; }
         }
-        private List<BackwardEdgeDefinition> _BackwardEdgeInformation;
+        private List<IncomingEdgeDefinition> _BackwardEdgeInformation;
 
         #endregion
 
         #region constructor
 
-        public BackwardEdgesNode()
+        public IncomingEdgesNode()
         {
-            _BackwardEdgeInformation = new List<BackwardEdgeDefinition>();
+            _BackwardEdgeInformation = new List<IncomingEdgeDefinition>();
         }
 
         #endregion
@@ -41,9 +41,9 @@ namespace sones.GraphQL.Structure.Nodes.DDL
             {
                 foreach (var _ParseTreeNode in parseNode.ChildNodes[1].ChildNodes)
                 {
-                    if (_ParseTreeNode.AstNode as BackwardEdgeNode != null)
+                    if (_ParseTreeNode.AstNode as IncomingEdgeNode != null)
                     {
-                        _BackwardEdgeInformation.Add(((BackwardEdgeNode)_ParseTreeNode.AstNode).BackwardEdgeDefinition);
+                        _BackwardEdgeInformation.Add(((IncomingEdgeNode)_ParseTreeNode.AstNode).BackwardEdgeDefinition);
                     }
                 }
             }

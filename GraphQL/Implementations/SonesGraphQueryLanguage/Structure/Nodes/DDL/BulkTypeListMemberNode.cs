@@ -18,7 +18,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
         private String _Comment = ""; //the name of the type that should be extended
         private Boolean _IsAbstract = false;
         private Dictionary<AttributeDefinition, String> _Attributes = new Dictionary<AttributeDefinition, String>(); //the dictionayry of attribute definitions
-        private List<BackwardEdgeDefinition> _BackwardEdgeInformation;
+        private List<IncomingEdgeDefinition> _BackwardEdgeInformation;
         private List<IndexDefinition> _Indices;
 
         #endregion
@@ -30,7 +30,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
         public String Comment { get { return _Comment; } }
         public Boolean IsAbstract { get { return _IsAbstract; } }
         public Dictionary<AttributeDefinition, String> Attributes { get { return _Attributes; } }
-        public List<BackwardEdgeDefinition> BackwardEdges { get { return _BackwardEdgeInformation; } }
+        public List<IncomingEdgeDefinition> BackwardEdges { get { return _BackwardEdgeInformation; } }
         public List<IndexDefinition> Indices { get { return _Indices; } }
 
         #endregion

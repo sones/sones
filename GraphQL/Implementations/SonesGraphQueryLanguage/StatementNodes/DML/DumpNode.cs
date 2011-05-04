@@ -40,7 +40,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
             if (HasChildNodes(parseNode.ChildNodes[1]))
             {
-                _TypesToDump = ((parseNode.ChildNodes[1].ChildNodes[1].AstNode as TypeListNode).Types).Select(tlnode => tlnode.TypeName).ToList();
+                _TypesToDump = ((parseNode.ChildNodes[1].ChildNodes[1].AstNode as VertexTypeListNode).Types).Select(tlnode => tlnode.TypeName).ToList();
             }
 
             #endregion

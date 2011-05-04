@@ -19,7 +19,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
         private String _Extends = ""; //the name of the type that should be extended
         private String _Comment = ""; //the name of the type that should be extended
         private Dictionary<AttributeDefinition, String> _Attributes = new Dictionary<AttributeDefinition, String>(); //the dictionayry of attribute definitions
-        private List<BackwardEdgeDefinition> _BackwardEdgeInformation;
+        private List<IncomingEdgeDefinition> _BackwardEdgeInformation;
         private List<IndexDefinition> _Indices;
 
         #endregion
@@ -30,7 +30,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
         public String Extends { get { return _Extends; } }
         public String Comment { get { return _Comment; } }
         public Dictionary<AttributeDefinition, String> Attributes { get { return _Attributes; } }
-        public List<BackwardEdgeDefinition> BackwardEdges { get { return _BackwardEdgeInformation; } }
+        public List<IncomingEdgeDefinition> BackwardEdges { get { return _BackwardEdgeInformation; } }
         public List<IndexDefinition> Indices { get { return _Indices; } }
 
         #endregion
@@ -74,7 +74,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 
             if (HasChildNodes(parseNode.ChildNodes[3]))
             {
-                _BackwardEdgeInformation = (((BackwardEdgesNode)parseNode.ChildNodes[3].AstNode).BackwardEdgeInformation);
+                _BackwardEdgeInformation = (((IncomingEdgesNode)parseNode.ChildNodes[3].AstNode).BackwardEdgeInformation);
             }
 
             #endregion

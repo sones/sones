@@ -15,9 +15,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
     {
 
         public readonly List<AttributeDefinition> ListOfAttributes;
-        public readonly List<BackwardEdgeDefinition> BackwardEdgeInformation;
+        public readonly List<IncomingEdgeDefinition> BackwardEdgeInformation;
 
-        public AlterType_AddAttributes(List<AttributeDefinition> listOfAttributes, List<BackwardEdgeDefinition> backwardEdgeInformation)
+        public AlterType_AddAttributes(List<AttributeDefinition> listOfAttributes, List<IncomingEdgeDefinition> backwardEdgeInformation)
         {
             ListOfAttributes = listOfAttributes;
             BackwardEdgeInformation = backwardEdgeInformation;

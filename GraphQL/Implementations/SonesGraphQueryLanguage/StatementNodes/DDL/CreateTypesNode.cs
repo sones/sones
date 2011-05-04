@@ -301,7 +301,7 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// </summary>
         /// <param name="aIncomingEdge">The incoming edge definition by the gql</param>
         /// <returns>An incoming edge predefinition</returns>
-        private IncomingEdgePredefinition GenerateAIncomingEdge(BackwardEdgeDefinition aIncomingEdge)
+        private IncomingEdgePredefinition GenerateAIncomingEdge(IncomingEdgeDefinition aIncomingEdge)
         {
             IncomingEdgePredefinition result = new IncomingEdgePredefinition(aIncomingEdge.AttributeName);
 

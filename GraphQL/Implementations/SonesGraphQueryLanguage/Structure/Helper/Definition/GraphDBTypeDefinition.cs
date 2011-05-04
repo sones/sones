@@ -37,7 +37,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
         #region BackwardEdgeNode
 
-        public List<BackwardEdgeDefinition> BackwardEdgeNodes
+        public List<IncomingEdgeDefinition> BackwardEdgeNodes
         {
             get;
             private set;
@@ -82,7 +82,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
         #region Constructor
 
-        public GraphDBTypeDefinition(String myName, String myParentType, Boolean myIsAbstract, Dictionary<AttributeDefinition, String> myAttributes, List<BackwardEdgeDefinition> myBackwardEdgeNodes = null, List<IndexDefinition> myIndices = null, String myComment = null)
+        public GraphDBTypeDefinition(String myName, String myParentType, Boolean myIsAbstract, Dictionary<AttributeDefinition, String> myAttributes, List<IncomingEdgeDefinition> myBackwardEdgeNodes = null, List<IndexDefinition> myIndices = null, String myComment = null)
         {
 
             Name = myName;

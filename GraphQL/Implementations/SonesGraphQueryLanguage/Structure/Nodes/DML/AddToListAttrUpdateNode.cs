@@ -8,7 +8,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
     /// <summary>
     /// This node is requested in case of an AddToListAttrUpdate node.
     /// </summary>
-    public sealed class AddToListAttrUpdateNode : AStructureNode, IAstNodeInit
+    public class AddToListAttrUpdateNode : AStructureNode, IAstNodeInit
     {
         #region properties
 

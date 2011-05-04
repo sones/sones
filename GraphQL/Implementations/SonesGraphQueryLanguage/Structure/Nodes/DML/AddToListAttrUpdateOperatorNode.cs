@@ -1,18 +1,19 @@
 ﻿using System;
 using Irony.Ast;
 using Irony.Parsing;
+using sones.GraphQL.GQL.Structure.Helper.Definition;
+using sones.GraphQL.Structure.Nodes.Misc;
 
 namespace sones.GraphQL.Structure.Nodes.DML
 {
-    public sealed class AddToListAttrUpdateOperatorNode : AStructureNode, IAstNodeInit
+    public sealed class AddToListAttrUpdateOperatorNode : AddToListAttrUpdateNode, IAstNodeInit
     {
-        #region IAstNodeInit Members
+        public AddToListAttrUpdateOperatorNode()
+        { }
 
-        public void Init(ParsingContext context, ParseTreeNode parseNode)
+        public new void DirectInit(ParsingContext context, ParseTreeNode parseNode)
         {
-            throw new NotImplementedException();
+            AttributeUpdateList = new AttributeAssignOrUpdateList(((CollectionOfDBObjectsNode)parseNode.ChildNodes[2].AstNode).CollectionDefinition, ((IDNode)parseNode.ChildNodes[0].AstNode).IDChainDefinition, false);
         }
-
-        #endregion
     }
 }

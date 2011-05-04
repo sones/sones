@@ -44,7 +44,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
             if (HasChildNodes(parseNode.ChildNodes[3]))
             {
-                _AttributeAssignList = ((parseNode.ChildNodes[3].ChildNodes[1].AstNode as AttrAssignListNode).AttributeAssigns);
+                _AttributeAssignList = ((parseNode.ChildNodes[3].ChildNodes[1].AstNode as AttributeAssignListNode).AttributeAssigns);
             }
 
             #endregion

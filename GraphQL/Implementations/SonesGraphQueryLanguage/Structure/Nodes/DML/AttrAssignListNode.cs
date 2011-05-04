@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace sones.GraphQL.Structure.Nodes.DML
 {
-    public sealed class AttrAssignListNode : AStructureNode, IAstNodeInit
+    public sealed class AttributeAssignListNode : AStructureNode, IAstNodeInit
     {
         public List<AAttributeAssignOrUpdate> AttributeAssigns { get; private set; }
 

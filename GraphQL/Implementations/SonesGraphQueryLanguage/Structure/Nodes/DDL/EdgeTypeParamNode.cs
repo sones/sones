@@ -28,20 +28,6 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 
                 ///Das sollte hier jetzt viel einfacher sein, weil die definition einer edge maximal so aussehen kann User(Weighted) oder Set<User (Weighted)>
 
-                //if (parseNode.ChildNodes[0].AstNode is DefaultValueDefNode)
-                //{
-                //    param = (parseNode.ChildNodes[0].AstNode as DefaultValueDefNode).Value;
-                //    type = ParamType.DefaultValueDef;
-                //}
-
-                //else if (parseNode.ChildNodes[0].AstNode is EdgeType_SortedNode)
-                //{
-                //    param = (parseNode.ChildNodes[0].AstNode as EdgeType_SortedNode).SortDirection;
-                //    type = ParamType.Sort;
-                //}
-
-                //else
-                //{
                 //    throw new NotImplementedQLException("TODO");
 
                 //    if (GraphDBTypeMapper.IsBasicType(parseNode.ChildNodes[0].Token.ValueString))
