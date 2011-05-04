@@ -336,7 +336,11 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
             var val = (myValue as ValueDefinition).Value;
 
-            if (myParameter.Value.GetType() != val.GetType())
+            try
+            {
+                Convert.ChangeType(val, myParameter.Value.GetType());
+            }
+            catch (Exception)
             {
                 throw new FunctionParameterTypeMismatchException(myParameter.Value.GetType(), val.GetType());
             }

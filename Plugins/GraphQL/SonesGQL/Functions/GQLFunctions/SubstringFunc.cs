@@ -34,20 +34,9 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             if (myWorkingBase != null)
             {
-                if ((myWorkingBase is IAttributeDefinition) && 
-                    (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && 
-                    (myWorkingBase as IPropertyDefinition).IsUserDefinedType)
-                {
-                    return false;
-                }
-                else if (myWorkingBase is Type &&  ((Type)myWorkingBase).Name.Equals("String"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return
+                    (myWorkingBase is IPropertyDefinition) &&
+                    ((IPropertyDefinition)myWorkingBase).BaseType == typeof(String);
             }
             else
             {
@@ -62,7 +51,7 @@ namespace sones.Plugins.SonesGQL.Functions
                 throw new FunctionParameterTypeMismatchException(typeof(String), myCallingObject.GetType());
             }
 
-            var substring = myCallingObject.ToString().Substring((Int32)myParams[0].Value, (Int32)myParams[1].Value);
+            var substring = myCallingObject.ToString().Substring(Convert.ToInt32(myParams[0].Value), Convert.ToInt32(myParams[1].Value));
                 
             return new FuncParameter(substring);
         }
