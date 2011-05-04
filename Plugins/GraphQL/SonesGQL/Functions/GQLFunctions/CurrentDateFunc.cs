@@ -28,14 +28,15 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            if (myWorkingBase != null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            //if (myWorkingBase == null)
+            //{
+            //    return false;
+            //}
+            //else
+            //{
+            //    return true;
+            //}
+            return true;
         }
 
         public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)

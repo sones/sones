@@ -143,13 +143,13 @@ namespace sones.GraphDB.Request
         /// <param name="myMatchAction">A Action to perform on each match found</param>
         /// <param name="myStopEvaluator">Evaluator to stop traversion</param>
         /// <returns>Enumerable of verticies</returns>
-        private IEnumerable<IVertex> TraverseStartNodes(IEnumerable<IVertex>                                    myStartNodes,
-                                                        IMetaManager                                            myMetaManager,
-                                                        Boolean                                                 myAvoidCircles,
-                                                        Func<IVertex, IVertexType, IEdge, IEdgeType, Boolean>   myFollowThisEdge,
-                                                        Func<IVertex, IVertexType, Boolean>                     myMatchEvaluator,
-                                                        Action<IVertex>                                         myMatchAction,
-                                                        Func<TraversalState, Boolean>                           myStopEvaluator)
+        private IEnumerable<IVertex> TraverseStartNodes(IEnumerable<IVertex>                                                myStartNodes,
+                                                        IMetaManager                                                        myMetaManager,
+                                                        Boolean                                                             myAvoidCircles,
+                                                        Func<IVertex, IVertexType, IEdge, IAttributeDefinition, Boolean>    myFollowThisEdge,
+                                                        Func<IVertex, IVertexType, Boolean>                                 myMatchEvaluator,
+                                                        Action<IVertex>                                                     myMatchAction,
+                                                        Func<TraversalState, Boolean>                                       myStopEvaluator)
         {
             //start a traversion from each start node
             foreach (var node in myStartNodes)
@@ -180,14 +180,14 @@ namespace sones.GraphDB.Request
         /// <param name="myMatchAction">A Action to perform on each match found</param>
         /// <param name="myStopEvaluator">Evaluator to stop traversion</param>
         /// <returns>Enumerable of verticies</returns>
-        private IEnumerable<IVertex> TraverseVertex_private( IVertex                                                 myCurrentVertex,
-                                                             IVertex                                                 myViaVertex,
-                                                             IMetaManager                                            myMetaManager,
-                                                             Boolean                                                 myAvoidCircles,
-                                                             Func<IVertex, IVertexType, IEdge, IEdgeType, Boolean>   myFollowThisEdge,
-                                                             Func<IVertex, IVertexType, Boolean>                     myMatchEvaluator,
-                                                             Action<IVertex>                                         myMatchAction,
-                                                             Func<TraversalState, Boolean>                           myStopEvaluator )
+        private IEnumerable<IVertex> TraverseVertex_private( IVertex                                                            myCurrentVertex,
+                                                             IVertex                                                            myViaVertex,
+                                                             IMetaManager                                                       myMetaManager,
+                                                             Boolean                                                            myAvoidCircles,
+                                                             Func<IVertex, IVertexType, IEdge, IAttributeDefinition, Boolean>   myFollowThisEdge,
+                                                             Func<IVertex, IVertexType, Boolean>                                myMatchEvaluator,
+                                                             Action<IVertex>                                                    myMatchAction,
+                                                             Func<TraversalState, Boolean>                                      myStopEvaluator )
         {
             #region stop evaluation?
             //are we allowed to stop the current traversal
@@ -270,9 +270,15 @@ namespace sones.GraphDB.Request
                 #region traverse by using outgoing edges
                 //first do recursive search by using the outgoing edges
 
-                foreach (var _OutEdge in myCurrentVertex.GetAllOutgoingEdges())
+                //get vertex type of myCurrentVetex
+                var currVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken);
+
+                foreach (var _OutEdgeDef in currVertexType.GetOutgoingEdgeDefinitions(true))
                 {
-                    var outEdge = _OutEdge.Item2;
+                    var outEdge = myCurrentVertex.GetOutgoingEdge(_OutEdgeDef.AttributeID);
+
+                    if (outEdge == null)
+                        continue;
 
                     #region check edge
                     //check if the edge should be followed... if not, continue!
@@ -282,7 +288,7 @@ namespace sones.GraphDB.Request
                         if (!myFollowThisEdge(myCurrentVertex,
                                                 myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
                                                 outEdge,
-                                                myMetaManager.EdgeTypeManager.ExecuteManager.GetEdgeType(outEdge.EdgeTypeID, TransactionToken, SecurityToken)))
+                                                _OutEdgeDef))
                         {
                             continue;
                         }
