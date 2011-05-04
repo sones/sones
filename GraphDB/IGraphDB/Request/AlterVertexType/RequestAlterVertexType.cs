@@ -177,7 +177,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         public IEnumerable<String> ToBeRemovedProperties
         {
-            get { return (_toBeRemovedAttributes == null) ? null : _toBeRemovedAttributes.OfType<String>(); }
+            get { return (_toBeRemovedAttributes == null) ? null : _toBeRemovedAttributes; }
         }
 
         /// <summary>
@@ -194,14 +194,6 @@ namespace sones.GraphDB.Request
         public IEnumerable<long> ToBeRemovedIncomingEdges
         {
             get { return (_toBeRemovedIncomingEdges == null) ? null : _toBeRemovedIncomingEdges.OfType<long>(); }
-        }
-
-        /// <summary>
-        /// the unknown attributes of this edge type.
-        /// </summary>
-        public IEnumerable<UnknownAttributePredefinition> ToBeRemovedUnknownAttributes
-        {
-            get { return (_toBeRemovedAttributes == null) ? null : _toBeRemovedAttributes.OfType<UnknownAttributePredefinition>(); }
         }
 
         /// <summary>

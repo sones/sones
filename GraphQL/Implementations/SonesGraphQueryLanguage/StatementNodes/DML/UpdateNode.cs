@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using sones.GraphQL.GQL.Structure.Helper.Definition.Update;
 using sones.GraphQL.Structure.Nodes.DML;
 using sones.GraphDB.Request;
-using sones.GraphDB.TypeSystem;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -95,20 +95,27 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             Query = myQuery;
 
-            return myGraphDB.Update(mySecurityToken, myTransactionToken, new RequestUpdate(_TypeName), GenerateOutput);
+            return myGraphDB.Update(mySecurityToken, myTransactionToken, new RequestUpdate(new RequestGetVertices(_TypeName)), GenerateOutput);
         }
 
         #endregion
 
         #region helper
 
-        private QueryResult GenerateOutput(IRequestStatistics myStats, IVertexType myVertexType)
+        private QueryResult GenerateOutput(IRequestStatistics myStats, IEnumerable<IVertex> myVertices)
         {
+            var dict = new Dictionary<String, object>();
+
+            foreach (var vertex in myVertices)
+            {
+                dict.Add("Updated ", vertex.VertexID);
+            }
+
             return new QueryResult(Query, 
                                     "GQL", 
                                     Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), 
-                                    ResultType.Successful, 
-                                    new List<IVertexView> { new VertexView(new Dictionary<String, object> { { "UpdatedVertex", myVertexType } }, new Dictionary<String, IEdgeView>()) });
+                                    ResultType.Successful,
+                                    new List<IVertexView> { new VertexView(dict, new Dictionary<String, IEdgeView>()) });
         }
 
         #endregion

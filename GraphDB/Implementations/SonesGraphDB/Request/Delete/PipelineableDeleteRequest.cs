@@ -5,6 +5,7 @@ using System.Text;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.Manager;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Request.Delete
 {
@@ -13,6 +14,8 @@ namespace sones.GraphDB.Request.Delete
         #region data
 
         private readonly RequestDelete _request;
+
+        private IEnumerable<IVertex> _verticesToDelete;
 
         #endregion
 

@@ -10,28 +10,18 @@ namespace sones.GraphDB.Request
     {
         #region Data
 
-        public readonly String              TypeName;
-        public readonly IEnumerable<Int64>  ToBeDeletedVertices;
+        public readonly RequestGetVertices  GetVerticesRequest;
         public readonly IEnumerable<String> ToBeDeletedAttributes;
-        public readonly IExpression         ToBeDeletedExpression;
 
         #endregion
 
         #region Constructor
 
-        public RequestDelete(String myTypeName, IEnumerable<Int64> myToBeDeletedVertices, IEnumerable<String> myToBeDeletedAttributes = null)
+        public RequestDelete(RequestGetVertices myGetVerticesRequest, IEnumerable<String> myToBeDeletedAttributes = null)
         {
-            TypeName = myTypeName;
-            ToBeDeletedAttributes = myToBeDeletedAttributes;
-            ToBeDeletedExpression = null;
-        }
+            GetVerticesRequest = myGetVerticesRequest;
 
-        public RequestDelete(IExpression myToBeDeletedExpression, IEnumerable<String> myToBeDeletedAttributes = null)
-        {
             ToBeDeletedAttributes = myToBeDeletedAttributes;
-            TypeName = null;
-            ToBeDeletedVertices = null;
-            ToBeDeletedExpression = myToBeDeletedExpression;
         }
 
         #endregion

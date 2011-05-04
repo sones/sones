@@ -167,7 +167,7 @@ namespace sones.GraphDB.Request
         /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <param name="myVertexType">The updated vertex type</param>
         /// <returns>A TResult</returns>
-        public delegate TResult UpdateResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IVertexType myVertexType);
+        public delegate TResult UpdateResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IVertex> myVertexType);
 
         /// <summary>
         /// A converter delegate that produces a generic result

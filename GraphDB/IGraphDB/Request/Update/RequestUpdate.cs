@@ -13,9 +13,9 @@ namespace sones.GraphDB.Request
         #region data
 
         /// <summary>
-        /// The name of the vertex type that is going to be updated.
+        /// A GetVertices request to get the vertices to be updated
         /// </summary>
-        public readonly String VertexTypeName;
+        public readonly RequestGetVertices GetVerticesRequest;
 
         /// <summary>
         /// The comment for the updated vertex.
@@ -78,9 +78,13 @@ namespace sones.GraphDB.Request
 
         #region constructor
 
-        public RequestUpdate(String myVertexTypeName)
+        /// <summary>
+        /// Creates a new update request to get the vertices which should be updated
+        /// </summary>
+        /// <param name="myGetVerticesRequest">A request to get specific vertices.</param>
+        public RequestUpdate(RequestGetVertices myGetVerticesRequest)
         {
-            VertexTypeName = myVertexTypeName;
+            GetVerticesRequest = myGetVerticesRequest;
         }
 
         #endregion

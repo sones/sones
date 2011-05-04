@@ -91,7 +91,7 @@ namespace sones.GraphQL.StatementNodes.DML
             return myGraphDB.Delete<QueryResult>(
                 mySecurityToken,
                 myTransactionToken,
-                new RequestDelete(_typeName, toBeDeletedVertices, _toBeDeletedAttributes),
+                new RequestDelete(new RequestGetVertices(_typeName, toBeDeletedVertices), _toBeDeletedAttributes),
                 CreateQueryResult);
         }
 

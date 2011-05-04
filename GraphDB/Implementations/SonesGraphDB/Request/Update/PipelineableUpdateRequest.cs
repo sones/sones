@@ -5,6 +5,7 @@ using System.Text;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Request.Update
 {
@@ -17,7 +18,7 @@ namespace sones.GraphDB.Request.Update
         /// </summary>
         private readonly RequestUpdate _request;
 
-        private IVertexType updatedVertexType;
+        private IEnumerable<IVertex> updatedVertices;
 
         #endregion
 
@@ -71,7 +72,7 @@ namespace sones.GraphDB.Request.Update
         /// <returns>A TResult</returns>
         internal TResult GenerateRequestResult<TResult>(Converter.UpdateResultConverter<TResult> myOutputconverter)
         {
-            return myOutputconverter(Statistics, updatedVertexType);
+            return myOutputconverter(Statistics, updatedVertices);
         }
     }
 }
