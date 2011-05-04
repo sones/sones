@@ -1970,7 +1970,7 @@ namespace sones.GraphQL
         {
             var removeFromListAttrUpdateScopeNode = new RemoveFromListAttrUpdateScopeNode();
 
-            removeFromListAttrUpdateScopeNode.DirectInit(context, parseNode);
+            removeFromListAttrUpdateScopeNode.Init(context, parseNode);
 
             parseNode.AstNode = removeFromListAttrUpdateScopeNode;
         }
@@ -2620,7 +2620,10 @@ namespace sones.GraphQL
 
             #region hyperEdge
 
-            //TODO
+            string outgoingHyperEdges = CreateGraphDMLforVertexOutgoingHyperEdges(myVertex.GetAllOutgoingHyperEdges(),
+                                                                                    myVertexType.GetOutgoingEdgeDefinitions(true).ToDictionary(key => key.AttributeID, value => value));
+
+            stringBuilder.Append(outgoingHyperEdges);
 
             #endregion
 
