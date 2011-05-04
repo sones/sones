@@ -48,9 +48,36 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <typeparam name="TResult">The type of the result</typeparam>
         /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myCreatedVertexTypes">The vertex type that has been altered</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult AlterVertexTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IVertexType myAlteredVertexType);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myCreatedVertexTypes">The edge type that has been altered</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult AlterEdgeTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEdgeType myAlteredEdgeType);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <param name="myCreatedVertexType">The vertex type that has been created</param>
         /// <returns>A TResult</returns>
         public delegate TResult CreateVertexTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IVertexType myCreatedVertexType);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myCreatedVertexType">The edge type that has been created</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult CreateEdgeTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEdgeType myCreatedVertexType);
 
         /// <summary>
         /// A converter delegate that produces a generic result
@@ -172,14 +199,5 @@ namespace sones.GraphDB.Request
         /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <returns>A TResult</returns>
         public delegate TResult RebuildIndicesResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IIndexDefinition> myIndexDefinitions);
-
-        /// <summary>
-        /// A converter delegate that produces a generic result
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result</typeparam>
-        /// <param name="myRequestStatistics">The statistics of the request</param>
-        /// <returns>A TResult</returns>
-        public delegate TResult AlterTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics);
-
     }
 }

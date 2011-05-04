@@ -21,6 +21,7 @@ using sones.GraphDB.Request.DropIndex;
 using sones.GraphDB.Request.CreateIndex;
 using sones.GraphDB.Request.RebuildIndices;
 using sones.GraphDB.Manager.TypeManagement;
+using sones.GraphDB.Request.AlterType;
 
 namespace sones.GraphDB
 {
@@ -422,6 +423,45 @@ namespace sones.GraphDB
                                                                                         myTransactionToken));
 
             return ((PipelineableUpdateRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
+        #region AlterVertexType
+
+        public TResult AlterVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestAlterVertexType myRequestAlterVertexType, Converter.AlterVertexTypeResultConverter<TResult> myOutputconverter)
+        {
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableAlterTypeRequest(myRequestAlterVertexType,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
+
+            return ((PipelineableAlterTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
+        #region CreateEdgeType
+
+        public TResult CreateEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateVertexType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableCreateEdgeTypeRequest(myRequestCreateVertexType,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
+
+            return ((PipelineableCreateEdgeTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
+        #region AlterEdgeType
+
+        public TResult AlterEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestAlterEdgeType myRequestAlterEdgeType, Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableAlterEdgeTypeRequest(myRequestAlterEdgeType,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
+
+            return ((PipelineableAlterEdgeTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion

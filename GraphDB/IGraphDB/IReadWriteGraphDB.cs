@@ -11,6 +11,7 @@ using sones.GraphDB.Request.DropType;
 using sones.GraphDB.Request.DropIndex;
 using sones.GraphDB.Request.CreateIndex;
 using sones.GraphDB.Request.RebuildIndices;
+using sones.GraphDB.Request.AlterType;
 
 namespace sones.GraphDB
 {
@@ -48,6 +49,49 @@ namespace sones.GraphDB
                                           TransactionToken myTransactionToken,
                                           RequestCreateVertexType myRequestCreateVertexType,
                                           Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Alteres a vertex type
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestCreateVertexType">The alter vertex type request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult AlterVertexType<TResult>( SecurityToken mySecurityToken,
+                                          TransactionToken myTransactionToken,
+                                          RequestAlterVertexType myRequestAlterVertexType,
+                                          Converter.AlterVertexTypeResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Creates a new edge type
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestCreateVertexType">The create edge type request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult CreateEdgeType<TResult>(  SecurityToken mySecurityToken,
+                                          TransactionToken myTransactionToken,
+                                          RequestCreateEdgeType myRequestCreateVertexType,
+                                          Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Alteres a edge type
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestCreateVertexType">The alter edge type request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult AlterEdgeType<TResult>( SecurityToken mySecurityToken,
+                                        TransactionToken myTransactionToken,
+                                        RequestAlterEdgeType myRequestAlterEdgeType,
+                                        Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter);
+
 
         /// <summary>
         /// Clears the graphdb entirely

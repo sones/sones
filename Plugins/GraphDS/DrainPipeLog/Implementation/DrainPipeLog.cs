@@ -20,6 +20,7 @@ using sones.GraphDB.Request.DropIndex;
 using sones.GraphDB.Request.CreateIndex;
 using sones.GraphDB.Request.RebuildIndices;
 using System.IO;
+using sones.GraphDB.Request.AlterType;
 
 namespace sones.Plugins.GraphDS.DrainPipeLog
 {
@@ -29,6 +30,9 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
     /// </summary>
     public class DrainPipeLog : IDrainPipe
     {
+
+        #region Data
+
         private AppendLog _AppendLog = null;
         // this holds the information if this plugin handles requests asyncronously or syncronously
         // this will have a large impact on performance and/or reliability
@@ -36,8 +40,12 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         // when writing in asynchronous mode everything will be written in a separate thread
         private Thread Async_WriteThread = null;
         // the max number of bytes to hold in the buffer, defaults to 10 MByte
-        private Int32 MaximumAsyncBufferSize = 1024*1024*10;    // 10 MB
-        private WriteThread WriteThreadInstance = null;        
+        private Int32 MaximumAsyncBufferSize = 1024 * 1024 * 10;    // 10 MB
+        private WriteThread WriteThreadInstance = null;
+
+        #endregion
+
+        #region Constructors
 
         public DrainPipeLog()
         {
@@ -113,7 +121,9 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             }
             #endregion
         }
-        
+
+        #endregion
+
         #region IPluginable
         public string PluginName
         {
@@ -352,6 +362,21 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             throw new NotImplementedException();
         }
 
+        public TResult AlterVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestAlterVertexType myRequestAlterVertexType, Converter.AlterVertexTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult CreateEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateVertexType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult AlterEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestAlterEdgeType myRequestAlterEdgeType, Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
         public Guid ID
         {
             get { throw new NotImplementedException(); }
@@ -391,6 +416,5 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         }
 
         #endregion
-
     }
 }

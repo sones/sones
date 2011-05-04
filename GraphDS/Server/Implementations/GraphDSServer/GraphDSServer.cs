@@ -26,6 +26,7 @@ using sones.GraphDB.Request.DropType;
 using sones.GraphDB.Request.DropIndex;
 using sones.GraphDB.Request.CreateIndex;
 using sones.GraphDB.Request.RebuildIndices;
+using sones.GraphDB.Request.AlterType;
 
 namespace sones.GraphDSServer
 {
@@ -409,6 +410,33 @@ namespace sones.GraphDSServer
                                                     myTransactionToken,
                                                     myRequestRebuildIndices,
                                                     myOutputconverter);
+        }
+
+        public TResult AlterVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestAlterVertexType myRequestAlterVertexType, Converter.AlterVertexTypeResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.AlterVertexType<TResult>(
+                mySecurityToken,
+                myTransactionToken,
+                myRequestAlterVertexType,
+                myOutputconverter);
+        }
+
+        public TResult CreateEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateVertexType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.CreateEdgeType<TResult>(
+                mySecurityToken,
+                myTransactionToken,
+                myRequestCreateVertexType,
+                myOutputconverter);
+        }
+
+        public TResult AlterEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestAlterEdgeType myRequestAlterEdgeType, Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.AlterEdgeType<TResult>(
+                mySecurityToken,
+                myTransactionToken,
+                myRequestAlterEdgeType,
+                myOutputconverter);
         }
 
         public Guid ID

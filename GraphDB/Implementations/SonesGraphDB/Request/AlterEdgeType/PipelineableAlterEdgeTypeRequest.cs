@@ -6,28 +6,31 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Request.AlterType
 {
-    public sealed class PipelineableAlterTypeRequest : APipelinableRequest
+    /// <summary>
+    /// This class is responsible for realizing a alter type on the database
+    /// </summary>
+    public sealed class PipelineableAlterEdgeTypeRequest : APipelinableRequest
     {
         #region data
 
         /// <summary>
-        /// The request which is executet
+        /// The request which is executed
         /// </summary>
-        public RequestAlterVertexType _request;
+        public RequestAlterEdgeType _request;
 
-        private IVertexType _alteredVertexType;
+        private IEdgeType _alteredEdgeType;
 
         #endregion
 
         #region constructor
 
         /// <summary>
-        /// Creates a new pipelineable alter type request
+        /// Creates a new pipelineable alter edge type request
         /// </summary>
-        /// <param name="myRequest">The alter type request</param>
+        /// <param name="myRequest">The alter edge type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableAlterTypeRequest(RequestAlterVertexType myRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public PipelineableAlterEdgeTypeRequest(RequestAlterEdgeType myRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
             :base(mySecurityToken, myTransactionToken)
         {
             _request = myRequest;
@@ -54,7 +57,7 @@ namespace sones.GraphDB.Request.AlterType
         }
 
         /// <summary>
-        /// Returns the alter type request
+        /// Returns the alter edge type request
         /// </summary>
         public override IRequest GetRequest()
         {
@@ -66,14 +69,14 @@ namespace sones.GraphDB.Request.AlterType
         #region internal methods
 
         /// <summary>
-        /// Generates the myResult of a alter type request
+        /// Generates the myResult of a alter edge type request
         /// </summary>
         /// <typeparam name="TResult">The type of the myResult</typeparam>
         /// <param name="myOutputconverter">The output converter that is used to create the TResult</param>
         /// <returns>A TResult</returns>
-        internal TResult GenerateRequestResult<TResult>(Converter.AlterVertexTypeResultConverter<TResult> myOutputconverter)
+        internal TResult GenerateRequestResult<TResult>(Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter)
         {
-            return myOutputconverter(Statistics, _alteredVertexType);
+            return myOutputconverter(Statistics, _alteredEdgeType);
         }
 
         #endregion

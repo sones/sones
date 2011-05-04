@@ -9,6 +9,7 @@ using sones.GraphQL.GQL.Manager.Plugin;
 using System.Collections.Generic;
 using sones.GraphQL.GQL.Structure.Helper.Definition.AlterType;
 using sones.GraphQL.Structure.Nodes.DDL;
+using sones.GraphDB.Request.GetVertexType;
 
 namespace sones.GraphQL.StatementNodes.DDL
 {
@@ -19,8 +20,9 @@ namespace sones.GraphQL.StatementNodes.DDL
     {
         #region Data
 
-        String _TypeName = ""; //the name of the type that should be altered
-        List<AAlterTypeCommand> _AlterTypeCommand;
+        private String _TypeName = String.Empty; //the name of the type that should be altered
+        private List<AAlterTypeCommand> _AlterTypeCommand;
+        private String _query;
 
         #endregion
 
@@ -87,10 +89,27 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            throw new NotImplementedException();
+            //_query = myQuery;
+
+            //return myGraphDB.Alt AllVertexTypes<QueryResult>(
+            //    mySecurityToken,
+            //    myTransactionToken,
+            //    CreateNewRequest(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken),
+            //    CreateOutput);
+
+            return null;
         }
 
         #endregion
+
+        //#region private helper
+
+        //private RequestGetAllVertexTypes CreateNewRequest(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //#endregion
 
     }
 }
