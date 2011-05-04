@@ -88,6 +88,7 @@ namespace sones.GraphDB.Manager.Index
                 GetIsSingleValue(index),
                 GetIsRangeValue(index),
                 GetIsVersionedValue(index),
+                true,
                 new VertexInformation((long)BaseTypes.VertexType, vertexType.ID),
                 null,
                 mySecurity,

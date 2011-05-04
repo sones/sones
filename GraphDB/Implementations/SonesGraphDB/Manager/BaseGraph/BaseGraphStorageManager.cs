@@ -170,6 +170,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             VertexInformation myVertex,
             AttributeDefinitions myAttribute,
             String myComment,
+            bool myIsUserDefined,
             Int64 myCreationDate,
             EdgeMultiplicity myMultiplicity,
             VertexInformation myDefiningType,
@@ -179,7 +180,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
-            StoreOutgoingEdge(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myCreationDate, myMultiplicity, myDefiningType, myEdgeType, myInnerEdgeType, myTarget, mySecurity, myTransaction);
+            StoreOutgoingEdge(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myIsUserDefined, myCreationDate, myMultiplicity, myDefiningType, myEdgeType, myInnerEdgeType, myTarget, mySecurity, myTransaction);
         }
 
         public static void StoreOutgoingEdge(
@@ -188,6 +189,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             long myID,
             String myName,
             String myComment,
+            bool myIsUserDefined,
             Int64 myCreationDate,
             EdgeMultiplicity myMultiplicity,
             VertexInformation myDefiningType,
@@ -221,7 +223,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 {
                     { (long) AttributeDefinitions.ID, myID },
                     { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
                     { (long) AttributeDefinitions.Multiplicity, (byte) myMultiplicity },
                 },
                 null,
@@ -262,13 +264,14 @@ namespace sones.GraphDB.Manager.BaseGraph
             VertexInformation myVertex,
             AttributeDefinitions myAttribute,
             String myComment,
+            bool myIsUserDefined,
             Int64 myCreationDate,
             VertexInformation myDefiningType,
             VertexInformation myRelatedIncomingEdge,
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
-            StoreIncomingEdge(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myCreationDate, myDefiningType, myRelatedIncomingEdge, mySecurity, myTransaction);
+            StoreIncomingEdge(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myIsUserDefined, myCreationDate, myDefiningType, myRelatedIncomingEdge, mySecurity, myTransaction);
         }
 
         public static void StoreIncomingEdge(
@@ -277,6 +280,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             long myID,
             String myName,
             String myComment,
+            bool myIsUserDefined,
             Int64 myCreationDate,
             VertexInformation myDefiningType,
             VertexInformation myRelatedIncomingEdge,
@@ -298,7 +302,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 {
                     { (long) AttributeDefinitions.ID, myID },
                     { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
                 },
                 null,
                 mySecurity,
@@ -348,12 +352,13 @@ namespace sones.GraphDB.Manager.BaseGraph
             bool myIsMandatory,
             PropertyMultiplicity myMultiplicity,
             String myDefaultValue,
+            bool myIsUserDefined,
             VertexInformation myDefiningType,
             VertexInformation myBasicType,
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
-            StoreProperty(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myCreationDate, myIsMandatory, myMultiplicity, myDefaultValue, myDefiningType, myBasicType, mySecurity, myTransaction);
+            StoreProperty(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myCreationDate, myIsMandatory, myMultiplicity, myDefaultValue, myIsUserDefined, myDefiningType, myBasicType, mySecurity, myTransaction);
         }
 
         public static void StoreProperty(
@@ -366,6 +371,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             bool myIsMandatory,
             PropertyMultiplicity myMultiplicity,
             String myDefaultValue,
+            bool myIsUserDefined,
             VertexInformation myDefiningType,
             VertexInformation myBasicType,
             SecurityToken mySecurity,
@@ -375,7 +381,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 {
                     { (long) AttributeDefinitions.ID, myID},
                     { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
                     { (long) AttributeDefinitions.IsMandatory, myIsMandatory },
                     { (long) AttributeDefinitions.Multiplicity, (byte) myMultiplicity },
                 };
@@ -431,6 +437,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             long myID,
             String myName,
             String myComment,
+            bool myIsUserDefined,
             Int64 myCreationDate,
             VertexInformation myDefiningType,
             SecurityToken mySecurity,
@@ -450,7 +457,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 {
                     { (long) AttributeDefinitions.ID, myID},
                     { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
                 },
                 null,
                 mySecurity,
@@ -465,6 +472,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             IVertexStore myStore,
             VertexInformation myVertex,
             BasicTypes myType,
+            bool myIsUserDefined,
             String myComment,
             Int64 myCreationDate,
             SecurityToken mySecurity,
@@ -481,7 +489,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 {
                     { (long) AttributeDefinitions.ID, (long) myType },
                     { (long) AttributeDefinitions.Name, myType.ToString() },
-                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
                     { (long) AttributeDefinitions.IsAbstract, false },
                     { (long) AttributeDefinitions.IsSealed, true },
                     //{ (long) AttributeDefinitions.Behaviour, null },
@@ -568,6 +576,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             VertexInformation myVertex,
             BaseTypes myType,
             String myComment,
+            bool myIsUserDefined,
             Int64 myCreationDate,
             bool myIsAbstract,
             bool myIsSealed,
@@ -591,7 +600,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 {
                     { (long) AttributeDefinitions.ID, (long) myType },
                     { (long) AttributeDefinitions.Name, myType.ToString() },
-                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
                     { (long) AttributeDefinitions.IsAbstract, myIsAbstract },
                     { (long) AttributeDefinitions.IsSealed, myIsSealed },
                     //{ (long) AttributeDefinitions.Behaviour, null },
@@ -635,12 +644,13 @@ namespace sones.GraphDB.Manager.BaseGraph
             bool myIsSingleValue,
             bool myIsRange,
             bool myIsVersioned,
+            bool myIsUserDefined,
             VertexInformation myDefiningVertexType,
             IList<VertexInformation> myIndexedProperties,
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
-            return StoreIndex(myStore, myVertex, (long)myType, myType.ToString(), myComment, myCreationDate, myIndexClass, myIsSingleValue, myIsRange, myIsVersioned, myDefiningVertexType, myIndexedProperties, mySecurity, myTransaction);
+            return StoreIndex(myStore, myVertex, (long)myType, myType.ToString(), myComment, myCreationDate, myIndexClass, myIsSingleValue, myIsRange, myIsVersioned, myIsUserDefined, myDefiningVertexType, myIndexedProperties, mySecurity, myTransaction);
         }
 
         public static IVertex StoreIndex(
@@ -654,6 +664,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             bool myIsSingleValue,
             bool myIsRange,
             bool myIsVersioned,
+            bool myIsUserDefined,
             VertexInformation myDefiningVertexType,
             IList<VertexInformation> myIndexedProperties,
             SecurityToken mySecurity,
@@ -663,7 +674,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 {
                     { (long) AttributeDefinitions.ID, myID },
                     { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsUserDefined, myIsUserDefined },
                     { (long) AttributeDefinitions.IsSingleValue, myIsSingleValue},
                     { (long) AttributeDefinitions.IsRange, myIsRange },
                     { (long) AttributeDefinitions.IsVersioned, myIsVersioned },
