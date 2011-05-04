@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Request.Update
 {
@@ -15,6 +16,8 @@ namespace sones.GraphDB.Request.Update
         /// The request that contains the todo
         /// </summary>
         private readonly RequestUpdate _request;
+
+        private IVertexType updatedVertexType;
 
         #endregion
 
@@ -36,16 +39,25 @@ namespace sones.GraphDB.Request.Update
 
         #endregion
 
+        /// <summary>
+        /// Validates the given request.
+        /// </summary>
         public override void Validate(Manager.IMetaManager myMetaManager)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Executes the given request.
+        /// </summary>
         public override void Execute(Manager.IMetaManager myMetaManager)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Returns the update request.
+        /// </summary>
         public override IRequest GetRequest()
         {
             return _request;
@@ -59,7 +71,7 @@ namespace sones.GraphDB.Request.Update
         /// <returns>A TResult</returns>
         internal TResult GenerateRequestResult<TResult>(Converter.UpdateResultConverter<TResult> myOutputconverter)
         {
-            return myOutputconverter(Statistics);
+            return myOutputconverter(Statistics, updatedVertexType);
         }
     }
 }

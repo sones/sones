@@ -9,13 +9,11 @@ using sones.GraphQL.GQL.Manager.Plugin;
 using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 using sones.GraphQL.Structure.Nodes.Misc;
 using sones.GraphQL.Structure.Nodes.Expressions;
-using System.Diagnostics;
-using sones.GraphQL.GQL.ErrorHandling;
 using System.Collections.Generic;
-using sones.Library.ErrorHandling;
 using sones.GraphQL.GQL.Structure.Helper.Definition.Update;
 using sones.GraphQL.Structure.Nodes.DML;
 using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -23,11 +21,25 @@ namespace sones.GraphQL.StatementNodes.DML
     {
         #region Data
 
+        /// <summary>
+        /// The attributes to update / add / remove
+        /// </summary>
         private HashSet<AAttributeAssignOrUpdateOrRemove> _listOfUpdates;
 
+        /// <summary>
+        /// Where Expression
+        /// </summary>
         private BinaryExpressionDefinition _WhereExpression;
 
+        /// <summary>
+        /// The Name of the type which should be updated
+        /// </summary>
         private String _TypeName;
+
+        /// <summary>
+        /// The executed query
+        /// </summary>
+        private String Query;
 
         #endregion
 
@@ -76,19 +88,27 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
+        /// <summary>
+        /// Executes the statement and returns a QueryResult.
+        /// </summary>
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            var sw = Stopwatch.StartNew();
+            Query = myQuery;
 
-            QueryResult result = null;
-            var stat = myGraphDB.Update(mySecurityToken, myTransactionToken, new RequestUpdate(_TypeName), (stats) => stats);
+            return myGraphDB.Update(mySecurityToken, myTransactionToken, new RequestUpdate(_TypeName), GenerateOutput);
+        }
 
-            sw.Stop();
+        #endregion
 
-            if (result != null)
-                return new QueryResult(myQuery, "GQL", (ulong)sw.ElapsedMilliseconds, result.TypeOfResult, result.Vertices, result.Error);
-            else
-                return new QueryResult(myQuery, "GQL", (ulong)sw.ElapsedMilliseconds, ResultType.Failed, new List<IVertexView>(), new GQLStatementNodeExecutionException(myQuery, this, "QueryResult is null."));
+        #region helper
+
+        private QueryResult GenerateOutput(IRequestStatistics myStats, IVertexType myVertexType)
+        {
+            return new QueryResult(Query, 
+                                    "GQL", 
+                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), 
+                                    ResultType.Successful, 
+                                    new List<IVertexView> { new VertexView(new Dictionary<String, object> { { "UpdatedVertex", myVertexType } }, new Dictionary<String, IEdgeView>()) });
         }
 
         #endregion

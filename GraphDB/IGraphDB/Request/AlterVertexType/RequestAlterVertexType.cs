@@ -17,24 +17,24 @@ namespace sones.GraphDB.Request
         /// </summary>
         public readonly string VertexTypeName;
         
-        private List<AttributePredefinition> _toBeAddedAttributes;
-        private List<IndexPredefinition> _toBeAddedIndices;
-        private List<UniquePredefinition> _toBeAddedUniques;
+        private List<AttributePredefinition>    _toBeAddedAttributes;
+        private List<IndexPredefinition>        _toBeAddedIndices;
+        private List<UniquePredefinition>       _toBeAddedUniques;
 
-        private List<String> _toBeRemovedAttributes;
-        private List<long> _toBeRemovedIncomingEdges;
-        private List<long> _toBeRemovedOutgoingEdges;
-        private List<IndexPredefinition> _toBeRemovedIndices;
-        private List<UniquePredefinition> _toBeRemovedUniques;
+        private List<String>                    _toBeRemovedAttributes;
+        private List<String>                    _toBeRemovedIncomingEdges;
+        private List<String>                    _toBeRemovedOutgoingEdges;
+        private Dictionary<String, String>      _toBeRemovedIndices;
+        private List<UniquePredefinition>       _toBeRemovedUniques;
 
         #region add counter
-        private int _addProperties = 0;
-        private int _addIncoming = 0;
-        private int _addOutgoing = 0;
-        private int _addBinaries = 0;
-        private int _addUnknown = 0;
-        private int _addUnique = 0;
-        private int _addIndices = 0;
+        private int _addProperties  = 0;
+        private int _addIncoming    = 0;
+        private int _addOutgoing    = 0;
+        private int _addBinaries    = 0;
+        private int _addUnknown     = 0;
+        private int _addUnique      = 0;
+        private int _addIndices     = 0;
 
         public int AddPropertyCount
         {
@@ -78,17 +78,16 @@ namespace sones.GraphDB.Request
         #endregion
 
         #region remove counter
-        private int _removeProperties = 0;
-        private int _removeIncoming = 0;
-        private int _removeOutgoing = 0;
-        private int _removeBinaries = 0;
-        private int _removeUnknown = 0;
-        private int _removeUnique = 0;
-        private int _removeIndices = 0;
+        private int _removeAttributes   = 0;
+        private int _removeIncoming     = 0;
+        private int _removeOutgoing     = 0;
+        private int _removeBinaries     = 0;
+        private int _removeUnique       = 0;
+        private int _removeIndices      = 0;
 
-        public int RemovePropertyCount
+        public int RemoveAttributeCount
         {
-            get { return _removeProperties; }
+            get { return _removeAttributes; }
         }
 
         public int RemoveIncomingEdgeCount
@@ -101,11 +100,6 @@ namespace sones.GraphDB.Request
             get { return _removeOutgoing; }
         }
 
-        public int RemoveAttributeCount
-        {
-            get { return (_toBeRemovedAttributes == null) ? 0 : _toBeRemovedAttributes.Count; }
-        }
-
         public int RemoveBinaryPropertyCount
         {
             get { return _removeBinaries; }
@@ -114,11 +108,6 @@ namespace sones.GraphDB.Request
         public int RemoveUniquePropertyCount
         {
             get { return _removeUnique; }
-        }
-
-        public int RemoveUnknownPropertyCount
-        {
-            get { return _removeUnknown; }
         }
 
         public int RemoveIndicesPropertyCount
@@ -218,9 +207,9 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The index definitions of this vertex type.
         /// </summary>
-        public IEnumerable<IndexPredefinition> ToBeRemovedIndices
+        public Dictionary<String, String> ToBeRemovedIndices
         {
-            get { return (_toBeRemovedIndices == null) ? null : _toBeRemovedIndices.AsReadOnly(); }
+            get { return (_toBeRemovedIndices == null) ? null : _toBeRemovedIndices; }
         }
         
         /// <summary>
@@ -386,7 +375,7 @@ namespace sones.GraphDB.Request
             {
                 _toBeRemovedAttributes = (_toBeRemovedAttributes) ?? new List<String>();
                 _toBeRemovedAttributes.Add(myAttrName);
-                _removeUnknown++;
+                _removeAttributes++;
             }
 
             return this;
@@ -397,11 +386,11 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myOutgoingEdgeID">The id of the outgoing IncomingEdge</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestAlterVertexType RemoveOutgoingEdge(long myOutgoingEdgeID)
+        public RequestAlterVertexType RemoveOutgoingEdge(String myOutgoingEdgeID)
         {
             if (myOutgoingEdgeID != null)
             {
-                _toBeRemovedOutgoingEdges = (_toBeRemovedOutgoingEdges) ?? new List<long>();
+                _toBeRemovedOutgoingEdges = (_toBeRemovedOutgoingEdges) ?? new List<String>();
                 _toBeRemovedOutgoingEdges.Add(myOutgoingEdgeID);
                 _removeOutgoing++;
             }
@@ -414,11 +403,11 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myIncomingEdgeID">The id of the incomingEdge</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestAlterVertexType RemoveIncomingEdge(long myIncomingEdgeID)
+        public RequestAlterVertexType RemoveIncomingEdge(String myIncomingEdgeID)
         {
             if (myIncomingEdgeID != null)
             {
-                _toBeRemovedIncomingEdges = (_toBeRemovedIncomingEdges) ?? new List<long>();
+                _toBeRemovedIncomingEdges = (_toBeRemovedIncomingEdges) ?? new List<String>();
                 _toBeRemovedIncomingEdges.Add(myIncomingEdgeID);
                 _removeIncoming++;
             }
@@ -448,13 +437,16 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myIndexDefinition">The index definition that is going to be added.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestAlterVertexType RemoveIndex(IndexPredefinition myIndexDefinition)
+        public RequestAlterVertexType RemoveIndex(String myIndexName, String myEdition)
         {
-            if (myIndexDefinition != null)
+            if (String.IsNullOrWhiteSpace(myIndexName))
             {
-                _toBeAddedIndices = (_toBeAddedIndices) ?? new List<IndexPredefinition>();
-                _toBeAddedIndices.Add(myIndexDefinition);
-                _removeIndices++;
+                _toBeRemovedIndices = (_toBeRemovedIndices) ?? new Dictionary<String, String>();
+                if (!_toBeRemovedIndices.ContainsKey(myIndexName))
+                {
+                    _toBeRemovedIndices.Add(myIndexName, myEdition);
+                    _removeIndices++;
+                }
             }
 
             return this;
