@@ -69,20 +69,129 @@ namespace sones.Library.Arithmetics
             return null;
         }
 
-        public static IComparable Sub(Type myType, IComparable myMinuend, IComparable mySubtrahend)
+        /// <summary>
+        /// Subtracts the given operands, depending on the type
+        /// </summary>
+        /// <param name="myType">The type of the operands</param>
+        /// <param name="mySubtrahend">The subtrahend of the operation</param>
+        /// <param name="myMinuend">The Minuend of the operation</param>
+        /// <returns></returns>
+        public static IComparable Sub(Type myType, IComparable mySubtrahend, IComparable myMinuend)
         {
-            throw new NotImplementedException();
+            //make sure that either the dividend and the divisor are not NULL and not 0
+            if ((mySubtrahend != null) &&
+                (myMinuend != null))
+            {
+
+                #region check types and calculate
+
+                if (myType == typeof(Int16))
+                {
+                    return Convert.ToInt16(mySubtrahend) - Convert.ToInt16(myMinuend);
+                }
+                else if (myType == typeof(UInt16))
+                {
+                    return Convert.ToUInt16(mySubtrahend) - Convert.ToUInt16(myMinuend);
+                }
+                else if (myType == typeof(Int32))
+                {
+                    return Convert.ToInt32(mySubtrahend) - Convert.ToInt32(myMinuend);
+                }
+                else if (myType == typeof(UInt32))
+                {
+                    return Convert.ToUInt32(mySubtrahend) - Convert.ToUInt32(myMinuend);
+                }
+                else if (myType == typeof(Int64))
+                {
+                    return Convert.ToInt64(mySubtrahend) - Convert.ToInt64(myMinuend);
+                }
+                else if (myType == typeof(UInt64))
+                {
+                    return Convert.ToUInt64(mySubtrahend) - Convert.ToUInt64(myMinuend);
+                }
+                else if (myType == typeof(Double))
+                {
+                    return Convert.ToDouble(mySubtrahend) - Convert.ToDouble(myMinuend);
+                }
+                else if (myType == typeof(Single))
+                {
+                    return Convert.ToSingle(mySubtrahend) - Convert.ToSingle(myMinuend);
+                }
+                else
+                {
+                    throw new ArithmeticException();
+                }
+                #endregion
+
+            }
+
+            return null;
         }
 
+        /// <summary>
+        /// Multiplicates the given operands, depending on the type
+        /// </summary>
+        /// <param name="myType">The type of the operands</param>
+        /// <param name="myLeft">The left operand of the operation</param>
+        /// <param name="myRight">The right operand of the operation</param>
+        /// <exception cref="InvalidCastException">Is thrown if operation fails</exception>
+        /// <returns>Result of the operation in case of valid type, else NULL or an Exception is thrown</returns>
         public static IComparable Mul(Type myType, IComparable myLeft, IComparable myRight)
         {
-            throw new NotImplementedException();
+            //make sure that either the dividend and the divisor are not NULL and not 0
+            if ((myLeft != null) &&
+                (myRight != null))
+            {
+
+                #region check types and calculate
+
+                if (myType == typeof(Int16))
+                {
+                    return Convert.ToInt16(myLeft) * Convert.ToInt16(myRight);
+                }
+                else if (myType == typeof(UInt16))
+                {
+                    return Convert.ToUInt16(myLeft) * Convert.ToUInt16(myRight);
+                }
+                else if (myType == typeof(Int32))
+                {
+                    return Convert.ToInt32(myLeft) * Convert.ToInt32(myRight);
+                }
+                else if (myType == typeof(UInt32))
+                {
+                    return Convert.ToUInt32(myLeft) * Convert.ToUInt32(myRight);
+                }
+                else if (myType == typeof(Int64))
+                {
+                    return Convert.ToInt64(myLeft) * Convert.ToInt64(myRight);
+                }
+                else if (myType == typeof(UInt64))
+                {
+                    return Convert.ToUInt64(myLeft) * Convert.ToUInt64(myRight);
+                }
+                else if (myType == typeof(Double))
+                {
+                    return Convert.ToDouble(myLeft) * Convert.ToDouble(myRight);
+                }
+                else if (myType == typeof(Single))
+                {
+                    return Convert.ToSingle(myLeft) * Convert.ToSingle(myRight);
+                }
+                else
+                {
+                    throw new ArithmeticException();
+                }
+                #endregion
+
+            }
+
+            return null;
         }
 
         /// <summary>
         /// Divides the given operands, depending on the type
         /// </summary>
-        /// <param name="myType">The type of the operand</param>
+        /// <param name="myType">The type of the operands</param>
         /// <param name="myDivident">The Dividend of the operation</param>
         /// <param name="myDivisor">The Divisor of the operation</param>
         /// <exception cref="InvalidCastException">Is thrown if operation fails</exception>
@@ -97,7 +206,6 @@ namespace sones.Library.Arithmetics
             {
 
                 #region check types and calculate
-
 
                 if (myType == typeof(Int16))
                 {
