@@ -27,7 +27,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
         /// </summary>
         public override TypesOfAlterCmd AlterType
         {
-            get { return TypesOfAlterCmd.RenameType; }
+            get { return TypesOfAlterCmd.RenameVertexType; }
         }
 
         public override IVertexView CreateResult(GraphDB.TypeSystem.IVertexType myAlteredVertexType)

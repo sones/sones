@@ -27,7 +27,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
         /// </summary>
         public override TypesOfAlterCmd AlterType
         {
-            get { return TypesOfAlterCmd.RenameBackwardedge; }
+            get { return TypesOfAlterCmd.RenameIncomingEdge; }
         }
 
         public override IVertexView CreateResult(IVertexType myAlteredVertexType)

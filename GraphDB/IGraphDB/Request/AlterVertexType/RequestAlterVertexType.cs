@@ -244,8 +244,10 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Creates a new alter type request 
         /// </summary>
-        public RequestAlterVertexType()
-        { 
+        /// <param name="myToBeAlteredVertexType">The name of the vertex type that should be altered.</param>
+        public RequestAlterVertexType(String myToBeAlteredVertexType)
+        {
+            VertexTypeName = myToBeAlteredVertexType;
         }
 
         #endregion
