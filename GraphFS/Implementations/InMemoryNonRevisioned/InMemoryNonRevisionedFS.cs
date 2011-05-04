@@ -471,8 +471,11 @@ namespace sones.GraphFS
             {
                 outValue.AddOrUpdate(myToBeUpdatedVertexID, updatedVertex, (key, oldValue) =>
                 {
-                    oldValue = updatedVertex;
-                    return oldValue;
+                    lock (oldValue)
+                    {
+                        oldValue = updatedVertex;
+                        return oldValue;    
+                    }
                 });
             }
 
