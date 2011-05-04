@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace sones.GraphDB.Request.RebuildIndices
+namespace sones.GraphDB.Request
 {
     public sealed class RequestRebuildIndices : IRequest
     {

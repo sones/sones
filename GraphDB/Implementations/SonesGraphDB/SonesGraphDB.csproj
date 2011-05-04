@@ -103,7 +103,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Request\AlterEdgeType\PipelineableAlterEdgeTypeRequest.cs" />
-    <Compile Include="Request\AlterType\PipelineableAlterTypeRequest.cs" />
+    <Compile Include="Request\AlterVertexType\PipelineableAlterVertexTypeRequest.cs" />
     <Compile Include="Request\CreateEdgeType\PipelineableCreateEdgeTypeRequest.cs" />
     <Compile Include="Request\CreateIndex\PipelineableCreateIndexRequest.cs" />
     <Compile Include="Request\CreateVertexType\PipelineableCreateVertexTypeRequest.cs">

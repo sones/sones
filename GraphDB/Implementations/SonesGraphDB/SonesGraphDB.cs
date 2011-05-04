@@ -431,11 +431,11 @@ namespace sones.GraphDB
 
         public TResult AlterVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestAlterVertexType myRequestAlterVertexType, Converter.AlterVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableAlterTypeRequest(myRequestAlterVertexType,
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableAlterVertexTypeRequest(myRequestAlterVertexType,
                                                                                         mySecurityToken,
                                                                                         myTransactionToken));
 
-            return ((PipelineableAlterTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableAlterVertexTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion

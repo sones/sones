@@ -5,13 +5,6 @@ using System.Text;
 using sones.GraphDB.Request;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.Security;
-using sones.GraphDB.Request.Delete;
-using sones.GraphDB.Request.Update;
-using sones.GraphDB.Request.DropType;
-using sones.GraphDB.Request.DropIndex;
-using sones.GraphDB.Request.CreateIndex;
-using sones.GraphDB.Request.RebuildIndices;
-using sones.GraphDB.Request.AlterType;
 
 namespace sones.GraphDB
 {

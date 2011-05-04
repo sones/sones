@@ -6,8 +6,8 @@ using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphQL.GQL.Manager.Plugin;
-using sones.GraphDB.Request.DropType;
 using sones.Library.ErrorHandling;
+using sones.GraphDB.Request;
 
 namespace sones.GraphQL.StatementNodes.DDL
 {

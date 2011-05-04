@@ -13,9 +13,9 @@ using System.Diagnostics;
 using sones.GraphQL.GQL.ErrorHandling;
 using System.Collections.Generic;
 using sones.Library.ErrorHandling;
-using sones.GraphDB.Request.Update;
 using sones.GraphQL.GQL.Structure.Helper.Definition.Update;
 using sones.GraphQL.Structure.Nodes.DML;
+using sones.GraphDB.Request;
 
 namespace sones.GraphQL.StatementNodes.DML
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace sones.GraphDB.Request.DropType
+namespace sones.GraphDB.Request
 {
     public sealed class RequestDropType : IRequest
     {

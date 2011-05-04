@@ -9,9 +9,8 @@ using sones.GraphQL.GQL.Manager.Plugin;
 using System.Collections.Generic;
 using sones.GraphQL.Structure.Nodes.Misc;
 using sones.Library.ErrorHandling;
-using sones.GraphDB.Request.RebuildIndices;
-using sones.GraphDB.Request;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDB.Request;
 
 namespace sones.GraphQL.StatementNodes.DML
 {

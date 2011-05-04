@@ -13,14 +13,7 @@ using System.Threading;
 using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.Request.GetIndex;
-using sones.GraphDB.Request.Delete;
-using sones.GraphDB.Request.Update;
-using sones.GraphDB.Request.DropType;
-using sones.GraphDB.Request.DropIndex;
-using sones.GraphDB.Request.CreateIndex;
-using sones.GraphDB.Request.RebuildIndices;
 using System.IO;
-using sones.GraphDB.Request.AlterType;
 
 namespace sones.Plugins.GraphDS.DrainPipeLog
 {

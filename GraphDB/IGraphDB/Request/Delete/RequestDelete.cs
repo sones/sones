@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.Expression;
 
-namespace sones.GraphDB.Request.Delete
+namespace sones.GraphDB.Request
 {
     public sealed class RequestDelete : IRequest
     {

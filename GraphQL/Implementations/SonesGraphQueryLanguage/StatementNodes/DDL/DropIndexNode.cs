@@ -10,7 +10,7 @@ using sones.GraphQL.Structure.Nodes.Misc;
 using sones.GraphQL.GQL.ErrorHandling;
 using System.Diagnostics;
 using sones.Library.ErrorHandling;
-using sones.GraphDB.Request.DropIndex;
+using sones.GraphDB.Request;
 
 namespace sones.GraphQL.StatementNodes.DDL
 {

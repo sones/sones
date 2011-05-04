@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using sones.GraphDB.Request.CreateVertexTypes;
 using System;
 
-namespace sones.GraphDB.Request.AlterType
+namespace sones.GraphDB.Request
 {
     /// <summary>
     /// Request to alter a vertex type

@@ -118,7 +118,7 @@
     <Compile Include="IReadWriteGraphDB.cs" />
     <Compile Include="Manager\ILogicExpressionOptimizer.cs" />
     <Compile Include="Request\AlterEdgeType\RequestAlterEdgeType.cs" />
-    <Compile Include="Request\AlterType\RequestAlterVertexType.cs" />
+    <Compile Include="Request\AlterVertexType\RequestAlterVertexType.cs" />
     <Compile Include="Request\Clear\RequestClear.cs" />
     <Compile Include="Request\Converter.cs" />
     <Compile Include="Request\CreateEdgeType\EdgeTypeDefinition.cs" />

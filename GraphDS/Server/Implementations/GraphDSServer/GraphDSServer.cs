@@ -20,13 +20,6 @@ using sones.GraphDB.Request.GetIndex;
 using sones.Plugins.GraphDS;
 using sones.Library.VersionedPluginManager;
 using sones.GraphDS.PluginManager;
-using sones.GraphDB.Request.Delete;
-using sones.GraphDB.Request.Update;
-using sones.GraphDB.Request.DropType;
-using sones.GraphDB.Request.DropIndex;
-using sones.GraphDB.Request.CreateIndex;
-using sones.GraphDB.Request.RebuildIndices;
-using sones.GraphDB.Request.AlterType;
 
 namespace sones.GraphDSServer
 {

@@ -6,7 +6,7 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Request.AlterType
 {
-    public sealed class PipelineableAlterTypeRequest : APipelinableRequest
+    public sealed class PipelineableAlterVertexTypeRequest : APipelinableRequest
     {
         #region data
 
@@ -27,7 +27,7 @@ namespace sones.GraphDB.Request.AlterType
         /// <param name="myRequest">The alter type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableAlterTypeRequest(RequestAlterVertexType myRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public PipelineableAlterVertexTypeRequest(RequestAlterVertexType myRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
             :base(mySecurityToken, myTransactionToken)
         {
             _request = myRequest;

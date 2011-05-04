@@ -5,7 +5,7 @@ using System.Text;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request.CreateVertexTypes;
 
-namespace sones.GraphDB.Request.CreateIndex
+namespace sones.GraphDB.Request
 {
     public sealed class RequestCreateIndex : IRequest
     {

@@ -10,7 +10,6 @@ using sones.GraphQL.Result;
 using sones.GraphQL.Structure.Nodes.Expressions;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphDB.Request.Delete;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
 using sones.GraphDB.TypeSystem;
 
