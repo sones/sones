@@ -671,7 +671,7 @@ namespace sones.GraphFS
             _vertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
         }
         
-        private void RemoveIncommingEdgeFromTargetVertex(InMemoryVertex myTargetVertex, Int64 myIncommingVertexTypeID, Int64 myIncommingEdgeID, InMemoryVertex myIncommingVertex)
+        private void RemoveIncommingEdgeFromTargetVertex(InMemoryVertex myTargetVertex, Int64 myIncommingVertexTypeID, Int64 myIncommingEdgePropID, InMemoryVertex myIncommingVertex)
         {
             if(myTargetVertex.IncomingEdges != null)
             {
@@ -683,14 +683,14 @@ namespace sones.GraphFS
                     {
                         IncomingEdgeCollection edgeCollection = null;
 
-                        if (iEdgeCollection.TryGetValue(myIncommingEdgeID, out edgeCollection))
+                        if (iEdgeCollection.TryGetValue(myIncommingEdgePropID, out edgeCollection))
                         {
                             edgeCollection.RemoveVertex(myIncommingVertex);
                         }
 
                         if (edgeCollection.Count() == 0)
                         {
-                            iEdgeCollection.Remove(myIncommingEdgeID);
+                            iEdgeCollection.Remove(myIncommingEdgePropID);
                         }
 
                         if (iEdgeCollection.Count == 0)
@@ -733,7 +733,10 @@ namespace sones.GraphFS
             {
                 if (toBeUpdatedVertex.OutgoingEdges == null)
                 {
-                    toBeUpdatedVertex.OutgoingEdges = new Dictionary<long, IEdge>();
+                    lock (toBeUpdatedVertex)
+                    {
+                        toBeUpdatedVertex.OutgoingEdges = new Dictionary<long, IEdge>();
+                    }
                 }
 
                 lock (toBeUpdatedVertex.OutgoingEdges)
@@ -753,7 +756,7 @@ namespace sones.GraphFS
                                 {
                                     var targetVertex = edge.GetTargetVertices().First();
 
-                                    RemoveIncommingEdgeFromTargetVertex((InMemoryVertex)targetVertex, item, edge.EdgeTypeID, toBeUpdatedVertex);
+                                    RemoveIncommingEdgeFromTargetVertex((InMemoryVertex)targetVertex, targetVertex.VertexTypeID, item, toBeUpdatedVertex);
                                     
                                     toBeUpdatedVertex.OutgoingEdges.Remove(item);
                                 }
@@ -836,7 +839,10 @@ namespace sones.GraphFS
             {
                 if (toBeUpdatedVertex.OutgoingEdges == null)
                 {
-                    toBeUpdatedVertex.OutgoingEdges = new Dictionary<long, IEdge>();
+                    lock (toBeUpdatedVertex)
+                    {
+                        toBeUpdatedVertex.OutgoingEdges = new Dictionary<long, IEdge>();
+                    }
                 }
 
                 lock (toBeUpdatedVertex.OutgoingEdges)
@@ -856,7 +862,7 @@ namespace sones.GraphFS
                                 {
                                     foreach (var targetVertex in edge.GetTargetVertices())
                                     {
-                                        RemoveIncommingEdgeFromTargetVertex((InMemoryVertex)targetVertex, item, edge.EdgeTypeID, toBeUpdatedVertex);
+                                        RemoveIncommingEdgeFromTargetVertex((InMemoryVertex)targetVertex, targetVertex.VertexTypeID, item, toBeUpdatedVertex);
                                     }
                                     
                                     toBeUpdatedVertex.OutgoingEdges.Remove(item);
