@@ -119,7 +119,8 @@ namespace sones.GraphDB.Manager.Vertex
                 }
             }
 
-            var result = _vertexStore.AddVertex(mySecurity, myTransaction, RequestInsertVertexToVertexAddDefinition(myInsertDefinition, vertexType, myTransaction, mySecurity));
+            var addDefinition = RequestInsertVertexToVertexAddDefinition(myInsertDefinition, vertexType, myTransaction, mySecurity);
+            var result = _vertexStore.AddVertex(mySecurity, myTransaction, addDefinition);
 
 
             foreach (var indexDef in vertexType.GetIndexDefinitions(false))
@@ -211,7 +212,9 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     case EdgeMultiplicity.SingleEdge:
                         {
-                            singleEdges.Add(edgeDef.EdgeName, CreateSingleEdgeAddDefinition(myTransaction, mySecurity, date, attrDef.AttributeID, edgeDef, attrDef.EdgeType, source, attrDef.TargetVertexType));
+                            var edge = CreateSingleEdgeAddDefinition(myTransaction, mySecurity, date, attrDef.AttributeID, edgeDef, attrDef.EdgeType, source, attrDef.TargetVertexType);
+                            if (edge.HasValue)
+                                singleEdges.Add(edgeDef.EdgeName, edge.Value);
                         }
                         break;
 
@@ -222,7 +225,8 @@ namespace sones.GraphDB.Manager.Vertex
                     case EdgeMultiplicity.MultiEdge:
                         {
                             var edge = CreateMultiEdgeAddDefinition(myTransaction, mySecurity, source, date, edgeDef, attrDef);
-                            hyperEdges.Add(attrDef.Name, edge);
+                            if (edge.HasValue)
+                                hyperEdges.Add(attrDef.Name, edge.Value);
                         }
                         break;
                     default:
@@ -234,7 +238,7 @@ namespace sones.GraphDB.Manager.Vertex
             outHyperEdges = hyperEdges.Select(x => x.Value);
         }
 
-        private HyperEdgeAddDefinition CreateMultiEdgeAddDefinition(
+        private HyperEdgeAddDefinition? CreateMultiEdgeAddDefinition(
             TransactionToken myTransaction,
             SecurityToken mySecurity, 
             VertexInformation source, 
@@ -244,6 +248,9 @@ namespace sones.GraphDB.Manager.Vertex
         {
             var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, attrDef.TargetVertexType);
             var contained = CreateContainedEdges(myTransaction, mySecurity, date, vertexIDs, edgeDef, attrDef, source);
+            if (contained == null)
+                return null;
+
             return new HyperEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, contained, edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, attrDef.EdgeType), edgeDef.UnstructuredProperties);
         }
 
@@ -256,6 +263,9 @@ namespace sones.GraphDB.Manager.Vertex
             IOutgoingEdgeDefinition attrDef,
             VertexInformation mySource)
         {
+            if (vertexIDs.Count == 0 && edgeDef.ContainedEdgeCount == 0)
+                return null;
+
             List<SingleEdgeAddDefinition> result = new List<SingleEdgeAddDefinition>();
             foreach (var vertex in vertexIDs)
             {
@@ -272,14 +282,17 @@ namespace sones.GraphDB.Manager.Vertex
                     if (edge.ContainedEdgeCount > 0)
                         //TODO a better exception here
                         throw new Exception("An edge within a multi edge cannot have contained edges.");
+                    
+                    var toAdd = CreateSingleEdgeAddDefinition(myTransaction, mySecurity, myDate, Int64.MinValue, edge, attrDef.InnerEdgeType, mySource, attrDef.TargetVertexType);
 
-                    result.Add(CreateSingleEdgeAddDefinition(myTransaction, mySecurity, myDate, Int64.MinValue, edge, attrDef.InnerEdgeType, mySource, attrDef.TargetVertexType));
+                    if (toAdd.HasValue)
+                        result.Add(toAdd.Value);
                 }
             }
             return result;
         }
 
-        private SingleEdgeAddDefinition CreateSingleEdgeAddDefinition(
+        private SingleEdgeAddDefinition? CreateSingleEdgeAddDefinition(
             TransactionToken myTransaction,
             SecurityToken mySecurity, 
             long date, 

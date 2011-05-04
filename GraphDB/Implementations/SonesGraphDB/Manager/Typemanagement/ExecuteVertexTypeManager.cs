@@ -605,6 +605,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 {
                     var info = result[current.Value.VertexTypeName];
                     info.AttributeCountWithParents = info.AttributeCountWithParents + result[current.Value.SuperVertexTypeName].AttributeCountWithParents;
+                    result[current.Value.VertexTypeName] = info;
                 }
             }
 
