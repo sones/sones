@@ -15,7 +15,7 @@ namespace sones.GraphDB.Request.AlterType
         #region constructor
 
         /// <summary>
-        /// Creates a new alter type request
+        /// Creates a new alter type request 
         /// </summary>
         public RequestAlterType()
         { 
