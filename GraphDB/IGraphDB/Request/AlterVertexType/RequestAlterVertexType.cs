@@ -376,16 +376,16 @@ namespace sones.GraphDB.Request
 
         #region remove
         /// <summary>
-        /// Adds an unknown property
+        /// Adds an property to be removed
         /// </summary>
         /// <param name="myUnknownName">The unknwown property name that is going to be added</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestAlterVertexType RemoveUnknownAttribute(String myUnknownName)
+        public RequestAlterVertexType RemoveAttribute(String myAttrName)
         {
-            if (String.IsNullOrWhiteSpace(myUnknownName))
+            if (String.IsNullOrWhiteSpace(myAttrName))
             {
                 _toBeRemovedAttributes = (_toBeRemovedAttributes) ?? new List<String>();
-                _toBeRemovedAttributes.Add(myUnknownName);
+                _toBeRemovedAttributes.Add(myAttrName);
                 _removeUnknown++;
             }
 
