@@ -36,28 +36,12 @@ namespace sones.GraphQL.Structure.Nodes.DDL
         {
             _DropIndexList = new Dictionary<String, String>();
 
-
-            if (parseNode.ChildNodes[1].ChildNodes.Count == 2 && parseNode.ChildNodes[1].ChildNodes.TrueForAll(item => !HasChildNodes(item)))
+            if (HasChildNodes(parseNode.ChildNodes[1]) &&
+                HasChildNodes(parseNode.ChildNodes[1].ChildNodes[0]))
             {
-                var idxName = parseNode.ChildNodes[1].ChildNodes[0].Token.Text;
-                var idxEdition = ((EditionOptNode)parseNode.ChildNodes[1].ChildNodes[1].AstNode).IndexEdition;
-
-                if (!_DropIndexList.ContainsKey(idxName))
+                foreach (var aIndexNameToken in parseNode.ChildNodes[1].ChildNodes[0].ChildNodes)
                 {
-                    _DropIndexList.Add(idxName, idxEdition);
-                }
-            }
-            else
-            {
-                foreach (var nodes in parseNode.ChildNodes[1].ChildNodes)
-                {
-                    var idxName = nodes.ChildNodes[0].Token.Text;
-                    var idxEdition = ((EditionOptNode)nodes.ChildNodes[1].AstNode).IndexEdition;
-
-                    if (!_DropIndexList.ContainsKey(idxName))
-                    {
-                        _DropIndexList.Add(idxName, idxEdition);
-                    }
+                    _DropIndexList.Add(aIndexNameToken.Token.ValueString, String.Empty);
                 }
             }
         }

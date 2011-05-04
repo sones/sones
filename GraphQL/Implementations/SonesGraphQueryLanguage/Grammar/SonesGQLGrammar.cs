@@ -1122,12 +1122,11 @@ namespace sones.GraphQL
 
             alterCmdList.Rule = MakePlusRule(alterCmdList, S_comma, alterCmd);
 
-            IndexDropOnAlterTypeMember.Rule = S_BRACKET_LEFT + Id_simple + editionOpt + S_BRACKET_RIGHT;
+            IndexDropOnAlterTypeMember.Rule = S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT;
 
             IndexDropOnAlterTypeMemberList.Rule = MakePlusRule(IndexDropOnAlterTypeMemberList, S_comma, IndexDropOnAlterTypeMember);
 
-            IndexDropOnAlterType.Rule = S_INDICES + IndexDropOnAlterTypeMember
-                                        | S_INDICES + S_BRACKET_LEFT + IndexDropOnAlterTypeMemberList + S_BRACKET_RIGHT;
+            IndexDropOnAlterType.Rule = S_INDICES + IndexDropOnAlterTypeMember;
 
             #endregion
 

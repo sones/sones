@@ -26,7 +26,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
         /// </summary>
         public override TypesOfAlterCmd AlterType
         {
-            get { throw new NotImplementedException(); }
+            get { return TypesOfAlterCmd.AddIndex; }
         }
 
         /// <summary>

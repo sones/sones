@@ -123,14 +123,24 @@ namespace sones.GraphQL.StatementNodes.DDL
         {
             switch (myAlterCommand.AlterType)
             {
-                case TypesOfAlterCmd.Add:
+                case TypesOfAlterCmd.DropIndex:
 
-                    ProcessAdd(myAlterCommand, ref result);
+                    ProcessDropIndex(myAlterCommand, ref result);
 
                     break;
-                case TypesOfAlterCmd.Drop:
+                case TypesOfAlterCmd.AddIndex:
 
-                    ProcessDrop(myAlterCommand, ref result);
+                    ProcessAddIndex(myAlterCommand, ref result);
+
+                    break;
+                case TypesOfAlterCmd.AddAttribute:
+
+                    ProcessAddAttribute(myAlterCommand, ref result);
+
+                    break;
+                case TypesOfAlterCmd.DropAttribute:
+
+                    ProcessDropAttribute(myAlterCommand, ref result);
 
                     break;
                 case TypesOfAlterCmd.RenameAttribute:
@@ -178,6 +188,57 @@ namespace sones.GraphQL.StatementNodes.DDL
             }
         }
 
+        private void ProcessDropIndex(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
+        {
+            var command = (AlterType_DropIndices)myAlterCommand;
+
+            foreach (var aIndex in command.IdxDropList)
+            {
+                result.RemoveIndex(aIndex.Key, aIndex.Value);
+            }
+        }
+
+        private void ProcessAddIndex(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
+        {
+            var command = (AlterType_AddIndices)myAlterCommand;
+
+            foreach (var aIndexDefinition in command.IdxDefinitionList)
+            {
+                result.AddIndex(GenerateIndex(aIndexDefinition));
+            }
+        }
+
+        /// <summary>
+        /// Generates a index predefinition
+        /// </summary>
+        /// <param name="aIndex">The index definition by the gql</param>
+        /// <returns>An IndexPredefinition</returns>
+        private IndexPredefinition GenerateIndex(IndexDefinition aIndex)
+        {
+            IndexPredefinition result;
+
+            if (String.IsNullOrEmpty(aIndex.IndexName))
+            {
+                result = new IndexPredefinition();
+            }
+            else
+            {
+                result = new IndexPredefinition(aIndex.IndexName);
+            }
+
+            if (!String.IsNullOrEmpty(aIndex.IndexType))
+            {
+                result.SetIndexType(aIndex.IndexType);
+            }
+
+            foreach (var aIndexProperty in aIndex.IndexAttributeDefinitions)
+            {
+                result.AddProperty(aIndexProperty.IndexAttribute.ContentString);
+            }
+
+            return result;
+        }
+
         private void ProcessChangeComment(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
             throw new NotImplementedException();
@@ -218,19 +279,52 @@ namespace sones.GraphQL.StatementNodes.DDL
             throw new NotImplementedException();
         }
 
-        private void ProcessDrop(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
+        private void ProcessDropAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            throw new NotImplementedException();
-        }
-
-        private void ProcessAdd(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
-        {
-            var command = (AlterType_AddAttributes)myAlterCommand;
+            var command = (AlterType_DropAttributes)myAlterCommand;
 
             foreach (var aAttribute in command.ListOfAttributes)
             {
-                result.AddToBeAddedUnknownAttribute(GenerateUnknownAttribute(aAttribute));
+                result.RemoveAttribute(aAttribute);
             }
+        }
+
+        private void ProcessAddAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
+        {
+            var command = (AlterType_AddAttributes)myAlterCommand;
+
+            if (command.ListOfAttributes != null && command.ListOfAttributes.Count > 0)
+            {
+                foreach (var aAttribute in command.ListOfAttributes)
+                {
+                    result.AddUnknownAttribute(GenerateUnknownAttribute(aAttribute));
+                }
+            }
+            else
+            {
+                if (command.BackwardEdgeInformation != null && command.BackwardEdgeInformation.Count > 0)
+                {
+                    foreach (var aIncomingEdge in command.BackwardEdgeInformation)
+                    {
+                        result.AddIncomingEdge(GenerateAIncomingEdge(aIncomingEdge));
+                    }
+                }
+            }
+            
+        }
+
+        /// <summary>
+        /// Generates an incoming edge attribute
+        /// </summary>
+        /// <param name="aIncomingEdge">The incoming edge definition by the gql</param>
+        /// <returns>An incoming edge predefinition</returns>
+        private IncomingEdgePredefinition GenerateAIncomingEdge(IncomingEdgeDefinition aIncomingEdge)
+        {
+            IncomingEdgePredefinition result = new IncomingEdgePredefinition(aIncomingEdge.AttributeName);
+
+            result.SetOutgoingEdge(aIncomingEdge.TypeName, aIncomingEdge.TypeAttributeName);
+
+            return result;
         }
 
         private QueryResult CreateOutput(IRequestStatistics myStats, IVertexType myALteredVertexType)

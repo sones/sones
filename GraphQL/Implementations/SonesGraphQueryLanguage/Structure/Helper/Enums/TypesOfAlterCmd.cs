@@ -2,8 +2,11 @@
 {
     public enum TypesOfAlterCmd
     {
-        Add,
-        Drop,
+        AddAttribute,
+        AddIndex,
+        DropAttribute,
+        DropIncomingEdge,
+        DropIndex,
         RenameAttribute,
         RenameVertexType,
         RenameIncomingEdge,

@@ -25,7 +25,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
 
         public override TypesOfAlterCmd AlterType
         {
-            get { throw new NotImplementedException(); }
+            get { return TypesOfAlterCmd.DropIndex; }
         }
 
         public override IVertexView CreateResult(IVertexType myAlteredVertexType)
