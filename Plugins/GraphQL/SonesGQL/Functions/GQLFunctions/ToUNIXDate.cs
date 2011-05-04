@@ -30,26 +30,27 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            if (myWorkingBase == typeof(UInt64) || myWorkingBase == typeof(DateTime))
-            {
-                return true;
-            }
-            else if (myWorkingBase is IAttributeDefinition)
-            {
-                if ((myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && (myWorkingBase as IPropertyDefinition).BaseType.Name.Equals("UInt64")
-                 || (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && (myWorkingBase as IPropertyDefinition).BaseType.Name.Equals("DateTime"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
+            if (myWorkingBase == null)
             {
                 return false;
             }
+            else
+            {
+                if (myWorkingBase == typeof(UInt64) || myWorkingBase == typeof(DateTime))
+                {
+                    return true;
+                }
+                else if (myWorkingBase is Type)
+                {
+                    return (((Type)myWorkingBase) == typeof(long)) || (((Type)myWorkingBase) == typeof(DateTime));
+                }
+                else if (myWorkingBase is IPropertyDefinition)
+                {
+                    return (((myWorkingBase as IPropertyDefinition).BaseType == typeof(long)) || (((myWorkingBase as IPropertyDefinition).BaseType == typeof(DateTime))));
+                }
+            }
+
+            return false;
         }
 
         public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)

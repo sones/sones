@@ -63,5 +63,10 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             get { return "currentdate"; }
         }
+
+        public override Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            return typeof(DateTime);
+        }
     }
 }

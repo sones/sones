@@ -738,12 +738,12 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
                             //_LastAttribute = (returnType as DBTypeAttribute).GetValue();
                             //_LastType = GetDBTypeByAttribute(myDBContext, _LastAttribute);
                         }
-                        else if (returnType is IVertexType)
+                        else if (returnType is Object)
                         {
                             //_LastAttribute = null;
                             //_LastType = (returnType as DBType).GetValue();
                         }
-                        else if (returnType is Object)
+                        else if (returnType is Type)
                         {
                             //_LastAttribute = null;
                             //_LastType = myDBContext.DBTypeManager.GetTypeByName((returnType as ADBBaseObject).ObjectName);
