@@ -30,6 +30,8 @@ namespace sones.GraphQL.GQL.Manager.Select
     {
         #region data
 
+        List<SelectionElement> _SelectionElementsTypeIndependend;
+
         /// <summary>
         /// the selection element of _Selections , the aggregate selection element
         /// </summary>
@@ -75,6 +77,8 @@ namespace sones.GraphQL.GQL.Manager.Select
             _Aggregates = new Dictionary<string, Dictionary<EdgeList, List<SelectionElementAggregate>>>();
             _Groupings = new Dictionary<string, List<SelectionElement>>();
             _Selections = new Dictionary<string, Dictionary<EdgeList, List<SelectionElement>>>();
+            _SelectionElementsTypeIndependend = new List<SelectionElement>();
+
 
             _graphdb = myGraphDB;
             _pluginManager = myPluginManager;
@@ -212,7 +216,16 @@ namespace sones.GraphQL.GQL.Manager.Select
                             (lastElem as SelectionElementFunction).AddFollowingFunction(funcElem);
                             lastElem = funcElem;
                         }
-                        
+                        else
+                        {
+                            if (_SelectionElementsTypeIndependend.Any(se => se.Alias == funcElem.Alias))
+                            {
+                                throw new DuplicateAttributeSelectionException(funcElem.Alias);
+                            }
+
+                            _SelectionElementsTypeIndependend.Add(funcElem);
+                            lastElem = funcElem;
+                        }
                         #endregion
 
                     }
@@ -729,6 +742,59 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 #endregion
 
+            }
+
+        }
+
+        public IEnumerable<IVertexView> GetTypeIndependendResult(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+
+            //_DBOs = new IEnumerable<Vertex>();
+            var Attributes = new Dictionary<string, object>();
+
+            #region Go through all _SelectionElementsTypeIndependend
+
+            foreach (var selection in _SelectionElementsTypeIndependend)
+            {
+                if (selection is SelectionElementFunction)
+                {
+                    var func = ((SelectionElementFunction)selection);
+                    FuncParameter funcResult = null;
+                    var alias = func.Alias;
+                    object CallingObject = null;
+                    while (func != null)
+                    {
+                        var parameter = func.Function.Execute(null, null, null, _pluginManager, _graphdb, mySecurityToken, myTransactionToken);
+                        funcResult = func.Function.Function.ExecFunc(null, CallingObject, null, _graphdb, mySecurityToken, myTransactionToken, parameter.ToArray());
+                        if (funcResult.Value == null)
+                        {
+                            break; // no result for this object because of not set attribute value
+                        }
+                        else
+                        {
+                            func = func.FollowingFunction;
+                            if (func != null)
+                            {
+                                CallingObject = funcResult.Value;
+                            }
+                        }
+
+                    }
+
+                    if (funcResult.Value == null)
+                    {
+                        continue; // no result for this object because of not set attribute value
+                    }
+
+                    Attributes.Add(alias, funcResult.Value);
+                }
+            }
+
+            #endregion
+
+            if (!Attributes.IsNullOrEmpty())
+            {
+                yield return new VertexView(Attributes, null);
             }
 
         }

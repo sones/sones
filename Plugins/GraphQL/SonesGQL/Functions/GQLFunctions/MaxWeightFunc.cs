@@ -28,15 +28,9 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            if ((myWorkingBase is IAttributeDefinition) && 
-                (((myWorkingBase as IAttributeDefinition).Kind == AttributeType.OutgoingEdge) && (myWorkingBase as IOutgoingEdgeDefinition).EdgeType.Name == "Weighted"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return myWorkingBase != null &&
+                myWorkingBase is IAttributeDefinition &&
+                ((IAttributeDefinition)myWorkingBase).Kind == AttributeType.OutgoingEdge;
         }
 
         //TODO: implement

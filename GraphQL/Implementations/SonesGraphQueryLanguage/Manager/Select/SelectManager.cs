@@ -78,6 +78,16 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             List<IEnumerable<IVertexView>> _ListOfVertices1 = CreateVertices(mySecurityToken, myTransactionToken, typeList, selectResultManager, selectDefinition.WhereExpressionDefinition, selectDefinition.ResolutionDepth, selectDefinition.OrderByDefinition, selectDefinition.Limit, selectDefinition.Offset);
 
+            #region TypeIndependendResults
+
+            var _ListOfVertices2 = selectResultManager.GetTypeIndependendResult(mySecurityToken, myTransactionToken);
+            if (_ListOfVertices2.CountIsGreater(0))
+            {
+                _ListOfVertices1.Add(_ListOfVertices2);
+            }
+
+            #endregion
+
             sw.Stop();
 
             return new QueryResult(myQuery, SonesGQLConstants.GQL, Convert.ToUInt64(sw.Elapsed.TotalMilliseconds), ResultType.Successful, AggregateListOfVertices(_ListOfVertices1));
