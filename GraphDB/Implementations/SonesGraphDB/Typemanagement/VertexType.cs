@@ -774,17 +774,6 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
-
-        #region IVertexType Members
-
-
-        bool IVertexType.HasUniqueDefinitions(bool myIncludeAncestorDefinitions)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
         #region IBaseType Members
 
 
