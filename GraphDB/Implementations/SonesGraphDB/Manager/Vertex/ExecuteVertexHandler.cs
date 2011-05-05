@@ -477,7 +477,7 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     var update = CreateVertexUpdateDefinition(vertex, vertexType, myUpdate);
 
-                    yield return UpdateVertex(vertex, update, myUpdate.Edition, myTransaction, mySecurity);
+                    yield return UpdateVertex(vertex, update, myUpdate.UpdatedEdition, myTransaction, mySecurity);
                 }
             }
 
@@ -486,9 +486,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         private IVertex UpdateVertex(IVertex vertex, VertexUpdateDefinition update, String myEdition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            //return _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, vertex.VertexTypeID, update, myEdition);
-            throw new NotImplementedException();
-
+            return _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, vertex.VertexTypeID, update, myEdition);
         }
 
         private VertexUpdateDefinition CreateVertexUpdateDefinition(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate)
@@ -547,13 +545,33 @@ namespace sones.GraphDB.Manager.Vertex
 
         private void CreateEdgeUpdateDefinition(
             IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, 
-            out IDictionary<long, SingleEdgeUpdateDefinition> toBeUpdatedSingle, 
-            out IDictionary<long, HyperEdgeUpdateDefinition> toBeUpdatedHyper, 
-            out IDictionary<long, IComparable> toBeUpdatedStructured, 
-            out IDictionary<string, object> toBeUpdatedUnstructured, 
-            out IDictionary<long, StreamAddDefinition> toBeUpdatedBinaries)
+            out IDictionary<long, SingleEdgeUpdateDefinition> outUpdatedSingle, 
+            out IDictionary<long, HyperEdgeUpdateDefinition> outUpdatedHyper, 
+            out IDictionary<long, IComparable> outUpdatedStructured, 
+            out IDictionary<string, object> outUpdatedUnstructured, 
+            out IDictionary<long, StreamAddDefinition> outUpdatedBinaries)
         {
-            throw new NotImplementedException();
+            #region predefine
+
+            Dictionary<long, SingleEdgeUpdateDefinition> toBeUpdatedSingle = null;
+            Dictionary<long, HyperEdgeUpdateDefinition> toBeUpdatedHyper = null;
+            Dictionary<long, IComparable> toBeUpdatedStructured = null;
+            Dictionary<string, object> toBeUpdatedUnstructured = null;
+            Dictionary<long, StreamAddDefinition> toBeUpdatedBinaries = null;
+
+            #endregion
+
+            
+            
+            #region return
+
+            outUpdatedSingle       = toBeUpdatedSingle;
+            outUpdatedHyper        = toBeUpdatedHyper;
+            outUpdatedStructured   = toBeUpdatedStructured;
+            outUpdatedUnstructured = toBeUpdatedUnstructured;
+            outUpdatedBinaries     = toBeUpdatedBinaries;
+
+            #endregion
         }
 
         private void CreateEdgeDeleteDefinition(
@@ -630,11 +648,11 @@ namespace sones.GraphDB.Manager.Vertex
 
             #region return
 
-            outDeletedSingle       = toBeDeletedSingle = null;
-            outDeletedHyper        = toBeDeletedHyper = null;
-            outDeletedStructured   = toBeDeletedStructured = null;
-            outDeletedUnstructured = toBeDeletedUnstructured = null;
-            outDeletedBinaries     = toBeDeletedBinaries = null;
+            outDeletedSingle       = toBeDeletedSingle;
+            outDeletedHyper        = toBeDeletedHyper;
+            outDeletedStructured   = toBeDeletedStructured;
+            outDeletedUnstructured = toBeDeletedUnstructured;
+            outDeletedBinaries     = toBeDeletedBinaries;
 
             #endregion
 
