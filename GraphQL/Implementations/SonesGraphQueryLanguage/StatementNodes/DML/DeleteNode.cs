@@ -72,16 +72,18 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken,
-                                                            myTransactionToken,
-                                                            new CommonUsageGraph(myGraphDB, mySecurityToken,
-                                                                                 myTransactionToken));
-
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
                 mySecurityToken,
                 myTransactionToken,
                 new RequestGetVertexType(_typeName),
                 (stats, vType) => vType);
+
+            _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+
+            var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken,
+                                                            myTransactionToken,
+                                                            new CommonUsageGraph(myGraphDB, mySecurityToken,
+                                                                                 myTransactionToken));
 
             var toBeDeletedVertices =
                 expressionGraph.SelectVertexIDs(
@@ -91,7 +93,7 @@ namespace sones.GraphQL.StatementNodes.DML
             return myGraphDB.Delete<QueryResult>(
                 mySecurityToken,
                 myTransactionToken,
-                new RequestDelete(new RequestGetVertices(_typeName, toBeDeletedVertices), _toBeDeletedAttributes),
+                new RequestDelete(new RequestGetVertices(_typeName, toBeDeletedVertices)).AddAttributes(_toBeDeletedAttributes),
                 CreateQueryResult);
         }
 

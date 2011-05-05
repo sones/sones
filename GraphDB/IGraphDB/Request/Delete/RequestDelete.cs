@@ -10,18 +10,22 @@ namespace sones.GraphDB.Request
     {
         #region Data
 
-        public readonly RequestGetVertices  GetVerticesRequest;
-        public readonly IEnumerable<String> ToBeDeletedAttributes;
+        public readonly RequestGetVertices ToBeDeletedVertices;
+        public readonly HashSet<String> ToBeDeletedAttributes;
 
         #endregion
 
         #region Constructor
 
-        public RequestDelete(RequestGetVertices myGetVerticesRequest, IEnumerable<String> myToBeDeletedAttributes = null)
+        /// <summary>
+        /// Creates a new delete request that is able to delete attributes from certain vertices or 
+        /// the vertices themself
+        /// </summary>
+        /// <param name="myToBeDeletedVertices">The vertices that should be deleted/changed</param>
+        public RequestDelete(RequestGetVertices myToBeDeletedVertices)
         {
-            GetVerticesRequest = myGetVerticesRequest;
-
-            ToBeDeletedAttributes = myToBeDeletedAttributes;
+            ToBeDeletedAttributes = new HashSet<string>();
+            ToBeDeletedVertices = myToBeDeletedVertices;
         }
 
         #endregion
@@ -31,6 +35,40 @@ namespace sones.GraphDB.Request
         public GraphDBAccessMode AccessMode
         {
             get { return GraphDBAccessMode.TypeChange; }
+        }
+
+        #endregion
+
+        #region fluent methods
+
+        /// <summary>
+        /// Adds an attribute that should be deleted
+        /// </summary>
+        /// <param name="myAttributeName">The name of the attribute that should be deleted</param>
+        /// <returns>The request itself</returns>
+        public RequestDelete AddAttribute(String myAttributeName)
+        {
+            if (!String.IsNullOrWhiteSpace(myAttributeName))
+            {
+                ToBeDeletedAttributes.Add(myAttributeName);                
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds attributes that should be deleted
+        /// </summary>
+        /// <param name="myAttributeNames">The names of the attributes that should be deleted</param>
+        /// <returns>The request itself</returns>
+        public RequestDelete AddAttributes(IEnumerable<String> myAttributeNames)
+        {
+            foreach (var aToBeDeletedAttribute in myAttributeNames)
+            {
+                this.AddAttribute(aToBeDeletedAttribute);
+            }
+
+            return this;
         }
 
         #endregion
