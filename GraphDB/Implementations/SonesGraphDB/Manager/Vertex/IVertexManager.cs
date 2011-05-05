@@ -95,10 +95,24 @@ namespace sones.GraphDB.Manager.Vertex
         /// <returns>The added vertex.</returns>
         IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity);
 
+
+        /// <summary>
+        /// Updates a set of vertices and returns them.
+        /// </summary>
+        /// <param name="myUpdate">The request that represents the update.</param>
+        /// <param name="TransactionToken">A transaction token for this operation.</param>
+        /// <param name="SecurityToken">A security token for this operation.</param>
+        /// <returns>The updated vertivess.</returns>
+        IEnumerable<IVertex> UpdateVertex(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity);
+
+
+
         /// <summary>
         /// Gets the vertex store this vertex manager is acting on.
         /// </summary>
         IVertexStore VertexStore { get;  }
 
+
+        IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken);
     }
 }

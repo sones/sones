@@ -6,6 +6,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
+using sones.GraphDB.Manager;
 
 namespace sones.GraphDB.Request.Update
 {
@@ -29,11 +30,11 @@ namespace sones.GraphDB.Request.Update
         /// </summary>
         /// <param name="myGetEdgeTypeRequest">The get vertex request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
-        /// <param name="myTransactionToken">The transaction token</param>
+        /// <param name="myTransaction">The transaction token</param>
         public PipelineableUpdateRequest(   RequestUpdate myUpdateRequest, 
                                             SecurityToken mySecurity,
-                                            TransactionToken myTransactionToken)
-            : base(mySecurity, myTransactionToken)
+                                            TransactionToken myTransaction)
+            : base(mySecurity, myTransaction)
         {
             _request = myUpdateRequest;
         }
@@ -43,17 +44,17 @@ namespace sones.GraphDB.Request.Update
         /// <summary>
         /// Validates the given request.
         /// </summary>
-        public override void Validate(Manager.IMetaManager myMetaManager)
+        public override void Validate(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            myMetaManager.VertexManager.CheckManager.UpdateVertex(_request, TransactionToken, SecurityToken);
         }
 
         /// <summary>
         /// Executes the given request.
         /// </summary>
-        public override void Execute(Manager.IMetaManager myMetaManager)
+        public override void Execute(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            myMetaManager.VertexManager.ExecuteManager.UpdateVertex(_request, TransactionToken, SecurityToken);
         }
 
         /// <summary>

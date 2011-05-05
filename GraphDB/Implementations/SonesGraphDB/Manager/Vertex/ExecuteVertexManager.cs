@@ -75,9 +75,66 @@ namespace sones.GraphDB.Manager.Vertex
             return _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, myTypeID);
         }
 
-        public void CanGetVertices(IExpression iExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken)
         {
+            IEnumerable<IVertex> result;
+            #region case 1 - Expression
 
+            if (_request.Expression != null)
+            {
+                result = GetVertices(_request.Expression, _request.IsLongrunning, TransactionToken, SecurityToken);
+            }
+
+            #endregion
+
+            #region case 2 - No Expression
+
+            else if (_request.VertexTypeName != null)
+            {
+                //2.1 typeName as string
+                if (_request.VertexIDs != null)
+                {
+                    //2.1.1 vertex ids
+                    List<IVertex> fetchedVertices = new List<IVertex>();
+
+                    foreach (var item in _request.VertexIDs)
+                    {
+                        fetchedVertices.Add(GetVertex(_request.VertexTypeName, item, null, null, TransactionToken, SecurityToken));
+                    }
+
+                    result = fetchedVertices;
+                }
+                else
+                {
+                    //2.1.2 no vertex ids ... take all
+                    result = GetVertices(_request.VertexTypeName, TransactionToken, SecurityToken);
+                }
+            }
+            else
+            {
+                //2.2 type as id
+                if (_request.VertexIDs != null)
+                {
+                    //2.2.1 vertex ids
+                    List<IVertex> fetchedVertices = new List<IVertex>();
+
+                    foreach (var item in _request.VertexIDs)
+                    {
+                        fetchedVertices.Add(GetVertex(_request.VertexTypeID, item, null, null, TransactionToken, SecurityToken));
+                    }
+
+                    result = fetchedVertices;
+                }
+                else
+                {
+                    //2.2.2 no vertex ids ... take all
+                    result = GetVertices(_request.VertexTypeID, TransactionToken, SecurityToken);
+                }
+            }
+
+            #endregion
+
+            return result;
         }
 
         #endregion
@@ -92,6 +149,11 @@ namespace sones.GraphDB.Manager.Vertex
         public IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken)
         {
             return _vertexStore.GetVertex(SecurityToken, TransactionToken, myVertexID, myVertexTypeID, (aEdition) => myEdition == aEdition, (aVertexRevisionID) => myTimespan.IsWithinTimeStamp(aVertexRevisionID));
+        }
+
+        public IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            return GetVertices(myExpression, false, myTransactionToken, mySecurityToken).FirstOrDefault();
         }
 
         #endregion
@@ -380,10 +442,6 @@ namespace sones.GraphDB.Manager.Vertex
             throw new ArgumentException("A unique definition must contain at least one element.");
         }
 
-        public IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
-        {
-            return GetVertices(myExpression, false, myTransactionToken, mySecurityToken).FirstOrDefault();
-        }
 
         public IVertexStore VertexStore
         {
@@ -401,6 +459,17 @@ namespace sones.GraphDB.Manager.Vertex
             _indexManager = myMetaManager.IndexManager;
             _vertexStore = myMetaManager.VertexStore;
             _queryPlanManager = myMetaManager.QueryPlanManager;
+        }
+
+        #endregion
+
+
+        #region IVertexHandler Members
+
+
+        public IEnumerable<IVertex> UpdateVertex(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            return null;
         }
 
         #endregion

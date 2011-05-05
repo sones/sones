@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using sones.GraphDB.Request.Insert;
 
 namespace sones.GraphDB.Request
 {
     /// <summary>
     /// Request to update a vertex / vertex type
     /// </summary>
-    public sealed class RequestUpdate : IRequest
+    public sealed class RequestUpdate : IRequest, IPropertyProvider
     {
 
         #region data
@@ -27,10 +28,12 @@ namespace sones.GraphDB.Request
         /// </summary>
         public string Edition { get; private set; }
 
+    /*  ASK: should this be possible?
         /// <summary>
         /// The UUID of updated vertex.
         /// </summary>
         public long? VertexUUID { get; private set; }
+        */
 
         /// <summary>
         /// The well defined properties of updated vertex.
@@ -65,8 +68,8 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The well defined properties of updated vertex.
         /// </summary>
-        public IDictionary<String, IComparable> RemoveValuedStructuredProperties { get { return _toBeRemovedValuedStructured; } }
-        private Dictionary<string, IComparable> _toBeRemovedValuedStructured;
+        public IDictionary<String, IEnumerable<IComparable>> RemoveValuedStructuredProperties { get { return _toBeRemovedValuedStructured; } }
+        private Dictionary<string, IEnumerable<IComparable>> _toBeRemovedValuedStructured;
 
         /// <summary>
         /// The well defined properties which should be removed of updated vertex.
@@ -130,14 +133,14 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myID">The ID of the updated vertex.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate SetUUID(long myID)
+/*        public RequestUpdate SetUUID(long myID)
         {
             VertexUUID = myID;
 
             return this;
 
         }
-
+        */
         /// <summary>
         /// Adds a new structured property
         /// </summary>
@@ -227,9 +230,9 @@ namespace sones.GraphDB.Request
         /// <param name="myPropertyName">The name of the property</param>
         /// <param name="myProperty">The value of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate RemoveValuedStructuredProperty(String myPropertyName, IComparable myProperty)
+        public RequestUpdate RemoveValuedStructuredProperty(String myPropertyName, IEnumerable<IComparable> myProperty)
         {
-            _toBeRemovedValuedStructured = _toBeRemovedValuedStructured ?? new Dictionary<String, IComparable>();
+            _toBeRemovedValuedStructured = _toBeRemovedValuedStructured ?? new Dictionary<String, IEnumerable<IComparable>>();
             _toBeRemovedValuedStructured.Add(myPropertyName, myProperty);
 
             return this;
@@ -248,6 +251,49 @@ namespace sones.GraphDB.Request
             return this;
         }
         
+
+        #endregion
+
+        #region IPropertyProvider Members
+
+        IDictionary<string, IComparable> IPropertyProvider.StructuredProperties
+        {
+            get { return UpdateStructuredProperties; }
+        }
+
+        IDictionary<string, object> IPropertyProvider.UnstructuredProperties
+        {
+            get { return UpdateUnstructuredProperties; }
+        }
+
+        IDictionary<string, object> IPropertyProvider.UnknownProperties
+        {
+            get { return UpdateUnknownProperties; }
+        }
+
+        IPropertyProvider IPropertyProvider.AddStructuredProperty(string myPropertyName, IComparable myProperty)
+        {
+            return UpdateStructuredProperty(myPropertyName, myProperty);
+        }
+
+        IPropertyProvider IPropertyProvider.AddUnstructuredProperty(string myPropertyName, object myProperty)
+        {
+            return UpdateUnstructuredProperty(myPropertyName, myProperty);
+        }
+
+        IPropertyProvider IPropertyProvider.AddUnknownProperty(string myPropertyName, object myProperty)
+        {
+            return UpdateUnknownProperty(myPropertyName, myProperty);
+        }
+
+        #endregion
+
+        #region IUnknownProvider Members
+
+        void IUnknownProvider.ClearUnknown()
+        {
+            _toBeUpdatedUnknown = null;
+        }
 
         #endregion
     }

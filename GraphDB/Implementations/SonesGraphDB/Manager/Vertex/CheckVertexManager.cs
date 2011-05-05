@@ -13,12 +13,45 @@ using sones.Library.Commons.VertexStore;
 using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Request.Insert;
 using sones.GraphDB.TypeManagement.Base;
+using sones.GraphDB.ErrorHandling.Expression;
 
 namespace sones.GraphDB.Manager.Vertex
 {
     class CheckVertexManager: AVertexHandler, IVertexHandler
     {
         #region IVertexHandler Members
+
+        public IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken)
+        {
+            #region case 1 - Expression
+
+            if (_request.Expression != null)
+            {
+                if (!_queryPlanManager.IsValidExpression(_request.Expression))
+                {
+                    throw new InvalidExpressionException(_request.Expression);
+                }
+            }
+            
+            #endregion
+
+            #region case 2 - No Expression
+
+            else if (_request.VertexTypeName != null)
+            {
+                //2.1 typeName as string
+                _vertexTypeManager.CheckManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);
+            }
+            else
+            {
+                //2.2 type as id
+                _vertexTypeManager.CheckManager.GetVertexType(_request.VertexTypeID, TransactionToken, SecurityToken);
+            }
+
+            #endregion
+
+            return null;
+        }
 
         public IEnumerable<IVertex> GetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
@@ -210,5 +243,15 @@ namespace sones.GraphDB.Manager.Vertex
 
 
 
+
+        #region IVertexHandler Members
+
+
+        public IEnumerable<IVertex> UpdateVertex(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            return null;
+        }
+
+        #endregion
     }
 }

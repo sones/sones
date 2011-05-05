@@ -52,91 +52,13 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            #region case 1 - Expression
-
-            if (_request.Expression != null)
-            {
-                if (!myMetaManager.QueryPlanManager.IsValidExpression(_request.Expression))
-                {
-                    throw new InvalidExpressionException(_request.Expression);
-                }
-            }
-            
-            #endregion
-
-            #region case 2 - No Expression
-
-            else if (_request.VertexTypeName != null)
-            {
-                //2.1 typeName as string
-                myMetaManager.VertexTypeManager.CheckManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);
-            }
-            else
-            {
-                //2.2 type as id
-                myMetaManager.VertexTypeManager.CheckManager.GetVertexType(_request.VertexTypeID, TransactionToken, SecurityToken);
-            }
-
-            #endregion
+             myMetaManager.VertexManager.CheckManager.GetVertices(_request, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            #region case 1 - Expression
+            _fetchedIVertices = myMetaManager.VertexManager.ExecuteManager.GetVertices(_request, TransactionToken, SecurityToken);
 
-            if (_request.Expression != null)
-            {
-                _fetchedIVertices = myMetaManager.VertexManager.ExecuteManager.GetVertices(_request.Expression, _request.IsLongrunning, TransactionToken, SecurityToken);
-            }
-
-            #endregion
-
-            #region case 2 - No Expression
-
-            else if (_request.VertexTypeName != null)
-            {
-                //2.1 typeName as string
-                if (_request.VertexIDs != null)
-                {
-                    //2.1.1 vertex ids
-                    List<IVertex> fetchedVertices = new List<IVertex>();
-
-                    foreach (var item in _request.VertexIDs)
-                    {
-                        fetchedVertices.Add(myMetaManager.VertexManager.ExecuteManager.GetVertex(_request.VertexTypeName, item, null, null, TransactionToken, SecurityToken));
-                    }
-
-                    _fetchedIVertices = fetchedVertices;
-                }
-                else
-                {
-                    //2.1.2 no vertex ids ... take all
-                    _fetchedIVertices = myMetaManager.VertexManager.ExecuteManager.GetVertices(_request.VertexTypeName, TransactionToken, SecurityToken);
-                }
-            }
-            else
-            {
-                //2.2 type as id
-                if (_request.VertexIDs != null)
-                {
-                    //2.2.1 vertex ids
-                    List<IVertex> fetchedVertices = new List<IVertex>();
-
-                    foreach (var item in _request.VertexIDs)
-                    {
-                        fetchedVertices.Add(myMetaManager.VertexManager.ExecuteManager.GetVertex(_request.VertexTypeID, item, null, null, TransactionToken, SecurityToken));
-                    }
-
-                    _fetchedIVertices = fetchedVertices;
-                }
-                else
-                {
-                    //2.2.2 no vertex ids ... take all
-                    _fetchedIVertices = myMetaManager.VertexManager.ExecuteManager.GetVertices(_request.VertexTypeID, TransactionToken, SecurityToken);
-                }
-            }
-
-            #endregion
         }
 
         public override IRequest GetRequest()

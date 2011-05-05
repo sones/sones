@@ -14,12 +14,14 @@ using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Request.Insert;
 using sones.GraphDB.TypeManagement.Base;
+using sones.GraphDB.Manager.QueryPlan;
 
 namespace sones.GraphDB.Manager.Vertex
 {
     internal abstract class AVertexHandler: IManager
     {
         protected IManagerOf<IVertexTypeHandler> _vertexTypeManager;
+        protected IQueryPlanManager _queryPlanManager;
 
 
         protected IVertexType GetVertexType(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
@@ -74,6 +76,7 @@ namespace sones.GraphDB.Manager.Vertex
         public virtual void Initialize(IMetaManager myMetaManager)
         {
             _vertexTypeManager = myMetaManager.VertexTypeManager;
+            _queryPlanManager = myMetaManager.QueryPlanManager;
         }
 
         public virtual void Load(TransactionToken myTransaction, SecurityToken mySecurity)
