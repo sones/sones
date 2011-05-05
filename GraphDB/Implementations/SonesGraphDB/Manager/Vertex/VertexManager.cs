@@ -32,15 +32,15 @@ namespace sones.GraphDB.Manager.Vertex
 
         #region Data
 
-        private CheckVertexManager _check;
-        private ExecuteVertexManager _execute;
+        private CheckVertexHandler _check;
+        private ExecuteVertexHandler _execute;
 
         #endregion
 
         public VertexManager(IDManager myIDManager)
         {
-            _check = new CheckVertexManager();
-            _execute = new ExecuteVertexManager(myIDManager);
+            _check = new CheckVertexHandler();
+            _execute = new ExecuteVertexHandler(myIDManager);
         }
 
         #region IManagerOf<IVertexManager> Members

@@ -93,9 +93,9 @@
     <Compile Include="Manager\TypeManagement\IEdgeTypeHandler.cs" />
     <Compile Include="Manager\TypeManagement\UniqueID.cs" />
     <Compile Include="Manager\Vertex\AVertexHandler.cs" />
-    <Compile Include="Manager\Vertex\CheckVertexManager.cs" />
-    <Compile Include="Manager\Vertex\ExecuteVertexManager.cs" />
-    <Compile Include="Manager\Vertex\IVertexManager.cs" />
+    <Compile Include="Manager\Vertex\CheckVertexHandler.cs" />
+    <Compile Include="Manager\Vertex\ExecuteVertexHandler.cs" />
+    <Compile Include="Manager\Vertex\IVertexHandler.cs" />
     <Compile Include="Manager\Vertex\VertexManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

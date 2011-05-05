@@ -21,7 +21,7 @@ using sones.Plugins.Index.Interfaces;
 
 namespace sones.GraphDB.Manager.Vertex
 {
-    internal class ExecuteVertexManager : AVertexHandler, IVertexHandler
+    internal class ExecuteVertexHandler : AVertexHandler, IVertexHandler
     {
         #region data
 
@@ -46,7 +46,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         #region c'tor
 
-        public ExecuteVertexManager(IDManager myIDManager)
+        public ExecuteVertexHandler(IDManager myIDManager)
         {
             _idManager = myIDManager;
         }

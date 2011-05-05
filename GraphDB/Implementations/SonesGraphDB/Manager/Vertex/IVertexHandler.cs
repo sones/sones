@@ -19,18 +19,18 @@ namespace sones.GraphDB.Manager.Vertex
     {
         #region Get Vertices
 
+        IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken);
+
         /// <summary>
-        /// Returns the list of vertices that matches the expression.
+        /// Gets all vertices for one vertex type.
         /// </summary>
-        /// <param name="myExpression">An logical expression tree. Migth be unoptimized.</param>
-        /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer.</param>
-        /// <param name="myTransactionToken">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="myVertexType">The interesting vertex type.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <returns>
-        /// A possible emtpy list of vertices that matches the expression. The myResult is never <c>NULL</c>.
-        /// Any implementation should try to optimize the way the underlying parentVertex store and indices are used to get the myResult.
+        /// All vertices of the interesting vertex type.
         /// </returns>
-        IEnumerable<IVertex> GetVertices(IExpression myExpression, Boolean myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+        IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Gets all vertices for one vertex type ID.
@@ -44,31 +44,21 @@ namespace sones.GraphDB.Manager.Vertex
         IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
-        /// Gets all vertices for one vertex type.
+        /// Returns the list of vertices that matches the expression.
         /// </summary>
-        /// <param name="myVertexType">The interesting vertex type.</param>
-        /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <param name="myExpression">An logical expression tree. Migth be unoptimized.</param>
+        /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer.</param>
+        /// <param name="myTransactionToken">A transaction token for this operation.</param>
+        /// <param name="mySecurityToken">A security token for this operation.</param>
         /// <returns>
-        /// All vertices of the interesting vertex type.
+        /// A possible emtpy list of vertices that matches the expression. The myResult is never <c>NULL</c>.
+        /// Any implementation should try to optimize the way the underlying parentVertex store and indices are used to get the myResult.
         /// </returns>
-        IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransaction, SecurityToken mySecurity);
+        IEnumerable<IVertex> GetVertices(IExpression myExpression, Boolean myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
 
         #endregion
 
         #region GetVertex
-
-        /// <summary>
-        /// Execution of the request
-        /// </summary>
-        /// <param name="myVertexTypeName">The vertex type name of the requested vertex</param>
-        /// <param name="myVertexID">The id of the requested vertex</param>
-        /// <param name="myEdition">The edition that should be processed</param>
-        /// <param name="myTimespan">The timespan that should be processed</param>
-        /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurity">A security token for this operation</param>
-        /// <returns>The requested vertex</returns>
-        IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Execution of the request
@@ -81,10 +71,22 @@ namespace sones.GraphDB.Manager.Vertex
         /// <param name="mySecurity">A security token for this operation</param>
         /// <returns>The requested vertex</returns>
         IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity);
+  
+        /// <summary>
+        /// Execution of the request
+        /// </summary>
+        /// <param name="myVertexTypeName">The vertex type name of the requested vertex</param>
+        /// <param name="myVertexID">The id of the requested vertex</param>
+        /// <param name="myEdition">The edition that should be processed</param>
+        /// <param name="myTimespan">The timespan that should be processed</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation</param>
+        /// <returns>The requested vertex</returns>
+        IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity);
+        
+        IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity);
 
         #endregion
-
-        IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Adds a vertex to the FS.
@@ -113,6 +115,5 @@ namespace sones.GraphDB.Manager.Vertex
         IVertexStore VertexStore { get;  }
 
 
-        IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken);
     }
 }

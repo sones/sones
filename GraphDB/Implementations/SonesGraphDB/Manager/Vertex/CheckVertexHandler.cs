@@ -17,7 +17,7 @@ using sones.GraphDB.ErrorHandling.Expression;
 
 namespace sones.GraphDB.Manager.Vertex
 {
-    class CheckVertexManager: AVertexHandler, IVertexHandler
+    class CheckVertexHandler: AVertexHandler, IVertexHandler
     {
         #region IVertexHandler Members
 
