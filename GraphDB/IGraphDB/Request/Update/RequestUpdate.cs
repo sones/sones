@@ -77,6 +77,12 @@ namespace sones.GraphDB.Request
         public List<String> RemoveStructuredProperties { get { return _toBeRemovedStructured; } }
         private List<string> _toBeRemovedStructured;
 
+        /// <summary>
+        /// The outgoing edges which should be removed from updated vertex.
+        /// </summary>
+        public IEnumerable<EdgePredefinition> RemoveOutgoingEdges { get { return _toBeRemovedEdges; } }
+        private HashSet<EdgePredefinition> _toBeRemovedEdges;
+
         #endregion
 
         #region constructor
@@ -225,7 +231,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds a new valued structured property to remove
+        /// Removes a valued structured property.
         /// </summary>
         /// <param name="myPropertyName">The name of the property</param>
         /// <param name="myProperty">The value of the property</param>
@@ -239,7 +245,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds a new structured property to remove
+        /// Removes a structured property.
         /// </summary>
         /// <param name="myPropertyName">The name of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
@@ -247,6 +253,19 @@ namespace sones.GraphDB.Request
         {
             _toBeRemovedStructured = _toBeRemovedStructured ?? new List<String>(); 
             _toBeRemovedStructured.Add(myPropertyName);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes a outgoing edge.
+        /// </summary>
+        /// <param name="myEdgeDefinition">The name of the edge.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestUpdate RemoveEdge(EdgePredefinition myEdgeDefinition)
+        {
+            _toBeRemovedEdges = _toBeRemovedEdges ?? new HashSet<EdgePredefinition>();
+            _toBeRemovedEdges.Add(myEdgeDefinition);
 
             return this;
         }
