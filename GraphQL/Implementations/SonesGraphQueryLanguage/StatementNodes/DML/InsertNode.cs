@@ -152,27 +152,20 @@ namespace sones.GraphQL.StatementNodes.DML
 
         private static void ProcessStructuredProperty(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType, AAttributeAssignOrUpdate aAttributeDefinition, ref RequestInsertVertex result)
         {
-            #region data
-
-            IAttributeDefinition attribute =
-                vertexType.GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString);
-
-            #endregion
-
             #region AttributeAssignOrUpdateValue
 
             if (aAttributeDefinition is AttributeAssignOrUpdateValue)
             {
                 var value = aAttributeDefinition as AttributeAssignOrUpdateValue;
-                
-                result.AddStructuredProperty(value.AttributeIDChain.ContentString, (IComparable)Convert.ChangeType(value.Value, ((IPropertyDefinition)attribute).BaseType));
+
+                result.AddUnknownProperty(value.AttributeIDChain.ContentString, value.Value);
 
                 return;
             }
 
             #endregion
 
-            #region AttributeAssignOrUpdateValue
+            #region AttributeAssignOrUpdateList
 
             if (aAttributeDefinition is AttributeAssignOrUpdateList)
             {
@@ -184,25 +177,27 @@ namespace sones.GraphQL.StatementNodes.DML
 
                         #region set
 
+                        IAttributeDefinition attribute = vertexType.GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString);
+
                         EdgePredefinition edgeDefinition = new EdgePredefinition(value.AttributeIDChain.ContentString);
 
                         foreach (var aTupleElement in value.CollectionDefinition.TupleDefinition)
                         {
-                            
+
                             if (aTupleElement.Value is BinaryExpressionDefinition)
                             {
                                 #region BinaryExpressionDefinition
 
                                 foreach (var aVertexID in ProcessBinaryExpression(
                                     (BinaryExpressionDefinition)aTupleElement.Value,
-                                    myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType))
+                                    myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, ((IOutgoingEdgeDefinition)attribute).TargetVertexType))
                                 {
                                     var inneredge = new EdgePredefinition().AddVertexID(aVertexID);
-                                    
+
                                     foreach (var aStructuredProperty in aTupleElement.Parameters)
-	                                {
+                                    {
                                         inneredge.AddUnknownProperty(aStructuredProperty.Key, aStructuredProperty.Value);
-	                                }
+                                    }
 
                                     edgeDefinition.AddEdge(inneredge);
                                 }
@@ -225,12 +220,21 @@ namespace sones.GraphQL.StatementNodes.DML
                         #region list
 
                         //has to be list of comparables
-                        var property = (IPropertyDefinition) attribute;
                         ListCollectionWrapper listWrapper = new ListCollectionWrapper();
+
+                        Type myRequestedType;
+                        if (vertexType.HasProperty(aAttributeDefinition.AttributeIDChain.ContentString))
+                        {
+                            myRequestedType = ((IPropertyDefinition)vertexType.GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString)).BaseType;
+                        }
+                        else
+                        {
+                            myRequestedType = typeof(String);
+                        }
 
                         foreach (var aTupleElement in value.CollectionDefinition.TupleDefinition)
                         {
-                            listWrapper.AddElement((IComparable)Convert.ChangeType(((ValueDefinition)aTupleElement.Value).Value, property.BaseType));
+                            listWrapper.AddElement((IComparable)Convert.ChangeType(((ValueDefinition)aTupleElement.Value).Value, myRequestedType));
                         }
 
                         result.AddStructuredProperty(aAttributeDefinition.AttributeIDChain.ContentString, listWrapper);
@@ -239,6 +243,8 @@ namespace sones.GraphQL.StatementNodes.DML
 
                         return;
                     case CollectionType.SetOfUUIDs:
+
+                        #region SetOfUUIDs
 
                         EdgePredefinition anotheredgeDefinition = new EdgePredefinition(value.AttributeIDChain.ContentString);
 
@@ -264,6 +270,8 @@ namespace sones.GraphQL.StatementNodes.DML
                         }
 
                         result.AddEdge(anotheredgeDefinition);
+
+                        #endregion
 
                         return;
                     default:
@@ -313,6 +321,8 @@ namespace sones.GraphQL.StatementNodes.DML
                 {
                     #region expression
 
+                    IAttributeDefinition attribute = vertexType.GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString);
+
                     foreach (var aTupleElement in value.SetRefDefinition.TupleDefinition)
                     {
                         if (aTupleElement.Value is BinaryExpressionDefinition)
@@ -321,7 +331,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
                             var vertexIDs = ProcessBinaryExpression(
                                 (BinaryExpressionDefinition)aTupleElement.Value,
-                                myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType).ToList();
+                                myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, ((IOutgoingEdgeDefinition)attribute).TargetVertexType).ToList();
 
                             if (vertexIDs.Count > 1)
                             {

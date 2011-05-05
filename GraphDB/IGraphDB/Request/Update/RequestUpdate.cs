@@ -28,13 +28,6 @@ namespace sones.GraphDB.Request
         /// </summary>
         public string Edition { get; private set; }
 
-    /*  ASK: should this be possible?
-        /// <summary>
-        /// The UUID of updated vertex.
-        /// </summary>
-        public long? VertexUUID { get; private set; }
-        */
-
         /// <summary>
         /// The well defined properties of updated vertex.
         /// </summary>
@@ -74,8 +67,8 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The well defined properties which should be removed of updated vertex.
         /// </summary>
-        public List<String> RemoveStructuredProperties { get { return _toBeRemovedStructured; } }
-        private List<string> _toBeRemovedStructured;
+        public List<String> RemovedAttributes { get { return _toBeRemovedAttributes; } }
+        private List<string> _toBeRemovedAttributes;
 
         /// <summary>
         /// The outgoing edges which should be removed from updated vertex.
@@ -133,20 +126,6 @@ namespace sones.GraphDB.Request
             return this;
         }
 
-
-        /// <summary>
-        /// Sets the UUID of the updated vertex. If this is not done, an ID is creted by the system.
-        /// </summary>
-        /// <param name="myID">The ID of the updated vertex.</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-/*        public RequestUpdate SetUUID(long myID)
-        {
-            VertexUUID = myID;
-
-            return this;
-
-        }
-        */
         /// <summary>
         /// Adds a new structured property
         /// </summary>
@@ -236,7 +215,7 @@ namespace sones.GraphDB.Request
         /// <param name="myPropertyName">The name of the property</param>
         /// <param name="myProperty">The value of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate RemoveValuedStructuredProperty(String myPropertyName, IEnumerable<IComparable> myProperty)
+        public RequestUpdate RemoveFromCollection(String myPropertyName, IEnumerable<IComparable> myProperty)
         {
             _toBeRemovedValuedStructured = _toBeRemovedValuedStructured ?? new Dictionary<String, IEnumerable<IComparable>>();
             _toBeRemovedValuedStructured.Add(myPropertyName, myProperty);
@@ -249,10 +228,10 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myPropertyName">The name of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate RemoveValuedStructuredProperty(String myPropertyName)
+        public RequestUpdate RemoveAttribute(String myPropertyName)
         {
-            _toBeRemovedStructured = _toBeRemovedStructured ?? new List<String>(); 
-            _toBeRemovedStructured.Add(myPropertyName);
+            _toBeRemovedAttributes = _toBeRemovedAttributes ?? new List<String>(); 
+            _toBeRemovedAttributes.Add(myPropertyName);
 
             return this;
         }
