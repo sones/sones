@@ -844,7 +844,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #region remove all vertices of this type
 
-            throw new NotImplementedException();
+            _vertexManager.ExecuteManager.VertexStore.RemoveVertices(mySecurityToken, myTransactionToken, myVertexTypeID);
 
             #endregion
 

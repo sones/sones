@@ -160,6 +160,11 @@ namespace sones.GraphDB.Manager.Transaction
             return _vertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID, myEdition, myInterestingRevisionIDFilterFunc);
         }
 
+        public void RemoveVertices(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID, IEnumerable<long> myToBeDeltedVertices = null)
+        {
+            _vertexStore.RemoveVertices(mySecurityToken, myTransactionToken, myVertexTypeID, myToBeDeltedVertices);
+        }
+
         #endregion
 
         #region IPluginable Members

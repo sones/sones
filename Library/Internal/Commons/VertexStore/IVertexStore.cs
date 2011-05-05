@@ -251,6 +251,15 @@ namespace sones.Library.Commons.VertexStore
             Int64 myVertexTypeID);
 
         /// <summary>
+        /// Remove vertices from a vertex type
+        /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="myVertexTypeID">The vertex type id</param>
+        /// <param name="myToBeDeltedVertices">The vertex ids that should be deleted</param>
+        void RemoveVertices(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID, IEnumerable<long> myToBeDeltedVertices = null);
+
+        /// <summary>
         /// Adds a new vertex to the graph fs
         /// </summary>
         /// <param name="mySecurityToken">The current security token</param>
@@ -287,6 +296,5 @@ namespace sones.Library.Commons.VertexStore
             String myToBeUpdatedEditions = null,
             Int64 myToBeUpdatedRevisionIDs = 0L,
             Boolean myCreateNewRevision = false);
-
     }
 }

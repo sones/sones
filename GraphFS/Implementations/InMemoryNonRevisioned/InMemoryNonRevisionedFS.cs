@@ -339,6 +339,15 @@ namespace sones.GraphFS
             return false;
         }
 
+        public void RemoveVertices(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID, IEnumerable<long> myToBeDeltedVertices = null)
+        {
+            HashSet<Int64> toBeDeletedVertices = (myToBeDeltedVertices != null) ? new HashSet<Int64>(myToBeDeltedVertices) : new HashSet<Int64>(GetVerticesByTypeID(mySecurityToken, myTransactionToken, myVertexTypeID).Select(aVertex => aVertex.VertexID));
+
+            foreach (var aToBeDeletedVertex in toBeDeletedVertices)
+            {
+                RemoveVertex(mySecurityToken, myTransactionToken, myVertexTypeID, aToBeDeletedVertex);
+            }
+        }
 
         public IVertex AddVertex(
             SecurityToken mySecurityToken, TransactionToken myTransactionToken,
