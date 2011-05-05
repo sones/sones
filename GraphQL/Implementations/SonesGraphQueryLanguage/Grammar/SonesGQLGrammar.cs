@@ -2183,16 +2183,23 @@ namespace sones.GraphQL
         #region IDumpable Members
         #region Export GraphDDL
 
+        /// <summary>
+        /// Exports the types
+        /// </summary>
+        /// <param name="myDumpFormat">The dump format.</param>
+        /// <param name="myTypesToDump">The types to dump.</param>
         public IEnumerable<String> ExportGraphDDL(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump)
         {
             StringBuilder stringBuilder;
             var delimiter = ", ";
 
+            //CREATE VERTEX TYPE / TYPES
             if (myTypesToDump.Count() > 1)
-                stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_TYPES.ToUpperString(), " "));
+                stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_VERTEX.ToUpperString(), " ", S_TYPES.ToUpperString(), " "));
             else
                 stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_VERTEX.ToUpperString(), " ", S_TYPE.ToUpperString(), " "));
 
+            //add attributes
             foreach (var vertexType in myTypesToDump)
             {
                 stringBuilder.Append(String.Concat(CreateGraphDDL(vertexType), delimiter));
@@ -2201,11 +2208,13 @@ namespace sones.GraphQL
             //Create vertex type User Attributes (Int64 Age, String Name, Set<User> Friends, User Father, LIST<String> Hobbies, Set<User(Weighted)> weightedUser)
             var retString = stringBuilder.ToString();
 
+            //remove ending
             if (retString.EndsWith(delimiter))
             {
                 retString = retString.Substring(0, retString.Length - delimiter.Length);
             }
 
+            //no attributes found so set string to empty
             if (retString.EndsWith("TYPES") || retString.EndsWith("TYPE"))
             {
                 retString = String.Empty;
@@ -2217,6 +2226,10 @@ namespace sones.GraphQL
 
         #region private helper
 
+        /// <summary>
+        /// Creates the ddl of a type.
+        /// </summary>
+        /// <param name="myVertexType">The vertex type.</param>
         private String CreateGraphDDL(IVertexType myVertexType)
         {
 
@@ -2225,15 +2238,16 @@ namespace sones.GraphQL
 
             #region parent type
 
+            //EXTENDS ...
             if (myVertexType.HasParentType)
             {
-                stringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myVertexType.ParentVertexType.Name);//builder.AppendLine();
+                stringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myVertexType.ParentVertexType.Name);
             }
 
             #endregion
 
             #region attributes
-
+            //are there attributes
             if (myVertexType.HasAttributes(false))
             {
                 #region !incomingEdges
@@ -2241,7 +2255,6 @@ namespace sones.GraphQL
                 if (myVertexType.GetAttributeDefinitions(false).Any(aAttribute => aAttribute.Kind != AttributeType.IncomingEdge))
                 {
                     //so, there are attributes that are no incoming edges
-
                     stringBuilder.Append(String.Concat(S_ATTRIBUTES.ToUpperString(), " ", S_BRACKET_LEFT));
 
                     #region properties
@@ -2371,8 +2384,6 @@ namespace sones.GraphQL
 
         private String CreateGraphDDLOfMandatoryAttributes(IEnumerable<IPropertyDefinition> myMandatoryAttributeDefinitions)
         {
-            //TODO: Add default values
-
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
@@ -2462,9 +2473,11 @@ namespace sones.GraphQL
                                                         GetGraphDDLOfInnerEdge(myOutgoingEdgeDefinition.InnerEdgeType, myIVertexType)));
 
                     break;
+
                 case EdgeMultiplicity.HyperEdge:
                     //TODO if GQL supports hyper edges, implement this.
                     break;
+
                 case EdgeMultiplicity.MultiEdge:
                     //e.g. Set<User(e.g. Weighted)>
                     stringBuilder.Append(String.Concat(S_SET,
@@ -2474,6 +2487,7 @@ namespace sones.GraphQL
                                                         TERMINAL_GT));
 
                     break;
+
                 default:
                     throw new UnknownException(new NotImplementedException("This should never happen"));
             }
@@ -2541,11 +2555,14 @@ namespace sones.GraphQL
         /// <summary>
         /// Create the GraphDML of all DBObjects in the database.
         /// </summary>
-        /// <param name="myDumpFormat"></param>
-        /// <param name="dbContext"></param>
-        /// <param name="objectManager"></param>
-        /// <returns></returns>
-        public IEnumerable<String> ExportGraphDML(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        /// <param name="myDumpFormat">The dump format.</param>
+        /// <param name="myTypesToDump">The types to dum.</param>
+        /// <param name="mySecurityToken">The security token.</param>
+        /// <param name="myTransactionToken">The transaction token.</param>
+        public IEnumerable<String> ExportGraphDML(DumpFormats myDumpFormat, 
+                                                    IEnumerable<IVertexType> myTypesToDump,     
+                                                    SecurityToken mySecurityToken, 
+                                                    TransactionToken myTransactionToken)
         {
             var queries = new List<String>();
 
@@ -2557,7 +2574,7 @@ namespace sones.GraphQL
 
                 foreach (var aVertex in GetAllVertices(aVertexType, mySecurityToken, myTransactionToken))
                 {
-                    queries.Add(CreateGraphDMLforIVertex(aVertexType, aVertex, propertyDefinitions, mySecurityToken, myTransactionToken));
+                    queries.Add(CreateGraphDMLforIVertex(aVertexType, aVertex, propertyDefinitions));
                 }
             }
 
@@ -2569,13 +2586,12 @@ namespace sones.GraphQL
         private string CreateGraphDMLforIVertex(
             IVertexType myVertexType,
             IVertex myVertex,
-            Dictionary<long, IPropertyDefinition> myPropertyDefinitions,
-            SecurityToken mySecurityToken,
-            TransactionToken myTransactionToken)
+            Dictionary<long, IPropertyDefinition> myPropertyDefinitions)
         {
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
+            //INSERT INTO ... VALUES (UUID = ...,
             stringBuilder.Append(String.Concat(S_INSERT.ToUpperString(), " ", S_INTO.ToUpperString(), " ", myVertexType.Name, " ", S_VALUES.ToUpperString(), " ", S_BRACKET_LEFT));
             stringBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = ", myVertex.VertexID.ToString(), delimiter));
 
@@ -2909,7 +2925,9 @@ namespace sones.GraphQL
             return stringBuilder.ToString();
         }
 
-        private IEnumerable<IVertex> GetAllVertices(IVertexType myVertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private IEnumerable<IVertex> GetAllVertices(IVertexType myVertexType, 
+                                                    SecurityToken mySecurityToken, 
+                                                    TransactionToken myTransactionToken)
         {
             var request = new RequestGetVertices(myVertexType.ID);
 
