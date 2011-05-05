@@ -310,6 +310,9 @@ namespace sones.GraphDB.Manager.Vertex
             IOutgoingEdgeDefinition attrDef)
         {
             var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, attrDef.TargetVertexType);
+            if (vertexIDs == null)
+                return null;
+
             var contained = CreateContainedEdges(myTransaction, mySecurity, date, vertexIDs, edgeDef, attrDef, source);
             if (contained == null)
                 return null;
@@ -321,12 +324,12 @@ namespace sones.GraphDB.Manager.Vertex
             TransactionToken myTransaction, 
             SecurityToken mySecurity, 
             long myDate,
-            ISet<VertexInformation> vertexIDs, 
+            IEnumerable<VertexInformation> vertexIDs, 
             EdgePredefinition edgeDef,
             IOutgoingEdgeDefinition attrDef,
             VertexInformation mySource)
         {
-            if (vertexIDs.Count == 0 && edgeDef.ContainedEdgeCount == 0)
+            if (vertexIDs.Count() == 0 && edgeDef.ContainedEdgeCount == 0)
                 return null;
 
             List<SingleEdgeAddDefinition> result = new List<SingleEdgeAddDefinition>();
@@ -366,18 +369,9 @@ namespace sones.GraphDB.Manager.Vertex
             IVertexType myTargetType = null)
         {
             var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, myTargetType);
+            if (vertexIDs == null)
+                return null;
 
-            if (edgeDef.Expressions != null)
-            {
-                //only checks with expession, other are done in check manager.
-                if (vertexIDs.Count > 1)
-                    //TODO: better exception here
-                    throw new Exception("More than one target vertices for a single edge is not allowed.");
-
-                if (vertexIDs.Count > 0)
-                    //TODO: better exception here
-                    throw new Exception("A single edge needs at least one target.");
-            }
             CheckMandatoryConstraint(edgeDef, myEdgeType);
             CheckTargetVertices(myTargetType, vertexIDs);
 
@@ -393,33 +387,24 @@ namespace sones.GraphDB.Manager.Vertex
                 throw new Exception("A target vertex has a type, that is not assignable to the target vertex type of the edge.");
         }
 
-        private ISet<VertexInformation> GetResultingVertexIDs(TransactionToken myTransaction, SecurityToken mySecurity, EdgePredefinition myEdgeDef, IVertexType myTargetType = null)
+        private IEnumerable<VertexInformation> GetResultingVertexIDs(TransactionToken myTransaction, SecurityToken mySecurity, EdgePredefinition myEdgeDef, IVertexType myTargetType = null)
         {
-            HashSet<VertexInformation> result = new HashSet<VertexInformation>();
-            if (myTargetType != null)
+            if (myEdgeDef.VertexIDs != null)
             {
-                if (myEdgeDef.VertexIDs != null)
+                HashSet<VertexInformation> result = new HashSet<VertexInformation>();
+                foreach (var kvP in myEdgeDef.VertexIDs)
                 {
-                    result.UnionWith(myEdgeDef.VertexIDs.Select(x => new VertexInformation(myTargetType.ID, x)));
-                }
-            }
-            else
-            {
-                if (myEdgeDef.VertexIDCount > 0)
-                    //TODO a better exception here.
-                    throw new Exception("An edge definition without a target type can not contain target IDs");
-            }
-                
-            if (myEdgeDef.Expressions != null)
-            {
-                foreach (var expr in myEdgeDef.Expressions)
-                {
-                    var vertices = GetVertices(expr, false, myTransaction, mySecurity);
-                    result.UnionWith(vertices.Select(x => new VertexInformation(x.VertexTypeID, x.VertexID)));
-                }
-            }
+                    var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(kvP.Key, myTransaction, mySecurity);
+                    foreach (var vertex in kvP.Value)
+                    {
+                        result.Add(new VertexInformation(vertexType.ID, vertex));
+                    }
 
-            return result;
+                }
+                return result;
+            }
+                           
+            return null;
         }
 
         private static IComparable CreateIndexEntry(IList<IPropertyDefinition> myIndexProps, IDictionary<string, IComparable> myProperties)

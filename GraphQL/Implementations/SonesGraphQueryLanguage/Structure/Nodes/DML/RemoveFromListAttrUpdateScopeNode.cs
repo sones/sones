@@ -42,7 +42,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
                     throw new NotImplementedQLException("");
                 }
 
-                TupleDefinition = collection.CollectionDefinition.TupleDefinition;
+                TupleDefinition = (TupleDefinition)collection.CollectionDefinition.TupleDefinition;
             }
 
             if (parseNode.ChildNodes[1].AstNode is TupleNode)

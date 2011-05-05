@@ -204,6 +204,8 @@
     <Compile Include="Structure\Nodes\DML\AddToListAttrUpdateOperatorNode.cs" />
     <Compile Include="Structure\Nodes\DML\AttrDefaultValueNode.cs" />
     <Compile Include="Structure\Nodes\DML\CommentsNode.cs" />
+    <Compile Include="Structure\Nodes\DML\VertexTypeVertexElementNode.cs" />
+    <Compile Include="Structure\Nodes\DML\VertexTypeVertexIDCollectionNode.cs" />
     <Compile Include="Structure\Nodes\DML\VerbosityNode.cs" />
     <Compile Include="Structure\Nodes\DML\ParallelTasksNode.cs" />
     <Compile Include="Structure\Nodes\DML\DescribeEdgesNode.cs" />

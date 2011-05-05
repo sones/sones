@@ -3,6 +3,7 @@ using sones.GraphDB.Expression;
 using System.Collections.Generic;
 using System.IO;
 using sones.GraphDB.Request.Insert;
+using System.Linq;
 
 namespace sones.GraphDB.Request
 {
@@ -23,16 +24,10 @@ namespace sones.GraphDB.Request
         public string Comment { get; private set; }
 
         /// <summary>
-        /// The expressions, that defines the vertices where to connect to.
-        /// </summary>
-        public IEnumerable<IExpression> Expressions { get { return _expressions; } }
-        private HashSet<IExpression> _expressions;
-
-        /// <summary>
         /// The IDs of the vertices where to connect to.
         /// </summary>
-        public IEnumerable<long> VertexIDs { get { return _ids; } }
-        private HashSet<long> _ids;
+        public IDictionary<String, ISet<long>> VertexIDs { get { return _ids; } }
+        private Dictionary<String, ISet<long>> _ids;
 
         public int VertexIDCount { get { return (_ids == null) ? 0 : _ids.Count; } }
 
@@ -141,40 +136,14 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds an expression to this edge definition.
-        /// </summary>
-        /// <param name="myExpression">The expression, that will be evaluated to get the vertices, where to connect to.</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgePredefinition AddExpression(IExpression myExpression)
-        {
-            _expressions = _expressions ?? new HashSet<IExpression>();
-            _expressions.Add(myExpression);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Adds expressions to this edge definition.
-        /// </summary>
-        /// <param name="myExpressions">The expressions, that will be evaluated to get the vertices, where to connect to.</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgePredefinition AddExpression(IEnumerable<IExpression> myExpressions)
-        {
-            _expressions = _expressions ?? new HashSet<IExpression>();
-            _expressions.UnionWith(myExpressions);
-
-            return this;
-        }
-
-        /// <summary>
         /// Adds a verex ID to this edge definition..
         /// </summary>
         /// <param name="myVertexID">The vertex ID where to connect to.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgePredefinition AddVertexID(long myVertexID)
+        public EdgePredefinition AddVertexID(String myVertexType, long myVertexID)
         {
-            _ids = _ids ?? new HashSet<long>();
-            _ids.Add(myVertexID);
+            var set = EnsureHashSet(myVertexType);
+            set.Add(myVertexID);
 
             return this;
         }
@@ -184,10 +153,10 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myVertexIDs">The vertex IDs where to connect to.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgePredefinition AddVertexID(IEnumerable<long> myVertexID)
+        public EdgePredefinition AddVertexID(String myVertexType, IEnumerable<long> myVertexIDs)
         {
-            _ids = _ids ?? new HashSet<long>();
-            _ids.UnionWith(myVertexID);
+            var set = EnsureHashSet(myVertexType);
+            set.UnionWith(myVertexIDs);
 
             return this;
         }
@@ -221,6 +190,17 @@ namespace sones.GraphDB.Request
         }
 
         #endregion
+
+
+        private ISet<long> EnsureHashSet(String myVertexType)
+        {
+            _ids = _ids ?? new Dictionary<String, ISet<long>>();
+            if (!_ids.ContainsKey(myVertexType))
+                _ids.Add(myVertexType, new HashSet<long>());
+
+            return _ids[myVertexType];
+        }
+
 
     }
     

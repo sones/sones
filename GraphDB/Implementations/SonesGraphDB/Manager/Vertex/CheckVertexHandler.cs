@@ -155,7 +155,7 @@ namespace sones.GraphDB.Manager.Vertex
                 //TODO: better exception here
                 throw new Exception("More than one target vertices for a single edge is not allowed.");
 
-            if (edge.VertexIDCount == 0 && edge.Expressions == null)
+            if (edge.VertexIDCount == 0)
                 //TODO: better exception here
                 throw new Exception("A single edge needs at least one target.");
 

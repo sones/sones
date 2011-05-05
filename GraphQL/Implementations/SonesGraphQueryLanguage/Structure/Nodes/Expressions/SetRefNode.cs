@@ -41,7 +41,7 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
                 IsREFUUID = true;
             }
 
-            var tupleNode = parseNode.ChildNodes[1].AstNode as TupleNode;
+            var tupleNode = parseNode.ChildNodes[4].AstNode as TupleNode;
 
             if (tupleNode == null)
             {
@@ -49,12 +49,14 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
             }
 
             Dictionary<string, object> parameters = null;
-            if (parseNode.ChildNodes[2].AstNode is ParametersNode)
+            if (parseNode.ChildNodes[5].AstNode is ParametersNode)
             {
-                parameters = (parseNode.ChildNodes[2].AstNode as ParametersNode).ParameterValues;
+                parameters = (parseNode.ChildNodes[5].AstNode as ParametersNode).ParameterValues;
             }
 
-            SetRefDefinition = new SetRefDefinition(tupleNode.TupleDefinition, IsREFUUID, parameters);
+            String referencedVertexType = parseNode.ChildNodes[2].Token.ValueString;
+
+            SetRefDefinition = new SetRefDefinition(tupleNode.TupleDefinition, IsREFUUID, referencedVertexType, parameters);
         }
 
         #endregion

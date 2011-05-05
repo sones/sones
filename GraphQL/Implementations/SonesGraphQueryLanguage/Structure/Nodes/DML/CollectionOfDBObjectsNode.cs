@@ -54,16 +54,13 @@ namespace sones.GraphQL.Structure.Nodes.DML
                     throw new NotImplementedException("");
             }
 
-            var tupleNode = (TupleNode)parseNode.ChildNodes[1].AstNode;
-
-            if (tupleNode == null)
+            if (parseNode.ChildNodes[1].AstNode is TupleNode)
             {
-                CollectionDefinition = new CollectionDefinition(collectionType, new TupleDefinition());
+                CollectionDefinition = new CollectionDefinition(collectionType, ((TupleNode)parseNode.ChildNodes[1].AstNode).TupleDefinition);
             }
-
             else
             {
-                CollectionDefinition = new CollectionDefinition(collectionType, tupleNode.TupleDefinition);
+                CollectionDefinition = new CollectionDefinition(collectionType, (VertexTypeVertexIDCollectionNode)parseNode.ChildNodes[1].AstNode);
             }
         }
 

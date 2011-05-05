@@ -196,7 +196,9 @@ namespace sones.GraphQL.StatementNodes.DML
                             edgeDefinition.AddUnknownProperty(aProperty.Key, aProperty.Value);
                         }
 
-                        edgeDefinition.AddVertexID(Convert.ToInt64(((ValueDefinition)aTupleElement.Value).Value));
+                        edgeDefinition.AddVertexID(
+                            attributeAssignOrUpdateSetRef.SetRefDefinition.ReferencedVertexType, 
+                            Convert.ToInt64(((ValueDefinition)aTupleElement.Value).Value));
 
                         #endregion
                     }
@@ -220,9 +222,11 @@ namespace sones.GraphQL.StatementNodes.DML
                     {
                         #region BinaryExpressionDefinition
 
+                        var targetVertexType = ((IOutgoingEdgeDefinition)attribute).TargetVertexType;
+
                         var vertexIDs = ProcessBinaryExpression(
                             (BinaryExpressionDefinition)aTupleElement.Value,
-                            myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, ((IOutgoingEdgeDefinition)attribute).TargetVertexType).ToList();
+                            myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, targetVertexType).ToList();
 
                         if (vertexIDs.Count > 1)
                         {
@@ -236,7 +240,7 @@ namespace sones.GraphQL.StatementNodes.DML
                             edgeDefinition.AddUnknownProperty(aStructuredProperty.Key, aStructuredProperty.Value);
                         }
 
-                        edgeDefinition.AddVertexID(vertexIDs.FirstOrDefault());
+                        edgeDefinition.AddVertexID(targetVertexType.Name, vertexIDs.FirstOrDefault());
 
                         #endregion
                     }
@@ -266,18 +270,20 @@ namespace sones.GraphQL.StatementNodes.DML
 
                     EdgePredefinition edgeDefinition = new EdgePredefinition(attributeAssignOrUpdateList.AttributeIDChain.ContentString);
                     IAttributeDefinition attribute =  vertexType.GetAttributeDefinition(attributeAssignOrUpdateList.AttributeIDChain.ContentString);
-                    foreach (var aTupleElement in attributeAssignOrUpdateList.CollectionDefinition.TupleDefinition)
+                    foreach (var aTupleElement in (TupleDefinition)attributeAssignOrUpdateList.CollectionDefinition.TupleDefinition)
                     {
 
                         if (aTupleElement.Value is BinaryExpressionDefinition)
                         {
                             #region BinaryExpressionDefinition
 
+                            var targetVertexType = ((IOutgoingEdgeDefinition)attribute).TargetVertexType;
+
                             foreach (var aVertexID in ProcessBinaryExpression(
                                 (BinaryExpressionDefinition)aTupleElement.Value,
-                                myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, ((IOutgoingEdgeDefinition)attribute).TargetVertexType))
+                                myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, targetVertexType))
                             {
-                                var inneredge = new EdgePredefinition().AddVertexID(aVertexID);
+                                var inneredge = new EdgePredefinition().AddVertexID(targetVertexType.Name, aVertexID);
 
                                 foreach (var aStructuredProperty in aTupleElement.Parameters)
                                 {
@@ -317,7 +323,7 @@ namespace sones.GraphQL.StatementNodes.DML
                         myRequestedType = typeof(String);
 	                }
 
-                    foreach (var aTupleElement in attributeAssignOrUpdateList.CollectionDefinition.TupleDefinition)
+                    foreach (var aTupleElement in (TupleDefinition)attributeAssignOrUpdateList.CollectionDefinition.TupleDefinition)
                     {
                         listWrapper.AddElement((IComparable)Convert.ChangeType(((ValueDefinition)aTupleElement.Value).Value, myRequestedType));
                     }
@@ -333,24 +339,20 @@ namespace sones.GraphQL.StatementNodes.DML
 
                     EdgePredefinition anotheredgeDefinition = new EdgePredefinition(attributeAssignOrUpdateList.AttributeIDChain.ContentString);
 
-                    foreach (var aTupleElement in attributeAssignOrUpdateList.CollectionDefinition.TupleDefinition)
+                    foreach (var aTupleElement in ((VertexTypeVertexIDCollectionNode)attributeAssignOrUpdateList.CollectionDefinition.TupleDefinition).Elements)
                     {
-                        if (aTupleElement.Value is ValueDefinition)
+                        foreach (var aVertexIDTuple in aTupleElement.VertexIDs)
                         {
                             var innerEdge = new EdgePredefinition();
 
-                            foreach (var aStructuredProperty in aTupleElement.Parameters)
+                            foreach (var aStructuredProperty in aVertexIDTuple.Item2)
                             {
                                 innerEdge.AddUnknownProperty(aStructuredProperty.Key, aStructuredProperty.Value);
                             }
 
-                            innerEdge.AddVertexID(Convert.ToInt64(((ValueDefinition)aTupleElement.Value).Value));
+                            innerEdge.AddVertexID(aTupleElement.ReferencedVertexTypeName, aVertexIDTuple.Item1);
 
                             anotheredgeDefinition.AddEdge(innerEdge);
-                        }
-                        else
-                        {
-                            throw new NotImplementedQLException("TODO");
                         }
                     }
 

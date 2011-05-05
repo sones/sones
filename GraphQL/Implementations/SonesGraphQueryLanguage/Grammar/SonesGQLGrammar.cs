@@ -592,6 +592,8 @@ namespace sones.GraphQL
             var RemoveFromListAttrUpdateScope = new NonTerminal("RemoveFromListAttrUpdateScope", CreateRemoveFromListAttrUpdateScope);
             var AttrUpdateOrAssign = new NonTerminal("AttrUpdateOrAssign");
             var CollectionOfDBObjects = new NonTerminal("ListOfDBObjects", typeof(CollectionOfDBObjectsNode));
+            var VertexTypeVertexIDCollection = new NonTerminal("VertexTypeVertexIDCollection", CreateVertexTypeVertexIDCollection);
+            var VertexTypeVertexElement = new NonTerminal("VertexTypeVertexElement", CreateVertexTypeVertexElement);
             var CollectionTuple = new NonTerminal("CollectionTuple", typeof(TupleNode));
             var ExtendedExpressionList = new NonTerminal("ExtendedExpressionList");
             var ExtendedExpression = new NonTerminal("ExtendedExpression", typeof(ExpressionOfAListNode));
@@ -1220,11 +1222,16 @@ namespace sones.GraphQL
                                 | Id + "=" + Reference
                                 | Id + "=" + CollectionOfDBObjects;
 
-            CollectionOfDBObjects.Rule = S_SETOF + CollectionTuple
-                                            | S_LISTOF + CollectionTuple
-                                            | S_SETOFUUIDS + CollectionTuple
-                                            | S_SETOFUUIDS + "()"
-                                            | S_SETOF + "()";
+            CollectionOfDBObjects.Rule =        S_SETOF + CollectionTuple
+                                            |   S_LISTOF + CollectionTuple
+                                            |   S_SETOFUUIDS + VertexTypeVertexIDCollection
+                                            |   S_SETOFUUIDS + "()"
+                                            |   S_SETOF + "()";
+
+
+            VertexTypeVertexIDCollection.Rule = MakeStarRule(VertexTypeVertexIDCollection, VertexTypeVertexElement);
+
+            VertexTypeVertexElement.Rule = TERMINAL_LT + Id_simple + TERMINAL_GT + CollectionTuple;
 
             CollectionTuple.Rule = S_BRACKET_LEFT + ExtendedExpressionList + S_BRACKET_RIGHT;
 
@@ -1234,8 +1241,8 @@ namespace sones.GraphQL
 
             Reference.Rule = S_REFERENCE + tuple + ListParametersForExpression
                            | S_REF + tuple + ListParametersForExpression
-                           | S_REFUUID + tuple + ListParametersForExpression
-                           | S_REFERENCEUUID + tuple + ListParametersForExpression;
+                           | S_REFUUID + TERMINAL_LT + Id_simple + TERMINAL_GT + tuple + ListParametersForExpression
+                           | S_REFERENCEUUID + TERMINAL_LT + Id_simple + TERMINAL_GT + tuple + ListParametersForExpression;
 
             //| S_SETREF + tupleRangeSet + ListParametersForExpression;
 
@@ -1972,6 +1979,24 @@ namespace sones.GraphQL
             removeFromListAttrUpdateScopeNode.Init(context, parseNode);
 
             parseNode.AstNode = removeFromListAttrUpdateScopeNode;
+        }
+
+        private void CreateVertexTypeVertexIDCollection(ParsingContext context, ParseTreeNode parseNode)
+        {
+            var vertexTypeVertexIDCollection = new VertexTypeVertexIDCollectionNode();
+
+            vertexTypeVertexIDCollection.Init(context, parseNode);
+
+            parseNode.AstNode = vertexTypeVertexIDCollection;
+        }
+
+        private void CreateVertexTypeVertexElement(ParsingContext context, ParseTreeNode parseNode)
+        {
+            var vertexTypeVertexElement = new VertexTypeVertexElementNode();
+
+            vertexTypeVertexElement.Init(context, parseNode);
+
+            parseNode.AstNode = vertexTypeVertexElement;
         }
 
         #region RebuildIndices

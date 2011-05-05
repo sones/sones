@@ -19,13 +19,13 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         #region Properties
 
         public CollectionType CollectionType { get; private set; }
-        public TupleDefinition TupleDefinition { get; private set; }
+        public Object TupleDefinition { get; private set; }
 
         #endregion
 
         #region Ctor
 
-        public CollectionDefinition(CollectionType myCollectionType, TupleDefinition myTupleDefinition)
+        public CollectionDefinition(CollectionType myCollectionType, Object myTupleDefinition)
         {
             CollectionType = myCollectionType;
             TupleDefinition = myTupleDefinition;

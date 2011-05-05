@@ -17,6 +17,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         #region Fields
 
         public Boolean IsREFUUID;
+        public String ReferencedVertexType;
 
         #endregion
 
@@ -36,13 +37,15 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             this.TupleDefinition = tupleDefinition;
             this.Parameters = myParameters;
+            ReferencedVertexType = null;
         }
 
-        public SetRefDefinition(TupleDefinition tupleDefinition, bool myIsREFUUID, Dictionary<String, object> parameters)
+        public SetRefDefinition(TupleDefinition tupleDefinition, bool myIsREFUUID, String myReferencedVertexType, Dictionary<String, object> parameters)
         {
             TupleDefinition = tupleDefinition;
             IsREFUUID = myIsREFUUID;
             Parameters = parameters;
+            ReferencedVertexType = myReferencedVertexType;
         }
 
         #endregion
