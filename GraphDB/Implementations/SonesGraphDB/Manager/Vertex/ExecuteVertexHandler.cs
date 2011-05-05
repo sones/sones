@@ -308,8 +308,6 @@ namespace sones.GraphDB.Manager.Vertex
             IOutgoingEdgeDefinition attrDef)
         {
             var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, attrDef.TargetVertexType);
-            if (vertexIDs == null)
-                return null;
 
             var contained = CreateContainedEdges(myTransaction, mySecurity, date, vertexIDs, edgeDef, attrDef, source);
             if (contained == null)
@@ -327,23 +325,26 @@ namespace sones.GraphDB.Manager.Vertex
             IOutgoingEdgeDefinition attrDef,
             VertexInformation mySource)
         {
-            if (vertexIDs.Count() == 0 && edgeDef.ContainedEdgeCount == 0)
+            if ((vertexIDs == null || vertexIDs.Count() == 0 )&& (edgeDef.ContainedEdges == null || edgeDef.ContainedEdges.Count() == 0))
                 return null;
 
             List<SingleEdgeAddDefinition> result = new List<SingleEdgeAddDefinition>();
-            foreach (var vertex in vertexIDs)
+            if (vertexIDs != null)
             {
-                //single edges from VertexIDs or expression does not have user properties
-                //TODO they can have default values
-                CheckMandatoryConstraint(null, attrDef.InnerEdgeType);
-                result.Add(new SingleEdgeAddDefinition(Int64.MinValue, attrDef.InnerEdgeType.ID, mySource, vertex, null, myDate, myDate, null, null));
+                foreach (var vertex in vertexIDs)
+                {
+                    //single edges from VertexIDs or expression does not have user properties
+                    //TODO they can have default values
+                    CheckMandatoryConstraint(null, attrDef.InnerEdgeType);
+                    result.Add(new SingleEdgeAddDefinition(Int64.MinValue, attrDef.InnerEdgeType.ID, mySource, vertex, null, myDate, myDate, null, null));
+                }
             }
 
-            if (edgeDef.ContainedEdgeCount > 0)
+            if (edgeDef.ContainedEdges != null)
             {
                 foreach (var edge in edgeDef.ContainedEdges)
                 {
-                    if (edge.ContainedEdgeCount > 0)
+                    if (edge.ContainedEdges != null)
                         //TODO a better exception here
                         throw new Exception("An edge within a multi edge cannot have contained edges.");
                     
@@ -493,9 +494,8 @@ namespace sones.GraphDB.Manager.Vertex
         private VertexUpdateDefinition CreateVertexUpdateDefinition(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate)
         {
             
-            #region get edges that will be removed.
+            #region get removes
 
-            //Perf: better to go only one time throught RemoveOutgoingEdges
             IEnumerable<long> toBeDeletedSingle;
             IEnumerable<long> toBeDeletedHyper;
             IEnumerable<long> toBeDeletedStructured;
@@ -506,24 +506,39 @@ namespace sones.GraphDB.Manager.Vertex
 
             #endregion
 
-            #region get edge updates
+            #region get update definitions
 
             IDictionary<Int64, HyperEdgeUpdateDefinition> toBeUpdatedHyper;
             IDictionary<Int64, SingleEdgeUpdateDefinition> toBeUpdatedSingle;
             IDictionary<Int64, IComparable> toBeUpdatedStructured;
             IDictionary<String, Object> toBeUpdatedUnstructured;
             IDictionary<Int64, StreamAddDefinition> toBeUpdatedBinaries;
+
             CreateEdgeUpdateDefinition(myVertex, myVertexType, myUpdate, out toBeUpdatedSingle, out toBeUpdatedHyper, out toBeUpdatedStructured, out toBeUpdatedUnstructured, out toBeUpdatedBinaries);
 
             #endregion
 
-            #region create edge updates
+            #region create updates
 
-            var single = new SingleEdgeUpdate(toBeUpdatedSingle, toBeDeletedSingle);
-            var hyper = new HyperEdgeUpdate(toBeUpdatedHyper, toBeDeletedHyper);
-            var structured = new StructuredPropertiesUpdate(toBeUpdatedStructured, toBeDeletedStructured);
-            var unstructured = new UnstructuredPropertiesUpdate(toBeUpdatedUnstructured, toBeDeletedUnstructured);
-            var binaries = new BinaryPropertiesUpdate(toBeUpdatedBinaries, toBeDeletedBinaries);
+            var single = (toBeUpdatedSingle != null || toBeDeletedSingle != null)
+                ? new SingleEdgeUpdate(toBeUpdatedSingle, toBeDeletedSingle)
+                : null;
+
+            var hyper = (toBeUpdatedHyper != null || toBeDeletedHyper != null)
+                ? new HyperEdgeUpdate(toBeUpdatedHyper, toBeDeletedHyper)
+                : null;
+
+            var structured = (toBeUpdatedStructured != null || toBeDeletedStructured != null)
+                ? new StructuredPropertiesUpdate(toBeUpdatedStructured, toBeDeletedStructured)
+                : null;
+
+            var unstructured = (toBeUpdatedUnstructured != null || toBeDeletedUnstructured != null)
+                ? new UnstructuredPropertiesUpdate(toBeUpdatedUnstructured, toBeDeletedUnstructured)
+                : null;
+
+            var binaries = (toBeUpdatedBinaries != null || toBeDeletedBinaries != null)
+                ? new BinaryPropertiesUpdate(toBeUpdatedBinaries, toBeDeletedBinaries)
+                : null;
 
             #endregion
 

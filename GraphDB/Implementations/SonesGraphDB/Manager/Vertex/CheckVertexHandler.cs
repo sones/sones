@@ -126,7 +126,7 @@ namespace sones.GraphDB.Manager.Vertex
                         }
                     case EdgeMultiplicity.MultiEdge:
                         {
-                            if (edge.ContainedEdgeCount > 0)
+                            if (edge.ContainedEdges != null)
                             {
                                 foreach (var innerEdge in edge.ContainedEdges)
                                 {
@@ -146,15 +146,11 @@ namespace sones.GraphDB.Manager.Vertex
 
         private void CheckSingleEdge(EdgePredefinition edge, IBaseType myTargetType)
         {
-            if (edge.ContainedEdgeCount > 0)
+            if (edge.ContainedEdges != null)
             {
                 //TODO better exception here.
                 throw new Exception("A single edge can not contain other edges.");
             }
-
-            if (edge.ContainedEdgeCount > 1)
-                //TODO: better exception here
-                throw new Exception("More than one target vertices for a single edge is not allowed.");
 
             if (edge.VertexIDsByVertexTypeID == null && edge.VertexIDsByVertexTypeName == null)
                 //TODO: better exception here

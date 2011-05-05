@@ -59,7 +59,6 @@ namespace sones.GraphDB.Request
         public IEnumerable<EdgePredefinition> ContainedEdges { get { return _edges; } }
         private List<EdgePredefinition> _edges;
 
-        public int ContainedEdgeCount { get { return (_edges == null)? 0 :_edges.Count; } }
         #endregion
 
         #region constructor
