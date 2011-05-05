@@ -13,6 +13,13 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
     /// </summary>
     public sealed class AlterType_DropUnique : AAlterTypeCommand
     {
+        public readonly String DroppedUnique;
+
+        public AlterType_DropUnique(String myDroppedUnique)
+        {
+            DroppedUnique = myDroppedUnique;
+        }
+
         /// <summary>
         /// <seealso cref=" AAlterTypeCommand"/>
         /// </summary>

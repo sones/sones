@@ -10,7 +10,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
     /// <summary>
     /// Change the name of a vertex
     /// </summary>
-    public sealed class AlterType_RenameType : AAlterTypeCommand
+    public sealed class AlterType_RenameVertexType : AAlterTypeCommand
     {
 
         /// <summary>

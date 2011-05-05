@@ -19,7 +19,7 @@ namespace sones.GraphQL.StatementNodes.DDL
     /// <summary>
     /// This node is requested in case of an Create Types statement.
     /// </summary>
-    public sealed class CreateTypesNode : AStatement, IAstNodeInit
+    public sealed class CreateVertexTypesNode : AStatement, IAstNodeInit
     {
         #region Data
 
@@ -30,7 +30,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         #region constructor
 
-        public CreateTypesNode()
+        public CreateVertexTypesNode()
         {
 
         }

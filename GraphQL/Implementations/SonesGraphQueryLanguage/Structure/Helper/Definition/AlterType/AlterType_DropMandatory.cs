@@ -13,6 +13,13 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
     /// </summary>
     public sealed class AlterType_DropMandatory : AAlterTypeCommand
     {
+        public readonly String DroppedMandatory;
+
+        public AlterType_DropMandatory(String myDroppedMandatory)
+        {
+            DroppedMandatory = myDroppedMandatory;
+        }
+
         /// <summary>
         /// <seealso cref=" AAlterTypeCommand"/>
         /// </summary>

@@ -73,7 +73,7 @@
     <Compile Include="SonesQueryLanguage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatementNodes\AStatement.cs" />
-    <Compile Include="StatementNodes\DDL\AlterTypeNode.cs" />
+    <Compile Include="StatementNodes\DDL\AlterVertexTypeNode.cs" />
     <Compile Include="StatementNodes\DML\UnlinkNode.cs" />
     <Compile Include="StatementNodes\DML\LinkNode.cs" />
     <Compile Include="StatementNodes\DML\ImportNode.cs" />

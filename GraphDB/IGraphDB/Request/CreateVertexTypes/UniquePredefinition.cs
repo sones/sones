@@ -9,7 +9,7 @@ namespace sones.GraphDB.Request.CreateVertexTypes
     /// <summary>
     /// A class that represents a set of properties, that must be unique.
     /// </summary>
-    public class UniquePredefinition
+    public sealed class UniquePredefinition
     {
         /// <summary>
         /// Stores the names of the properties, that will be unique together.

@@ -126,6 +126,7 @@
     <Compile Include="Request\CreateIndex\RequestCreateIndex.cs" />
     <Compile Include="Request\CreateVertexTypes\AttributePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\BinaryPropertyPredefinition.cs" />
+    <Compile Include="Request\CreateVertexTypes\MandatoryPredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\IncomingEdgePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\IndexPredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\OutgoingEdgePredefinition.cs" />

@@ -37,15 +37,15 @@ namespace sones.GraphQL.Structure.Nodes.DDL
                             break;
                         }
 
-                        if (parseNode.ChildNodes.Count == 2 && parseNode.ChildNodes[1].Token.Text.ToLower() == SonesGQLGrammar.TERMINAL_UNIQUE.ToLower())
+                        if (parseNode.ChildNodes.Count == 4 && parseNode.ChildNodes[1].Token.Text.ToLower() == SonesGQLGrammar.TERMINAL_UNIQUE.ToLower())
                         {
-                            AlterTypeCommand = new AlterType_DropUnique();
+                            AlterTypeCommand = new AlterType_DropUnique(parseNode.ChildNodes[3].Token.ValueString);
                             break;
                         }
 
-                        if (parseNode.ChildNodes.Count == 2 && parseNode.ChildNodes[1].Token.Text.ToUpper() == SonesGQLGrammar.TERMINAL_MANDATORY.ToUpper())
+                        if (parseNode.ChildNodes.Count == 4 && parseNode.ChildNodes[1].Token.Text.ToUpper() == SonesGQLGrammar.TERMINAL_MANDATORY.ToUpper())
                         {
-                            AlterTypeCommand = new AlterType_DropMandatory();
+                            AlterTypeCommand = new AlterType_DropMandatory(parseNode.ChildNodes[3].Token.ValueString);
                             break;
                         }
 
@@ -132,7 +132,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
                         {
                             if (parseNode.ChildNodes[1].Token.Text.ToUpper() == SonesGQLConstants.INCOMINGEDGE)
                             {
-                                AlterTypeCommand = new AlterType_RenameBackwardedge() { OldName = parseNode.ChildNodes[2].Token.ValueString, NewName = parseNode.ChildNodes[4].Token.ValueString };
+                                AlterTypeCommand = new AlterType_RenameIncomingEdge() { OldName = parseNode.ChildNodes[2].Token.ValueString, NewName = parseNode.ChildNodes[4].Token.ValueString };
                             }
                             else
                             {
@@ -141,7 +141,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
                         }
                         else if (parseNode.ChildNodes.Count <= 3)
                         {
-                            AlterTypeCommand = new AlterType_RenameType() { NewName = parseNode.ChildNodes[2].Token.ValueString };
+                            AlterTypeCommand = new AlterType_RenameVertexType() { NewName = parseNode.ChildNodes[2].Token.ValueString };
                         }
 
                         #endregion

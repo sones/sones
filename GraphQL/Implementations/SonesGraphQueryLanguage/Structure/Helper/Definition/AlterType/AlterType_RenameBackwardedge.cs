@@ -11,7 +11,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
     /// <summary>
     /// Change the name of a backwardedge
     /// </summary>
-    public sealed class AlterType_RenameBackwardedge : AAlterTypeCommand
+    public sealed class AlterType_RenameIncomingEdge : AAlterTypeCommand
     {
         /// <summary>
         /// The old name of the backwardedge

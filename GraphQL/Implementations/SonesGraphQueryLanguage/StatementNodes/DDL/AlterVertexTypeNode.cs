@@ -21,7 +21,7 @@ namespace sones.GraphQL.StatementNodes.DDL
     /// <summary>
     /// This node is requested in case of an Alter Type statement.
     /// </summary>
-    public sealed class AlterTypeNode : AStatement, IAstNodeInit
+    public sealed class AlterVertexTypeNode : AStatement, IAstNodeInit
     {
         #region Data
 
@@ -241,42 +241,65 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         private void ProcessChangeComment(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            throw new NotImplementedException();
+            var command = (AlterType_ChangeComment)myAlterCommand;
+
+            result.SetComment(command.NewComment);
         }
 
         private void ProcessDropMandatory(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            throw new NotImplementedException();
+            var command = (AlterType_DropMandatory)myAlterCommand;
+
+            result.RemoveMandatory(command.DroppedMandatory);
         }
 
         private void ProcessMandatory(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            throw new NotImplementedException();
+            var command = (AlterType_SetMandatory)myAlterCommand;
+
+            foreach (var aMandatory in command.MandatoryAttributes)
+            {
+                result.AddMandatory(new MandatoryPredefinition(aMandatory));
+            }
         }
 
         private void ProcessDropUnique(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            throw new NotImplementedException();
+            var command = (AlterType_DropUnique)myAlterCommand;
+
+            result.RemoveUnique(command.DroppedUnique);
         }
 
         private void ProcessUnique(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            throw new NotImplementedException();
+            var command = (AlterType_SetUnique)myAlterCommand;
+
+            foreach (var aUnique in command.UniqueAttributes)
+            {
+                result.AddUnique(new UniquePredefinition(aUnique));
+            }
+
         }
 
         private void ProcessRenameIncomingEdge(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            throw new NotImplementedException();
+            var command = (AlterType_RenameIncomingEdge)myAlterCommand;
+
+            result.RenameAttribute(command.OldName, command.NewName);
         }
 
         private void ProcessRenameVertexType(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            throw new NotImplementedException();
+            var command = (AlterType_RenameVertexType)myAlterCommand;
+
+            result.RenameVertexType(command.NewName);
         }
 
         private void ProcessRenameAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            throw new NotImplementedException();
+            var command = (AlterType_RenameAttribute)myAlterCommand;
+
+            result.RenameAttribute(command.OldName, command.NewName);
         }
 
         private void ProcessDropAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)

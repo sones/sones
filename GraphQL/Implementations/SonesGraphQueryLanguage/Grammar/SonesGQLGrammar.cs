@@ -1100,7 +1100,7 @@ namespace sones.GraphQL
 
             #endregion
 
-            #region ALTER TYPE/VERTEX
+            #region ALTER VERTEX TYPE
 
             alterStmt.Rule = S_ALTER + S_VERTEX + S_TYPE + Id_simple + alterCmdList + uniquenessOpt + mandatoryOpt;
 
@@ -1114,10 +1114,10 @@ namespace sones.GraphQL
                             | S_RENAME + S_ATTRIBUTE + Id_simple + S_TO + Id_simple
                             | S_RENAME + S_INCOMINGEDGE + Id_simple + S_TO + Id_simple
                             | S_RENAME + S_TO + Id_simple
-                            | S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
-                            | S_UNDEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
-                            | S_DROP + S_UNIQUE
-                            | S_DROP + S_MANDATORY
+                            //| S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
+                            //| S_UNDEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
+                            | S_DROP + S_UNIQUE + S_ON + Id_simple
+                            | S_DROP + S_MANDATORY + S_ON + Id_simple
                             | S_COMMENT + "=" + string_literal;
 
             alterCmdList.Rule = MakePlusRule(alterCmdList, S_comma, alterCmd);
@@ -1582,7 +1582,7 @@ namespace sones.GraphQL
         private void CreateCreateTypesStatementNode(ParsingContext context, ParseTreeNode parseNode)
         {
 
-            CreateTypesNode aCreateTypesNode = new CreateTypesNode();
+            CreateVertexTypesNode aCreateTypesNode = new CreateVertexTypesNode();
 
             aCreateTypesNode.Init(context, parseNode);
 
@@ -1756,7 +1756,7 @@ namespace sones.GraphQL
 
         private void CreateAlterStmNode(ParsingContext context, ParseTreeNode parseNode)
         {
-            AlterTypeNode aAlterTypeStatementNode = new AlterTypeNode();
+            AlterVertexTypeNode aAlterTypeStatementNode = new AlterVertexTypeNode();
 
             aAlterTypeStatementNode.Init(context, parseNode);
 

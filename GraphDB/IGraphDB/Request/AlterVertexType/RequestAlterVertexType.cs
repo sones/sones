@@ -20,20 +20,27 @@ namespace sones.GraphDB.Request
         private List<AttributePredefinition>    _toBeAddedAttributes;
         private List<IndexPredefinition>        _toBeAddedIndices;
         private List<UniquePredefinition>       _toBeAddedUniques;
+        private List<MandatoryPredefinition>    _toBeAddedMandatories;
 
         private List<String>                    _toBeRemovedAttributes;
         private List<String>                    _toBeRemovedIncomingEdges;
         private List<String>                    _toBeRemovedOutgoingEdges;
         private Dictionary<String, String>      _toBeRemovedIndices;
-        private List<UniquePredefinition>       _toBeRemovedUniques;
+        private List<String>                    _toBeRemovedUniques;
+        private List<String>                    _toBeRemovedMandatories;
+
+        private Dictionary<String, String>      _toBeRenamedAttributes;
+
 
         #region add counter
+
         private int _addProperties  = 0;
         private int _addIncoming    = 0;
         private int _addOutgoing    = 0;
         private int _addBinaries    = 0;
         private int _addUnknown     = 0;
         private int _addUnique      = 0;
+        private int _addMandatory   = 0;
         private int _addIndices     = 0;
 
         public int AddPropertyCount
@@ -65,6 +72,11 @@ namespace sones.GraphDB.Request
         {
             get { return _addUnique; }
         }
+        
+        public int AddMandatoryPropertyCount
+        {
+            get { return _addMandatory; }
+        }
 
         public int AddUnknownPropertyCount
         {
@@ -83,7 +95,13 @@ namespace sones.GraphDB.Request
         private int _removeOutgoing     = 0;
         private int _removeBinaries     = 0;
         private int _removeUnique       = 0;
+        private int _removeMandatory    = 0;
         private int _removeIndices      = 0;
+
+        public int RemoveMandatoryCount
+        {
+            get { return _removeMandatory; }
+        }
 
         public int RemoveAttributeCount
         {
@@ -116,7 +134,18 @@ namespace sones.GraphDB.Request
         }
         #endregion
 
-        #region add 
+        #region rename counter
+
+        private int _renameAttribute     = 0;
+        
+        public int RenameAttributeCount
+        {
+            get { return _renameAttribute; }
+        }
+
+        #endregion
+
+        #region add
         /// <summary>
         /// The properties of the vertex type.
         /// </summary>
@@ -165,6 +194,14 @@ namespace sones.GraphDB.Request
             get { return (_toBeAddedUniques == null) ? null : _toBeAddedUniques.AsReadOnly(); }
         }
 
+        /// <summary>
+        /// The mandatory definitions of this vertex type.
+        /// </summary>
+        public IEnumerable<MandatoryPredefinition> ToBeAddedMandatories
+        {
+            get { return (_toBeAddedMandatories == null) ? null : _toBeAddedMandatories.AsReadOnly(); }
+        }
+
         public IEnumerable<BinaryPropertyPredefinition> ToBeAddedBinaryProperties
         {
             get { return (_toBeAddedAttributes == null) ? null : _toBeAddedAttributes.OfType<BinaryPropertyPredefinition>(); }
@@ -172,6 +209,15 @@ namespace sones.GraphDB.Request
         #endregion
 
         #region remove
+
+        /// <summary>
+        /// The removed mandatory constraints
+        /// </summary>
+        public IEnumerable<String> ToBeRemovedMandatories
+        {
+            get { return (_toBeRemovedMandatories == null) ? null : _toBeRemovedMandatories; }
+        }
+
         /// <summary>
         /// The properties of the vertex type.
         /// </summary>
@@ -207,16 +253,33 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The unique definitions of this vertex type.
         /// </summary>
-        public IEnumerable<UniquePredefinition> ToBeRemovedUniques
+        public IEnumerable<String> ToBeRemovedUniques
         {
             get { return (_toBeRemovedUniques == null) ? null : _toBeRemovedUniques.AsReadOnly(); }
         }
         #endregion
 
+        #region rename
+
         /// <summary>
-        /// Gets the comment for this vertex type.
+        /// The renamed attributes
+        /// </summary>
+        public Dictionary<String, String> ToBeRenamedProperties
+        {
+            get { return _toBeRenamedAttributes; }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Gets the altered comment for this vertex type.
         /// </summary>
         public string AlteredComment { get; private set; }
+
+        /// <summary>
+        /// Gets the altered vertex type name
+        /// </summary>
+        public string AlteredVertexTypeName { get; private set; }
 
         #endregion
 
@@ -338,6 +401,23 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
+        /// Adds a mandatory definition.
+        /// </summary>
+        /// <param name="myMandatoryDefinition">The mandatory definition that is going to be added.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestAlterVertexType AddMandatory(MandatoryPredefinition myMandatoryDefinition)
+        {
+            if (myMandatoryDefinition != null)
+            {
+                _toBeAddedMandatories = (_toBeAddedMandatories) ?? new List<MandatoryPredefinition>();
+                _toBeAddedMandatories.Add(myMandatoryDefinition);
+                _addMandatory++;
+            }
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds an index definition.
         /// </summary>
         /// <param name="myIndexDefinition">The index definition that is going to be added.</param>
@@ -363,7 +443,7 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestAlterVertexType RemoveAttribute(String myAttrName)
         {
-            if (String.IsNullOrWhiteSpace(myAttrName))
+            if (!String.IsNullOrWhiteSpace(myAttrName))
             {
                 _toBeRemovedAttributes = (_toBeRemovedAttributes) ?? new List<String>();
                 _toBeRemovedAttributes.Add(myAttrName);
@@ -410,15 +490,32 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Adds a unique definition.
         /// </summary>
-        /// <param name="myUniqueDefinition">The unique definition that is going to be added.</param>
+        /// <param name="myUniqueDefinition">The name of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestAlterVertexType RemoveUnique(UniquePredefinition myUniqueDefinition)
+        public RequestAlterVertexType RemoveUnique(String myUniqueDefinition)
         {
             if (myUniqueDefinition != null)
             {
-                _toBeRemovedUniques = (_toBeRemovedUniques) ?? new List<UniquePredefinition>();
+                _toBeRemovedUniques = (_toBeRemovedUniques) ?? new List<String>();
                 _toBeRemovedUniques.Add(myUniqueDefinition);
                 _removeUnique++;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes a mandatory constraint
+        /// </summary>
+        /// <param name="myMandatory">The name of the property</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestAlterVertexType RemoveMandatory(String myMandatory)
+        {
+            if (myMandatory != null)
+            {
+                _toBeRemovedMandatories = (_toBeRemovedMandatories) ?? new List<String>();
+                _toBeRemovedMandatories.Add(myMandatory);
+                _removeMandatory++;
             }
 
             return this;
@@ -431,7 +528,7 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestAlterVertexType RemoveIndex(String myIndexName, String myEdition)
         {
-            if (String.IsNullOrWhiteSpace(myIndexName))
+            if (!String.IsNullOrWhiteSpace(myIndexName))
             {
                 _toBeRemovedIndices = (_toBeRemovedIndices) ?? new Dictionary<String, String>();
                 if (!_toBeRemovedIndices.ContainsKey(myIndexName))
@@ -443,7 +540,10 @@ namespace sones.GraphDB.Request
 
             return this;
         } 
+
         #endregion
+
+        #region comment
 
         /// <summary>
         /// Sets the comment of the vertex type.
@@ -456,6 +556,48 @@ namespace sones.GraphDB.Request
 
             return this;
         }
+
+        #endregion
+
+        #region rename
+
+        /// <summary>
+        /// Renames an attribute
+        /// </summary>
+        /// <param name="myOldAttributeName">The old vertex type name.</param>
+        /// <param name="myNewAttributeName">The new vertex type name.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestAlterVertexType RenameAttribute(String myOldAttributeName, String myNewAttributeName)
+        {
+            if (!String.IsNullOrWhiteSpace(myOldAttributeName))
+            {
+                _toBeRenamedAttributes = (_toBeRenamedAttributes) ?? new Dictionary<String, String>();
+                if (!_toBeRenamedAttributes.ContainsKey(myOldAttributeName))
+                {
+                    _toBeRenamedAttributes.Add(myOldAttributeName, myNewAttributeName);
+                    _renameAttribute++;
+                }
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Renames the vertex type
+        /// </summary>
+        /// <param name="myNewVertexTypeName">The old vertex type name.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestAlterVertexType RenameVertexType(String myNewVertexTypeName)
+        {
+            if (!String.IsNullOrWhiteSpace(myNewVertexTypeName))
+            {
+                AlteredVertexTypeName = myNewVertexTypeName;
+            }
+
+            return this;
+        }
+
+        #endregion
 
         #endregion
     }
