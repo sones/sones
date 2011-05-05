@@ -14,6 +14,8 @@ using sones.GraphQL.GQL.Structure.Helper.Definition.Update;
 using sones.GraphQL.Structure.Nodes.DML;
 using sones.GraphDB.Request;
 using sones.Library.PropertyHyperGraph;
+using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -95,12 +97,42 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             Query = myQuery;
 
-            return myGraphDB.Update(mySecurityToken, myTransactionToken, new RequestUpdate(new RequestGetVertices(_TypeName)), GenerateOutput);
+            return myGraphDB.Update(mySecurityToken, myTransactionToken, GenerateUpdateRequest(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken), GenerateOutput);
         }
 
         #endregion
 
         #region helper
+
+        private RequestUpdate GenerateUpdateRequest(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            //prepare
+            var vertexType = myGraphDB.GetVertexType<IVertexType>(
+                mySecurityToken,
+                myTransactionToken,
+                new RequestGetVertexType(_TypeName),
+                (stats, vtype) => vtype);
+
+            //validate
+            _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+
+            //calculate
+            var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken));
+
+            //extract
+            var myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
+
+            var result = new RequestUpdate(new RequestGetVertices(vertexType.ID, myToBeUpdatedVertices, false));
+
+            ProcessListOfUpdates(ref result);
+
+            return result;
+        }
+
+        private void ProcessListOfUpdates(ref RequestUpdate result)
+        {
+            throw new NotImplementedException();
+        }
 
         private QueryResult GenerateOutput(IRequestStatistics myStats, IEnumerable<IVertex> myVertices)
         {
