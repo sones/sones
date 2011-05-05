@@ -85,7 +85,7 @@
     <Compile Include="StatementNodes\DDL\DropIndexNode.cs" />
     <Compile Include="StatementNodes\DDL\DropTypeNode.cs" />
     <Compile Include="StatementNodes\DDL\CreateIndexNode.cs" />
-    <Compile Include="StatementNodes\DDL\CreateTypesNode.cs" />
+    <Compile Include="StatementNodes\DDL\CreateVertexTypesNode.cs" />
     <Compile Include="StatementNodes\DML\SelectNode.cs" />
     <Compile Include="StatementNodes\DML\UpdateNode.cs" />
     <Compile Include="StatementNodes\DML\InsertNode.cs" />

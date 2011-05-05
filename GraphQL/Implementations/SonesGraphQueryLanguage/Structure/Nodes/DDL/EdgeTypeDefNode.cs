@@ -84,6 +84,11 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 
 
             }
+
+            if (this.TypeCharacteristics == null)
+            {
+                this.TypeCharacteristics = new TypeCharacteristics();
+            }
         }
 
         #endregion

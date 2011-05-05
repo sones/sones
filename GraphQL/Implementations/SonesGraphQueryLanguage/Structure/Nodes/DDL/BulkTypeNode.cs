@@ -86,8 +86,15 @@ namespace sones.GraphQL.Structure.Nodes.DDL
             {
                 foreach (String uniqueAttr in ((UniqueAttributesOptNode)parseNode.ChildNodes[4].AstNode).UniqueAttributes)
                 {
-                    var attr = (from a in _Attributes where a.Key.AttributeName == uniqueAttr select a).First();
-                    attr.Key.AttributeType.TypeCharacteristics.IsUnique = true;
+                    var attr = (from a in _Attributes where a.Key.AttributeName == uniqueAttr select a).FirstOrDefault();
+                    if (attr.Key != null)
+                    {
+                        attr.Key.AttributeType.TypeCharacteristics.IsUnique = true;                        
+                    }
+                    else
+                    {
+                        throw new VertexAttributeIsNotDefinedException(uniqueAttr);
+                    }
                 }
             }
 
