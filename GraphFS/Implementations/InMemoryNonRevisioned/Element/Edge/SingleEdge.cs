@@ -224,7 +224,7 @@ namespace sones.GraphFS.Element.Edge
             _edgeTypeID = myEdgeType;
         }
 
-        public void UpdateStructuredProperties(Dictionary<long, IComparable> myUpdatedProperties, IEnumerable<long> myDeletedProperties)
+        public void UpdateStructuredProperties(IDictionary<long, IComparable> myUpdatedProperties, IEnumerable<long> myDeletedProperties)
         {
             lock (_structuredProperties)
             {
@@ -253,7 +253,7 @@ namespace sones.GraphFS.Element.Edge
             }
         }
 
-        public void UpdateUnStructuredProperties(Dictionary<String, Object> myUpdatedProperties, IEnumerable<String> myDeletedProperties)
+        public void UpdateUnStructuredProperties(IDictionary<String, Object> myUpdatedProperties, IEnumerable<String> myDeletedProperties)
         {
             lock (_unstructuredProperties)
             {

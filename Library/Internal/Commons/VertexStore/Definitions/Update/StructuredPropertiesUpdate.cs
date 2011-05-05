@@ -15,7 +15,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// <summary>
         /// The to be updated structured properties
         /// </summary>
-        public readonly Dictionary<Int64, IComparable> Updated;
+        public readonly IDictionary<Int64, IComparable> Updated;
         
         /// <summary>
         /// The properties that should be deleted
@@ -31,7 +31,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// </summary>
         /// <param name="myUpdated">The to be updated structured properties</param>
         /// <param name="myDeleted">The properties that should be deleted</param>
-        public StructuredPropertiesUpdate(Dictionary<Int64, IComparable> myUpdated = null, IEnumerable<Int64> myDeleted = null)
+        public StructuredPropertiesUpdate(IDictionary<Int64, IComparable> myUpdated = null, IEnumerable<Int64> myDeleted = null)
         {
             Updated = myUpdated;
             Deleted = myDeleted;

@@ -160,8 +160,6 @@ namespace sones.GraphDB.Manager.Vertex
         #endregion
 
 
-
-
         public IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             IVertexType vertexType = GetVertexType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
@@ -396,10 +394,9 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     foreach (var kvP in myEdgeDef.VertexIDsByVertexTypeID)
                     {
-                        var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(kvP.Key, myTransaction, mySecurity);
                         foreach (var vertex in kvP.Value)
                         {
-                            result.Add(new VertexInformation(vertexType.ID, vertex));
+                            result.Add(new VertexInformation(kvP.Key, vertex));
                         }
 
                     }
@@ -418,7 +415,6 @@ namespace sones.GraphDB.Manager.Vertex
                 }
                 return result;
             }
-                           
             return null;
         }
 
@@ -470,7 +466,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         public IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-/*            var toBeUpdated = GetVertices(myUpdate.GetVerticesRequest, myTransaction, mySecurity);
+            var toBeUpdated = GetVertices(myUpdate.GetVerticesRequest, myTransaction, mySecurity);
             var groupedByTypeID = toBeUpdated.GroupBy(_ => _.VertexTypeID);
 
             foreach (var group in groupedByTypeID)
@@ -485,9 +481,6 @@ namespace sones.GraphDB.Manager.Vertex
             }
 
             yield break;
-            */
-            throw new NotImplementedException();
-
         }
 
         private IVertex UpdateVertex(IVertex vertex, VertexUpdateDefinition update, String myEdition, TransactionToken myTransaction, SecurityToken mySecurity)
@@ -499,122 +492,137 @@ namespace sones.GraphDB.Manager.Vertex
 
         private VertexUpdateDefinition CreateVertexUpdateDefinition(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate)
         {
-            /*
+            
             #region get edges that will be removed.
 
             //Perf: better to go only one time throught RemoveOutgoingEdges
             IEnumerable<long> toBeDeletedSingle;
             IEnumerable<long> toBeDeletedHyper;
-            CreateEdgeDeleteDefinition(myVertex, myVertexType, myUpdate.RemoveOutgoingEdges, out toBeDeletedSingle, out toBeDeletedHyper);
+            IEnumerable<long> toBeDeletedStructured;
+            IEnumerable<String> toBeDeletedUnstructured;
+            IEnumerable<long> toBeDeletedBinaries;
+            
+            CreateEdgeDeleteDefinition(myVertex, myVertexType, myUpdate.RemovedAttributes, out toBeDeletedSingle, out toBeDeletedHyper, out toBeDeletedStructured, out toBeDeletedUnstructured, out toBeDeletedBinaries);
 
             #endregion
 
             #region get edge updates
 
-            Dictionary<Int64, HyperEdgeUpdateDefinition> toBeUpdatedHyper;
-            Dictionary<Int64, SingleEdgeUpdateDefinition> toBeUpdatedSingle;
-            CreateEdgeUpdateDefinition(myVertex, myVertexType, myUpdate.UpdateOutgoingEdges, out toBeUpdatedSingle, out toBeUpdatedHyper);
-
+            IDictionary<Int64, HyperEdgeUpdateDefinition> toBeUpdatedHyper;
+            IDictionary<Int64, SingleEdgeUpdateDefinition> toBeUpdatedSingle;
+            IDictionary<Int64, IComparable> toBeUpdatedStructured;
+            IDictionary<String, Object> toBeUpdatedUnstructured;
+            IDictionary<Int64, StreamAddDefinition> toBeUpdatedBinaries;
+            CreateEdgeUpdateDefinition(myVertex, myVertexType, myUpdate, out toBeUpdatedSingle, out toBeUpdatedHyper, out toBeUpdatedStructured, out toBeUpdatedUnstructured, out toBeUpdatedBinaries);
 
             #endregion
 
-            var structured = CreateUpdateStructuredProperties(myVertex, myVertexType, myUpdate);
-            var unstructured = CreateUpdateUnstructuredProperties(myVertex, myVertexType, myUpdate);
-            var binaries = CreateUpdateBinaryProperties(myVertex, myVertexType, myUpdate);
-            var single = CreateSingleEdgeUpdate(myVertex, myVertexType, myUpdate, toBeDeletedSingle);
-            var hyper = CreateHyperEdgeUpdate(myVertex, myVertexType, myUpdate, toBeDeletedHyper);
+            #region create edge updates
 
-            return new VertexUpdateDefinition(myUpdate.Comment, structured, unstructured, binaries, single, hyper);
-             */
-            throw new NotImplementedException();
+            var single = new SingleEdgeUpdate(toBeUpdatedSingle, toBeDeletedSingle);
+            var hyper = new HyperEdgeUpdate(toBeUpdatedHyper, toBeDeletedHyper);
+            var structured = new StructuredPropertiesUpdate(toBeUpdatedStructured, toBeDeletedStructured);
+            var unstructured = new UnstructuredPropertiesUpdate(toBeUpdatedUnstructured, toBeDeletedUnstructured);
+            var binaries = new BinaryPropertiesUpdate(toBeUpdatedBinaries, toBeDeletedBinaries);
 
+            #endregion
+
+            return new VertexUpdateDefinition(myUpdate.UpdatedComment, structured, unstructured, binaries, single, hyper);
         }
 
-        private HyperEdgeUpdate CreateHyperEdgeUpdate(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IEnumerable<long> myToBeDeletedHyper)
-        {
-            /*
-            var updated = CreateHyperEdgeUpdateDefinition(myVertex, myVertexType, myUpdate);
-            
-            return new HyperEdgeUpdate(updated, myToBeDeletedHyper);
-             */
-            throw new NotImplementedException();
-
-        }
-
-        private void CreateEdgeUpdateDefinition(IVertex myVertex, IVertexType myVertexType, IEnumerable<EdgePredefinition> iEnumerable, out Dictionary<long, SingleEdgeUpdateDefinition> toBeUpdatedSingle, out Dictionary<long, HyperEdgeUpdateDefinition> toBeUpdatedHyper)
+        private void CreateEdgeUpdateDefinition(
+            IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, 
+            out IDictionary<long, SingleEdgeUpdateDefinition> toBeUpdatedSingle, 
+            out IDictionary<long, HyperEdgeUpdateDefinition> toBeUpdatedHyper, 
+            out IDictionary<long, IComparable> toBeUpdatedStructured, 
+            out IDictionary<string, object> toBeUpdatedUnstructured, 
+            out IDictionary<long, StreamAddDefinition> toBeUpdatedBinaries)
         {
             throw new NotImplementedException();
         }
 
-        private void CreateEdgeDeleteDefinition(IVertex myVertex, IVertexType myVertexType, IEnumerable<string> myRemoveOutgoingEdges, out IEnumerable<long> toBeDeletedSingle, out IEnumerable<long> toBeDeletedHyper)
+        private void CreateEdgeDeleteDefinition(
+            IVertex myVertex, IVertexType myVertexType, IEnumerable<string> myRemoveAttributes, 
+            out IEnumerable<long> outDeletedSingle, 
+            out IEnumerable<long> outDeletedHyper,
+            out IEnumerable<long> outDeletedStructured,
+            out IEnumerable<string> outDeletedUnstructured,
+            out IEnumerable<long> outDeletedBinaries)
         {
-            /*
-            List<long> outSingle = new List<long>(myRemoveOutgoingEdges.Count());
-            List<long> outHyper = new List<long>(myRemoveOutgoingEdges.Count());
+            #region predefine
 
-            foreach (var name in myRemoveOutgoingEdges)
+            List<long> toBeDeletedSingle = null;
+            List<long> toBeDeletedHyper = null;
+            List<long> toBeDeletedStructured = null;
+            List<String> toBeDeletedUnstructured = null;
+            List<long> toBeDeletedBinaries = null;
+
+            #endregion
+
+            if (myRemoveAttributes != null)
             {
-                if (myVertexType.HasOutgoingEdge(name))
+                foreach (var name in myRemoveAttributes)
                 {
-                    var attr = myVertexType.GetOutgoingEdgeDefinition(name);
-                    switch (attr.Multiplicity)
+                    if (myVertexType.HasAttribute(name))
                     {
-                        case EdgeMultiplicity.HyperEdge:
-                        case EdgeMultiplicity.MultiEdge:
-                            outHyper.Add(attr.ID);
-                            break;
-                        case EdgeMultiplicity.SingleEdge:
-                            outSingle.Add(attr.ID);
-                            break;
-                        default:
-                            //TODO a better exception here
-                            throw new Exception("The enumeration EdgeMultiplicity was changed, but not this switch statement.");
+                        var attr = myVertexType.GetAttributeDefinition(name);
+
+                        switch (attr.Kind)
+                        {
+                            case AttributeType.Property:
+                                toBeDeletedStructured =  toBeDeletedStructured ?? new List<long>();
+                                toBeDeletedStructured.Add(attr.ID);
+                                break;
+                            case AttributeType.BinaryProperty:
+                                toBeDeletedBinaries = toBeDeletedBinaries ?? new List<long>();
+                                toBeDeletedBinaries.Add(attr.ID);
+                                break;
+                            case AttributeType.IncomingEdge:
+                                //TODO: a better exception here.
+                                throw new Exception("The edges on an incoming edge attribute can not be removed.");
+                            case AttributeType.OutgoingEdge:
+                                switch ((attr as IOutgoingEdgeDefinition).Multiplicity)
+                                {
+                                    case EdgeMultiplicity.HyperEdge:
+                                    case EdgeMultiplicity.MultiEdge:
+                                        toBeDeletedHyper = toBeDeletedHyper ?? new List<long>();
+                                        toBeDeletedHyper.Add(attr.ID);
+                                        break;
+                                    case EdgeMultiplicity.SingleEdge:
+                                        toBeDeletedSingle = toBeDeletedSingle ?? new List<long>();
+                                        toBeDeletedSingle.Add(attr.ID);
+                                        break;
+                                    default:
+                                        //TODO a better exception here
+                                        throw new Exception("The enumeration EdgeMultiplicity was changed, but not this switch statement.");
+                                }
+                                break;
+                            default:
+                                //TODO: a better exception here.
+                                throw new Exception("The enumeration AttributeType was updated, but not this switch statement.");
+
+                        }
                     }
+                    else
+                    {
+                        toBeDeletedUnstructured = toBeDeletedUnstructured ?? new List<String>();
+                        toBeDeletedUnstructured.Add(name);
+                    }
+
+
                 }
-                else
-                    //TODO a better exception here
-                    throw new Exception(string.Format("An edge with the name {0} is not defined on vertex type {1}", name, myVertexType.Name));
             }
 
-            toBeDeletedSingle = outSingle;
-            toBeDeletedHyper = outHyper;
-             */
-            throw new NotImplementedException();
+            #region return
 
-        }
+            outDeletedSingle       = toBeDeletedSingle = null;
+            outDeletedHyper        = toBeDeletedHyper = null;
+            outDeletedStructured   = toBeDeletedStructured = null;
+            outDeletedUnstructured = toBeDeletedUnstructured = null;
+            outDeletedBinaries     = toBeDeletedBinaries = null;
 
-        private IDictionary<Int64, HyperEdgeUpdateDefinition> CreateHyperEdgeUpdateDefinition(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate)
-        {
-            throw new NotImplementedException();
-        }
+            #endregion
 
-        private SingleEdgeUpdate CreateSingleEdgeUpdate(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IEnumerable<long> myToBeDeletedSingle)
-        {/*
-            var updated = CreateSingleEdgeUpdateDefinition(myVertex, myVertexType, myUpdate);
-            return new SingleEdgeUpdate(updated, myToBeDeletedSingle);
-          */
-            throw new NotImplementedException();
-
-        }
-
-        private IDictionary<long, SingleEdgeUpdateDefinition> CreateSingleEdgeUpdateDefinition(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate)
-        {
-            throw new NotImplementedException();
-        }
-
-        private BinaryPropertiesUpdate CreateUpdateBinaryProperties(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate)
-        {
-            throw new NotImplementedException();
-        }
-
-        private UnstructuredPropertiesUpdate CreateUpdateUnstructuredProperties(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate)
-        {
-            throw new NotImplementedException();
-        }
-
-        private StructuredPropertiesUpdate CreateUpdateStructuredProperties(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion

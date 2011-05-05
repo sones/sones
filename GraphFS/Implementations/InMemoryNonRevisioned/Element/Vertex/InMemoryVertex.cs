@@ -464,7 +464,7 @@ namespace sones.GraphFS.Element.Vertex
             }
         }
 
-        public void UpdateBinaryProperties(Dictionary<Int64, StreamAddDefinition> myBinaryUpdatedProperties, IEnumerable<Int64> myDeletedBinaryProperties)
+        public void UpdateBinaryProperties(IDictionary<Int64, StreamAddDefinition> myBinaryUpdatedProperties, IEnumerable<Int64> myDeletedBinaryProperties)
         {
             lock (_binaryProperties)
             {

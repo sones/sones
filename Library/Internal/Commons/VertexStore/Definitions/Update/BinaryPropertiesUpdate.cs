@@ -15,7 +15,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// <summary>
         /// The to be updated binary properties
         /// </summary>
-        public Dictionary<Int64, StreamAddDefinition> Updated;
+        public IDictionary<Int64, StreamAddDefinition> Updated;
         
         /// <summary>
         /// The to be deleted unstructured properties
@@ -31,7 +31,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// </summary>
         /// <param name="myUpdated">The to be updated binary properties</param>
         /// <param name="myDeleted">The to be deleted unstructured properties</param>
-        public BinaryPropertiesUpdate(Dictionary<Int64, StreamAddDefinition> myUpdated = null, IEnumerable<Int64> myDeleted = null)
+        public BinaryPropertiesUpdate(IDictionary<Int64, StreamAddDefinition> myUpdated = null, IEnumerable<Int64> myDeleted = null)
         {
             Updated = myUpdated;
             Deleted = myDeleted;

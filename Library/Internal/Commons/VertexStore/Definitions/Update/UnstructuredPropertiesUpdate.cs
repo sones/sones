@@ -15,7 +15,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// <summary>
         /// The to be updated unstructured properties
         /// </summary>
-        public Dictionary<String, Object> Updated;
+        public IDictionary<String, Object> Updated;
         
         /// <summary>
         /// The unstructured properties that should be deleted
@@ -31,7 +31,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// </summary>
         /// <param name="myUpdated">The to be updated unstructured properties</param>
         /// <param name="myDeleted">The unstructured properties that should be deleted</param>
-        public UnstructuredPropertiesUpdate(Dictionary<String, Object> myUpdated = null, IEnumerable<String> myDeleted = null)
+        public UnstructuredPropertiesUpdate(IDictionary<String, Object> myUpdated = null, IEnumerable<String> myDeleted = null)
         {
             Updated = myUpdated;
             Deleted = myDeleted;
