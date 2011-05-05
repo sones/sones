@@ -165,7 +165,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 Attributes.Add("TYPE", property.BaseType);
                 Attributes.Add("Name", property.Name);
                 Attributes.Add("UserDefined", property.IsUserDefinedType);
-                Attributes.Add("DefaultValue", property.DefaultValue);
+
+                if (property.DefaultValue != null)
+                    Attributes.Add("DefaultValue", property.DefaultValue);
                 
                 _AttributeReadout.Add(new VertexView(Attributes, new Dictionary<String, IEdgeView>()));
 
