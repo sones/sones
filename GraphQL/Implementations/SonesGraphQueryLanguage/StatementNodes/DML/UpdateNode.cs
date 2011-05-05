@@ -108,7 +108,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
         #region helper
 
-        private static IEnumerable<long> ProcessBinaryExpression(BinaryExpressionDefinition binExpression, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType)
+        private static IEnumerable<IVertex> ProcessBinaryExpression(BinaryExpressionDefinition binExpression, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType)
         {
             //validate
             binExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
@@ -118,7 +118,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
             //extract
             return
-                expressionGraph.SelectVertexIDs(
+                expressionGraph.Select(
                     new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
         }
 
@@ -131,7 +131,15 @@ namespace sones.GraphQL.StatementNodes.DML
                 new RequestGetVertexType(_TypeName),
                 (stats, vtype) => vtype);
 
-            var myToBeUpdatedVertices = ProcessBinaryExpression(_WhereExpression, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+            //validate
+            _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+
+            //calculate
+            var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+
+            //extract
+
+            var myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
 
             var result = new RequestUpdate(new RequestGetVertices(vertexType.ID, myToBeUpdatedVertices, false));
 
@@ -240,7 +248,7 @@ namespace sones.GraphQL.StatementNodes.DML
                             edgeDefinition.AddUnknownProperty(aStructuredProperty.Key, aStructuredProperty.Value);
                         }
 
-                        edgeDefinition.AddVertexID(targetVertexType.Name, vertexIDs.FirstOrDefault());
+                        edgeDefinition.AddVertexID(vertexIDs.FirstOrDefault().VertexTypeID, vertexIDs.FirstOrDefault().VertexID);
 
                         #endregion
                     }
@@ -279,11 +287,11 @@ namespace sones.GraphQL.StatementNodes.DML
 
                             var targetVertexType = ((IOutgoingEdgeDefinition)attribute).TargetVertexType;
 
-                            foreach (var aVertexID in ProcessBinaryExpression(
+                            foreach (var aVertex in ProcessBinaryExpression(
                                 (BinaryExpressionDefinition)aTupleElement.Value,
                                 myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, targetVertexType))
                             {
-                                var inneredge = new EdgePredefinition().AddVertexID(targetVertexType.Name, aVertexID);
+                                var inneredge = new EdgePredefinition().AddVertexID(aVertex.VertexTypeID, aVertex.VertexID);
 
                                 foreach (var aStructuredProperty in aTupleElement.Parameters)
                                 {

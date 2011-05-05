@@ -190,11 +190,11 @@ namespace sones.GraphQL.StatementNodes.DML
 
                                 var targetVertexType = ((IOutgoingEdgeDefinition)attribute).TargetVertexType;
 
-                                foreach (var aVertexID in ProcessBinaryExpression(
+                                foreach (var aVertex in ProcessBinaryExpression(
                                     (BinaryExpressionDefinition)aTupleElement.Value,
                                     myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, targetVertexType))
                                 {
-                                    var inneredge = new EdgePredefinition().AddVertexID(targetVertexType.Name, aVertexID);
+                                    var inneredge = new EdgePredefinition().AddVertexID(aVertex.VertexTypeID, aVertex.VertexID);
 
                                     foreach (var aStructuredProperty in aTupleElement.Parameters)
                                     {
@@ -345,7 +345,7 @@ namespace sones.GraphQL.StatementNodes.DML
                                 edgeDefinition.AddUnknownProperty(aStructuredProperty.Key, aStructuredProperty.Value);
                             }
 
-                            edgeDefinition.AddVertexID(targetVertexType.Name, vertexIDs.FirstOrDefault());
+                            edgeDefinition.AddVertexID(vertexIDs.FirstOrDefault().VertexTypeID, vertexIDs.FirstOrDefault().VertexID);
 
                             #endregion
                         }
@@ -387,15 +387,14 @@ namespace sones.GraphQL.StatementNodes.DML
             }
         }
 
-        private static IEnumerable<long> ProcessBinaryExpression(BinaryExpressionDefinition binExpression, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType)
+        private static IEnumerable<IVertex> ProcessBinaryExpression(BinaryExpressionDefinition binExpression, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType)
         {
             binExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
 
             var expressionGraph = binExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
 
             return
-                expressionGraph.SelectVertexIDs(
-                    new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
+                expressionGraph.Select(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
         }
 
         #endregion
