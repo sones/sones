@@ -15,6 +15,14 @@ namespace sones.GraphDB.Manager.Index
     public interface IIndexManager
     {
         /// <summary>
+        /// Removes the index instance from the index manager, but not the index representing vertex in the FS.
+        /// </summary>
+        /// <param name="myIndexID">The ID of the index.</param>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        void RemoveIndexInstance(long myIndexID, TransactionToken myTransaction, SecurityToken mySecurity);
+
+        /// <summary>
         /// Creates an index corresponding to a definition
         /// </summary>
         /// <param name="myIndexDefinition">The definition for the index</param>

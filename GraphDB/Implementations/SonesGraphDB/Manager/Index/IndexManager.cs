@@ -190,6 +190,11 @@ namespace sones.GraphDB.Manager.Index
             return indices;
         }
 
+        public void RemoveIndexInstance(long myIndexID, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            _indices.Remove(myIndexID);
+        }
+
         #endregion
 
         #region IManager Members
@@ -202,6 +207,7 @@ namespace sones.GraphDB.Manager.Index
 
         void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity)
         {
+
         }
 
         #endregion
@@ -221,6 +227,6 @@ namespace sones.GraphDB.Manager.Index
             return index is ISingleValueIndex<IComparable, Int64>;
         }
 
-        
+
     }
 }

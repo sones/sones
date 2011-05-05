@@ -389,17 +389,32 @@ namespace sones.GraphDB.Manager.Vertex
 
         private IEnumerable<VertexInformation> GetResultingVertexIDs(TransactionToken myTransaction, SecurityToken mySecurity, EdgePredefinition myEdgeDef, IVertexType myTargetType = null)
         {
-            if (myEdgeDef.VertexIDs != null)
+            if (myEdgeDef.VertexIDsByVertexTypeID != null || myEdgeDef.VertexIDsByVertexTypeName != null )
             {
                 HashSet<VertexInformation> result = new HashSet<VertexInformation>();
-                foreach (var kvP in myEdgeDef.VertexIDs)
+                if (myEdgeDef.VertexIDsByVertexTypeID != null)
                 {
-                    var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(kvP.Key, myTransaction, mySecurity);
-                    foreach (var vertex in kvP.Value)
+                    foreach (var kvP in myEdgeDef.VertexIDsByVertexTypeID)
                     {
-                        result.Add(new VertexInformation(vertexType.ID, vertex));
-                    }
+                        var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(kvP.Key, myTransaction, mySecurity);
+                        foreach (var vertex in kvP.Value)
+                        {
+                            result.Add(new VertexInformation(vertexType.ID, vertex));
+                        }
 
+                    }
+                }
+                if (myEdgeDef.VertexIDsByVertexTypeName != null)
+                {
+                    foreach (var kvP in myEdgeDef.VertexIDsByVertexTypeName)
+                    {
+                        var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(kvP.Key, myTransaction, mySecurity);
+                        foreach (var vertex in kvP.Value)
+                        {
+                            result.Add(new VertexInformation(vertexType.ID, vertex));
+                        }
+
+                    }
                 }
                 return result;
             }

@@ -2698,16 +2698,16 @@ namespace sones.GraphQL
 
             #endregion
 
-            #region RevisionID
+            #region Revision
 
-            stringBuilder.Append(String.Concat("RevisionID", " = ", myVertex.VertexRevisionID, delimiter));
+            stringBuilder.Append(String.Concat("Revision", " = ", myVertex.VertexRevisionID, delimiter));
 
             #endregion
 
             #region Edition
 
             if (!String.IsNullOrWhiteSpace(myVertex.EditionName))
-                stringBuilder.Append(String.Concat(S_EDITION, " = '", myVertex.EditionName, "'", delimiter));
+                stringBuilder.Append(String.Concat("Edition", " = '", myVertex.EditionName, "'", delimiter));
 
             #endregion
 

@@ -26,10 +26,14 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The IDs of the vertices where to connect to.
         /// </summary>
-        public IDictionary<String, ISet<long>> VertexIDs { get { return _ids; } }
-        private Dictionary<String, ISet<long>> _ids;
+        public IDictionary<String, ISet<long>> VertexIDsByVertexTypeName { get { return _vertexIDsByVertexTypeName; } }
+        private Dictionary<String, ISet<long>> _vertexIDsByVertexTypeName;
 
-        public int VertexIDCount { get { return (_ids == null) ? 0 : _ids.Count; } }
+        /// <summary>
+        /// The IDs of the vertices where to connect to.
+        /// </summary>
+        public IDictionary<Int64, ISet<long>> VertexIDsByVertexTypeID { get { return _vertexIDsByVertexTypeID; } }
+        private Dictionary<Int64, ISet<long>> _vertexIDsByVertexTypeID;
 
         /// <summary>
         /// The well defined properties of a vertex.
@@ -136,13 +140,27 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds a verex ID to this edge definition..
+        /// Adds a vertex ID to this edge definition..
         /// </summary>
         /// <param name="myVertexID">The vertex ID where to connect to.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public EdgePredefinition AddVertexID(String myVertexType, long myVertexID)
         {
             var set = EnsureHashSet(myVertexType);
+            set.Add(myVertexID);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a vertex ID to this edge definition..
+        /// </summary>
+        /// <param name="myVertexTypeID">The vertextype ID where to connect to.</param>
+        /// <param name="myVertexID">The vertex ID where to connect to.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public EdgePredefinition AddVertexID(long myVertexTypeID, long myVertexID)
+        {
+            var set = EnsureHashSet(myVertexTypeID);
             set.Add(myVertexID);
 
             return this;
@@ -194,13 +212,21 @@ namespace sones.GraphDB.Request
 
         private ISet<long> EnsureHashSet(String myVertexType)
         {
-            _ids = _ids ?? new Dictionary<String, ISet<long>>();
-            if (!_ids.ContainsKey(myVertexType))
-                _ids.Add(myVertexType, new HashSet<long>());
+            _vertexIDsByVertexTypeName = _vertexIDsByVertexTypeName ?? new Dictionary<String, ISet<long>>();
+            if (!_vertexIDsByVertexTypeName.ContainsKey(myVertexType))
+                _vertexIDsByVertexTypeName.Add(myVertexType, new HashSet<long>());
 
-            return _ids[myVertexType];
+            return _vertexIDsByVertexTypeName[myVertexType];
         }
 
+        private ISet<long> EnsureHashSet(long myVertexTypeID)
+        {
+            _vertexIDsByVertexTypeID = _vertexIDsByVertexTypeID ?? new Dictionary<long, ISet<long>>();
+            if (!_vertexIDsByVertexTypeID.ContainsKey(myVertexTypeID))
+                _vertexIDsByVertexTypeID.Add(myVertexTypeID, new HashSet<long>());
+
+            return _vertexIDsByVertexTypeID[myVertexTypeID];
+        }
 
     }
     

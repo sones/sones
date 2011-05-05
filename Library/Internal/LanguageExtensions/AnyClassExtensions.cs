@@ -21,5 +21,16 @@ namespace sones.Library.LanguageExtensions
             if (null == myObject)
                 throw new ArgumentNullException(myArgumentName);
         }        
+
+        public static IComparable ConvertToIComparable(this Object myObject, Type myConvertType)
+        {
+            if (typeof(DateTime).Equals(myConvertType))
+            {
+                return DateTime.FromBinary((long)Convert.ChangeType(myObject, typeof(long)));
+            } 
+            else 
+                return (IComparable) Convert.ChangeType(myObject, myConvertType);
+        }
+
     }
 }

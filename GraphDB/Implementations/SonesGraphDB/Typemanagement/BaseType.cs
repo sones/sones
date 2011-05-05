@@ -109,7 +109,11 @@ namespace sones.GraphDB.TypeManagement
         }
         public bool HasAttribute(string myAttributeName)
         {
-            return GetAttributes_private().ContainsKey(myAttributeName);
+            var result = GetAttributes_private().ContainsKey(myAttributeName);
+            if (!result && HasParentType)
+                result = GetParentType().HasAttribute(myAttributeName);
+
+            return result;
         }
 
         public IAttributeDefinition GetAttributeDefinition(string myAttributeName)

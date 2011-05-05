@@ -14,6 +14,7 @@ using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Request.Insert;
 using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.ErrorHandling.Expression;
+using sones.Library.LanguageExtensions;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -155,7 +156,7 @@ namespace sones.GraphDB.Manager.Vertex
                 //TODO: better exception here
                 throw new Exception("More than one target vertices for a single edge is not allowed.");
 
-            if (edge.VertexIDCount == 0)
+            if (edge.VertexIDsByVertexTypeID == null && edge.VertexIDsByVertexTypeName == null)
                 //TODO: better exception here
                 throw new Exception("A single edge needs at least one target.");
 
@@ -177,11 +178,14 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     if (myBaseType.HasProperty(unknownProp.Key))
                     {
-                        if (unknownProp.Value is IComparable)
+                        var propDef = myBaseType.GetPropertyDefinition(unknownProp.Key);
+
+                        try
                         {
-                            myPropertyProvider.AddStructuredProperty(unknownProp.Key, (IComparable)unknownProp.Value);
+                            var converted = unknownProp.Value.ConvertToIComparable(propDef.BaseType);
+                            myPropertyProvider.AddStructuredProperty(unknownProp.Key, converted);
                         }
-                        else
+                        catch (InvalidCastException)                 
                         {
                             //TODO: better exception
                             throw new Exception("Type of property does not match.");
