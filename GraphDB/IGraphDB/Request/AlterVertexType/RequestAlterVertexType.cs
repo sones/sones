@@ -17,11 +17,17 @@ namespace sones.GraphDB.Request
         /// </summary>
         public readonly string VertexTypeName;
         
+        /// <summary>
+        /// Attributes which are to be added
+        /// </summary>
         private List<AttributePredefinition>    _toBeAddedAttributes;
         private List<IndexPredefinition>        _toBeAddedIndices;
         private List<UniquePredefinition>       _toBeAddedUniques;
         private List<MandatoryPredefinition>    _toBeAddedMandatories;
 
+        /// <summary>
+        /// Attributes which are to be removed
+        /// </summary>
         private List<String>                    _toBeRemovedAttributes;
         private List<String>                    _toBeRemovedIncomingEdges;
         private List<String>                    _toBeRemovedOutgoingEdges;
@@ -147,7 +153,7 @@ namespace sones.GraphDB.Request
 
         #region add
         /// <summary>
-        /// The properties of the vertex type.
+        /// Properties to be added to the altered type.
         /// </summary>
         public IEnumerable<PropertyPredefinition> ToBeAddedProperties
         {
@@ -155,7 +161,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// The outgoing edges of this vertex type.
+        /// OutgoingEdges to be added to the altered type.
         /// </summary>
         public IEnumerable<OutgoingEdgePredefinition> ToBeAddedOutgoingEdges
         {
@@ -163,7 +169,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// The outgoing edges of this vertex type.
+        /// IncomingEdges to be added to the altered type.
         /// </summary>
         public IEnumerable<IncomingEdgePredefinition> ToBeAddedIncomingEdges
         {
@@ -171,7 +177,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// the unknown attributes of this edge type.
+        /// Unknown attributes to be added to the altered type.
         /// </summary>
         public IEnumerable<UnknownAttributePredefinition> ToBeAddedUnknownAttributes
         {
@@ -179,7 +185,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// The index definitions of this vertex type.
+        /// Indices to be added to the altered type.
         /// </summary>
         public IEnumerable<IndexPredefinition> ToBeAddedIndices
         {
@@ -187,7 +193,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// The unique definitions of this vertex type.
+        /// Unique attributes to be added to the altered type.
         /// </summary>
         public IEnumerable<UniquePredefinition> ToBeAddedUniques
         {
@@ -195,13 +201,16 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// The mandatory definitions of this vertex type.
+        /// Mandatory attributes to be added to the altered type.
         /// </summary>
         public IEnumerable<MandatoryPredefinition> ToBeAddedMandatories
         {
             get { return (_toBeAddedMandatories == null) ? null : _toBeAddedMandatories.AsReadOnly(); }
         }
 
+        /// <summary>
+        /// Binary properties to be added to the altered type.
+        /// </summary>
         public IEnumerable<BinaryPropertyPredefinition> ToBeAddedBinaryProperties
         {
             get { return (_toBeAddedAttributes == null) ? null : _toBeAddedAttributes.OfType<BinaryPropertyPredefinition>(); }
@@ -211,7 +220,7 @@ namespace sones.GraphDB.Request
         #region remove
 
         /// <summary>
-        /// The removed mandatory constraints
+        /// Mandatory attributes to be removed from the altered type.
         /// </summary>
         public IEnumerable<String> ToBeRemovedMandatories
         {
@@ -219,7 +228,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// The properties of the vertex type.
+        /// Properties to be removed from the altered type.
         /// </summary>
         public IEnumerable<String> ToBeRemovedProperties
         {
@@ -227,7 +236,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// The outgoing edges of this vertex type.
+        /// Outgoing edges to be removed from the altered type.
         /// </summary>
         public IEnumerable<long> ToBeRemovedOutgoingEdges
         {
@@ -235,7 +244,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// The outgoing edges of this vertex type.
+        /// Incoming edges to be removed from the altered type.
         /// </summary>
         public IEnumerable<long> ToBeRemovedIncomingEdges
         {
@@ -243,7 +252,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// The index definitions of this vertex type.
+        /// Indices to be removed from the altered type.
         /// </summary>
         public Dictionary<String, String> ToBeRemovedIndices
         {
@@ -251,7 +260,7 @@ namespace sones.GraphDB.Request
         }
         
         /// <summary>
-        /// The unique definitions of this vertex type.
+        /// Unique attributes to be removed from the altered type.
         /// </summary>
         public IEnumerable<String> ToBeRemovedUniques
         {
@@ -345,7 +354,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Adds an outgoing edge.
         /// </summary>
-        /// <param name="myOutgoingEdgePredefinition">The definition of the outgoing IncomingEdge</param>
+        /// <param name="myOutgoingEdgePredefinition">The definition of the outgoing IncomingEdge.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestAlterVertexType AddOutgoingEdge(OutgoingEdgePredefinition myOutgoingEdgePredefinition)
         {
@@ -359,6 +368,11 @@ namespace sones.GraphDB.Request
             return this;
         }
 
+        /// <summary>
+        /// Adds a binary property.
+        /// </summary>
+        /// <param name="myBinaryPropertyPredefinition">The defintition of the binary property.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestAlterVertexType AddBinaryProperty(BinaryPropertyPredefinition myBinaryPropertyPredefinition)
         {
             if (myBinaryPropertyPredefinition != null)
@@ -371,6 +385,11 @@ namespace sones.GraphDB.Request
             return this;
         }
 
+        /// <summary>
+        /// Adds a incoming edge.
+        /// </summary>
+        /// <param name="myIncomingEdgePredefinition">The definition of the incoming edge.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestAlterVertexType AddIncomingEdge(IncomingEdgePredefinition myIncomingEdgePredefinition)
         {
             if (myIncomingEdgePredefinition != null)
@@ -437,9 +456,9 @@ namespace sones.GraphDB.Request
 
         #region remove
         /// <summary>
-        /// Adds an property to be removed
+        /// Removes a property to be removed
         /// </summary>
-        /// <param name="myUnknownName">The unknwown property name that is going to be added</param>
+        /// <param name="myAttrName">The property name that is going to be added</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestAlterVertexType RemoveAttribute(String myAttrName)
         {
@@ -454,16 +473,16 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds an outgoing edge.
+        /// Removes an outgoing edge.
         /// </summary>
-        /// <param name="myOutgoingEdgeID">The id of the outgoing IncomingEdge</param>
+        /// <param name="myOutgoingEdge">The outgoing IncomingEdge.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestAlterVertexType RemoveOutgoingEdge(String myOutgoingEdgeID)
+        public RequestAlterVertexType RemoveOutgoingEdge(String myOutgoingEdge)
         {
-            if (myOutgoingEdgeID != null)
+            if (!String.IsNullOrWhiteSpace(myOutgoingEdge))
             {
                 _toBeRemovedOutgoingEdges = (_toBeRemovedOutgoingEdges) ?? new List<String>();
-                _toBeRemovedOutgoingEdges.Add(myOutgoingEdgeID);
+                _toBeRemovedOutgoingEdges.Add(myOutgoingEdge);
                 _removeOutgoing++;
             }
 
@@ -471,16 +490,16 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds an incoming edge.
+        /// Removes an incoming edge.
         /// </summary>
-        /// <param name="myIncomingEdgeID">The id of the incomingEdge</param>
+        /// <param name="myIncomingEdge">The incomingEdge</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestAlterVertexType RemoveIncomingEdge(String myIncomingEdgeID)
+        public RequestAlterVertexType RemoveIncomingEdge(String myIncomingEdge)
         {
-            if (myIncomingEdgeID != null)
+            if (!String.IsNullOrWhiteSpace(myIncomingEdge))
             {
                 _toBeRemovedIncomingEdges = (_toBeRemovedIncomingEdges) ?? new List<String>();
-                _toBeRemovedIncomingEdges.Add(myIncomingEdgeID);
+                _toBeRemovedIncomingEdges.Add(myIncomingEdge);
                 _removeIncoming++;
             }
 
@@ -488,16 +507,16 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds a unique definition.
+        /// Removes a unique definition.
         /// </summary>
-        /// <param name="myUniqueDefinition">The name of the property</param>
+        /// <param name="myUnique">The name of the unique property.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestAlterVertexType RemoveUnique(String myUniqueDefinition)
+        public RequestAlterVertexType RemoveUnique(String myUnique)
         {
-            if (myUniqueDefinition != null)
+            if (!String.IsNullOrWhiteSpace(myUnique))
             {
                 _toBeRemovedUniques = (_toBeRemovedUniques) ?? new List<String>();
-                _toBeRemovedUniques.Add(myUniqueDefinition);
+                _toBeRemovedUniques.Add(myUnique);
                 _removeUnique++;
             }
 
@@ -505,13 +524,13 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Removes a mandatory constraint
+        /// Removes a mandatory constraint.
         /// </summary>
         /// <param name="myMandatory">The name of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestAlterVertexType RemoveMandatory(String myMandatory)
         {
-            if (myMandatory != null)
+            if (!String.IsNullOrWhiteSpace(myMandatory))
             {
                 _toBeRemovedMandatories = (_toBeRemovedMandatories) ?? new List<String>();
                 _toBeRemovedMandatories.Add(myMandatory);
@@ -522,9 +541,10 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds an index definition.
+        /// Removes an index definition.
         /// </summary>
-        /// <param name="myIndexDefinition">The index definition that is going to be added.</param>
+        /// <param name="myIndexName">The index name that is going to be added.</param>
+        /// <param name="myEdition">The index name that is going to be added.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestAlterVertexType RemoveIndex(String myIndexName, String myEdition)
         {
