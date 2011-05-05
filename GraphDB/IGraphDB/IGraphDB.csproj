@@ -138,7 +138,7 @@
     <Compile Include="Request\CreateVertexType\RequestCreateVertexType.cs" />
     <Compile Include="Request\Delete\RequestDelete.cs" />
     <Compile Include="Request\DropIndex\RequestDropIndex.cs" />
-    <Compile Include="Request\DropType\RequestDropType.cs" />
+    <Compile Include="Request\DropVertexType\RequestDropVertexType.cs" />
     <Compile Include="Request\GetEdgeType\RequestGetAllEdgeTypes.cs" />
     <Compile Include="Request\GetEdgeType\RequestGetEdgeType.cs" />
     <Compile Include="Request\DescribeIndex\RequestDescribeIndex.cs" />

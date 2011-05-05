@@ -216,14 +216,14 @@ namespace sones.GraphDB
         public TResult DropType<TResult>(
             SecurityToken mySecurity,
             TransactionToken myTransactionToken,
-            RequestDropType myRequestDropType,
-            Converter.DropTypeResultConverter<TResult> myOutputconverter)
+            RequestDropVertexType myRequestDropType,
+            Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableDropTypeRequest(myRequestDropType,
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableDropVertexTypeRequest(myRequestDropType,
                                                                                         mySecurity,
                                                                                         myTransactionToken));
 
-            return ((PipelineableDropTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableDropVertexTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion

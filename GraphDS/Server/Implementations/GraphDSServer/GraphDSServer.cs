@@ -373,7 +373,7 @@ namespace sones.GraphDSServer
                                                 myOutputconverter);
         }
 
-        public TResult DropType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropType myRequestDropType, Converter.DropTypeResultConverter<TResult> myOutputconverter)
+        public TResult DropType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropVertexType myRequestDropType, Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.DropType<TResult>(mySecurityToken, 
                                                 myTransactionToken, 

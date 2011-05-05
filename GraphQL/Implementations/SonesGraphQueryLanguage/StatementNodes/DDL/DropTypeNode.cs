@@ -52,7 +52,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
             try
             {
-                var stat = myGraphDB.DropType(mySecurityToken, myTransactionToken, new RequestDropType(_TypeName), (stats) => stats);
+                var stat = myGraphDB.DropType(mySecurityToken, myTransactionToken, new RequestDropVertexType(_TypeName), (stats) => stats);
 
                 qresult = new QueryResult(myQuery, "sones.gql", Convert.ToUInt64(stat.ExecutionTime.Milliseconds), ResultType.Successful);
             }

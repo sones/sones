@@ -687,7 +687,91 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private void Remove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
+            var toDeleteAttributeDefinitions = new List<IAttributeDefinition>();
+
+            var toDeleteIndexDefinitions = new List<IUniqueDefinition>();
+
+            var toDeleteVertices = new List<IVertex>();
+            
+
+            #region check if specified types can be removed
+            //get child vertex types and check if they are specified by user
+            foreach (var delType in myVertexTypes)
+            {
+                #region check that child types are specified if existing
+
+                foreach (var child in delType.GetChildVertexTypes())
+                    if (!myVertexTypes.Contains(child))
+                        //all child types has to be specified by user
+                        throw new NotImplementedException(); 
+                
+                #endregion
+
+                #region check that the delete type has no incoming edges
+
+                if (delType.HasIncomingEdges(false))
+                    //all incoming edges has to be deletet by user
+                    throw new NotImplementedException();
+
+                #endregion
+
+                #region check that no other type has a outgoing edge pointing on delete type
+
+                //get all vertex types and check if they have outgoing edges with target vertex the delete type
+                foreach (var type in GetAllVertexTypes(myTransaction, mySecurity))
+                {
+                    foreach (var outEdgeDef in type.GetOutgoingEdgeDefinitions(false))
+                    {
+                        if (outEdgeDef.TargetVertexType.ID.Equals(delType.ID))
+                            //there is a outgoing edge from a vertex type which points to a vertex type which schould be removed
+                            throw new NotImplementedException();
+                        
+                    }
+                }
+
+                #endregion
+
+                #region check if there are incoming edges of target vertices of outgoing edges of the deleting type
+
+                foreach (var outEdge in delType.GetOutgoingEdgeDefinitions(false))
+                {
+                    foreach (var inEdge in outEdge.TargetVertexType.GetIncomingEdgeDefinitions(true))
+                    {
+                        if (inEdge.RelatedEdgeDefinition.ID.Equals(outEdge.ID))
+                            //
+                            throw new NotImplementedException();
+                    }
+                }
+
+                #endregion
+
+                toDeleteAttributeDefinitions.AddRange(delType.GetAttributeDefinitions(false));
+
+                toDeleteIndexDefinitions.AddRange(delType.GetUniqueDefinitions(false));
+
+                //get all vertices of collected types
+                toDeleteVertices.AddRange(_vertexManager.ExecuteManager.GetVertices(delType.ID, myTransaction, mySecurity));
+            }
+            #endregion
+
+            //remove indices on types
+            var count = toDeleteIndexDefinitions.Count;
+            var enumerator = toDeleteIndexDefinitions.GetEnumerator();
+
+            while(enumerator.Current != null)
+            {
+                _indexManager.RemoveIndexInstance(enumerator.Current.CorrespondingIndex.ID, myTransaction, mySecurity);
+            }
+
+            //delete vertices
+            foreach(var attr in toDeleteAttributeDefinitions)
+            {
+                _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, attr.ID, attr.RelatedType.ID);
+            }
+
+
+            //get all edges of collected types 
+
         }
 
         private void Update(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)

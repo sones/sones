@@ -168,8 +168,8 @@ namespace sones.GraphDB
         /// <returns>A generic result</returns>
         TResult DropType<TResult>(  SecurityToken mySecurityToken,
                                     TransactionToken myTransactionToken,
-                                    RequestDropType myRequestDropType,
-                                    Converter.DropTypeResultConverter<TResult> myOutputconverter);
+                                    RequestDropVertexType myRequestDropType,
+                                    Converter.DropVertexTypeResultConverter<TResult> myOutputconverter);
 
         /// <summary>
         /// Drops a index on type

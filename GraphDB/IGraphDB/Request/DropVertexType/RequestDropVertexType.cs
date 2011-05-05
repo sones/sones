@@ -5,7 +5,7 @@ using System.Text;
 
 namespace sones.GraphDB.Request
 {
-    public sealed class RequestDropType : IRequest
+    public sealed class RequestDropVertexType : IRequest
     {
         #region data
 
@@ -18,7 +18,7 @@ namespace sones.GraphDB.Request
         
         #region constructor
 
-        public RequestDropType(String myTypeName)
+        public RequestDropVertexType(String myTypeName)
         {
             TypeName = myTypeName;
         }

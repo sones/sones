@@ -11,14 +11,14 @@ using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphDB.Request.DropType
 {
-    public sealed class PipelineableDropTypeRequest : APipelinableRequest
+    public sealed class PipelineableDropVertexTypeRequest : APipelinableRequest
     {
         #region Data
 
         /// <summary>
         /// The request that contains the todo
         /// </summary>
-        private readonly RequestDropType _request;
+        private readonly RequestDropVertexType _request;
 
         #endregion
         
@@ -30,12 +30,12 @@ namespace sones.GraphDB.Request.DropType
         /// <param name="myGetEdgeTypeRequest">The get vertex request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The transaction token</param>
-        public PipelineableDropTypeRequest( RequestDropType myDropTypeRequest, 
-                                            SecurityToken mySecurity,
-                                            TransactionToken myTransactionToken)
+        public PipelineableDropVertexTypeRequest( RequestDropVertexType myDropVertexTypeRequest, 
+                                                    SecurityToken mySecurity,
+                                                    TransactionToken myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
-            _request = myDropTypeRequest;
+            _request = myDropVertexTypeRequest;
         }
 
         #endregion
@@ -70,7 +70,7 @@ namespace sones.GraphDB.Request.DropType
         /// <typeparam name="TResult">The type of the myResult</typeparam>
         /// <param name="myOutputconverter">The delegate that is executed uppon output-generation</param>
         /// <returns>A TResult</returns>
-        internal TResult GenerateRequestResult<TResult>(Converter.DropTypeResultConverter<TResult> myOutputconverter)
+        internal TResult GenerateRequestResult<TResult>(Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
         {
             return myOutputconverter(Statistics);
         }

@@ -335,7 +335,7 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             throw new NotImplementedException();
         }
 
-        public TResult DropType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropType myRequestDropType, Converter.DropTypeResultConverter<TResult> myOutputconverter)
+        public TResult DropType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropVertexType myRequestDropType, Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
