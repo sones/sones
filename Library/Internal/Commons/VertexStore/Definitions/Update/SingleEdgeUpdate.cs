@@ -16,7 +16,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// The single edges that should be updated
         /// property id + single edge update definition
         /// </summary>
-        public Dictionary<Int64, SingleEdgeUpdateDefinition> Updated;
+        public IDictionary<Int64, SingleEdgeUpdateDefinition> Updated;
         
         /// <summary>
         /// The single edge property-ids that should be deleted
@@ -33,7 +33,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// <param name="myUpdated">The single edges that should be updated</param>
         /// <param name="myDeleted">The single edge property-ids that should be deleted</param>
         public SingleEdgeUpdate(
-            Dictionary<Int64, SingleEdgeUpdateDefinition> myUpdated = null,
+            IDictionary<Int64, SingleEdgeUpdateDefinition> myUpdated = null,
             IEnumerable<Int64> myDeleted = null)
         {
             Updated = myUpdated;

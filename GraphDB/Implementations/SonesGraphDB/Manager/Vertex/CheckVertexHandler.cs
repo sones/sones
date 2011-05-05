@@ -247,10 +247,11 @@ namespace sones.GraphDB.Manager.Vertex
         #region IVertexHandler Members
 
 
-        public IEnumerable<IVertex> UpdateVertex(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
+        public IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             return null;
         }
+      
 
         #endregion
     }

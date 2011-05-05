@@ -15,7 +15,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// <summary>
         /// The hyperedges that are going to be updated
         /// </summary>
-        public Dictionary<Int64, HyperEdgeUpdateDefinition> Updated;
+        public IDictionary<Int64, HyperEdgeUpdateDefinition> Updated;
           
         /// <summary>
         /// The hyperedge property-ids that are going to be deleted
@@ -33,7 +33,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// <param name="myUpdated">The hyperedges that are going to be updated</param>
         /// <param name="myDeleted">The hyperedge property-ids that are going to be deleted</param>
         public HyperEdgeUpdate(
-            Dictionary<Int64, HyperEdgeUpdateDefinition> myUpdated = null,
+            IDictionary<Int64, HyperEdgeUpdateDefinition> myUpdated = null,
             IEnumerable<Int64> myDeleted = null)
         {
             Updated = myUpdated;

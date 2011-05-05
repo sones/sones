@@ -73,8 +73,8 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The outgoing edges which should be removed from updated vertex.
         /// </summary>
-        public IEnumerable<EdgePredefinition> RemoveOutgoingEdges { get { return _toBeRemovedEdges; } }
-        private HashSet<EdgePredefinition> _toBeRemovedEdges;
+        public IEnumerable<String> RemoveOutgoingEdges { get { return _toBeRemovedEdges; } }
+        private HashSet<String> _toBeRemovedEdges;
 
         #endregion
 
@@ -241,9 +241,9 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myEdgeDefinition">The name of the edge.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate RemoveEdge(EdgePredefinition myEdgeDefinition)
+        public RequestUpdate RemoveEdge(String myEdgeDefinition)
         {
-            _toBeRemovedEdges = _toBeRemovedEdges ?? new HashSet<EdgePredefinition>();
+            _toBeRemovedEdges = _toBeRemovedEdges ?? new HashSet<String>();
             _toBeRemovedEdges.Add(myEdgeDefinition);
 
             return this;

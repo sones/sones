@@ -105,7 +105,7 @@ namespace sones.GraphDB.Manager.Vertex
         /// <param name="TransactionToken">A transaction token for this operation.</param>
         /// <param name="SecurityToken">A security token for this operation.</param>
         /// <returns>The updated vertivess.</returns>
-        IEnumerable<IVertex> UpdateVertex(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity);
+        IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity);
 
 
 

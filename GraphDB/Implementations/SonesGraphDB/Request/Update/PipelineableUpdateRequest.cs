@@ -46,7 +46,7 @@ namespace sones.GraphDB.Request.Update
         /// </summary>
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexManager.CheckManager.UpdateVertex(_request, TransactionToken, SecurityToken);
+            myMetaManager.VertexManager.CheckManager.UpdateVertices(_request, TransactionToken, SecurityToken);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace sones.GraphDB.Request.Update
         /// </summary>
         public override void Execute(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexManager.ExecuteManager.UpdateVertex(_request, TransactionToken, SecurityToken);
+            myMetaManager.VertexManager.ExecuteManager.UpdateVertices(_request, TransactionToken, SecurityToken);
         }
 
         /// <summary>
