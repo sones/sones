@@ -59,14 +59,13 @@ namespace sones.GraphDB.Expression.QueryPlan
             {
                 foreach (var aVertex in _vertexStore.GetVerticesByTypeID(_securityToken, _transactionToken, myInterestingVertexType.ID, _property.Edition, VertexRevisionFilter))
                 {
-                    if (aVertex.HasProperty(_property.Property.ID))
+                    var value = _property.Property.ExtractValue(aVertex);
+
+                    if (value != null &&
+                            (value.CompareTo(_constantRange.Lower) >= 0) &&
+                            (value.CompareTo(_constantRange.Upper) <= 0))
                     {
-                        if (
-                            (_property.Property.ExtractValue(aVertex).CompareTo(_constantRange.Lower) >= 0) &&
-                            (_property.Property.ExtractValue(aVertex).CompareTo(_constantRange.Upper) <= 0))
-                        {
-                            yield return aVertex;
-                        }
+                        yield return aVertex;
                     }
                 }
             }
@@ -74,14 +73,13 @@ namespace sones.GraphDB.Expression.QueryPlan
             {
                 foreach (var aVertex in _vertexStore.GetVerticesByTypeID(_securityToken, _transactionToken, myInterestingVertexType.ID, _property.Edition, VertexRevisionFilter))
                 {
-                    if (aVertex.HasProperty(_property.Property.ID))
+                    var value = _property.Property.ExtractValue(aVertex);
+
+                    if (value != null &&
+                            (value.CompareTo(_constantRange.Lower) > 0) &&
+                            (value.CompareTo(_constantRange.Upper) < 0))
                     {
-                        if (
-                            (_property.Property.ExtractValue(aVertex).CompareTo(_constantRange.Lower) > 0) &&
-                            (_property.Property.ExtractValue(aVertex).CompareTo(_constantRange.Upper) < 0))
-                        {
-                            yield return aVertex;
-                        }
+                        yield return aVertex;
                     }
                 }
             }
