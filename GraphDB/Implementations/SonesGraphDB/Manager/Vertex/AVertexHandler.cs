@@ -45,7 +45,7 @@ namespace sones.GraphDB.Manager.Vertex
 
             foreach (var mand in mandatories)
             {
-                if ( myPropertyProvider == null || myPropertyProvider.StructuredProperties == null || !myPropertyProvider.StructuredProperties.Any(x => mand.Name.Equals(x)))
+                if ( myPropertyProvider == null || myPropertyProvider.StructuredProperties == null || !myPropertyProvider.StructuredProperties.Any(x => mand.Name.Equals(x.Key)))
                 {
                     throw new MandatoryConstraintViolationException(mand.Name);
                 }

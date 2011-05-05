@@ -330,7 +330,7 @@ namespace sones.GraphDB.Manager
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreProperty(myStore, _WeightedEdgeDotWeight, "Weight", "WeightedComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Edge, _BaseTypeDouble, _security, _transaction);
+            BaseGraphStorageManager.StoreProperty(myStore, _WeightedEdgeDotWeight, "Weight", "WeightedComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _WeightedEdge, _BaseTypeDouble, _security, _transaction);
 
             #endregion
         }
