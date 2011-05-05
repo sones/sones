@@ -101,15 +101,16 @@ namespace sones.Plugins.SonesGQL.DBExport
             var dumpReadout = new Dictionary<String, Object>();
             ASonesException error = null;
 
+            #region dump gddl
             if ((myDumpType & DumpTypes.GDDL) == DumpTypes.GDDL)
             {
-                
+
                 var graphDDL = myGrammar.ExportGraphDDL(DumpFormats.GQL, myTypes);
 
                 if (graphDDL == null)
                 {
                     throw new ExportFailedException(myDumpType.ToString(), "");
-                    
+
                 }
 
                 dumpReadout.Add("GDDL", graphDDL);
@@ -123,8 +124,10 @@ namespace sones.Plugins.SonesGQL.DBExport
                     error = e;
                 }
 
-            }
+            } 
+            #endregion
 
+            #region dump gdml
             if ((myDumpType & DumpTypes.GDML) == DumpTypes.GDML)
             {
 
@@ -146,7 +149,8 @@ namespace sones.Plugins.SonesGQL.DBExport
                     error = e;
                 }
 
-            }
+            } 
+            #endregion
 
             return new QueryResult("", ExportFormat, 0L, ResultType.Successful, new List<IVertexView> { new VertexView(dumpReadout, null) }, error);
         }
@@ -210,7 +214,6 @@ namespace sones.Plugins.SonesGQL.DBExport
         }
 
         #endregion
-
 
         #region Output handling
 
@@ -312,7 +315,6 @@ namespace sones.Plugins.SonesGQL.DBExport
         }
 
         #endregion
-
 
         #region GetTypes to dump
 

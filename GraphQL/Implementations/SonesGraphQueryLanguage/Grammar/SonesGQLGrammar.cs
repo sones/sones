@@ -31,7 +31,7 @@ using sones.Library.Commons.Transaction;
 
 namespace sones.GraphQL
 {
-    public sealed class SonesGQLGrammar : Grammar , IDumpable
+    public sealed class SonesGQLGrammar : Grammar, IDumpable
     {
         #region Data
 
@@ -512,7 +512,7 @@ namespace sones.GraphQL
             var bulkTypeList = new NonTerminal("bulkTypeList");
             var attributesOpt = new NonTerminal("attributesOpt");
             var insertValuesOpt = new NonTerminal("insertValuesOpt");
-            
+
 
             #region Expression
 
@@ -834,9 +834,9 @@ namespace sones.GraphQL
 
             #region Value
 
-            KeyValuePair.Rule =     Id_simple + "=" + string_literal 
-                                |   Id_simple + "=" + number
-                                |   Id_simple + "=" + BooleanVal;
+            KeyValuePair.Rule = Id_simple + "=" + string_literal
+                                | Id_simple + "=" + number
+                                | Id_simple + "=" + BooleanVal;
 
             ValueList.Rule = MakeStarRule(ValueList, S_comma, KeyValuePair);
 
@@ -861,7 +861,7 @@ namespace sones.GraphQL
             //                 SET     <                  USER        (                WEIGHTED    )                 >
             EdgeTypeDef.Rule = S_SET + S_ListTypePrefix + Id_simple + S_BRACKET_LEFT + Id_simple + S_BRACKET_RIGHT + S_ListTypePostfix;
 
-            
+
             ////                       COUNTED        (Integer, DEFAULT=2)                   <   [idsimple]  >
             //SingleEdgeTypeDef.Rule = Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePrefix + Id_simple + S_ListTypePostfix;
 
@@ -878,7 +878,7 @@ namespace sones.GraphQL
 
             DefaultValueDef.Rule = S_DEFAULT + "=" + KeyValuePair;
 
-            VertexType.Rule =       Id_simple
+            VertexType.Rule = Id_simple
                                    | S_LIST + S_ListTypePrefix + Id_simple + S_ListTypePostfix
                                    | S_SET + S_ListTypePrefix + Id_simple + S_ListTypePostfix
                                    | EdgeTypeDef
@@ -1049,9 +1049,9 @@ namespace sones.GraphQL
 
             #region CREATE TYPE(S)
 
-            createTypesStmt.Rule =      S_CREATE + S_VERTEX + S_TYPES + bulkTypeList
-                                    |   S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkType
-                                    |   S_CREATE + S_VERTEX + S_TYPE + bulkType;
+            createTypesStmt.Rule = S_CREATE + S_VERTEX + S_TYPES + bulkTypeList
+                                    | S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkType
+                                    | S_CREATE + S_VERTEX + S_TYPE + bulkType;
 
             //vertexType.Rule = S_VERTEX + S_TYPE;
             //BNF_VertexTypes.Rule = S_VERTEX + S_TYPES;
@@ -1065,8 +1065,8 @@ namespace sones.GraphQL
             commentOpt.Rule = Empty
                                     | S_COMMENT + "=" + string_literal;
 
-            abstractOpt.Rule =      S_ABSTRACT
-                                |   Empty;
+            abstractOpt.Rule = S_ABSTRACT
+                                | Empty;
 
             extendsOpt.Rule = Empty
                                     | S_EXTENDS + Id_simple;
@@ -1114,8 +1114,8 @@ namespace sones.GraphQL
                             | S_RENAME + S_ATTRIBUTE + Id_simple + S_TO + Id_simple
                             | S_RENAME + S_INCOMINGEDGE + Id_simple + S_TO + Id_simple
                             | S_RENAME + S_TO + Id_simple
-                            //| S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
-                            //| S_UNDEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
+                //| S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
+                //| S_UNDEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
                             | S_DROP + S_UNIQUE + S_ON + Id_simple
                             | S_DROP + S_MANDATORY + S_ON + Id_simple
                             | S_COMMENT + "=" + string_literal;
@@ -1150,9 +1150,9 @@ namespace sones.GraphQL
 
             selectionList.Rule = MakePlusRule(selectionList, S_comma, selectionListElement);
 
-            selectionListElement.Rule =     S_ASTERISK
-                                        |   BNF_Aggregate + aliasOpt
-                                        |   IdOrFuncList + aliasOpt;
+            selectionListElement.Rule = S_ASTERISK
+                                        | BNF_Aggregate + aliasOpt
+                                        | IdOrFuncList + aliasOpt;
 
             aliasOptName.Rule = Id_simple | string_literal;
 
@@ -1323,8 +1323,8 @@ namespace sones.GraphQL
 
             DescrDedicatedIdxStmt.Rule = Empty | Id_simple;
 
-            DescrIdxEdtStmt.Rule =      Empty 
-                                    |   S_EDITION + Id_simple;
+            DescrIdxEdtStmt.Rule = Empty
+                                    | S_EDITION + Id_simple;
 
             DescrIdxsStmt.Rule = S_INDICES;
 
@@ -2181,7 +2181,6 @@ namespace sones.GraphQL
         #endregion
 
         #region IDumpable Members
-
         #region Export GraphDDL
 
         public IEnumerable<String> ExportGraphDDL(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump)
@@ -2189,10 +2188,10 @@ namespace sones.GraphQL
             StringBuilder stringBuilder;
             var delimiter = ", ";
 
-            if(myTypesToDump.Count() > 1)
+            if (myTypesToDump.Count() > 1)
                 stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_TYPES.ToUpperString(), " "));
             else
-                stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_TYPE.ToUpperString(), " "));
+                stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_VERTEX.ToUpperString(), " ", S_TYPE.ToUpperString(), " "));
 
             foreach (var vertexType in myTypesToDump)
             {
@@ -2243,7 +2242,7 @@ namespace sones.GraphQL
                 {
                     //so, there are attributes that are no incoming edges
 
-                    stringBuilder.Append(S_ATTRIBUTES.ToUpperString() + " " + S_BRACKET_LEFT);
+                    stringBuilder.Append(String.Concat(S_ATTRIBUTES.ToUpperString(), " ", S_BRACKET_LEFT));
 
                     #region properties
 
@@ -2459,24 +2458,24 @@ namespace sones.GraphQL
             {
                 //e.g. User
                 case EdgeMultiplicity.SingleEdge:
-                        stringBuilder.Append(String.Concat(myOutgoingEdgeDefinition.TargetVertexType.Name, 
-                                                            GetGraphDDLOfInnerEdge(myOutgoingEdgeDefinition.InnerEdgeType, myIVertexType)));
+                    stringBuilder.Append(String.Concat(myOutgoingEdgeDefinition.TargetVertexType.Name,
+                                                        GetGraphDDLOfInnerEdge(myOutgoingEdgeDefinition.InnerEdgeType, myIVertexType)));
 
-                        break;
+                    break;
                 case EdgeMultiplicity.HyperEdge:
-                        //TODO if GQL supports hyper edges, implement this.
-                        break;
+                    //TODO if GQL supports hyper edges, implement this.
+                    break;
                 case EdgeMultiplicity.MultiEdge:
-                        //e.g. Set<User(e.g. Weighted)>
-                        stringBuilder.Append(String.Concat( S_SET,
-                                                            TERMINAL_LT,
-                                                            myOutgoingEdgeDefinition.TargetVertexType.Name,
-                                                            GetGraphDDLOfInnerEdge(myOutgoingEdgeDefinition.InnerEdgeType, myIVertexType),
-                                                            TERMINAL_GT));
+                    //e.g. Set<User(e.g. Weighted)>
+                    stringBuilder.Append(String.Concat(S_SET,
+                                                        TERMINAL_LT,
+                                                        myOutgoingEdgeDefinition.TargetVertexType.Name,
+                                                        GetGraphDDLOfInnerEdge(myOutgoingEdgeDefinition.InnerEdgeType, myIVertexType),
+                                                        TERMINAL_GT));
 
-                        break;
+                    break;
                 default:
-                        throw new UnknownException(new NotImplementedException("This should never happen"));
+                    throw new UnknownException(new NotImplementedException("This should never happen"));
             }
 
             return stringBuilder.ToString();
@@ -2516,7 +2515,7 @@ namespace sones.GraphQL
                         stringBuilder.Append(delimiter);
 
                         break;
-                    
+
                     case PropertyMultiplicity.Set:
                         stringBuilder.Append(String.Concat(S_SET, TERMINAL_LT, _Attribute.BaseType.Name, TERMINAL_GT, " ", _Attribute.Name));
 
@@ -2568,7 +2567,7 @@ namespace sones.GraphQL
         }
 
         private string CreateGraphDMLforIVertex(
-            IVertexType myVertexType, 
+            IVertexType myVertexType,
             IVertex myVertex,
             Dictionary<long, IPropertyDefinition> myPropertyDefinitions,
             SecurityToken mySecurityToken,
@@ -2608,10 +2607,8 @@ namespace sones.GraphQL
 
             #region singleEdge
 
-            string outgoingSingleEdges = CreateGraphDMLforVertexOutgoingSingleEdges(myVertex.GetAllOutgoingSingleEdges(), 
-                                                                                myVertexType.GetOutgoingEdgeDefinitions(true).ToDictionary(key => key.ID, value => value), 
-                                                                                mySecurityToken, 
-                                                                                myTransactionToken);
+            string outgoingSingleEdges = CreateGraphDMLforVertexOutgoingSingleEdges(myVertex.GetAllOutgoingSingleEdges(),
+                                                                                myVertexType.GetOutgoingEdgeDefinitions(true).ToDictionary(key => key.ID, value => value));
 
             stringBuilder.Append(outgoingSingleEdges);
 
@@ -2641,7 +2638,7 @@ namespace sones.GraphQL
 
             #region Comment
 
-            if(!String.IsNullOrWhiteSpace(myVertex.Comment))
+            if (!String.IsNullOrWhiteSpace(myVertex.Comment))
                 stringBuilder.Append(String.Concat(S_COMMENT, " = '", myVertex.Comment, "'", delimiter));
 
             #endregion
@@ -2750,7 +2747,7 @@ namespace sones.GraphQL
         private string CreateGraphDMLforSingleAttribute(object mySingleAttribute)
         {
             var stringBuilder = new StringBuilder();
-            
+
             stringBuilder.Append(String.Concat(mySingleAttribute.ToString()));
 
             return stringBuilder.ToString();
@@ -2786,9 +2783,7 @@ namespace sones.GraphQL
 
         private string CreateGraphDMLforVertexOutgoingSingleEdges(
             IEnumerable<Tuple<long, ISingleEdge>> myEdges,
-            Dictionary<long, IOutgoingEdgeDefinition> myOutgoingEdgeDefinitions,
-            SecurityToken mySecurityToken,
-            TransactionToken myTransactionToken)
+            Dictionary<long, IOutgoingEdgeDefinition> myOutgoingEdgeDefinitions)
         {
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
@@ -2800,46 +2795,18 @@ namespace sones.GraphQL
                     continue;
                 }
 
-                var edgeT = _iGraphDB.GetEdgeType<IEdgeType>(mySecurityToken, myTransactionToken, new RequestGetEdgeType(edge.Item2.EdgeTypeID), (stats, edgeType) => edgeType);
-                
-                if (edgeT.HasProperties(false))
+                var def = myOutgoingEdgeDefinitions[edge.Item1];
+
+                stringBuilder.Append(String.Concat(def.Name, " = ", S_SETOFUUIDS.ToUpperString(), " ", S_BRACKET_LEFT));
+
+                stringBuilder.Append(String.Concat(edge.Item2.GetTargetVertex().VertexID, " "));
+
+                if (edge.Item2.GetAllProperties().Count() > 0)
                 {
-
-                    var typeAttribute = myOutgoingEdgeDefinitions[edge.Item1];
-
-                    switch (typeAttribute.Multiplicity)
-                    {
-                        case EdgeMultiplicity.SingleEdge:
-
-                            #region Single
-
-                            stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", CreateGraphDMLforSingleAttribute(edge.Item2)));
-
-                            #endregion
-
-                            break;
-
-                        case EdgeMultiplicity.HyperEdge:
-
-                            #region Set
-
-                            stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
-                            foreach (var val in (edge.Item2 as ICollection))
-                            {
-                                stringBuilder.Append(CreateGraphDMLforSingleAttribute(val) + delimiter);
-                            }
-                            
-                            stringBuilder.RemoveSuffix(delimiter);
-                            stringBuilder.Append(S_BRACKET_RIGHT);
-
-                            #endregion
-
-                            break;
-                        default:
-
-                            throw new UnknownException(new NotImplementedException("This should never happen"));
-                    }
+                    stringBuilder.Append(CreateGraphDMLforVertexDefinedProperties(edge.Item2.GetAllProperties(), myOutgoingEdgeDefinitions));
                 }
+
+                stringBuilder.Append(S_BRACKET_RIGHT);
 
                 stringBuilder.Append(delimiter);
             }
@@ -2883,8 +2850,6 @@ namespace sones.GraphQL
                 stringBuilder.Append(delimiter);
             }
 
-            stringBuilder.RemoveSuffix(delimiter);
-
             return stringBuilder.ToString();
         }
 
@@ -2921,12 +2886,12 @@ namespace sones.GraphQL
                         #region Set
 
                         stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
-                        
+
                         foreach (var val in (attribute.Item2 as ICollection))
                         {
                             stringBuilder.Append(CreateGraphDMLforSingleAttribute(val) + delimiter);
                         }
-                        
+
                         stringBuilder.RemoveSuffix(delimiter);
                         stringBuilder.Append(S_BRACKET_RIGHT);
 
