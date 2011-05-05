@@ -89,23 +89,44 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
 
             foreach (ParseTreeNode node in parseNodes)
             {
-                if (node.AstNode == null && HasChildNodes(node))
+                if (node.AstNode != null)
                 {
-                    foreach (var aExpressionNode in node.ChildNodes)
+
+                    if (node.AstNode is IDNode)
                     {
-                        if (aExpressionNode.AstNode is IDNode)
+                        FuncDefinition.Parameters.Add((node.AstNode as IDNode).IDChainDefinition); // new
+                    }
+
+                    else if (node.AstNode is BinaryExpressionNode)
+                    {
+                        FuncDefinition.Parameters.Add((node.AstNode as BinaryExpressionNode).BinaryExpressionDefinition); // new
+                    }
+
+                    else
+                    {
+                        FuncDefinition.Parameters.Add(new ValueDefinition(node.Token.Value)); // new
+                    }
+
+                    paramNum++;
+
+                }
+                else if (HasChildNodes(node))
+                {
+                    foreach (var aChildNode in node.ChildNodes)
+                    {
+                        if (aChildNode.AstNode is IDNode)
                         {
-                            FuncDefinition.Parameters.Add((aExpressionNode.AstNode as IDNode).IDChainDefinition); // new
+                            FuncDefinition.Parameters.Add((aChildNode.AstNode as IDNode).IDChainDefinition); // new
                         }
 
-                        else if (aExpressionNode.AstNode is BinaryExpressionNode)
+                        else if (aChildNode.AstNode is BinaryExpressionNode)
                         {
-                            FuncDefinition.Parameters.Add((aExpressionNode.AstNode as BinaryExpressionNode).BinaryExpressionDefinition); // new
+                            FuncDefinition.Parameters.Add((aChildNode.AstNode as BinaryExpressionNode).BinaryExpressionDefinition); // new
                         }
 
                         else
                         {
-                            FuncDefinition.Parameters.Add(new ValueDefinition(aExpressionNode.Token.Value)); // new
+                            FuncDefinition.Parameters.Add(new ValueDefinition(aChildNode.Token.Value)); // new
                         }
 
                         paramNum++;
