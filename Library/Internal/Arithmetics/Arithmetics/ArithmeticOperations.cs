@@ -200,44 +200,50 @@ namespace sones.Library.Arithmetics
         {
             //make sure that either the dividend and the divisor are not NULL and not 0
             if ((myDivident != null) &&
-                (myDivisor != null) &&
-                (myDivident.CompareTo(0) != 0) &&
-                (myDivisor.CompareTo(0) != 0))
+                (myDivisor != null))
             {
 
                 #region check types and calculate
 
                 if (myType == typeof(Int16))
                 {
-                    return Convert.ToInt16(myDivident) / Convert.ToInt16(myDivisor);
+                    if ((Convert.ToInt16(myDivident).CompareTo(Convert.ToInt64(0)) != 0) && (Convert.ToInt16(myDivisor).CompareTo(Convert.ToInt64(0)) != 0))
+                        return Convert.ToInt16(myDivident) / Convert.ToInt16(myDivisor);
                 }
                 else if (myType == typeof(UInt16))
                 {
-                    return Convert.ToUInt16(myDivident) / Convert.ToUInt16(myDivisor);
+                    if ((Convert.ToUInt16(myDivident).CompareTo(Convert.ToUInt64(0)) != 0) && (Convert.ToUInt16(myDivisor).CompareTo(Convert.ToUInt64(0)) != 0))
+                        return Convert.ToUInt16(myDivident) / Convert.ToUInt16(myDivisor);
                 }
                 else if (myType == typeof(Int32))
                 {
-                    return Convert.ToInt32(myDivident) / Convert.ToInt32(myDivisor);
+                    if ((Convert.ToInt32(myDivident).CompareTo(Convert.ToInt32(0)) != 0) && (Convert.ToInt32(myDivisor).CompareTo(Convert.ToInt32(0)) != 0))
+                        return Convert.ToInt32(myDivident) / Convert.ToInt32(myDivisor);
                 }
                 else if (myType == typeof(UInt32))
                 {
-                    return Convert.ToUInt32(myDivident) / Convert.ToUInt32(myDivisor);
+                    if ((Convert.ToUInt32(myDivident).CompareTo(Convert.ToUInt32(0)) != 0) && (Convert.ToUInt32(myDivisor).CompareTo(Convert.ToUInt32(0)) != 0))
+                        return Convert.ToUInt32(myDivident) / Convert.ToUInt32(myDivisor);
                 }
                 else if (myType == typeof(Int64))
                 {
-                    return Convert.ToInt64(myDivident) / Convert.ToInt64(myDivisor);
+                    if ((Convert.ToInt64(myDivident).CompareTo(0) != 0) && (Convert.ToInt64(myDivisor).CompareTo(0) != 0))
+                        return Convert.ToInt64(myDivident) / Convert.ToInt64(myDivisor);
                 }
                 else if (myType == typeof(UInt64))
                 {
-                    return Convert.ToUInt64(myDivident) / Convert.ToUInt64(myDivisor);
+                    if ((Convert.ToUInt64(myDivident).CompareTo(Convert.ToUInt64(0)) != 0) && (Convert.ToUInt64(myDivisor).CompareTo(Convert.ToUInt64(0)) != 0))
+                        return Convert.ToUInt64(myDivident) / Convert.ToUInt64(myDivisor);
                 }
                 else if (myType == typeof(Double))
                 {
-                    return Convert.ToDouble(myDivident) / Convert.ToDouble(myDivisor);
+                    if ((Convert.ToDouble(myDivident).CompareTo(Convert.ToDouble(0)) != 0) && (Convert.ToDouble(myDivisor).CompareTo(Convert.ToDouble(0)) != 0))
+                        return Convert.ToDouble(myDivident) / Convert.ToDouble(myDivisor);
                 }
                 else if (myType == typeof(Single))
                 {
-                    return Convert.ToSingle(myDivident) / Convert.ToSingle(myDivisor);
+                    if ((Convert.ToSingle(myDivident).CompareTo(Convert.ToSingle(0)) != 0) && (Convert.ToSingle(myDivisor).CompareTo(Convert.ToSingle(0)) != 0))
+                        return Convert.ToSingle(myDivident) / Convert.ToSingle(myDivisor);
                 }
                 else
                 {
