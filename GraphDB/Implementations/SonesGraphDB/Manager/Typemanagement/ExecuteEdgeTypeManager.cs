@@ -55,7 +55,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             var vertex = Get(myTypeId, myTransaction, mySecurity);
 
             if (vertex == null)
-                throw new KeyNotFoundException(string.Format("A edg type with name {0} was not found.", myTypeId));
+                throw new KeyNotFoundException(string.Format("A edge type with name {0} was not found.", myTypeId));
 
             return new EdgeType(vertex);
 
