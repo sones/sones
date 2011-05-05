@@ -50,9 +50,9 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             if (myCallingObject != null)
             {
-                if (myCallingObject.GetType().Name.Equals("Int64"))
+                if (myCallingObject is Int64)
                 {
-                    return new FuncParameter(UNIXTimeConversionExtension.FromUnixTimeStamp(Convert.ToInt64(DateTime.Now.Millisecond)));
+                    return new FuncParameter(UNIXTimeConversionExtension.FromUnixTimeStamp((Int64)myCallingObject));
                 }
                 else
                 {
