@@ -71,8 +71,18 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 var property = new Property();
 
                 property.ID = aProperty.Item1;
-                property.Value = aProperty.Item2.ToString();
-                property.Type = aProperty.Item2.GetType().Name;
+                if (aProperty.Item2 != null)
+                {
+                    property.Value = aProperty.Item2.ToString();
+                    property.Type = aProperty.Item2.GetType().Name;
+                }
+                else
+                {
+                    property.Value = String.Empty;
+                    property.Type = "null";
+                }
+                
+                
 
                 properties.Add(property);
             }
