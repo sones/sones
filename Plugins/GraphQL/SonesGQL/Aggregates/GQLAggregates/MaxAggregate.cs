@@ -29,6 +29,16 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         #endregion
 
+        #region describe
+        /// <summary>
+        /// Returns the description of the aggregate.
+        /// </summary>
+        public string GetDescribeOutput()
+        {
+            return "This aggregate will calculate the max value of the given operands. This aggregate is type dependent and will only operate on comparable operands.";
+        }
+        #endregion
+
         #region IGQLAggregate Members
 
         /// <summary>

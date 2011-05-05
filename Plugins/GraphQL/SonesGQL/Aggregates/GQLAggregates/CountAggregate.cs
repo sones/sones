@@ -24,6 +24,16 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         #endregion
 
+        #region describe
+        /// <summary>
+        /// Returns the description of the aggregate.
+        /// </summary>
+        public string GetDescribeOutput()
+        {
+            return "This aggregate will operate a count on a MultiEdge / HyperEdge. This aggregate is type dependent and will only operate on Multi- / HyperEdges.";
+        }
+        #endregion
+
         #region IGQLAggregate Members
 
         /// <summary>

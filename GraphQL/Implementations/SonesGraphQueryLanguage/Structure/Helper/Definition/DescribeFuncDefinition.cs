@@ -46,16 +46,17 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 #region Specific function
 
-                //aggregate is user defined
+                //aggregate is user defined z.b. sones.exist or another.exist
                 if (_FuncName.Contains("."))
                 {
                     try
                     {
-                        var aggregate = myPluginManager.GetAndInitializePlugin<IGQLFunction>(_FuncName);
+                        //get plugin
+                        var func = myPluginManager.GetAndInitializePlugin<IGQLFunction>(_FuncName);
 
-                        if (aggregate != null)
+                        if (func != null)
                         {
-                            resultingVertices = new List<IVertexView>() { GenerateOutput(aggregate, _FuncName) };
+                            resultingVertices = new List<IVertexView>() { GenerateOutput(func, _FuncName) };
                         }
                         else
                         {
@@ -67,16 +68,17 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                         error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "", e);
                     }
                 }
-                //maybe user forgot prefix "sones."
+                //try get function
                 else
                 {
                     try
                     {
-                        var aggregate = myPluginManager.GetAndInitializePlugin<IGQLFunction>("SONES." + _FuncName);
+                        //get plugin
+                        var func = myPluginManager.GetAndInitializePlugin<IGQLFunction>(_FuncName);
 
-                        if (aggregate != null)
+                        if (func != null)
                         {
-                            resultingVertices = new List<IVertexView>() { GenerateOutput(aggregate, "SONES." + _FuncName) };
+                            resultingVertices = new List<IVertexView>() { GenerateOutput(func, _FuncName) };
                         }
                         else
                         {
@@ -85,7 +87,25 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                     }
                     catch (ASonesException e)
                     {
-                        error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "", e);
+                        //maybe user forgot prefix 'sones.'
+                        try
+                        {
+                            //get plugin
+                            var func = myPluginManager.GetAndInitializePlugin<IGQLFunction>("SONES." + _FuncName);
+
+                            if (func != null)
+                            {
+                                resultingVertices = new List<IVertexView>() { GenerateOutput(func, "SONES." + _FuncName) };
+                            }
+                            else
+                            {
+                                error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "");
+                            }
+                        }
+                        catch (ASonesException ee)
+                        {
+                            error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "", e);
+                        }
                     }
                 }
 
@@ -96,13 +116,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             else
             {
 
-                #region All aggregates
+                #region All functions
 
                 myPluginManager.GetPluginsForType<IGQLFunction>();
                 foreach (var funcName in myPluginManager.GetPluginsForType<IGQLFunction>())
                 {
                     try
                     {
+                        //get plugin
                         var func = myPluginManager.GetAndInitializePlugin<IGQLFunction>(funcName);
 
                         if (func != null)
@@ -133,12 +154,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         #region Output
 
         /// <summary>
-        /// generates an output for a function 
+        /// Generate an output for an function description.
         /// </summary>
-        /// <param name="myFunc">the function</param>
-        /// <param name="myFuncName">function name</param>
-        /// <param name="myTypeManager">type manager</param>
-        /// <returns>a list of readouts which contains the information</returns>
+        /// <param name="myAggregate">The function.</param>
+        /// <param name="myAggrName">The function name.</param>
+        /// <returns>List of readouts with the information.</returns>
         private IVertexView GenerateOutput(IGQLFunction myFunc, String myFuncName)
         {
             var _Function = new Dictionary<String, Object>();
@@ -148,6 +168,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             _Function.Add("Function", myFunc.FunctionName);
             _Function.Add("Type", myFuncName);
+            _Function.Add("Description", myFunc.GetDescribeOutput());
 
             int count = 1;
             foreach (var parameter in ((IPluginable)myFunc).SetableParameters)

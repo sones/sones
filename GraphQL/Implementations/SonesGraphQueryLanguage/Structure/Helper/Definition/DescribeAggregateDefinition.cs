@@ -47,6 +47,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             var resultingVertices = new List<IVertexView>();
             ASonesException error = null;
 
+            //aggregate name is not empty
             if (!String.IsNullOrEmpty(_AggregateName))
             {
 
@@ -57,6 +58,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 {
                     try
                     {
+                        //get plugin
                         var aggregate = myPluginManager.GetAndInitializePlugin<IGQLAggregate>(_AggregateName);
 
                         if (aggregate != null)
@@ -73,16 +75,17 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                         error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "", e);
                     }
                 }
-                //maybe user forgot prefix "sones."
+                //try get aggregate
                 else
                 {
                     try
                     {
-                        var aggregate = myPluginManager.GetAndInitializePlugin<IGQLAggregate>("SONES." + _AggregateName);
+                        //get plugin
+                        var aggregate = myPluginManager.GetAndInitializePlugin<IGQLAggregate>(_AggregateName);
 
                         if (aggregate != null)
                         {
-                            resultingVertices = new List<IVertexView>() { GenerateOutput(aggregate, "SONES." + _AggregateName) };
+                            resultingVertices = new List<IVertexView>() { GenerateOutput(aggregate, _AggregateName) };
                         }
                         else
                         {
@@ -91,7 +94,25 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                     }
                     catch (ASonesException e)
                     {
-                        error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "", e);
+                        //maybe user forgot prefix 'sones.'
+                        try
+                        {
+                            //get plugin
+                            var aggregate = myPluginManager.GetAndInitializePlugin<IGQLAggregate>("SONES." + _AggregateName);
+
+                            if (aggregate != null)
+                            {
+                                resultingVertices = new List<IVertexView>() { GenerateOutput(aggregate, "SONES." + _AggregateName) };
+                            }
+                            else
+                            {
+                                error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "");
+                            }
+                        }
+                        catch (ASonesException ee)
+                        {
+                            error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "", e);
+                        }
                     }
                 }
 
@@ -130,6 +151,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             }
 
+            //an error occured
             if(error != null)
                 return new QueryResult("", "GQL", 0L, ResultType.Failed, resultingVertices, error);
             else
@@ -139,11 +161,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         #region GenerateOutput
 
         /// <summary>
-        /// generate an output for an aggregate
+        /// Generate an output for an aggregate description.
         /// </summary>
-        /// <param name="myAggregate">the aggregate</param>
-        /// <param name="myAggrName">aggregate name</param>
-        /// <returns>list of readouts with the information</returns>
+        /// <param name="myAggregate">The aggregate.</param>
+        /// <param name="myAggrName">The aggregate name.</param>
+        /// <returns>List of readouts with the information.</returns>
         private IVertexView GenerateOutput(IGQLAggregate myAggregate, String myAggrName)
         {
 
@@ -154,6 +176,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             _Aggregate.Add("Aggregate", myAggregate.AggregateName);
             _Aggregate.Add("Type", myAggrName);
+            _Aggregate.Add("Description", myAggregate.GetDescribeOutput());
 
             int count = 1;
             foreach (var parameter in ((IPluginable)myAggregate).SetableParameters)

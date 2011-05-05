@@ -46,6 +46,14 @@ namespace sones.Plugins.SonesGQL.Functions
 
         Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
+        /// <summary>
+        /// Name of the function
+        /// </summary>
         String FunctionName { get; }
+
+        /// <summary>
+        /// Description of the function.
+        /// </summary>
+        String GetDescribeOutput();
     }
 }

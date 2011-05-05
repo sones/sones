@@ -49,5 +49,11 @@ namespace sones.Plugins.SonesGQL.Aggregates
         /// The name of the aggregate
         /// </summary>
         String AggregateName { get; }
+
+        /// <summary>
+        /// The ouput of a describe.
+        /// </summary>
+        /// <returns></returns>
+        String GetDescribeOutput();
     }
 }
