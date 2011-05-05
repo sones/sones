@@ -111,5 +111,13 @@ namespace sones.GraphDB.Manager.Vertex
         /// Gets the vertex store this vertex manager is acting on.
         /// </summary>
         IVertexStore VertexStore { get;  }
+
+        /// <summary>
+        /// Deletes a set of vertices
+        /// </summary>
+        /// <param name="myDeleteRequest">The request that represents the delete operation</param>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
     }
 }

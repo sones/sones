@@ -464,6 +464,10 @@ namespace sones.GraphDB.Manager.Vertex
 
         #region IVertexHandler Members
 
+        public void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
 
         public IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
         {
@@ -659,6 +663,5 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         #endregion
-
     }
 }

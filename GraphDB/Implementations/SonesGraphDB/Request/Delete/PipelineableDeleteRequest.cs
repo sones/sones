@@ -15,8 +15,6 @@ namespace sones.GraphDB.Request.Delete
 
         private readonly RequestDelete _request;
 
-        private IEnumerable<IVertex> _verticesToDelete;
-
         #endregion
 
         #region Constructor
@@ -38,13 +36,12 @@ namespace sones.GraphDB.Request.Delete
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            //_request.
-            //myMetaManager.VertexTypeManager.CanGetVertexType(_request.TypeName, TransactionToken, SecurityToken);
+            myMetaManager.VertexManager.CheckManager.Delete(_request, SecurityToken, TransactionToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            myMetaManager.VertexManager.ExecuteManager.Delete(_request, SecurityToken, TransactionToken);            
         }
 
         public override IRequest GetRequest()

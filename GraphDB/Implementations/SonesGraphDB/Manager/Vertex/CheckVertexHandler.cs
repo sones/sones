@@ -241,18 +241,14 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-
-
-
-        #region IVertexHandler Members
-
-
         public IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            return null;
+            throw new NotImplementedException();
         }
-      
 
-        #endregion
+        public void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
