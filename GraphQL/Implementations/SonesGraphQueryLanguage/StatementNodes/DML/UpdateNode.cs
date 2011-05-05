@@ -248,7 +248,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
                 #endregion
 
-                result.UpdateEdge(edgeDefinition);
+                result.AddEdge(edgeDefinition);
 
                 return;
             }
@@ -295,7 +295,7 @@ namespace sones.GraphQL.StatementNodes.DML
                         }
                     }
 
-                    result.UpdateEdge(edgeDefinition);
+                    result.AddEdge(edgeDefinition);
 
                     #endregion)
 
@@ -322,7 +322,7 @@ namespace sones.GraphQL.StatementNodes.DML
                         listWrapper.AddElement((IComparable)Convert.ChangeType(((ValueDefinition)aTupleElement.Value).Value, myRequestedType));
                     }
 
-                    result.UpdateUnknownProperty(attributeAssignOrUpdateList.AttributeIDChain.ContentString, listWrapper);
+                    result.AddUnknownProperty(attributeAssignOrUpdateList.AttributeIDChain.ContentString, listWrapper);
 
                     #endregion)
 
@@ -354,7 +354,7 @@ namespace sones.GraphQL.StatementNodes.DML
                         }
                     }
 
-                    result.UpdateEdge(anotheredgeDefinition);
+                    result.AddEdge(anotheredgeDefinition);
 
                     #endregion
 
@@ -366,7 +366,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
         private void ProcessAttributeAssignOrUpdateValue(AttributeAssignOrUpdateValue attributeAssignOrUpdateValue, ref RequestUpdate result)
         {
-            result.UpdateUnknownProperty(attributeAssignOrUpdateValue.AttributeIDChain.ContentString , attributeAssignOrUpdateValue.Value);
+            result.AddUnknownProperty(attributeAssignOrUpdateValue.AttributeIDChain.ContentString , attributeAssignOrUpdateValue.Value);
         }
 
         private QueryResult GenerateOutput(IRequestStatistics myStats, IEnumerable<IVertex> myVertices)

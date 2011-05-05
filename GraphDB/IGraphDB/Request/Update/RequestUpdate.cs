@@ -21,7 +21,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The comment for the updated vertex.
         /// </summary>
-        public string Comment { get; private set; }
+        public string UpdatedComment { get; private set; }
 
         /// <summary>
         /// The edition of updated vertex.
@@ -31,50 +31,32 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The well defined properties of updated vertex.
         /// </summary>
-        public IDictionary<String, IComparable> UpdateStructuredProperties { get { return _toBeUpdatedStructured; } }
-        private Dictionary<string, IComparable> _toBeUpdatedStructured;
+        public IDictionary<String, IComparable> AddedStructuredProperties { get; private set; }
 
         /// <summary>
         /// The unstructured part of updated vertex.
         /// </summary>
-        public IDictionary<String, Object> UpdateUnstructuredProperties { get { return _toBeUpdatedUnstructured; } }
-        private Dictionary<string, object> _toBeUpdatedUnstructured;
+        public IDictionary<String, Object> AddedUnstructuredProperties { get; private set; }
 
         /// <summary>
         /// The binaries of updated vertex.
         /// </summary>
-        public IDictionary<String, Stream> UpdateBinaryProperties { get { return _toBeUpdatedBinaries; } }
-        private Dictionary<string, Stream> _toBeUpdatedBinaries;
+        public IDictionary<String, Stream> AddedBinaryProperties { get; private set; }
 
         /// <summary>
         /// The outgoing edges of updated vertex.
         /// </summary>
-        public IEnumerable<EdgePredefinition> UpdateOutgoingEdges { get { return _toBeUpdatedEdges; } }
-        private HashSet<EdgePredefinition> _toBeUpdatedEdges;
+        public List<EdgePredefinition> AddedOutgoingEdges { get; private set; }
 
         /// <summary>
         /// The unknwon properties of updated.
         /// </summary>
-        public IDictionary<string, object> UpdateUnknownProperties { get { return _toBeUpdatedUnknown; } }
-        private IDictionary<string, object> _toBeUpdatedUnknown;
-
-        /// <summary>
-        /// The well defined properties of updated vertex.
-        /// </summary>
-        public IDictionary<String, IEnumerable<IComparable>> RemoveValuedStructuredProperties { get { return _toBeRemovedValuedStructured; } }
-        private Dictionary<string, IEnumerable<IComparable>> _toBeRemovedValuedStructured;
+        public IDictionary<string, object> AddedUnknownProperties { get; private set; }
 
         /// <summary>
         /// The well defined properties which should be removed of updated vertex.
         /// </summary>
-        public List<String> RemovedAttributes { get { return _toBeRemovedAttributes; } }
-        private List<string> _toBeRemovedAttributes;
-
-        /// <summary>
-        /// The outgoing edges which should be removed from updated vertex.
-        /// </summary>
-        public IEnumerable<String> RemoveOutgoingEdges { get { return _toBeRemovedEdges; } }
-        private HashSet<String> _toBeRemovedEdges;
+        public List<String> RemovedAttributes { get; private set; }
 
         #endregion
 
@@ -102,6 +84,8 @@ namespace sones.GraphDB.Request
 
         #region fluent interface
 
+        #region misc
+
         /// <summary>
         /// Sets the comment for updated vertex.
         /// </summary>
@@ -109,7 +93,7 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestUpdate SetComment(String myComment)
         {
-            Comment = myComment;
+            UpdatedComment = myComment;
 
             return this;
         }
@@ -126,16 +110,18 @@ namespace sones.GraphDB.Request
             return this;
         }
 
+        #endregion
+
         /// <summary>
         /// Adds a new structured property
         /// </summary>
         /// <param name="myPropertyName">The name of the property</param>
         /// <param name="myProperty">The value of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate UpdateStructuredProperty(String myPropertyName, IComparable myProperty)
+        public RequestUpdate AddStructuredProperty(String myPropertyName, IComparable myProperty)
         {
-            _toBeUpdatedStructured = _toBeUpdatedStructured ?? new Dictionary<String, IComparable>();
-            _toBeUpdatedStructured.Add(myPropertyName, myProperty);
+            AddedStructuredProperties = AddedStructuredProperties ?? new Dictionary<String, IComparable>();
+            AddedStructuredProperties.Add(myPropertyName, myProperty);
 
             return this;
         }
@@ -146,10 +132,10 @@ namespace sones.GraphDB.Request
         /// <param name="myPropertyName">The name of the property</param>
         /// <param name="myProperty">The value of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate UpdateUnstructuredProperty(String myPropertyName, Object myProperty)
+        public RequestUpdate AddUnstructuredProperty(String myPropertyName, Object myProperty)
         {
-            _toBeUpdatedUnstructured = _toBeUpdatedUnstructured ?? new Dictionary<String, Object>();
-            _toBeUpdatedUnstructured.Add(myPropertyName, myProperty);
+            AddedUnstructuredProperties = AddedUnstructuredProperties ?? new Dictionary<String, Object>();
+            AddedUnstructuredProperties.Add(myPropertyName, myProperty);
 
             return this;
         }
@@ -160,10 +146,10 @@ namespace sones.GraphDB.Request
         /// <param name="myPropertyName">The name of the property</param>
         /// <param name="myProperty">The value of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate UpdateUnknownProperty(String myPropertyName, Object myProperty)
+        public RequestUpdate AddUnknownProperty(String myPropertyName, Object myProperty)
         {
-            _toBeUpdatedUnknown = _toBeUpdatedUnknown ?? new Dictionary<String, Object>();
-            _toBeUpdatedUnknown.Add(myPropertyName, myProperty);
+            AddedUnknownProperties = AddedUnknownProperties ?? new Dictionary<String, Object>();
+            AddedUnknownProperties.Add(myPropertyName, myProperty);
 
             return this;
         }
@@ -173,10 +159,10 @@ namespace sones.GraphDB.Request
         /// <param name="myPropertyName">The name of the property</param>
         /// <param name="myStream">The value of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate UpdateBinaryProperty(String myPropertyName, Stream myStream)
+        public RequestUpdate AddBinaryProperty(String myPropertyName, Stream myStream)
         {
-            _toBeUpdatedBinaries = _toBeUpdatedBinaries ?? new Dictionary<String, Stream>();
-            _toBeUpdatedBinaries.Add(myPropertyName, myStream);
+            AddedBinaryProperties = AddedBinaryProperties ?? new Dictionary<String, Stream>();
+            AddedBinaryProperties.Add(myPropertyName, myStream);
 
             return this;
         }
@@ -187,38 +173,10 @@ namespace sones.GraphDB.Request
         /// <param name="myEdgeName">The name of the edge to be inserted</param>
         /// <param name="myEdgeDefinition">The definition of the edge</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate UpdateEdge(EdgePredefinition myEdgeDefinition)
+        public RequestUpdate AddEdge(EdgePredefinition myEdgeDefinition)
         {
-            _toBeUpdatedEdges = _toBeUpdatedEdges ?? new HashSet<EdgePredefinition>();
-            _toBeUpdatedEdges.Add(myEdgeDefinition);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Adds new edges to the vertex defintion.
-        /// </summary>
-        /// <param name="myEdgeName">The name of the edge to be inserted.</param>
-        /// <param name="myEdgeDefinitions">The definitions of the edge.</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate UpdateEdges(String myEdgeName, IEnumerable<EdgePredefinition> myEdgeDefinitions)
-        {
-            _toBeUpdatedEdges = _toBeUpdatedEdges ?? new HashSet<EdgePredefinition>();
-            _toBeUpdatedEdges.UnionWith(myEdgeDefinitions);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Removes a valued structured property.
-        /// </summary>
-        /// <param name="myPropertyName">The name of the property</param>
-        /// <param name="myProperty">The value of the property</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate RemoveFromCollection(String myPropertyName, IEnumerable<IComparable> myProperty)
-        {
-            _toBeRemovedValuedStructured = _toBeRemovedValuedStructured ?? new Dictionary<String, IEnumerable<IComparable>>();
-            _toBeRemovedValuedStructured.Add(myPropertyName, myProperty);
+            AddedOutgoingEdges = AddedOutgoingEdges ?? new List<EdgePredefinition>();
+            AddedOutgoingEdges.Add(myEdgeDefinition);
 
             return this;
         }
@@ -230,25 +188,75 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestUpdate RemoveAttribute(String myPropertyName)
         {
-            _toBeRemovedAttributes = _toBeRemovedAttributes ?? new List<String>(); 
-            _toBeRemovedAttributes.Add(myPropertyName);
+            RemovedAttributes = RemovedAttributes ?? new List<String>();
+            RemovedAttributes.Add(myPropertyName);
+
+            return this;
+        }
+
+        #region collection handling
+
+        #region add to collection
+
+        /// <summary>
+        /// Adds elements to a collection
+        /// </summary>
+        /// <param name="myAttributeName">The attribute that is going to be updated</param>
+        /// <param name="myToBeAddedElements">The elements that should be added</param>
+        /// <returns>The request itself</returns>
+        public RequestUpdate AddElementsToCollection(String myAttributeName, IEnumerable<IComparable> myToBeAddedElements)
+        {
+
 
             return this;
         }
 
         /// <summary>
-        /// Removes a outgoing edge.
+        /// Adds elements To a collection
         /// </summary>
-        /// <param name="myEdgeDefinition">The name of the edge.</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestUpdate RemoveEdge(String myEdgeDefinition)
+        /// <param name="myAttributeName">The attribute that is going to be updated</param>
+        /// <param name="myToBeAddedElements">The elements that should be added</param>
+        /// <returns>The request itself</returns>
+        public RequestUpdate AddElementsToCollection(String myAttributeName, IEnumerable<EdgePredefinition> myToBeAddedElements)
         {
-            _toBeRemovedEdges = _toBeRemovedEdges ?? new HashSet<String>();
-            _toBeRemovedEdges.Add(myEdgeDefinition);
+
 
             return this;
         }
-        
+
+        #endregion
+
+        #region remove from collection
+
+        /// <summary>
+        /// Removes elements from a collection
+        /// </summary>
+        /// <param name="myAttributeName">The attribute that is going to be updated</param>
+        /// <param name="myToBeRemovedElements">The elements that should be removed</param>
+        /// <returns>The request itself</returns>
+        public RequestUpdate RemoveElementsFromCollection(String myAttributeName, IEnumerable<IComparable> myToBeRemovedElements)
+        {
+
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes elements from a collection
+        /// </summary>
+        /// <param name="myAttributeName">The attribute that is going to be updated</param>
+        /// <param name="myToBeRemovedElements">The elements that should be removed</param>
+        /// <returns>The request itself</returns>
+        public RequestUpdate RemoveElementsFromCollection(String myAttributeName, IEnumerable<EdgePredefinition> myToBeRemovedElements)
+        {
+
+
+            return this;
+        }
+
+        #endregion
+
+        #endregion
 
         #endregion
 
@@ -256,32 +264,32 @@ namespace sones.GraphDB.Request
 
         IDictionary<string, IComparable> IPropertyProvider.StructuredProperties
         {
-            get { return UpdateStructuredProperties; }
+            get { return AddedStructuredProperties; }
         }
 
         IDictionary<string, object> IPropertyProvider.UnstructuredProperties
         {
-            get { return UpdateUnstructuredProperties; }
+            get { return AddedUnstructuredProperties; }
         }
 
         IDictionary<string, object> IPropertyProvider.UnknownProperties
         {
-            get { return UpdateUnknownProperties; }
+            get { return AddedUnknownProperties; }
         }
 
         IPropertyProvider IPropertyProvider.AddStructuredProperty(string myPropertyName, IComparable myProperty)
         {
-            return UpdateStructuredProperty(myPropertyName, myProperty);
+            return AddStructuredProperty(myPropertyName, myProperty);
         }
 
         IPropertyProvider IPropertyProvider.AddUnstructuredProperty(string myPropertyName, object myProperty)
         {
-            return UpdateUnstructuredProperty(myPropertyName, myProperty);
+            return AddUnstructuredProperty(myPropertyName, myProperty);
         }
 
         IPropertyProvider IPropertyProvider.AddUnknownProperty(string myPropertyName, object myProperty)
         {
-            return UpdateUnknownProperty(myPropertyName, myProperty);
+            return AddUnknownProperty(myPropertyName, myProperty);
         }
 
         #endregion
@@ -290,7 +298,7 @@ namespace sones.GraphDB.Request
 
         void IUnknownProvider.ClearUnknown()
         {
-            _toBeUpdatedUnknown = null;
+            AddedUnknownProperties = null;
         }
 
         #endregion
