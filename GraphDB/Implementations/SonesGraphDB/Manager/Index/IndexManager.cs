@@ -195,6 +195,13 @@ namespace sones.GraphDB.Manager.Index
             _indices.Remove(myIndexID);
         }
 
+
+        public void RebuildIndices(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            throw new NotImplementedException();
+        }
+
+
         #endregion
 
         #region IManager Members
@@ -226,7 +233,5 @@ namespace sones.GraphDB.Manager.Index
         {
             return index is ISingleValueIndex<IComparable, Int64>;
         }
-
-
     }
 }

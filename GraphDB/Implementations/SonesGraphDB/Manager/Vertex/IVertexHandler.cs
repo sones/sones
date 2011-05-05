@@ -107,13 +107,9 @@ namespace sones.GraphDB.Manager.Vertex
         /// <returns>The updated vertivess.</returns>
         IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity);
 
-
-
         /// <summary>
         /// Gets the vertex store this vertex manager is acting on.
         /// </summary>
         IVertexStore VertexStore { get;  }
-
-
     }
 }

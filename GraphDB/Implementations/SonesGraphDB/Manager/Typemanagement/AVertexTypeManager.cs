@@ -29,6 +29,10 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public abstract void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
 
+        public abstract void TruncateVertexType(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+        
+        public abstract void TruncateVertexType(String myVertexTypeName, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+
         #endregion
 
         /// <summary>
@@ -208,8 +212,5 @@ namespace sones.GraphDB.Manager.TypeManagement
             BasicTypes result;
             return Enum.TryParse(myType, false, out result);
         }
-
-
-
     }
 }

@@ -837,6 +837,30 @@ namespace sones.GraphDB.Manager.TypeManagement
                 BaseTypes.VertexType);
 
         }
+
+        public override void TruncateVertexType(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            var vertexType = GetVertexType(myVertexTypeID, myTransactionToken, mySecurityToken);
+
+            #region remove all vertices of this type
+
+            throw new NotImplementedException();
+
+            #endregion
+
+            #region rebuild indices
+
+            _indexManager.RebuildIndices(myVertexTypeID, myTransactionToken, mySecurityToken);
+
+            #endregion
+        }
+
+        public override void TruncateVertexType(String myVertexTypeName, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            var vertexType = GetVertexType(myVertexTypeName, myTransactionToken, mySecurityToken);
+
+            this.TruncateVertexType(vertexType.ID, myTransactionToken, mySecurityToken);
+        }
     }
 
 

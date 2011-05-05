@@ -61,6 +61,20 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
 
-    
+        /// <summary>
+        /// Removes all vertices of a given vertex type
+        /// </summary>
+        /// <param name="myVertexTypeID">The vertex type id that should be truncated</param>
+        /// <param name="myTransactionToken">A transaction token for this operation.</param>
+        /// <param name="mySecurityToken">A security token for this operation.</param>
+        void TruncateVertexType(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+
+        /// <summary>
+        /// Removes all vertices of a given vertex type
+        /// </summary>
+        /// <param name="myVertexTypeName">The vertex type name that should be truncated</param>
+        /// <param name="myTransactionToken">A transaction token for this operation.</param>
+        /// <param name="mySecurityToken">A security token for this operation.</param>
+        void TruncateVertexType(string myVertexTypeName, TransactionToken TransactionToken, SecurityToken SecurityToken);
     }
 }

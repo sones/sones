@@ -33,14 +33,14 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CheckManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.CheckManager.TruncateVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            //1. remove all objects
+            var vertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);
 
-            //2. reset indices
+            myMetaManager.VertexTypeManager.ExecuteManager.TruncateVertexType(vertexType.ID, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

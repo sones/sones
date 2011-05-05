@@ -72,6 +72,15 @@ namespace sones.GraphDB.Manager.TypeManagement
             CanUpdate(myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
+        public override void TruncateVertexType(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            //do nothing here
+        }
+
+        public override void TruncateVertexType(String myVertexTypeName, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            //do nothing here
+        }
 
         #endregion
 
