@@ -565,7 +565,7 @@ namespace sones.GraphFS
                         CreateOrUpdateIncomingEdgesOnVertex(
                             targetVertex,
                             myVertexDefinition.VertexTypeID,
-                            aSingleEdgeDefinition.PropertyID,
+                            aHyperEdgeDefinition.PropertyID,
                             myVertex);
 
                         containedSingleEdges.Add(singleEdge);
