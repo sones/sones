@@ -206,13 +206,13 @@ namespace sones.GraphDB.Manager.Index
 
         #region IManager Members
 
-        void IManager.Initialize(IMetaManager myMetaManager)
+        public void Initialize(IMetaManager myMetaManager)
         {
             _vertexTypeManager = myMetaManager.VertexTypeManager;
             _vertexStore = myMetaManager.VertexStore;
         }
 
-        void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        public void Load(TransactionToken myTransaction, SecurityToken mySecurity)
         {
 
         }

@@ -928,14 +928,14 @@ namespace sones.GraphDB.Manager.BaseGraph
             if (edge == null)
                 throw new UnknownDBException("An index has no vertex that represents its indexed properties.");
 
-            
-            var vertices = edge.GetTargetVertices();
+
+            var vertices = edge.GetAllEdges();
             if (vertices == null)
                 throw new UnknownDBException("An index has no vertex that represents its indexed properties.");
 
             vertices = vertices.OrderBy(x => x.GetProperty<int>((long)AttributeDefinitions.OrderableEdgeDotOrder));
 
-            return vertices.Select(x=> CreatePropertyDefinition(x)).ToArray();
+            return vertices.Select(x=> CreatePropertyDefinition(x.GetTargetVertex())).ToArray();
 
         }
 

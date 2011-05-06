@@ -70,13 +70,14 @@ namespace sones.GraphDB.Manager
         /// <param name="myPlugins">The plugin definitions</param>
         /// <param name="myPluginManager">Used to load pluginable manager</param>
         /// <param name="myApplicationSettings">The current application settings</param>
-        private MetaManager(IVertexStore myVertexStore, IDManager myIDManager)
+        private MetaManager(IVertexStore myVertexStore, IDManager myIDManager, GraphDBPluginManager myPluginManager, GraphDBPlugins myPlugins)
         {
             _vertexStore = myVertexStore;
             _vertexTypeManager = new VertexTypeManager(myIDManager);
             _vertexManager = new VertexManager(myIDManager);
             _edgeTypeManager = new EdgeTypeManager(myIDManager);
             _queryPlanManager = new QueryPlanManager();
+            _indexManager = new IndexManager(myIDManager, myPluginManager, myPlugins.IndexPlugins);
         }
 
         #endregion
@@ -85,7 +86,7 @@ namespace sones.GraphDB.Manager
 
         public static IMetaManager CreateMetaManager(IVertexStore myVertexStore, IDManager myIDManager, GraphDBPlugins myPlugins, GraphDBPluginManager myPluginManager, GraphApplicationSettings myApplicationSettings, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var result = new MetaManager(myVertexStore, myIDManager);
+            var result = new MetaManager(myVertexStore, myIDManager, myPluginManager, myPlugins);
 
             result.Initialize();
             result.Load();
@@ -99,7 +100,7 @@ namespace sones.GraphDB.Manager
             _vertexManager.Initialize(this);
             _queryPlanManager.Initialize(this);
             _edgeTypeManager.Initialize(this);
-            //_indexManager.Initialize(this);
+            _indexManager.Initialize(this);
         }
 
         private void Load()
@@ -108,7 +109,7 @@ namespace sones.GraphDB.Manager
             _vertexManager.Load(SystemTransactionToken, SystemSecurityToken);
             _queryPlanManager.Load(SystemTransactionToken, SystemSecurityToken);
             _edgeTypeManager.Load(SystemTransactionToken, SystemSecurityToken);
-            //_indexManager.Load(SystemTransactionToken, SystemSecurityToken);
+            _indexManager.Load(SystemTransactionToken, SystemSecurityToken);
         }
 
         public IIndexManager IndexManager

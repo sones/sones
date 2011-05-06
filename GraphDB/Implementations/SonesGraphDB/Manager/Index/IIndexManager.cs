@@ -12,7 +12,7 @@ namespace sones.GraphDB.Manager.Index
     /// <summary>
     /// The interface for all index manager.
     /// </summary>
-    public interface IIndexManager
+    public interface IIndexManager : IManager
     {
         /// <summary>
         /// Removes the index instance from the index manager, but not the index representing vertex in the FS.
