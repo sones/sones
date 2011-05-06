@@ -3066,7 +3066,7 @@ namespace sones.GraphQL
             #endregion
         }
 
-        public void SetIndices(IEnumerable<IIndex<IComparable, Int64>> indices)
+        public void SetIndices(IEnumerable<String> indices)
         {
             #region Add all plugins to the grammar
 
@@ -3081,11 +3081,11 @@ namespace sones.GraphQL
                 {
                     if (BNF_IndexTypeOpt.Rule == null)
                     {
-                        BNF_IndexTypeOpt.Rule = S_INDEXTYPE + ToTerm(idx.IndexName);
+                        BNF_IndexTypeOpt.Rule = S_INDEXTYPE + ToTerm(idx);
                     }
                     else
                     {
-                        BNF_IndexTypeOpt.Rule |= S_INDEXTYPE + ToTerm(idx.IndexName);
+                        BNF_IndexTypeOpt.Rule |= S_INDEXTYPE + ToTerm(idx);
                     }
                 }
             }

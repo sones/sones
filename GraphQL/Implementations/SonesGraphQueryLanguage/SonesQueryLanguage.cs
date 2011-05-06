@@ -246,6 +246,7 @@ namespace sones.GraphQL
 
         private void SetExtendableMember(SonesGQLGrammar myGQLGrammar)
         {
+            #region aggregate
             List<IGQLAggregate> aggregates = new List<IGQLAggregate>();
             foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGQLAggregate>())
             {
@@ -257,6 +258,10 @@ namespace sones.GraphQL
                 throw new GQLGrammarSetExtandableMemberException(typeof(IGQLAggregate), "There is no plugin found to set in GQL grammar.");
             }
             myGQLGrammar.SetAggregates(aggregates);
+
+            #endregion
+
+            #region functions
 
             List<IGQLFunction> functions = new List<IGQLFunction>();
             foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGQLFunction>())
@@ -270,33 +275,22 @@ namespace sones.GraphQL
             }
             myGQLGrammar.SetFunctions(functions);
 
-            bool foundAtLeastOneValidIndex = false;
+            #endregion
 
-            List<IIndex<IComparable, Int64>> indices = new List<IIndex<IComparable, Int64>>();
-            foreach(var plugin in _GQLPluginManager.GetPluginsForType<ISingleValueIndex<IComparable, Int64>>())
-            {
-                indices.Add((IIndex<IComparable, Int64>)_GQLPluginManager.GetAndInitializePlugin<ISingleValueIndex<IComparable, Int64>>(plugin));
+            #region
+            List<String> indices = new List<string>();
 
-                foundAtLeastOneValidIndex = true;
-            }
+            indices.AddRange(_GQLPluginManager.GetPluginsForType<IVersionedIndex<IComparable, Int64, Int64>>());
+            indices.AddRange(_GQLPluginManager.GetPluginsForType<ISingleValueIndex<IComparable, Int64>>());
+            indices.AddRange(_GQLPluginManager.GetPluginsForType<IMultipleValueIndex<IComparable, Int64>>());
 
-            foreach(var plugin in _GQLPluginManager.GetPluginsForType<IMultipleValueIndex<IComparable, Int64>>())
-            {
-                indices.Add((IIndex<IComparable, Int64>)_GQLPluginManager.GetAndInitializePlugin<IMultipleValueIndex<IComparable, Int64>>(plugin));
-
-                foundAtLeastOneValidIndex = true;
-            }
-
-            foreach (var plugin in _GQLPluginManager.GetPluginsForType<IVersionedIndex<IComparable, Int64, Int64>>())
-            {
-                indices.Add((IIndex<IComparable, Int64>)_GQLPluginManager.GetAndInitializePlugin<IVersionedIndex<IComparable, Int64, Int64>>(plugin));
-            }
-
-            if (!foundAtLeastOneValidIndex)
+            if (indices.Count < 1)
             {
                 throw new GQLGrammarSetExtandableMemberException(typeof(IIndex<IComparable, Int64>), "There is no valid index plugin found to set in GQL grammar. Expected at least SingleValueIndex or MultiValueIndex");
             }
+
             myGQLGrammar.SetIndices(indices);
+            #endregion
 
             List<IGraphDBImport> importer = new List<IGraphDBImport>();
             foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGraphDBImport>())
