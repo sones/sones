@@ -160,7 +160,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             //now we store each vertex type
             for (var current = defsTopologically.First; current != null; current = current.Next)
             {
-                result[resultPos] = new VertexType(BaseGraphStorageManager.StoreVertexType(
+                result[resultPos++] = new VertexType(BaseGraphStorageManager.StoreVertexType(
                     _vertexManager.ExecuteManager.VertexStore,
                     typeInfos[current.Value.VertexTypeName].VertexInfo,
                     current.Value.VertexTypeName,
@@ -173,7 +173,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     null, //TODO uniques
                     mySecurity,
                     myTransaction));
-
+                
             }
 
             #region Store Attributes
