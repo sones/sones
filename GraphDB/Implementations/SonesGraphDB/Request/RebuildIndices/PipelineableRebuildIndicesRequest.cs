@@ -15,7 +15,6 @@ namespace sones.GraphDB.Request.RebuildIndices
         #region data
 
         private readonly RequestRebuildIndices _request;
-        private IEnumerable<IIndexDefinition> IndexDefinitions;
 
         #endregion
 
@@ -39,7 +38,7 @@ namespace sones.GraphDB.Request.RebuildIndices
 
         public override void Validate(Manager.IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override void Execute(Manager.IMetaManager myMetaManager)
@@ -71,12 +70,9 @@ namespace sones.GraphDB.Request.RebuildIndices
 
             }
 
-            //TODO implement indeManager.RebuildIndices
-            //IndexDefinitions = myMetaManager.IndexManager.RebuildIndices(typesToRebuild);
-
-            if (IndexDefinitions == null)
+            foreach (var aType in typesToRebuild)
             {
-                throw new RebuildIndicesFaildException(_request.Types, "");
+                myMetaManager.IndexManager.RebuildIndices(aType.ID, TransactionToken, SecurityToken);
             }
         }
 
@@ -87,7 +83,7 @@ namespace sones.GraphDB.Request.RebuildIndices
 
         internal TResult GenerateRequestResult<TResult>(Converter.RebuildIndicesResultConverter<TResult> myOutputconverter)
         {
-            return myOutputconverter(Statistics, IndexDefinitions);
+            return myOutputconverter(Statistics);
         }
     }
 }

@@ -78,14 +78,13 @@ namespace sones.GraphQL.StatementNodes.DML
 
         #endregion
 
-        private QueryResult GenerateOutput(IRequestStatistics myStats, IEnumerable<IIndexDefinition> myIndexDefs)
+        private QueryResult GenerateOutput(IRequestStatistics myStats)
         {
             return new QueryResult(Query,
                                     "sones.gql",
                                     Convert.ToUInt64(myStats.ExecutionTime),
                                     ResultType.Successful,
-                                    new List<IVertexView> { new VertexView(new Dictionary<String, object> { {"CreatedIndex", IndexDefinitions} } , 
-                                                                            new Dictionary<String, IEdgeView>()) });
+                                    new List<IVertexView>());
         }
     }
 }

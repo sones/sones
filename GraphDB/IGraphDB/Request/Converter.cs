@@ -199,6 +199,6 @@ namespace sones.GraphDB.Request
         /// <typeparam name="TResult">The type of the result</typeparam>
         /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <returns>A TResult</returns>
-        public delegate TResult RebuildIndicesResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IIndexDefinition> myIndexDefinitions);
+        public delegate TResult RebuildIndicesResultConverter<out TResult>(IRequestStatistics myRequestStatistics);
     }
 }
