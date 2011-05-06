@@ -43,46 +43,7 @@ namespace sones.GraphDB.Request.DropIndex
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            IVertexType graphDBType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
-            IVertexType indexType = null;
-
-            if (graphDBType == null)
-            {
-                throw new VertexTypeDoesNotExistException(_request.TypeName);
-            }
-
-            var indices = graphDBType.GetIndexDefinitions(true);
-
-            if (indices != null)
-            {
-                foreach (var index in indices)
-                {
-                    //name of found index is not null or empty and equals searched index name
-                    if (!string.IsNullOrWhiteSpace(index.Name) && index.Name.Equals(_request.IndexName))
-                    {
-                        //edition of searched index is null or empty
-                        if (string.IsNullOrWhiteSpace(_request.Edition))
-                        {
-                            indexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(index.IndexTypeName, TransactionToken, SecurityToken);
-                        }
-                        else
-                        {
-                            if (index.Edition.Equals(_request.Edition))
-                            {
-                                indexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(index.IndexTypeName, TransactionToken, SecurityToken);
-                            }
-                        }
-
-                    }
-                }
-            }
-
-            if (indexType == null)
-            {
-                throw new IndexTypeDoesNotExistException(_request.TypeName, _request.IndexName);
-            }
-            
-            myMetaManager.VertexTypeManager.ExecuteManager.RemoveVertexTypes(new List<IVertexType> { indexType }, TransactionToken, SecurityToken);
+            myMetaManager.IndexManager.DropIndex(_request, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

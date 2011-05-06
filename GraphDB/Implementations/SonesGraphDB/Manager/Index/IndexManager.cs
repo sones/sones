@@ -18,6 +18,7 @@ using sones.GraphDB.TypeManagement.Base;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.Expression.Tree.Literals;
+using sones.GraphDB.Request;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -360,14 +361,14 @@ namespace sones.GraphDB.Manager.Index
             
         }
 
-        #endregion
-
-        #region IIndexManager Members
-
+        public void DropIndex(RequestDropIndex myDropIndexRequest, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            throw new NotImplementedException();
+        }
 
         public ISingleValueIndex<IComparable, long> GetIndex(BaseUniqueIndex myIndex)
         {
-            return _indices[(long)myIndex] as ISingleValueIndex<IComparable, Int64>; 
+            return _indices[(long)myIndex] as ISingleValueIndex<IComparable, Int64>;
         }
 
         #endregion

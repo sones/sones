@@ -7,6 +7,7 @@ using sones.Plugins.Index.Interfaces;
 using System.Collections.Generic;
 using sones.GraphDB.Request.CreateVertexTypes;
 using sones.GraphDB.TypeManagement.Base;
+using sones.GraphDB.Request;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -102,5 +103,13 @@ namespace sones.GraphDB.Manager.Index
         /// </summary>
         /// <param name="myIndexID"></param>
         ISingleValueIndex<IComparable, Int64> GetIndex(BaseUniqueIndex myIndex);
+
+        /// <summary>
+        /// Drops indices
+        /// </summary>
+        /// <param name="myDropIndexRequest">The drop index request</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="mySecurityToken">The current security token</param>
+        void DropIndex(RequestDropIndex myDropIndexRequest, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
     }
 }
