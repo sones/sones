@@ -177,6 +177,11 @@ namespace sones.GraphQL.StatementNodes.DML
 
                         #region set
 
+                        if (!vertexType.HasAttribute(aAttributeDefinition.AttributeIDChain.ContentString))
+                        {
+                            throw new InvalidVertexAttributeException(String.Format("The vertex type {0} has no attribute named {1}.", vertexType.Name, aAttributeDefinition.AttributeIDChain.ContentString));
+                        }
+
                         IAttributeDefinition attribute = vertexType.GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString);
 
                         EdgePredefinition edgeDefinition = new EdgePredefinition(value.AttributeIDChain.ContentString);
@@ -319,6 +324,10 @@ namespace sones.GraphQL.StatementNodes.DML
                 {
                     #region expression
 
+                    if (!vertexType.HasAttribute(aAttributeDefinition.AttributeIDChain.ContentString))
+                    {
+                        throw new InvalidVertexAttributeException(String.Format("The vertex type {0} has no attribute named {1}.", vertexType.Name, aAttributeDefinition.AttributeIDChain.ContentString));
+                    }
                     IAttributeDefinition attribute = vertexType.GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString);
 
                     foreach (var aTupleElement in value.SetRefDefinition.TupleDefinition)
