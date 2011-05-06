@@ -934,7 +934,189 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override void AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            throw new NotImplementedException();
+            var vertexType = GetVertexType(myAlterVertexTypeRequest.VertexTypeName, myTransactionToken, mySecurityToken);
+
+            #region checks
+
+            CheckToBeAddedAttributes(myAlterVertexTypeRequest, vertexType);
+            CheckToBeRemovedAttributes(myAlterVertexTypeRequest, vertexType);
+            CheckToBeRenamedAttributes(myAlterVertexTypeRequest, vertexType);
+
+            #endregion
+
+        }
+
+        /// <summary>
+        /// Checks the to be renamed attributes
+        /// </summary>
+        /// <param name="myAlterVertexTypeRequest"></param>
+        /// <param name="vertexType"></param>
+        private static void CheckToBeRenamedAttributes(RequestAlterVertexType myAlterVertexTypeRequest, IVertexType vertexType)
+        {
+            foreach (var aToBeRenamedAttributes in myAlterVertexTypeRequest.ToBeRenamedProperties)
+            {
+                if (!CheckOldName(aToBeRenamedAttributes.Key, vertexType))
+                {
+                    throw new InvalidAlterVertexTypeException(String.Format("It is not possible to rename {0} into {1}. The to be renamed attribute does not exist."));                    
+                }
+
+                if (!CheckNewName(aToBeRenamedAttributes.Value, vertexType))
+	            {
+                    throw new InvalidAlterVertexTypeException(String.Format("It is not possible to rename {0} into {1}. The new attribute name already exists."));
+	            }
+            }
+        }
+
+        /// <summary>
+        /// Checks if the new name of the attribute already exists
+        /// </summary>
+        /// <param name="myNewAttributeName"></param>
+        /// <param name="vertexType"></param>
+        /// <returns></returns>
+        private static bool CheckNewName(string myNewAttributeName, IVertexType vertexType)
+        {
+            foreach (var aVertexType in vertexType.GetChildVertexTypes(true, true))
+            {
+                if( aVertexType.HasBinaryProperty(myNewAttributeName) ||
+                    aVertexType.HasOutgoingEdge(myNewAttributeName) ||
+                    aVertexType.HasIncomingEdge(myNewAttributeName) ||
+                    aVertexType.HasProperty(myNewAttributeName))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if the old name exists on the given vertex type
+        /// </summary>
+        /// <param name="myOldAttributeName"></param>
+        /// <param name="vertexType"></param>
+        /// <returns></returns>
+        private static bool CheckOldName(string myOldAttributeName, IVertexType vertexType)
+        {
+            return vertexType.HasProperty(myOldAttributeName) || vertexType.HasOutgoingEdge(myOldAttributeName) || vertexType.HasIncomingEdge(myOldAttributeName);
+        }
+
+        /// <summary>
+        /// Checks if the to be removed attributes exists on this type
+        /// </summary>
+        /// <param name="myAlterVertexTypeRequest"></param>
+        /// <param name="vertexType"></param>
+        private static void CheckToBeRemovedAttributes(RequestAlterVertexType myAlterVertexTypeRequest, IVertexType vertexType)
+        {
+            #region properties
+
+            foreach (var aToBeDeletedAttribute in myAlterVertexTypeRequest.ToBeRemovedProperties)
+            {
+                if (!vertexType.HasProperty(aToBeDeletedAttribute))
+                {
+                    throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute);
+                }
+            }
+
+            #endregion
+
+            #region outgoing Edges
+
+            foreach (var aToBeDeletedAttribute in myAlterVertexTypeRequest.ToBeRemovedOutgoingEdges)
+            {
+                if (!vertexType.HasOutgoingEdge(aToBeDeletedAttribute))
+                {
+                    throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute);
+                }
+            }
+
+            #endregion
+
+            #region incoming edges
+
+            foreach (var aToBeDeletedAttribute in myAlterVertexTypeRequest. ToBeRemovedIncomingEdges)
+            {
+                if (!vertexType.HasIncomingEdge(aToBeDeletedAttribute))
+                {
+                    throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute);
+                }
+            }
+
+            #endregion
+        }
+
+        /// <summary>
+        /// Checks if the to be added attributes exist in the given vertex type or derived oness
+        /// </summary>
+        /// <param name="myAlterVertexTypeRequest"></param>
+        /// <param name="vertexType"></param>
+        private static void CheckToBeAddedAttributes(RequestAlterVertexType myAlterVertexTypeRequest, IVertexType vertexType)
+        {
+            foreach (var aVertexType in vertexType.GetChildVertexTypes(true, true))
+            {
+                #region binary properties
+
+                foreach (var aToBeAddedAttribute in myAlterVertexTypeRequest.ToBeAddedBinaryProperties)
+                {
+                    if (aVertexType.HasBinaryProperty(aToBeAddedAttribute.AttributeName))
+                    {
+                        throw new VertexAttributeAlreadyExistsException(aToBeAddedAttribute.AttributeName);
+                    }
+                }
+
+                #endregion
+
+                #region outgoing edges
+
+                foreach (var aToBeAddedAttribute in myAlterVertexTypeRequest.ToBeAddedOutgoingEdges)
+                {
+                    if (aVertexType.HasOutgoingEdge(aToBeAddedAttribute.AttributeName))
+                    {
+                        throw new VertexAttributeAlreadyExistsException(aToBeAddedAttribute.AttributeName);
+                    }
+                }
+
+                #endregion
+
+                #region Incoming edges
+
+                foreach (var aToBeAddedAttribute in myAlterVertexTypeRequest.ToBeAddedIncomingEdges)
+                {
+                    if (aVertexType.HasIncomingEdge(aToBeAddedAttribute.AttributeName))
+                    {
+                        throw new VertexAttributeAlreadyExistsException(aToBeAddedAttribute.AttributeName);
+                    }
+                }
+
+                #endregion
+
+                #region property
+
+                foreach (var aToBeAddedAttribute in myAlterVertexTypeRequest.ToBeAddedProperties)
+                {
+                    if (aVertexType.HasProperty(aToBeAddedAttribute.AttributeName))
+                    {
+                        throw new VertexAttributeAlreadyExistsException(aToBeAddedAttribute.AttributeName);
+                    }
+                }
+
+                #endregion
+
+                #region unknown attributes
+
+                foreach (var aToBeAddedAttribute in myAlterVertexTypeRequest.ToBeAddedUnknownAttributes)
+                {
+                    if (aVertexType.HasProperty(aToBeAddedAttribute.AttributeName) ||
+                        aVertexType.HasOutgoingEdge(aToBeAddedAttribute.AttributeName) ||
+                        aVertexType.HasIncomingEdge(aToBeAddedAttribute.AttributeName) ||
+                        aVertexType.HasBinaryProperty(aToBeAddedAttribute.AttributeName))
+                    {
+                        throw new VertexAttributeAlreadyExistsException(aToBeAddedAttribute.AttributeName);
+                    }
+                }
+
+
+                #endregion
+            }
         }
     }
 

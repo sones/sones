@@ -73,6 +73,7 @@
     <Compile Include="ErrorHandling\QueryPlan\InvalidExpressionException.cs" />
     <Compile Include="ErrorHandling\Type\AGraphDBTypeException.cs" />
     <Compile Include="ErrorHandling\Type\InvalidTypeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidAlterVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\EmptyPropertyTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DuplicatedAttributeNameException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\EmptyEdgeTypeException.cs" />
@@ -80,12 +81,15 @@
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\TargetVertexTypeNotFoundException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UndefinedAttributesException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UnknownPropertyTypeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeAlreadyExistsException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeExistsInSubtypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeExistsInSuperVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DropOfVertexAttributeNotAllowedException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DropOfDerivedVertexAttributeIsNotAllowedException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeNameException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeSelectionException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\AGraphDBVertexAttributeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeIsNotDefinedException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeUniqueConstraintViolation.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\CircularTypeHierarchyException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\DuplicatedVertexTypeName.cs" />

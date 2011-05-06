@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace sones.GraphQL.ErrorHandling
+namespace sones.GraphDB.ErrorHandling
 {
     /// <summary>
     /// The attribute is not defined on this type
     /// </summary>
-    public sealed class VertexAttributeIsNotDefinedException : AGraphQLVertexAttributeException
+    public sealed class VertexAttributeIsNotDefinedException : AGraphDBVertexAttributeException
     {
         public String AttributeName { get; private set; }
         public String TypeName { get; private set; }

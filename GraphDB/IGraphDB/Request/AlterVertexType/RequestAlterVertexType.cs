@@ -238,17 +238,17 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Outgoing edges to be removed from the altered type.
         /// </summary>
-        public IEnumerable<long> ToBeRemovedOutgoingEdges
+        public IEnumerable<String> ToBeRemovedOutgoingEdges
         {
-            get { return (_toBeRemovedOutgoingEdges == null) ? null : _toBeRemovedOutgoingEdges.OfType<long>(); }
+            get { return (_toBeRemovedOutgoingEdges == null) ? null : _toBeRemovedOutgoingEdges.OfType<String>(); }
         }
 
         /// <summary>
         /// Incoming edges to be removed from the altered type.
         /// </summary>
-        public IEnumerable<long> ToBeRemovedIncomingEdges
+        public IEnumerable<String> ToBeRemovedIncomingEdges
         {
-            get { return (_toBeRemovedIncomingEdges == null) ? null : _toBeRemovedIncomingEdges.OfType<long>(); }
+            get { return (_toBeRemovedIncomingEdges == null) ? null : _toBeRemovedIncomingEdges.OfType<String>(); }
         }
 
         /// <summary>

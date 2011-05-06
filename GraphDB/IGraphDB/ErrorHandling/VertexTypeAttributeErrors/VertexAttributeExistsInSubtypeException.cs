@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace sones.GraphQL.ErrorHandling
+namespace sones.GraphDB.ErrorHandling
 {
     /// <summary>
     /// The vertex attribute already exists in subtype
     /// </summary>
-    public sealed class VertexAttributeExistsInSubtypeException : AGraphQLVertexAttributeException
+    public sealed class VertexAttributeExistsInSubtypeException : AGraphDBVertexAttributeException
     {
         public String AttributeName { get; private set; }
         public String SubtypeName { get; private set; }

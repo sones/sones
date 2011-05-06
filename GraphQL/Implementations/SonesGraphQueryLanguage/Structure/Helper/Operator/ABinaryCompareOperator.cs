@@ -17,6 +17,7 @@ using sones.Plugins.SonesGQL.Aggregates.ErrorHandling;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph.Helper;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.Expression;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Operator
 {

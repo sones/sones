@@ -102,9 +102,6 @@
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\RemoveVertexTypeAttributeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UpdateVertexAttributeValueException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeException.cs" />
-    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeAlreadyExistsException.cs" />
-    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeExistsInSubtypeException.cs" />
-    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeIsNotDefinedException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeKindException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeValueException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidUndefinedVertexAttributesException.cs" />

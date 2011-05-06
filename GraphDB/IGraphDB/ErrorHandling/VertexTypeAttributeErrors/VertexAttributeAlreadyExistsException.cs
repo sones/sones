@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace sones.GraphQL.ErrorHandling
+namespace sones.GraphDB.ErrorHandling
 {
     /// <summary>
     /// The vertex attribute already exists in the type
     /// </summary>
-    public sealed class VertexAttributeAlreadyExistsException : AGraphQLVertexAttributeException
+    public sealed class VertexAttributeAlreadyExistsException : AGraphDBVertexAttributeException
     {
         public String AttributeName { get; private set; }
         public String TypeName { get; private set; }

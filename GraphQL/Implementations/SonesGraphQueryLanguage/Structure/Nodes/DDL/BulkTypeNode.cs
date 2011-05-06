@@ -5,6 +5,7 @@ using Irony.Parsing;
 using System.Collections.Generic;
 using sones.GraphQL.GQL.Structure.Helper.Definition;
 using sones.GraphQL.ErrorHandling;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphQL.Structure.Nodes.DDL
 {
