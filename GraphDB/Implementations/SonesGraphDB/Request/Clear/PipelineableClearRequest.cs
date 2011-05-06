@@ -2,6 +2,8 @@
 using sones.GraphDB.Manager;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace sones.GraphDB.Request
 {
@@ -14,6 +16,8 @@ namespace sones.GraphDB.Request
 
         private readonly RequestClear _request;
 
+        private IEnumerable<long> _deletedVertexTypeIDs;
+
         #endregion
 
         #region Constructor
@@ -24,7 +28,8 @@ namespace sones.GraphDB.Request
         /// <param name="myClearRequest">The clear request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableClearRequest(RequestClear myClearRequest, SecurityToken mySecurity,
+        public PipelineableClearRequest(RequestClear myClearRequest, 
+                                        SecurityToken mySecurity,
                                         TransactionToken myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
@@ -33,20 +38,25 @@ namespace sones.GraphDB.Request
 
         #endregion
 
+        #region APipelineableRequest Member
+
         public override void Validate(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            if(_request == null)
+                throw new NotImplementedException();
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            _deletedVertexTypeIDs = myMetaManager.VertexTypeManager.ExecuteManager.ClearDB(TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()
         {
             return _request;
         }
+
+        #endregion
 
         /// <summary>
         /// Generates the myResult of a clear request
@@ -56,7 +66,7 @@ namespace sones.GraphDB.Request
         /// <returns>A TResult</returns>
         internal TResult GenerateRequestResult<TResult>(Converter.ClearResultConverter<TResult> myOutputconverter)
         {
-            return myOutputconverter(Statistics);
+            return myOutputconverter(Statistics, _deletedVertexTypeIDs);
         }
     }
 }

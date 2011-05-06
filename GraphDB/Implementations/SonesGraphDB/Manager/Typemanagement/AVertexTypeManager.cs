@@ -27,6 +27,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public abstract IEnumerable<long> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity);
 
+        public abstract IEnumerable<long> ClearDB(TransactionToken myTransaction, SecurityToken mySecurity);
+
         public abstract void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
 
         public abstract void TruncateVertexType(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
@@ -215,6 +217,27 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             BasicTypes result;
             return Enum.TryParse(myType, false, out result);
+        }
+
+        /// <summary>
+        /// TODO find better check method
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected static bool IsTypeBaseType(long myTypeID)
+        {
+            return ((long)BaseTypes.Attribute).Equals(myTypeID) ||
+                        ((long)BaseTypes.BaseType).Equals(myTypeID) ||
+                        ((long)BaseTypes.BinaryProperty).Equals(myTypeID) ||
+                        ((long)BaseTypes.Edge).Equals(myTypeID) ||
+                        ((long)BaseTypes.EdgeType).Equals(myTypeID) ||
+                        ((long)BaseTypes.IncomingEdge).Equals(myTypeID) ||
+                        ((long)BaseTypes.Index).Equals(myTypeID) ||
+                        ((long)BaseTypes.Orderable).Equals(myTypeID) ||
+                        ((long)BaseTypes.OutgoingEdge).Equals(myTypeID) ||
+                        ((long)BaseTypes.Property).Equals(myTypeID) ||
+                        ((long)BaseTypes.Vertex).Equals(myTypeID) ||
+                        ((long)BaseTypes.VertexType).Equals(myTypeID) ||
+                        ((long)BaseTypes.Weighted).Equals(myTypeID);
         }
 
         #region IVertexTypeHandler Members

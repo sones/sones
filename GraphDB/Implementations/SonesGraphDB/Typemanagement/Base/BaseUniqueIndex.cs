@@ -7,10 +7,6 @@ namespace sones.GraphDB.TypeManagement.Base
         BaseTypeDotName  = Int64.MinValue,
         VertexTypeDotName,
         EdgeTypeDotName,
-        PropertyDotName,
-        BinaryPropertyDotName,
-        OutgoingEdgeDotName,
-        IncomingEdgeDotName,
         IndexDotName,
     }
 }

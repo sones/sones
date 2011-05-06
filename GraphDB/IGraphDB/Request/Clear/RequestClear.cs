@@ -7,6 +7,12 @@
     {
         #region Constructor
 
+        /// <summary>
+        /// Returns a new clear request
+        /// </summary>
+        public RequestClear()
+        { }
+
         #endregion
 
         #region IRequest Members

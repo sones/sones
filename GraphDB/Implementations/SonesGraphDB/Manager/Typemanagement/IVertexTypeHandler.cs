@@ -63,6 +63,15 @@ namespace sones.GraphDB.Manager.TypeManagement
         IEnumerable<long> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
+        /// Clears the graphDB and removes all user defined types.
+        /// </summary>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// All types will be removed.
+        /// All types are removed simultaneously. This means that edges between the types are not need to be removed before.
+        IEnumerable<long> ClearDB(TransactionToken myTransaction, SecurityToken mySecurity);
+
+        /// <summary>
         /// Updates existing vertex types.
         /// </summary>
         /// <param name="myVertexTypeDefinitions">TODO: for update use VertexTypeUpdateDefinition</param>

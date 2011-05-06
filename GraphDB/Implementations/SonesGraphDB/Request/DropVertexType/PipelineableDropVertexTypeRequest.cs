@@ -45,6 +45,10 @@ namespace sones.GraphDB.Request.DropType
         public override void Validate(IMetaManager myMetaManager)
         {
             myMetaManager.VertexTypeManager.CheckManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
+
+            myMetaManager.VertexTypeManager.CheckManager.RemoveVertexTypes(new List<IVertexType> { myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken) }, 
+                                                                            TransactionToken, 
+                                                                            SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)

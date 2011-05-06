@@ -10,6 +10,7 @@ using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.TypeManagement.Base;
 using sones.Library.LanguageExtensions;
 using sones.GraphDB.Request.CreateVertexTypes;
+using sones.GraphDB.TypeManagement;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -76,6 +77,14 @@ namespace sones.GraphDB.Manager.TypeManagement
             #endregion
 
             CanRemove(myVertexTypes, myTransaction, mySecurity);
+
+            return null;
+        }
+
+        public override IEnumerable<long> ClearDB(TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            #region check arguments
+            #endregion
 
             return null;
         }
@@ -503,7 +512,44 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private bool CanRemove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
+            #region check if specified types can be removed
+            //get child vertex types and check if they are specified by user
+            foreach (var delType in myVertexTypes)
+            {
+                #region check that the remove type is no base type
+                if (delType == null)
+                    throw new VertexTypeRemoveException("", "Vertex Type is null.");
+
+                if (!delType.HasParentType)
+                    continue;
+
+                if (delType.ParentVertexType.ID.Equals((long)BaseTypes.BaseType) && IsTypeBaseType(delType.ID))
+                    //Exception that base type cannot be deleted
+                    throw new VertexTypeRemoveException(delType.Name, "A BaseType connot be removed.");
+
+                #endregion
+
+                #region check that existing child types are specified
+
+                foreach (var child in delType.GetChildVertexTypes())
+                    if (!myVertexTypes.Contains(child))
+                        //all child types has to be specified by user
+                        throw new VertexTypeRemoveException(delType.Name, "The given type has child types and cannot be removed.");
+
+                #endregion
+
+                #region check that the delete type has no incoming edges
+
+                if (delType.HasIncomingEdges(false))
+                    //all incoming edges has to be deletet by user
+                    throw new VertexTypeRemoveException(delType.Name, "The given type has incoming edges and cannot be removed.");
+
+                #endregion
+
+            }
+            #endregion
+
+            return true;
         }
 
         private bool CanUpdate(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)

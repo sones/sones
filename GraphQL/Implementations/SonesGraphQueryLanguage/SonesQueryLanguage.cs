@@ -172,14 +172,9 @@ namespace sones.GraphQL
             {
                 queryResult = statement.Execute(_IGraphDBInstance, this, _GQLPluginManager,  myQueryString, mySecurityToken, myTransactionToken);
             }
-            //TODO: implement
-            //catch (GraphDBWarningException we)
-            //{
-            //    queryResult = new QueryResult(new List<IError>(), new List<IWarning>() { (we as GraphDBWarningException).GraphDBWarning });
-            //}
             catch (ASonesException ee)
             {
-                queryResult.Error = (ee as AGraphQLException);
+                queryResult.Error = ee;
                 return queryResult;
             }
             catch (Exception e)
@@ -247,6 +242,7 @@ namespace sones.GraphQL
         private void SetExtendableMember(SonesGQLGrammar myGQLGrammar)
         {
             #region aggregate
+
             List<IGQLAggregate> aggregates = new List<IGQLAggregate>();
             foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGQLAggregate>())
             {
@@ -277,7 +273,8 @@ namespace sones.GraphQL
 
             #endregion
 
-            #region
+            #region indces
+
             List<String> indices = new List<string>();
 
             indices.AddRange(_GQLPluginManager.GetPluginsForType<IVersionedIndex<IComparable, Int64, Int64>>());
@@ -290,7 +287,10 @@ namespace sones.GraphQL
             }
 
             myGQLGrammar.SetIndices(indices);
+
             #endregion
+
+            #region import
 
             List<IGraphDBImport> importer = new List<IGraphDBImport>();
             foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGraphDBImport>())
@@ -304,6 +304,10 @@ namespace sones.GraphQL
             }
             myGQLGrammar.SetGraphDBImporter(importer);
 
+            #endregion
+
+            #region export
+
             List<IGraphDBExport> exporter = new List<IGraphDBExport>();
             foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGraphDBExport>())
             {
@@ -315,6 +319,8 @@ namespace sones.GraphQL
                 throw new GQLGrammarSetExtandableMemberException(typeof(IGraphDBExport), "There is no plugin found to set in GQL grammar.");
             }
             myGQLGrammar.SetGraphDBExporter(exporter);
+
+            #endregion
         }
 
         #endregion

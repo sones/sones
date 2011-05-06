@@ -97,6 +97,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             return Remove(myVertexTypes, myTransaction, mySecurity);
         }
 
+        public override IEnumerable<long> ClearDB(TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            return Clear(myTransaction, mySecurity);
+        }
+
         public override void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             Update(myVertexTypeDefinitions, myTransaction, mySecurity);
@@ -686,6 +691,13 @@ namespace sones.GraphDB.Manager.TypeManagement
             return name.Equals(myVertexTypeName);
         }
 
+        /// <summary>
+        /// Removes the given types from the graphDB.
+        /// </summary>
+        /// <param name="myVertexTypes">The types to delete.</param>
+        /// <param name="myTransaction">Transaction token.</param>
+        /// <param name="mySecurity">Security Token.</param>
+        /// <returns>Set of deleted vertex type IDs.</returns>
         private IEnumerable<long> Remove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             //the attribute types on delete types which have to be removed
@@ -694,38 +706,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             //the indices on the delete types
             var toDeleteIndexDefinitions = new List<IUniqueDefinition>();
 
-            #region check if specified types can be removed
-            //get child vertex types and check if they are specified by user
+            #region get propertydefinitions
+            
+            //get child vertex types
             foreach (var delType in myVertexTypes)
             {
-                #region check that the remove type is no base type
-
-                if(!delType.HasParentType)
-                    continue;
-
-                if (delType.ParentVertexType.ID.Equals((long)BaseTypes.BaseType) && IsBaseType(delType.ID))
-                    //Exception that base type cannot be deleted
-                    throw new VertexTypeRemoveException(delType.Name, "A BaseType connot be removed.");
-
-                #endregion
-
-                #region check that existing child types are specified
-
-                foreach (var child in delType.GetChildVertexTypes())
-                    if (!myVertexTypes.Contains(child))
-                        //all child types has to be specified by user
-                        throw new VertexTypeRemoveException(delType.Name, "The given type has child types and cannot be removed."); 
-                
-                #endregion
-
-                #region check that the delete type has no incoming edges
-
-                if (delType.HasIncomingEdges(false))
-                    //all incoming edges has to be deletet by user
-                    throw new VertexTypeRemoveException(delType.Name, "The given type has incoming edges and cannot be removed.");
-
-                #endregion
-
                 #region check that no other type has a outgoing edge pointing on delete type
 
                 //get all vertex types and check if they have outgoing edges with target vertex the delete type
@@ -739,7 +724,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         if (outEdgeDef.TargetVertexType.ID.Equals(delType.ID))
                             //there is a outgoing edge from a vertex type which points to a vertex type which schould be removed
                             throw new VertexTypeRemoveException(delType.Name, "There are other types which have outgoing edges pointing to the type, which should be removed.");
-                        
+
                     }
                 }
 
@@ -763,18 +748,127 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 toDeleteIndexDefinitions.AddRange(delType.GetUniqueDefinitions(false));
             }
+            
             #endregion
 
             //the IDs of the deleted vertices
             var deletedTypeIDs = new List<long>( myVertexTypes.Select(item => item.ID) );
 
             #region remove indices
+            
             //remove indices on types
             foreach (var index in toDeleteIndexDefinitions)
             {
                 _indexManager.RemoveIndexInstance(index.CorrespondingIndex.ID, myTransaction, mySecurity);
             } 
+            
             #endregion
+
+            #region remove attribute types on delete types
+            
+            //delete attribute vertices
+            foreach (var attr in toDeleteAttributeDefinitions)
+            {
+                switch (attr.Kind)
+                {
+                    case (AttributeType.Property):
+                        _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, attr.ID, (long)BaseTypes.Property);
+                        break;
+
+                    case (AttributeType.IncomingEdge):
+                        _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, attr.ID, (long)BaseTypes.IncomingEdge);
+                        break;
+
+                    case (AttributeType.OutgoingEdge):
+                        _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, attr.ID, (long)BaseTypes.OutgoingEdge);
+                        break;
+
+                    case (AttributeType.BinaryProperty):
+                        _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, attr.ID, (long)BaseTypes.BinaryProperty);
+                        break;
+
+                    default:
+                        break;
+                }
+            } 
+            
+            #endregion
+
+            #region remove vertices
+
+            //delete the vertices
+            foreach (var type in myVertexTypes)
+            {
+
+                //removes the instances of the VertexType
+               _vertexManager.ExecuteManager.VertexStore.RemoveVertices(mySecurity, myTransaction, type.ID);
+
+                //removes the vertexType
+                _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, type.ID, (long)BaseTypes.VertexType);
+
+            } 
+            
+            #endregion
+
+            #region remove vertex type names from index
+
+            foreach (var vertexType in myVertexTypes)
+            {
+                var result = _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName);
+
+                if (result != null)
+                {
+                    result.Remove(vertexType.Name);
+                }
+            }
+
+            #endregion
+
+            toDeleteAttributeDefinitions.Clear();
+            toDeleteIndexDefinitions.Clear();
+
+            return deletedTypeIDs;
+        }
+
+        /// <summary>
+        /// Clears the graphDB, removes all user defined types.
+        /// </summary>
+        /// <param name="myTransaction">Transaction token.</param>
+        /// <param name="mySecurity">Security token.</param>
+        /// <returns>Set of deleted vertex type IDs.</returns>
+        private IEnumerable<long> Clear(TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            //the attribute types on delete types which have to be removed
+            var toDeleteAttributeDefinitions = new List<IAttributeDefinition>();
+
+            //the indices on the delete types
+            var toDeleteIndexDefinitions = new List<IUniqueDefinition>();
+
+            //the types to delete
+            var toDeleteVertexTypes = new List<IVertexType>();
+
+            #region check if specified types can be removed
+            //get child vertex types and check if they are specified by user
+            foreach (var delType in GetAllVertexTypes(myTransaction, mySecurity))
+            {
+                #region check that the remove type is no base type
+
+                if (delType.IsUserDefined)
+                    continue;
+
+                #endregion
+
+                toDeleteAttributeDefinitions.AddRange(delType.GetAttributeDefinitions(false));
+
+                toDeleteIndexDefinitions.AddRange(delType.GetUniqueDefinitions(false));
+
+                toDeleteVertexTypes.Add(delType);
+
+            }
+            #endregion
+
+            //the IDs of the deleted vertices
+            var deletedTypeIDs = new List<long>(toDeleteVertexTypes.Select(item => item.ID));
 
             #region remove attribute types on delete types
             //delete attribute vertices
@@ -801,52 +895,31 @@ namespace sones.GraphDB.Manager.TypeManagement
                     default:
                         break;
                 }
-            } 
+            }
+            #endregion
+
+            #region remove indices
+            //remove indices on types
+            foreach (var index in toDeleteIndexDefinitions)
+            {
+                _indexManager.RemoveIndexInstance(index.CorrespondingIndex.ID, myTransaction, mySecurity);
+            }
             #endregion
 
             #region remove vertices
             //delete the vertices
-            foreach (var type in myVertexTypes)
+            foreach (var type in toDeleteVertexTypes)
             {
-                //removes the instances of the VertexType
-               _vertexManager.ExecuteManager.VertexStore.RemoveVertices(mySecurity, myTransaction, type.ID);
+                _vertexManager.ExecuteManager.VertexStore.RemoveVertices(mySecurity, myTransaction, type.ID);
 
                 //removes the vertexType
                 _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, type.ID, (long)BaseTypes.VertexType);
-
-            } 
+            }
             #endregion
 
-            #region remove vertex type names from index
-
-            foreach (var vertexType in myVertexTypes)
-                _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName).Remove(vertexType.Name);
-
-            #endregion
-
+            toDeleteVertexTypes.Clear();
+                        
             return deletedTypeIDs;
-
-        }
-
-        /// <summary>
-        /// TODO find better check method
-        /// Checks if the given type is a base type
-        /// </summary>
-        private bool IsBaseType(long myTypeID)
-        {
-            return ((long)BaseTypes.Attribute).Equals(myTypeID) || 
-                        ((long)BaseTypes.BaseType).Equals(myTypeID) || 
-                        ((long)BaseTypes.BinaryProperty).Equals(myTypeID) ||
-                        ((long)BaseTypes.Edge).Equals(myTypeID) ||
-                        ((long)BaseTypes.EdgeType).Equals(myTypeID) ||
-                        ((long)BaseTypes.IncomingEdge).Equals(myTypeID) ||
-                        ((long)BaseTypes.Index).Equals(myTypeID) ||
-                        ((long)BaseTypes.Orderable).Equals(myTypeID) ||
-                        ((long)BaseTypes.OutgoingEdge).Equals(myTypeID) ||
-                        ((long)BaseTypes.Property).Equals(myTypeID) ||
-                        ((long)BaseTypes.Vertex).Equals(myTypeID) ||
-                        ((long)BaseTypes.VertexType).Equals(myTypeID) ||
-                        ((long)BaseTypes.Weighted).Equals(myTypeID);
         }
 
         private void Update(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
