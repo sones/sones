@@ -8,12 +8,13 @@ using sones.GraphFS.Element.Edge;
 using sones.GraphFS.Element.Vertex;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
-using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
 using sones.Library.Commons.VertexStore;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.Security;
+using sones.Library.Commons.VertexStore.Definitions.Update;
+
 
 namespace sones.GraphFS
 {
@@ -206,7 +207,7 @@ namespace sones.GraphFS
             {
                 foreach (var aVertex in vertices)
                 {
-                    if (!aVertex.Value.IsBulkVertex)
+                    if (!aVertex.Value.IsBulkVertex && aVertex.Value.VertexTypeID == myVertexTypeID)
                     {
                         yield return aVertex.Value;                        
                     }
@@ -323,17 +324,82 @@ namespace sones.GraphFS
         }
 
         public bool RemoveVertex(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken,
             long myVertexID, long myVertexTypeID)
         {
-            //Todo: remove references on this vertex
 
             ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 
             if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
             {
                 InMemoryVertex vertex;
-                return vertices.TryRemove(myVertexID, out vertex);
+
+                if (vertices.TryGetValue(myVertexID, out vertex))
+                {
+                    lock (vertex)
+                    {
+                        #region incoming edges
+
+                        foreach (var incommingVertices in vertex.GetAllIncomingVertices())
+                        {
+                            foreach (InMemoryVertex sVertex in incommingVertices.Item3)
+                            {
+                                lock (sVertex)
+                                {
+                                    var edge = sVertex.OutgoingEdges[incommingVertices.Item2];
+
+                                    if (edge is IHyperEdge)
+                                    {
+                                        var hyperEdge = edge as HyperEdge;
+                                        
+                                        lock (hyperEdge.ContainedSingleEdges)
+                                        {
+                                            var edgesToBeRemove = hyperEdge.ContainedSingleEdges.Where(item => item.TargetVertex.VertexID == myVertexID &&
+                                                item.TargetVertex.VertexTypeID == myVertexTypeID);
+
+                                            hyperEdge.ContainedSingleEdges = hyperEdge.ContainedSingleEdges.Except(edgesToBeRemove).ToList();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        sVertex.OutgoingEdges.Remove(incommingVertices.Item2);
+                                    }
+                                }
+                            }
+                        }
+
+                        #endregion
+
+                        #region outgoing edges
+                        
+                        foreach (var aOutgoingEdge in vertex.GetAllOutgoingEdges())
+                        {
+
+                            foreach (InMemoryVertex aTargetVertex in aOutgoingEdge.Item2.GetTargetVertices())
+                            {
+                                lock (aTargetVertex)
+                                {
+                                    aTargetVertex.IncomingEdges[vertex.VertexTypeID][aOutgoingEdge.Item1].RemoveVertex(vertex);
+                                    
+                                    if (aTargetVertex.IncomingEdges[vertex.VertexTypeID][aOutgoingEdge.Item1].Count() == 0)
+                                    {
+                                        aTargetVertex.IncomingEdges[vertex.VertexTypeID].Remove(aOutgoingEdge.Item1);
+                                    }
+
+                                    if (aTargetVertex.IncomingEdges[vertex.VertexTypeID].Count() == 0)
+                                    {
+                                        aTargetVertex.IncomingEdges.Remove(vertex.VertexTypeID);
+                                    }
+                                }
+                            }
+                        }
+
+                        #endregion
+
+                    }
+
+                    return vertices.TryRemove(myVertexID, out vertex);
+                }
             }
 
             return false;
@@ -342,10 +408,20 @@ namespace sones.GraphFS
         public void RemoveVertices(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID, IEnumerable<long> myToBeDeltedVertices = null)
         {
             HashSet<Int64> toBeDeletedVertices = (myToBeDeltedVertices != null) ? new HashSet<Int64>(myToBeDeltedVertices) : new HashSet<Int64>(GetVerticesByTypeID(mySecurityToken, myTransactionToken, myVertexTypeID).Select(aVertex => aVertex.VertexID));
-
+            
             foreach (var aToBeDeletedVertex in toBeDeletedVertices)
             {
-                RemoveVertex(mySecurityToken, myTransactionToken, myVertexTypeID, aToBeDeletedVertex);
+                RemoveVertex(mySecurityToken, myTransactionToken, aToBeDeletedVertex, myVertexTypeID);
+            }
+
+            ConcurrentDictionary<Int64, InMemoryVertex> outValue;
+
+            if (_vertexStore.TryGetValue(myVertexTypeID, out outValue))
+            {
+                if (outValue.Count == 0)
+                {
+                    _vertexStore.TryRemove(myVertexTypeID, out outValue);
+                }
             }
         }
 
@@ -513,7 +589,7 @@ namespace sones.GraphFS
         #endregion
 
         #region private helper
-
+        
         private void AddEdgesToVertex(VertexAddDefinition myVertexDefinition, InMemoryVertex myVertex, Dictionary<Int64, IEdge> myEdges)
         {
             SingleEdge singleEdge;
@@ -680,7 +756,7 @@ namespace sones.GraphFS
             _vertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
         }
         
-        private void RemoveIncommingEdgeFromTargetVertex(InMemoryVertex myTargetVertex, Int64 myIncommingVertexTypeID, Int64 myIncommingEdgePropID, InMemoryVertex myIncommingVertex)
+        private void RemoveIncommingEdgeFromTargetVertex(InMemoryVertex myTargetVertex, Int64 myIncommingVertexTypeID, Int64 myIncommingEdgePropID, IVertex myIncommingVertex)
         {
             if(myTargetVertex.IncomingEdges != null)
             {
@@ -694,12 +770,12 @@ namespace sones.GraphFS
 
                         if (iEdgeCollection.TryGetValue(myIncommingEdgePropID, out edgeCollection))
                         {
-                            edgeCollection.RemoveVertex(myIncommingVertex);
-                        }
-
-                        if (edgeCollection.Count() == 0)
-                        {
-                            iEdgeCollection.Remove(myIncommingEdgePropID);
+                            edgeCollection.RemoveVertex((InMemoryVertex)myIncommingVertex);
+                            
+                            if (edgeCollection.Count() == 0)
+                            {
+                                iEdgeCollection.Remove(myIncommingEdgePropID);
+                            }
                         }
 
                         if (iEdgeCollection.Count == 0)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.ErrorHandling.Expression;
 using System.Collections;
+using sones.Library.NewFastSerializer;
 
 
 namespace sones.GraphDB.Expression.Tree.Literals
@@ -19,7 +20,9 @@ namespace sones.GraphDB.Expression.Tree.Literals
         /// <summary>
         /// The actual value of the wrapper
         /// </summary>
-        public readonly IList<IComparable> Value;
+        public IList<IComparable> Value;
+
+        public Boolean _isDirty;
 
         #endregion
 
@@ -32,6 +35,7 @@ namespace sones.GraphDB.Expression.Tree.Literals
         public ListCollectionWrapper(IList<IComparable> myCollection)
         {
             Value = myCollection;
+            _isDirty = false;
         }
 
         /// <summary>
@@ -40,6 +44,7 @@ namespace sones.GraphDB.Expression.Tree.Literals
         public ListCollectionWrapper()
         {
             Value = new List<IComparable>();
+            _isDirty = false;
         }
 
         #endregion
@@ -150,5 +155,48 @@ namespace sones.GraphDB.Expression.Tree.Literals
 
         #endregion
 
+
+        #region IFastSerialize Members
+
+        public bool isDirty
+        {
+            get
+            {
+                return _isDirty;
+            }
+            set
+            {
+                _isDirty = value;
+            }
+        }
+
+        public DateTime ModificationTime
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void Serialize(ref SerializationWriter mySerializationWriter)
+        {
+            mySerializationWriter.WriteInt32(Value.Count);
+
+            foreach (var item in Value)
+            {
+                mySerializationWriter.WriteObject(item);
+            }
+        }
+
+        public void Deserialize(ref SerializationReader mySerializationReader)
+        {
+            Value = new List<IComparable>();
+
+            var itemCnt = mySerializationReader.ReadInt32();
+
+            for (int i = 0; i < itemCnt; i++)
+            {
+                Value.Add((IComparable)mySerializationReader.ReadObject());
+            }
+        }
+
+        #endregion
     }
 }

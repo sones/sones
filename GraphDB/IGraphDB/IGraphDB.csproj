@@ -184,6 +184,10 @@
     <Compile Include="TypeSystem\PropertyMultiplicity.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Library\External\NewFastSerializer\NewFastSerializer.csproj">
+      <Project>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</Project>
+      <Name>NewFastSerializer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
