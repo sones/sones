@@ -44,6 +44,11 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         IVertexType VertexType { get; }
 
+        /// <summary>
+        /// The index definition, that causes that index
+        /// </summary>
+        IIndexDefinition SourceIndex { get; }
+
         bool IsSingle { get; }
 
         bool IsRange { get; }

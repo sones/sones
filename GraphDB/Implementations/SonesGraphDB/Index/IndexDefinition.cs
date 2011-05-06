@@ -27,6 +27,8 @@ namespace sones.GraphDB.Index
 
         public bool IsVersioned { get; internal set; }
 
+        public IIndexDefinition SourceIndex { get; internal set; }
+
         #endregion
     }
 }

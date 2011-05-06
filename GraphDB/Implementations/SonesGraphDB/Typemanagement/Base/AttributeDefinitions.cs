@@ -93,6 +93,8 @@ namespace sones.GraphDB.TypeManagement.Base
         IndexDotIsSingleValue,
         IndexDotIsRange,
         IndexDotIsVersioned,
+        IndexDotSourceIndex,
+
 
         #endregion
 

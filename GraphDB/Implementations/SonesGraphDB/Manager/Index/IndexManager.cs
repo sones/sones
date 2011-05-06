@@ -105,6 +105,7 @@ namespace sones.GraphDB.Manager.Index
                 true,
                 new VertexInformation((long)BaseTypes.VertexType, vertexType.ID),
                 null,
+                null,//TODO: take a look
                 mySecurity,
                 myTransaction);
 
@@ -363,7 +364,39 @@ namespace sones.GraphDB.Manager.Index
 
         public void DropIndex(RequestDropIndex myDropIndexRequest, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            throw new NotImplementedException();
+            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myDropIndexRequest.TypeName, myTransactionToken, mySecurityToken);
+
+            if (!String.IsNullOrEmpty(myDropIndexRequest.IndexName))
+            {
+                //so there is an index name
+
+                var indexDefinitions = vertexType.GetIndexDefinitions(false);
+
+                if (indexDefinitions != null && indexDefinitions.Count() > 0)
+                {
+                    if (!String.IsNullOrEmpty(myDropIndexRequest.Edition))
+                    {
+                        //so there is also an edition
+                        ProcessDropIndex(indexDefinitions.Where(_ => _.SourceIndex == null && _.IndexTypeName == myDropIndexRequest.IndexName && _.Edition == myDropIndexRequest.Edition), vertexType, mySecurityToken, myTransactionToken);
+                    }
+                    else
+                    {
+                        //no edition
+                        ProcessDropIndex(indexDefinitions.Where(_ => _.SourceIndex == null && _.IndexTypeName == myDropIndexRequest.IndexName), vertexType, mySecurityToken, myTransactionToken);
+                    }
+                }
+            }
+        }
+
+        private void ProcessDropIndex(IEnumerable<IIndexDefinition> myToBeDroppedIndices, IVertexType vertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            foreach (var aVertexType in vertexType.GetChildVertexTypes(true, true))
+            {
+                foreach (var aIndexDefinition in myToBeDroppedIndices)
+                {
+                    RemoveIndexInstance(aIndexDefinition.ID, myTransactionToken, mySecurityToken);
+                }
+            }
         }
 
         public ISingleValueIndex<IComparable, long> GetIndex(BaseUniqueIndex myIndex)

@@ -45,8 +45,9 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #region Index
 
-        private static readonly Tuple<Int64, Int64> _EdgeIndexDotIndexedProperties = Tuple.Create((long)AttributeDefinitions.IndexDotIndexedProperties, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeIndexDotIndexedProperties  = Tuple.Create((long)AttributeDefinitions.IndexDotIndexedProperties, _EdgeEdgeType);
         private static readonly Tuple<Int64, Int64> _EdgeIndexDotDefiningVertexType = Tuple.Create((long)AttributeDefinitions.IndexDotDefiningVertexType, _EdgeEdgeType);
+        private static readonly Tuple<Int64, Int64> _EdgeIndexDotSource             = Tuple.Create((long)AttributeDefinitions.IndexDotSourceIndex, _EdgeEdgeType);
 
         #endregion
 
@@ -535,6 +536,9 @@ namespace sones.GraphDB.Manager.BaseGraph
             var single = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsSingleValue);
             var range = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsRange);
             var version = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsVersioned);
+            var sourceIndex = (myIndexVertex.HasOutgoingEdge((long)AttributeDefinitions.IndexDotSourceIndex))
+                ? CreateIndexDefinition(myIndexVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.IndexDotSourceIndex).GetTargetVertex())
+                : null;
 
             myDefiningVertexType = myDefiningVertexType ?? GetDefiningVertexType(myIndexVertex);
 
@@ -549,6 +553,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 IsSingle = single,
                 IsRange = range,
                 IsVersioned = version,
+                SourceIndex = sourceIndex,
             };
         }
 
@@ -574,6 +579,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             bool myIsVersioned,
             bool myIsUserDefined,
             VertexInformation myDefiningVertexType,
+            VertexInformation? mySourceIndex, 
             IList<VertexInformation> myIndexedProperties,
             SecurityToken mySecurity,
             TransactionToken myTransaction)
@@ -587,18 +593,23 @@ namespace sones.GraphDB.Manager.BaseGraph
                     { (long) AttributeDefinitions.IndexDotIsVersioned, myIsVersioned },
                 };
 
+            var single = new Dictionary<Tuple<long, long>, VertexInformation>
+                {
+                    { _EdgeIndexDotDefiningVertexType, myDefiningVertexType }
+                };
+
             if (myIndexClass != null)
                 props.Add((long) AttributeDefinitions.IndexDotIndexClass, myIndexClass);
+
+            if (mySourceIndex.HasValue)
+                single.Add( _EdgeIndexDotSource, mySourceIndex.Value);
 
             return Store(
                 myStore,
                 myVertex,
                 myComment,
                 myCreationDate,
-                new Dictionary<Tuple<long, long>, VertexInformation>
-                {
-                    { _EdgeIndexDotDefiningVertexType, myDefiningVertexType }
-                },
+                single,
                 new Dictionary<Tuple<long, long>, IEnumerable<VertexInformation>>
                 {
                     { _EdgeIndexDotIndexedProperties, myIndexedProperties }
