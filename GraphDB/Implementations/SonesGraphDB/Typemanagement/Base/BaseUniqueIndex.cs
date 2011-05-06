@@ -2,7 +2,7 @@
 
 namespace sones.GraphDB.TypeManagement.Base
 {
-    internal enum BaseUniqueIndex : long
+    public enum BaseUniqueIndex : long
     {
         BaseTypeDotName  = Int64.MinValue,
         VertexTypeDotName,

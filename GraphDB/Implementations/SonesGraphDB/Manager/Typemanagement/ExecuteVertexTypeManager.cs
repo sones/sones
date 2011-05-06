@@ -173,6 +173,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                     null, //TODO uniques
                     mySecurity,
                     myTransaction));
+
+                _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName).Add(current.Value.VertexTypeName, typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID);
                 
             }
 
@@ -354,10 +356,11 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                     #region Indices
 
-                    foreach (var index in current.Value.Indices)
-                    {
-                        _indexManager.CreateIndex(index, mySecurity, myTransaction);
-                    }
+                    if (current.Value.Indices != null)
+                        foreach (var index in current.Value.Indices)
+                        {
+                            _indexManager.CreateIndex(index, mySecurity, myTransaction);
+                        }
 
                     foreach (var index in result[resultPos].ParentVertexType.GetIndexDefinitions(true))
                     {
@@ -427,9 +430,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                     //The parent type is sealed.
                     throw new SealedBaseVertexTypeException(myTopologicallySortedPointer.Value.VertexTypeName, parent.GetPropertyAsString((long)AttributeDefinitions.AttributeDotName));
 
-                var attributeNames = parent.GetIncomingVertices(
-                    (long)BaseTypes.Attribute,
-                    (long)AttributeDefinitions.AttributeDotDefiningType).Select(vertex => vertex.GetPropertyAsString((long)AttributeDefinitions.AttributeDotName));
+                var parentType = new VertexType(parent);
+                var attributeNames = parentType.GetAttributeDefinitions(true).Select(_=>_.Name);
 
                 myAttributes[myTopologicallySortedPointer.Value.VertexTypeName] = new HashSet<string>(attributeNames);
             }
@@ -817,6 +819,13 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, type.ID, (long)BaseTypes.Vertex);
             } 
+            #endregion
+
+            #region remove vertex type names from index
+
+            foreach (var vertexType in myVertexTypes)
+                _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName).Remove(vertexType.Name);
+
             #endregion
 
             return deletedTypeIDs;

@@ -46,6 +46,7 @@ namespace sones.GraphDB.Manager.Index
 
         private Dictionary<long, IIndex<IComparable, Int64>> _indices = new Dictionary<long,IIndex<IComparable,long>>();
         private IDManager _idManager;
+        private ISingleValueIndex<IComparable, long> _ownIndex;
 
         #endregion
 
@@ -73,6 +74,12 @@ namespace sones.GraphDB.Manager.Index
 
         public IIndexDefinition CreateIndex(IndexPredefinition myIndexDefinition, SecurityToken mySecurity, TransactionToken myTransaction, bool myIsUserDefined = true)
         {
+            myIndexDefinition.CheckNull("myIndexDefinition");
+
+            if (_ownIndex.ContainsKey(myIndexDefinition.Name))
+                //TODO a better exception here.
+                throw new Exception("An index with that name already exists.");
+
             var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myIndexDefinition.VertexTypeName, myTransaction, mySecurity);
             var indexID = _idManager[(long)BaseTypes.Index].GetNextID();
             var info = new VertexInformation((long)BaseTypes.Index, indexID);
@@ -100,6 +107,7 @@ namespace sones.GraphDB.Manager.Index
                 mySecurity,
                 myTransaction);
 
+            _ownIndex.Add(myIndexDefinition.Name, indexID);
             _indices.Add(indexID, index);
 
             return BaseGraphStorageManager.CreateIndexDefinition(indexVertex, vertexType);
@@ -199,7 +207,17 @@ namespace sones.GraphDB.Manager.Index
 
         public void RemoveIndexInstance(long myIndexID, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            _indices.Remove(myIndexID);
+            var vertex = _vertexStore.GetVertex(mySecurity, myTransaction, myIndexID, (long)BaseTypes.Index, String.Empty);
+            if (_vertexStore.RemoveVertex(mySecurity, myTransaction, myIndexID, (long)BaseTypes.Index))
+            {
+                var def = BaseGraphStorageManager.CreateIndexDefinition(vertex);
+                _ownIndex.Remove(def.Name);
+                _indices.Remove(myIndexID);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("myIndexID", "No index with available with that id.");
+            }
         }
 
 
@@ -217,7 +235,10 @@ namespace sones.GraphDB.Manager.Index
             {
                 var index = GetIndex(vertexType, indexDef.IndexedProperties, mySecurity, myTransaction);
                 if (!myOnlyNonPersistent || !index.IsPersistent)
+                {
+                    index.ClearIndex();
                     toRebuild.Add(index, indexDef.IndexedProperties);
+                }
             }
 
             if (toRebuild.Count > 0)
@@ -300,6 +321,8 @@ namespace sones.GraphDB.Manager.Index
                 var index = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(typeClass, parameter, indexID);
 
                 _indices.Add(indexID, index);
+                if (def.Name == "IndexDotName")
+                    _ownIndex = index as ISingleValueIndex<IComparable, Int64>;
             }
 
             _idManager[(long)BaseTypes.Index].SetToMaxID(maxID);
@@ -335,6 +358,16 @@ namespace sones.GraphDB.Manager.Index
             myVertexType.CheckNull("myVertexType");
             return myPropertyDefinition.InIndices.Where(_ => myVertexType.Equals(_.VertexType)).Select(_ => _indices[_.ID]);
             
+        }
+
+        #endregion
+
+        #region IIndexManager Members
+
+
+        public ISingleValueIndex<IComparable, long> GetIndex(BaseUniqueIndex myIndex)
+        {
+            return _indices[(long)myIndex] as ISingleValueIndex<IComparable, Int64>; 
         }
 
         #endregion

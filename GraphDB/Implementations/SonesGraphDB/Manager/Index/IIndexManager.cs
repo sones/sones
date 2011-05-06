@@ -6,6 +6,7 @@ using System;
 using sones.Plugins.Index.Interfaces;
 using System.Collections.Generic;
 using sones.GraphDB.Request.CreateVertexTypes;
+using sones.GraphDB.TypeManagement.Base;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -95,5 +96,11 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         void RebuildIndices(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="myIndexID"></param>
+        ISingleValueIndex<IComparable, Int64> GetIndex(BaseUniqueIndex myIndex);
     }
 }
