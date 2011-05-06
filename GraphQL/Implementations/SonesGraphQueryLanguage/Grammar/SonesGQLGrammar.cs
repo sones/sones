@@ -586,7 +586,6 @@ namespace sones.GraphQL
             var AddToListAttrUpdate = new NonTerminal("AddToListAttrUpdate", typeof(AddToListAttrUpdateNode));
             var AddToListAttrUpdateAddTo = new NonTerminal("AddToListAttrUpdateAddTo", CreateAddToListAttrUpdateAddToNode);
             var AddToListAttrUpdateOperator = new NonTerminal("AddToListAttrUpdateOperator", CreateAddToListAttrUpdateOperatorNode);
-            var RemoveFromListAttrUpdate = new NonTerminal("RemoveFromListAttrUpdate", typeof(RemoveFromListAttrUpdateNode));
             var RemoveFromListAttrUpdateAddToRemoveFrom = new NonTerminal("RemoveFromListAttrUpdateAddToRemoveFrom", CreateRemoveFromListAttrUpdateAddToRemoveFromNode);
             var RemoveFromListAttrUpdateAddToOperator = new NonTerminal("RemoveFromListAttrUpdateAddToOperator", CreateRemoveFromListAttrUpdateAddToOperatorNode);
             var RemoveFromListAttrUpdateScope = new NonTerminal("RemoveFromListAttrUpdateScope", CreateRemoveFromListAttrUpdateScope);
@@ -1261,16 +1260,14 @@ namespace sones.GraphQL
             AttrRemove.Rule = S_REMOVE + S_ATTRIBUTES + S_BRACKET_LEFT + id_simpleList + S_BRACKET_RIGHT;
 
             ListAttrUpdate.Rule = AddToListAttrUpdate
-                                    | RemoveFromListAttrUpdate;
+                                    | RemoveFromListAttrUpdateAddToRemoveFrom
+                                    | RemoveFromListAttrUpdateAddToOperator;
 
             AddToListAttrUpdate.Rule = AddToListAttrUpdateAddTo
                                         | AddToListAttrUpdateOperator;
 
             AddToListAttrUpdateAddTo.Rule = S_ADD + S_TO + Id + CollectionOfDBObjects;
             AddToListAttrUpdateOperator.Rule = Id + S_ADDTOLIST + CollectionOfDBObjects;
-
-            RemoveFromListAttrUpdate.Rule = RemoveFromListAttrUpdateAddToRemoveFrom
-                                            | RemoveFromListAttrUpdateAddToOperator;
 
             RemoveFromListAttrUpdateAddToRemoveFrom.Rule = S_REMOVE + S_FROM + Id + tuple;
             RemoveFromListAttrUpdateAddToOperator.Rule = Id + RemoveFromListAttrUpdateScope;

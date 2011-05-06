@@ -19,13 +19,13 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.Update
         /// The name of the attribute
         /// </summary>
         public string AttributeName { get; private set; }
-        public TupleDefinition TupleDefinition { get; private set; }
+        public Object TupleDefinition { get; private set; }
 
         #endregion
 
         #region Ctor
 
-        public AttributeRemoveList(IDChainDefinition myIDChainDefinition, string myAttributeName, TupleDefinition myTupleDefinition)
+        public AttributeRemoveList(IDChainDefinition myIDChainDefinition, string myAttributeName, Object myTupleDefinition)
         {
             // TODO: Complete member initialization
             this.AttributeIDChain = myIDChainDefinition;

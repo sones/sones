@@ -177,9 +177,92 @@ namespace sones.GraphQL.StatementNodes.DML
                     result.RemoveAttribute(aToBeRemovedAttribute);
                 }
             }
+            else if (aUpdate is AttributeRemoveList)
+            {
+                ProcessAttributeRemoveList(vertexType, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, (AttributeRemoveList)aUpdate, ref result);
+            }
             else
             {
                 throw new NotImplementedQLException("");
+            }
+        }
+
+        private void ProcessAttributeRemoveList(IVertexType vertexType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, AttributeRemoveList attributeRemoveList, ref RequestUpdate result)
+        {
+            if (attributeRemoveList.TupleDefinition is VertexTypeVertexIDCollectionNode)
+            {
+                #region setofUUIDs
+
+                List<EdgePredefinition> toBeRemovedEdges = new List<EdgePredefinition>();
+
+                foreach (var aTupleElement in ((VertexTypeVertexIDCollectionNode)attributeRemoveList.TupleDefinition).Elements)
+                {
+                    foreach (var aVertexIDTuple in aTupleElement.VertexIDs)
+                    {
+                        var innerEdge = new EdgePredefinition();
+
+                        innerEdge.AddVertexID(aTupleElement.ReferencedVertexTypeName, aVertexIDTuple.Item1);
+
+                        toBeRemovedEdges.Add(innerEdge);
+                    }
+                }
+
+                result.RemoveElementsFromCollection(attributeRemoveList.AttributeName, toBeRemovedEdges);
+
+                #endregion
+            }
+            else if (attributeRemoveList.TupleDefinition is TupleDefinition)
+            {
+                #region binaryExpression
+
+                foreach (var aTupleElement in ((TupleDefinition)attributeRemoveList.TupleDefinition))
+                {
+                    if (aTupleElement.Value is BinaryExpressionDefinition)
+                    {
+                        #region BinaryExpressionDefinition
+                        
+                        if (!vertexType.HasAttribute(attributeRemoveList.AttributeName))
+                        {
+                            throw new InvalidVertexAttributeException(String.Format("The vertex type {0} has no attribute named {1}.", vertexType.Name, attributeRemoveList.AttributeName));
+                        }
+                        IAttributeDefinition attribute = vertexType.GetAttributeDefinition(attributeRemoveList.AttributeName);
+                        List<EdgePredefinition> toBeRemovedEdges = new List<EdgePredefinition>();
+
+                        var targetVertexType = ((IOutgoingEdgeDefinition)attribute).TargetVertexType;
+
+                        var vertexIDs = ProcessBinaryExpression(
+                            (BinaryExpressionDefinition)aTupleElement.Value,
+                            myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, targetVertexType).ToList();
+
+                        if (vertexIDs.Count > 1)
+                        {
+                            throw new ReferenceAssignmentExpectedException(String.Format("It is not possible to create a single edge pointing to {0} vertices", vertexIDs.Count));
+                        }
+
+                        foreach (var aVertex in vertexIDs)
+                        {
+                            toBeRemovedEdges.Add(new EdgePredefinition().AddVertexID(aVertex.VertexTypeID, aVertex.VertexID));
+                        }
+
+                        result.RemoveElementsFromCollection(attributeRemoveList.AttributeName, toBeRemovedEdges);
+
+                        #endregion
+                    }
+                    else if (aTupleElement.Value is ValueDefinition)
+                    {
+                        result.RemoveElementsFromCollection(attributeRemoveList.AttributeName, new List<IComparable> { (IComparable)((ValueDefinition)aTupleElement.Value).Value });
+                    }
+                    else
+                    {
+                        throw new NotImplementedQLException("");
+                    }
+                }
+
+                #endregion
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
 
@@ -222,6 +305,10 @@ namespace sones.GraphQL.StatementNodes.DML
             {
                 #region expression
 
+                if (!vertexType.HasAttribute(attributeAssignOrUpdateSetRef.AttributeIDChain.ContentString))
+                {
+                    throw new InvalidVertexAttributeException(String.Format("The vertex type {0} has no attribute named {1}.", vertexType.Name, attributeAssignOrUpdateSetRef.AttributeIDChain.ContentString));
+                }
                 IAttributeDefinition attribute = vertexType.GetAttributeDefinition(attributeAssignOrUpdateSetRef.AttributeIDChain.ContentString);
 
                 foreach (var aTupleElement in attributeAssignOrUpdateSetRef.SetRefDefinition.TupleDefinition)
@@ -277,6 +364,12 @@ namespace sones.GraphQL.StatementNodes.DML
                     #region set
 
                     EdgePredefinition edgeDefinition = new EdgePredefinition(attributeAssignOrUpdateList.AttributeIDChain.ContentString);
+
+                    if (!vertexType.HasAttribute(attributeAssignOrUpdateList.AttributeIDChain.ContentString))
+                    {
+                        throw new InvalidVertexAttributeException(String.Format("The vertex type {0} has no attribute named {1}.", vertexType.Name, attributeAssignOrUpdateList.AttributeIDChain.ContentString));
+                    }
+
                     IAttributeDefinition attribute =  vertexType.GetAttributeDefinition(attributeAssignOrUpdateList.AttributeIDChain.ContentString);
                     foreach (var aTupleElement in (TupleDefinition)attributeAssignOrUpdateList.CollectionDefinition.TupleDefinition)
                     {
@@ -336,7 +429,7 @@ namespace sones.GraphQL.StatementNodes.DML
                         listWrapper.AddElement((IComparable)Convert.ChangeType(((ValueDefinition)aTupleElement.Value).Value, myRequestedType));
                     }
 
-                    result.UpdateUnknownProperty(attributeAssignOrUpdateList.AttributeIDChain.ContentString, listWrapper);
+                    result.AddElementsToCollection(attributeAssignOrUpdateList.AttributeIDChain.ContentString, listWrapper);
 
                     #endregion)
 

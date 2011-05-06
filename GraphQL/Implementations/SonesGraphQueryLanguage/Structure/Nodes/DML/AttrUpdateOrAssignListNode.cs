@@ -59,7 +59,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
                         if (aChild.AstNode is RemoveFromListAttrUpdateNode)
                         {
-                            ListOfUpdate.Add((aChild.AstNode as RemoveFromListAttrUpdateNode).ToBeRemovedList);
+                            ListOfUpdate.Add((aChild.AstNode as RemoveFromListAttrUpdateNode).AttributeRemoveList);
                         }
                     }
                     else

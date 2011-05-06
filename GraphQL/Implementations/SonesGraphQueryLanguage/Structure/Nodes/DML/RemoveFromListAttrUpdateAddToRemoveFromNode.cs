@@ -9,6 +9,8 @@ namespace sones.GraphQL.Structure.Nodes.DML
 {
     public sealed class RemoveFromListAttrUpdateAddToRemoveFromNode : RemoveFromListAttrUpdateNode
     {
+        public AttributeRemoveList ToBeRemovedList;
+
         public RemoveFromListAttrUpdateAddToRemoveFromNode()
         { }
         

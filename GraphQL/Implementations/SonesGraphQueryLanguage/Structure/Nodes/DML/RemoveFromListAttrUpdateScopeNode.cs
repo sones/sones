@@ -11,11 +11,11 @@ namespace sones.GraphQL.Structure.Nodes.DML
     /// <summary>
     /// contains the scope of a list update statement
     /// </summary>
-    public sealed class RemoveFromListAttrUpdateScopeNode : RemoveFromListAttrUpdateNode
+    public sealed class RemoveFromListAttrUpdateScopeNode : AStructureNode, IAstNodeInit
     {
         #region propertys
 
-        public TupleDefinition TupleDefinition { get; private set; }
+        public Object TupleDefinition { get; private set; }
 
         #endregion
 
@@ -26,30 +26,22 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
         #endregion
 
-        /// <summary>
-        /// Get the scope of an remove list update
-        /// </summary>
-        /// <param name="context">Irony compiler context</param>
-        /// <param name="parseNode">The parse node that contains the information</param>
-        public void DirectInit(ParsingContext context, ParseTreeNode parseNode)
+        #region IAstNodeInit Members
+
+        public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
             if (parseNode.ChildNodes[1].AstNode is CollectionOfDBObjectsNode)
             {
                 var collection = parseNode.ChildNodes[1].AstNode as CollectionOfDBObjectsNode;
 
-                if (collection.CollectionDefinition.CollectionType != CollectionType.SetOfUUIDs)
-                {
-                    throw new NotImplementedQLException("");
-                }
-
-                TupleDefinition = (TupleDefinition)collection.CollectionDefinition.TupleDefinition;
+                TupleDefinition = collection.CollectionDefinition.TupleDefinition;
             }
-
-            if (parseNode.ChildNodes[1].AstNode is TupleNode)
+            else if (parseNode.ChildNodes[1].AstNode is TupleNode)
             {
                 TupleDefinition = ((TupleNode)parseNode.ChildNodes[1].AstNode).TupleDefinition;
             }
         }
-        
+
+        #endregion
     }
 }

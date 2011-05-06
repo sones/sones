@@ -232,7 +232,6 @@
     <Compile Include="Structure\Nodes\DML\ParametersNode.cs" />
     <Compile Include="Structure\Nodes\DML\LimitNode.cs" />
     <Compile Include="Structure\Nodes\DML\OffsetNode.cs" />
-    <Compile Include="Structure\Nodes\DML\RemoveFromListAttrUpdateNode.cs" />
     <Compile Include="Structure\Nodes\DML\SelectOutputOptNode.cs" />
     <Compile Include="Structure\Nodes\DML\SelectionListElementNode.cs" />
     <Compile Include="Structure\Nodes\DML\OrderByNode.cs" />
