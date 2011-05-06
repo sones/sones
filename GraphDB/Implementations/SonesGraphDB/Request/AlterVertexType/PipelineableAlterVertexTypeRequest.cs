@@ -42,7 +42,7 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public override void Validate(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            myMetaManager.VertexTypeManager.CheckManager.AlterVertexType(_request, SecurityToken, TransactionToken);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public override void Execute(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            myMetaManager.VertexTypeManager.ExecuteManager.AlterVertexType(_request, SecurityToken, TransactionToken);
         }
 
         /// <summary>

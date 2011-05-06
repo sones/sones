@@ -931,6 +931,11 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             this.TruncateVertexType(vertexType.ID, myTransactionToken, mySecurityToken);
         }
+
+        public override void AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 

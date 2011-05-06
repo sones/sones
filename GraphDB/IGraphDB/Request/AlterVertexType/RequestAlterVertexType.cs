@@ -13,7 +13,7 @@ namespace sones.GraphDB.Request
         #region Data
 
         /// <summary>
-        /// The name of the vertex type that is going to be created
+        /// The name of the vertex type that is going to be altered
         /// </summary>
         public readonly string VertexTypeName;
         

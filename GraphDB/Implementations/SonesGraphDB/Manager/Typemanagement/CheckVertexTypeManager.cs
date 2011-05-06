@@ -76,12 +76,17 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override void TruncateVertexType(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            //do nothing here
+            GetVertexType(myVertexTypeID, myTransactionToken, mySecurityToken);
         }
 
         public override void TruncateVertexType(String myVertexTypeName, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            //do nothing here
+            GetVertexType(myVertexTypeName, myTransactionToken, mySecurityToken);
+        }
+
+        public override void AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            GetVertexType(myAlterVertexTypeRequest.VertexTypeName, myTransactionToken, mySecurityToken);
         }
 
         #endregion

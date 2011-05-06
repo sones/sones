@@ -76,5 +76,13 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransactionToken">A transaction token for this operation.</param>
         /// <param name="mySecurityToken">A security token for this operation.</param>
         void TruncateVertexType(string myVertexTypeName, TransactionToken TransactionToken, SecurityToken SecurityToken);
+
+        /// <summary>
+        /// Alteres a certain vertex type
+        /// </summary>
+        /// <param name="myAlterVertexTypeRequest">The alter vertex type request</param>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        void AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
     }
 }
