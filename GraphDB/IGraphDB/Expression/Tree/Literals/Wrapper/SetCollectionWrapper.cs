@@ -21,8 +21,6 @@ namespace sones.GraphDB.Expression.Tree.Literals
         /// </summary>
         public ISet<IComparable> Value;
 
-        private Boolean _isDirty;
-
         #endregion
 
         #region constructor
@@ -31,10 +29,9 @@ namespace sones.GraphDB.Expression.Tree.Literals
         /// Creates a new set collection wrapper
         /// </summary>
         /// <param name="myCollection">The collection that needs to be wrapped</param>
-        public SetCollectionWrapper(ISet<IComparable> myCollection)
+        public SetCollectionWrapper(IEnumerable<IComparable> myCollection)
         {
-            Value = myCollection;
-            _isDirty = false;
+            Value = new HashSet<IComparable>( myCollection);
         }
 
         /// <summary>
@@ -43,7 +40,6 @@ namespace sones.GraphDB.Expression.Tree.Literals
         public SetCollectionWrapper()
         {
             Value = new HashSet<IComparable>();
-            _isDirty = false;
         }
 
         #endregion
@@ -141,23 +137,6 @@ namespace sones.GraphDB.Expression.Tree.Literals
         #endregion
 
         #region IFastSerialize Members
-
-        public bool isDirty
-        {
-            get
-            {
-                return _isDirty;
-            }
-            set
-            {
-                _isDirty = value;
-            }
-        }
-
-        public DateTime ModificationTime
-        {
-            get { throw new NotImplementedException(); }
-        }
 
         public void Serialize(ref SerializationWriter mySerializationWriter)
         {

@@ -22,7 +22,6 @@ namespace sones.GraphDB.Expression.Tree.Literals
         /// </summary>
         public IList<IComparable> Value;
 
-        public Boolean _isDirty;
 
         #endregion
 
@@ -32,10 +31,9 @@ namespace sones.GraphDB.Expression.Tree.Literals
         /// Creates a new collection wrapper
         /// </summary>
         /// <param name="myCollection">The collection that needs to be wrapped</param>
-        public ListCollectionWrapper(IList<IComparable> myCollection)
+        public ListCollectionWrapper(IEnumerable<IComparable> myCollection)
         {
-            Value = myCollection;
-            _isDirty = false;
+            Value = new List<IComparable>(myCollection);
         }
 
         /// <summary>
@@ -44,7 +42,6 @@ namespace sones.GraphDB.Expression.Tree.Literals
         public ListCollectionWrapper()
         {
             Value = new List<IComparable>();
-            _isDirty = false;
         }
 
         #endregion
@@ -139,50 +136,7 @@ namespace sones.GraphDB.Expression.Tree.Literals
 
         #endregion
 
-        #region ICollectionWrapper Members
-
-        public void Add(IComparable myComparable)
-        {
-            Value.Add(myComparable);
-        }
-
-        public void Add(IEnumerable<IComparable> myComparables)
-        {
-            foreach (var toAdd in myComparables)
-                Value.Add(toAdd);
-        }
-
-        public void Remove(IComparable myComparable)
-        {
-            Value.Remove(myComparable);
-        }
-
-        public void Remove(IEnumerable<IComparable> myComparables)
-        {
-            foreach (var toRemove in myComparables)
-                Value.Remove(toRemove);
-        }
-
-        #endregion
-
         #region IFastSerialize Members
-
-        public bool isDirty
-        {
-            get
-            {
-                return _isDirty;
-            }
-            set
-            {
-                _isDirty = value;
-            }
-        }
-
-        public DateTime ModificationTime
-        {
-            get { throw new NotImplementedException(); }
-        }
 
         public void Serialize(ref SerializationWriter mySerializationWriter)
         {
@@ -207,5 +161,10 @@ namespace sones.GraphDB.Expression.Tree.Literals
         }
 
         #endregion
+
+        public void Add(IComparable myValue)
+        {
+            Value.Add(myValue);
+        }
     }
 }

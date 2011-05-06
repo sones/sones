@@ -81,7 +81,19 @@ namespace sones.GraphDB.Manager.Index
                 //TODO a better exception here.
                 throw new Exception("An index with that name already exists.");
 
+            if (myIndexDefinition.Properties == null)
+                throw new Exception("Index without properties is not allowed.");
+            
+
             var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myIndexDefinition.VertexTypeName, myTransaction, mySecurity);
+
+            foreach (var prop in myIndexDefinition.Properties)
+            {
+                if (!vertexType.HasProperty(prop))
+                    //TODO a better exception here.
+                    throw new Exception("The property is not defined on vertex type.");
+            }
+
             var indexID = _idManager[(long)BaseTypes.Index].GetNextID();
             var info = new VertexInformation((long)BaseTypes.Index, indexID);
 
@@ -92,25 +104,57 @@ namespace sones.GraphDB.Manager.Index
 
             var index = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(typeClass, parameter, indexID);
 
+            var props = myIndexDefinition.Properties.Select(prop => new VertexInformation((long)BaseTypes.Property, vertexType.GetPropertyDefinition(prop).ID)).ToList();
+            var date = DateTime.UtcNow.ToBinary()
+
             var indexVertex = BaseGraphStorageManager.StoreIndex(
-                _vertexStore,
-                info,
-                myIndexDefinition.Name,
-                myIndexDefinition.Comment,
-                DateTime.UtcNow.ToBinary(),
-                myIndexDefinition.TypeName,
-                GetIsSingleValue(index),
-                GetIsRangeValue(index),
-                GetIsVersionedValue(index),
-                true,
-                new VertexInformation((long)BaseTypes.VertexType, vertexType.ID),
-                null,
-                null,//TODO: take a look
-                mySecurity,
-                myTransaction);
+                                _vertexStore,
+                                info,
+                                myIndexDefinition.Name,
+                                myIndexDefinition.Comment,
+                                date,
+                                myIndexDefinition.TypeName,
+                                GetIsSingleValue(index),
+                                GetIsRangeValue(index),
+                                GetIsVersionedValue(index),
+                                true,
+                                new VertexInformation((long)BaseTypes.VertexType, vertexType.ID),
+                                null,
+                                props,
+                                mySecurity,
+                                myTransaction);
 
             _ownIndex.Add(myIndexDefinition.Name, indexID);
             _indices.Add(indexID, index);
+
+            foreach (var childType in vertexType.GetChildVertexTypes(true, false))
+            {
+                var childID = _idManager[(long)BaseTypes.Index].GetNextID();
+                BaseGraphStorageManager.StoreIndex(
+                                _vertexStore,
+                                new VertexInformation((long)BaseTypes.Index, childID),
+                                string.Join("_", myIndexDefinition.Name, childType.Name),
+                                myIndexDefinition.Name, //we store the source index name as comment
+                                date,
+                                myIndexDefinition.TypeName,
+                                GetIsSingleValue(index),
+                                GetIsRangeValue(index),
+                                GetIsVersionedValue(index),
+                                false,
+                                new VertexInformation((long)BaseTypes.VertexType, vertexType.ID),
+                                info,
+                                props,
+                                mySecurity,
+                                myTransaction);
+
+                _ownIndex.Add(myIndexDefinition.Name, childID);
+                _indices.Add(childID, index);
+            }
+
+            foreach(var type in vertexType.GetChildVertexTypes(true, true))
+            {
+                RebuildIndices(type.ID, myTransaction, mySecurity);
+            }
 
             return BaseGraphStorageManager.CreateIndexDefinition(indexVertex, vertexType);
         }

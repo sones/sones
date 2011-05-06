@@ -548,24 +548,77 @@ namespace sones.GraphDB.Manager.Vertex
             var toBeUpdated = GetVertices(myUpdate.GetVerticesRequest, myTransaction, mySecurity);
             var groupedByTypeID = toBeUpdated.GroupBy(_ => _.VertexTypeID);
 
-            foreach (var group in groupedByTypeID)
+            if (groupedByTypeID.CountIsGreater(0))
             {
-                var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(group.Key, myTransaction, mySecurity);
-                foreach (var vertex in group)
+                Dictionary<IVertex, VertexUpdateDefinition> updates = new Dictionary<IVertex, VertexUpdateDefinition>();
+                foreach (var group in groupedByTypeID)
                 {
+                    var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(group.Key, myTransaction, mySecurity);
+
                     //we copy each property in property provider, because an unknown property can be a structured at one type but unstructured at the other.
                     //this must be refactored:
                     //idea cancel IPropertyProvider. Change ConvertUnknownProperties to fill the dictionaries directly.
                     PropertyCopy copy = new PropertyCopy(myUpdate);
                     ConvertUnknownProperties(copy, vertexType);
 
-                    var update = CreateVertexUpdateDefinition(vertex, vertexType, myUpdate, copy);
+                    if (copy.StructuredProperties != null)
+                    {
 
-                    yield return UpdateVertex(vertex, update, myUpdate.UpdatedEdition, myTransaction, mySecurity);
+                        var toBeUpdatedStructuredNames = copy.StructuredProperties.Select(_ => _.Key).ToArray();
+                        foreach (var uniqueIndex in vertexType.GetUniqueDefinitions(false))
+                        {
+                            //if the unique index is defined on a property that will be updated
+                            if (uniqueIndex.UniquePropertyDefinitions.Any(_ => toBeUpdatedStructuredNames.Contains(_.Name)))
+                            {
+                                //the list of property names, that can make an update of multiple vertices on unique properties unique again.
+                                
+                                var uniquemaker = uniqueIndex.UniquePropertyDefinitions.Select(_ => _.Name).Except(toBeUpdatedStructuredNames);
+                                if (!uniquemaker.CountIsGreater(0) && group.CountIsGreater(1))
+                                    throw new IndexUniqueConstrainViolationException(vertexType.Name, String.Join(", ", uniquemaker));
+                            }
+                        }
+
+                        var toBeUpdatedUniques = vertexType.GetUniqueDefinitions(true).Where(_ => _.UniquePropertyDefinitions.Any(__ => toBeUpdatedStructuredNames.Contains(__.Name)));
+
+
+                        /*if (group.CountIsGreater(1))
+                        {
+
+
+                            foreach (var uniqueDef in vertexType.GetUniqueDefinitions(true))
+                            {
+                                var toBeUpdatedUniques = uniqueDef.UniquePropertyDefinitions.Select(_ => _.Name).Intersect(copy);
+                                if (toBeUpdatedUniques.CountIsGreater(0))
+                                {
+                                    throw new IndexUniqueConstrainViolationException(vertexType.Name, String.Join(", ", toBeUpdatedUniques));
+                                }
+                            }
+                        }
+                        else
+                        {
+
+                        }*/
+
+
+                    }
+                    foreach (var vertex in group)
+                    {
+
+                        var toBeUpdatedIndices = copy.StructuredProperties.ToDictionary(_ => _.Key, _ => vertexType.GetPropertyDefinition(_.Key).InIndices);
+                        
+
+                        var update = CreateVertexUpdateDefinition(vertex, vertexType, myUpdate, copy);
+                        updates.Add(vertex, update);
+                    }
                 }
+                
+                //force execution
+                return updates.Select(_=>_vertexStore.UpdateVertex(mySecurity, myTransaction, _.Key.VertexID, _.Key.VertexTypeID, _.Value)).ToArray();
+                
             }
 
-            yield break;
+            return Enumerable.Empty<IVertex>();
+
         }
 
         private IVertex UpdateVertex(IVertex vertex, VertexUpdateDefinition update, String myEdition, TransactionToken myTransaction, SecurityToken mySecurity)
@@ -680,6 +733,7 @@ namespace sones.GraphDB.Manager.Vertex
 
             if (myUpdate.AddedElementsToCollectionProperties != null || myUpdate.RemovedElementsFromCollectionProperties != null)
             {
+                toBeUpdatedStructured = toBeUpdatedStructured  ?? new Dictionary<long, IComparable>();
                 if (myUpdate.AddedElementsToCollectionProperties != null && myUpdate.RemovedElementsFromCollectionProperties != null)
                 {
                     var keys = myUpdate.AddedElementsToCollectionProperties.Keys.Intersect(myUpdate.RemovedElementsFromCollectionProperties.Keys);
@@ -700,9 +754,11 @@ namespace sones.GraphDB.Manager.Vertex
                             }
 
                             //if it is not ListCollectionWrapper something wrong with deserialization
-                            var value = (ListCollectionWrapper) propDef.ExtractValue(myVertex);
+                            var extractedValue = (ICollectionWrapper) propDef.ExtractValue(myVertex);
 
-                            value.Add(added.Value);
+                            var newValue = CreateNewCollectionWrapper(extractedValue.Except(added.Value), propDef);
+
+                            toBeUpdatedStructured.Add(propDef.ID, newValue);
                         }
                     }
                     if (myUpdate.RemovedElementsFromCollectionProperties != null)
@@ -711,8 +767,13 @@ namespace sones.GraphDB.Manager.Vertex
                         {
                             var propDef = myVertexType.GetPropertyDefinition(remove.Key);
                             //if it is not ListCollectionWrapper something wrong with deserialization
-                            var value = (ListCollectionWrapper) propDef.ExtractValue(myVertex);
-                            value.Remove(remove.Value);
+                            var extractedValue = (ICollectionWrapper) propDef.ExtractValue(myVertex);
+
+                            var newValue = CreateNewCollectionWrapper(extractedValue.Except(remove.Value), propDef);
+
+                            toBeUpdatedStructured.Add(propDef.ID, newValue);
+
+                            
                         }
                     }
                 }
@@ -729,6 +790,21 @@ namespace sones.GraphDB.Manager.Vertex
             outUpdatedBinaries     = toBeUpdatedBinaries;
 
             #endregion
+        }
+
+        private ICollectionWrapper CreateNewCollectionWrapper(IEnumerable<IComparable> myValues, IPropertyDefinition myPropertyDef)
+        {
+            switch (myPropertyDef.Multiplicity)
+            {
+                case PropertyMultiplicity.List:
+                    return new ListCollectionWrapper(myValues);
+                case PropertyMultiplicity.Set:
+                    return new SetCollectionWrapper(myValues);
+                case PropertyMultiplicity.Single:
+                    throw new Exception("This property is not a collection property");
+                default:
+                    throw new Exception("The enumeration PropertyMultiplicity was changed, but not this switch statement.");
+            }
         }
 
         private void CreateEdgeDeleteDefinition(

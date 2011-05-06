@@ -42,17 +42,6 @@ namespace sones.Library.Serializer
     {
 
         /// <summary>
-        /// This boolean is true when the object was changed since it was last serialized
-        /// </summary>
-        [NotIFastSerialized]
-        Boolean isDirty { get; set; }
-
-        /// <summary>
-        /// This is the timestamp of the last object modification or its creation
-        /// </summary>
-        DateTime ModificationTime { get; }
-
-        /// <summary>
         /// This method serializes the implementing object
         /// </summary>
         /// <param name="mySerializationWriter"></param>

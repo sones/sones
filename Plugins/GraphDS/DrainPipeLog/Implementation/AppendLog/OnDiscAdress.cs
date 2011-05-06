@@ -45,21 +45,5 @@ namespace sones.Plugins.GraphDS.DrainPipeLog.Storage
             End = mySerializationReader.ReadInt64();
         }
         #endregion
-
-        public bool isDirty
-        {
-            get
-            {
-                return false;
-            }
-            set
-            {               
-            }
-        }
-
-        public DateTime ModificationTime
-        {
-            get { return new DateTime(CreationTime); }
-        }
     }
 }
