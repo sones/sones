@@ -10,6 +10,7 @@ using sones.GraphQL.GQL.Structure.Helper.Definition;
 using sones.GraphQL.GQL.Structure.Nodes.DML;
 using System.Diagnostics;
 using sones.Library.ErrorHandling;
+using System.Collections.Generic;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -68,7 +69,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
             sw.Stop();
 
-            return new QueryResult(myQuery, "sones.gql", (ulong)sw.ElapsedMilliseconds, qresult.TypeOfResult, qresult.Vertices, error);
+            return new QueryResult(myQuery, "sones.gql", (ulong)sw.ElapsedMilliseconds, qresult != null ? qresult.TypeOfResult : ResultType.Failed, qresult != null ? qresult.Vertices : new IVertexView[0], error);
         }
 
         #endregion
