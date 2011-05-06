@@ -8,6 +8,7 @@ using sones.Library.Commons.Transaction;
 using sones.GraphQL.GQL.Manager.Plugin;
 using sones.Library.ErrorHandling;
 using sones.GraphDB.Request;
+using System.Collections.Generic;
 
 namespace sones.GraphQL.StatementNodes.DDL
 {
@@ -16,7 +17,9 @@ namespace sones.GraphQL.StatementNodes.DDL
         #region Data
 
         //the name of the type that should be dropped
-        String _TypeName = ""; 
+        String _TypeName = "";
+
+        String _query;
 
         #endregion
 
@@ -26,7 +29,7 @@ namespace sones.GraphQL.StatementNodes.DDL
         {
             #region get Name
 
-            _TypeName = parseNode.ChildNodes[2].Token.ValueString;
+            _TypeName = parseNode.ChildNodes[3].Token.ValueString;
 
             #endregion
         }
@@ -47,21 +50,25 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            QueryResult qresult = null;
-            ASonesException error = null;
+            _query = myQuery;
 
-            try
-            {
-                var stat = myGraphDB.DropType(mySecurityToken, myTransactionToken, new RequestDropVertexType(_TypeName), (stats) => stats);
+            return myGraphDB.DropType(mySecurityToken, myTransactionToken, new RequestDropVertexType(_TypeName), GenerateOutput);
+        }
 
-                qresult = new QueryResult(myQuery, "sones.gql", Convert.ToUInt64(stat.ExecutionTime.Milliseconds), ResultType.Successful);
-            }
-            catch (ASonesException e)
-            {
-                error = e;
-            }
+        #endregion
 
-            return new QueryResult(myQuery, "sones.gql", qresult.Duration, qresult.TypeOfResult, qresult.Vertices, error);
+        #region helper
+
+        private QueryResult GenerateOutput(IRequestStatistics myStats, IEnumerable<long> myDeletedTypeIDs)
+        {
+            return new QueryResult(_query, 
+                                    "GQL", 
+                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), 
+                                    ResultType.Successful, 
+                                    new List<IVertexView> 
+                                    { 
+                                        new VertexView( new Dictionary<String, object> { { "Deleted", myDeletedTypeIDs } }, null )
+                                    });
         }
 
         #endregion

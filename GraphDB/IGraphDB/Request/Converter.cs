@@ -175,7 +175,7 @@ namespace sones.GraphDB.Request
         /// <typeparam name="TResult">The type of the result</typeparam>
         /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <returns>A TResult</returns>
-        public delegate TResult DropVertexTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics);
+        public delegate TResult DropVertexTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<long> myDeletedTypeIDs);
 
         /// <summary>
         /// A converter delegate that produces a generic result

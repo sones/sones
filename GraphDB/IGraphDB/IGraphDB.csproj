@@ -103,6 +103,7 @@
     <Compile Include="ErrorHandling\VertexTypeErrors\VertexTypeDoesNotMatchException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\AGraphDBVertexTypeException.cs" />
     <Compile Include="ErrorHandling\UnknownDBException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeErrors\VertexTypeRemoveException.cs" />
     <Compile Include="Expression\Operator\BinaryOperator.cs" />
     <Compile Include="Expression\Operator\UnaryOperator.cs" />
     <Compile Include="Expression\Tree\Literals\CollectionLiteralExpression.cs" />

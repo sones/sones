@@ -20,6 +20,8 @@ namespace sones.GraphDB.Request.DropType
         /// </summary>
         private readonly RequestDropVertexType _request;
 
+        private IEnumerable<long> _deletedTypeIDs;
+
         #endregion
         
         #region constructor
@@ -54,7 +56,7 @@ namespace sones.GraphDB.Request.DropType
                 throw new VertexTypeDoesNotExistException(_request.TypeName);
             }
 
-            myMetaManager.VertexTypeManager.ExecuteManager.RemoveVertexTypes(new List<IVertexType> {graphDBType}, TransactionToken, SecurityToken);
+            _deletedTypeIDs = myMetaManager.VertexTypeManager.ExecuteManager.RemoveVertexTypes(new List<IVertexType> {graphDBType}, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()
@@ -72,7 +74,7 @@ namespace sones.GraphDB.Request.DropType
         /// <returns>A TResult</returns>
         internal TResult GenerateRequestResult<TResult>(Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            return myOutputconverter(Statistics);
+            return myOutputconverter(Statistics, _deletedTypeIDs);
         }
 
         #endregion 

@@ -50,7 +50,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             return null;
         }
 
-        public override void RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEnumerable<long> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region check arguments
 
@@ -59,6 +59,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             #endregion
 
             CanRemove(myVertexTypes, myTransaction, mySecurity);
+
+            return null;
         }
 
         public override void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
