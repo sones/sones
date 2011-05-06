@@ -809,15 +809,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             foreach (var type in myVertexTypes)
             {
                 //removes the instances of the VertexType
-                foreach (var vertex in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurity, myTransaction, type.ID))
-                {
-                    _vertexManager.ExecuteManager.VertexStore.RemoveVertexRevision(mySecurity, myTransaction, vertex.VertexID, vertex.VertexTypeID, vertex.EditionName, vertex.VertexRevisionID);
-                }
+               _vertexManager.ExecuteManager.VertexStore.RemoveVertices(mySecurity, myTransaction, type.ID);
 
                 //removes the vertexType
                 _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, type.ID, (long)BaseTypes.VertexType);
 
-                _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, type.ID, (long)BaseTypes.Vertex);
             } 
             #endregion
 
