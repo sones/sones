@@ -49,22 +49,6 @@ namespace sones.GraphDB.Expression.Tree.Literals
 
         #endregion
 
-        #region fluent methods
-
-        /// <summary>
-        /// Fluent method to add a single element
-        /// </summary>
-        /// <param name="myToBeAddedElement">The IComparable element that should be added</param>
-        /// <returns>The element itself</returns>
-        public ListCollectionWrapper AddElement(IComparable myToBeAddedElement)
-        {
-            Value.Add(myToBeAddedElement);
-
-            return this;
-        }
-
-        #endregion
-
         #region IComparable Members
 
         public int CompareTo(object obj)
@@ -155,6 +139,31 @@ namespace sones.GraphDB.Expression.Tree.Literals
 
         #endregion
 
+        #region ICollectionWrapper Members
+
+        public void Add(IComparable myComparable)
+        {
+            Value.Add(myComparable);
+        }
+
+        public void Add(IEnumerable<IComparable> myComparables)
+        {
+            foreach (var toAdd in myComparables)
+                Value.Add(toAdd);
+        }
+
+        public void Remove(IComparable myComparable)
+        {
+            Value.Remove(myComparable);
+        }
+
+        public void Remove(IEnumerable<IComparable> myComparables)
+        {
+            foreach (var toRemove in myComparables)
+                Value.Remove(toRemove);
+        }
+
+        #endregion
 
         #region IFastSerialize Members
 

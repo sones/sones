@@ -19,6 +19,8 @@ using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Expression.Tree.Literals;
 using sones.Plugins.Index.Interfaces;
 using sones.Library.Commons.VertexStore.Definitions.Update;
+using sones.Library.LanguageExtensions;
+using System.IO;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -461,8 +463,80 @@ namespace sones.GraphDB.Manager.Vertex
 
         #endregion
 
-
         #region IVertexHandler Members
+
+        #region class PropertyCopy
+        /// <summary>
+        /// This class copies the
+        /// </summary>
+        private class PropertyCopy: IPropertyProvider
+        {
+            #region c'tor
+
+            public PropertyCopy(IPropertyProvider toCopy)
+            {
+                foreach (var prop in toCopy.StructuredProperties)
+                {
+                    AddStructuredProperty(prop.Key, prop.Value);
+                }
+
+                foreach (var prop in toCopy.UnstructuredProperties)
+                {
+                    AddUnstructuredProperty(prop.Key, prop.Value);
+                }
+
+                foreach (var prop in toCopy.UnknownProperties)
+                {
+                    AddUnknownProperty(prop.Key, prop.Value);
+                }
+            }
+
+            #endregion
+
+            #region IPropertyProvider Members
+
+            public IDictionary<string, IComparable> StructuredProperties { get; private set; }
+
+            public IDictionary<string, object> UnstructuredProperties{ get; private set; }
+
+            public IDictionary<string, object> UnknownProperties { get; private set; }
+
+            public IPropertyProvider AddStructuredProperty(string myPropertyName, IComparable myProperty)
+            {
+                StructuredProperties = StructuredProperties ?? new Dictionary<string, IComparable>();
+                StructuredProperties.Add(myPropertyName, myProperty);
+
+                return this;
+            }
+
+            public IPropertyProvider AddUnstructuredProperty(string myPropertyName, object myProperty)
+            {
+                UnstructuredProperties = UnstructuredProperties ?? new Dictionary<string, object>();
+                UnstructuredProperties.Add(myPropertyName, myProperty);
+
+                return this;
+            }
+
+            public IPropertyProvider AddUnknownProperty(string myPropertyName, object myProperty)
+            {
+                UnknownProperties = UnknownProperties ?? new Dictionary<string, object>();
+                UnknownProperties.Add(myPropertyName, myProperty);
+
+                return this;
+            }
+
+            #endregion
+
+            #region IUnknownProvider Members
+
+            public void ClearUnknown()
+            {
+                UnknownProperties = null;
+            }
+
+            #endregion
+        }
+        #endregion
 
         public void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
@@ -479,7 +553,13 @@ namespace sones.GraphDB.Manager.Vertex
                 var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(group.Key, myTransaction, mySecurity);
                 foreach (var vertex in group)
                 {
-                    var update = CreateVertexUpdateDefinition(vertex, vertexType, myUpdate);
+                    //we copy each property in property provider, because an unknown property can be a structured at one type but unstructured at the other.
+                    //this must be refactored:
+                    //idea cancel IPropertyProvider. Change ConvertUnknownProperties to fill the dictionaries directly.
+                    PropertyCopy copy = new PropertyCopy(myUpdate);
+                    ConvertUnknownProperties(copy, vertexType);
+
+                    var update = CreateVertexUpdateDefinition(vertex, vertexType, myUpdate, copy);
 
                     yield return UpdateVertex(vertex, update, myUpdate.UpdatedEdition, myTransaction, mySecurity);
                 }
@@ -493,7 +573,7 @@ namespace sones.GraphDB.Manager.Vertex
             return _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, vertex.VertexTypeID, update, myEdition);
         }
 
-        private VertexUpdateDefinition CreateVertexUpdateDefinition(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate)
+        private VertexUpdateDefinition CreateVertexUpdateDefinition(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IPropertyProvider myPropertyCopy)
         {
             
             #region get removes
@@ -516,7 +596,7 @@ namespace sones.GraphDB.Manager.Vertex
             IDictionary<String, Object> toBeUpdatedUnstructured;
             IDictionary<Int64, StreamAddDefinition> toBeUpdatedBinaries;
 
-            CreateEdgeUpdateDefinition(myVertex, myVertexType, myUpdate, out toBeUpdatedSingle, out toBeUpdatedHyper, out toBeUpdatedStructured, out toBeUpdatedUnstructured, out toBeUpdatedBinaries);
+            CreateEdgeUpdateDefinition(myVertex, myVertexType, myUpdate, myPropertyCopy, out toBeUpdatedSingle, out toBeUpdatedHyper, out toBeUpdatedStructured, out toBeUpdatedUnstructured, out toBeUpdatedBinaries);
 
             #endregion
 
@@ -547,8 +627,9 @@ namespace sones.GraphDB.Manager.Vertex
             return new VertexUpdateDefinition(myUpdate.UpdatedComment, structured, unstructured, binaries, single, hyper);
         }
 
+        //HACK: this code style = lassitude * lack of time
         private void CreateEdgeUpdateDefinition(
-            IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, 
+            IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IPropertyProvider myPropertyCopy,
             out IDictionary<long, SingleEdgeUpdateDefinition> outUpdatedSingle, 
             out IDictionary<long, HyperEdgeUpdateDefinition> outUpdatedHyper, 
             out IDictionary<long, IComparable> outUpdatedStructured, 
@@ -557,16 +638,88 @@ namespace sones.GraphDB.Manager.Vertex
         {
             #region predefine
 
-            Dictionary<long, SingleEdgeUpdateDefinition> toBeUpdatedSingle = null;
-            Dictionary<long, HyperEdgeUpdateDefinition> toBeUpdatedHyper = null;
-            Dictionary<long, IComparable> toBeUpdatedStructured = null;
-            Dictionary<string, object> toBeUpdatedUnstructured = null;
-            Dictionary<long, StreamAddDefinition> toBeUpdatedBinaries = null;
+            IDictionary<long, SingleEdgeUpdateDefinition> toBeUpdatedSingle = null;
+            IDictionary<long, HyperEdgeUpdateDefinition> toBeUpdatedHyper = null;
+            IDictionary<long, IComparable> toBeUpdatedStructured = null;
+            IDictionary<string, object> toBeUpdatedUnstructured = null;
+            IDictionary<long, StreamAddDefinition> toBeUpdatedBinaries = null;
 
             #endregion
 
-            
-            
+            #region property copy things
+
+            if (myPropertyCopy.StructuredProperties != null)
+            {
+                toBeUpdatedStructured = new Dictionary<long, IComparable>();
+                foreach (var prop in myPropertyCopy.StructuredProperties)
+                {
+                    var propDef = myVertexType.GetPropertyDefinition(prop.Key);
+                    CheckPropertyType(myVertexType.Name, prop.Value, propDef);
+                    toBeUpdatedStructured.Add(propDef.ID, prop.Value);
+                }
+            }
+
+            toBeUpdatedUnstructured = myPropertyCopy.UnstructuredProperties;
+
+            #endregion
+
+            #region binary properties
+            if (myUpdate.UpdatedBinaryProperties != null)
+            {
+                foreach (var prop in myUpdate.UpdatedBinaryProperties)
+                {
+                    var propDef = myVertexType.GetBinaryPropertyDefinition(prop.Key);
+
+                    toBeUpdatedBinaries = toBeUpdatedBinaries ?? new Dictionary<long, StreamAddDefinition>();
+                    toBeUpdatedBinaries.Add(propDef.ID, new StreamAddDefinition(propDef.ID, prop.Value));
+                }
+            }
+            #endregion
+
+            #region collections
+
+            if (myUpdate.AddedElementsToCollectionProperties != null || myUpdate.RemovedElementsFromCollectionProperties != null)
+            {
+                if (myUpdate.AddedElementsToCollectionProperties != null && myUpdate.RemovedElementsFromCollectionProperties != null)
+                {
+                    var keys = myUpdate.AddedElementsToCollectionProperties.Keys.Intersect(myUpdate.RemovedElementsFromCollectionProperties.Keys);
+                    if (keys.CountIsGreater(0))
+                    {
+                        //TOTO a better exception here
+                        throw new Exception("You can not add and remove items simultaneously on a collection attribute.");
+                    }
+
+                    if (myUpdate.AddedElementsToCollectionProperties != null)
+                    {
+                        foreach (var added in myUpdate.AddedElementsToCollectionProperties)
+                        {
+                            var propDef = myVertexType.GetPropertyDefinition(added.Key);
+                            foreach (var element in added.Value)
+                            {
+                                CheckPropertyType(myVertexType.Name, element, propDef);
+                            }
+
+                            //if it is not ListCollectionWrapper something wrong with deserialization
+                            var value = (ListCollectionWrapper) propDef.ExtractValue(myVertex);
+
+                            value.Add(added.Value);
+                        }
+                    }
+                    if (myUpdate.RemovedElementsFromCollectionProperties != null)
+                    {
+                        foreach (var remove in myUpdate.RemovedElementsFromCollectionProperties)
+                        {
+                            var propDef = myVertexType.GetPropertyDefinition(remove.Key);
+                            //if it is not ListCollectionWrapper something wrong with deserialization
+                            var value = (ListCollectionWrapper) propDef.ExtractValue(myVertex);
+                            value.Remove(remove.Value);
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
             #region return
 
             outUpdatedSingle       = toBeUpdatedSingle;
@@ -607,6 +760,10 @@ namespace sones.GraphDB.Manager.Vertex
                         switch (attr.Kind)
                         {
                             case AttributeType.Property:
+
+                                if ((attr as IPropertyDefinition).IsMandatory)
+                                    throw new MandatoryConstraintViolationException(attr.Name);
+
                                 toBeDeletedStructured =  toBeDeletedStructured ?? new List<long>();
                                 toBeDeletedStructured.Add(attr.ID);
                                 break;

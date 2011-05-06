@@ -16,6 +16,8 @@ using sones.Library.LanguageExtensions;
 using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.TypeManagement.Base;
 using sones.Library.Commons.VertexStore.Definitions;
+using sones.Library.PropertyHyperGraph;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -42,7 +44,7 @@ namespace sones.GraphDB.Manager.Index
 
         private IManagerOf<IVertexTypeHandler> _vertexTypeManager;
 
-        private Dictionary<long, IIndex<IComparable, Int64>> _indices;
+        private Dictionary<long, IIndex<IComparable, Int64>> _indices = new Dictionary<long,IIndex<IComparable,long>>();
         private IDManager _idManager;
 
         #endregion
@@ -75,7 +77,12 @@ namespace sones.GraphDB.Manager.Index
             var indexID = _idManager[(long)BaseTypes.Index].GetNextID();
             var info = new VertexInformation((long)BaseTypes.Index, indexID);
 
-            var index = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(myIndexDefinition.TypeName, _indexPluginParameter[myIndexDefinition.TypeName].PluginParameter, indexID);
+            var typeClass = myIndexDefinition.TypeName ?? GetBestMatchingIndexName(false, false, false);
+            var parameter = (_indexPluginParameter.ContainsKey(typeClass))
+                    ? _indexPluginParameter[typeClass].PluginParameter
+                    : null;
+
+            var index = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(typeClass, parameter, indexID);
 
             var indexVertex = BaseGraphStorageManager.StoreIndex(
                 _vertexStore,
@@ -119,7 +126,7 @@ namespace sones.GraphDB.Manager.Index
             var propertyTypes = myPropertyDefinition.GroupBy(_ => _.RelatedType);
             foreach (var group in propertyTypes)
             {
-                if (!myVertexType.IsAncestorOrSelf(group.Key))
+                if (!myVertexType.IsDescendantOrSelf(group.Key))
                 {
                     throw new ArgumentException(string.Format("The properties ({0}) defined on type {1} is not part of inheritance hierarchy of {2}.", 
                         string.Join(",", group.Select(_ => _.Name)), 
@@ -198,7 +205,69 @@ namespace sones.GraphDB.Manager.Index
 
         public void RebuildIndices(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            throw new NotImplementedException();
+            RebuildIndices(myVertexTypeID, myTransactionToken, mySecurityToken, false);
+        }
+
+        private void RebuildIndices(long myVertexTypeID, TransactionToken myTransaction, SecurityToken mySecurity, bool myOnlyNonPersistent)
+        {
+            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeID, myTransaction, mySecurity);
+
+            Dictionary<IIndex<IComparable, Int64>, IList<IPropertyDefinition>> toRebuild = new Dictionary<IIndex<IComparable, long>, IList<IPropertyDefinition>>();
+            foreach (var indexDef in vertexType.GetIndexDefinitions(false))
+            {
+                var index = GetIndex(vertexType, indexDef.IndexedProperties, mySecurity, myTransaction);
+                if (!myOnlyNonPersistent || !index.IsPersistent)
+                    toRebuild.Add(index, indexDef.IndexedProperties);
+            }
+
+            if (toRebuild.Count > 0)
+            {
+                var vertices = _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, myVertexTypeID);
+
+                foreach (var vertex in vertices)
+                {
+                    foreach (var index in toRebuild)
+                    {
+                        var key = CreateIndexKey(index.Value, vertex);
+                        if (index.Key is ISingleValueIndex<IComparable, Int64>)
+                        {
+                            (index.Key as ISingleValueIndex<IComparable, Int64>).Add(key, vertex.VertexID);
+                        }
+                        else if (index.Key is IMultipleValueIndex<IComparable, Int64>)
+                        {
+                            //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
+                            //TODO: Refactor IIndex structure
+                            (index.Key as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> { vertex.VertexID });
+                        }
+                        else
+                        {
+                            throw new NotImplementedException("Indices other than single or multiple value indices are not supported yet.");
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+        private IComparable CreateIndexKey(IList<IPropertyDefinition> myIndexProps, IVertex vertex)
+        {
+            if (myIndexProps.Count > 1)
+            {
+                List<IComparable> values = new List<IComparable>(myIndexProps.Count);
+                for (int i = 0; i < myIndexProps.Count; i++)
+                {
+                    values[i] = myIndexProps[i].ExtractValue(vertex);
+                }
+
+                //using ListCollectionWrapper from Expressions, maybe this class should go to Lib
+                return new ListCollectionWrapper(values);
+            }
+            else if (myIndexProps.Count == 1)
+            {
+                return myIndexProps[0].ExtractValue(vertex);
+            }
+            throw new ArgumentOutOfRangeException("myIndexProps", "At least one property must be indexed.");
         }
 
 
@@ -214,7 +283,31 @@ namespace sones.GraphDB.Manager.Index
 
         public void Load(TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            var maxID = Int64.MinValue;
 
+            var vertices = _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, (long)BaseTypes.Index);
+            foreach (var indexVertex in vertices)
+            {
+                var def = BaseGraphStorageManager.CreateIndexDefinition(indexVertex);
+                var vertexType = def.VertexType;
+                var indexID = def.ID;
+                maxID = Math.Max(maxID, def.ID);
+                var typeClass = def.IndexTypeName ?? GetBestMatchingIndexName(def.IsSingle, def.IsRange, def.IsVersioned);
+                var parameter = (_indexPluginParameter.ContainsKey(typeClass))
+                        ? _indexPluginParameter[typeClass].PluginParameter
+                        : null;
+
+                var index = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(typeClass, parameter, indexID);
+
+                _indices.Add(indexID, index);
+            }
+
+            _idManager[(long)BaseTypes.Index].SetToMaxID(maxID);
+
+            RebuildIndices((long)BaseTypes.BaseType, myTransaction, mySecurity, true);
+            RebuildIndices((long)BaseTypes.VertexType, myTransaction, mySecurity, true);
+            RebuildIndices((long)BaseTypes.EdgeType, myTransaction, mySecurity, true);
+            RebuildIndices((long)BaseTypes.Index, myTransaction, mySecurity, true);
         }
 
         #endregion
@@ -233,5 +326,17 @@ namespace sones.GraphDB.Manager.Index
         {
             return index is ISingleValueIndex<IComparable, Int64>;
         }
+
+        #region IIndexManager Members
+
+
+        public IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            myVertexType.CheckNull("myVertexType");
+            return myPropertyDefinition.InIndices.Where(_=>myVertexType.Equals(_.VertexType)).Select(_ => _indices[_.ID]);
+            
+        }
+
+        #endregion
     }
 }

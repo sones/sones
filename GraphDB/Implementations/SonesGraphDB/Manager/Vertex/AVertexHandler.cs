@@ -15,6 +15,7 @@ using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Request.Insert;
 using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.Manager.QueryPlan;
+using sones.Library.LanguageExtensions;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -53,6 +54,74 @@ namespace sones.GraphDB.Manager.Vertex
                 }
             }
         }
+
+        protected static void ConvertUnknownProperties(IPropertyProvider myPropertyProvider, IBaseType myBaseType)
+        {
+            if (myPropertyProvider.UnknownProperties != null)
+            {
+                foreach (var unknownProp in myPropertyProvider.UnknownProperties)
+                {   
+                    //ASK: What's about binary properties?
+                    if (myBaseType.HasProperty(unknownProp.Key))
+                    {
+                        var propDef = myBaseType.GetPropertyDefinition(unknownProp.Key);
+
+                        try
+                        {
+                            var converted = unknownProp.Value.ConvertToIComparable(propDef.BaseType);
+                            myPropertyProvider.AddStructuredProperty(unknownProp.Key, converted);
+                        }
+                        catch (InvalidCastException)                 
+                        {
+                            //TODO: better exception
+                            throw new Exception("Type of property does not match.");
+                        }
+                    }
+                    else
+                    {
+                        myPropertyProvider.AddUnstructuredProperty(unknownProp.Key, unknownProp.Value);
+                    }
+                }
+                myPropertyProvider.ClearUnknown();
+            }
+        }
+
+        protected static void CheckAddStructuredProperties(IDictionary<String, IComparable> myProperties, IVertexType vertexType)
+        {
+            foreach (var prop in myProperties)
+            {
+                var propertyDef = vertexType.GetPropertyDefinition(prop.Key);
+                if (propertyDef == null)
+                    throw new AttributeDoesNotExistException(prop.Key, vertexType.Name);
+
+                if (propertyDef.Multiplicity == PropertyMultiplicity.Single)
+                {
+                    CheckPropertyType(vertexType.Name, prop.Value, propertyDef);
+                }
+                else
+                {
+                    IEnumerable<IComparable> items = prop.Value as IEnumerable<IComparable>;
+                    if (items == null)
+                    {
+                        throw new PropertyHasWrongTypeException(vertexType.Name, prop.Key, propertyDef.Multiplicity, propertyDef.BaseType.Name);
+                    }
+
+                    foreach (var item in items)
+                    {
+                        CheckPropertyType(vertexType.Name, item, propertyDef);
+                    }
+                }
+            }
+        }
+
+        protected static void CheckPropertyType(String myVertexTypeName, IComparable myValue, IPropertyDefinition propertyDef)
+        {
+            //Assign safty should be suffice.
+            if (!propertyDef.BaseType.IsAssignableFrom(myValue.GetType()))
+                throw new PropertyHasWrongTypeException(myVertexTypeName, propertyDef.Name, propertyDef.BaseType.Name, myValue.GetType().Name);
+        }
+
+
 
         private static bool IsMustSetProperty(IPropertyDefinition myPropertyDefinition)
         {

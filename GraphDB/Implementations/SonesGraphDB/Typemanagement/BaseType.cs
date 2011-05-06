@@ -184,12 +184,10 @@ namespace sones.GraphDB.TypeManagement
 
         public bool IsAncestor(IBaseType myOtherType)
         {
-            for (var current = this.GetParentType(); current != null; current = current.GetParentType())
-            {
-                if (Equals(current, myOtherType))
-                    return true;
-            }
-            return false;
+            if (myOtherType == null)
+                return false;
+
+            return myOtherType.IsDescendant(this);
         }
 
         public bool IsAncestorOrSelf(IBaseType myOtherType)
@@ -199,10 +197,12 @@ namespace sones.GraphDB.TypeManagement
 
         public bool IsDescendant(IBaseType myOtherType)
         {
-            if (myOtherType == null)
-                return false;
-
-            return myOtherType.IsAncestor(this);
+            for (var current = this.GetParentType(); current != null; current = current.GetParentType())
+            {
+                if (current.Equals(myOtherType))
+                    return true;
+            }
+            return false;
         }
 
         public bool IsDescendantOrSelf(IBaseType myOtherType)

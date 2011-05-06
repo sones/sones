@@ -11,6 +11,14 @@ namespace sones.GraphDB.Expression.Tree.Literals
     /// </summary>
     public interface ICollectionWrapper : IComparableWrapper, IEnumerable<IComparable>
     {
+        void Add(IComparable myComparable);
+
+        void Add(IEnumerable<IComparable> myComparables);
+
+        void Remove(IComparable myComparable);
+
+        void Remove(IEnumerable<IComparable> myComparables);
+
 
     }
 }

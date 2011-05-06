@@ -532,6 +532,10 @@ namespace sones.GraphDB.Manager.BaseGraph
             var typeName = GetIndexTypeName(myIndexVertex);
             var isUserDefined = GetIndexDotIsUserDefined(myIndexVertex);
             var name = GetIndexDotName(myIndexVertex);
+            var single = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsSingleValue);
+            var range = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsRange);
+            var version = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsVersioned);
+
             myDefiningVertexType = myDefiningVertexType ?? GetDefiningVertexType(myIndexVertex);
 
             return new IndexDefinition
@@ -542,6 +546,9 @@ namespace sones.GraphDB.Manager.BaseGraph
                 IsUserdefined = isUserDefined,
                 Name = name,
                 VertexType = myDefiningVertexType,
+                IsSingle = single,
+                IsRange = range,
+                IsVersioned = version,
             };
         }
 
@@ -580,7 +587,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                     { (long) AttributeDefinitions.IndexDotIsVersioned, myIsVersioned },
                 };
 
-            if (myIndexClass == null)
+            if (myIndexClass != null)
                 props.Add((long) AttributeDefinitions.IndexDotIndexClass, myIndexClass);
 
             return Store(
@@ -919,7 +926,10 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         private static String GetIndexTypeName(IVertex myIndexVertex)
         {
-            return myIndexVertex.GetPropertyAsString((long)AttributeDefinitions.IndexDotIndexClass);
+            if (myIndexVertex.HasProperty((long)AttributeDefinitions.IndexDotIndexClass))
+                return myIndexVertex.GetPropertyAsString((long)AttributeDefinitions.IndexDotIndexClass);
+
+            return null;
         }
 
         private static IList<IPropertyDefinition> GetIndexedProperties(IVertex myIndexVertex)

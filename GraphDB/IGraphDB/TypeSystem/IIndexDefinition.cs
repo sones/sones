@@ -43,5 +43,11 @@ namespace sones.GraphDB.TypeSystem
         /// The defining vertex type.
         /// </summary>
         IVertexType VertexType { get; }
+
+        bool IsSingle { get; }
+
+        bool IsRange { get; }
+
+        bool IsVersioned { get; }
     }
 }

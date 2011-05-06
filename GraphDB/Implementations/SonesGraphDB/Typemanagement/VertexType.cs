@@ -57,7 +57,7 @@ namespace sones.GraphDB.TypeManagement
             : base(myVertexTypeVertex)
         {
             _hasOwnUniques = HasOutgoingEdge(AttributeDefinitions.VertexTypeDotUniquenessDefinitions);
-            _hasOwnIndices = HasIncomingVertices(BaseTypes.Index, AttributeDefinitions.PropertyDotInIndices);
+            _hasOwnIndices = HasIncomingVertices(BaseTypes.Index, AttributeDefinitions.IndexDotDefiningVertexType);
             _hasChilds = HasIncomingVertices(BaseTypes.VertexType, AttributeDefinitions.VertexTypeDotParent);
         }
 
@@ -314,8 +314,8 @@ namespace sones.GraphDB.TypeManagement
         {
             if (_hasOwnIndices)
             {
-                var vertices = GetIncomingVertices(BaseTypes.Index, AttributeDefinitions.PropertyDotInIndices);
-                var indices = vertices.Select(x => BaseGraphStorageManager.CreateIndexDefinition(x, this)).ToArray();
+                var vertices = GetIncomingVertices(BaseTypes.Index, AttributeDefinitions.IndexDotDefiningVertexType);
+                return vertices.Select(x => BaseGraphStorageManager.CreateIndexDefinition(x, this)).ToArray();
             }
             return Enumerable.Empty<IIndexDefinition>();
 

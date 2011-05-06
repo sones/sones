@@ -20,6 +20,7 @@ using sones.GraphDB.TypeSystem;
 using sones.GraphQL.ErrorHandling;
 using sones.GraphQL.GQL.Structure.Helper.Definition;
 using sones.GraphDB.Expression.Tree.Literals;
+using sones.Library.LanguageExtensions;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -426,7 +427,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
                     foreach (var aTupleElement in (TupleDefinition)attributeAssignOrUpdateList.CollectionDefinition.TupleDefinition)
                     {
-                        listWrapper.AddElement((IComparable)Convert.ChangeType(((ValueDefinition)aTupleElement.Value).Value, myRequestedType));
+                        listWrapper.Add(((ValueDefinition)aTupleElement.Value).Value.ConvertToIComparable(myRequestedType));
                     }
 
                     result.AddElementsToCollection(attributeAssignOrUpdateList.AttributeIDChain.ContentString, listWrapper);

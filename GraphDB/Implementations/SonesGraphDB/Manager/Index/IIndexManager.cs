@@ -50,6 +50,16 @@ namespace sones.GraphDB.Manager.Index
         IEnumerable<IIndex<IComparable, Int64>> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="myVertexType"></param>
+        /// <param name="myPropertyDefinition"></param>
+        /// <param name="mySecurityToken"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <returns></returns>
+        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+
+        /// <summary>
         /// Returns all indices
         /// </summary>
         /// <param name="myPropertyDefinition"></param>

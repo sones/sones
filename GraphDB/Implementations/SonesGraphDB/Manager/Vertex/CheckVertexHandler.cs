@@ -101,7 +101,7 @@ namespace sones.GraphDB.Manager.Vertex
 
             if (myInsertDefinition.StructuredProperties != null)
             {
-                CheckAddStructuredProperties(myInsertDefinition, vertexType);
+                CheckAddStructuredProperties(myInsertDefinition.StructuredProperties, vertexType);
             }
 
             CheckMandatoryConstraint(myInsertDefinition, vertexType);
@@ -171,7 +171,8 @@ namespace sones.GraphDB.Manager.Vertex
             if (myPropertyProvider.UnknownProperties != null)
             {
                 foreach (var unknownProp in myPropertyProvider.UnknownProperties)
-                {
+                {   
+                    //ASK: What's about binary properties?
                     if (myBaseType.HasProperty(unknownProp.Key))
                     {
                         var propDef = myBaseType.GetPropertyDefinition(unknownProp.Key);
@@ -196,40 +197,6 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        private static void CheckAddStructuredProperties(RequestInsertVertex myInsertDefinition, IVertexType vertexType)
-        {
-            foreach (var prop in myInsertDefinition.StructuredProperties)
-            {
-                var propertyDef = vertexType.GetPropertyDefinition(prop.Key);
-                if (propertyDef == null)
-                    throw new AttributeDoesNotExistException(prop.Key, myInsertDefinition.VertexTypeName);
-
-                if (propertyDef.Multiplicity == PropertyMultiplicity.Single)
-                {
-                    CheckPropertyType(myInsertDefinition, prop.Key, prop.Value, propertyDef);
-                }
-                else
-                {
-                    IEnumerable<IComparable> items = prop.Value as IEnumerable<IComparable>;
-                    if (items == null)
-                    {
-                        throw new PropertyHasWrongTypeException(myInsertDefinition.VertexTypeName, prop.Key, propertyDef.Multiplicity, propertyDef.BaseType.Name);
-                    }
-
-                    foreach (var item in items)
-                    {
-                        CheckPropertyType(myInsertDefinition, prop.Key, item, propertyDef);
-                    }
-                }
-            }
-        }
-
-        private static void CheckPropertyType(RequestInsertVertex myInsertDefinition, String myAttributeName, IComparable myValue, IPropertyDefinition propertyDef)
-        {
-            //Assign safty should be suffice.
-            if (!propertyDef.BaseType.IsAssignableFrom(myValue.GetType()))
-                throw new PropertyHasWrongTypeException(myInsertDefinition.VertexTypeName, myAttributeName, propertyDef.BaseType.Name, myValue.GetType().Name);
-        }
 
         private static void CheckAddBinaryProperties(RequestInsertVertex myInsertDefinition, IVertexType vertexType)
         {

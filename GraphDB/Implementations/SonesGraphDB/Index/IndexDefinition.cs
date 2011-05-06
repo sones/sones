@@ -21,6 +21,12 @@ namespace sones.GraphDB.Index
 
         public long ID { get; internal set; }
 
+        public bool IsSingle { get; internal set; }
+
+        public bool IsRange { get; internal set; }
+
+        public bool IsVersioned { get; internal set; }
+
         #endregion
     }
 }
