@@ -10,6 +10,7 @@ using sones.Library.VersionedPluginManager;
 using System.Xml;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace sones.Plugins.GraphDS.IO.JSON_IO
 {
@@ -84,7 +85,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                 _Query.Add(new JProperty("errors", new JArray(
                              new JObject(
                              new JProperty("code", myQueryResult.Error.GetType().ToString()),
-                             new JProperty("description", myQueryResult.Error.ToString())
+                             new JProperty("description", HandleQueryExceptions(myQueryResult))
                            ))));
             }
             // results ------------------------------
@@ -101,6 +102,17 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             _Query.Add(new JProperty("results", _resultsArray));
 
             return _Query.ToString();
+        }
+
+        private String HandleQueryExceptions(QueryResult queryresult)
+        {
+            StringBuilder SB = new StringBuilder();
+
+            SB.Append(queryresult.Error.ToString());
+            if (queryresult.Error.InnerException != null)
+                SB.Append(" InnerException: "+queryresult.Error.InnerException.Message);
+
+            return SB.ToString();
         }
 
         #region private toJSON Extensions

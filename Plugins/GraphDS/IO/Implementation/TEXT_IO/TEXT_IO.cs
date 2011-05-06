@@ -68,7 +68,7 @@ namespace sones.Plugins.GraphDS.IO
 
             if (myQueryResult.Error != null)
             {
-                Output.AppendLine("error: \t\t"+myQueryResult.Error.GetType().ToString() + " - " + myQueryResult.Error.ToString());
+                Output.AppendLine("error: \t\t"+myQueryResult.Error.GetType().ToString() + " - " + HandleQueryExceptions(myQueryResult));
             }
 
             if (myQueryResult.Vertices != null)
@@ -82,6 +82,17 @@ namespace sones.Plugins.GraphDS.IO
             }
 
             return Output.ToString();
+        }
+
+        private String HandleQueryExceptions(QueryResult queryresult)
+        {
+            StringBuilder SB = new StringBuilder();
+
+            SB.Append(queryresult.Error.ToString());
+            if (queryresult.Error.InnerException != null)
+                SB.Append(" InnerException: " + queryresult.Error.InnerException.Message);
+
+            return SB.ToString();
         }
 
         #region private toHTML

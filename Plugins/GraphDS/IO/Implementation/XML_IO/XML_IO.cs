@@ -9,6 +9,7 @@ using sones.GraphQL.Result;
 using sones.Library.VersionedPluginManager;
 using SchemaToClassesGenerator;
 using sones.Plugins.GraphDS.IO.XML_IO.ErrorHandling;
+using System.Text;
 
 
 namespace sones.Plugins.GraphDS.IO.XML_IO
@@ -39,7 +40,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
             result.Version = IOInterfaceCompatibility.MaxVersion.ToString();
 
-            result.Query = new Query() { Duration = myQueryResult.Duration, ResultType = Enum.GetName(typeof(ResultType), myQueryResult.TypeOfResult), Language = myQueryResult.NameOfQuerylanguage, Value = myQueryResult.Query, VerticesCount = myQueryResult.Vertices.LongCount(), Error = myQueryResult.Error == null ? null : myQueryResult.Error.Message };
+            result.Query = new Query() { Duration = myQueryResult.Duration, ResultType = Enum.GetName(typeof(ResultType), myQueryResult.TypeOfResult), Language = myQueryResult.NameOfQuerylanguage, Value = myQueryResult.Query, VerticesCount = myQueryResult.Vertices.LongCount(), Error = myQueryResult.Error == null ? null : HandleQueryExceptions(myQueryResult) };
           
             List<SchemaVertexView> vertices = new List<SchemaVertexView>();
 
@@ -263,7 +264,18 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
         #endregion
 
         #region private helpers
-        
+
+        private String HandleQueryExceptions(QueryResult queryresult)
+        {
+            StringBuilder SB = new StringBuilder();
+
+            SB.Append(queryresult.Error.ToString());
+            if (queryresult.Error.InnerException != null)
+                SB.Append(" InnerException: " + queryresult.Error.InnerException.Message);
+
+            return SB.ToString();
+        }
+
         private void ValidationEventHandler(object sender, ValidationEventArgs eventArgs)
         {
             if (eventArgs.Severity == XmlSeverityType.Error)

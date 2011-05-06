@@ -80,7 +80,7 @@ namespace sones.Plugins.GraphDS.IO
 
             if (myQueryResult.Error != null)
             {
-                Output.Append("<tr><td style=\"width:250px\">error</td><td style=\"width:400px\">").Append(EscapeForXMLandHTML(myQueryResult.Error.GetType().ToString()+" - "+myQueryResult.Error.ToString())).Append("</td></tr>");
+                Output.Append("<tr><td style=\"width:250px\">error</td><td style=\"width:400px\">").Append(EscapeForXMLandHTML(myQueryResult.Error.GetType().ToString()+" - "+HandleQueryExceptions(myQueryResult))).Append("</td></tr>");
             }
 
             if (myQueryResult.Vertices != null)
@@ -101,6 +101,17 @@ namespace sones.Plugins.GraphDS.IO
 
             Output.Append("</table>  <!-- MainTable -->");
             return HTMLBuilder(myQueryResult,Output).ToString();
+        }
+
+        private String HandleQueryExceptions(QueryResult queryresult)
+        {
+            StringBuilder SB = new StringBuilder();
+
+            SB.Append(queryresult.Error.ToString());
+            if (queryresult.Error.InnerException != null)
+                SB.Append(" InnerException: " + queryresult.Error.InnerException.Message);
+
+            return SB.ToString();
         }
 
         #region private toHTML
