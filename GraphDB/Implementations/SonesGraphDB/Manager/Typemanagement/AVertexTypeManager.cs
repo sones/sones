@@ -34,7 +34,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         public abstract void TruncateVertexType(String myVertexTypeName, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
 
         public abstract void AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
-        
+
+        public abstract bool HasVertexType(string myVertexTypeName, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+
         #endregion
 
         /// <summary>
@@ -216,6 +218,15 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         #region IVertexTypeHandler Members
+
+        #endregion
+
+        #region IManager Members
+
+        public abstract void Initialize(IMetaManager myMetaManager);
+        
+        public abstract void Load(TransactionToken myTransaction, SecurityToken mySecurity);
+        
 
         #endregion
     }

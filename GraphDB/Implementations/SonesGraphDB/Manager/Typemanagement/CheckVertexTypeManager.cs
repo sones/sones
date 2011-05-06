@@ -15,6 +15,13 @@ namespace sones.GraphDB.Manager.TypeManagement
 {
     internal sealed class CheckVertexTypeManager: AVertexTypeManager
     {
+        #region data
+
+        private IVertexTypeHandler _vertexTypeManager;
+
+
+        #endregion
+
 
         #region IVertexTypeManager Members
 
@@ -30,6 +37,16 @@ namespace sones.GraphDB.Manager.TypeManagement
                 throw new EmptyVertexTypeNameException();
             }
             return null;
+        }
+
+        public override bool HasVertexType(string myAlteredVertexTypeName, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            if (String.IsNullOrWhiteSpace(myAlteredVertexTypeName))
+            {
+                throw new EmptyVertexTypeNameException();
+            }
+
+            return true;
         }
 
         public override IEnumerable<IVertexType> GetAllVertexTypes(TransactionToken myTransaction, SecurityToken mySecurity)
@@ -86,9 +103,400 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override void AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            GetVertexType(myAlterVertexTypeRequest.VertexTypeName, myTransactionToken, mySecurityToken);
+            var vertexType =  GetVertexType(myAlterVertexTypeRequest.VertexTypeName, myTransactionToken, mySecurityToken);
 
-            //TODO: add some more checks here
+            #region checks
+
+            CheckToBeAddedAttributes(myAlterVertexTypeRequest, vertexType);
+            CheckToBeRemovedAttributes(myAlterVertexTypeRequest, vertexType);
+            CheckToBeRenamedAttributes(myAlterVertexTypeRequest, vertexType);
+            CheckNewVertexTypeName(myAlterVertexTypeRequest.AlteredVertexTypeName, mySecurityToken, myTransactionToken);
+            CheckToBeAddedMandatoryAndUniques(myAlterVertexTypeRequest.ToBeAddedMandatories, myAlterVertexTypeRequest.ToBeAddedUniques, vertexType);
+            CheckToBeRemovedMandatoryAndUnique(myAlterVertexTypeRequest.ToBeRemovedMandatories, myAlterVertexTypeRequest.ToBeRemovedUniques, vertexType);
+            CheckToBeAddedIndices(myAlterVertexTypeRequest.ToBeAddedIndices, vertexType, mySecurityToken, myTransactionToken);
+            CheckToBeRemovedIndices(myAlterVertexTypeRequest.ToBeRemovedIndices, vertexType, mySecurityToken, myTransactionToken);
+
+            #endregion
+        }
+
+        #endregion
+
+        #region alter vertex type
+
+        /// <summary>
+        /// Checks if the desired index are removable
+        /// </summary>
+        /// <param name="myToBeRemovedIndices"></param>
+        /// <param name="vertexType"></param>
+        /// <param name="mySecurityToken"></param>
+        /// <param name="myTransactionToken"></param>
+        private void CheckToBeRemovedIndices(Dictionary<string, string> myToBeRemovedIndices, IVertexType vertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            if (myToBeRemovedIndices != null)
+            {
+                var indexDefinitions = vertexType.GetIndexDefinitions(true).ToList();
+
+                foreach (var aKV in myToBeRemovedIndices)
+                {
+                    if (!indexDefinitions.Any(_ => _.Name == aKV.Key && _.Edition == aKV.Value))
+                    {
+                        throw new IndexRemoveException(aKV.Key, aKV.Value, "The desired index does not exist.");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if every to be added index is valid
+        /// </summary>
+        /// <param name="myToBeAddedIndices"></param>
+        /// <param name="vertexType"></param>
+        /// <param name="mySecurityToken"></param>
+        /// <param name="myTransactionToken"></param>
+        private void CheckToBeAddedIndices(IEnumerable<IndexPredefinition> myToBeAddedIndices, IVertexType vertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            if (myToBeAddedIndices != null)
+            {
+                var indexDefinitions = vertexType.GetIndexDefinitions(true).ToList();
+
+                foreach (var aIndexPredefinition in myToBeAddedIndices)
+                {
+                    #region check the properties
+
+                    foreach (var aProperty in aIndexPredefinition.Properties)
+                    {
+                        if (!vertexType.HasProperty(aProperty))
+                        {
+                            throw new AttributeDoesNotExistException(aProperty, vertexType.Name);
+                        }
+                    }
+
+                    #endregion
+
+                    #region check the idx name, etc
+
+                    if (indexDefinitions.Any(_ => _.Name == aIndexPredefinition.Name))
+                    {
+                        throw new IndexCreationException(aIndexPredefinition, "This index definition is ambiguous.");
+                    }
+
+                    #endregion
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if it possible to remove a mandatory or unique constraint
+        /// </summary>
+        /// <param name="myMandatories"></param>
+        /// <param name="myUniques"></param>
+        /// <param name="vertexType"></param>
+        private void CheckToBeRemovedMandatoryAndUnique(IEnumerable<string> myMandatories, IEnumerable<string> myUniques, IVertexType vertexType)
+        {
+            if (myMandatories != null || myUniques != null)
+            {
+                List<IAttributeDefinition> attributes = vertexType.GetAttributeDefinitions(false).ToList();
+
+                #region mandatories
+
+                if (myMandatories != null)
+                {
+                    foreach (var aMandatory in myMandatories)
+                    {
+                        if (!attributes.Any(_ => _.Name == aMandatory))
+                        {
+                            throw new AttributeDoesNotExistException(aMandatory, vertexType.Name);
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region uniques
+
+                if (myUniques != null)
+                {
+                    foreach (var aUnique in myUniques)
+                    {
+                        if (!attributes.Any(_ => _.Name == aUnique))
+                        {
+                            throw new AttributeDoesNotExistException(aUnique, vertexType.Name);
+                        }
+                    }
+                }
+
+                #endregion
+            }
+        }
+
+        /// <summary>
+        /// Checks if the mandatories can be added
+        /// </summary>
+        /// <param name="myMandatories"></param>
+        /// <param name="myUniques"></param>
+        /// <param name="vertexType"></param>
+        private void CheckToBeAddedMandatoryAndUniques(IEnumerable<MandatoryPredefinition> myMandatories, IEnumerable<UniquePredefinition> myUniques, IVertexType vertexType)
+        {
+            if (myMandatories != null || myUniques != null)
+            {
+                List<IAttributeDefinition> attributes = vertexType.GetAttributeDefinitions(false).ToList();
+
+                #region mandatories
+
+                if (myMandatories != null)
+                {
+                    foreach (var aMandatory in myMandatories)
+                    {
+                        if (!attributes.Any(_ => _.Name == aMandatory.MandatoryAttribute))
+                        {
+                            throw new AttributeDoesNotExistException(aMandatory.MandatoryAttribute, vertexType.Name);
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region uniques
+
+                if (myUniques != null)
+                {
+                    foreach (var aUnique in myUniques)
+                    {
+                        foreach (var aAttribute in aUnique.Properties)
+                        {
+                            if (!attributes.Any(_ => _.Name == aAttribute))
+                            {
+                                throw new AttributeDoesNotExistException(aAttribute, vertexType.Name);
+                            }
+                        }
+                    }
+                }
+
+                #endregion
+
+            }
+
+        }
+
+        /// <summary>
+        /// Checks if the new vertex type name already exists
+        /// </summary>
+        /// <param name="myAlteredVertexTypeName"></param>
+        /// <param name="mySecurityToken"></param>
+        /// <param name="myTransactionToken"></param>
+        private void CheckNewVertexTypeName(string myAlteredVertexTypeName, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            if (myAlteredVertexTypeName != null && _vertexTypeManager.HasVertexType(myAlteredVertexTypeName, mySecurityToken, myTransactionToken))
+            {
+                throw new VertexTypeAlreadyExistException(myAlteredVertexTypeName);
+            }
+        }
+
+        /// <summary>
+        /// Checks the to be renamed attributes
+        /// </summary>
+        /// <param name="myAlterVertexTypeRequest"></param>
+        /// <param name="vertexType"></param>
+        private static void CheckToBeRenamedAttributes(RequestAlterVertexType myAlterVertexTypeRequest, IVertexType vertexType)
+        {
+            if (myAlterVertexTypeRequest.ToBeRenamedProperties != null)
+            {
+                foreach (var aToBeRenamedAttributes in myAlterVertexTypeRequest.ToBeRenamedProperties)
+                {
+                    if (!CheckOldName(aToBeRenamedAttributes.Key, vertexType))
+                    {
+                        throw new InvalidAlterVertexTypeException(String.Format("It is not possible to rename {0} into {1}. The to be renamed attribute does not exist."));
+                    }
+
+                    if (!CheckNewName(aToBeRenamedAttributes.Value, vertexType))
+                    {
+                        throw new InvalidAlterVertexTypeException(String.Format("It is not possible to rename {0} into {1}. The new attribute name already exists."));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if the new name of the attribute already exists
+        /// </summary>
+        /// <param name="myNewAttributeName"></param>
+        /// <param name="vertexType"></param>
+        /// <returns></returns>
+        private static bool CheckNewName(string myNewAttributeName, IVertexType vertexType)
+        {
+            if (myNewAttributeName != null)
+            {
+                foreach (var aVertexType in vertexType.GetChildVertexTypes(true, true))
+                {
+                    var attributesOfCurrentVertexType = aVertexType.GetAttributeDefinitions(false).ToList();
+
+                    if (attributesOfCurrentVertexType.Any(_ => _.Name == myNewAttributeName))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if the old name exists on the given vertex type
+        /// </summary>
+        /// <param name="myOldAttributeName"></param>
+        /// <param name="vertexType"></param>
+        /// <returns></returns>
+        private static bool CheckOldName(string myOldAttributeName, IVertexType vertexType)
+        {
+            if (myOldAttributeName != null)
+            {
+                var attributesOfCurrentVertexType = vertexType.GetAttributeDefinitions(false).ToList();
+
+                return attributesOfCurrentVertexType.Any(_ => _.Name == myOldAttributeName);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if the to be removed attributes exists on this type
+        /// </summary>
+        /// <param name="myAlterVertexTypeRequest"></param>
+        /// <param name="vertexType"></param>
+        private static void CheckToBeRemovedAttributes(RequestAlterVertexType myAlterVertexTypeRequest, IVertexType vertexType)
+        {
+            #region properties
+
+            var attributesOfCurrentVertexType = vertexType.GetAttributeDefinitions(false).ToList();
+
+            if (myAlterVertexTypeRequest.ToBeRemovedProperties != null)
+            {
+                foreach (var aToBeDeletedAttribute in myAlterVertexTypeRequest.ToBeRemovedProperties)
+                {
+                    if (!attributesOfCurrentVertexType.Any(_ => _.Name == aToBeDeletedAttribute))
+                    {
+                        throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute);
+                    }
+                }
+            }
+
+            #endregion
+
+            #region outgoing Edges
+
+            if (myAlterVertexTypeRequest.ToBeRemovedOutgoingEdges != null)
+            {
+                foreach (var aToBeDeletedAttribute in myAlterVertexTypeRequest.ToBeRemovedOutgoingEdges)
+                {
+                    if (!attributesOfCurrentVertexType.Any(_ => _.Name == aToBeDeletedAttribute))
+                    {
+                        throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute);
+                    }
+                }
+            }
+
+            #endregion
+
+            #region incoming edges
+
+            if (myAlterVertexTypeRequest.ToBeRemovedIncomingEdges != null)
+            {
+                foreach (var aToBeDeletedAttribute in myAlterVertexTypeRequest.ToBeRemovedIncomingEdges)
+                {
+                    if (!attributesOfCurrentVertexType.Any(_ => _.Name == aToBeDeletedAttribute))
+                    {
+                        throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute);
+                    }
+                }
+            }
+
+            #endregion
+        }
+
+        /// <summary>
+        /// Checks if the to be added attributes exist in the given vertex type or derived oness
+        /// </summary>
+        /// <param name="myAlterVertexTypeRequest"></param>
+        /// <param name="vertexType"></param>
+        private static void CheckToBeAddedAttributes(RequestAlterVertexType myAlterVertexTypeRequest, IVertexType vertexType)
+        {
+            foreach (var aVertexType in vertexType.GetChildVertexTypes(true, true))
+            {
+                var attributesOfCurrentVertexType = aVertexType.GetAttributeDefinitions(false).ToList();
+
+                #region binary properties
+                if (myAlterVertexTypeRequest.ToBeAddedBinaryProperties != null)
+                {
+                    foreach (var aToBeAddedAttribute in myAlterVertexTypeRequest.ToBeAddedBinaryProperties)
+                    {
+                        if (attributesOfCurrentVertexType.Any(_ => _.Name == aToBeAddedAttribute.AttributeName))
+                        {
+                            throw new VertexAttributeAlreadyExistsException(aToBeAddedAttribute.AttributeName);
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region outgoing edges
+
+                if (myAlterVertexTypeRequest.ToBeAddedOutgoingEdges != null)
+                {
+                    foreach (var aToBeAddedAttribute in myAlterVertexTypeRequest.ToBeAddedOutgoingEdges)
+                    {
+                        if (attributesOfCurrentVertexType.Any(_ => _.Name == aToBeAddedAttribute.AttributeName))
+                        {
+                            throw new VertexAttributeAlreadyExistsException(aToBeAddedAttribute.AttributeName);
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region Incoming edges
+                if (myAlterVertexTypeRequest.ToBeAddedIncomingEdges != null)
+                {
+                    foreach (var aToBeAddedAttribute in myAlterVertexTypeRequest.ToBeAddedIncomingEdges)
+                    {
+                        if (attributesOfCurrentVertexType.Any(_ => _.Name == aToBeAddedAttribute.AttributeName))
+                        {
+                            throw new VertexAttributeAlreadyExistsException(aToBeAddedAttribute.AttributeName);
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region property
+
+                if (myAlterVertexTypeRequest.ToBeAddedProperties != null)
+                {
+                    foreach (var aToBeAddedAttribute in myAlterVertexTypeRequest.ToBeAddedProperties)
+                    {
+                        if (attributesOfCurrentVertexType.Any(_ => _.Name == aToBeAddedAttribute.AttributeName))
+                        {
+                            throw new VertexAttributeAlreadyExistsException(aToBeAddedAttribute.AttributeName);
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region unknown attributes
+
+                if (myAlterVertexTypeRequest.ToBeAddedUnknownAttributes != null)
+                {
+                    foreach (var aToBeAddedAttribute in myAlterVertexTypeRequest.ToBeAddedUnknownAttributes)
+                    {
+                        if (attributesOfCurrentVertexType.Any(_ => _.Name == aToBeAddedAttribute.AttributeName))
+                        {
+                            throw new VertexAttributeAlreadyExistsException(aToBeAddedAttribute.AttributeName);
+                        }
+                    }
+                }
+
+                #endregion
+            }
         }
 
         #endregion
@@ -377,6 +785,16 @@ namespace sones.GraphDB.Manager.TypeManagement
                         throw new Exception("Unknown multiplicity for properties.");
                 }
             return prop;
+        }
+
+        public override void Initialize(IMetaManager myMetaManager)
+        {
+            _vertexTypeManager = myMetaManager.VertexTypeManager.ExecuteManager;
+        }
+
+        public override void Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            throw new NotImplementedException();
         }
     }
 }

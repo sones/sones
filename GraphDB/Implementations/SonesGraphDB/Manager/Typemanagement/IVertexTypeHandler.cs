@@ -6,8 +6,17 @@ using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    public interface IVertexTypeHandler
+    public interface IVertexTypeHandler: IManager
     {
+        /// <summary>
+        /// Is there a vertex type to a given name
+        /// </summary>
+        /// <param name="myVertexTypeName">The name of the interesting vertex type</param>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <returns>True or false</returns>
+        bool HasVertexType(string myVertexTypeName, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+
         /// <summary>
         /// Gets a vertex type by id.
         /// </summary>
