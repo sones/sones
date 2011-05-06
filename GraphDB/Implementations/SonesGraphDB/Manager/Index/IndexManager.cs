@@ -333,7 +333,7 @@ namespace sones.GraphDB.Manager.Index
         public IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             myVertexType.CheckNull("myVertexType");
-            return myPropertyDefinition.InIndices.Where(_=>myVertexType.Equals(_.VertexType)).Select(_ => _indices[_.ID]);
+            return myPropertyDefinition.InIndices.Where(_ => myVertexType.Equals(_.VertexType)).Select(_ => _indices[_.ID]);
             
         }
 
