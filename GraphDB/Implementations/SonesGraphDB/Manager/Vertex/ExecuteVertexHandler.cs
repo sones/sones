@@ -919,6 +919,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         private IEnumerable<IVertex> ExecuteUpdates(IEnumerable<IGrouping<long, IVertex>> groups, Dictionary<IVertex, Tuple<long?, string, VertexUpdateDefinition>> updates, TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            List<IVertex> result = new List<IVertex>();
             foreach (var group in groups)
             {
                 var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(group.Key, myTransaction, mySecurity);
@@ -941,6 +942,7 @@ namespace sones.GraphDB.Manager.Vertex
                         ? _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, group.Key, update.Item3, update.Item2, update.Item1.Value)
                         : _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, group.Key, update.Item3, update.Item2, 0L, true);
 
+                    result.Add(updatedVertex);
 
                     if (neededPropNames.CountIsGreater(0))
                     {
@@ -950,7 +952,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                 }
             }
-            return null;
+            return result;
         }
 
         private void AddToIndex(IDictionary<string, IComparable> structured, long id, IVertexType vertexType, Dictionary<IIndex<IComparable, long>, IList<IPropertyDefinition>> indices, TransactionToken myTransaction, SecurityToken mySecurity)

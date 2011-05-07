@@ -54,7 +54,7 @@ namespace sones.GraphDB.Request.Update
         /// </summary>
         public override void Execute(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexManager.ExecuteManager.UpdateVertices(_request, TransactionToken, SecurityToken);
+            updatedVertices = myMetaManager.VertexManager.ExecuteManager.UpdateVertices(_request, TransactionToken, SecurityToken);
         }
 
         /// <summary>
