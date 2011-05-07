@@ -1014,12 +1014,223 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             var vertexType = GetVertexType(myAlterVertexTypeRequest.VertexTypeName, myTransactionToken, mySecurityToken);
 
-            #region action
+            #region remove stuff
 
-            
+            RemoveMandatoryConstraint(myAlterVertexTypeRequest.ToBeRemovedMandatories, vertexType, myTransactionToken,
+                                      mySecurityToken);
+
+            RemoveUniqueConstraint(myAlterVertexTypeRequest.ToBeRemovedUniques, vertexType, myTransactionToken,
+                                      mySecurityToken);
+
+            RemoveIndices(myAlterVertexTypeRequest.ToBeRemovedIndices, vertexType, myTransactionToken, mySecurityToken);
+
+            RemoveAttributes(myAlterVertexTypeRequest.ToBeRemovedIncomingEdges,
+                             myAlterVertexTypeRequest.ToBeRemovedOutgoingEdges,
+                             myAlterVertexTypeRequest.ToBeRemovedProperties, vertexType, myTransactionToken,
+                             mySecurityToken);
 
             #endregion
 
+            #region add stuff
+
+            AddMandatoryConstraint(myAlterVertexTypeRequest.ToBeAddedMandatories, vertexType, myTransactionToken,
+                                   mySecurityToken);
+
+            AddUniqueConstraint(myAlterVertexTypeRequest.ToBeAddedUniques, vertexType, myTransactionToken,
+                                mySecurityToken);
+
+            AddIndices(myAlterVertexTypeRequest.ToBeAddedIndices, vertexType, myTransactionToken, mySecurityToken);
+
+            AddAttributes(myAlterVertexTypeRequest.ToBeAddedBinaryProperties,
+                          myAlterVertexTypeRequest.ToBeAddedIncomingEdges,
+                          myAlterVertexTypeRequest.ToBeAddedOutgoingEdges, 
+                          myAlterVertexTypeRequest.ToBeAddedProperties,
+                          vertexType, myTransactionToken, mySecurityToken);
+
+            RenameAttributes(myAlterVertexTypeRequest.ToBeRenamedProperties, vertexType, myTransactionToken,
+                             mySecurityToken);
+
+            #endregion
+
+            #region misc
+
+            ChangeCommentOnVertexType(vertexType, myAlterVertexTypeRequest.AlteredComment, myTransactionToken,mySecurityToken);
+            RenameVertexType(vertexType, myAlterVertexTypeRequest.AlteredVertexTypeName, myTransactionToken, mySecurityToken);
+
+            #endregion
+        }
+
+        /// <summary>
+        /// Renames attributes
+        /// </summary>
+        /// <param name="myToBeRenamedAttributes"></param>
+        /// <param name="vertexType"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="mySecurityToken"></param>
+        private void RenameAttributes(Dictionary<string, string> myToBeRenamedAttributes, IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            if (myToBeRenamedAttributes.IsNotNullOrEmpty())
+            {
+                throw new NotImplementedException();                
+            }
+        }
+
+        /// <summary>
+        /// Adds attributes
+        /// </summary>
+        /// <param name="myToBeAddedBinaryProperties"></param>
+        /// <param name="myToBeAddedIncomingEdges"></param>
+        /// <param name="myToBeAddedOutgoingEdges"></param>
+        /// <param name="myToBeAddedProperties"></param>
+        /// <param name="vertexType"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="mySecurityToken"></param>
+        private void AddAttributes(IEnumerable<BinaryPropertyPredefinition> myToBeAddedBinaryProperties, IEnumerable<IncomingEdgePredefinition> myToBeAddedIncomingEdges, IEnumerable<OutgoingEdgePredefinition> myToBeAddedOutgoingEdges, IEnumerable<PropertyPredefinition> myToBeAddedProperties, IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            if (myToBeAddedBinaryProperties.IsNotNullOrEmpty() ||
+                myToBeAddedIncomingEdges.IsNotNullOrEmpty() ||
+                myToBeAddedOutgoingEdges.IsNotNullOrEmpty() ||
+                myToBeAddedProperties.IsNotNullOrEmpty())
+            {
+                throw new NotImplementedException();    
+            }
+        }
+
+        /// <summary>
+        /// Adds indices
+        /// </summary>
+        /// <param name="myToBeAddedIndices"></param>
+        /// <param name="vertexType"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="mySecurityToken"></param>
+        private void AddIndices(IEnumerable<IndexPredefinition> myToBeAddedIndices, IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            if (myToBeAddedIndices.IsNotNullOrEmpty())
+            {
+                throw new NotImplementedException();                
+            }
+        }
+
+        /// <summary>
+        /// Adds a unique constraint
+        /// </summary>
+        /// <param name="myToBeAddedUniques"></param>
+        /// <param name="vertexType"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="mySecurityToken"></param>
+        private void AddUniqueConstraint(IEnumerable<UniquePredefinition> myToBeAddedUniques, IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            if (myToBeAddedUniques.IsNotNullOrEmpty())
+            {
+                throw new NotImplementedException();                
+            }
+        }
+
+        /// <summary>
+        /// Adds a mandatory constraint
+        /// </summary>
+        /// <param name="myToBeAddedMandatories"></param>
+        /// <param name="vertexType"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="mySecurityToken"></param>
+        private void AddMandatoryConstraint(IEnumerable<MandatoryPredefinition> myToBeAddedMandatories, IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            if (myToBeAddedMandatories.IsNotNullOrEmpty())
+            {
+                throw new NotImplementedException();                
+            }
+        }
+
+        /// <summary>
+        /// Removes attributes
+        /// </summary>
+        /// <param name="myToBeRemovedIncomingEdges"></param>
+        /// <param name="myToBeRemovedOutgoingEdges"></param>
+        /// <param name="myToBeRemovedProperties"></param>
+        /// <param name="vertexType"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="mySecurityToken"></param>
+        private void RemoveAttributes(IEnumerable<string> myToBeRemovedIncomingEdges, IEnumerable<string> myToBeRemovedOutgoingEdges, IEnumerable<string> myToBeRemovedProperties, IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            if (myToBeRemovedIncomingEdges.IsNotNullOrEmpty() || myToBeRemovedOutgoingEdges.IsNotNullOrEmpty() || myToBeRemovedProperties.IsNotNullOrEmpty())
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Removes indices
+        /// </summary>
+        /// <param name="myToBeRemovedIndices"></param>
+        /// <param name="vertexType"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="mySecurityToken"></param>
+        private void RemoveIndices(Dictionary<string, string> myToBeRemovedIndices, IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            if (myToBeRemovedIndices.IsNotNullOrEmpty())
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Removes unique constaints
+        /// </summary>
+        /// <param name="myUniqueConstraints"></param>
+        /// <param name="myVertexType"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="mySecurityToken"></param>
+        private void RemoveUniqueConstraint(IEnumerable<string> myUniqueConstraints, IVertexType myVertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            if (myUniqueConstraints.IsNotNullOrEmpty())
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Removes mandatory constraits
+        /// </summary>
+        /// <param name="myToBeRemovedMandatories"></param>
+        /// <param name="myVertexType"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="mySecurityToken"></param>
+        private void RemoveMandatoryConstraint(IEnumerable<string> myToBeRemovedMandatories, IVertexType myVertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            if (myToBeRemovedMandatories.IsNotNullOrEmpty())
+            {
+                throw new NotImplementedException();                
+            }
+        }
+
+        /// <summary>
+        /// Change the comment on the vertex type
+        /// </summary>
+        /// <param name="vertexType"></param>
+        /// <param name="myNewComment"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="mySecurityToken"></param>
+        private void ChangeCommentOnVertexType(IVertexType vertexType, string myNewComment, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            if (!String.IsNullOrEmpty(myNewComment))
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Renames a vertex type
+        /// </summary>
+        /// <param name="vertexType"></param>
+        /// <param name="myNewVertexTypeName"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="mySecurityToken"></param>
+        private void RenameVertexType(IVertexType vertexType, string myNewVertexTypeName, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            if (myNewVertexTypeName != null)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public override bool HasVertexType(string myAlteredVertexTypeName, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
