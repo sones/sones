@@ -233,7 +233,7 @@ namespace sones.GraphDB.Manager.Vertex
             IEnumerable<SingleEdgeAddDefinition> singleEdges;
             IEnumerable<HyperEdgeAddDefinition> hyperEdges;
 
-            CreateEdgeAddDefinitions(myInsertDefinition.OutgoingEdges, myVertexType, myTransaction, mySecurity, source, date, out singleEdges, out hyperEdges);
+            CreateEdgeAddDefinitions(myInsertDefinition.OutgoingEdges, myVertexType, myTransaction, mySecurity, source, creationdate, out singleEdges, out hyperEdges);
 
 
             var binaries = (myInsertDefinition.BinaryProperties == null)
@@ -251,7 +251,7 @@ namespace sones.GraphDB.Manager.Vertex
         {
             if (structured != null)
             {
-                List<long> toDeleteKeys;
+                List<long> toDeleteKeys = null;
                 foreach (var structure in structured)
                 {
                     long? toDelete = null;
@@ -275,7 +275,7 @@ namespace sones.GraphDB.Manager.Vertex
                             break;
                         case AttributeDefinitions.VertexDotRevision:
                             //TODO a better exception here.
-                            throw new Exception("Revision can not be set.")
+                            throw new Exception("Revision can not be set.");
                         case AttributeDefinitions.VertexDotUUID:
                             vertexID = (long)structure.Value;
                             toDelete = structure.Key;
@@ -284,7 +284,10 @@ namespace sones.GraphDB.Manager.Vertex
                     }
 
                     if (toDelete.HasValue)
+                    {
+                        toDeleteKeys = toDeleteKeys ?? new List<long>();
                         toDeleteKeys.Add(toDelete.Value);
+                    }
                 }
 
                 foreach (var key in toDeleteKeys)
