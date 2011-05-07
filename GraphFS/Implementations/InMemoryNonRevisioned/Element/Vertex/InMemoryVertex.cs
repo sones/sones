@@ -16,6 +16,8 @@ namespace sones.GraphFS.Element.Vertex
     {
         #region data
 
+        private readonly object _lockobject = new object();
+
         public Boolean IsBulkVertex = true;
 
         /// <summary>
@@ -55,7 +57,6 @@ namespace sones.GraphFS.Element.Vertex
         private readonly Int64 _vertexRevisionID;
        
         #endregion
-        
 
         #region constructor
 
@@ -455,18 +456,16 @@ namespace sones.GraphFS.Element.Vertex
 
         public void UpdateComment(String myComment)
         {
-            lock (_comment)
+            lock (_lockobject)
             {
-                if (myComment != null)
-                { 
-                    _comment = myComment;
-                }
+
+                _comment = myComment;
             }
         }
 
         public void UpdateBinaryProperties(IDictionary<Int64, StreamAddDefinition> myBinaryUpdatedProperties, IEnumerable<Int64> myDeletedBinaryProperties)
         {
-            lock (_binaryProperties)
+            lock (_lockobject)
             {
                 if (myDeletedBinaryProperties != null)
                 {
@@ -495,7 +494,7 @@ namespace sones.GraphFS.Element.Vertex
 
         public void UpdateStructuredProperties(StructuredPropertiesUpdate myStructuredUpdates)
         {
-            lock (_structuredProperties)
+            lock (_lockobject)
             {
                 if (myStructuredUpdates.Deleted != null)
                 {
@@ -524,7 +523,7 @@ namespace sones.GraphFS.Element.Vertex
 
         public void UpdateUnstructuredProperties(UnstructuredPropertiesUpdate myUnstructuredUpdates)
         {
-            lock (_unstructuredProperties)
+            lock (_lockobject)
             {
                 if (myUnstructuredUpdates.Deleted != null)
                 {
@@ -623,7 +622,7 @@ namespace sones.GraphFS.Element.Vertex
         /// <param name="UnstructuredProperties"></param>
         internal void Activate(Dictionary<long, Stream> binaryProperties, Dictionary<long, IEdge> edges, string Comment, long CreationDate, long ModificationDate, IDictionary<long, IComparable> StructuredProperties, IDictionary<string, object> UnstructuredProperties)
         {
-            lock (this)
+            lock (_lockobject)
             {
                 //copy the values
                 _binaryProperties = binaryProperties;

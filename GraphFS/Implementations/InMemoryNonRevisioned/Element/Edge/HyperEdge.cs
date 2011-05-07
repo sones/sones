@@ -15,6 +15,8 @@ namespace sones.GraphFS.Element.Edge
     {
         #region data
 
+        private readonly object _lockobject = new object();
+
         /// <summary>
         /// The edge type id
         /// </summary>
@@ -74,7 +76,7 @@ namespace sones.GraphFS.Element.Edge
 
         public void UpdateComment(String myComment)
         {
-            lock (_comment)
+            lock (_lockobject)
             {
                 if (myComment != null)
                 {
@@ -85,7 +87,7 @@ namespace sones.GraphFS.Element.Edge
 
         public void UpdateStructuredProperties(IDictionary<long, IComparable> myUpdatedProperties, IEnumerable<long> myDeletedProperties)
         {
-            lock (_structuredProperties)
+            lock (_lockobject)
             {
                 if (myDeletedProperties != null)
                 {
@@ -114,7 +116,7 @@ namespace sones.GraphFS.Element.Edge
 
         public void UpdateUnStructuredProperties(IDictionary<String, Object> myUpdatedProperties, IEnumerable<String> myDeletedProperties)
         {
-            lock (_unstructuredProperties)
+            lock (_lockobject)
             {
                 if (myDeletedProperties != null)
                 {

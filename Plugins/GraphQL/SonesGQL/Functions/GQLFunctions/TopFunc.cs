@@ -43,20 +43,37 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
-            long propertyID = 0;
+            var currentInnerEdgeType = ((IOutgoingEdgeDefinition)myAttributeDefinition).InnerEdgeType;
+            bool orderByWeight = false;
+            Int64 weightPropertyID = 0;
+            int numOfEntries = Convert.ToInt32(myParams[0].Value);
+
+            if (currentInnerEdgeType.HasProperty("Weight"))
+            {
+                orderByWeight = true;
+                weightPropertyID = currentInnerEdgeType.GetPropertyDefinition("Weight").ID;
+            }
 
             if (myCallingObject is IHyperEdge)
             {
                 var hyperEdge = myCallingObject as IHyperEdge;
 
-                var topVertices = hyperEdge.InvokeHyperEdgeFunc<IEnumerable<IVertex>>(singleEdges =>
+                if (orderByWeight)
+                {
+                    var topVertices = hyperEdge.InvokeHyperEdgeFunc<IEnumerable<IVertex>>(singleEdges =>
                     {
                         return singleEdges
-                            .OrderByDescending(edge => edge.GetProperty(propertyID))
+                            .OrderByDescending(edge => edge.GetProperty(weightPropertyID))
                             .Select(aOrderedEdge => aOrderedEdge.GetTargetVertex());
                     });
 
-                return new FuncParameter(topVertices);
+                    return new FuncParameter(topVertices);
+
+                }
+                else
+                {
+                    return new FuncParameter(hyperEdge.GetTargetVertices().Take(numOfEntries));
+                }
             }
 
             throw new InvalidTypeException(myCallingObject.GetType().ToString(), "IHyperEdge");
