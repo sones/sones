@@ -614,24 +614,190 @@ namespace sones.GraphDB.Manager.Vertex
 
             if (myDeleteRequest.ToBeDeletedAttributes.IsNotNullOrEmpty())
             {
-                foreach (var aVertex in toBeProcessedVertices)
-	            {
-                    throw new NotImplementedException();
-	            }
+                List<long> toBeDeletedStructuredPropertiesUpdate = new List<long>();
+                List<String> tobeDeletedUnstructuredProperties = new List<String>();
+                List<long> toBeDeletedBinaryProperties = new List<long>();
+                List<long> toBeDeletedSingleEdges = new List<long>();
+                List<long> toBeDeletedHyperEdges = new List<long>();
+                Dictionary<Int64, IPropertyDefinition> toBeDeletedProperties = new Dictionary<long, IPropertyDefinition>();
+                Dictionary<Int64, IOutgoingEdgeDefinition> toBeDeletedEdges = new Dictionary<long, IOutgoingEdgeDefinition>();
+                Dictionary<Int64, IBinaryPropertyDefinition> toBeDeletedBinaries = new Dictionary<long, IBinaryPropertyDefinition>();
+                HashSet<String> toBeDeletedUndefinedAttributes = new HashSet<string>();
 
+                //remove the attributes
+                foreach (var aVertexTypeGroup in toBeProcessedVertices.GroupBy(_ => _.VertexTypeID))
+                {
+                    var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(aVertexTypeGroup.Key, myTransactionToken, mySecurityToken);
+
+                    #region prepare update definition
+
+                    toBeDeletedStructuredPropertiesUpdate.Clear();
+                    StructuredPropertiesUpdate structuredProperties = new StructuredPropertiesUpdate(null, toBeDeletedStructuredPropertiesUpdate);
+
+                    tobeDeletedUnstructuredProperties.Clear();
+                    UnstructuredPropertiesUpdate unstructuredProperties = new UnstructuredPropertiesUpdate(null, tobeDeletedUnstructuredProperties);
+
+                    toBeDeletedBinaryProperties.Clear();
+                    BinaryPropertiesUpdate binaryProperties = new BinaryPropertiesUpdate(null, toBeDeletedBinaryProperties);
+
+                    toBeDeletedSingleEdges.Clear();
+                    SingleEdgeUpdate singleEdges = new SingleEdgeUpdate(null, toBeDeletedSingleEdges);
+
+                    toBeDeletedHyperEdges.Clear();
+                    HyperEdgeUpdate hyperEdges = new HyperEdgeUpdate(null, toBeDeletedHyperEdges);
+
+                    VertexUpdateDefinition update = new VertexUpdateDefinition(null, structuredProperties, unstructuredProperties, binaryProperties, singleEdges, hyperEdges);
+
+                    #endregion
+
+                    #region sorting attributes
+
+                    toBeDeletedProperties.Clear();
+                    toBeDeletedEdges.Clear();
+                    toBeDeletedBinaries.Clear();
+                    toBeDeletedUndefinedAttributes.Clear();
+
+                    foreach (var aToBeDeleted in myDeleteRequest.ToBeDeletedAttributes)
+                    {
+                        if (!vertexType.HasAttribute(aToBeDeleted))
+                        {
+                            toBeDeletedUndefinedAttributes.Add(aToBeDeleted);
+                        }
+
+                        var attribute = vertexType.GetAttributeDefinition(aToBeDeleted);
+
+                        switch (attribute.Kind)
+                        {
+                            case AttributeType.Property:
+                                toBeDeletedProperties.Add(attribute.ID, (IPropertyDefinition)attribute);
+                                break;
+
+                            case AttributeType.OutgoingEdge:
+                                toBeDeletedEdges.Add(attribute.ID, (IOutgoingEdgeDefinition)attribute);
+                                break;
+
+                            case AttributeType.BinaryProperty:
+                                toBeDeletedBinaries.Add(attribute.ID, (IBinaryPropertyDefinition)attribute);
+                                break;
+                        }
+                    }
+
+                    #endregion
+
+                    foreach (var aVertex in aVertexTypeGroup.ToList())
+                    {
+                        #region fetch to be deleted attributes
+
+                        #region properties
+
+                        foreach (var aToBeDeletedProperty in toBeDeletedProperties)
+                        {
+                            if (aVertex.HasProperty(aToBeDeletedProperty.Key))
+                            {
+                                foreach (var aCorrespondingIndex in _indexManager.GetIndices(vertexType, vertexType.GetPropertyDefinition(aToBeDeletedProperty.Value.ID), mySecurityToken, myTransactionToken))
+                                {
+                                    RemoveVertexPropertyFromIndex(aVertex, aToBeDeletedProperty.Value, aCorrespondingIndex, mySecurityToken, myTransactionToken);
+                                }
+
+                                toBeDeletedStructuredPropertiesUpdate.Add(aToBeDeletedProperty.Key);
+                            }
+                        }
+
+                        #endregion
+
+                        #region edges
+
+                        foreach (var aToBeDeltedEdge in toBeDeletedEdges)
+                        {
+                            if (aVertex.HasOutgoingEdge(aToBeDeltedEdge.Key))
+                            {
+                                switch (aToBeDeltedEdge.Value.Multiplicity)
+                                {
+                                    case EdgeMultiplicity.SingleEdge:
+
+                                        toBeDeletedSingleEdges.Add(aToBeDeltedEdge.Key);
+
+                                        break;
+                                    case EdgeMultiplicity.MultiEdge:
+                                    case EdgeMultiplicity.HyperEdge:
+
+                                        toBeDeletedHyperEdges.Add(aToBeDeltedEdge.Key);
+
+                                        break;
+                                }
+                            }
+                        }
+
+                        #endregion
+
+                        #region binaries
+
+                        foreach (var aBinaryProperty in toBeDeletedBinaryProperties)
+                        {
+                            //TODO: Add HasBinaryProperty to IVertex
+                            if (aVertex.GetAllBinaryProperties((_, __) => _ == aBinaryProperty).Count() > 0)
+                            {
+                                toBeDeletedBinaryProperties.Add(aBinaryProperty);
+                            }
+                        }
+
+                        #endregion
+
+                        #region undefined data
+
+                        foreach (var aUnstructuredProperty in toBeDeletedUndefinedAttributes)
+                        {
+                            if (aVertex.HasUnstructuredProperty(aUnstructuredProperty))
+                            {
+                                tobeDeletedUnstructuredProperties.Add(aUnstructuredProperty);
+                            }
+                        }
+
+                        #endregion
+
+                        #endregion
+
+                        _vertexStore.UpdateVertex(mySecurityToken, myTransactionToken, aVertex.VertexID, aVertex.VertexTypeID, update, aVertex.EditionName, aVertex.VertexRevisionID, false);
+                    }
+                }
             }
             else
             {
                 //remove the nodes
-                foreach (var aVertex in toBeProcessedVertices.ToList())
+                foreach (var aVertexTypeGroup in toBeProcessedVertices.GroupBy(_ => _.VertexTypeID))
                 {
-                    RemoveVertex(aVertex, mySecurityToken, myTransactionToken);
-                }
+                    var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(aVertexTypeGroup.Key, myTransactionToken, mySecurityToken);
 
+                    foreach (var aVertex in aVertexTypeGroup.ToList())
+                    {
+                        RemoveVertex(aVertex, vertexType, mySecurityToken, myTransactionToken);
+                    }
+                }
             }
         }
 
-        private void RemoveVertex(IVertex aVertex, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void RemoveVertex(IVertex aVertex, IVertexType myVertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            RemoveVertexFromIndex(aVertex, myVertexType, mySecurityToken, myTransactionToken);
+
+            _vertexStore.RemoveVertex(mySecurityToken, myTransactionToken, aVertex.VertexID, aVertex.VertexTypeID);
+        }
+
+        private void RemoveVertexFromIndex(IVertex aVertex, IVertexType myVertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            foreach (var aStructuredProperty in myVertexType.GetPropertyDefinitions(true))
+            {
+                if (aVertex.HasProperty(aStructuredProperty.ID))
+                {
+                    foreach (var aCorrespondingIndex in _indexManager.GetIndices(myVertexType, myVertexType.GetPropertyDefinition(aStructuredProperty.ID), mySecurityToken, myTransactionToken))
+                    {
+                        RemoveVertexPropertyFromIndex(aVertex, aStructuredProperty, aCorrespondingIndex, mySecurityToken, myTransactionToken);
+                    }
+                }
+            }
+        }
+
+        private void RemoveVertexPropertyFromIndex(IVertex aVertex, IPropertyDefinition aStructuredProperty, IIndex<IComparable, long> aCorrespondingIndex, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
