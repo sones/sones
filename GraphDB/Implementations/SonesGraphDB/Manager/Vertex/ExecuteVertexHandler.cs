@@ -240,7 +240,7 @@ namespace sones.GraphDB.Manager.Vertex
             ExtractVertexProperties(myInsertDefinition, ref edition, ref comment, ref vertexID, ref creationdate, ref modificationDate, structured);
 
             //set id to maximum to allow user set UUIDs
-            _idManager[myVertexType.ID].SetToMaxID(myInsertDefinition.VertexUUID.Value);
+            _idManager[myVertexType.ID].SetToMaxID(vertexID);
 
             return new VertexAddDefinition(vertexID, myVertexType.ID, edition, hyperEdges, singleEdges, binaries, comment, creationdate, modificationDate, structured, myInsertDefinition.UnstructuredProperties);
         }
