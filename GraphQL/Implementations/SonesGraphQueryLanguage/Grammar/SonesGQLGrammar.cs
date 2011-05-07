@@ -2754,12 +2754,12 @@ namespace sones.GraphQL
 
             //#endregion
 
-            //#region Edition
+            #region Edition
 
-            //if (!String.IsNullOrWhiteSpace(myVertex.EditionName))
-            //    stringBuilder.Append(String.Concat("Edition", " = '", myVertex.EditionName, "'", delimiter));
+            if (!String.IsNullOrWhiteSpace(myVertex.EditionName))
+                stringBuilder.Append(String.Concat("Edition", " = '", myVertex.EditionName, "'", delimiter));
 
-            //#endregion
+            #endregion
 
             return stringBuilder.ToString();
         }
