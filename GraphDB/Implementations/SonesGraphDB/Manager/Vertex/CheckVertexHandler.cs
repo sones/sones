@@ -210,12 +210,11 @@ namespace sones.GraphDB.Manager.Vertex
 
         public IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            throw new NotImplementedException();
         }
     }
 }

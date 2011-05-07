@@ -119,11 +119,11 @@ namespace sones.GraphDB.TypeManagement
         public IAttributeDefinition GetAttributeDefinition(string myAttributeName)
         {
             IAttributeDefinition result;
-            if (GetAttributes_private().TryGetValue(myAttributeName, out result))
+            if (GetAttributes_private().TryGetValue(myAttributeName, out result) || !HasParentType)
                 return result;
 
 
-            return GetParentType().GetAttributeDefinition(myAttributeName); ;
+            return GetParentType().GetAttributeDefinition(myAttributeName);
         }
 
         public IAttributeDefinition GetAttributeDefinition(long myAttributeID)

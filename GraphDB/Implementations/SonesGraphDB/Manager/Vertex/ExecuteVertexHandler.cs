@@ -229,6 +229,8 @@ namespace sones.GraphDB.Manager.Vertex
             var source = new VertexInformation(myVertexType.ID, vertexID);
             long creationdate = DateTime.UtcNow.ToBinary();
             long modificationDate = creationdate;
+            String comment = myInsertDefinition.Comment;
+            String edition = myInsertDefinition.Edition;
 
             IEnumerable<SingleEdgeAddDefinition> singleEdges;
             IEnumerable<HyperEdgeAddDefinition> hyperEdges;
@@ -242,12 +244,12 @@ namespace sones.GraphDB.Manager.Vertex
 
             var structured = ConvertStructuredProperties(myInsertDefinition, myVertexType);
 
-            ExtractVertexProperties(myInsertDefinition, ref vertexID, ref creationdate, ref modificationDate, structured);
+            ExtractVertexProperties(myInsertDefinition, ref edition, ref comment, ref vertexID, ref creationdate, ref modificationDate, structured);
 
-            return new VertexAddDefinition(vertexID, myVertexType.ID, myInsertDefinition.Edition, hyperEdges, singleEdges, binaries, myInsertDefinition.Comment, creationdate, modificationDate, structured, myInsertDefinition.UnstructuredProperties);
+            return new VertexAddDefinition(vertexID, myVertexType.ID, edition, hyperEdges, singleEdges, binaries, comment, creationdate, modificationDate, structured, myInsertDefinition.UnstructuredProperties);
         }
 
-        private static void ExtractVertexProperties(RequestInsertVertex myInsertDefinition, ref long vertexID, ref long creationdate, ref long modificationDate, Dictionary<long,IComparable> structured)
+        private static void ExtractVertexProperties(RequestInsertVertex myInsertDefinition, ref String edition, ref String comment, ref long vertexID, ref long creationdate, ref long modificationDate, Dictionary<long,IComparable> structured)
         {
             if (structured != null)
             {
@@ -258,7 +260,7 @@ namespace sones.GraphDB.Manager.Vertex
                     switch ((AttributeDefinitions)structure.Key)
                     {
                         case AttributeDefinitions.VertexDotComment:
-                            myInsertDefinition.SetComment(structure.Value as String);
+                            comment = structure.Value as String;
                             toDelete = structure.Key;
                             break;
                         case AttributeDefinitions.VertexDotCreationDate:
@@ -266,7 +268,7 @@ namespace sones.GraphDB.Manager.Vertex
                             toDelete = structure.Key;
                             break;
                         case AttributeDefinitions.VertexDotEdition:
-                            myInsertDefinition.SetEdition(structure.Value as String);
+                            edition = structure.Value as String;
                             toDelete = structure.Key;
                             break;
                         case AttributeDefinitions.VertexDotModificationDate:
@@ -289,9 +291,9 @@ namespace sones.GraphDB.Manager.Vertex
                         toDeleteKeys.Add(toDelete.Value);
                     }
                 }
-
-                foreach (var key in toDeleteKeys)
-                    structured.Remove(key);
+                if (toDeleteKeys != null)
+                    foreach (var key in toDeleteKeys)
+                        structured.Remove(key);
             }
 }
 
@@ -527,20 +529,23 @@ namespace sones.GraphDB.Manager.Vertex
 
             public PropertyCopy(IPropertyProvider toCopy)
             {
-                foreach (var prop in toCopy.StructuredProperties)
-                {
-                    AddStructuredProperty(prop.Key, prop.Value);
-                }
+                if (toCopy.StructuredProperties != null)
+                    foreach (var prop in toCopy.StructuredProperties)
+                    {
+                        AddStructuredProperty(prop.Key, prop.Value);
+                    }
 
-                foreach (var prop in toCopy.UnstructuredProperties)
-                {
-                    AddUnstructuredProperty(prop.Key, prop.Value);
-                }
+                if (toCopy.UnstructuredProperties != null)
+                    foreach (var prop in toCopy.UnstructuredProperties)
+                    {
+                        AddUnstructuredProperty(prop.Key, prop.Value);
+                    }
 
-                foreach (var prop in toCopy.UnknownProperties)
-                {
-                    AddUnknownProperty(prop.Key, prop.Value);
-                }
+                if (toCopy.UnknownProperties != null)
+                    foreach (var prop in toCopy.UnknownProperties)
+                    {
+                        AddUnknownProperty(prop.Key, prop.Value);
+                    }
             }
 
             #endregion
@@ -800,6 +805,7 @@ namespace sones.GraphDB.Manager.Vertex
                         foreach (var added in myUpdate.AddedElementsToCollectionProperties)
                         {
                             var propDef = myVertexType.GetPropertyDefinition(added.Key);
+                            //myVertex.GetUnstructuredProperty<ICollectionWrapper>
                             foreach (var element in added.Value)
                             {
                                 CheckPropertyType(myVertexType.Name, element, propDef);
