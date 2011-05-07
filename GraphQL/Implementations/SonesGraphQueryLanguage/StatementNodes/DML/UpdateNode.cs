@@ -464,7 +464,14 @@ namespace sones.GraphQL.StatementNodes.DML
                             }
                         }
 
-                        result.AddElementsToCollection(attributeAssignOrUpdateList.AttributeIDChain.ContentString, edgeDefinition);
+                        if (attributeAssignOrUpdateList.Assign)
+                        {
+                            result.UpdateEdge(edgeDefinition);
+                        }
+                        else
+                        {
+                            result.AddElementsToCollection(attributeAssignOrUpdateList.AttributeIDChain.ContentString, edgeDefinition);
+                        }
 
                         #endregion
                     }
