@@ -952,82 +952,82 @@ namespace sones.GraphDB.Manager.Vertex
 
             #region get removes
 
-            IEnumerable<long> toBeDeletedSingle;
-            IEnumerable<long> toBeDeletedHyper;
-            IEnumerable<long> toBeDeletedStructured;
-            IEnumerable<String> toBeDeletedUnstructured;
-            IEnumerable<long> toBeDeletedBinaries;
+            List<long> toBeDeletedSingle = null;
+            List<long> toBeDeletedHyper = null;
+            List<long> toBeDeletedStructured = null;
+            List<String> toBeDeletedUnstructured = null;
+            List<long> toBeDeletedBinaries = null;
 
-            CreateEdgeDeleteDefinition(myVertex, myVertexType, myUpdate.RemovedAttributes, out toBeDeletedSingle, out toBeDeletedHyper, out toBeDeletedStructured, out toBeDeletedUnstructured, out toBeDeletedBinaries);
+            if (myUpdate.RemovedAttributes != null)
+            {
+                foreach (var name in myUpdate.RemovedAttributes)
+                {
+                    if (myVertexType.HasAttribute(name))
+                    {
+                        var attr = myVertexType.GetAttributeDefinition(name);
+
+                        switch (attr.Kind)
+                        {
+                            case AttributeType.Property:
+
+                                if ((attr as IPropertyDefinition).IsMandatory)
+                                    throw new MandatoryConstraintViolationException(attr.Name);
+
+                                toBeDeletedStructured = toBeDeletedStructured ?? new List<long>();
+                                toBeDeletedStructured.Add(attr.ID);
+                                break;
+                            case AttributeType.BinaryProperty:
+                                toBeDeletedBinaries = toBeDeletedBinaries ?? new List<long>();
+                                toBeDeletedBinaries.Add(attr.ID);
+                                break;
+                            case AttributeType.IncomingEdge:
+                                //TODO: a better exception here.
+                                throw new Exception("The edges on an incoming edge attribute can not be removed.");
+                            case AttributeType.OutgoingEdge:
+                                switch ((attr as IOutgoingEdgeDefinition).Multiplicity)
+                                {
+                                    case EdgeMultiplicity.HyperEdge:
+                                    case EdgeMultiplicity.MultiEdge:
+                                        toBeDeletedHyper = toBeDeletedHyper ?? new List<long>();
+                                        toBeDeletedHyper.Add(attr.ID);
+                                        break;
+                                    case EdgeMultiplicity.SingleEdge:
+                                        toBeDeletedSingle = toBeDeletedSingle ?? new List<long>();
+                                        toBeDeletedSingle.Add(attr.ID);
+                                        break;
+                                    default:
+                                        //TODO a better exception here
+                                        throw new Exception("The enumeration EdgeMultiplicity was changed, but not this switch statement.");
+                                }
+                                break;
+                            default:
+                                //TODO: a better exception here.
+                                throw new Exception("The enumeration AttributeType was updated, but not this switch statement.");
+
+                        }
+                    }
+                    else
+                    {
+                        toBeDeletedUnstructured = toBeDeletedUnstructured ?? new List<String>();
+                        toBeDeletedUnstructured.Add(name);
+                    }
+
+
+                }
+            }
 
             #endregion
 
             #region get update definitions
 
-            IDictionary<Int64, HyperEdgeUpdateDefinition> toBeUpdatedHyper;
-            IDictionary<Int64, SingleEdgeUpdateDefinition> toBeUpdatedSingle;
-            IDictionary<Int64, IComparable> toBeUpdatedStructured;
-            IDictionary<String, Object> toBeUpdatedUnstructured;
-            IDictionary<Int64, StreamAddDefinition> toBeUpdatedBinaries;
-            long? revision;
-            string edition;
-            string comment;
-
-            CreateEdgeUpdateDefinition(myVertex, myVertexType, myUpdate, myPropertyCopy, myTransaction, mySecurity, out toBeUpdatedSingle, out toBeUpdatedHyper, out toBeUpdatedStructured, out toBeUpdatedUnstructured, out toBeUpdatedBinaries, out revision, out edition, out comment);
-
-            #endregion
-
-            #region create updates
-
-            var single = (toBeUpdatedSingle != null || toBeDeletedSingle != null)
-                ? new SingleEdgeUpdate(toBeUpdatedSingle, toBeDeletedSingle)
-                : null;
-
-            var hyper = (toBeUpdatedHyper != null || toBeDeletedHyper != null)
-                ? new HyperEdgeUpdate(toBeUpdatedHyper, toBeDeletedHyper)
-                : null;
-
-            var structured = (toBeUpdatedStructured != null || toBeDeletedStructured != null)
-                ? new StructuredPropertiesUpdate(toBeUpdatedStructured, toBeDeletedStructured)
-                : null;
-
-            var unstructured = (toBeUpdatedUnstructured != null || toBeDeletedUnstructured != null)
-                ? new UnstructuredPropertiesUpdate(toBeUpdatedUnstructured, toBeDeletedUnstructured)
-                : null;
-
-            var binaries = (toBeUpdatedBinaries != null || toBeDeletedBinaries != null)
-                ? new BinaryPropertiesUpdate(toBeUpdatedBinaries, toBeDeletedBinaries)
-                : null;
-
-            #endregion
-
-            return Tuple.Create(revision, edition, new VertexUpdateDefinition(comment, structured, unstructured, binaries, single, hyper));
-        }
-
-        //HACK: this code style = lassitude * lack of time
-        private void CreateEdgeUpdateDefinition(
-            IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IPropertyProvider myPropertyCopy, TransactionToken myTransaction, SecurityToken mySecurity,
-            out IDictionary<long, SingleEdgeUpdateDefinition> outUpdatedSingle,
-            out IDictionary<long, HyperEdgeUpdateDefinition> outUpdatedHyper,
-            out IDictionary<long, IComparable> outUpdatedStructured,
-            out IDictionary<string, object> outUpdatedUnstructured,
-            out IDictionary<long, StreamAddDefinition> outUpdatedBinaries,
-            out long? outRevision,
-            out String outEdition,
-            out String outComment)
-        {
-            #region predefine
-
-            IDictionary<long, SingleEdgeUpdateDefinition> toBeUpdatedSingle = null;
-            IDictionary<long, HyperEdgeUpdateDefinition> toBeUpdatedHyper = null;
-            IDictionary<long, IComparable> toBeUpdatedStructured = null;
-            IDictionary<string, object> toBeUpdatedUnstructured = null;
-            IDictionary<long, StreamAddDefinition> toBeUpdatedBinaries = null;
+            IDictionary<Int64, HyperEdgeUpdateDefinition> toBeUpdatedHyper = null;
+            IDictionary<Int64, SingleEdgeUpdateDefinition> toBeUpdatedSingle = null;
+            IDictionary<Int64, IComparable> toBeUpdatedStructured = null ;
+            IDictionary<String, Object> toBeUpdatedUnstructured = null;
+            IDictionary<Int64, StreamAddDefinition> toBeUpdatedBinaries = null;
             long? revision = null;
-            String edition = myUpdate.UpdatedEdition;
-            String comment = myUpdate.UpdatedComment;
-
-            #endregion
+            string edition = myUpdate.UpdatedEdition;
+            string comment = myUpdate.UpdatedComment;
 
             #region property copy things
 
@@ -1186,8 +1186,6 @@ namespace sones.GraphDB.Manager.Vertex
             if (myUpdate.AddedElementsToCollectionEdges != null || myUpdate.RemovedElementsFromCollectionEdges != null || myUpdate.UpdateOutgoingEdges != null)
             {
                 VertexInformation source = new VertexInformation(myVertex.VertexTypeID, myVertex.VertexID);
-                toBeUpdatedHyper = new Dictionary<long, HyperEdgeUpdateDefinition>();
-
 /*                if (myUpdate.AddedElementsToCollectionEdges != null && myUpdate.RemovedElementsFromCollectionEdges != null)
                 {
                     var keys = myUpdate.AddedElementsToCollectionEdges.Keys.Intersect(myUpdate.RemovedElementsFromCollectionEdges.Keys);
@@ -1198,6 +1196,36 @@ namespace sones.GraphDB.Manager.Vertex
                     }
                 }
                 */
+
+                if (myUpdate.UpdateOutgoingEdges != null)
+                {
+                    foreach (var edge in myUpdate.UpdateOutgoingEdges)
+                    {
+
+                        var edgeDef = myVertexType.GetOutgoingEdgeDefinition(edge.EdgeName);
+                        switch (edgeDef.Multiplicity)
+                        {
+                            case EdgeMultiplicity.SingleEdge:
+                                var targets = GetResultingVertexIDs(myTransaction, mySecurity, edge, edgeDef.TargetVertexType);
+                                if (targets.CountIsGreater(1))
+                                    throw new Exception("Single edge can not have more than one target.");
+
+                                if (targets.CountIsGreater(0))
+                                {
+                                    
+
+                                }
+                                break;
+                            case EdgeMultiplicity.MultiEdge:
+                                break;
+                            case EdgeMultiplicity.HyperEdge:
+                                break;
+                            default:
+                                break;
+                        }
+
+                    }
+                }
                 if (myUpdate.AddedElementsToCollectionEdges != null)
                 {
                     foreach (var hyperEdge in myUpdate.AddedElementsToCollectionEdges)
@@ -1215,11 +1243,12 @@ namespace sones.GraphDB.Manager.Vertex
                         var edgeTypeID = edgeDef.ID;
                         StructuredPropertiesUpdate structuredUpdate;
                         UnstructuredPropertiesUpdate unstructuredUpdate;
-                        IEnumerable<SingleEdgeUpdateDefinition> single;
+                        IEnumerable<SingleEdgeUpdateDefinition> singleUpdate;
 
-                        CreateSingleEdgeUpdateDefinitions(source, myTransaction, mySecurity, hyperEdge.Value, edgeDef, out structuredUpdate, out unstructuredUpdate, out single);
+                        CreateSingleEdgeUpdateDefinitions(source, myTransaction, mySecurity, hyperEdge.Value, edgeDef, out structuredUpdate, out unstructuredUpdate, out singleUpdate);
 
-                        toBeUpdatedHyper.Add(edgeTypeID, new HyperEdgeUpdateDefinition(edgeTypeID, null, structuredUpdate, unstructuredUpdate, null, single));
+                        toBeUpdatedHyper = toBeUpdatedHyper ?? new Dictionary<long, HyperEdgeUpdateDefinition>();
+                        toBeUpdatedHyper.Add(edgeTypeID, new HyperEdgeUpdateDefinition(edgeTypeID, null, structuredUpdate, unstructuredUpdate, null, singleUpdate));
 
                     }
 
@@ -1238,16 +1267,71 @@ namespace sones.GraphDB.Manager.Vertex
                                 throw new Exception("Removing edges is only defined on hyper/multi edges.");
 
                             var edgeTypeID = edgeDef.ID;
-                            IEnumerable<SingleEdgeDeleteDefinition> single;
 
                             var del = CreateSingleEdgeDeleteDefinitions(source, myTransaction, mySecurity, hyperEdge.Value, edgeDef);
-
+    
+                            toBeUpdatedHyper = toBeUpdatedHyper ?? new Dictionary<long, HyperEdgeUpdateDefinition>();
                             toBeUpdatedHyper.Add(edgeTypeID, new HyperEdgeUpdateDefinition(edgeTypeID, null, null, null, del, null));
 
                         }
                     }
                 }
             }
+
+            #endregion
+
+            #region create updates
+
+            var single = (toBeUpdatedSingle != null || toBeDeletedSingle != null)
+                ? new SingleEdgeUpdate(toBeUpdatedSingle, toBeDeletedSingle)
+                : null;
+
+            var hyper = (toBeUpdatedHyper != null || toBeDeletedHyper != null)
+                ? new HyperEdgeUpdate(toBeUpdatedHyper, toBeDeletedHyper)
+                : null;
+
+            var structured = (toBeUpdatedStructured != null || toBeDeletedStructured != null)
+                ? new StructuredPropertiesUpdate(toBeUpdatedStructured, toBeDeletedStructured)
+                : null;
+
+            var unstructured = (toBeUpdatedUnstructured != null || toBeDeletedUnstructured != null)
+                ? new UnstructuredPropertiesUpdate(toBeUpdatedUnstructured, toBeDeletedUnstructured)
+                : null;
+
+            var binaries = (toBeUpdatedBinaries != null || toBeDeletedBinaries != null)
+                ? new BinaryPropertiesUpdate(toBeUpdatedBinaries, toBeDeletedBinaries)
+                : null;
+
+            #endregion
+
+            return Tuple.Create(revision, edition, new VertexUpdateDefinition(comment, structured, unstructured, binaries, single, hyper));
+        }
+
+        //HACK: this code style = lassitude * lack of time
+        private void CreateEdgeUpdateDefinition(
+            IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IPropertyProvider myPropertyCopy, TransactionToken myTransaction, SecurityToken mySecurity,
+            out IDictionary<long, SingleEdgeUpdateDefinition> outUpdatedSingle,
+            out IDictionary<long, HyperEdgeUpdateDefinition> outUpdatedHyper,
+            out IDictionary<long, IComparable> outUpdatedStructured,
+            out IDictionary<string, object> outUpdatedUnstructured,
+            out IDictionary<long, StreamAddDefinition> outUpdatedBinaries,
+            out long? outRevision,
+            out String outEdition,
+            out String outComment)
+        {
+            #region predefine
+
+            IDictionary<long, SingleEdgeUpdateDefinition> toBeUpdatedSingle = null;
+            IDictionary<long, HyperEdgeUpdateDefinition> toBeUpdatedHyper = null;
+            IDictionary<long, IComparable> toBeUpdatedStructured = null;
+            IDictionary<string, object> toBeUpdatedUnstructured = null;
+            IDictionary<long, StreamAddDefinition> toBeUpdatedBinaries = null;
+            long? revision = null;
+            String edition = myUpdate.UpdatedEdition;
+            String comment = myUpdate.UpdatedComment;
+
+            #endregion
+
             #endregion
 
             #region return
@@ -1395,63 +1479,6 @@ namespace sones.GraphDB.Manager.Vertex
 
             #endregion
 
-            if (myRemoveAttributes != null)
-            {
-                foreach (var name in myRemoveAttributes)
-                {
-                    if (myVertexType.HasAttribute(name))
-                    {
-                        var attr = myVertexType.GetAttributeDefinition(name);
-
-                        switch (attr.Kind)
-                        {
-                            case AttributeType.Property:
-
-                                if ((attr as IPropertyDefinition).IsMandatory)
-                                    throw new MandatoryConstraintViolationException(attr.Name);
-
-                                toBeDeletedStructured = toBeDeletedStructured ?? new List<long>();
-                                toBeDeletedStructured.Add(attr.ID);
-                                break;
-                            case AttributeType.BinaryProperty:
-                                toBeDeletedBinaries = toBeDeletedBinaries ?? new List<long>();
-                                toBeDeletedBinaries.Add(attr.ID);
-                                break;
-                            case AttributeType.IncomingEdge:
-                                //TODO: a better exception here.
-                                throw new Exception("The edges on an incoming edge attribute can not be removed.");
-                            case AttributeType.OutgoingEdge:
-                                switch ((attr as IOutgoingEdgeDefinition).Multiplicity)
-                                {
-                                    case EdgeMultiplicity.HyperEdge:
-                                    case EdgeMultiplicity.MultiEdge:
-                                        toBeDeletedHyper = toBeDeletedHyper ?? new List<long>();
-                                        toBeDeletedHyper.Add(attr.ID);
-                                        break;
-                                    case EdgeMultiplicity.SingleEdge:
-                                        toBeDeletedSingle = toBeDeletedSingle ?? new List<long>();
-                                        toBeDeletedSingle.Add(attr.ID);
-                                        break;
-                                    default:
-                                        //TODO a better exception here
-                                        throw new Exception("The enumeration EdgeMultiplicity was changed, but not this switch statement.");
-                                }
-                                break;
-                            default:
-                                //TODO: a better exception here.
-                                throw new Exception("The enumeration AttributeType was updated, but not this switch statement.");
-
-                        }
-                    }
-                    else
-                    {
-                        toBeDeletedUnstructured = toBeDeletedUnstructured ?? new List<String>();
-                        toBeDeletedUnstructured.Add(name);
-                    }
-
-
-                }
-            }
 
             #region return
 
