@@ -694,14 +694,37 @@ namespace sones.GraphDB.Manager.Vertex
                 }
 
                 //force execution
-                return updates.Select(_ => (_.Value.Item1.HasValue)
-                                                ? _vertexStore.UpdateVertex(mySecurity, myTransaction, _.Key.VertexID, _.Key.VertexTypeID, _.Value.Item3, _.Value.Item2, _.Value.Item1.Value)
-                                                : _vertexStore.UpdateVertex(mySecurity, myTransaction, _.Key.VertexID, _.Key.VertexTypeID, _.Value.Item3, _.Value.Item2, myCreateNewRevision: true)).ToArray();
+                return ExecuteUpdates(groupedByTypeID, updates, myTransaction, mySecurity);
 
             }
 
             return Enumerable.Empty<IVertex>();
 
+        }
+
+        private IEnumerable<IVertex> ExecuteUpdates(IEnumerable<IGrouping<long, IVertex>> groups, Dictionary<IVertex, Tuple<long?, string, VertexUpdateDefinition>> updates, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            foreach (var group in groups)
+            {
+                var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(group.Key, myTransaction, mySecurity);
+
+                var indices = vertexType.GetIndexDefinitions(false).Select(_ => _indexManager.GetIndex(vertexType, _.IndexedProperties, mySecurity, myTransaction));
+                {
+                }
+
+                foreach (var vertex in group)
+                {
+                    var update = updates[vertex];
+                    
+                    if (update.Item1.HasValue)
+                        _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, group.Key, update.Item3, update.Item2, update.Item1.Value);
+                    else
+                        _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, group.Key, update.Item3, update.Item2, 0L, true);
+
+
+                }
+            }
+            return null;
         }
 
         private IVertex UpdateVertex(IVertex vertex, VertexUpdateDefinition update, String myEdition, TransactionToken myTransaction, SecurityToken mySecurity)

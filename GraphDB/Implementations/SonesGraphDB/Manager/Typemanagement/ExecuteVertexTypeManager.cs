@@ -22,7 +22,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 {
     internal class ExecuteVertexTypeManager: AVertexTypeManager
     {
-        private IDictionary<string, IVertexType> _baseTypes = new Dictionary<String, IVertexType>();
+        private IDictionary<long, IVertexType> _baseTypes = new Dictionary<long, IVertexType>();
+        private IDictionary<String, long> _nameIndex = new Dictionary<String, long>();
         private IManagerOf<IVertexHandler> _vertexManager;
         private IIndexManager _indexManager;
         private IManagerOf<IEdgeTypeHandler> _edgeManager;
@@ -58,9 +59,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #region get static types
 
-            if (_baseTypes.ContainsKey(myTypeName))
+            if (_nameIndex.ContainsKey(myTypeName))
             {
-                return _baseTypes[myTypeName];
+                return _baseTypes[_nameIndex[myTypeName]];
             }
 
             #endregion
@@ -111,9 +112,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             #region get static types
 
-            if (Enum.IsDefined(typeof(BaseTypes), myTypeId) && _baseTypes.ContainsKey(((BaseTypes)myTypeId).ToString()))
+            if (_baseTypes.ContainsKey(myTypeId))
             {
-                return _baseTypes[((BaseTypes)myTypeId).ToString()];
+                return _baseTypes[myTypeId];
             }
 
             #endregion
@@ -165,7 +166,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             //now we store each vertex type
             for (var current = defsTopologically.First; current != null; current = current.Next)
             {
-                result[resultPos++] = new VertexType(BaseGraphStorageManager.StoreVertexType(
+               var r = new VertexType(BaseGraphStorageManager.StoreVertexType(
                     _vertexManager.ExecuteManager.VertexStore,
                     typeInfos[current.Value.VertexTypeName].VertexInfo,
                     current.Value.VertexTypeName,
@@ -179,8 +180,11 @@ namespace sones.GraphDB.Manager.TypeManagement
                     mySecurity,
                     myTransaction));
 
+                 result[resultPos++] = r;
                 _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName).Add(current.Value.VertexTypeName, typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID);
-                
+
+                _baseTypes.Add( typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID, r);
+                _nameIndex.Add(current.Value.VertexTypeName, typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID);
             }
 
             #region Store Attributes
@@ -935,7 +939,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                 if (vertex == null)
                     //TODO: better exception
                     throw new Exception("Could not load base vertex type.");
-                _baseTypes.Add(baseType.ToString(), new VertexType(vertex));
+                _baseTypes.Add((long)baseType, new VertexType(vertex));
+                _nameIndex.Add(baseType.ToString(), (long)baseType);
             }
         }
 
@@ -1240,7 +1245,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #region get static types
 
-            if (_baseTypes.ContainsKey(myAlteredVertexTypeName))
+            if (_nameIndex.ContainsKey(myAlteredVertexTypeName))
             {
                 return true;
             }
