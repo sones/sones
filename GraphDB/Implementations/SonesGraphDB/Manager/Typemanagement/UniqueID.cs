@@ -43,7 +43,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 //Repeat the question in locked area, because it might have changed.
                 if (myID > _id)
-                    _id = myID;
+                    _id = myID + 1;
             }
         }
 
