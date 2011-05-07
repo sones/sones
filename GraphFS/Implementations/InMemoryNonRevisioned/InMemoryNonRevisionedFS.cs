@@ -978,12 +978,15 @@ namespace sones.GraphFS
                                     }
 
                                     hyperEdge.UpdateEdgeType(item.Value.EdgeTypeID);
-                                    hyperEdge.UpdateUnStructuredProperties(
-                                        item.Value.UpdatedUnstructuredProperties.Updated,
-                                        item.Value.UpdatedUnstructuredProperties.Deleted);
-                                    hyperEdge.UpdateStructuredProperties(
-                                        item.Value.UpdatedStructuredProperties.Updated,
-                                        item.Value.UpdatedStructuredProperties.Deleted);
+                                    if (item.Value.UpdatedUnstructuredProperties != null)
+                                        hyperEdge.UpdateUnStructuredProperties(
+                                            item.Value.UpdatedUnstructuredProperties.Updated,
+                                            item.Value.UpdatedUnstructuredProperties.Deleted);
+
+                                    if (item.Value.UpdatedStructuredProperties != null)
+                                        hyperEdge.UpdateStructuredProperties(
+                                            item.Value.UpdatedStructuredProperties.Updated,
+                                        item    .Value.UpdatedStructuredProperties.Deleted);
 
                                     #region update the containing single edges
 

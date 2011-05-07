@@ -839,31 +839,13 @@ namespace sones.GraphDB.Manager.Vertex
 
                         var toBeUpdatedUniques = vertexType.GetUniqueDefinitions(true).Where(_ => _.UniquePropertyDefinitions.Any(__ => toBeUpdatedStructuredNames.Contains(__.Name)));
 
-
-                        /*if (group.CountIsGreater(1))
-                        {
-
-
-                            foreach (var uniqueDef in vertexType.GetUniqueDefinitions(true))
-                            {
-                                var toBeUpdatedUniques = uniqueDef.UniquePropertyDefinitions.Select(_ => _.Name).Intersect(copy);
-                                if (toBeUpdatedUniques.CountIsGreater(0))
-                                {
-                                    throw new IndexUniqueConstrainViolationException(vertexType.Name, String.Join(", ", toBeUpdatedUniques));
-                                }
-                            }
-                        }
-                        else
-                        {
-
-                        }*/
-
-
                     }
                     foreach (var vertex in group)
                     {
 
-                        var toBeUpdatedIndices = copy.StructuredProperties.ToDictionary(_ => _.Key, _ => vertexType.GetPropertyDefinition(_.Key).InIndices);
+                        //var toBeUpdatedIndices = (copy.StructuredProperties != null)
+                        //                            ? copy.StructuredProperties.ToDictionary(_ => _.Key, _ => vertexType.GetPropertyDefinition(_.Key).InIndices)
+                        //                            : null;
 
 
                         var update = CreateVertexUpdateDefinition(vertex, vertexType, myUpdate, copy, myTransaction, mySecurity);
@@ -886,23 +868,78 @@ namespace sones.GraphDB.Manager.Vertex
             {
                 var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(group.Key, myTransaction, mySecurity);
 
-                var indices = vertexType.GetIndexDefinitions(false).Select(_ => _indexManager.GetIndex(vertexType, _.IndexedProperties, mySecurity, myTransaction));
-                {
-                }
+                var indices = vertexType.GetIndexDefinitions(false).ToDictionary(_ => _indexManager.GetIndex(vertexType, _.IndexedProperties, mySecurity, myTransaction), _=>_.IndexedProperties);
+                var neededPropNames = indices.SelectMany(_=>_.Value).Select(_=>_.Name).Distinct();
 
                 foreach (var vertex in group)
                 {
                     var update = updates[vertex];
-                    
-                    if (update.Item1.HasValue)
-                        _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, group.Key, update.Item3, update.Item2, update.Item1.Value);
-                    else
-                        _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, group.Key, update.Item3, update.Item2, 0L, true);
 
+                    if (neededPropNames.CountIsGreater(0))
+                    {
+                        var structured = GetStructuredFromVertex(vertex, vertexType, neededPropNames);
+
+                        RemoveFromIndex(structured, vertexType, indices, myTransaction, mySecurity);
+                    }
+                    
+                    var updatedVertex = (update.Item1 != null &&  update.Item1.HasValue)
+                        ? _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, group.Key, update.Item3, update.Item2, update.Item1.Value)
+                        : _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, group.Key, update.Item3, update.Item2, 0L, true);
+
+
+                    if (neededPropNames.CountIsGreater(0))
+                    {
+                        var structured = GetStructuredFromVertex(updatedVertex, vertexType, neededPropNames);
+                        AddToIndex(structured, updatedVertex.VertexID, vertexType, indices, myTransaction, mySecurity);
+                    }
 
                 }
             }
             return null;
+        }
+
+        private void AddToIndex(IDictionary<string, IComparable> structured, long id, IVertexType vertexType, Dictionary<IIndex<IComparable, long>, IList<IPropertyDefinition>> indices, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            foreach (var index in indices)
+            {
+                var entry = CreateIndexEntry(index.Value, structured);
+
+                if (index.Key is ISingleValueIndex<IComparable, long>)
+                {
+                    (index.Key as ISingleValueIndex<IComparable, long>).Add(entry, id);
+                }
+                else if (index.Key is IMultipleValueIndex<IComparable, long>)
+                {
+                    //Ask: Why do I need to create a hashset for a single value??? *aaarghhh*
+                    (index.Key as IMultipleValueIndex<IComparable, long>).Add(entry, new HashSet<long>(new[] { id }));
+                }
+                else
+                    throw new NotImplementedException("Other index types are not known.");
+            }
+        }
+
+        private void RemoveFromIndex(IDictionary<string, IComparable> structured, IVertexType vertexType, Dictionary<IIndex<IComparable, long>, IList<IPropertyDefinition>> indices, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            foreach (var index in indices)
+            {
+                var entry = CreateIndexEntry(index.Value, structured);
+
+                index.Key.Remove(entry);
+            }
+        }
+
+        private IDictionary<String, IComparable> GetStructuredFromVertex(IVertex vertex, IVertexType vertexType, IEnumerable<string> neededPropNames)
+        {
+            var result = new Dictionary<String, IComparable>();
+            foreach (var propName in neededPropNames)
+            {
+                var id = vertexType.GetPropertyDefinition(propName).ID;
+
+                if (vertex.HasProperty(id))
+                    result.Add(propName, vertex.GetProperty<IComparable>(id));
+            }
+
+            return result;
         }
 
         private IVertex UpdateVertex(IVertex vertex, VertexUpdateDefinition update, String myEdition, TransactionToken myTransaction, SecurityToken mySecurity)
@@ -1144,11 +1181,14 @@ namespace sones.GraphDB.Manager.Vertex
             ExtractVertexProperties(ref edition, ref revision, ref comment, ref vertexID, ref creationDate, ref modificationDate, toBeUpdatedStructured);
             #endregion
 
-            VertexInformation source = new VertexInformation(myVertex.VertexTypeID, myVertex.VertexID);
-            if (myUpdate.AddedElementsToCollectionEdges != null || myUpdate.RemovedElementsFromCollectionEdges != null)
+            #region edge magic
+
+            if (myUpdate.AddedElementsToCollectionEdges != null || myUpdate.RemovedElementsFromCollectionEdges != null || myUpdate.UpdateOutgoingEdges != null)
             {
+                VertexInformation source = new VertexInformation(myVertex.VertexTypeID, myVertex.VertexID);
                 toBeUpdatedHyper = new Dictionary<long, HyperEdgeUpdateDefinition>();
-                if (myUpdate.AddedElementsToCollectionEdges != null && myUpdate.RemovedElementsFromCollectionEdges != null)
+
+/*                if (myUpdate.AddedElementsToCollectionEdges != null && myUpdate.RemovedElementsFromCollectionEdges != null)
                 {
                     var keys = myUpdate.AddedElementsToCollectionEdges.Keys.Intersect(myUpdate.RemovedElementsFromCollectionEdges.Keys);
                     if (keys.CountIsGreater(0))
@@ -1157,7 +1197,7 @@ namespace sones.GraphDB.Manager.Vertex
                         throw new Exception("You can not add and remove items simultaneously on a collection attribute.");
                     }
                 }
-
+                */
                 if (myUpdate.AddedElementsToCollectionEdges != null)
                 {
                     foreach (var hyperEdge in myUpdate.AddedElementsToCollectionEdges)
@@ -1208,7 +1248,8 @@ namespace sones.GraphDB.Manager.Vertex
                     }
                 }
             }
-            
+            #endregion
+
             #region return
 
             outUpdatedSingle       = toBeUpdatedSingle;

@@ -840,7 +840,10 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override void Load(TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
+        }
+
+        public override void CleanUpTypes()
+        {
         }
     }
 }

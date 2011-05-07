@@ -39,6 +39,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public abstract bool HasVertexType(string myVertexTypeName, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
+        public abstract void CleanUpTypes();
         #endregion
 
         /// <summary>

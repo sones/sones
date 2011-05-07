@@ -149,7 +149,10 @@ namespace sones.GraphDB.Manager.Index
 
                 _ownIndex.Add(myIndexDefinition.Name, childID);
                 _indices.Add(childID, index);
+
             }
+
+            _vertexTypeManager.ExecuteManager.CleanUpTypes();
 
             foreach(var type in vertexType.GetChildVertexTypes(true, true))
             {

@@ -52,6 +52,33 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region IVertexTypeManager Members
 
+        public override IVertexType GetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            #region get static types
+
+            if (_baseTypes.ContainsKey(myTypeId))
+            {
+                return _baseTypes[myTypeId];
+            }
+
+            #endregion
+
+
+            #region get from fs
+
+            var vertex = Get(myTypeId, myTransaction, mySecurity);
+
+            if (vertex == null)
+                throw new KeyNotFoundException(string.Format("A vertex type with ID {0} was not found.", myTypeId));
+
+            var result = new VertexType(vertex);
+            _baseTypes.Add(result.ID, result);
+            _nameIndex.Add(result.Name, result.ID);
+            return result;
+        
+            #endregion
+        }
+
         public override IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             if (String.IsNullOrWhiteSpace(myTypeName))
@@ -73,7 +100,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             if (vertex == null)
                 throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeName));
 
-            return new VertexType(vertex);
+            var result = new VertexType(vertex);
+            _baseTypes.Add(result.ID, result);
+            _nameIndex.Add(result.Name, result.ID);
+            return result;
+
 
             #endregion
         }
@@ -108,29 +139,6 @@ namespace sones.GraphDB.Manager.TypeManagement
             Update(myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
-        public override IVertexType GetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
-        {
-            #region get static types
-
-            if (_baseTypes.ContainsKey(myTypeId))
-            {
-                return _baseTypes[myTypeId];
-            }
-
-            #endregion
-
-
-            #region get from fs
-
-            var vertex = Get(myTypeId, myTransaction, mySecurity);
-
-            if (vertex == null)
-                throw new KeyNotFoundException(string.Format("A vertex type with ID {0} was not found.", myTypeId));
-
-            return new VertexType(vertex);
-        
-            #endregion
-        }
 
         #endregion
 
@@ -831,6 +839,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             toDeleteAttributeDefinitions.Clear();
             toDeleteIndexDefinitions.Clear();
 
+            CleanUpTypes();
+
             return deletedTypeIDs;
         }
 
@@ -1063,6 +1073,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             RenameVertexType(vertexType, myAlterVertexTypeRequest.AlteredVertexTypeName, myTransactionToken, mySecurityToken);
 
             #endregion
+
+            CleanUpTypes();
         }
 
         /// <summary>
@@ -1255,6 +1267,20 @@ namespace sones.GraphDB.Manager.TypeManagement
             var vertex = Get(myAlteredVertexTypeName, myTransactionToken, mySecurityToken);
 
             return vertex != null;
+        }
+
+        public override void CleanUpTypes()
+        {
+            var help = new Dictionary<long, IVertexType>(_baseTypes);
+
+            _baseTypes.Clear();
+            _nameIndex.Clear();
+
+            foreach (var type in new[] { BaseTypes.Attribute, BaseTypes.BaseType, BaseTypes.BinaryProperty, BaseTypes.EdgeType, BaseTypes.IncomingEdge, BaseTypes.Index, BaseTypes.OutgoingEdge, BaseTypes.VertexType })
+            {
+                _baseTypes.Add((long)type, help[(long)type]);
+                _nameIndex.Add(type.ToString(), (long)type);
+            }
         }
     }
 }
