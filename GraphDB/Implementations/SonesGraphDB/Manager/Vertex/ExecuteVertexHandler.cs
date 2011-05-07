@@ -21,6 +21,7 @@ using sones.Plugins.Index.Interfaces;
 using sones.Library.Commons.VertexStore.Definitions.Update;
 using sones.Library.LanguageExtensions;
 using System.IO;
+using sones.GraphDB.TypeManagement.Base;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -226,7 +227,8 @@ namespace sones.GraphDB.Manager.Vertex
             }
 
             var source = new VertexInformation(myVertexType.ID, vertexID);
-            long date = DateTime.UtcNow.ToBinary();
+            long creationdate = DateTime.UtcNow.ToBinary();
+            long modificationDate = creationdate;
 
             IEnumerable<SingleEdgeAddDefinition> singleEdges;
             IEnumerable<HyperEdgeAddDefinition> hyperEdges;
@@ -240,8 +242,55 @@ namespace sones.GraphDB.Manager.Vertex
 
             var structured = ConvertStructuredProperties(myInsertDefinition, myVertexType);
 
-            return new VertexAddDefinition(vertexID, myVertexType.ID, myInsertDefinition.Edition, hyperEdges, singleEdges, binaries, myInsertDefinition.Comment, date, date, structured, myInsertDefinition.UnstructuredProperties);
+            ExtractVertexProperties(myInsertDefinition, ref vertexID, ref creationdate, ref modificationDate, structured);
+
+            return new VertexAddDefinition(vertexID, myVertexType.ID, myInsertDefinition.Edition, hyperEdges, singleEdges, binaries, myInsertDefinition.Comment, creationdate, modificationDate, structured, myInsertDefinition.UnstructuredProperties);
         }
+
+        private static void ExtractVertexProperties(RequestInsertVertex myInsertDefinition, ref long vertexID, ref long creationdate, ref long modificationDate, Dictionary<long,IComparable> structured)
+        {
+            if (structured != null)
+            {
+                List<long> toDeleteKeys;
+                foreach (var structure in structured)
+                {
+                    long? toDelete = null;
+                    switch ((AttributeDefinitions)structure.Key)
+                    {
+                        case AttributeDefinitions.VertexDotComment:
+                            myInsertDefinition.SetComment(structure.Value as String);
+                            toDelete = structure.Key;
+                            break;
+                        case AttributeDefinitions.VertexDotCreationDate:
+                            creationdate = (long)structure.Value;
+                            toDelete = structure.Key;
+                            break;
+                        case AttributeDefinitions.VertexDotEdition:
+                            myInsertDefinition.SetEdition(structure.Value as String);
+                            toDelete = structure.Key;
+                            break;
+                        case AttributeDefinitions.VertexDotModificationDate:
+                            modificationDate = (long)structure.Value;
+                            toDelete = structure.Key;
+                            break;
+                        case AttributeDefinitions.VertexDotRevision:
+                            //TODO a better exception here.
+                            throw new Exception("Revision can not be set.")
+                        case AttributeDefinitions.VertexDotUUID:
+                            vertexID = (long)structure.Value;
+                            toDelete = structure.Key;
+                            break;
+
+                    }
+
+                    if (toDelete.HasValue)
+                        toDeleteKeys.Add(toDelete.Value);
+                }
+
+                foreach (var key in toDeleteKeys)
+                    structured.Remove(key);
+            }
+}
 
         private static Dictionary<long, IComparable> ConvertStructuredProperties(IPropertyProvider myInsertDefinition, IBaseType myType)
         {
