@@ -249,7 +249,7 @@ namespace sones.GraphDB.Manager.Vertex
             return Tuple.Create(revision, new VertexAddDefinition(vertexID, myVertexType.ID, edition, hyperEdges, singleEdges, binaries, comment, creationdate, modificationDate, structured, myInsertDefinition.UnstructuredProperties));
         }
 
-        private static void ExtractVertexProperties(ref String edition, ref long? revision, ref String comment, ref long vertexID, ref long creationdate, ref long modificationDate, IDictionary<long,IComparable> structured)
+        private static void ExtractVertexProperties(ref String edition, ref long? revision, ref String comment, ref long vertexID, ref long creationdate, ref long modificationDate, IDictionary<long, IComparable> structured)
         {
             if (structured != null)
             {
@@ -296,7 +296,7 @@ namespace sones.GraphDB.Manager.Vertex
                     foreach (var key in toDeleteKeys)
                         structured.Remove(key);
             }
-}
+        }
 
         private static Dictionary<long, IComparable> ConvertStructuredProperties(IPropertyProvider myInsertDefinition, IBaseType myType)
         {
@@ -358,10 +358,10 @@ namespace sones.GraphDB.Manager.Vertex
 
         private HyperEdgeAddDefinition? CreateMultiEdgeAddDefinition(
             TransactionToken myTransaction,
-            SecurityToken mySecurity, 
-            VertexInformation source, 
-            long date, 
-            EdgePredefinition edgeDef, 
+            SecurityToken mySecurity,
+            VertexInformation source,
+            long date,
+            EdgePredefinition edgeDef,
             IOutgoingEdgeDefinition attrDef)
         {
             var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, attrDef.TargetVertexType);
@@ -374,15 +374,15 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         private IEnumerable<SingleEdgeAddDefinition> CreateContainedEdges(
-            TransactionToken myTransaction, 
-            SecurityToken mySecurity, 
+            TransactionToken myTransaction,
+            SecurityToken mySecurity,
             long myDate,
-            IEnumerable<VertexInformation> vertexIDs, 
+            IEnumerable<VertexInformation> vertexIDs,
             EdgePredefinition edgeDef,
             IOutgoingEdgeDefinition attrDef,
             VertexInformation mySource)
         {
-            if ((vertexIDs == null || vertexIDs.Count() == 0 )&& (edgeDef.ContainedEdges == null || edgeDef.ContainedEdges.Count() == 0))
+            if ((vertexIDs == null || vertexIDs.Count() == 0) && (edgeDef.ContainedEdges == null || edgeDef.ContainedEdges.Count() == 0))
                 return null;
 
             List<SingleEdgeAddDefinition> result = new List<SingleEdgeAddDefinition>();
@@ -404,7 +404,7 @@ namespace sones.GraphDB.Manager.Vertex
                     if (edge.ContainedEdges != null)
                         //TODO a better exception here
                         throw new Exception("An edge within a multi edge cannot have contained edges.");
-                    
+
                     var toAdd = CreateSingleEdgeAddDefinition(myTransaction, mySecurity, myDate, Int64.MinValue, edge, attrDef.InnerEdgeType, mySource, attrDef.TargetVertexType);
 
                     if (toAdd.HasValue)
@@ -416,12 +416,12 @@ namespace sones.GraphDB.Manager.Vertex
 
         private SingleEdgeAddDefinition? CreateSingleEdgeAddDefinition(
             TransactionToken myTransaction,
-            SecurityToken mySecurity, 
-            long date, 
-            long myAttributeID, 
-            EdgePredefinition edgeDef, 
-            IEdgeType myEdgeType, 
-            VertexInformation source, 
+            SecurityToken mySecurity,
+            long date,
+            long myAttributeID,
+            EdgePredefinition edgeDef,
+            IEdgeType myEdgeType,
+            VertexInformation source,
             IVertexType myTargetType = null)
         {
             var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, myTargetType);
@@ -445,7 +445,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         private IEnumerable<VertexInformation> GetResultingVertexIDs(TransactionToken myTransaction, SecurityToken mySecurity, EdgePredefinition myEdgeDef, IVertexType myTargetType = null)
         {
-            if (myEdgeDef.VertexIDsByVertexTypeID != null || myEdgeDef.VertexIDsByVertexTypeName != null )
+            if (myEdgeDef.VertexIDsByVertexTypeID != null || myEdgeDef.VertexIDsByVertexTypeName != null)
             {
                 HashSet<VertexInformation> result = new HashSet<VertexInformation>();
                 if (myEdgeDef.VertexIDsByVertexTypeID != null)
@@ -524,7 +524,7 @@ namespace sones.GraphDB.Manager.Vertex
         /// <summary>
         /// This class copies the
         /// </summary>
-        private class PropertyCopy: IPropertyProvider
+        private class PropertyCopy : IPropertyProvider
         {
             #region c'tor
 
@@ -555,7 +555,7 @@ namespace sones.GraphDB.Manager.Vertex
 
             public IDictionary<string, IComparable> StructuredProperties { get; private set; }
 
-            public IDictionary<string, object> UnstructuredProperties{ get; private set; }
+            public IDictionary<string, object> UnstructuredProperties { get; private set; }
 
             public IDictionary<string, object> UnknownProperties { get; private set; }
 
@@ -652,7 +652,7 @@ namespace sones.GraphDB.Manager.Vertex
                             if (uniqueIndex.UniquePropertyDefinitions.Any(_ => toBeUpdatedStructuredNames.Contains(_.Name)))
                             {
                                 //the list of property names, that can make an update of multiple vertices on unique properties unique again.
-                                
+
                                 var uniquemaker = uniqueIndex.UniquePropertyDefinitions.Select(_ => _.Name).Except(toBeUpdatedStructuredNames);
                                 if (!uniquemaker.CountIsGreater(0) && group.CountIsGreater(1))
                                     throw new IndexUniqueConstrainViolationException(vertexType.Name, String.Join(", ", uniquemaker));
@@ -686,18 +686,18 @@ namespace sones.GraphDB.Manager.Vertex
                     {
 
                         var toBeUpdatedIndices = copy.StructuredProperties.ToDictionary(_ => _.Key, _ => vertexType.GetPropertyDefinition(_.Key).InIndices);
-                        
 
-                        var update = CreateVertexUpdateDefinition(vertex, vertexType, myUpdate, copy);
+
+                        var update = CreateVertexUpdateDefinition(vertex, vertexType, myUpdate, copy, myTransaction, mySecurity);
                         updates.Add(vertex, update);
                     }
                 }
-                
+
                 //force execution
-                return updates.Select(_=> (_.Value.Item1.HasValue)
+                return updates.Select(_ => (_.Value.Item1.HasValue)
                                                 ? _vertexStore.UpdateVertex(mySecurity, myTransaction, _.Key.VertexID, _.Key.VertexTypeID, _.Value.Item3, _.Value.Item2, _.Value.Item1.Value)
                                                 : _vertexStore.UpdateVertex(mySecurity, myTransaction, _.Key.VertexID, _.Key.VertexTypeID, _.Value.Item3, _.Value.Item2, myCreateNewRevision: true)).ToArray();
-                
+
             }
 
             return Enumerable.Empty<IVertex>();
@@ -709,9 +709,9 @@ namespace sones.GraphDB.Manager.Vertex
             return _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, vertex.VertexTypeID, update, myEdition);
         }
 
-        private Tuple<long?, String, VertexUpdateDefinition> CreateVertexUpdateDefinition(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IPropertyProvider myPropertyCopy)
+        private Tuple<long?, String, VertexUpdateDefinition> CreateVertexUpdateDefinition(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IPropertyProvider myPropertyCopy, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            
+
             #region get removes
 
             IEnumerable<long> toBeDeletedSingle;
@@ -719,7 +719,7 @@ namespace sones.GraphDB.Manager.Vertex
             IEnumerable<long> toBeDeletedStructured;
             IEnumerable<String> toBeDeletedUnstructured;
             IEnumerable<long> toBeDeletedBinaries;
-            
+
             CreateEdgeDeleteDefinition(myVertex, myVertexType, myUpdate.RemovedAttributes, out toBeDeletedSingle, out toBeDeletedHyper, out toBeDeletedStructured, out toBeDeletedUnstructured, out toBeDeletedBinaries);
 
             #endregion
@@ -735,7 +735,7 @@ namespace sones.GraphDB.Manager.Vertex
             string edition;
             string comment;
 
-            CreateEdgeUpdateDefinition(myVertex, myVertexType, myUpdate, myPropertyCopy, out toBeUpdatedSingle, out toBeUpdatedHyper, out toBeUpdatedStructured, out toBeUpdatedUnstructured, out toBeUpdatedBinaries, out revision, out edition, out comment);
+            CreateEdgeUpdateDefinition(myVertex, myVertexType, myUpdate, myPropertyCopy, myTransaction, mySecurity, out toBeUpdatedSingle, out toBeUpdatedHyper, out toBeUpdatedStructured, out toBeUpdatedUnstructured, out toBeUpdatedBinaries, out revision, out edition, out comment);
 
             #endregion
 
@@ -768,11 +768,11 @@ namespace sones.GraphDB.Manager.Vertex
 
         //HACK: this code style = lassitude * lack of time
         private void CreateEdgeUpdateDefinition(
-            IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IPropertyProvider myPropertyCopy,
-            out IDictionary<long, SingleEdgeUpdateDefinition> outUpdatedSingle, 
-            out IDictionary<long, HyperEdgeUpdateDefinition> outUpdatedHyper, 
-            out IDictionary<long, IComparable> outUpdatedStructured, 
-            out IDictionary<string, object> outUpdatedUnstructured, 
+            IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IPropertyProvider myPropertyCopy, TransactionToken myTransaction, SecurityToken mySecurity,
+            out IDictionary<long, SingleEdgeUpdateDefinition> outUpdatedSingle,
+            out IDictionary<long, HyperEdgeUpdateDefinition> outUpdatedHyper,
+            out IDictionary<long, IComparable> outUpdatedStructured,
+            out IDictionary<string, object> outUpdatedUnstructured,
             out IDictionary<long, StreamAddDefinition> outUpdatedBinaries,
             out long? outRevision,
             out String outEdition,
@@ -933,6 +933,7 @@ namespace sones.GraphDB.Manager.Vertex
 
             #endregion
 
+            #region extract vertex properties
             #region will be ignored
             long vertexID = 0L;
             long creationDate = 0L;
@@ -940,7 +941,73 @@ namespace sones.GraphDB.Manager.Vertex
             #endregion
 
             ExtractVertexProperties(ref edition, ref revision, ref comment, ref vertexID, ref creationDate, ref modificationDate, toBeUpdatedStructured);
+            #endregion
 
+            VertexInformation source = new VertexInformation(myVertex.VertexTypeID, myVertex.VertexID);
+            if (myUpdate.AddedElementsToCollectionEdges != null || myUpdate.RemovedElementsFromCollectionEdges != null)
+            {
+                toBeUpdatedHyper = new Dictionary<long, HyperEdgeUpdateDefinition>();
+                if (myUpdate.AddedElementsToCollectionEdges != null && myUpdate.RemovedElementsFromCollectionEdges != null)
+                {
+                    var keys = myUpdate.AddedElementsToCollectionEdges.Keys.Intersect(myUpdate.RemovedElementsFromCollectionEdges.Keys);
+                    if (keys.CountIsGreater(0))
+                    {
+                        //TOTO a better exception here
+                        throw new Exception("You can not add and remove items simultaneously on a collection attribute.");
+                    }
+                }
+
+                if (myUpdate.AddedElementsToCollectionEdges != null)
+                {
+                    foreach (var hyperEdge in myUpdate.AddedElementsToCollectionEdges)
+                    {
+                        var edgeDef = myVertexType.GetOutgoingEdgeDefinition(hyperEdge.Key);
+
+                        if (edgeDef == null)
+                            //TODO a better exception here
+                            throw new Exception("edge attribute not defined.");
+
+                        if (edgeDef.Multiplicity == EdgeMultiplicity.SingleEdge)
+                            //TODO a better exception here
+                            throw new Exception("Add edges is only defined on hyper/multi edges.");
+
+                        var edgeTypeID = edgeDef.ID;
+                        StructuredPropertiesUpdate structuredUpdate;
+                        UnstructuredPropertiesUpdate unstructuredUpdate;
+                        IEnumerable<SingleEdgeUpdateDefinition> single;
+
+                        CreateSingleEdgeUpdateDefinitions(source, myTransaction, mySecurity, hyperEdge.Value, edgeDef, out structuredUpdate, out unstructuredUpdate, out single);
+
+                        toBeUpdatedHyper.Add(edgeTypeID, new HyperEdgeUpdateDefinition(edgeTypeID, null, structuredUpdate, unstructuredUpdate, null, single));
+
+                    }
+
+                    if (myUpdate.RemovedElementsFromCollectionEdges != null)
+                    {
+                        foreach (var hyperEdge in myUpdate.RemovedElementsFromCollectionEdges)
+                        {
+                            var edgeDef = myVertexType.GetOutgoingEdgeDefinition(hyperEdge.Key);
+
+                            if (edgeDef == null)
+                                //TODO a better exception here
+                                throw new Exception("Edge attribute not defined.");
+
+                            if (edgeDef.Multiplicity == EdgeMultiplicity.SingleEdge)
+                                //TODO a better exception here
+                                throw new Exception("Removing edges is only defined on hyper/multi edges.");
+
+                            var edgeTypeID = edgeDef.ID;
+                            IEnumerable<SingleEdgeDeleteDefinition> single;
+
+                            var del = CreateSingleEdgeDeleteDefinitions(source, myTransaction, mySecurity, hyperEdge.Value, edgeDef);
+
+                            toBeUpdatedHyper.Add(edgeTypeID, new HyperEdgeUpdateDefinition(edgeTypeID, null, null, null, del, null));
+
+                        }
+                    }
+                }
+            }
+            
             #region return
 
             outUpdatedSingle       = toBeUpdatedSingle;
@@ -951,7 +1018,106 @@ namespace sones.GraphDB.Manager.Vertex
             outRevision = revision;
             outEdition = edition;
             outComment = comment;
+
             #endregion
+        }
+
+        private IEnumerable<SingleEdgeDeleteDefinition> CreateSingleEdgeDeleteDefinitions(VertexInformation mySource, TransactionToken myTransaction,SecurityToken mySecurity,EdgePredefinition myEdge,IOutgoingEdgeDefinition edgeDef)
+        {
+            List<SingleEdgeDeleteDefinition> result = new List<SingleEdgeDeleteDefinition>();
+
+            switch (edgeDef.Multiplicity)
+            {
+                case EdgeMultiplicity.HyperEdge:
+                    break;
+                case EdgeMultiplicity.MultiEdge:
+                    var targets = GetResultingVertexIDs(myTransaction, mySecurity, myEdge, edgeDef.TargetVertexType);
+                    if (targets != null)
+                        foreach (var target in targets)
+                        {
+                            result.Add(new SingleEdgeDeleteDefinition(mySource, target));
+                        }
+
+                    foreach (var innerEdge in myEdge.ContainedEdges)
+                    {
+                        targets = GetResultingVertexIDs(myTransaction, mySecurity, innerEdge, edgeDef.TargetVertexType);
+
+                        if (targets != null)
+                            foreach (var target in targets)
+                            {
+                                result.Add(new SingleEdgeDeleteDefinition(mySource, target));
+                            }
+                    }
+                    break;
+                default : throw new Exception("The EdgeMultiplicity enumeration was changed, but not this switch statement.");
+            }
+
+            return result;
+        }
+
+        private void CreateSingleEdgeUpdateDefinitions(VertexInformation mySource, TransactionToken myTransaction, SecurityToken mySecurity, EdgePredefinition myEdge, IOutgoingEdgeDefinition edgeDef, out StructuredPropertiesUpdate outStructuredUpdate, out UnstructuredPropertiesUpdate outUnstructuredUpdate, out IEnumerable<SingleEdgeUpdateDefinition> outSingleUpdate)
+        {
+            #region predefine
+            List<SingleEdgeUpdateDefinition> singleUpdate = new List<SingleEdgeUpdateDefinition>();
+            #endregion
+
+            outStructuredUpdate = null;
+            outUnstructuredUpdate = null;
+
+            switch (edgeDef.Multiplicity)
+            {
+                case EdgeMultiplicity.HyperEdge:
+                    break;
+                case EdgeMultiplicity.MultiEdge:
+                    var targets = GetResultingVertexIDs(myTransaction, mySecurity, myEdge, edgeDef.TargetVertexType);
+                    if (targets != null)
+                        foreach (var target in targets)
+                        {
+                            singleUpdate.Add(new SingleEdgeUpdateDefinition(mySource, target, Int64.MinValue));
+                        }
+
+                    foreach (var innerEdge in myEdge.ContainedEdges)
+                    {
+                        targets = GetResultingVertexIDs(myTransaction, mySecurity, innerEdge, edgeDef.TargetVertexType);
+                        ConvertUnknownProperties(innerEdge, edgeDef.InnerEdgeType);
+
+                        var innerStructuredUpdate = CreateStructuredUpdate(innerEdge.StructuredProperties, edgeDef.InnerEdgeType);
+                        var innerUnstructuredUpdate = CreateUnstructuredUpdate(innerEdge.UnstructuredProperties);
+                        if (targets != null)
+                            foreach (var target in targets)
+                            {
+                                singleUpdate.Add(new SingleEdgeUpdateDefinition(mySource, target, Int64.MinValue, null, innerStructuredUpdate, innerUnstructuredUpdate));
+                            }
+                    }
+
+                    outStructuredUpdate = CreateStructuredUpdate(myEdge.StructuredProperties, edgeDef.EdgeType);
+                    outUnstructuredUpdate = CreateUnstructuredUpdate(myEdge.UnstructuredProperties);
+
+                    break;
+                default : throw new Exception("The EdgeMultiplicity enumeration was changed, but not this switch statement.");
+            }
+
+            #region return
+
+            outSingleUpdate = singleUpdate;
+
+            #endregion
+        }
+
+        private UnstructuredPropertiesUpdate CreateUnstructuredUpdate(IDictionary<string, object> myUnstructured)
+        {
+            if (myUnstructured == null)
+                return null;
+
+            return new UnstructuredPropertiesUpdate(myUnstructured);
+        }
+
+        private StructuredPropertiesUpdate CreateStructuredUpdate(IDictionary<string, IComparable> myStructured, IBaseType myVertexType)
+        {
+            if (myStructured == null)
+                return null;
+
+            return new StructuredPropertiesUpdate(myStructured.ToDictionary(_=>myVertexType.GetAttributeDefinition(_.Key).ID, _=>_.Value));
         }
 
         private ICollectionWrapper CreateNewCollectionWrapper(IEnumerable<IComparable> myValues, PropertyMultiplicity myMultiplicity)
@@ -970,8 +1136,8 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         private void CreateEdgeDeleteDefinition(
-            IVertex myVertex, IVertexType myVertexType, IEnumerable<string> myRemoveAttributes, 
-            out IEnumerable<long> outDeletedSingle, 
+            IVertex myVertex, IVertexType myVertexType, IEnumerable<string> myRemoveAttributes,
+            out IEnumerable<long> outDeletedSingle,
             out IEnumerable<long> outDeletedHyper,
             out IEnumerable<long> outDeletedStructured,
             out IEnumerable<string> outDeletedUnstructured,
@@ -1002,7 +1168,7 @@ namespace sones.GraphDB.Manager.Vertex
                                 if ((attr as IPropertyDefinition).IsMandatory)
                                     throw new MandatoryConstraintViolationException(attr.Name);
 
-                                toBeDeletedStructured =  toBeDeletedStructured ?? new List<long>();
+                                toBeDeletedStructured = toBeDeletedStructured ?? new List<long>();
                                 toBeDeletedStructured.Add(attr.ID);
                                 break;
                             case AttributeType.BinaryProperty:
@@ -1047,11 +1213,11 @@ namespace sones.GraphDB.Manager.Vertex
 
             #region return
 
-            outDeletedSingle       = toBeDeletedSingle;
-            outDeletedHyper        = toBeDeletedHyper;
-            outDeletedStructured   = toBeDeletedStructured;
+            outDeletedSingle = toBeDeletedSingle;
+            outDeletedHyper = toBeDeletedHyper;
+            outDeletedStructured = toBeDeletedStructured;
             outDeletedUnstructured = toBeDeletedUnstructured;
-            outDeletedBinaries     = toBeDeletedBinaries;
+            outDeletedBinaries = toBeDeletedBinaries;
 
             #endregion
 
