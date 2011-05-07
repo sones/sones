@@ -18,10 +18,10 @@ namespace sones.GraphDB.Request
         /// </summary>
         public readonly RequestGetVertices GetVerticesRequest;
 
-        public IDictionary<string, List<IComparable>> AddedElementsToCollectionProperties { get; private set; }
-        public IDictionary<string, List<IComparable>> RemovedElementsFromCollectionProperties { get; private set; }
-        public IDictionary<string, List<EdgePredefinition>> AddedElementsToCollectionEdges { get; private set; }
-        public IDictionary<string, List<EdgePredefinition>> RemovedElementsFromCollectionEdges { get; private set; }
+        public IDictionary<string, IEnumerable<IComparable>> AddedElementsToCollectionProperties { get; private set; }
+        public IDictionary<string, IEnumerable<IComparable>> RemovedElementsFromCollectionProperties { get; private set; }
+        public IDictionary<string, IEnumerable<EdgePredefinition>> AddedElementsToCollectionEdges { get; private set; }
+        public IDictionary<string, IEnumerable<EdgePredefinition>> RemovedElementsFromCollectionEdges { get; private set; }
 
         /// <summary>
         /// The comment for the updated vertex.
@@ -211,15 +211,8 @@ namespace sones.GraphDB.Request
         /// <returns>The request itself</returns>
         public RequestUpdate AddElementsToCollection(String myAttributeName, IEnumerable<IComparable> myToBeAddedElements)
         {
-            AddedElementsToCollectionProperties = AddedElementsToCollectionProperties ?? new Dictionary<String, List<IComparable>>();
-            if (AddedElementsToCollectionProperties.ContainsKey(myAttributeName))
-            {
-                AddedElementsToCollectionProperties[myAttributeName].AddRange(myToBeAddedElements);
-            }
-            else
-            {
-                AddedElementsToCollectionProperties.Add(myAttributeName, new List<IComparable>(myToBeAddedElements));
-            }
+            AddedElementsToCollectionProperties = AddedElementsToCollectionProperties ?? new Dictionary<String, IEnumerable<IComparable>>();
+            AddedElementsToCollectionProperties[myAttributeName] = myToBeAddedElements;
 
             return this;
         }
@@ -232,15 +225,8 @@ namespace sones.GraphDB.Request
         /// <returns>The request itself</returns>
         public RequestUpdate AddElementsToCollection(String myAttributeName, IEnumerable<EdgePredefinition> myToBeAddedElements)
         {
-            AddedElementsToCollectionEdges = AddedElementsToCollectionEdges ?? new Dictionary<String, List<EdgePredefinition>>();
-            if (AddedElementsToCollectionEdges.ContainsKey(myAttributeName))
-            {
-                AddedElementsToCollectionEdges[myAttributeName].AddRange(myToBeAddedElements);
-            }
-            else
-            {
-                AddedElementsToCollectionEdges.Add(myAttributeName, new List<EdgePredefinition>(myToBeAddedElements));
-            }
+            AddedElementsToCollectionEdges = AddedElementsToCollectionEdges ?? new Dictionary<String, IEnumerable<EdgePredefinition>>();
+            AddedElementsToCollectionEdges[myAttributeName] = myToBeAddedElements;
 
             return this;
         }
@@ -257,15 +243,8 @@ namespace sones.GraphDB.Request
         /// <returns>The request itself</returns>
         public RequestUpdate RemoveElementsFromCollection(String myAttributeName, IEnumerable<IComparable> myToBeRemovedElements)
         {
-            RemovedElementsFromCollectionProperties = RemovedElementsFromCollectionProperties ?? new Dictionary<String, List<IComparable>>();
-            if (RemovedElementsFromCollectionProperties.ContainsKey(myAttributeName))
-            {
-                RemovedElementsFromCollectionProperties[myAttributeName].AddRange(myToBeRemovedElements);
-            }
-            else
-            {
-                RemovedElementsFromCollectionProperties.Add(myAttributeName, new List<IComparable>(myToBeRemovedElements));
-            }
+            RemovedElementsFromCollectionProperties = RemovedElementsFromCollectionProperties ?? new Dictionary<String, IEnumerable<IComparable>>();
+            RemovedElementsFromCollectionProperties[myAttributeName] = myToBeRemovedElements;
 
             return this;
         }
@@ -278,15 +257,8 @@ namespace sones.GraphDB.Request
         /// <returns>The request itself</returns>
         public RequestUpdate RemoveElementsFromCollection(String myAttributeName, IEnumerable<EdgePredefinition> myToBeRemovedElements)
         {
-            RemovedElementsFromCollectionEdges = RemovedElementsFromCollectionEdges ?? new Dictionary<String, List<EdgePredefinition>>();
-            if (RemovedElementsFromCollectionEdges.ContainsKey(myAttributeName))
-            {
-                RemovedElementsFromCollectionEdges[myAttributeName].AddRange(myToBeRemovedElements);
-            }
-            else
-            {
-                RemovedElementsFromCollectionEdges.Add(myAttributeName, new List<EdgePredefinition>(myToBeRemovedElements));
-            }
+            RemovedElementsFromCollectionEdges = RemovedElementsFromCollectionEdges ?? new Dictionary<String, IEnumerable<EdgePredefinition>>();
+            RemovedElementsFromCollectionEdges[myAttributeName] = myToBeRemovedElements;
 
             return this;
         }

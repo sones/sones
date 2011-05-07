@@ -215,16 +215,9 @@ namespace sones.GraphDB.Manager.Vertex
 
         private VertexAddDefinition RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            long vertexID;
-            if (myInsertDefinition.VertexUUID.HasValue)
-            {
-                _idManager[myVertexType.ID].SetToMaxID(myInsertDefinition.VertexUUID.Value);
-                vertexID = myInsertDefinition.VertexUUID.Value;
-            }
-            else
-            {
-                vertexID = _idManager[myVertexType.ID].GetNextID();
-            }
+            long vertexID = (myInsertDefinition.VertexUUID.HasValue)
+                ? myInsertDefinition.VertexUUID.Value
+                : _idManager[myVertexType.ID].GetNextID();
 
             var source = new VertexInformation(myVertexType.ID, vertexID);
             long creationdate = DateTime.UtcNow.ToBinary();
@@ -245,6 +238,9 @@ namespace sones.GraphDB.Manager.Vertex
             var structured = ConvertStructuredProperties(myInsertDefinition, myVertexType);
 
             ExtractVertexProperties(myInsertDefinition, ref edition, ref comment, ref vertexID, ref creationdate, ref modificationDate, structured);
+
+            //set id to maximum to allow user set UUIDs
+            _idManager[myVertexType.ID].SetToMaxID(myInsertDefinition.VertexUUID.Value);
 
             return new VertexAddDefinition(vertexID, myVertexType.ID, edition, hyperEdges, singleEdges, binaries, comment, creationdate, modificationDate, structured, myInsertDefinition.UnstructuredProperties);
         }
@@ -805,16 +801,29 @@ namespace sones.GraphDB.Manager.Vertex
                         foreach (var added in myUpdate.AddedElementsToCollectionProperties)
                         {
                             var propDef = myVertexType.GetPropertyDefinition(added.Key);
-                            //myVertex.GetUnstructuredProperty<ICollectionWrapper>
-                            foreach (var element in added.Value)
+                            
+                            //if it is not ICollectionWrapper something wrong with deserialization
+                            var extractedValue = (propDef == null)
+                                ? myVertex.GetUnstructuredProperty<ICollectionWrapper>(added.Key)
+                                : myVertex.GetProperty<ICollectionWrapper>(propDef.ID);
+
+                            PropertyMultiplicity mult;
+                            if (propDef != null)
                             {
-                                CheckPropertyType(myVertexType.Name, element, propDef);
+                                //check types only for structured properties
+                                foreach (var element in added.Value)
+                                {
+                                    CheckPropertyType(myVertexType.Name, element, propDef);
+                                }
+                                mult = propDef.Multiplicity;
                             }
+                            else
+                                mult = (extractedValue is SetCollectionWrapper)
+                                    ? PropertyMultiplicity.Set
+                                    : PropertyMultiplicity.List;
 
-                            //if it is not ListCollectionWrapper something wrong with deserialization
-                            var extractedValue = (ICollectionWrapper) propDef.ExtractValue(myVertex);
-
-                            var newValue = CreateNewCollectionWrapper(extractedValue.Except(added.Value), propDef);
+                            
+                            var newValue = CreateNewCollectionWrapper(extractedValue.Except(added.Value), mult);
 
                             toBeUpdatedStructured.Add(propDef.ID, newValue);
                         }
@@ -827,7 +836,7 @@ namespace sones.GraphDB.Manager.Vertex
                             //if it is not ListCollectionWrapper something wrong with deserialization
                             var extractedValue = (ICollectionWrapper) propDef.ExtractValue(myVertex);
 
-                            var newValue = CreateNewCollectionWrapper(extractedValue.Except(remove.Value), propDef);
+                            var newValue = CreateNewCollectionWrapper(extractedValue.Except(remove.Value), propDef.Multiplicity);
 
                             toBeUpdatedStructured.Add(propDef.ID, newValue);
 
@@ -850,9 +859,9 @@ namespace sones.GraphDB.Manager.Vertex
             #endregion
         }
 
-        private ICollectionWrapper CreateNewCollectionWrapper(IEnumerable<IComparable> myValues, IPropertyDefinition myPropertyDef)
+        private ICollectionWrapper CreateNewCollectionWrapper(IEnumerable<IComparable> myValues, PropertyMultiplicity myMultiplicity)
         {
-            switch (myPropertyDef.Multiplicity)
+            switch (myMultiplicity)
             {
                 case PropertyMultiplicity.List:
                     return new ListCollectionWrapper(myValues);
