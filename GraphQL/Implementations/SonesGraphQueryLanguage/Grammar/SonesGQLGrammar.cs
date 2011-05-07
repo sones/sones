@@ -2368,6 +2368,8 @@ namespace sones.GraphQL
             var _StringBuilder = new StringBuilder();
             var _Delimiter = ", ";
 
+            #region search each index and build string
+            
             foreach (var _AttributeIndex in myIndexDefinitions)
             {
 
@@ -2379,7 +2381,8 @@ namespace sones.GraphQL
                 _StringBuilder.Append(String.Concat(" ", S_EDITION.ToUpperString(), " ", _AttributeIndex.Edition));
 
                 _StringBuilder.Append(String.Concat(" ", S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexTypeName));
-                _StringBuilder.Append(String.Concat(" ", S_ON.ToUpperString(), " " + S_ATTRIBUTES.ToUpperString(), " ", GetIndexedPropertyNames(_AttributeIndex.IndexedProperties)));
+                _StringBuilder.Append(String.Concat(" ", S_ON.ToUpperString(), " " + S_ATTRIBUTES.ToUpperString(), " ", 
+                                                    GetIndexedPropertyNames(_AttributeIndex.IndexedProperties)));
 
                 _StringBuilder.Append(S_BRACKET_RIGHT);
 
@@ -2392,6 +2395,8 @@ namespace sones.GraphQL
                 _StringBuilder.Remove(_StringBuilder.Length - _Delimiter.Length, 2);
             }
 
+            #endregion
+
             return _StringBuilder.ToString();
         }
 
@@ -2399,6 +2404,10 @@ namespace sones.GraphQL
         {
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
+
+            #region build string for index properties
+
+            stringBuilder.Append(S_BRACKET_LEFT);
 
             foreach (var aIndexedProperty in myIndexedProperties)
             {
@@ -2411,6 +2420,10 @@ namespace sones.GraphQL
                 stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
             }
 
+            stringBuilder.Append(S_BRACKET_RIGHT);
+
+            #endregion
+
             return stringBuilder.ToString();
         }
 
@@ -2419,6 +2432,8 @@ namespace sones.GraphQL
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
+            #region build string for mandytory attributes
+            
             foreach (var aMandatoryAttribute in myMandatoryAttributeDefinitions)
             {
                 stringBuilder.Append(aMandatoryAttribute.Name);
@@ -2430,6 +2445,8 @@ namespace sones.GraphQL
                 stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
             }
 
+            #endregion
+            
             return stringBuilder.ToString();
         }
 
@@ -2438,6 +2455,8 @@ namespace sones.GraphQL
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
+            #region build string for unique attributes
+            
             foreach (var aUniquenessDefinition in myUniqueAttributeDefinitions)
             {
                 //TODO: handle uniqueness on multiple attributes
@@ -2451,6 +2470,8 @@ namespace sones.GraphQL
                 stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
             }
 
+            #endregion
+            
             return stringBuilder.ToString();
         }
 
@@ -2459,6 +2480,8 @@ namespace sones.GraphQL
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
+            #region build string for incoming edges
+            
             foreach (var _Attribute in myIncomingEdgeDefinitions)
             {
                 stringBuilder.Append(String.Concat(_Attribute.RelatedEdgeDefinition.SourceVertexType.Name, ".", _Attribute.RelatedEdgeDefinition.Name, " ", _Attribute.Name));
@@ -2470,6 +2493,8 @@ namespace sones.GraphQL
                 stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
             }
 
+            #endregion
+
             return stringBuilder.ToString();
         }
 
@@ -2478,6 +2503,8 @@ namespace sones.GraphQL
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
+            #region build string for outgoing edges
+            
             foreach (var aOutgoingEdgeDefinition in myOutgoingEdgeDefinitions)
             {
                 stringBuilder.Append(String.Concat(GetGraphDDLOfOutgoingEdge(aOutgoingEdgeDefinition, myIVertexType), " ", aOutgoingEdgeDefinition.Name));
@@ -2490,12 +2517,16 @@ namespace sones.GraphQL
                 stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
             }
 
+            #endregion
+
             return stringBuilder.ToString();
         }
 
         private string GetGraphDDLOfOutgoingEdge(IOutgoingEdgeDefinition myOutgoingEdgeDefinition, IVertexType myIVertexType)
         {
             var stringBuilder = new StringBuilder();
+
+            #region build string for edge properties
 
             switch (myOutgoingEdgeDefinition.Multiplicity)
             {
@@ -2506,12 +2537,12 @@ namespace sones.GraphQL
 
                     break;
 
+                //TODO if GQL supports hyper edges, implement this.
                 case EdgeMultiplicity.HyperEdge:
-                    //TODO if GQL supports hyper edges, implement this.
                     break;
 
+                //e.g. Set<User(e.g. Weighted)>
                 case EdgeMultiplicity.MultiEdge:
-                    //e.g. Set<User(e.g. Weighted)>
                     stringBuilder.Append(String.Concat(S_SET,
                                                         TERMINAL_LT,
                                                         myOutgoingEdgeDefinition.TargetVertexType.Name,
@@ -2524,6 +2555,8 @@ namespace sones.GraphQL
                     throw new UnknownException(new NotImplementedException("This should never happen"));
             }
 
+            #endregion
+
             return stringBuilder.ToString();
         }
 
@@ -2531,10 +2564,14 @@ namespace sones.GraphQL
         {
             var stringBuilder = new StringBuilder();
 
+            #region build string for inner edge
+            
             if (myInnerEdge != null && myInnerEdge.Name.Equals("Weighted"))
             {
                 stringBuilder.Append(String.Concat(S_BRACKET_LEFT, myInnerEdge.Name, S_BRACKET_RIGHT));
             }
+
+            #endregion
 
             return stringBuilder.ToString();
         }
@@ -2544,6 +2581,8 @@ namespace sones.GraphQL
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
+            #region build string for properties
+            
             foreach (var _Attribute in myPropertyDefinitions)
             {
                 switch (_Attribute.Multiplicity)
@@ -2575,11 +2614,12 @@ namespace sones.GraphQL
 
             }
 
+            #endregion
+
             return stringBuilder.ToString();
         }
 
         #endregion
-
         #endregion
 
         #region Export GraphDML
@@ -2730,6 +2770,8 @@ namespace sones.GraphQL
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
+            #region build string for properties
+            
             foreach (var attribute in myStructuredProperties)
             {
                 if (attribute.Item2 == null)
@@ -2802,6 +2844,8 @@ namespace sones.GraphQL
 
             }
 
+            #endregion
+
             return stringBuilder.ToString();
         }
 
@@ -2821,6 +2865,8 @@ namespace sones.GraphQL
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
+            #region build string for unstructured properties
+            
             foreach (var attribute in myUnstructuredProperties)
             {
                 if (attribute.Item2 == null)
@@ -2838,6 +2884,8 @@ namespace sones.GraphQL
             }
 
             stringBuilder.RemoveSuffix(delimiter);
+
+            #endregion
 
             return stringBuilder.ToString();
         }
