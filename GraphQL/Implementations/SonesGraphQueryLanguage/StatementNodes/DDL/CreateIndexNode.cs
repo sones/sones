@@ -59,7 +59,7 @@ namespace sones.GraphQL.StatementNodes.DDL
                     }
                     else if (child.AstNode is ATypeNode)
                     {
-                        _DBType = (child.AstNode as ATypeNode).ReferenceAndType.TypeName;
+                        _DBType = (child.AstNode as ATypeNode).ReferenceAndType.Reference;
 
                         if (parseNode.ChildNodes[childNum - 1].Token.KeyTerm == grammar.S_ON)
                         {
@@ -106,6 +106,10 @@ namespace sones.GraphQL.StatementNodes.DDL
                 var indexDef = new IndexPredefinition(_IndexName);
                 indexDef.SetIndexType(_IndexType);
                 indexDef.SetVertexType(_DBType);
+                foreach (var aIndexedProperty in _AttributeList)
+                {
+                    indexDef.AddProperty(aIndexedProperty.IndexAttribute.ContentString);
+                }
 
                 qresult = myGraphDB.CreateIndex<QueryResult>(mySecurityToken, myTransactionToken, new RequestCreateIndex(indexDef), GenerateResult);
             }
@@ -123,7 +127,7 @@ namespace sones.GraphQL.StatementNodes.DDL
         {
             return new QueryResult(Query, 
                                     "sones.gql", 
-                                    Convert.ToUInt64(myStats.ExecutionTime), 
+                                    Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds), 
                                     ResultType.Successful, 
                                     new List<IVertexView> { new VertexView(new Dictionary<String, object> { {"CreatedIndex", myIndexDefinition} } , 
                                                                             new Dictionary<String, IEdgeView>()) });

@@ -886,11 +886,57 @@ namespace sones.GraphDB.Manager.BaseGraph
         private static Type GetBaseType(IVertex myVertex)
         {
             var typeID = GetUUID(myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.PropertyDotBaseType).GetTargetVertex());
-            if (!Enum.IsDefined(typeof(BasicTypes), typeID))
-                throw new NotImplementedException("User defined base types are not implemented yet.");
 
-            BasicTypes type = (BasicTypes)typeID;
-            return GetBaseType(type);
+            switch ((BasicTypes)typeID)
+            {
+                case BasicTypes.Int32:
+                    return typeof(Int32);
+
+                case BasicTypes.String:
+                    return typeof(String);
+
+                case BasicTypes.DateTime:
+                    return typeof(DateTime);
+
+                case BasicTypes.Double:
+                    return typeof(Double);
+
+                case BasicTypes.Boolean:
+                    return typeof(Boolean);
+
+                case BasicTypes.Int64:
+                    return typeof(Int64);
+
+                case BasicTypes.Char:
+                    return typeof(Char);
+
+                case BasicTypes.Byte:
+                    return typeof(Byte);
+
+                case BasicTypes.Single:
+                    return typeof(Single);
+
+                case BasicTypes.SByte:
+                    return typeof(SByte);
+
+                case BasicTypes.Int16:
+                    return typeof(Int16);
+
+                case BasicTypes.UInt32:
+                    return typeof(UInt32);
+
+                case BasicTypes.UInt64:
+                    return typeof(UInt64);
+
+                case BasicTypes.UInt16:
+                    return typeof(UInt16);
+
+                case BasicTypes.TimeSpan:
+                    return typeof(TimeSpan);
+
+                default:
+                    throw new NotImplementedException("User defined base types are not implemented yet.");
+            }
         }
 
         /// <summary>

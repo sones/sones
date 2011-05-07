@@ -193,22 +193,29 @@ namespace sones.GraphDB.Manager.Vertex
             foreach (var indexDef in vertexType.GetIndexDefinitions(false))
             {
                 var key = CreateIndexEntry(indexDef.IndexedProperties, myInsertDefinition.StructuredProperties);
-                var index = _indexManager.GetIndex(vertexType, indexDef.IndexedProperties, mySecurity, myTransaction);
+                if (key != null)
+                {
+                    //do sth if there is a value corresponding to the index definition
 
-                if (index is ISingleValueIndex<IComparable, Int64>)
-                {
-                    (index as ISingleValueIndex<IComparable, Int64>).Add(key, result.VertexID);
+                    var index = _indexManager.GetIndex(vertexType, indexDef.IndexedProperties, mySecurity, myTransaction);
+
+                    if (index is ISingleValueIndex<IComparable, Int64>)
+                    {
+                        (index as ISingleValueIndex<IComparable, Int64>).Add(key, result.VertexID);
+                    }
+                    else if (index is IMultipleValueIndex<IComparable, Int64>)
+                    {
+                        //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
+                        //TODO: Refactor IIndex structure
+                        (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> { result.VertexID });
+                    }
+                    else
+                    {
+                        throw new NotImplementedException("Indices other than single or multiple value indices are not supported yet.");
+                    }
+
                 }
-                else if (index is IMultipleValueIndex<IComparable, Int64>)
-                {
-                    //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
-                    //TODO: Refactor IIndex structure
-                    (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> { result.VertexID });
-                }
-                else
-                {
-                    throw new NotImplementedException("Indices other than single or multiple value indices are not supported yet.");
-                }
+
             }
 
             return result;
@@ -492,7 +499,12 @@ namespace sones.GraphDB.Manager.Vertex
             }
             else if (myIndexProps.Count == 1)
             {
-                return myProperties[myIndexProps[0].Name];
+                IComparable toBeIndexedValue;
+                if (myProperties.TryGetValue(myIndexProps[0].Name, out toBeIndexedValue))
+                {
+                    return toBeIndexedValue;
+                }
+                return null;
             }
             throw new ArgumentException("A unique definition must contain at least one element.");
         }
