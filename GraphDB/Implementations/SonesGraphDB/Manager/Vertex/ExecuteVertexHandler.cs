@@ -1259,17 +1259,6 @@ namespace sones.GraphDB.Manager.Vertex
             if (myUpdate.AddedElementsToCollectionEdges != null || myUpdate.RemovedElementsFromCollectionEdges != null || myUpdate.UpdateOutgoingEdges != null)
             {
                 VertexInformation source = new VertexInformation(myVertex.VertexTypeID, myVertex.VertexID);
-/*                if (myUpdate.AddedElementsToCollectionEdges != null && myUpdate.RemovedElementsFromCollectionEdges != null)
-                {
-                    var keys = myUpdate.AddedElementsToCollectionEdges.Keys.Intersect(myUpdate.RemovedElementsFromCollectionEdges.Keys);
-                    if (keys.CountIsGreater(0))
-                    {
-                        //TOTO a better exception here
-                        throw new Exception("You can not add and remove items simultaneously on a collection attribute.");
-                    }
-                }
-                */
-
                 if (myUpdate.UpdateOutgoingEdges != null)
                 {
                     foreach (var edge in myUpdate.UpdateOutgoingEdges)
@@ -1279,22 +1268,84 @@ namespace sones.GraphDB.Manager.Vertex
                         switch (edgeDef.Multiplicity)
                         {
                             case EdgeMultiplicity.SingleEdge:
-                                var targets = GetResultingVertexIDs(myTransaction, mySecurity, edge, edgeDef.TargetVertexType);
-                                if (targets.CountIsGreater(1))
-                                    throw new Exception("Single edge can not have more than one target.");
-
-                                if (targets.CountIsGreater(0))
                                 {
-                                    
+                                    var targets = GetResultingVertexIDs(myTransaction, mySecurity, edge, edgeDef.TargetVertexType);
+                                    if (targets == null || !targets.CountIsGreater(0))
+                                    {
+                                        toBeDeletedSingle = toBeDeletedSingle ?? new List<long>();
+                                        toBeDeletedSingle.Add(edgeDef.ID);
+                                    }
+                                    else if (targets.CountIsGreater(1))
+                                    {
+                                        throw new Exception("Single edge can not have more than one target.");
+                                    }
+                                    else
+                                    {
+                                        ConvertUnknownProperties(edge, edgeDef.EdgeType);
+                                        var structured = CreateStructuredUpdate(edge.StructuredProperties, edgeDef.EdgeType);
+                                        var unstructured = CreateUnstructuredUpdate(edge.UnstructuredProperties);
 
+                                        toBeUpdatedSingle = toBeUpdatedSingle ?? new Dictionary<long, SingleEdgeUpdateDefinition>();
+                                        toBeUpdatedSingle.Add(edgeDef.ID, new SingleEdgeUpdateDefinition(source, targets.First(), edgeDef.EdgeType.ID, edge.Comment, structured, unstructured));
+                                    }
                                 }
                                 break;
                             case EdgeMultiplicity.MultiEdge:
+                                {
+                                    List<SingleEdgeDeleteDefinition> internSingleDelete = null;
+                                    if (myVertex.HasOutgoingEdge(edgeDef.ID))
+                                    {
+                                        internSingleDelete = new List<SingleEdgeDeleteDefinition>();
+                                        foreach (var edgeInstance in myVertex.GetOutgoingHyperEdge(edgeDef.ID).GetTargetVertices())
+                                        {
+                                            internSingleDelete.Add(new SingleEdgeDeleteDefinition(source, new VertexInformation(edgeInstance.VertexTypeID, edgeInstance.VertexID)));
+                                        }
+                                    }
+
+                                    List<SingleEdgeUpdateDefinition> internSingleUpdate = null;
+                                    var targets = GetResultingVertexIDs(myTransaction, mySecurity, edge, edgeDef.TargetVertexType);
+
+                                    if (targets != null)
+                                    {
+                                        foreach (var target in targets)
+                                        {
+                                            internSingleUpdate = internSingleUpdate ?? new List<SingleEdgeUpdateDefinition>();
+                                            internSingleUpdate.Add(new SingleEdgeUpdateDefinition(source, target, edgeDef.InnerEdgeType.ID));
+                                        }
+                                    }
+                                    if (edge.ContainedEdges != null)
+                                    {
+                                        foreach (var innerEdge in edge.ContainedEdges)
+                                        {
+                                            targets = GetResultingVertexIDs(myTransaction, mySecurity, innerEdge, edgeDef.TargetVertexType);
+                                            if (targets != null && targets.CountIsGreater(0))
+                                            {
+                                                ConvertUnknownProperties(innerEdge, edgeDef.InnerEdgeType);
+                                                var structured = CreateStructuredUpdate(innerEdge.StructuredProperties, edgeDef.InnerEdgeType);
+                                                var unstructured = CreateUnstructuredUpdate(innerEdge.UnstructuredProperties);
+
+                                                foreach (var target in targets)
+                                                {
+                                                    internSingleUpdate = internSingleUpdate ?? new List<SingleEdgeUpdateDefinition>();
+                                                    internSingleUpdate.Add(new SingleEdgeUpdateDefinition(source, target, edgeDef.InnerEdgeType.ID, innerEdge.Comment, structured, unstructured));
+
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                    ConvertUnknownProperties(edge, edgeDef.EdgeType);
+                                    var outerStructured = CreateStructuredUpdate(edge.StructuredProperties, edgeDef.EdgeType);
+                                    var outerUnstructured = CreateUnstructuredUpdate(edge.UnstructuredProperties);
+
+                                    toBeUpdatedHyper = toBeUpdatedHyper ?? new Dictionary<long, HyperEdgeUpdateDefinition>();
+                                    toBeUpdatedHyper.Add(edgeDef.ID, new HyperEdgeUpdateDefinition(edgeDef.EdgeType.ID, edge.Comment, outerStructured, outerUnstructured, internSingleDelete, internSingleUpdate));
+                                }
                                 break;
                             case EdgeMultiplicity.HyperEdge:
                                 break;
                             default:
-                                break;
+                                throw new Exception("The enumeration EdgeMultiplicity was changed, but not this switch statement.");
                         }
 
                     }
@@ -1355,29 +1406,29 @@ namespace sones.GraphDB.Manager.Vertex
 
             #region create updates
 
-            var single = (toBeUpdatedSingle != null || toBeDeletedSingle != null)
+            var updateSingle = (toBeUpdatedSingle != null || toBeDeletedSingle != null)
                 ? new SingleEdgeUpdate(toBeUpdatedSingle, toBeDeletedSingle)
                 : null;
 
-            var hyper = (toBeUpdatedHyper != null || toBeDeletedHyper != null)
+            var updateHyper = (toBeUpdatedHyper != null || toBeDeletedHyper != null)
                 ? new HyperEdgeUpdate(toBeUpdatedHyper, toBeDeletedHyper)
                 : null;
 
-            var structured = (toBeUpdatedStructured != null || toBeDeletedStructured != null)
+            var updateStructured = (toBeUpdatedStructured != null || toBeDeletedStructured != null)
                 ? new StructuredPropertiesUpdate(toBeUpdatedStructured, toBeDeletedStructured)
                 : null;
 
-            var unstructured = (toBeUpdatedUnstructured != null || toBeDeletedUnstructured != null)
+            var updateUnstructured = (toBeUpdatedUnstructured != null || toBeDeletedUnstructured != null)
                 ? new UnstructuredPropertiesUpdate(toBeUpdatedUnstructured, toBeDeletedUnstructured)
                 : null;
 
-            var binaries = (toBeUpdatedBinaries != null || toBeDeletedBinaries != null)
+            var updateBinaries = (toBeUpdatedBinaries != null || toBeDeletedBinaries != null)
                 ? new BinaryPropertiesUpdate(toBeUpdatedBinaries, toBeDeletedBinaries)
                 : null;
 
             #endregion
 
-            return Tuple.Create(revision, edition, new VertexUpdateDefinition(comment, structured, unstructured, binaries, single, hyper));
+            return Tuple.Create(revision, edition, new VertexUpdateDefinition(comment, updateStructured, updateUnstructured, updateBinaries, updateSingle, updateHyper));
         }
 
         //HACK: this code style = lassitude * lack of time
