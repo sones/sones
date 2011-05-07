@@ -2216,22 +2216,29 @@ namespace sones.GraphQL
             StringBuilder stringBuilder;
             var delimiter = ", ";
 
-            //CREATE VERTEX TYPE / TYPES
+            #region CREATE VERTEX TYPE / TYPES
+
             if (myTypesToDump.Count() > 1)
                 stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_VERTEX.ToUpperString(), " ", S_TYPES.ToUpperString(), " "));
             else
                 stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_VERTEX.ToUpperString(), " ", S_TYPE.ToUpperString(), " "));
+            
+            #endregion
 
-            //add attributes
+            #region go threw each type and add attributes
+            
             foreach (var vertexType in myTypesToDump)
             {
                 stringBuilder.Append(String.Concat(CreateGraphDDL(vertexType), delimiter));
             }
 
-            //Create vertex type User Attributes (Int64 Age, String Name, Set<User> Friends, User Father, LIST<String> Hobbies, Set<User(Weighted)> weightedUser)
+            #endregion
+
+            //z.B. Create vertex type User Attributes (Int64 Age, String Name, Set<User> Friends, User Father, LIST<String> Hobbies, Set<User(Weighted)> weightedUser)
             var retString = stringBuilder.ToString();
 
-            //remove ending
+            #region remove ending
+
             if (retString.EndsWith(delimiter))
             {
                 retString = retString.Substring(0, retString.Length - delimiter.Length);
@@ -2242,6 +2249,8 @@ namespace sones.GraphQL
             {
                 retString = String.Empty;
             }
+
+            #endregion
 
             return new List<String> { retString };
 
@@ -2976,7 +2985,6 @@ namespace sones.GraphQL
         }
 
         #endregion
-
         #endregion
 
         #region IExtendableGrammar Members
