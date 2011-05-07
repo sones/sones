@@ -22,6 +22,7 @@ using sones.Library.Commons.VertexStore.Definitions.Update;
 using sones.Library.LanguageExtensions;
 using System.IO;
 using sones.GraphDB.TypeManagement.Base;
+using sones.Plugins.Index.Helper;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -509,6 +510,32 @@ namespace sones.GraphDB.Manager.Vertex
             throw new ArgumentException("A unique definition must contain at least one element.");
         }
 
+        private static IComparable CreateIndexEntry(IList<IPropertyDefinition> myIndexProps, IDictionary<long, IComparable> myProperties)
+        {
+
+            if (myIndexProps.Count > 1)
+            {
+                List<IComparable> values = new List<IComparable>(myIndexProps.Count);
+                for (int i = 0; i < myIndexProps.Count; i++)
+                {
+                    values[i] = myProperties[myIndexProps[i].ID];
+                }
+
+                //using ListCollectionWrapper from Expressions, maybe this class should go to Lib
+                return new ListCollectionWrapper(values);
+            }
+            else if (myIndexProps.Count == 1)
+            {
+                IComparable toBeIndexedValue;
+                if (myProperties.TryGetValue(myIndexProps[0].ID, out toBeIndexedValue))
+                {
+                    return toBeIndexedValue;
+                }
+                return null;
+            }
+            throw new ArgumentException("A unique definition must contain at least one element.");
+        }
+
 
         public IVertexStore VertexStore
         {
@@ -694,9 +721,13 @@ namespace sones.GraphDB.Manager.Vertex
                         {
                             if (aVertex.HasProperty(aToBeDeletedProperty.Key))
                             {
-                                foreach (var aCorrespondingIndex in _indexManager.GetIndices(vertexType, vertexType.GetPropertyDefinition(aToBeDeletedProperty.Value.ID), mySecurityToken, myTransactionToken))
+                                foreach (var aIndexDefinition in aToBeDeletedProperty.Value.InIndices)
                                 {
-                                    RemoveVertexPropertyFromIndex(aVertex, aToBeDeletedProperty.Value, aCorrespondingIndex, mySecurityToken, myTransactionToken);
+                                    RemoveVertexPropertyFromIndex(
+                                        aVertex,
+                                        aIndexDefinition,
+                                        _indexManager.GetIndex(vertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken)
+                                        , mySecurityToken, myTransactionToken);
                                 }
 
                                 toBeDeletedStructuredPropertiesUpdate.Add(aToBeDeletedProperty.Key);
@@ -778,28 +809,52 @@ namespace sones.GraphDB.Manager.Vertex
 
         private void RemoveVertex(IVertex aVertex, IVertexType myVertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            RemoveVertexFromIndex(aVertex, myVertexType, mySecurityToken, myTransactionToken);
+            RemoveVertexFromIndices(aVertex, myVertexType, mySecurityToken, myTransactionToken);
 
             _vertexStore.RemoveVertex(mySecurityToken, myTransactionToken, aVertex.VertexID, aVertex.VertexTypeID);
         }
 
-        private void RemoveVertexFromIndex(IVertex aVertex, IVertexType myVertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void RemoveVertexFromIndices(IVertex aVertex, IVertexType myVertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             foreach (var aStructuredProperty in myVertexType.GetPropertyDefinitions(true))
             {
                 if (aVertex.HasProperty(aStructuredProperty.ID))
                 {
-                    foreach (var aCorrespondingIndex in _indexManager.GetIndices(myVertexType, myVertexType.GetPropertyDefinition(aStructuredProperty.ID), mySecurityToken, myTransactionToken))
+                    foreach (var aIndexDefinition in aStructuredProperty.InIndices)
                     {
-                        RemoveVertexPropertyFromIndex(aVertex, aStructuredProperty, aCorrespondingIndex, mySecurityToken, myTransactionToken);
+                        RemoveVertexPropertyFromIndex(
+                            aVertex,
+                            aIndexDefinition,
+                            _indexManager.GetIndex(myVertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken)
+                            , mySecurityToken, myTransactionToken);
                     }
                 }
             }
         }
 
-        private void RemoveVertexPropertyFromIndex(IVertex aVertex, IPropertyDefinition aStructuredProperty, IIndex<IComparable, long> aCorrespondingIndex, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void RemoveVertexPropertyFromIndex(IVertex aVertex, IIndexDefinition aIndexDefinition, IIndex<IComparable, long> iIndex, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            throw new NotImplementedException();
+            var entry = CreateIndexEntry(aIndexDefinition.IndexedProperties, aVertex.GetAllProperties().ToDictionary(key => key.Item1, value => value.Item2));
+
+            if (iIndex is IMultipleValueIndex<IComparable, long>)
+            {
+                lock (iIndex)
+                {
+                    if (iIndex.ContainsKey(entry))
+                    {
+                        var toBeUpdatedIndex = (IMultipleValueIndex<IComparable, long>)iIndex;
+
+                        var payLoad = toBeUpdatedIndex[entry];
+                        payLoad.Remove(aVertex.VertexID);
+
+                        toBeUpdatedIndex.Add(entry, payLoad, IndexAddStrategy.REPLACE);
+                    }
+                }
+            }
+            else
+            {
+                iIndex.Remove(entry);
+            }
         }
 
         public IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
@@ -879,7 +934,7 @@ namespace sones.GraphDB.Manager.Vertex
                     {
                         var structured = GetStructuredFromVertex(vertex, vertexType, neededPropNames);
 
-                        RemoveFromIndex(structured, vertexType, indices, myTransaction, mySecurity);
+                        RemoveFromIndex(vertex.VertexID, structured, vertexType, indices, myTransaction, mySecurity);
                     }
                     
                     var updatedVertex = (update.Item1 != null &&  update.Item1.HasValue)
@@ -918,13 +973,31 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        private void RemoveFromIndex(IDictionary<string, IComparable> structured, IVertexType vertexType, Dictionary<IIndex<IComparable, long>, IList<IPropertyDefinition>> indices, TransactionToken myTransaction, SecurityToken mySecurity)
+        private void RemoveFromIndex(long myVertexID, IDictionary<string, IComparable> structured, IVertexType vertexType, Dictionary<IIndex<IComparable, long>, IList<IPropertyDefinition>> indices, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             foreach (var index in indices)
             {
                 var entry = CreateIndexEntry(index.Value, structured);
 
-                index.Key.Remove(entry);
+                if (index.Key is IMultipleValueIndex<IComparable, long>)
+                {
+                    lock (index.Key)
+                    {
+                        if (index.Key.ContainsKey(entry))
+                        {
+                            var toBeUpdatedIndex = (IMultipleValueIndex<IComparable, long>)index.Key;
+
+                            var payLoad = toBeUpdatedIndex[entry];
+                            payLoad.Remove(myVertexID);
+
+                            toBeUpdatedIndex.Add(entry, payLoad, IndexAddStrategy.REPLACE);
+                        }
+                    }
+                }
+                else
+                {
+                    index.Key.Remove(entry);
+                }
             }
         }
 
