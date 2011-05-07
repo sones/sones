@@ -260,7 +260,7 @@ namespace sones.GraphDB.Manager.Vertex
                             toDelete = structure.Key;
                             break;
                         case AttributeDefinitions.VertexDotCreationDate:
-                            creationdate = (long)structure.Value;
+                            creationdate = ((DateTime)structure.Value).ToBinary();
                             toDelete = structure.Key;
                             break;
                         case AttributeDefinitions.VertexDotEdition:
@@ -268,7 +268,7 @@ namespace sones.GraphDB.Manager.Vertex
                             toDelete = structure.Key;
                             break;
                         case AttributeDefinitions.VertexDotModificationDate:
-                            modificationDate = (long)structure.Value;
+                            modificationDate = ((DateTime)structure.Value).ToBinary();
                             toDelete = structure.Key;
                             break;
                         case AttributeDefinitions.VertexDotRevision:
@@ -786,7 +786,6 @@ namespace sones.GraphDB.Manager.Vertex
 
             if (myUpdate.AddedElementsToCollectionProperties != null || myUpdate.RemovedElementsFromCollectionProperties != null)
             {
-                toBeUpdatedStructured = toBeUpdatedStructured  ?? new Dictionary<long, IComparable>();
                 if (myUpdate.AddedElementsToCollectionProperties != null && myUpdate.RemovedElementsFromCollectionProperties != null)
                 {
                     var keys = myUpdate.AddedElementsToCollectionProperties.Keys.Intersect(myUpdate.RemovedElementsFromCollectionProperties.Keys);
@@ -802,10 +801,16 @@ namespace sones.GraphDB.Manager.Vertex
                         {
                             var propDef = myVertexType.GetPropertyDefinition(added.Key);
                             
+                            var hasValue = (propDef == null)
+                                ? myVertex.HasUnstructuredProperty(added.Key)
+                                : myVertex.HasProperty(propDef.ID);
+
                             //if it is not ICollectionWrapper something wrong with deserialization
-                            var extractedValue = (propDef == null)
-                                ? myVertex.GetUnstructuredProperty<ICollectionWrapper>(added.Key)
-                                : myVertex.GetProperty<ICollectionWrapper>(propDef.ID);
+                            var extractedValue = (!hasValue)
+                                ? null
+                                : (propDef == null)
+                                    ? myVertex.GetUnstructuredProperty<ICollectionWrapper>(added.Key)
+                                    : myVertex.GetProperty<ICollectionWrapper>(propDef.ID);
 
                             PropertyMultiplicity mult;
                             if (propDef != null)
@@ -818,14 +823,28 @@ namespace sones.GraphDB.Manager.Vertex
                                 mult = propDef.Multiplicity;
                             }
                             else
-                                mult = (extractedValue is SetCollectionWrapper)
+                                mult = (added.Value is SetCollectionWrapper)
                                     ? PropertyMultiplicity.Set
                                     : PropertyMultiplicity.List;
 
-                            
-                            var newValue = CreateNewCollectionWrapper(extractedValue.Except(added.Value), mult);
 
-                            toBeUpdatedStructured.Add(propDef.ID, newValue);
+                            var newValue = CreateNewCollectionWrapper(
+                                (hasValue)
+                                    ? extractedValue.Union(added.Value)
+                                    : added.Value,
+                                 mult);
+
+                            if (propDef == null)
+                            {
+                                toBeUpdatedUnstructured = toBeUpdatedUnstructured ?? new Dictionary<String, object>();
+                                toBeUpdatedUnstructured.Add(added.Key, newValue);
+                            }
+                            else
+                            {
+                                toBeUpdatedStructured = toBeUpdatedStructured  ?? new Dictionary<long, IComparable>();
+                                toBeUpdatedStructured.Add(propDef.ID, newValue);
+                            }
+                            
                         }
                     }
                     if (myUpdate.RemovedElementsFromCollectionProperties != null)
@@ -833,13 +852,40 @@ namespace sones.GraphDB.Manager.Vertex
                         foreach (var remove in myUpdate.RemovedElementsFromCollectionProperties)
                         {
                             var propDef = myVertexType.GetPropertyDefinition(remove.Key);
-                            //if it is not ListCollectionWrapper something wrong with deserialization
-                            var extractedValue = (ICollectionWrapper) propDef.ExtractValue(myVertex);
+                            
+                            var hasValue = (propDef == null)
+                                ? myVertex.HasUnstructuredProperty(remove.Key)
+                                : myVertex.HasProperty(propDef.ID);
 
-                            var newValue = CreateNewCollectionWrapper(extractedValue.Except(remove.Value), propDef.Multiplicity);
+                            //no value, nothing to remove
+                            if (!hasValue)
+                                continue;
+
+                            //if it is not ICollectionWrapper something wrong with deserialization
+                            var extractedValue = (propDef == null)
+                                ? myVertex.GetUnstructuredProperty<ICollectionWrapper>(remove.Key)
+                                : myVertex.GetProperty<ICollectionWrapper>(propDef.ID);
+
+                            PropertyMultiplicity mult = (propDef != null)
+                                ? propDef.Multiplicity
+                                : (extractedValue is SetCollectionWrapper)
+                                    ? PropertyMultiplicity.Set
+                                    : PropertyMultiplicity.List;
+
+                            var newValue = CreateNewCollectionWrapper(extractedValue.Except(remove.Value), mult);
 
                             toBeUpdatedStructured.Add(propDef.ID, newValue);
 
+                            if (propDef == null)
+                            {
+                                toBeUpdatedUnstructured = toBeUpdatedUnstructured ?? new Dictionary<String, object>();
+                                toBeUpdatedUnstructured.Add(remove.Key, newValue);
+                            }
+                            else
+                            {
+                                toBeUpdatedStructured = toBeUpdatedStructured  ?? new Dictionary<long, IComparable>();
+                                toBeUpdatedStructured.Add(propDef.ID, newValue);
+                            }
                             
                         }
                     }
