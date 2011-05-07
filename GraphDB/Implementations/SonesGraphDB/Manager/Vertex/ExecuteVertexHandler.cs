@@ -184,7 +184,10 @@ namespace sones.GraphDB.Manager.Vertex
             }
 
             var addDefinition = RequestInsertVertexToVertexAddDefinition(myInsertDefinition, vertexType, myTransaction, mySecurity);
-            var result = _vertexStore.AddVertex(mySecurity, myTransaction, addDefinition);
+            var result = (addDefinition.Item1.HasValue)
+                            ? _vertexStore.AddVertex(mySecurity, myTransaction, addDefinition.Item2, addDefinition.Item1.Value)
+                            : _vertexStore.AddVertex(mySecurity, myTransaction, addDefinition.Item2);
+
 
 
             foreach (var indexDef in vertexType.GetIndexDefinitions(false))
@@ -213,7 +216,7 @@ namespace sones.GraphDB.Manager.Vertex
 
 
 
-        private VertexAddDefinition RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
+        private Tuple<long?, VertexAddDefinition> RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             long vertexID = (myInsertDefinition.VertexUUID.HasValue)
                 ? myInsertDefinition.VertexUUID.Value
@@ -224,6 +227,7 @@ namespace sones.GraphDB.Manager.Vertex
             long modificationDate = creationdate;
             String comment = myInsertDefinition.Comment;
             String edition = myInsertDefinition.Edition;
+            long? revision = null;
 
             IEnumerable<SingleEdgeAddDefinition> singleEdges;
             IEnumerable<HyperEdgeAddDefinition> hyperEdges;
@@ -237,15 +241,15 @@ namespace sones.GraphDB.Manager.Vertex
 
             var structured = ConvertStructuredProperties(myInsertDefinition, myVertexType);
 
-            ExtractVertexProperties(myInsertDefinition, ref edition, ref comment, ref vertexID, ref creationdate, ref modificationDate, structured);
+            ExtractVertexProperties(ref edition, ref revision, ref comment, ref vertexID, ref creationdate, ref modificationDate, structured);
 
             //set id to maximum to allow user set UUIDs
             _idManager[myVertexType.ID].SetToMaxID(vertexID);
 
-            return new VertexAddDefinition(vertexID, myVertexType.ID, edition, hyperEdges, singleEdges, binaries, comment, creationdate, modificationDate, structured, myInsertDefinition.UnstructuredProperties);
+            return Tuple.Create(revision, new VertexAddDefinition(vertexID, myVertexType.ID, edition, hyperEdges, singleEdges, binaries, comment, creationdate, modificationDate, structured, myInsertDefinition.UnstructuredProperties));
         }
 
-        private static void ExtractVertexProperties(RequestInsertVertex myInsertDefinition, ref String edition, ref String comment, ref long vertexID, ref long creationdate, ref long modificationDate, Dictionary<long,IComparable> structured)
+        private static void ExtractVertexProperties(ref String edition, ref long? revision, ref String comment, ref long vertexID, ref long creationdate, ref long modificationDate, IDictionary<long,IComparable> structured)
         {
             if (structured != null)
             {
@@ -272,8 +276,9 @@ namespace sones.GraphDB.Manager.Vertex
                             toDelete = structure.Key;
                             break;
                         case AttributeDefinitions.VertexDotRevision:
-                            //TODO a better exception here.
-                            throw new Exception("Revision can not be set.");
+                            revision = (long)structure.Value;
+                            toDelete = structure.Key;
+                            break;
                         case AttributeDefinitions.VertexDotUUID:
                             vertexID = (long)structure.Value;
                             toDelete = structure.Key;
@@ -603,7 +608,7 @@ namespace sones.GraphDB.Manager.Vertex
 
             if (groupedByTypeID.CountIsGreater(0))
             {
-                Dictionary<IVertex, VertexUpdateDefinition> updates = new Dictionary<IVertex, VertexUpdateDefinition>();
+                Dictionary<IVertex, Tuple<long?, String, VertexUpdateDefinition>> updates = new Dictionary<IVertex, Tuple<long?, String, VertexUpdateDefinition>>();
                 foreach (var group in groupedByTypeID)
                 {
                     var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(group.Key, myTransaction, mySecurity);
@@ -666,7 +671,9 @@ namespace sones.GraphDB.Manager.Vertex
                 }
                 
                 //force execution
-                return updates.Select(_=>_vertexStore.UpdateVertex(mySecurity, myTransaction, _.Key.VertexID, _.Key.VertexTypeID, _.Value)).ToArray();
+                return updates.Select(_=> (_.Value.Item1.HasValue)
+                                                ? _vertexStore.UpdateVertex(mySecurity, myTransaction, _.Key.VertexID, _.Key.VertexTypeID, _.Value.Item3, _.Value.Item2, _.Value.Item1.Value)
+                                                : _vertexStore.UpdateVertex(mySecurity, myTransaction, _.Key.VertexID, _.Key.VertexTypeID, _.Value.Item3, _.Value.Item2, myCreateNewRevision: true)).ToArray();
                 
             }
 
@@ -679,7 +686,7 @@ namespace sones.GraphDB.Manager.Vertex
             return _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, vertex.VertexTypeID, update, myEdition);
         }
 
-        private VertexUpdateDefinition CreateVertexUpdateDefinition(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IPropertyProvider myPropertyCopy)
+        private Tuple<long?, String, VertexUpdateDefinition> CreateVertexUpdateDefinition(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IPropertyProvider myPropertyCopy)
         {
             
             #region get removes
@@ -701,8 +708,11 @@ namespace sones.GraphDB.Manager.Vertex
             IDictionary<Int64, IComparable> toBeUpdatedStructured;
             IDictionary<String, Object> toBeUpdatedUnstructured;
             IDictionary<Int64, StreamAddDefinition> toBeUpdatedBinaries;
+            long? revision;
+            string edition;
+            string comment;
 
-            CreateEdgeUpdateDefinition(myVertex, myVertexType, myUpdate, myPropertyCopy, out toBeUpdatedSingle, out toBeUpdatedHyper, out toBeUpdatedStructured, out toBeUpdatedUnstructured, out toBeUpdatedBinaries);
+            CreateEdgeUpdateDefinition(myVertex, myVertexType, myUpdate, myPropertyCopy, out toBeUpdatedSingle, out toBeUpdatedHyper, out toBeUpdatedStructured, out toBeUpdatedUnstructured, out toBeUpdatedBinaries, out revision, out edition, out comment);
 
             #endregion
 
@@ -730,7 +740,7 @@ namespace sones.GraphDB.Manager.Vertex
 
             #endregion
 
-            return new VertexUpdateDefinition(myUpdate.UpdatedComment, structured, unstructured, binaries, single, hyper);
+            return Tuple.Create(revision, edition, new VertexUpdateDefinition(comment, structured, unstructured, binaries, single, hyper));
         }
 
         //HACK: this code style = lassitude * lack of time
@@ -740,7 +750,10 @@ namespace sones.GraphDB.Manager.Vertex
             out IDictionary<long, HyperEdgeUpdateDefinition> outUpdatedHyper, 
             out IDictionary<long, IComparable> outUpdatedStructured, 
             out IDictionary<string, object> outUpdatedUnstructured, 
-            out IDictionary<long, StreamAddDefinition> outUpdatedBinaries)
+            out IDictionary<long, StreamAddDefinition> outUpdatedBinaries,
+            out long? outRevision,
+            out String outEdition,
+            out String outComment)
         {
             #region predefine
 
@@ -749,6 +762,9 @@ namespace sones.GraphDB.Manager.Vertex
             IDictionary<long, IComparable> toBeUpdatedStructured = null;
             IDictionary<string, object> toBeUpdatedUnstructured = null;
             IDictionary<long, StreamAddDefinition> toBeUpdatedBinaries = null;
+            long? revision = null;
+            String edition = myUpdate.UpdatedEdition;
+            String comment = myUpdate.UpdatedComment;
 
             #endregion
 
@@ -894,6 +910,14 @@ namespace sones.GraphDB.Manager.Vertex
 
             #endregion
 
+            #region will be ignored
+            long vertexID = 0L;
+            long creationDate = 0L;
+            long modificationDate = 0L;
+            #endregion
+
+            ExtractVertexProperties(ref edition, ref revision, ref comment, ref vertexID, ref creationDate, ref modificationDate, toBeUpdatedStructured);
+
             #region return
 
             outUpdatedSingle       = toBeUpdatedSingle;
@@ -901,7 +925,9 @@ namespace sones.GraphDB.Manager.Vertex
             outUpdatedStructured   = toBeUpdatedStructured;
             outUpdatedUnstructured = toBeUpdatedUnstructured;
             outUpdatedBinaries     = toBeUpdatedBinaries;
-
+            outRevision = revision;
+            outEdition = edition;
+            outComment = comment;
             #endregion
         }
 
