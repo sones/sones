@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ISonesGQLFunction.Structure;
 using sones.GraphDB;
 using sones.GraphDB.TypeSystem;
@@ -7,6 +8,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.VersionedPluginManager;
+using sones.GraphDB.ErrorHandling.Type;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
@@ -48,44 +50,29 @@ namespace sones.Plugins.SonesGQL.Functions
         /// </summary>
         public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
-            Int64 weight = 0;
+            var currentInnerEdgeType = ((IOutgoingEdgeDefinition)myAttributeDefinition).InnerEdgeType;
 
-            //is there a attribute weight on the edge
-            if ((myAttributeDefinition is IOutgoingEdgeDefinition) && (myAttributeDefinition as IOutgoingEdgeDefinition).EdgeType.HasAttribute("Weight"))
+            if (myCallingObject is IHyperEdge && currentInnerEdgeType.HasProperty("Weight"))
             {
-                var propID = (myAttributeDefinition as IOutgoingEdgeDefinition).EdgeType.GetAttributeDefinition("Weight").ID;
+                var hyperEdge = myCallingObject as IHyperEdge;
 
-                if (myCallingObject is IHyperEdge)
+                if (currentInnerEdgeType.HasProperty("Weight"))
                 {
-                    foreach (var edge in (myCallingObject as IHyperEdge).GetAllEdges())
+                    var weightPropertyID = currentInnerEdgeType.GetPropertyDefinition("Weight").ID;
+
+                    var maxWeight = hyperEdge.InvokeHyperEdgeFunc<Double>(singleEdges =>
                     {
-                        if (edge.HasProperty(propID))
-                        {
-                            var prop = edge.GetProperty(propID);
+                        return Convert.ToDouble(singleEdges
+                            .OrderByDescending(edge => edge.GetProperty(weightPropertyID))
+                            .First().GetProperty(weightPropertyID));
+                    });
 
-                            if (prop.CompareTo(weight) > 0)
-                                weight = Convert.ToInt64(prop);
-                        }
-                    }
-                }
-                else if (myCallingObject is ISingleEdge)
-                {
-                    if ((myCallingObject as ISingleEdge).HasProperty(propID))
-                    {
-                        var prop = (myCallingObject as ISingleEdge).GetProperty(propID);
+                    return new FuncParameter(maxWeight);
 
-                        if (prop.CompareTo(weight) > 0)
-                            weight = Convert.ToInt64(prop);
-                    }
-                }
-                else
-                {
-                    //don't throw Exception and return 0
-                    //throw new InvalidTypeException(myCallingObject.GetType().ToString(), "IHyperEdge or ISingleEdge");
                 }
             }
 
-            return new FuncParameter(weight);
+            throw new InvalidTypeException(myCallingObject.GetType().ToString(), "Weighted IHyperEdge");
         }
 
         public override string PluginName

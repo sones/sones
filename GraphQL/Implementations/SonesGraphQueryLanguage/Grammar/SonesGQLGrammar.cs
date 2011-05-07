@@ -2748,11 +2748,11 @@ namespace sones.GraphQL
             #endregion
 
             //TODO: import with revision id and edition fails ...
-            //#region Revision
+            #region Revision
 
-            //stringBuilder.Append(String.Concat("Revision", " = ", myVertex.VertexRevisionID, delimiter));
+            stringBuilder.Append(String.Concat("Revision", " = ", myVertex.VertexRevisionID, delimiter));
 
-            //#endregion
+            #endregion
 
             #region Edition
 
