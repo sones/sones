@@ -215,6 +215,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         public void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
+            GetVertices(myDeleteRequest.ToBeDeletedVertices, myTransactionToken, mySecurityToken);
         }
     }
 }

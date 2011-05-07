@@ -598,6 +598,29 @@ namespace sones.GraphDB.Manager.Vertex
 
         public void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
+            var toBeProcessedVertices = GetVertices(myDeleteRequest.ToBeDeletedVertices, myTransactionToken, mySecurityToken);
+
+            if (myDeleteRequest.ToBeDeletedAttributes.IsNotNullOrEmpty())
+            {
+                foreach (var aVertex in toBeProcessedVertices)
+	            {
+                    throw new NotImplementedException();
+	            }
+
+            }
+            else
+            {
+                //remove the nodes
+                foreach (var aVertex in toBeProcessedVertices.ToList())
+                {
+                    RemoveVertex(aVertex, mySecurityToken, myTransactionToken);
+                }
+
+            }
+        }
+
+        private void RemoveVertex(IVertex aVertex, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
             throw new NotImplementedException();
         }
 
