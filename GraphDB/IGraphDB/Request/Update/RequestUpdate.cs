@@ -20,8 +20,8 @@ namespace sones.GraphDB.Request
 
         public IDictionary<string, IEnumerable<IComparable>> AddedElementsToCollectionProperties { get; private set; }
         public IDictionary<string, IEnumerable<IComparable>> RemovedElementsFromCollectionProperties { get; private set; }
-        public IDictionary<string, IEnumerable<EdgePredefinition>> AddedElementsToCollectionEdges { get; private set; }
-        public IDictionary<string, IEnumerable<EdgePredefinition>> RemovedElementsFromCollectionEdges { get; private set; }
+        public IDictionary<string, EdgePredefinition> AddedElementsToCollectionEdges { get; private set; }
+        public IDictionary<string, EdgePredefinition> RemovedElementsFromCollectionEdges { get; private set; }
 
         /// <summary>
         /// The comment for the updated vertex.
@@ -223,9 +223,9 @@ namespace sones.GraphDB.Request
         /// <param name="myAttributeName">The attribute that is going to be updated</param>
         /// <param name="myToBeAddedElements">The elements that should be added</param>
         /// <returns>The request itself</returns>
-        public RequestUpdate AddElementsToCollection(String myAttributeName, IEnumerable<EdgePredefinition> myToBeAddedElements)
+        public RequestUpdate AddElementsToCollection(String myAttributeName, EdgePredefinition myToBeAddedElements)
         {
-            AddedElementsToCollectionEdges = AddedElementsToCollectionEdges ?? new Dictionary<String, IEnumerable<EdgePredefinition>>();
+            AddedElementsToCollectionEdges = AddedElementsToCollectionEdges ?? new Dictionary<String, EdgePredefinition>();
             AddedElementsToCollectionEdges[myAttributeName] = myToBeAddedElements;
 
             return this;
@@ -255,9 +255,9 @@ namespace sones.GraphDB.Request
         /// <param name="myAttributeName">The attribute that is going to be updated</param>
         /// <param name="myToBeRemovedElements">The elements that should be removed</param>
         /// <returns>The request itself</returns>
-        public RequestUpdate RemoveElementsFromCollection(String myAttributeName, IEnumerable<EdgePredefinition> myToBeRemovedElements)
+        public RequestUpdate RemoveElementsFromCollection(String myAttributeName, EdgePredefinition myToBeRemovedElements)
         {
-            RemovedElementsFromCollectionEdges = RemovedElementsFromCollectionEdges ?? new Dictionary<String, IEnumerable<EdgePredefinition>>();
+            RemovedElementsFromCollectionEdges = RemovedElementsFromCollectionEdges ?? new Dictionary<String, EdgePredefinition>();
             RemovedElementsFromCollectionEdges[myAttributeName] = myToBeRemovedElements;
 
             return this;

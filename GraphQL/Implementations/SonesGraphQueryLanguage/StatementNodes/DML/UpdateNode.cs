@@ -194,6 +194,8 @@ namespace sones.GraphQL.StatementNodes.DML
             {
                 #region setofUUIDs
 
+                var edgedef = new EdgePredefinition(attributeRemoveList.AttributeName);
+
                 List<EdgePredefinition> toBeRemovedEdges = new List<EdgePredefinition>();
 
                 foreach (var aTupleElement in ((VertexTypeVertexIDCollectionNode)attributeRemoveList.TupleDefinition).Elements)
@@ -204,11 +206,11 @@ namespace sones.GraphQL.StatementNodes.DML
 
                         innerEdge.AddVertexID(aTupleElement.ReferencedVertexTypeName, aVertexIDTuple.Item1);
 
-                        toBeRemovedEdges.Add(innerEdge);
+                        edgedef.AddEdge(innerEdge);
                     }
                 }
 
-                result.RemoveElementsFromCollection(attributeRemoveList.AttributeName, toBeRemovedEdges);
+                result.RemoveElementsFromCollection(attributeRemoveList.AttributeName, edgedef);
 
                 #endregion
             }
@@ -267,12 +269,14 @@ namespace sones.GraphQL.StatementNodes.DML
                                 throw new ReferenceAssignmentExpectedException(String.Format("It is not possible to create a single edge pointing to {0} vertices", vertexIDs.Count));
                             }
 
+                            EdgePredefinition edge = new EdgePredefinition(attributeRemoveList.AttributeName);
+
                             foreach (var aVertex in vertexIDs)
                             {
-                                toBeRemovedEdges.Add(new EdgePredefinition().AddVertexID(aVertex.VertexTypeID, aVertex.VertexID));
+                                edge.AddEdge(new EdgePredefinition().AddVertexID(aVertex.VertexTypeID, aVertex.VertexID));
                             }
 
-                            result.RemoveElementsFromCollection(attributeRemoveList.AttributeName, toBeRemovedEdges);
+                            result.RemoveElementsFromCollection(attributeRemoveList.AttributeName, edge);
 
                             #endregion
                         }
@@ -323,6 +327,8 @@ namespace sones.GraphQL.StatementNodes.DML
                         throw new NotImplementedQLException("TODO");
                     }
                 }
+
+                result.UpdateEdge(edgeDefinition);
 
                 #endregion
             }
@@ -458,7 +464,7 @@ namespace sones.GraphQL.StatementNodes.DML
                             }
                         }
 
-                        result.UpdateEdge(edgeDefinition);
+                        result.AddElementsToCollection(attributeAssignOrUpdateList.AttributeIDChain.ContentString, edgeDefinition);
 
                         #endregion
                     }
@@ -514,7 +520,7 @@ namespace sones.GraphQL.StatementNodes.DML
                         }
                     }
 
-                    result.UpdateEdge(anotheredgeDefinition);
+                    result.AddElementsToCollection(attributeAssignOrUpdateList.AttributeIDChain.ContentString, anotheredgeDefinition);
 
                     #endregion
 
