@@ -65,7 +65,7 @@ namespace sones.Plugins.SonesGQL.Functions
                         return singleEdges
                             .OrderByDescending(edge => edge.GetProperty(weightPropertyID))
                             .Select(aOrderedEdge => aOrderedEdge.GetTargetVertex());
-                    });
+                    }).Take(numOfEntries);
 
                     return new FuncParameter(topVertices);
 
