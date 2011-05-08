@@ -20,7 +20,7 @@ namespace sones.GraphDB.Request.DropType
         /// </summary>
         private readonly RequestDropVertexType _request;
 
-        private IEnumerable<long> _deletedTypeIDs;
+        private Dictionary<Int64, String> _deletedTypeIDs;
 
         #endregion
         

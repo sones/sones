@@ -5,6 +5,7 @@ using sones.GraphQL.Result;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using System.Linq;
 using sones.GraphQL.GQL.Manager.Plugin;
 using sones.Library.ErrorHandling;
 using sones.GraphDB.Request;
@@ -59,15 +60,21 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         #region helper
 
-        private QueryResult GenerateOutput(IRequestStatistics myStats, IEnumerable<long> myDeletedTypeIDs)
+        private QueryResult GenerateOutput(IRequestStatistics myStats, Dictionary<Int64, String> myDeletedTypeIDs)
         {
+            var temp = new Dictionary<String, object>();
+            foreach(var item in myDeletedTypeIDs)
+            {
+                temp.Add("RemovedTypeID", item.Key);
+                temp.Add("RemovedTypeName", item.Value);
+            }
             return new QueryResult(_query, 
                                     "GQL", 
                                     Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), 
                                     ResultType.Successful, 
                                     new List<IVertexView> 
                                     { 
-                                        new VertexView( new Dictionary<String, object> { { "Deleted", myDeletedTypeIDs } }, null )
+                                        new VertexView( temp, null )
                                     });
         }
 

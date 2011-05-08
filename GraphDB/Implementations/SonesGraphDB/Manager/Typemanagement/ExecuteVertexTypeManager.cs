@@ -124,7 +124,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             return Add(myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
-        public override IEnumerable<long> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override Dictionary<Int64, String> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             return Remove(myVertexTypes, myTransaction, mySecurity);
         }
@@ -710,7 +710,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransaction">Transaction token.</param>
         /// <param name="mySecurity">Security Token.</param>
         /// <returns>Set of deleted vertex type IDs.</returns>
-        private IEnumerable<long> Remove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
+        private Dictionary<Int64, String> Remove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             //the attribute types on delete types which have to be removed
             var toDeleteAttributeDefinitions = new List<IAttributeDefinition>();
@@ -764,7 +764,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             #endregion
 
             //the IDs of the deleted vertices
-            var deletedTypeIDs = new List<long>( myVertexTypes.Select(item => item.ID) );
+            var deletedTypeIDs = new Dictionary<Int64, String>( myVertexTypes.ToDictionary(key => key.ID, item => item.Name) );
 
             #region remove indices
             

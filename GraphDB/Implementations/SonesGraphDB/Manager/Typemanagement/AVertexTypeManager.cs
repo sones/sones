@@ -25,7 +25,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public abstract IEnumerable<IVertexType> AddVertexTypes(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
 
-        public abstract IEnumerable<long> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity);
+        public abstract Dictionary<Int64, String> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity);
 
         public abstract IEnumerable<long> ClearDB(TransactionToken myTransaction, SecurityToken mySecurity);
 

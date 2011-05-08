@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
+using System;
 
 namespace sones.GraphDB.Request
 {
@@ -175,7 +176,7 @@ namespace sones.GraphDB.Request
         /// <typeparam name="TResult">The type of the result</typeparam>
         /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <returns>A TResult</returns>
-        public delegate TResult DropVertexTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<long> myDeletedTypeIDs);
+        public delegate TResult DropVertexTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, Dictionary<Int64, String> myDeletedTypeIDs);
 
         /// <summary>
         /// A converter delegate that produces a generic result
