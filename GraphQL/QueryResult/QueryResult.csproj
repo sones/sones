@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EdgeView.cs" />
     <Compile Include="GraphElementView.cs" />
     <Compile Include="HyperEdgeView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

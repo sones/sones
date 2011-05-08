@@ -41,7 +41,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             result.Version = IOInterfaceCompatibility.MaxVersion.ToString();
 
             result.Query = new Query() { Duration = myQueryResult.Duration, ResultType = Enum.GetName(typeof(ResultType), myQueryResult.TypeOfResult), Language = myQueryResult.NameOfQuerylanguage, Value = myQueryResult.Query, VerticesCount = myQueryResult.Vertices.LongCount(), Error = myQueryResult.Error == null ? null : HandleQueryExceptions(myQueryResult) };
-          
+                     
             List<SchemaVertexView> vertices = new List<SchemaVertexView>();
 
             foreach (var aVertex in myQueryResult)
@@ -49,8 +49,8 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 vertices.Add(GenerateVertexView(aVertex));
             }
 
-            result.VertexViewList = vertices.ToArray();
-
+            result.VertexView = vertices.ToArray();            
+            
             var stream = new MemoryStream();
 
             var writer = new System.Xml.Serialization.XmlSerializer(result.GetType());
@@ -72,6 +72,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 var property = new Property();
 
                 property.ID = aProperty.Item1;
+
                 if (aProperty.Item2 != null)
                 {
                     property.Value = aProperty.Item2.ToString();
@@ -81,14 +82,12 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 {
                     property.Value = String.Empty;
                     property.Type = "null";
-                }
-                
-                
+                }                
 
                 properties.Add(property);
             }
 
-            resultVertex.Properties = properties.ToArray();
+            resultVertex.Property = properties.ToArray();
 
             #endregion
 
@@ -104,67 +103,138 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 var content = new byte[aProperty.Item2.Length];
                 aProperty.Item2.Read(content, 0, content.Length);
                 
-
-                binProp.Content = content;
-
-               
+                binProp.Content = content;               
 
                 binProperties.Add(binProp);
             }
 
-            resultVertex.BinaryProperties = binProperties.ToArray();
+            resultVertex.BinaryProperty = binProperties.ToArray();
             
             #endregion
 
             #region edges
 
-            List<EdgeTuple> edges = new List<EdgeTuple>();
-
+            List<SchemaHyperEdgeView> edges = new List<SchemaHyperEdgeView>();
+                        
             foreach (var aEdge in aVertex.GetAllEdges())
             {
-                EdgeTuple et = new EdgeTuple();
                 
-                et.Name = aEdge.Item1;
-
-                #region target vertices
-
-                List<SchemaVertexView> innerVertices = new List<SchemaVertexView>();
-                
-                foreach (var aTargetVertex in aEdge.Item2.GetTargetVertices())
+                if (aEdge.Item2 is IHyperEdgeView)
                 {
-                    innerVertices.Add(GenerateVertexView(aTargetVertex));
+
+                    List<Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>> innerVertices = new List<Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>>();
+
+                    #region single edges
+
+                    foreach (var singleEdge in ((HyperEdgeView)aEdge.Item2).GetAllEdges())
+                    {
+                        innerVertices.Add(new Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>(GenerateVertexView(singleEdge.GetTargetVertex()), singleEdge.GetAllProperties()));
+                    }
+
+                    #endregion
+
+                    var hyperEdge = new SchemaHyperEdgeView();
+
+                    hyperEdge.Name = aEdge.Item1;
+
+                    #region set hyperedge properties
+
+                    var edgeProperties = aEdge.Item2.GetAllProperties().ToArray();
+                    hyperEdge.CountOfProperties = edgeProperties.Count();
+                    hyperEdge.Property = new Property[edgeProperties.Count()];
+
+                    for (Int32 i = 0; i < edgeProperties.Count(); i++)
+                    {
+                        hyperEdge.Property[i] = new Property();
+                        hyperEdge.Property[i].ID = edgeProperties[i].Item1;
+                        hyperEdge.Property[i].Type = edgeProperties[i].Item2.GetType().Name;
+                        hyperEdge.Property[i].Value = edgeProperties[i].Item2.ToString();
+                    }
+
+                    #endregion
+
+                    hyperEdge.SingleEdge = new SchemaSingleEdgeView[innerVertices.Count];
+
+                    for (Int32 i = 0; i < innerVertices.Count; i++)
+                    {
+                        hyperEdge.SingleEdge[i] = new SchemaSingleEdgeView();
+                        var singleEdgeProperties = innerVertices[i].Item2.ToArray();
+
+                        hyperEdge.SingleEdge[i].CountOfProperties = singleEdgeProperties.Count();
+                        hyperEdge.SingleEdge[i].EdgeProperty = new Property[hyperEdge.SingleEdge[i].CountOfProperties];
+
+                        #region single edge properties
+
+                        for (Int32 j = 0; j < singleEdgeProperties.Count(); j++)
+                        {
+                            hyperEdge.SingleEdge[i].EdgeProperty[j] = new Property();
+                            hyperEdge.SingleEdge[i].EdgeProperty[j].ID = singleEdgeProperties[j].Item1;
+                            hyperEdge.SingleEdge[i].EdgeProperty[j].Type = singleEdgeProperties[j].Item2.GetType().Name;
+                            hyperEdge.SingleEdge[i].EdgeProperty[j].Value = singleEdgeProperties[j].Item2.ToString();
+                        }
+
+                        #endregion
+
+                        #region target vertex
+
+                        hyperEdge.SingleEdge[i].TargetVertex = new SchemaVertexView();
+                        hyperEdge.SingleEdge[i].TargetVertex.Property = innerVertices[i].Item1.Property.ToArray();
+                        hyperEdge.SingleEdge[i].TargetVertex.BinaryProperty = innerVertices[i].Item1.BinaryProperty.ToArray();
+                        hyperEdge.SingleEdge[i].TargetVertex.Edge = innerVertices[i].Item1.Edge.ToArray();
+
+                        #endregion
+                    }
+
+                    edges.Add(hyperEdge);
+
                 }
-                
-                et.Edge = new SchemaEdgeView();
-                et.Edge.VertexViewList = innerVertices.ToArray();
-
-                #endregion
-
-                #region properties
-                
-                List<Property> edgeProps = new List<Property>();
-
-                foreach (var aProperty in aEdge.Item2.GetAllProperties())
+                else
                 {
-                    var prop = new Property();
+                    var singleEdge = new SchemaHyperEdgeView();
+                    
+                    singleEdge.Name = aEdge.Item1;
 
-                    prop.ID = aProperty.Item1;
-                    prop.Type = aProperty.Item2.GetType().Name;
-                    prop.Value = aProperty.Item2.ToString();
+                    var edgeProperties = aEdge.Item2.GetAllProperties().ToArray();
+                    singleEdge.CountOfProperties = edgeProperties.Count();
 
-                    edgeProps.Add(prop);
+                    #region properties
+
+                    singleEdge.Property = new Property[edgeProperties.Count()];
+
+                    for (Int32 i = 0; i < edgeProperties.Count(); i++)
+                    {
+                        singleEdge.Property[i] = new Property();
+                        singleEdge.Property[i].ID = edgeProperties[i].Item1;
+                        singleEdge.Property[i].Type = edgeProperties[i].Item2.GetType().Name;
+                        singleEdge.Property[i].Value = edgeProperties[i].Item2.ToString();
+                    }
+
+                    #endregion
+
+                    #region target vertex
+
+                    singleEdge.SingleEdge = new SchemaSingleEdgeView[1];
+
+                    singleEdge.SingleEdge[0] = new SchemaSingleEdgeView();
+                    singleEdge.SingleEdge[0].TargetVertex = new SchemaVertexView();
+
+                    var targetVertex = GenerateVertexView(((SingleEdgeView)aEdge.Item2).GetTargetVertex());
+
+                    singleEdge.SingleEdge[0].TargetVertex.Property = targetVertex.Property.ToArray();
+                    singleEdge.SingleEdge[0].TargetVertex.BinaryProperty = targetVertex.BinaryProperty.ToArray();
+                    singleEdge.SingleEdge[0].TargetVertex.Edge = targetVertex.Edge.ToArray();
+
+                    #endregion
+
+                    edges.Add(singleEdge);
+
                 }
 
-                et.Edge.Properties = edgeProps.ToArray();
-                et.Edge.CountOfProperties = edgeProps.Count;
-
-                #endregion
-
-                edges.Add(et);
+                #endregion                
                 
             }
 
-            resultVertex.Edges = edges.ToArray();
+            resultVertex.Edge = edges.ToArray();
 
             #endregion
 
@@ -208,7 +278,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             ResultType result = ResultType.Failed;
             UInt64 duration = 0;
             Int64  nrOfVertices = 0;
-            List<VertexView> vertices = null;
+            List<VertexView> vertices = new List<VertexView>();
 
             var nextNode = rootNode.FirstChild;
 
@@ -245,9 +315,9 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                     }
                 }
 
-                if (nextNode.Name == "VertexViewList")
+                if (nextNode.Name == "VertexView")
                 {
-                    vertices = ParseVertices(nextNode);
+                    vertices.Add(ParseVertex(nextNode));
                 }
 
                 nextNode = nextNode.NextSibling;
@@ -260,8 +330,6 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
         {
             get { return _contentType; }
         }
-
-        #endregion
 
         #region private helpers
 
@@ -284,252 +352,244 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             }
         }
 
-        private Dictionary<String, Object> ParseVertexProperties(XmlNode myVertexNode)
+        private Tuple<String, Object> ParseProperties(XmlNode myVertexNode)
         {
-            var result = new Dictionary<String, Object>();
-
             var property = myVertexNode.FirstChild;
+                        
+            String key = String.Empty;
+            Object value = null;
+            String type = String.Empty;
 
             while (property != null)
-            {
-                String key = String.Empty;
-                Object value = null;
-                String type = String.Empty;
-
-                var propElement = property.FirstChild;
-
-                while (propElement != null)
-                {
-                    if (propElement.HasChildNodes)
-                    {
-                        switch (propElement.Name)
-                        {
-                            case "ID":
-                                key = propElement.InnerText;                                    
-                                break;
-
-                            case "Type":
-                                type = propElement.InnerText;
-                                break;
-
-                            case "Value":
-                                switch (type)
-                                {
-                                    case "String":
-                                        value = propElement.InnerText;
-                                        break;
-                                    case "Int32":
-                                        value = System.Convert.ToInt32(propElement.InnerText);
-                                        break;
-                                    case "Int64":
-                                        value = System.Convert.ToInt64(propElement.InnerText);
-                                        break;
-                                    case "UInt32":
-                                        value = System.Convert.ToUInt32(propElement.InnerText);
-                                        break;
-                                    case "UInt64":
-                                        value = System.Convert.ToUInt64(propElement.InnerText);
-                                        break;
-                                }
-                                break;
-                        }
-                    }
-                    propElement = propElement.NextSibling; 
-                }
-
-                result.Add(key, value);
-                property = property.NextSibling;
-            }
-
-            return result;
-        }
-
-        private Dictionary<String, Stream> ParseBinaryVertex(XmlNode myVertexNode)
-        {
-            var result = new Dictionary<String, Stream>();
-
-            var binProp = myVertexNode.FirstChild;
-
-            while (binProp != null)
-            {
-                if (binProp.HasChildNodes)
-                { 
-                    var binPropElement = binProp.FirstChild;
-
-                    String name = String.Empty;
-                    Stream contentStream = null;
-                    
-                    while (binPropElement != null)
-                    {
-                        if (binPropElement.HasChildNodes)
-                        {
-                            switch (binPropElement.Name)
-                            {
-                                case "ID":
-                                    name = binPropElement.InnerText;
-                                    break;
-
-                                case "Content":
-                                    contentStream = new MemoryStream();
-                                    string str = binPropElement.InnerText;
-                                    //convert string (hex) to MemoryStream 
-                                    for (int i = 0; i < str.Length; i += 2)
-                                    {
-                                        string sub = str.Substring(i, 2);
-                                        byte b = byte.Parse(sub, System.Globalization.NumberStyles.HexNumber);
-                                        contentStream.WriteByte(b);
-                                    }
-                                    contentStream.Position = 0;
-                                    break;
-
-                            }
-                        }                        
-                        binPropElement = binPropElement.NextSibling;
-                    }
-                    result.Add(name, contentStream);
-                }
-                
-                binProp = binProp.NextSibling;
-            }
-
-            return result;
-        }
-
-        private void ParseEdgeProperties(XmlNode myEdgeProp, Dictionary<String, Object> myEdgeProperties, List<VertexView> myTargetVertices)
-        {            
-            Int32 cnt = 0;
-            var property = myEdgeProp.FirstChild;
-
-            while(property != null)
             {
                 if (property.HasChildNodes)
                 {
                     switch (property.Name)
                     {
-                        case "CountOfProperties":
-                            cnt = System.Convert.ToInt32(property.InnerText);
+                        case "ID":
+                            key = property.InnerText;
                             break;
 
-                        case "Properties":
-                            myEdgeProperties = ParseVertexProperties(property);
+                        case "Type":
+                            type = property.InnerText;
                             break;
 
-                        case "VertexViewList" :
-                            myTargetVertices.AddRange(ParseVertices(property));
+                        case "Value":
+                            switch (type)
+                            {
+                                case "String":
+                                    value = property.InnerText;
+                                    break;
+                                case "Int32":
+                                    value = System.Convert.ToInt32(property.InnerText);
+                                    break;
+                                case "Int64":
+                                    value = System.Convert.ToInt64(property.InnerText);
+                                    break;
+                                case "UInt32":
+                                    value = System.Convert.ToUInt32(property.InnerText);
+                                    break;
+                                case "UInt64":
+                                    value = System.Convert.ToUInt64(property.InnerText);
+                                    break;
+                            }
                             break;
                     }
                 }
+
                 property = property.NextSibling;
+            }
+
+            return new Tuple<string, object>(key, value);
+        }
+
+        private Tuple<String, Stream> ParseBinaryVertex(XmlNode myVertexNode)
+        {
+            var binProp = myVertexNode.FirstChild;
+            String name = String.Empty;
+            Stream contentStream = null;
+
+            while (binProp != null)
+            {
+                if (binProp.HasChildNodes)
+                {                    
+                    switch (binProp.Name)
+                    {
+                        case "ID":
+                            name = binProp.InnerText;
+                            break;
+
+                        case "Content":
+                            contentStream = new MemoryStream();
+                            string str = binProp.InnerText;
+
+                            //convert string (hex) to MemoryStream 
+                            for (int i = 0; i < str.Length; i += 2)
+                            {
+                                string sub = str.Substring(i, 2);
+                                byte b = byte.Parse(sub, System.Globalization.NumberStyles.HexNumber);
+                                contentStream.WriteByte(b);
+                            }
+                            contentStream.Position = 0;
+                            break;
+
+                    }                    
+                }
+                
+                binProp = binProp.NextSibling;
+            }
+
+            return new Tuple<string,Stream>(name, contentStream);
+        }
+
+        private ISingleEdgeView ParseSingleEdge(XmlNode mySingleEdges)
+        {            
+            var edgeProperties = new Dictionary<String, Object>();
+            IVertexView target = null;            
+
+            if (mySingleEdges.HasChildNodes)
+            {
+                var edgeItems = mySingleEdges.FirstChild;
+
+                while (edgeItems != null)
+                {
+                    switch (edgeItems.Name)
+                    { 
+                        case "EdgeProperty":
+                            var edgeProp = ParseProperties(edgeItems);
+                            edgeProperties.Add(edgeProp.Item1, edgeProp.Item2);
+                            break;
+                            
+                        case "TargetVertex":
+                            target = ParseVertex(edgeItems);
+                            break;
+                    }
+
+                    edgeItems = edgeItems.NextSibling;
+                }
+            }
+                
+            return new SingleEdgeView(new Dictionary<String, Object>(edgeProperties), target);            
+        }
+
+        private void ParseEdgeProperties(XmlNode myEdgeProp, ref Dictionary<String, Object> myEdgeProperties)
+        { 
+            while(myEdgeProp != null)
+            {
+                if (myEdgeProp.HasChildNodes)
+                {
+                    switch (myEdgeProp.Name)
+                    {
+                        case "Property":
+                            var props = ParseProperties(myEdgeProp);
+                            myEdgeProperties.Add(props.Item1, props.Item2);
+                            break;                        
+                    }
+                }
+
+                myEdgeProp = myEdgeProp.NextSibling;
             }            
         }
 
-        private Dictionary<String, IEdgeView> ParseEdges(XmlNode myEdge)
-        {
-            var result = new Dictionary<String, IEdgeView>();
+        private Tuple<String, IEdgeView> ParseEdge(XmlNode myEdge)
+        {                      
+            IEdgeView edgeView = null;
+            var edgeProps = new Dictionary<String, Object>();
+            var singleEdges = new List<ISingleEdgeView>();
             var edge = myEdge.FirstChild;
+            var name = String.Empty;     
+
 
             if (edge.HasChildNodes)
             {
                 while (edge != null)
                 {
                     if (edge.HasChildNodes)
-                    {
-                        var edgeItems = edge.FirstChild;
+                    {                        
+                        switch (edge.Name)
+                        { 
+                            case "Name" :
+                                name = edge.InnerText;
+                                break;
+                            
+                            case "Property":
+                                ParseEdgeProperties(edge, ref edgeProps);
+                                break;
 
-                        var name = String.Empty;
-                        IEdgeView edgeView = null;
-
-                        while (edgeItems != null)
-                        {
-                            switch (edgeItems.Name)
-                            { 
-                                case "Name" :
-                                    name = edgeItems.InnerText;
-                                    break;
-                                
-                                case "Edge":
-                                    var edgeProps = new Dictionary<String, Object>();
-                                    var targetVertices = new List<VertexView>();
-
-                                    ParseEdgeProperties(edgeItems, edgeProps, targetVertices);
-
-                                    edgeView = new EdgeView(edgeProps, targetVertices);
-                                    break;
-                            }
-
-                            edgeItems = edgeItems.NextSibling;
+                            case "SingleEdge" :
+                                singleEdges.Add(ParseSingleEdge(edge));
+                                break;
                         }
                         
-                        result.Add(name, edgeView);
                     }
 
                     edge = edge.NextSibling;
                 }
             }
 
-            return result;
+            if (singleEdges.Count > 1)
+            {
+                edgeView = new HyperEdgeView(edgeProps, singleEdges);
+            }
+            else
+            {
+                edgeView = singleEdges.First();
+            }
+
+            return new Tuple<string, IEdgeView>(name, edgeView);
         }
 
-        private List<VertexView> ParseVertices(XmlNode myVerticeList)
-        {
-            var result = new List<VertexView>();
+        private VertexView ParseVertex(XmlNode myVertex)
+        {                        
+            Dictionary<String, Object> propList = new Dictionary<string,object>();
+            Dictionary<String, IEdgeView> edges = new Dictionary<string, IEdgeView>();
+            Dictionary<String, Stream> binaryProperties = new Dictionary<string,Stream>();            
 
-            var vertex = myVerticeList.FirstChild;
-            Dictionary<String, Object> propList = null;
-            Dictionary<String, IEdgeView> edges = null;
-            Dictionary<String, Stream> binaryProperties = null;            
+            if(myVertex.HasChildNodes)
+            {               
+               var items = myVertex.FirstChild;
 
-            if(vertex.HasChildNodes)
-            {
-                while (vertex != null)
+                while (items != null)
                 {
-                    var items = vertex.FirstChild;
-
-                    while (items != null)
+                    if (items.HasChildNodes)
                     {
-                        if (items.HasChildNodes)
+                        switch (items.Name)
                         {
-                            switch (items.Name)
-                            {
-                                case "Properties":
-                                    propList = ParseVertexProperties(items);
-                                    break;
+                            case "Property":
+                                var prop = ParseProperties(items);
+                                propList.Add(prop.Item1, prop.Item2);
+                                break;
 
-                                case "BinaryProperties":
-                                    binaryProperties = ParseBinaryVertex(items);
-
-                                    if (propList != null)
+                            case "BinaryProperty":
+                                var binProp = ParseBinaryVertex(items);
+                                binaryProperties.Add(binProp.Item1, binProp.Item2);
+                                    
+                                foreach (var item in binaryProperties)
+                                {
+                                    if (propList.ContainsKey(item.Key))
                                     {
-                                        foreach (var item in binaryProperties)
-                                        {
-                                            if (propList.ContainsKey(item.Key))
-                                            {
-                                                propList[item.Key] = item.Value;
-                                            }
-                                            else
-                                            {
-                                                propList.Add(item.Key, item.Value);
-                                            }
-                                        }
+                                        propList[item.Key] = item.Value;
                                     }
+                                    else
+                                    {
+                                        propList.Add(item.Key, item.Value);
+                                    }
+                                }                                    
 
-                                    break;
+                                break;
 
-                                case "Edges" :
-                                    edges = ParseEdges(items);
-                                    break;
-                            }
+                            case "Edge" :
+                                var edge = ParseEdge(items);
+                                edges.Add(edge.Item1, edge.Item2);
+                                break;
                         }
-
-                        items = items.NextSibling;
                     }
 
-                    result.Add(new VertexView(propList, edges));
-                    vertex = vertex.NextSibling;
-                }                
+                    items = items.NextSibling;
+                }               
             }            
 
-            return result;
+            return new VertexView(propList, edges);
         }
 
         #endregion

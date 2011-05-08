@@ -101,7 +101,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                     _Prop.Add("Multiplicity", prop.Multiplicity);
                 }
 
-                var temp = new Dictionary<String, IEdgeView> { {"IndexedProperty", new EdgeView(_Prop, null)} };
+                var temp = new Dictionary<String, IEdgeView> { {"IndexedProperty", new SingleEdgeView(_Prop, null)} };
             }
 
             return new VertexView(_Index, new Dictionary<String, IEdgeView>());

@@ -9,95 +9,62 @@
   
   <xs:element name="Query">
     <xs:complexType>
-      <xs:attribute name = "Language"      type ="xs:string" use="required"/>
-      <xs:attribute name = "Value"         type ="xs:string" use="required"/>
-      <xs:attribute name = "ResultType"    type ="xs:string" use="required"/>
-      <xs:attribute name = "Error"         type ="xs:string" use="optional"/>
-      <xs:attribute name = "Duration"      type ="xs:unsignedLong" use="required"/>
-      <xs:attribute name = "VerticesCount" type ="xs:long" use="required"/>
+      <xs:attribute name = "Language"      type ="xs:string" use ="required"/>
+      <xs:attribute name = "Value"         type ="xs:string" use ="required"/>
+      <xs:attribute name = "ResultType"    type ="xs:string" use ="required"/>
+      <xs:attribute name = "Error"         type ="xs:string" use ="optional"/>
+      <xs:attribute name = "Duration"      type ="xs:unsignedLong" use ="required"/>
+      <xs:attribute name = "VerticesCount" type ="xs:long" use ="required"/>
     </xs:complexType>
   </xs:element>
-
-  <xs:complexType name ="GraphElementView" abstract="true">
-    <xs:sequence>
-      <xs:element name ="CountOfProperties" type="xs:int"/>
-      <xs:element name ="Properties"        type ="mstns:PropertyList"/>
-    </xs:sequence>
-  </xs:complexType>  
-    
-  <xs:complexType name ="SchemaEdgeView">
-    <xs:complexContent>
-      <xs:extension base="GraphElementView">
-        <xs:sequence>
-          <xs:element ref="mstns:VertexViewList"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="EdgeTuple">
-    <xs:sequence>
-      <xs:element name ="Name" type ="xs:string"/>        
-      <xs:element name ="Edge" type ="mstns:SchemaEdgeView"/>
-    </xs:sequence>
-  </xs:complexType>  
   
-  <xs:complexType name="EdgeTupleList">
+  <xs:complexType name ="SchemaHyperEdgeView">
     <xs:sequence>
-      <xs:element name="ETupleList" type="mstns:EdgeTuple" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name ="Name" type ="xs:string"/>
+      <xs:element name ="CountOfProperties" type ="xs:int"/>
+      <xs:element name ="Property" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0"/>
+      <xs:element name ="SingleEdge" type ="mstns:SchemaSingleEdgeView" maxOccurs ="unbounded" minOccurs ="0"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:element name="VertexViewList">
-    <xs:complexType>
+  <xs:complexType name="SchemaSingleEdgeView">
     <xs:sequence>
-      <xs:element name ="VertexView" type ="mstns:SchemaVertexView" maxOccurs ="unbounded" minOccurs="0"/>
+      <xs:element name ="CountOfProperties" type ="xs:int" minOccurs="0"/>
+      <xs:element name ="EdgeProperty" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0" />
+      <xs:element name ="TargetVertex" type ="mstns:SchemaVertexView" maxOccurs ="1" minOccurs ="1"/>
     </xs:sequence>
-    </xs:complexType>
-  </xs:element>  
-
+  </xs:complexType>  
+ 
   <xs:complexType name="Property">
     <xs:sequence>
-      <xs:element name ="ID" type="xs:string"/>
+      <xs:element name ="ID" type ="xs:string"/>
       <xs:element name ="Type" type ="xs:string"/>
       <xs:element name ="Value" type ="xs:string"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name ="PropertyList">
-    <xs:sequence>
-      <xs:element name ="Property" type="mstns:Property" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
   
   <xs:complexType name="SchemaVertexView">        
       <xs:sequence>        
-        <xs:element name ="Properties"        type ="mstns:PropertyList"/>
-        <xs:element name ="BinaryProperties"  type ="mstns:BinaryDataList"/>
-        <xs:element name ="Edges"             type ="mstns:EdgeTupleList"/>        
+        <xs:element name ="Property"        type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0"/>
+        <xs:element name ="BinaryProperty"  type ="mstns:BinaryData" maxOccurs ="unbounded" minOccurs ="0"/>
+        <xs:element name ="Edge"           type ="mstns:SchemaHyperEdgeView" maxOccurs="unbounded" minOccurs="0"/>        
       </xs:sequence>    
   </xs:complexType>
 
   <xs:complexType name="BinaryData">
     <xs:sequence>
-      <xs:element name="ID" type="xs:string"/>
-      <xs:element name="Content" type="xs:hexBinary"/>
+      <xs:element name ="ID" type ="xs:string"/>
+      <xs:element name ="Content" type ="xs:hexBinary"/>
     </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="BinaryDataList" >
-    <xs:sequence>
-      <xs:element name ="BinaryData" type ="mstns:BinaryData" maxOccurs="unbounded" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
+  </xs:complexType>  
 
   <xs:element name="Result">    
     <xs:complexType>      
       <xs:sequence>        
         <xs:element ref ="Query" />
-        <xs:element ref ="VertexViewList" />
+        <xs:element name ="VertexView" type ="mstns:SchemaVertexView" maxOccurs ="unbounded" minOccurs ="0"/>
       </xs:sequence>
-      <xs:attribute name="Version" type ="xs:string"/>
+      <xs:attribute name ="Version" type ="xs:string"/>
     </xs:complexType>
   </xs:element>  
   

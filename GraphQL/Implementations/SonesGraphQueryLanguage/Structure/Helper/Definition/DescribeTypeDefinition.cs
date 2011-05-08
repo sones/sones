@@ -119,23 +119,24 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             }
 
             if (myDepth > 0)
-            {
-                edges.Add("Properties", new EdgeView(null, GeneratePropertiesOutput(myType, myType.GetPropertyDefinitions(true))));
+            {               
+                
+                edges.Add("Properties", new HyperEdgeView(null, GeneratePropertiesOutput(myType, myType.GetPropertyDefinitions(true))));
 
-                edges.Add("Edges", new EdgeView(null, GenerateEdgesOutput(myType, myType.GetOutgoingEdgeDefinitions(true))));
+                edges.Add("Edges", new HyperEdgeView(null, GenerateEdgesOutput(myType, myType.GetOutgoingEdgeDefinitions(true))));
 
-                edges.Add("BackwardEdges", new EdgeView(null, GenerateEdgesOutput(myType, myType.GetIncomingEdgeDefinitions(true))));
+                edges.Add("BackwardEdges", new HyperEdgeView(null, GenerateEdgesOutput(myType, myType.GetIncomingEdgeDefinitions(true))));
 
-                edges.Add("UniqueAttributes", new EdgeView(null, GenerateUniquePropertiesOutput(myType, myType.GetUniqueDefinitions(true))));
+                edges.Add("UniqueAttributes", new HyperEdgeView(null, GenerateUniquePropertiesOutput(myType, myType.GetUniqueDefinitions(true))));
 
-                edges.Add("Attributes", new EdgeView(null, GenerateAttributesOutput(myType, myType.GetAttributeDefinitions(true))));
+                edges.Add("Attributes", new HyperEdgeView(null, GenerateAttributesOutput(myType, myType.GetAttributeDefinitions(true))));
 
-                edges.Add("Indices", new EdgeView(null, GenerateIndicesOutput(myType)));
+                edges.Add("Indices", new HyperEdgeView(null, GenerateIndicesOutput(myType)));
 
                 if (myType.HasParentType)
                 {
                     var _ParentType = myType.ParentVertexType;
-                    edges.Add("Extends", new EdgeView(null, new List<IVertexView> { GenerateOutput(_ParentType, myDepth - 1) } ));
+                    edges.Add("Extends", new SingleEdgeView(null, GenerateOutput(_ParentType, myDepth - 1)));
                 }
 
             }
@@ -151,10 +152,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <param name="myDBContext">The db context</param>
         /// <param name="myProperties">The propertyDefinitions</param>
         /// <returns>a list of readouts, contains the properties</returns>
-        private IEnumerable<IVertexView> GeneratePropertiesOutput(IVertexType myType, IEnumerable<IPropertyDefinition> myProperties)
+        private IEnumerable<ISingleEdgeView> GeneratePropertiesOutput(IVertexType myType, IEnumerable<IPropertyDefinition> myProperties)
         {
 
-            var _AttributeReadout = new List<IVertexView>();
+            var _AttributeReadout = new List<ISingleEdgeView>();
 
             foreach (var property in myProperties)
             {
@@ -169,7 +170,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 if (property.DefaultValue != null)
                     Attributes.Add("DefaultValue", property.DefaultValue);
                 
-                _AttributeReadout.Add(new VertexView(Attributes, new Dictionary<String, IEdgeView>()));
+                _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
 
             }
 
@@ -184,10 +185,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <param name="myDBContext">The db context</param>
         /// <param name="myAttributes">The attributeDefinitions</param>
         /// <returns>a list of readouts, contains the attributes</returns>
-        private IEnumerable<IVertexView> GenerateAttributesOutput(IVertexType myType, IEnumerable<IAttributeDefinition> myAttributes)
+        private IEnumerable<ISingleEdgeView> GenerateAttributesOutput(IVertexType myType, IEnumerable<IAttributeDefinition> myAttributes)
         {
 
-            var _AttributeReadout = new List<IVertexView>();
+            var _AttributeReadout = new List<ISingleEdgeView>();
 
             foreach (var attr in myAttributes)
             {
@@ -198,7 +199,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 Attributes.Add("TYPE", attr.Kind);
                 Attributes.Add("Name", attr.Name);
                 
-                _AttributeReadout.Add(new VertexView(Attributes, new Dictionary<String, IEdgeView>()));
+                _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
 
             }
 
@@ -213,10 +214,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <param name="myDBContext">The db context</param>
         /// <param name="myUniques">The uniqueDefinitions</param>
         /// <returns>a list of readouts, contains the attributes</returns>
-        private IEnumerable<IVertexView> GenerateUniquePropertiesOutput(IVertexType myType, IEnumerable<IUniqueDefinition> myUniques)
+        private IEnumerable<ISingleEdgeView> GenerateUniquePropertiesOutput(IVertexType myType, IEnumerable<IUniqueDefinition> myUniques)
         {
 
-            var _AttributeReadout = new List<IVertexView>();
+            var _AttributeReadout = new List<ISingleEdgeView>();
 
             foreach (var unique in myUniques)
             {
@@ -227,7 +228,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 Attributes.Add("DefiningVertexType", unique.DefiningVertexType);
                 Attributes.Add("UniqueProperties", GeneratePropertiesOutput(myType, unique.UniquePropertyDefinitions));
                 
-                _AttributeReadout.Add(new VertexView(Attributes, new Dictionary<String, IEdgeView>()));
+                _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
 
             }
 
@@ -241,10 +242,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <param name="myType">The db type</param>
         /// <param name="myDBContext">The db context</param>
         /// <returns>a list of readouts, contains the attributes</returns>
-        private IEnumerable<IVertexView> GenerateIndicesOutput(IVertexType myType)
+        private IEnumerable<ISingleEdgeView> GenerateIndicesOutput(IVertexType myType)
         {
 
-            var _AttributeReadout = new List<IVertexView>();
+            var _AttributeReadout = new List<ISingleEdgeView>();
 
             foreach (var idx in myType.GetIndexDefinitions(true))
             {
@@ -256,7 +257,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 Attributes.Add("Name", idx.Name);
                 Attributes.Add("Edition", idx.Edition);
 
-                _AttributeReadout.Add(new VertexView(Attributes, new Dictionary<String, IEdgeView>()));
+                _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
 
             }
 
@@ -271,10 +272,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <param name="myDBContext">The db context</param>
         /// <param name="myEdges">The EdgeDefinitions</param>
         /// <returns>a list of readouts, contains the attributes</returns>
-        private IEnumerable<IVertexView> GenerateEdgesOutput(IVertexType myType, IEnumerable<IAttributeDefinition> myEdges)
+        private IEnumerable<ISingleEdgeView> GenerateEdgesOutput(IVertexType myType, IEnumerable<IAttributeDefinition> myEdges)
         {
 
-            var _AttributeReadout = new List<IVertexView>();
+            var _AttributeReadout = new List<ISingleEdgeView>();
 
             foreach (var edge in myEdges)
             {
@@ -295,7 +296,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 Attributes.Add("UUID", edge.ID);
                 Attributes.Add("Name", edge.Name);
                 
-                _AttributeReadout.Add(new VertexView(Attributes, new Dictionary<String, IEdgeView>()));
+                _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
 
             }
 
