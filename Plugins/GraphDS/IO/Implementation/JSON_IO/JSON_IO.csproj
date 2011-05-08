@@ -48,9 +48,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
+      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
+      <Name>IGraphDB</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
       <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\External\NewFastSerializer\NewFastSerializer.csproj">
+      <Project>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</Project>
+      <Name>NewFastSerializer</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\External\Newtonsoft.Json\Newtonsoft.Json.csproj">
       <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>

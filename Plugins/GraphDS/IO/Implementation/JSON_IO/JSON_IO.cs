@@ -11,6 +11,7 @@ using System.Xml;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 using System.Text;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.Plugins.GraphDS.IO.JSON_IO
 {
@@ -125,15 +126,34 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                 // take one IVertexView and traverse through it
                 #region Vertex Properties
                 JObject _properties = new JObject();
+
                 foreach (var _property in aVertex.GetAllProperties())
                 {
                     if (_property.Item2 == null)
                         _properties.Add(new JProperty(_property.Item1, ""));
                     else
                         if (_property.Item2 is Stream)
+                        {
                             _properties.Add(new JProperty(_property.Item1, "BinaryProperty"));
+                        }
                         else
-                            _properties.Add(new JProperty(_property.Item1, _property.Item2.ToString()));
+                        {                            
+                            if (_property.Item2 is ICollectionWrapper)
+                            {
+                                var values = new JArray();
+
+                                foreach (var value in ((ICollectionWrapper)_property.Item2))
+                                {
+                                    values.Add(new JObject(new JProperty(value.ToString())));
+                                }
+
+                                _properties.Add(new JProperty(_property.Item1, values));
+                            }
+                            else
+                            {
+                                _properties.Add(new JProperty(_property.Item1, _property.Item2.ToString()));
+                            }
+                        }
                 }
                 // add to the results...
                 _results.Add(new JObject(new JProperty("Properties", new JObject(_properties))));

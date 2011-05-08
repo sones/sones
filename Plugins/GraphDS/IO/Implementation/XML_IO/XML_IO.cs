@@ -10,6 +10,7 @@ using sones.Library.VersionedPluginManager;
 using SchemaToClassesGenerator;
 using sones.Plugins.GraphDS.IO.XML_IO.ErrorHandling;
 using System.Text;
+using sones.GraphDB.Expression.Tree.Literals;
 
 
 namespace sones.Plugins.GraphDS.IO.XML_IO
@@ -78,7 +79,19 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                     if (aProperty.Item2 != null)
                     {
-                        property.Value = aProperty.Item2.ToString();
+                        if (aProperty.Item2 is ICollectionWrapper)
+                        {
+                            foreach (var value in ((ICollectionWrapper)aProperty.Item2))
+                            {
+                                property.Value += value.ToString() + " ";
+                            }
+
+                        }
+                        else
+                        {
+                            property.Value = aProperty.Item2.ToString();
+                        }
+                        
                         property.Type = aProperty.Item2.GetType().Name;
                     }
                     else

@@ -77,6 +77,10 @@
       <Project>{BE2A2669-CCDE-40A8-AEAB-673260D7260A}</Project>
       <Name>QueryResult</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\External\NewFastSerializer\NewFastSerializer.csproj">
+      <Project>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</Project>
+      <Name>NewFastSerializer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
