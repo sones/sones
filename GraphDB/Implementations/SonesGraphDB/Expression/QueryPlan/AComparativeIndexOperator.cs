@@ -123,7 +123,7 @@ namespace sones.GraphDB.Expression.QueryPlan
             {
                 foreach (var aVertexID in GetSingleIndexValues((ISingleValueIndex<IComparable, Int64>) myIndex, myIComparable))
                 {
-                    yield return aVertexID;
+                    yield return aVertexID; 
                 }
             }
             else

@@ -908,8 +908,10 @@ namespace sones.GraphDB.Manager.Vertex
                     }
                 }
 
+                IEnumerable<String> updatedNames = myUpdate.UpdatedStructuredProperties != null ? myUpdate.UpdatedStructuredProperties.Select(kv => kv.Key) : Enumerable.Empty<String>();
+
                 //force execution
-                return ExecuteUpdates(groupedByTypeID, updates, myTransaction, mySecurity);
+                return ExecuteUpdates(updatedNames, groupedByTypeID, updates, myTransaction, mySecurity);
 
             }
 
@@ -917,7 +919,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         }
 
-        private IEnumerable<IVertex> ExecuteUpdates(IEnumerable<IGrouping<long, IVertex>> groups, Dictionary<IVertex, Tuple<long?, string, VertexUpdateDefinition>> updates, TransactionToken myTransaction, SecurityToken mySecurity)
+        private IEnumerable<IVertex> ExecuteUpdates(IEnumerable<String> myChangedProperties, IEnumerable<IGrouping<long, IVertex>> groups, Dictionary<IVertex, Tuple<long?, string, VertexUpdateDefinition>> updates, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             List<IVertex> result = new List<IVertex>();
             foreach (var group in groups)
@@ -925,7 +927,7 @@ namespace sones.GraphDB.Manager.Vertex
                 var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(group.Key, myTransaction, mySecurity);
 
                 var indices = vertexType.GetIndexDefinitions(false).ToDictionary(_ => _indexManager.GetIndex(vertexType, _.IndexedProperties, mySecurity, myTransaction), _=>_.IndexedProperties);
-                var neededPropNames = indices.SelectMany(_=>_.Value).Select(_=>_.Name).Distinct();
+                var neededPropNames = indices.SelectMany(_=>_.Value).Select(_=>_.Name).Distinct().Intersect(myChangedProperties);
 
                 foreach (var vertex in group)
                 {
@@ -981,6 +983,10 @@ namespace sones.GraphDB.Manager.Vertex
             {
                 var entry = CreateIndexEntry(index.Value, structured);
 
+                if (entry != null)
+                {
+
+
                 if (index.Key is IMultipleValueIndex<IComparable, long>)
                 {
                     lock (index.Key)
@@ -1000,6 +1006,8 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     index.Key.Remove(entry);
                 }
+                }
+
             }
         }
 
@@ -1528,25 +1536,29 @@ namespace sones.GraphDB.Manager.Vertex
                             singleUpdate.Add(new SingleEdgeUpdateDefinition(mySource, target, Int64.MinValue));
                         }
 
-                    foreach (var innerEdge in myEdge.ContainedEdges)
+                    if (myEdge.ContainedEdges != null)
                     {
-                        targets = GetResultingVertexIDs(myTransaction, mySecurity, innerEdge, edgeDef.TargetVertexType);
-                        ConvertUnknownProperties(innerEdge, edgeDef.InnerEdgeType);
 
-                        var innerStructuredUpdate = CreateStructuredUpdate(innerEdge.StructuredProperties, edgeDef.InnerEdgeType);
-                        var innerUnstructuredUpdate = CreateUnstructuredUpdate(innerEdge.UnstructuredProperties);
-                        if (targets != null)
-                            foreach (var target in targets)
-                            {
-                                singleUpdate.Add(new SingleEdgeUpdateDefinition(mySource, target, Int64.MinValue, null, innerStructuredUpdate, innerUnstructuredUpdate));
-                            }
+                        foreach (var innerEdge in myEdge.ContainedEdges)
+                        {
+                            targets = GetResultingVertexIDs(myTransaction, mySecurity, innerEdge, edgeDef.TargetVertexType);
+                            ConvertUnknownProperties(innerEdge, edgeDef.InnerEdgeType);
+
+                            var innerStructuredUpdate = CreateStructuredUpdate(innerEdge.StructuredProperties, edgeDef.InnerEdgeType);
+                            var innerUnstructuredUpdate = CreateUnstructuredUpdate(innerEdge.UnstructuredProperties);
+                            if (targets != null)
+                                foreach (var target in targets)
+                                {
+                                    singleUpdate.Add(new SingleEdgeUpdateDefinition(mySource, target, Int64.MinValue, null, innerStructuredUpdate, innerUnstructuredUpdate));
+                                }
+                        }
                     }
 
                     outStructuredUpdate = CreateStructuredUpdate(myEdge.StructuredProperties, edgeDef.EdgeType);
                     outUnstructuredUpdate = CreateUnstructuredUpdate(myEdge.UnstructuredProperties);
 
                     break;
-                default : throw new Exception("The EdgeMultiplicity enumeration was changed, but not this switch statement.");
+                default: throw new Exception("The EdgeMultiplicity enumeration was changed, but not this switch statement.");
             }
 
             #region return

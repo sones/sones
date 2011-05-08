@@ -54,12 +54,24 @@ namespace sones.GraphDB.Expression.QueryPlan
         
         public override IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, long> mySingleValueIndex, IComparable myIComparable)
         {
-            yield return mySingleValueIndex[myIComparable];
+            if (mySingleValueIndex.ContainsKey(myIComparable))
+            {
+                yield return mySingleValueIndex[myIComparable];
+
+            }
+
+            yield break;
+
         }
 
         public override IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, long> myMultipleValueIndex, IComparable myIComparable)
         {
-            return myMultipleValueIndex[myIComparable];
+            if (myMultipleValueIndex.ContainsKey(myIComparable))
+            {
+                return myMultipleValueIndex[myIComparable];                 
+            }
+
+            return Enumerable.Empty<long>();
         }
 
         #endregion

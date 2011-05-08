@@ -525,27 +525,30 @@ namespace sones.GraphFS.Element.Vertex
         {
             lock (_lockobject)
             {
-                if (myUnstructuredUpdates.Deleted != null)
+                if (myUnstructuredUpdates != null)
                 {
-                    foreach (var item in myUnstructuredUpdates.Deleted)
+                    if (myUnstructuredUpdates.Deleted != null)
                     {
-                        if (_unstructuredProperties != null)
-                            _unstructuredProperties.Remove(item);
-                    }
-                }
-
-                if (myUnstructuredUpdates.Updated != null)
-                {
-                    foreach (var item in myUnstructuredUpdates.Updated)
-                    {
-                        _unstructuredProperties = _unstructuredProperties ?? new Dictionary<String, object>();
-                        if (_unstructuredProperties.ContainsKey(item.Key))
+                        foreach (var item in myUnstructuredUpdates.Deleted)
                         {
-                            _unstructuredProperties[item.Key] = item.Value;
+                            if (_unstructuredProperties != null)
+                                _unstructuredProperties.Remove(item);
                         }
-                        else
+                    }
+
+                    if (myUnstructuredUpdates.Updated != null)
+                    {
+                        foreach (var item in myUnstructuredUpdates.Updated)
                         {
-                            _unstructuredProperties.Add(item.Key, item.Value);
+                            _unstructuredProperties = _unstructuredProperties ?? new Dictionary<String, object>();
+                            if (_unstructuredProperties.ContainsKey(item.Key))
+                            {
+                                _unstructuredProperties[item.Key] = item.Value;
+                            }
+                            else
+                            {
+                                _unstructuredProperties.Add(item.Key, item.Value);
+                            }
                         }
                     }
                 }

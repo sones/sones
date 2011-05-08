@@ -112,7 +112,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override void AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            var vertexType =  GetVertexType(myAlterVertexTypeRequest.VertexTypeName, myTransactionToken, mySecurityToken);
+            var vertexType =  _vertexTypeManager.GetVertexType(myAlterVertexTypeRequest.VertexTypeName, myTransactionToken, mySecurityToken);
 
             #region checks
 

@@ -94,11 +94,13 @@ namespace sones.GraphDB.Manager.TypeManagement
         void IManager.Initialize(IMetaManager myMetaManager)
         {
             _execute.Initialize(myMetaManager);
+            _check.Initialize(myMetaManager);
         }
 
         void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity)
         {
             _execute.Load(myTransaction, mySecurity);
+            _check.Load(myTransaction, mySecurity);
         }
 
         #endregion
