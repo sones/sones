@@ -120,40 +120,43 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
         {
             JArray _results = new JArray();
 
-            // take one IVertexView and traverse through it
-            #region Vertex Properties
-            JObject _properties = new JObject();
-            foreach (var _property in aVertex.GetAllProperties())
+            if (aVertex != null)
             {
-                if (_property.Item2 == null)
-                    _properties.Add(new JProperty(_property.Item1, ""));
-                else
-                    if (_property.Item2 is Stream)
-                        _properties.Add(new JProperty(_property.Item1, "BinaryProperty"));
+                // take one IVertexView and traverse through it
+                #region Vertex Properties
+                JObject _properties = new JObject();
+                foreach (var _property in aVertex.GetAllProperties())
+                {
+                    if (_property.Item2 == null)
+                        _properties.Add(new JProperty(_property.Item1, ""));
                     else
-                        _properties.Add(new JProperty(_property.Item1, _property.Item2.ToString()));
-            }
-            // add to the results...
-            _results.Add(new JObject(new JProperty("Properties", new JObject(_properties))));
-            #endregion
+                        if (_property.Item2 is Stream)
+                            _properties.Add(new JProperty(_property.Item1, "BinaryProperty"));
+                        else
+                            _properties.Add(new JProperty(_property.Item1, _property.Item2.ToString()));
+                }
+                // add to the results...
+                _results.Add(new JObject(new JProperty("Properties", new JObject(_properties))));
+                #endregion
 
-            #region Edges
-            JArray _edges = new JArray();
-            foreach (var _edge in aVertex.GetAllEdges())
-            {
-                if (_edge.Item2 == null)
+                #region Edges
+                JArray _edges = new JArray();
+                foreach (var _edge in aVertex.GetAllEdges())
                 {
-                    _edges.Add(new JObject(new JProperty(_edge.Item1, "")));             
+                    if (_edge.Item2 == null)
+                    {
+                        _edges.Add(new JObject(new JProperty(_edge.Item1, "")));
+                    }
+                    else
+                    {
+                        JArray _newEdge = GenerateEdgeViewJSON(_edge.Item2);
+                        _edges.Add(new JObject(new JProperty(_edge.Item1, _newEdge)));
+                    }
                 }
-                else
-                {
-                    JArray _newEdge = GenerateEdgeViewJSON(_edge.Item2);
-                    _edges.Add(new JObject(new JProperty(_edge.Item1, _newEdge)));
-                }
+                // add to the results...
+                _results.Add(new JObject(new JProperty("Edges", _edges)));
+                #endregion
             }
-            // add to the results...
-            _results.Add(new JObject(new JProperty("Edges", _edges)));
-            #endregion
             return _results;
         }
 

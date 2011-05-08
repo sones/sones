@@ -61,183 +61,203 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
         private SchemaVertexView GenerateVertexView(IVertexView aVertex)
         {
+           
             var resultVertex = new SchemaVertexView();
 
-            #region properties
-
-            List<Property> properties = new List<Property>();
-
-            foreach (var aProperty in aVertex.GetAllProperties())
+            if (aVertex != null)
             {
-                var property = new Property();
+                #region properties
 
-                property.ID = aProperty.Item1;
+                List<Property> properties = new List<Property>();
 
-                if (aProperty.Item2 != null)
+                foreach (var aProperty in aVertex.GetAllProperties())
                 {
-                    property.Value = aProperty.Item2.ToString();
-                    property.Type = aProperty.Item2.GetType().Name;
+                    var property = new Property();
+
+                    property.ID = aProperty.Item1;
+
+                    if (aProperty.Item2 != null)
+                    {
+                        property.Value = aProperty.Item2.ToString();
+                        property.Type = aProperty.Item2.GetType().Name;
+                    }
+                    else
+                    {
+                        property.Value = String.Empty;
+                        property.Type = "null";
+                    }
+
+                    properties.Add(property);
                 }
-                else
+
+                resultVertex.Property = properties.ToArray();
+
+                #endregion
+
+                #region binaries
+
+                List<BinaryData> binProperties = new List<BinaryData>();
+
+                foreach (var aProperty in aVertex.GetAllBinaryProperties())
                 {
-                    property.Value = String.Empty;
-                    property.Type = "null";
-                }                
+                    var binProp = new BinaryData();
 
-                properties.Add(property);
-            }
+                    binProp.ID = aProperty.Item1;
+                    var content = new byte[aProperty.Item2.Length];
+                    aProperty.Item2.Read(content, 0, content.Length);
 
-            resultVertex.Property = properties.ToArray();
+                    binProp.Content = content;
 
-            #endregion
+                    binProperties.Add(binProp);
+                }
 
-            #region binaries
+                resultVertex.BinaryProperty = binProperties.ToArray();
 
-            List<BinaryData> binProperties = new List<BinaryData>();
-            
-            foreach (var aProperty in aVertex.GetAllBinaryProperties())
-            {
-                var binProp = new BinaryData();
+                #endregion
 
-                binProp.ID = aProperty.Item1;
-                var content = new byte[aProperty.Item2.Length];
-                aProperty.Item2.Read(content, 0, content.Length);
-                
-                binProp.Content = content;               
+                #region edges
 
-                binProperties.Add(binProp);
-            }
+                List<SchemaHyperEdgeView> edges = new List<SchemaHyperEdgeView>();
 
-            resultVertex.BinaryProperty = binProperties.ToArray();
-            
-            #endregion
-
-            #region edges
-
-            List<SchemaHyperEdgeView> edges = new List<SchemaHyperEdgeView>();
-                        
-            foreach (var aEdge in aVertex.GetAllEdges())
-            {
-                
-                if (aEdge.Item2 is IHyperEdgeView)
+                foreach (var aEdge in aVertex.GetAllEdges())
                 {
 
-                    List<Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>> innerVertices = new List<Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>>();
-
-                    #region single edges
-
-                    foreach (var singleEdge in ((HyperEdgeView)aEdge.Item2).GetAllEdges())
+                    if (aEdge.Item2 is IHyperEdgeView)
                     {
-                        innerVertices.Add(new Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>(GenerateVertexView(singleEdge.GetTargetVertex()), singleEdge.GetAllProperties()));
-                    }
 
-                    #endregion
+                        List<Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>> innerVertices = new List<Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>>();
 
-                    var hyperEdge = new SchemaHyperEdgeView();
+                        #region single edges
 
-                    hyperEdge.Name = aEdge.Item1;
-
-                    #region set hyperedge properties
-
-                    var edgeProperties = aEdge.Item2.GetAllProperties().ToArray();
-                    hyperEdge.CountOfProperties = edgeProperties.Count();
-                    hyperEdge.Property = new Property[edgeProperties.Count()];
-
-                    for (Int32 i = 0; i < edgeProperties.Count(); i++)
-                    {
-                        hyperEdge.Property[i] = new Property();
-                        hyperEdge.Property[i].ID = edgeProperties[i].Item1;
-                        hyperEdge.Property[i].Type = edgeProperties[i].Item2.GetType().Name;
-                        hyperEdge.Property[i].Value = edgeProperties[i].Item2.ToString();
-                    }
-
-                    #endregion
-
-                    hyperEdge.SingleEdge = new SchemaSingleEdgeView[innerVertices.Count];
-
-                    for (Int32 i = 0; i < innerVertices.Count; i++)
-                    {
-                        hyperEdge.SingleEdge[i] = new SchemaSingleEdgeView();
-                        var singleEdgeProperties = innerVertices[i].Item2.ToArray();
-
-                        hyperEdge.SingleEdge[i].CountOfProperties = singleEdgeProperties.Count();
-                        hyperEdge.SingleEdge[i].EdgeProperty = new Property[hyperEdge.SingleEdge[i].CountOfProperties];
-
-                        #region single edge properties
-
-                        for (Int32 j = 0; j < singleEdgeProperties.Count(); j++)
+                        foreach (var singleEdge in ((HyperEdgeView)aEdge.Item2).GetAllEdges())
                         {
-                            hyperEdge.SingleEdge[i].EdgeProperty[j] = new Property();
-                            hyperEdge.SingleEdge[i].EdgeProperty[j].ID = singleEdgeProperties[j].Item1;
-                            hyperEdge.SingleEdge[i].EdgeProperty[j].Type = singleEdgeProperties[j].Item2.GetType().Name;
-                            hyperEdge.SingleEdge[i].EdgeProperty[j].Value = singleEdgeProperties[j].Item2.ToString();
+                            innerVertices.Add(new Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>(GenerateVertexView(singleEdge.GetTargetVertex()), singleEdge.GetAllProperties()));
+                        }
+
+                        #endregion
+
+                        var hyperEdge = new SchemaHyperEdgeView();
+
+                        hyperEdge.Name = aEdge.Item1;
+
+                        #region set hyperedge properties
+
+                        var edgeProperties = aEdge.Item2.GetAllProperties().ToArray();
+                        hyperEdge.CountOfProperties = edgeProperties.Count();
+                        hyperEdge.Property = new Property[edgeProperties.Count()];
+
+                        for (Int32 i = 0; i < edgeProperties.Count(); i++)
+                        {
+                            hyperEdge.Property[i] = new Property();
+                            hyperEdge.Property[i].ID = edgeProperties[i].Item1;
+                            hyperEdge.Property[i].Type = edgeProperties[i].Item2.GetType().Name;
+                            hyperEdge.Property[i].Value = edgeProperties[i].Item2.ToString();
+                        }
+
+                        #endregion
+
+                        hyperEdge.SingleEdge = new SchemaSingleEdgeView[innerVertices.Count];
+
+                        for (Int32 i = 0; i < innerVertices.Count; i++)
+                        {
+                            hyperEdge.SingleEdge[i] = new SchemaSingleEdgeView();
+                            var singleEdgeProperties = innerVertices[i].Item2.ToArray();
+
+                            hyperEdge.SingleEdge[i].CountOfProperties = singleEdgeProperties.Count();
+                            hyperEdge.SingleEdge[i].EdgeProperty = new Property[hyperEdge.SingleEdge[i].CountOfProperties];
+
+                            #region single edge properties
+
+                            for (Int32 j = 0; j < singleEdgeProperties.Count(); j++)
+                            {
+                                hyperEdge.SingleEdge[i].EdgeProperty[j] = new Property();
+                                hyperEdge.SingleEdge[i].EdgeProperty[j].ID = singleEdgeProperties[j].Item1;
+                                hyperEdge.SingleEdge[i].EdgeProperty[j].Type = singleEdgeProperties[j].Item2.GetType().Name;
+                                hyperEdge.SingleEdge[i].EdgeProperty[j].Value = singleEdgeProperties[j].Item2.ToString();
+                            }
+
+                            #endregion
+
+                            #region target vertex
+
+                            hyperEdge.SingleEdge[i].TargetVertex = new SchemaVertexView();
+                            
+                            if (innerVertices[i].Item1.Property != null)
+                            {
+                                hyperEdge.SingleEdge[i].TargetVertex.Property = innerVertices[i].Item1.Property.ToArray();
+                            }
+
+                            if (innerVertices[i].Item1.BinaryProperty != null)
+                            {
+                                hyperEdge.SingleEdge[i].TargetVertex.BinaryProperty = innerVertices[i].Item1.BinaryProperty.ToArray();
+                            }
+
+                            if (innerVertices[i].Item1.Edge != null)
+                            {
+                                hyperEdge.SingleEdge[i].TargetVertex.Edge = innerVertices[i].Item1.Edge.ToArray();
+                            }
+
+                            #endregion
+                        }
+
+                        edges.Add(hyperEdge);
+
+                    }
+                    else
+                    {
+                        var singleEdge = new SchemaHyperEdgeView();
+
+                        singleEdge.Name = aEdge.Item1;
+
+                        var edgeProperties = aEdge.Item2.GetAllProperties().ToArray();
+                        singleEdge.CountOfProperties = edgeProperties.Count();
+
+                        #region properties
+
+                        singleEdge.Property = new Property[edgeProperties.Count()];
+
+                        for (Int32 i = 0; i < edgeProperties.Count(); i++)
+                        {
+                            singleEdge.Property[i] = new Property();
+                            singleEdge.Property[i].ID = edgeProperties[i].Item1;
+                            singleEdge.Property[i].Type = edgeProperties[i].Item2.GetType().Name;
+                            singleEdge.Property[i].Value = edgeProperties[i].Item2.ToString();
                         }
 
                         #endregion
 
                         #region target vertex
 
-                        hyperEdge.SingleEdge[i].TargetVertex = new SchemaVertexView();
-                        hyperEdge.SingleEdge[i].TargetVertex.Property = innerVertices[i].Item1.Property.ToArray();
-                        hyperEdge.SingleEdge[i].TargetVertex.BinaryProperty = innerVertices[i].Item1.BinaryProperty.ToArray();
-                        hyperEdge.SingleEdge[i].TargetVertex.Edge = innerVertices[i].Item1.Edge.ToArray();
+                        singleEdge.SingleEdge = new SchemaSingleEdgeView[1];
+
+                        singleEdge.SingleEdge[0] = new SchemaSingleEdgeView();
+                        singleEdge.SingleEdge[0].TargetVertex = new SchemaVertexView();
+
+                        var edgeTargetVertex = ((SingleEdgeView)aEdge.Item2).GetTargetVertex();
+
+                        var targetVertex = GenerateVertexView(edgeTargetVertex);
+
+                        if (edgeTargetVertex != null)
+                        {
+                            singleEdge.SingleEdge[0].TargetVertex.Property = targetVertex.Property.ToArray();
+                            singleEdge.SingleEdge[0].TargetVertex.BinaryProperty = targetVertex.BinaryProperty.ToArray();
+                            singleEdge.SingleEdge[0].TargetVertex.Edge = targetVertex.Edge.ToArray();
+                        }
 
                         #endregion
+
+                        edges.Add(singleEdge);
+
                     }
 
-                    edges.Add(hyperEdge);
-
-                }
-                else
-                {
-                    var singleEdge = new SchemaHyperEdgeView();
-                    
-                    singleEdge.Name = aEdge.Item1;
-
-                    var edgeProperties = aEdge.Item2.GetAllProperties().ToArray();
-                    singleEdge.CountOfProperties = edgeProperties.Count();
-
-                    #region properties
-
-                    singleEdge.Property = new Property[edgeProperties.Count()];
-
-                    for (Int32 i = 0; i < edgeProperties.Count(); i++)
-                    {
-                        singleEdge.Property[i] = new Property();
-                        singleEdge.Property[i].ID = edgeProperties[i].Item1;
-                        singleEdge.Property[i].Type = edgeProperties[i].Item2.GetType().Name;
-                        singleEdge.Property[i].Value = edgeProperties[i].Item2.ToString();
-                    }
-
-                    #endregion
-
-                    #region target vertex
-
-                    singleEdge.SingleEdge = new SchemaSingleEdgeView[1];
-
-                    singleEdge.SingleEdge[0] = new SchemaSingleEdgeView();
-                    singleEdge.SingleEdge[0].TargetVertex = new SchemaVertexView();
-
-                    var targetVertex = GenerateVertexView(((SingleEdgeView)aEdge.Item2).GetTargetVertex());
-
-                    singleEdge.SingleEdge[0].TargetVertex.Property = targetVertex.Property.ToArray();
-                    singleEdge.SingleEdge[0].TargetVertex.BinaryProperty = targetVertex.BinaryProperty.ToArray();
-                    singleEdge.SingleEdge[0].TargetVertex.Edge = targetVertex.Edge.ToArray();
-
-                    #endregion
-
-                    edges.Add(singleEdge);
+                #endregion
 
                 }
 
-                #endregion                
-                
+                resultVertex.Edge = edges.ToArray();
+
+                #endregion
             }
-
-            resultVertex.Edge = edges.ToArray();
-
-            #endregion
-
             return resultVertex;
         }
 
