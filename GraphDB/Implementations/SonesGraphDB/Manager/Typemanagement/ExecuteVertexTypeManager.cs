@@ -1031,14 +1031,17 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #region remove stuff
 
+            //done
             RemoveMandatoryConstraint(myAlterVertexTypeRequest.ToBeRemovedMandatories, vertexType, myTransactionToken,
                                       mySecurityToken);
-
+            //done
             RemoveUniqueConstraint(myAlterVertexTypeRequest.ToBeRemovedUniques, vertexType, myTransactionToken,
                                       mySecurityToken);
 
+            //done
             RemoveIndices(myAlterVertexTypeRequest.ToBeRemovedIndices, vertexType, myTransactionToken, mySecurityToken);
 
+            //done
             RemoveAttributes(myAlterVertexTypeRequest.ToBeRemovedIncomingEdges,
                              myAlterVertexTypeRequest.ToBeRemovedOutgoingEdges,
                              myAlterVertexTypeRequest.ToBeRemovedProperties, vertexType, myTransactionToken,
@@ -1048,20 +1051,25 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #region add stuff
 
+            //done
             AddMandatoryConstraint(myAlterVertexTypeRequest.ToBeAddedMandatories, vertexType, myTransactionToken,
                                    mySecurityToken);
 
+            //done
             AddUniqueConstraint(myAlterVertexTypeRequest.ToBeAddedUniques, vertexType, myTransactionToken,
                                 mySecurityToken);
 
+            //done
             AddIndices(myAlterVertexTypeRequest.ToBeAddedIndices, vertexType, myTransactionToken, mySecurityToken);
 
+            //done
             AddAttributes(myAlterVertexTypeRequest.ToBeAddedBinaryProperties,
                           myAlterVertexTypeRequest.ToBeAddedIncomingEdges,
                           myAlterVertexTypeRequest.ToBeAddedOutgoingEdges, 
                           myAlterVertexTypeRequest.ToBeAddedProperties,
                           vertexType, myTransactionToken, mySecurityToken);
 
+            //done
             RenameAttributes(myAlterVertexTypeRequest.ToBeRenamedProperties, vertexType, myTransactionToken,
                              mySecurityToken);
 
@@ -1069,7 +1077,10 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #region misc
 
+            //done
             ChangeCommentOnVertexType(vertexType, myAlterVertexTypeRequest.AlteredComment, myTransactionToken,mySecurityToken);
+            
+            //done
             RenameVertexType(vertexType, myAlterVertexTypeRequest.AlteredVertexTypeName, myTransactionToken, mySecurityToken);
 
             #endregion
@@ -1088,7 +1099,34 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myToBeRenamedAttributes.IsNotNullOrEmpty())
             {
-                throw new NotImplementedException();                
+
+                foreach (var aToBeRenamedAttribute in myToBeRenamedAttributes)
+                {
+                    VertexUpdateDefinition update = new VertexUpdateDefinition(null, new StructuredPropertiesUpdate(new Dictionary<long, IComparable> { { (long)AttributeDefinitions.AttributeDotName, aToBeRenamedAttribute.Value } }));
+                    var attribute = vertexType.GetAttributeDefinition(aToBeRenamedAttribute.Key);
+
+                    switch (attribute.Kind)
+                    {
+                        case AttributeType.Property:
+                            _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, attribute.ID, (long)BaseTypes.Property, update);
+                            break;
+
+                        case AttributeType.IncomingEdge:
+                            _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, attribute.ID, (long)BaseTypes.IncomingEdge, update);
+
+                            break;
+                        case AttributeType.OutgoingEdge:
+                            _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, attribute.ID, (long)BaseTypes.OutgoingEdge, update);
+
+                            break;
+                        case AttributeType.BinaryProperty:
+                            _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, attribute.ID, (long)BaseTypes.BinaryProperty, update);
+
+                            break;
+                        default:
+                            break;
+                    }
+                }          
             }
         }
 
@@ -1104,12 +1142,120 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurityToken"></param>
         private void AddAttributes(IEnumerable<BinaryPropertyPredefinition> myToBeAddedBinaryProperties, IEnumerable<IncomingEdgePredefinition> myToBeAddedIncomingEdges, IEnumerable<OutgoingEdgePredefinition> myToBeAddedOutgoingEdges, IEnumerable<PropertyPredefinition> myToBeAddedProperties, IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            if (myToBeAddedBinaryProperties.IsNotNullOrEmpty() ||
-                myToBeAddedIncomingEdges.IsNotNullOrEmpty() ||
-                myToBeAddedOutgoingEdges.IsNotNullOrEmpty() ||
-                myToBeAddedProperties.IsNotNullOrEmpty())
+            if (myToBeAddedProperties.IsNotNullOrEmpty())
             {
-                throw new NotImplementedException();    
+                ProcessAddPropery(myToBeAddedProperties, mySecurityToken, myTransactionToken, vertexType);
+
+                CleanUpTypes();
+            }
+
+            if (myToBeAddedBinaryProperties.IsNotNullOrEmpty())
+            {
+                ProcessAddBinaryPropery(myToBeAddedBinaryProperties, mySecurityToken, myTransactionToken, vertexType);
+            }
+
+
+            if (myToBeAddedOutgoingEdges.IsNotNullOrEmpty())
+            {
+                CleanUpTypes();
+                ProcessAddOutgoingEdges(myToBeAddedOutgoingEdges, mySecurityToken, myTransactionToken, vertexType);
+            }
+
+            if (myToBeAddedIncomingEdges.IsNotNullOrEmpty())
+            {
+                CleanUpTypes();
+                ProcessAddIncomingEdges(myToBeAddedIncomingEdges, mySecurityToken, myTransactionToken, vertexType);
+            }
+
+        }
+
+        private void ProcessAddOutgoingEdges(IEnumerable<OutgoingEdgePredefinition> myToBeAddedOutgoingEdges, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType)
+        {
+            foreach (var aToBeAddedOutgoingEdge in myToBeAddedOutgoingEdges)
+            {
+                var edgeType = _edgeManager.ExecuteManager.GetEdgeType(aToBeAddedOutgoingEdge.EdgeType, myTransactionToken, mySecurityToken);
+                var innerEdgeType = _edgeManager.ExecuteManager.GetEdgeType(aToBeAddedOutgoingEdge.InnerEdgeType, myTransactionToken, mySecurityToken);
+                var targetVertexType = GetVertexType(aToBeAddedOutgoingEdge.AttributeType, myTransactionToken, mySecurityToken);
+
+                BaseGraphStorageManager.StoreOutgoingEdge(_vertexManager.ExecuteManager.VertexStore,
+                    new VertexInformation((long)BaseTypes.OutgoingEdge,
+                        _idManager[(long)BaseTypes.OutgoingEdge].GetNextID()), aToBeAddedOutgoingEdge.AttributeName,
+                        aToBeAddedOutgoingEdge.Comment,
+                        true,
+                        DateTime.UtcNow.ToBinary(),
+                        aToBeAddedOutgoingEdge.Multiplicity,
+                        new VertexInformation((long)BaseTypes.VertexType, vertexType.ID),
+                        new VertexInformation((long)BaseTypes.EdgeType, edgeType.ID),
+                        new VertexInformation((long)BaseTypes.EdgeType, innerEdgeType.ID),
+                        new VertexInformation((long)BaseTypes.VertexType, targetVertexType.ID),
+                        mySecurityToken, myTransactionToken);
+            }
+        }
+
+        private void ProcessAddPropery(IEnumerable<PropertyPredefinition> myToBeAddedProperties, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType)
+        {
+            foreach (var aProperty in myToBeAddedProperties)
+            {
+                BaseGraphStorageManager.StoreProperty(
+                    _vertexManager.ExecuteManager.VertexStore,
+                    new VertexInformation((long)BaseTypes.Property,
+                        _idManager[(long)BaseTypes.Property].GetNextID()),
+                        aProperty.AttributeName,
+                        aProperty.Comment,
+                        DateTime.UtcNow.ToBinary(),
+                        aProperty.IsMandatory,
+                        aProperty.Multiplicity,
+                        aProperty.DefaultValue,
+                        true,
+                        new VertexInformation(
+                            (long)BaseTypes.VertexType,
+                            vertexType.ID),
+                        ConvertBasicType(aProperty.AttributeType),
+                        mySecurityToken,
+                        myTransactionToken);
+            }
+        }
+
+        private void ProcessAddIncomingEdges(IEnumerable<IncomingEdgePredefinition> myToBeAddedIncomingEdges, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType)
+        {
+            foreach (var aIncomingEdgeProperty in myToBeAddedIncomingEdges)
+            {
+                var targetVertexType = GetVertexType(GetTargetVertexTypeFromAttributeType(aIncomingEdgeProperty.AttributeType), myTransactionToken, mySecurityToken);
+                var targetOutgoingEdge = targetVertexType.GetOutgoingEdgeDefinition(GetTargetEdgeNameFromAttributeType(aIncomingEdgeProperty.AttributeType));
+
+                BaseGraphStorageManager.StoreIncomingEdge(
+                    _vertexManager.ExecuteManager.VertexStore,
+                    new VertexInformation((long)BaseTypes.IncomingEdge, _idManager[(long)BaseTypes.IncomingEdge].GetNextID()),
+                        aIncomingEdgeProperty.AttributeName,
+                        aIncomingEdgeProperty.Comment,
+                        true,
+                        DateTime.UtcNow.ToBinary(),
+                        new VertexInformation(
+                            (long)BaseTypes.VertexType,
+                            vertexType.ID),
+                            new VertexInformation((long)BaseTypes.OutgoingEdge, targetOutgoingEdge.ID),
+                        mySecurityToken,
+                        myTransactionToken);
+            }
+        }
+
+        private void ProcessAddBinaryPropery(IEnumerable<BinaryPropertyPredefinition> myToBeAddedBinaryProperties, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType)
+        {
+            foreach (var aBinaryProperty in myToBeAddedBinaryProperties)
+            {
+                BaseGraphStorageManager.StoreBinaryProperty(
+                    _vertexManager.ExecuteManager.VertexStore, 
+                    new VertexInformation((long)BaseTypes.BinaryProperty, 
+                        _idManager[(long)BaseTypes.BinaryProperty].GetNextID()), 
+                        aBinaryProperty.AttributeName, 
+                        aBinaryProperty.Comment, 
+                        true, 
+                        DateTime.UtcNow.ToBinary(), 
+                        new VertexInformation(
+                            (long)BaseTypes.VertexType, 
+                            vertexType.ID), 
+                        mySecurityToken, 
+                        myTransactionToken);
             }
         }
 
@@ -1124,7 +1270,13 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myToBeAddedIndices.IsNotNullOrEmpty())
             {
-                throw new NotImplementedException();                
+                foreach (var aToBeAddedIndex in myToBeAddedIndices)
+                {
+                    IndexPredefinition predef = new IndexPredefinition();
+                    predef.AddProperty(aToBeAddedIndex.Properties);
+
+                    _indexManager.CreateIndex(predef, mySecurityToken, myTransactionToken);
+                }          
             }
         }
 
@@ -1139,7 +1291,13 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myToBeAddedUniques.IsNotNullOrEmpty())
             {
-                throw new NotImplementedException();                
+                foreach (var aUniqueConstraint in myToBeAddedUniques)
+                {
+                    IndexPredefinition predef = new IndexPredefinition();
+                    predef.AddProperty(aUniqueConstraint.Properties);
+
+                    _indexManager.CreateIndex(predef, mySecurityToken, myTransactionToken);
+                }
             }
         }
 
@@ -1154,7 +1312,40 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myToBeAddedMandatories.IsNotNullOrEmpty())
             {
-                throw new NotImplementedException();                
+                VertexUpdateDefinition update = new VertexUpdateDefinition(null, new StructuredPropertiesUpdate(new Dictionary<long, IComparable> { { (long)AttributeDefinitions.PropertyDotIsMandatory, true } }));
+
+                foreach (var aMandatory in myToBeAddedMandatories)
+                {
+                    IPropertyDefinition property = vertexType.GetPropertyDefinition(aMandatory.MandatoryAttribute);
+                    var defaultValue = property.DefaultValue;
+
+                    //get new mandatory value and set it
+                    if (aMandatory.DefaultValue != null)
+                    {
+                        VertexUpdateDefinition defaultValueUpdate = new VertexUpdateDefinition(null, new StructuredPropertiesUpdate(new Dictionary<long, IComparable> { { (long)AttributeDefinitions.PropertyDotDefaultValue, aMandatory.DefaultValue.ToString() } }));
+                        _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, property.ID, (long)BaseTypes.Property, defaultValueUpdate);
+
+                        defaultValue = aMandatory.DefaultValue.ToString();
+                    }
+
+                    VertexUpdateDefinition vertexDefaultValueUpdate = new VertexUpdateDefinition(null, new StructuredPropertiesUpdate(new Dictionary<long, IComparable> { { property.ID, defaultValue } }));
+
+                    foreach (var aVertexType in vertexType.GetChildVertexTypes(true, true))
+                    {
+                        foreach (var aVertexWithoutPropery in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, vertexType.ID).Where(_ => !_.HasProperty(property.ID)).ToList())
+                        {
+                            if (defaultValue != null)
+                            {
+                                //update
+                                _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, aVertexWithoutPropery.VertexID, aVertexWithoutPropery.VertexTypeID, vertexDefaultValueUpdate);
+                            }
+                            else
+                            {
+                                throw new MandatoryConstraintViolationException(aMandatory.MandatoryAttribute);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -1171,7 +1362,59 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myToBeRemovedIncomingEdges.IsNotNullOrEmpty() || myToBeRemovedOutgoingEdges.IsNotNullOrEmpty() || myToBeRemovedProperties.IsNotNullOrEmpty())
             {
-                throw new NotImplementedException();
+                if (myToBeRemovedIncomingEdges.IsNotNullOrEmpty())
+                {
+                    ProcessIncomingEdgeRemoval(myToBeRemovedIncomingEdges, vertexType, myTransactionToken, mySecurityToken);
+                }
+
+                if (myToBeRemovedOutgoingEdges.IsNotNullOrEmpty())
+                {
+                    ProcessOutgoingEdgeRemoval(myToBeRemovedOutgoingEdges, vertexType, myTransactionToken, mySecurityToken);
+                }
+
+                if (myToBeRemovedProperties.IsNotNullOrEmpty())
+                {
+                    ProcessPropertyRemoval(myToBeRemovedProperties, vertexType, myTransactionToken, mySecurityToken);
+                }
+            }
+        }
+
+        private void ProcessPropertyRemoval(IEnumerable<string> myToBeRemovedProperties, IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            foreach (var aProperty in myToBeRemovedProperties)
+            {
+                #region remove related indices
+                
+                var propertyDefinition = vertexType.GetPropertyDefinition(aProperty);
+
+                foreach (var aIndexDefinition in propertyDefinition.InIndices)
+                {
+                    _indexManager.RemoveIndexInstance(aIndexDefinition.ID, myTransactionToken, mySecurityToken);
+                }
+
+                #endregion
+
+                _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurityToken, myTransactionToken, propertyDefinition.ID, (long)BaseTypes.Property);
+            }
+        }
+
+        private void ProcessOutgoingEdgeRemoval(IEnumerable<string> myToBeRemovedOutgoingEdges, IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            foreach (var aOutgoingEdge in myToBeRemovedOutgoingEdges)
+            {
+                var outgoingEdgeDefinition = vertexType.GetOutgoingEdgeDefinition(aOutgoingEdge);
+
+                _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurityToken, myTransactionToken, outgoingEdgeDefinition.ID, (long)BaseTypes.OutgoingEdge);
+            }
+        }
+
+        private void ProcessIncomingEdgeRemoval(IEnumerable<string> myToBeRemovedIncomingEdges, IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            foreach (var aIncomingEdge in myToBeRemovedIncomingEdges)
+            {
+                var incomingEdgeDefinition = vertexType.GetIncomingEdgeDefinition(aIncomingEdge);
+
+                _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurityToken, myTransactionToken, incomingEdgeDefinition.ID, (long)BaseTypes.IncomingEdge);
             }
         }
 
@@ -1186,7 +1429,21 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myToBeRemovedIndices.IsNotNullOrEmpty())
             {
-                throw new NotImplementedException();
+                foreach (var aIndex in myToBeRemovedIndices)
+                {
+                    //find the source
+                    IIndexDefinition sourceIndexDefinition = vertexType.GetIndexDefinitions(false).Where(_ => _.Name == aIndex.Key && _.Edition == aIndex.Value).FirstOrDefault();
+
+                    foreach (var aVertexType in vertexType.GetChildVertexTypes(true, false))
+                    {
+                        foreach (var aInnerIndex in aVertexType.GetIndexDefinitions(false).Where(_=>_.SourceIndex.ID == sourceIndexDefinition.ID))
+                        {
+                            _indexManager.RemoveIndexInstance(aInnerIndex.ID, myTransactionToken, mySecurityToken);                                                             
+                        }
+                    }
+
+                    _indexManager.RemoveIndexInstance(sourceIndexDefinition.ID, myTransactionToken, mySecurityToken);                                                             
+                }
             }
         }
 
@@ -1201,7 +1458,20 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myUniqueConstraints.IsNotNullOrEmpty())
             {
-                throw new NotImplementedException();
+                foreach (var aUniqueConstraint in myUniqueConstraints)
+                {
+                    foreach (var item in myVertexType.GetChildVertexTypes(true, true))
+                    {
+                        foreach (var aUniqueDefinition in item.GetUniqueDefinitions(false))
+                        {
+                            if (aUniqueDefinition.CorrespondingIndex.IndexedProperties.All(_ => _.Name == aUniqueConstraint))
+                            {
+                                _indexManager.RemoveIndexInstance(aUniqueDefinition.CorrespondingIndex.ID, myTransactionToken, mySecurityToken);                                 
+                            }
+                        }
+
+                    }
+                }
             }
         }
 
@@ -1216,7 +1486,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myToBeRemovedMandatories.IsNotNullOrEmpty())
             {
-                throw new NotImplementedException();                
+                VertexUpdateDefinition update = new VertexUpdateDefinition(null, new StructuredPropertiesUpdate(new Dictionary<long, IComparable> { { (long)AttributeDefinitions.PropertyDotIsMandatory, false } }));
+
+                foreach (var aMandatory in myToBeRemovedMandatories)
+                {
+                    IPropertyDefinition property = myVertexType.GetPropertyDefinition(aMandatory);
+
+                    _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, property.ID, (long)BaseTypes.Property, null);
+                }
             }
         }
 
@@ -1231,7 +1508,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (!String.IsNullOrEmpty(myNewComment))
             {
-                throw new NotImplementedException();
+                VertexUpdateDefinition update = new VertexUpdateDefinition(myNewComment);
+
+                _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertexType.ID, (long)BaseTypes.VertexType, update);
             }
         }
 
@@ -1246,7 +1525,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myNewVertexTypeName != null)
             {
-                throw new NotImplementedException();
+                VertexUpdateDefinition update = new VertexUpdateDefinition(null, new StructuredPropertiesUpdate(new Dictionary<long, IComparable> { { (long)AttributeDefinitions.BaseTypeDotName, myNewVertexTypeName } }));
+
+                _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertexType.ID, (long)BaseTypes.VertexType, update);
             }
         }
 

@@ -12,14 +12,17 @@ namespace sones.GraphDB.Request.CreateVertexTypes
     public sealed class MandatoryPredefinition
     {
         public readonly String MandatoryAttribute;
+        public readonly Object DefaultValue;
 
         /// <summary>
         /// Creates a new instance of MandatoryPredefinition.
         /// </summary>
         /// <param name="myProperty">The property that will be mandatory.</param>
-        public MandatoryPredefinition(String myProperty) 
+        /// <param name="myDefaultValue">The default value for the mandatory property</param>
+        public MandatoryPredefinition(String myProperty, Object myDefaultValue = null) 
         {
             MandatoryAttribute = myProperty;
+            DefaultValue = myDefaultValue;
         }
     }
 }
