@@ -696,7 +696,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 if (aggregates.IsNotNullOrEmpty())
                 {
-                    foreach (var val in ExamineDBO_Aggregates(dbos, aggregates, _Selections, myReferencedDBType, myUsingGraph, myResolutionDepth))
+                    foreach (var val in ExamineDBO_Aggregates(myTransactionToken, mySecurityToken, dbos, aggregates, _Selections, myReferencedDBType, myUsingGraph, myResolutionDepth))
                     {
                         if (val != null)
                         {
@@ -1602,7 +1602,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="myDBOs"></param>
         /// <param name="myReferencedDBType"></param>
         /// <returns></returns>
-        private IEnumerable<IVertexView> ExamineDBO_Aggregates(IEnumerable<IVertex> myDBOs, List<SelectionElementAggregate> myAggregates, List<SelectionElement> mySelections, IVertexType myReferencedDBType, Boolean myUsingGraph, Int64 myDepth)
+        private IEnumerable<IVertexView> ExamineDBO_Aggregates(TransactionToken myTransactionToken, SecurityToken mySecurityToken, IEnumerable<IVertex> myDBOs, List<SelectionElementAggregate> myAggregates, List<SelectionElement> mySelections, IVertexType myReferencedDBType, Boolean myUsingGraph, Int64 myDepth)
         {
 
             #region Aggregate
@@ -1709,10 +1709,19 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 foreach (var aggr in myAggregates)
                 {
-                    var aggrResult =
-                        aggr.Aggregate.Aggregate(
-                            myDBOs.Where(aVertex => aVertex.HasProperty(aggr.Element.ID)).Select(
-                                dbo => dbo.GetProperty(aggr.Element.ID)), (IPropertyDefinition)aggr.Element);
+                    FuncParameter aggrResult = null;
+
+                    if (aggr.Aggregate.AggregateName == "count" && aggr.RelatedIDChainDefinition.SelectType == TypesOfSelect.Asterisk)
+                    {
+                        aggrResult = new FuncParameter(_graphdb.GetVertexCount<UInt64>(mySecurityToken, myTransactionToken, new RequestGetVertexCount(aggr.EdgeList.LastEdge.VertexTypeID), (stats, count) => count));
+                    }
+                    else
+                    {
+                        aggrResult =
+                            aggr.Aggregate.Aggregate(
+                                myDBOs.Where(aVertex => aVertex.HasProperty(aggr.Element.ID)).Select(
+                                    dbo => dbo.GetProperty(aggr.Element.ID)), (IPropertyDefinition)aggr.Element);
+                    }
                     
 
                     //aggregatedAttributes.Add(aggr.Alias, aggrResult.Value.GetReadoutValue());
