@@ -55,16 +55,14 @@ namespace sones.GraphQL.StatementNodes.DML
         #endregion
 
         /// <summary>
-        /// Init method that is called by the InsertOrUpdate node
+        /// Init method that is called by the InsertOrUpdate/Link node
         /// </summary>
         /// <param name="myTypeName"></param>
         /// <param name="myAttributeAssignList"></param>
-        public void Init(String myTypeName, List<AAttributeAssignOrUpdate> myAttributeAssignList, IEnumerable<long> myVertexIDs)
+        public void Init(String myTypeName, IEnumerable<AAttributeAssignOrUpdateOrRemove> myAttributeAssignList, IEnumerable<long> myVertexIDs)
         {
-            _listOfUpdates = new HashSet<AAttributeAssignOrUpdateOrRemove>();
+            _listOfUpdates = new HashSet<AAttributeAssignOrUpdateOrRemove>(myAttributeAssignList);
             _vertexIDs = myVertexIDs;
-
-            myAttributeAssignList.ForEach(_ => _listOfUpdates.Add(_));
             _TypeName = myTypeName;
         }
 

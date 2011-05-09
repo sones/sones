@@ -14,6 +14,10 @@ using sones.GraphQL.Structure.Nodes.Misc;
 using sones.GraphQL.Structure.Nodes.Expressions;
 using sones.GraphQL.GQL.Structure.Nodes.Misc;
 using sones.GraphQL.GQL.Structure.Helper.Definition;
+using sones.GraphDB.TypeSystem;
+using sones.GraphDB.Request;
+using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
+using System.Diagnostics;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -25,6 +29,7 @@ namespace sones.GraphQL.StatementNodes.DML
         private TupleDefinition                             _Sources;
         private HashSet<AAttributeAssignOrUpdateOrRemove>   _Targets;
         private BinaryExpressionDefinition                  _Condition;
+        private String                                      _query;
 
         #endregion
 
@@ -153,16 +158,60 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            //var result = myIGraphDBSession.Update(_SourceType.TypeName, _Targets, _Condition);
+            var sw = Stopwatch.StartNew();
 
-            //return result;
+            _query = myQuery;
 
-            return null;
+            //prepare
+            var vertexType = myGraphDB.GetVertexType<IVertexType>(
+                mySecurityToken,
+                myTransactionToken,
+                new RequestGetVertexType(_SourceType.TypeName),
+                (stats, vtype) => vtype);
+
+            //validate
+            _Condition.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+
+            //calculate
+            var expressionGraph = _Condition.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+
+            //extract
+
+            var myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
+
+            if (myToBeUpdatedVertices.Count > 0)
+            {
+
+                //update
+                ProcessUpdate(myToBeUpdatedVertices, myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            sw.Stop();
+
+            return GenerateResult(sw.Elapsed.TotalMilliseconds);
         }
 
         #endregion
 
         #region Private Helpers
+
+        private QueryResult GenerateResult(double myElapsedTotalMilliseconds)
+        {
+            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myElapsedTotalMilliseconds), ResultType.Successful, new List<IVertexView>());
+        }
+
+        private void ProcessUpdate(IEnumerable<long> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            UpdateNode update = new UpdateNode();
+            update.Init(_SourceType.TypeName, _Targets, myVertexIDs);
+
+            update.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
+        }
 
         private BinaryExpressionDefinition GetConditionNode(String myOperator, BinaryExpressionDefinition myPrevNode, TupleDefinition myNodeList)
         {
