@@ -152,14 +152,20 @@ namespace sones.GraphDB.Manager.Index
 
             }
 
+            
+
+            var indexDefinition = BaseGraphStorageManager.CreateIndexDefinition(indexVertex, vertexType);
+
             _vertexTypeManager.ExecuteManager.CleanUpTypes();
 
-            foreach(var type in vertexType.GetChildVertexTypes(true, true))
+            var reloadedVertexType = _vertexTypeManager.ExecuteManager.GetVertexType(vertexType.Name, myTransaction, mySecurity);
+
+            foreach(var type in reloadedVertexType.GetChildVertexTypes(true, true))
             {
-                RebuildIndices(type.ID, myTransaction, mySecurity);
+                RebuildIndices(type, myTransaction, mySecurity);
             }
 
-            return BaseGraphStorageManager.CreateIndexDefinition(indexVertex, vertexType);
+            return indexDefinition;
         }
 
         public bool HasIndex(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
@@ -272,17 +278,22 @@ namespace sones.GraphDB.Manager.Index
 
         public void RebuildIndices(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            RebuildIndices(myVertexTypeID, myTransactionToken, mySecurityToken, false);
+            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeID, myTransactionToken, mySecurityToken);
+
+            RebuildIndices(vertexType, myTransactionToken, mySecurityToken, false);
         }
 
-        private void RebuildIndices(long myVertexTypeID, TransactionToken myTransaction, SecurityToken mySecurity, bool myOnlyNonPersistent)
+        public void RebuildIndices(IVertexType myVertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeID, myTransaction, mySecurity);
+            RebuildIndices(myVertexType, myTransactionToken, mySecurityToken, false);
+        }
 
+        private void RebuildIndices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, bool myOnlyNonPersistent)
+        {
             Dictionary<IIndex<IComparable, Int64>, IList<IPropertyDefinition>> toRebuild = new Dictionary<IIndex<IComparable, long>, IList<IPropertyDefinition>>();
-            foreach (var indexDef in vertexType.GetIndexDefinitions(false))
+            foreach (var indexDef in myVertexType.GetIndexDefinitions(false))
             {
-                var index = GetIndex(vertexType, indexDef.IndexedProperties, mySecurity, myTransaction);
+                var index = GetIndex(myVertexType, indexDef.IndexedProperties, mySecurity, myTransaction);
                 if (!myOnlyNonPersistent || !index.IsPersistent)
                 {
                     index.ClearIndex();
@@ -292,7 +303,7 @@ namespace sones.GraphDB.Manager.Index
 
             if (toRebuild.Count > 0)
             {
-                var vertices = _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, myVertexTypeID);
+                var vertices = _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, myVertexType.ID);
 
                 foreach (var vertex in vertices)
                 {
@@ -376,10 +387,10 @@ namespace sones.GraphDB.Manager.Index
 
             _idManager[(long)BaseTypes.Index].SetToMaxID(maxID);
 
-            RebuildIndices((long)BaseTypes.BaseType, myTransaction, mySecurity, true);
-            RebuildIndices((long)BaseTypes.VertexType, myTransaction, mySecurity, true);
-            RebuildIndices((long)BaseTypes.EdgeType, myTransaction, mySecurity, true);
-            RebuildIndices((long)BaseTypes.Index, myTransaction, mySecurity, true);
+            RebuildIndices(_vertexTypeManager.ExecuteManager.GetVertexType((long)BaseTypes.BaseType, myTransaction, mySecurity), myTransaction, mySecurity, true);
+            RebuildIndices(_vertexTypeManager.ExecuteManager.GetVertexType((long)BaseTypes.VertexType, myTransaction, mySecurity), myTransaction, mySecurity, true);
+            RebuildIndices(_vertexTypeManager.ExecuteManager.GetVertexType((long)BaseTypes.EdgeType, myTransaction, mySecurity), myTransaction, mySecurity, true);
+            RebuildIndices(_vertexTypeManager.ExecuteManager.GetVertexType((long)BaseTypes.Index, myTransaction, mySecurity), myTransaction, mySecurity, true);
         }
 
         #endregion
