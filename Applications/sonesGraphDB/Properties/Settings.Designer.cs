@@ -70,5 +70,17 @@ namespace sones.sonesGraphDBStarter.Properties {
                 this["UsePersistence"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".\\\\GraphFS_Pages")]
+        public string PersistenceLocation {
+            get {
+                return ((string)(this["PersistenceLocation"]));
+            }
+            set {
+                this["PersistenceLocation"] = value;
+            }
+        }
     }
 }

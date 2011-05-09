@@ -54,7 +54,7 @@ namespace sones.sonesGraphDBStarter
             IGraphDB GraphDB;
 
             if (Properties.Settings.Default.UsePersistence)
-                GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin",new Dictionary<string, object>() { { "location", new Uri(@"file:\\\.\persistentFS") } })));
+                GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin",new Dictionary<string, object>() { { "location", new Uri(@"file:\\\\"+Properties.Settings.Default.PersistenceLocation) } })));
             else
                 GraphDB = new SonesGraphDB();
 
