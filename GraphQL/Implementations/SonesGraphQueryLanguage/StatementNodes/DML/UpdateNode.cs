@@ -50,6 +50,19 @@ namespace sones.GraphQL.StatementNodes.DML
 
         #endregion
 
+        /// <summary>
+        /// Init method that is called by the InsertOrUpdate node
+        /// </summary>
+        /// <param name="myTypeName"></param>
+        /// <param name="myAttributeAssignList"></param>
+        public void Init(String myTypeName, List<AAttributeAssignOrUpdate> myAttributeAssignList)
+        {
+            _listOfUpdates = new HashSet<AAttributeAssignOrUpdateOrRemove>();
+
+            myAttributeAssignList.ForEach(_ => _listOfUpdates.Add(_));
+            _TypeName = myTypeName;
+        }
+
         #region IAstNodeInit Members
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)

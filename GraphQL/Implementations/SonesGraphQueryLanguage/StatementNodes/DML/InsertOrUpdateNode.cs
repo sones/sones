@@ -14,6 +14,9 @@ using sones.GraphQL.Structure.Nodes.Misc;
 using sones.GraphQL.ErrorHandling;
 using sones.GraphQL.Structure.Nodes.DML;
 using sones.GraphQL.Structure.Nodes.Expressions;
+using sones.GraphDB.TypeSystem;
+using sones.GraphDB.Request;
+using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -24,6 +27,7 @@ namespace sones.GraphQL.StatementNodes.DML
         private List<AAttributeAssignOrUpdate> _AttributeAssignList;
         private BinaryExpressionDefinition _WhereExpression;
         private String _Type;
+        private string _query;
         
         #endregion
 
@@ -88,11 +92,48 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            //var qresult = graphDBSession.InsertOrUpdate(_Type, _AttributeAssignList, _WhereExpression);
-            //qresult.PushIExceptional(ParsingResult);
-            //return qresult;
+            _query = myQuery;
 
-            return null;
+            //prepare
+            var vertexType = myGraphDB.GetVertexType<IVertexType>(
+                mySecurityToken,
+                myTransactionToken,
+                new RequestGetVertexType(_Type),
+                (stats, vtype) => vtype);
+
+            //validate
+            _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+
+            //calculate
+            var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+
+            //extract
+
+            var myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
+
+            if (myToBeUpdatedVertices.Count > 0)
+            {
+                //update
+                return ProcessUpdate(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+            }
+            else
+            {
+                //insert
+                return ProcessInsert(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+            }
+        }
+
+        private QueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            InsertNode insert = new InsertNode();
+            insert.Init(_Type, _AttributeAssignList);
+            return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
+        }
+
+        private QueryResult ProcessUpdate(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            UpdateNode update = new UpdateNode();
+            return update.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
         #endregion

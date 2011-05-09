@@ -31,6 +31,17 @@ namespace sones.GraphQL.StatementNodes.DML
         private List<AAttributeAssignOrUpdate> _AttributeAssignList;
         private String _queryString;
 
+        /// <summary>
+        /// Init method that is called by the InsertOrUpdate/Replace nodes
+        /// </summary>
+        /// <param name="myTypeName"></param>
+        /// <param name="myAttributeAssignList"></param>
+        public void Init(String myTypeName, List<AAttributeAssignOrUpdate> myAttributeAssignList)
+        {
+            _AttributeAssignList = myAttributeAssignList;
+            _TypeName = myTypeName;
+        }
+
         #region IAstNodeInit Members
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
