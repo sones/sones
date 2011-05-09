@@ -1349,6 +1349,10 @@ namespace sones.GraphQL.GQL.Manager.Select
                                 mySecurityToken,
                                 myTransactionToken));
                     }
+                    else
+                    {
+                        myAttributes.Item2.Add(outgoingEdgeDefinition.Name, GetNotResolvedReferenceEdgeAttributeValue(myDBObject.GetOutgoingEdge(outgoingEdgeDefinition.ID).GetTargetVertices()));
+                    }
                 }
             }
 
@@ -1374,6 +1378,10 @@ namespace sones.GraphQL.GQL.Manager.Select
                                 myUsingGraph,
                                 mySecurityToken,
                                 myTransactionToken));
+                    }
+                    else
+                    {
+                        myAttributes.Item2.Add(aIncomingEdgeDefinition.Name, GetNotResolvedReferenceEdgeAttributeValue(myDBObject.GetIncomingVertices(aIncomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, aIncomingEdgeDefinition.RelatedEdgeDefinition.ID)));
                     }
                 }
             }
