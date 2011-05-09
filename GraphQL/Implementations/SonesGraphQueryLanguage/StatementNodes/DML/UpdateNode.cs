@@ -37,6 +37,10 @@ namespace sones.GraphQL.StatementNodes.DML
         /// Where Expression
         /// </summary>
         private BinaryExpressionDefinition _WhereExpression;
+        /// <summary>
+        /// substitute for where expression
+        /// </summary>
+        private IEnumerable<long> _vertexIDs = null;
 
         /// <summary>
         /// The Name of the type which should be updated
@@ -55,9 +59,10 @@ namespace sones.GraphQL.StatementNodes.DML
         /// </summary>
         /// <param name="myTypeName"></param>
         /// <param name="myAttributeAssignList"></param>
-        public void Init(String myTypeName, List<AAttributeAssignOrUpdate> myAttributeAssignList)
+        public void Init(String myTypeName, List<AAttributeAssignOrUpdate> myAttributeAssignList, IEnumerable<long> myVertexIDs)
         {
             _listOfUpdates = new HashSet<AAttributeAssignOrUpdateOrRemove>();
+            _vertexIDs = myVertexIDs;
 
             myAttributeAssignList.ForEach(_ => _listOfUpdates.Add(_));
             _TypeName = myTypeName;
@@ -138,6 +143,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
         private RequestUpdate GenerateUpdateRequest(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
+            IEnumerable<long> toBeupdatedVertices = null;
             //prepare
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
                 mySecurityToken,
@@ -145,17 +151,25 @@ namespace sones.GraphQL.StatementNodes.DML
                 new RequestGetVertexType(_TypeName),
                 (stats, vtype) => vtype);
 
-            //validate
-            _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+            if (_vertexIDs == null)
+            {
+                //validate
+                _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
 
-            //calculate
-            var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+                //calculate
+                var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
 
-            //extract
+                //extract
 
-            var myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
+                toBeupdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
+            }
+            else
+            {
+                toBeupdatedVertices = _vertexIDs;
+            }
 
-            var result = new RequestUpdate(new RequestGetVertices(vertexType.ID, myToBeUpdatedVertices, false));
+
+            var result = new RequestUpdate(new RequestGetVertices(vertexType.ID, toBeupdatedVertices, false));
 
             ProcessListOfUpdates(vertexType, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, ref result);
 

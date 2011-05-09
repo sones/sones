@@ -17,6 +17,8 @@ using sones.GraphQL.Structure.Nodes.Expressions;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
+using System.Diagnostics;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -92,6 +94,8 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
+            var sw = Stopwatch.StartNew();
+
             _query = myQuery;
 
             //prepare
@@ -113,14 +117,25 @@ namespace sones.GraphQL.StatementNodes.DML
 
             if (myToBeUpdatedVertices.Count > 0)
             {
+
                 //update
-                return ProcessUpdate(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+                ProcessUpdate(myToBeUpdatedVertices, myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+
             }
             else
             {
                 //insert
                 return ProcessInsert(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
             }
+
+            sw.Stop();
+
+            return GenerateResult(sw.Elapsed.TotalMilliseconds);
+        }
+
+        private QueryResult GenerateResult(double myElapsedTotalMilliseconds)
+        {
+            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myElapsedTotalMilliseconds), ResultType.Successful, new List<IVertexView>());
         }
 
         private QueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
@@ -130,10 +145,12 @@ namespace sones.GraphQL.StatementNodes.DML
             return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
-        private QueryResult ProcessUpdate(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void ProcessUpdate(IEnumerable<long> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             UpdateNode update = new UpdateNode();
-            return update.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
+            update.Init(_Type, _AttributeAssignList, myVertexIDs);
+
+            update.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
         #endregion
