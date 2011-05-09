@@ -532,5 +532,10 @@ namespace sones.GraphDB.Manager
 
 
 
+
+        public bool CheckBaseGraph(IVertexStore myVertexStore)
+        {
+            return myVertexStore.GetVertex(_security, _transaction, (long)BaseTypes.VertexType, (long)BaseTypes.VertexType, String.Empty) != null;
+        }
     }
 }

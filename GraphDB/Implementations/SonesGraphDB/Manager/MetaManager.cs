@@ -88,6 +88,13 @@ namespace sones.GraphDB.Manager
         {
             var result = new MetaManager(myVertexStore, myIDManager, myPluginManager, myPlugins);
 
+            DBCreationManager creationManager = new DBCreationManager(result.SystemSecurityToken, result.SystemTransactionToken);
+            if (!creationManager.CheckBaseGraph(myVertexStore))
+            {
+                creationManager.CreateBaseGraph(myVertexStore);
+            }
+
+
             result.Initialize();
             result.Load();
 

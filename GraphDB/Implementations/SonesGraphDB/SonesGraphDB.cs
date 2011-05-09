@@ -117,9 +117,6 @@ namespace sones.GraphDB
 
             #endregion
 
-            DBCreationManager creationManager = new DBCreationManager(_security, _transaction);
-            creationManager.CreateBaseGraph(_iGraphFS);
-
             #region transaction
 
             _transactionManager = LoadTransactionManagerPlugin(myPlugins.TransactionManagerPlugin);
