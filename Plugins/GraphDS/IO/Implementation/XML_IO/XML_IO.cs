@@ -50,7 +50,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 vertices.Add(GenerateVertexView(aVertex));
             }
 
-            result.VertexView = vertices.ToArray();            
+            result.VertexViews = vertices.ToArray();
             
             var stream = new MemoryStream();
 
@@ -79,20 +79,29 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                     if (aProperty.Item2 != null)
                     {
+                        Type propertyElementType = typeof(Object);
+
                         if (aProperty.Item2 is ICollectionWrapper)
                         {
                             foreach (var value in ((ICollectionWrapper)aProperty.Item2))
                             {
-                                property.Value += value.ToString() + " ";
+                                property.Value += "[" + value.ToString() + "],";
+                                propertyElementType = property.Value.GetType();
                             }
 
+                            var index = property.Value.LastIndexOf(',');
+
+                            if (index > -1)
+                            {
+                                property.Value = property.Value.Remove(index, 1);
+                            }
                         }
                         else
                         {
                             property.Value = aProperty.Item2.ToString();
                         }
                         
-                        property.Type = aProperty.Item2.GetType().Name;
+                        property.Type = aProperty.Item2.GetType().Name + "<" + propertyElementType.Name + ">";
                     }
                     else
                     {
@@ -177,16 +186,16 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                             var singleEdgeProperties = innerVertices[i].Item2.ToArray();
 
                             hyperEdge.SingleEdge[i].CountOfProperties = singleEdgeProperties.Count();
-                            hyperEdge.SingleEdge[i].EdgeProperty = new Property[hyperEdge.SingleEdge[i].CountOfProperties];
+                            hyperEdge.SingleEdge[i].Property = new Property[hyperEdge.SingleEdge[i].CountOfProperties];
 
                             #region single edge properties
 
                             for (Int32 j = 0; j < singleEdgeProperties.Count(); j++)
                             {
-                                hyperEdge.SingleEdge[i].EdgeProperty[j] = new Property();
-                                hyperEdge.SingleEdge[i].EdgeProperty[j].ID = singleEdgeProperties[j].Item1;
-                                hyperEdge.SingleEdge[i].EdgeProperty[j].Type = singleEdgeProperties[j].Item2.GetType().Name;
-                                hyperEdge.SingleEdge[i].EdgeProperty[j].Value = singleEdgeProperties[j].Item2.ToString();
+                                hyperEdge.SingleEdge[i].Property[j] = new Property();
+                                hyperEdge.SingleEdge[i].Property[j].ID = singleEdgeProperties[j].Item1;
+                                hyperEdge.SingleEdge[i].Property[j].Type = singleEdgeProperties[j].Item2.GetType().Name;
+                                hyperEdge.SingleEdge[i].Property[j].Value = singleEdgeProperties[j].Item2.ToString();
                             }
 
                             #endregion
@@ -205,9 +214,9 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                                 hyperEdge.SingleEdge[i].TargetVertex.BinaryProperty = innerVertices[i].Item1.BinaryProperty.ToArray();
                             }
 
-                            if (innerVertices[i].Item1.Edge != null)
+                            if (innerVertices[i].Item1.Edges != null)
                             {
-                                hyperEdge.SingleEdge[i].TargetVertex.Edge = innerVertices[i].Item1.Edge.ToArray();
+                                hyperEdge.SingleEdge[i].TargetVertex.Edges = innerVertices[i].Item1.Edges.ToArray();
                             }
 
                             #endregion
@@ -254,7 +263,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                         {
                             singleEdge.SingleEdge[0].TargetVertex.Property = targetVertex.Property.ToArray();
                             singleEdge.SingleEdge[0].TargetVertex.BinaryProperty = targetVertex.BinaryProperty.ToArray();
-                            singleEdge.SingleEdge[0].TargetVertex.Edge = targetVertex.Edge.ToArray();
+                            singleEdge.SingleEdge[0].TargetVertex.Edges = targetVertex.Edges.ToArray();
                         }
 
                         #endregion
@@ -267,7 +276,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                 }
 
-                resultVertex.Edge = edges.ToArray();
+                resultVertex.Edges = edges.ToArray();
 
                 #endregion
             }
@@ -348,9 +357,15 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                     }
                 }
 
-                if (nextNode.Name == "VertexView")
+                if (nextNode.Name == "VertexViews")
                 {
-                    vertices.Add(ParseVertex(nextNode));
+                    var vertexItems = nextNode.FirstChild;
+
+                    while (vertexItems != null)
+                    {
+                        vertices.Add(ParseVertex(vertexItems));
+                        vertexItems = vertexItems.NextSibling;
+                    }
                 }
 
                 nextNode = nextNode.NextSibling;
@@ -408,23 +423,31 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                             break;
 
                         case "Value":
-                            switch (type)
+
+                            if (type.Contains(typeof(ListCollectionWrapper).Name) || type.Contains(typeof(SetCollectionWrapper).Name))
                             {
-                                case "String":
-                                    value = property.InnerText;
-                                    break;
-                                case "Int32":
-                                    value = System.Convert.ToInt32(property.InnerText);
-                                    break;
-                                case "Int64":
-                                    value = System.Convert.ToInt64(property.InnerText);
-                                    break;
-                                case "UInt32":
-                                    value = System.Convert.ToUInt32(property.InnerText);
-                                    break;
-                                case "UInt64":
-                                    value = System.Convert.ToUInt64(property.InnerText);
-                                    break;
+                                
+                            }
+                            else
+                            {
+                                switch (type)
+                                {
+                                    case "String":
+                                        value = property.InnerText;
+                                        break;
+                                    case "Int32":
+                                        value = System.Convert.ToInt32(property.InnerText);
+                                        break;
+                                    case "Int64":
+                                        value = System.Convert.ToInt64(property.InnerText);
+                                        break;
+                                    case "UInt32":
+                                        value = System.Convert.ToUInt32(property.InnerText);
+                                        break;
+                                    case "UInt64":
+                                        value = System.Convert.ToUInt64(property.InnerText);
+                                        break;
+                                }
                             }
                             break;
                     }
@@ -488,7 +511,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 {
                     switch (edgeItems.Name)
                     { 
-                        case "EdgeProperty":
+                        case "Property":
                             var edgeProp = ParseProperties(edgeItems);
                             edgeProperties.Add(edgeProp.Item1, edgeProp.Item2);
                             break;
@@ -611,9 +634,16 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                                 break;
 
-                            case "Edge" :
-                                var edge = ParseEdge(items);
-                                edges.Add(edge.Item1, edge.Item2);
+                            case "Edges" :
+
+                                var edgeItem = items.FirstChild;
+
+                                while (edgeItem != null)
+                                {
+                                    var edge = ParseEdge(edgeItem);
+                                    edges.Add(edge.Item1, edge.Item2);
+                                    edgeItem = edgeItem.NextSibling;
+                                }
                                 break;
                         }
                     }

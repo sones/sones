@@ -30,7 +30,7 @@
   <xs:complexType name="SchemaSingleEdgeView">
     <xs:sequence>
       <xs:element name ="CountOfProperties" type ="xs:int" minOccurs="0"/>
-      <xs:element name ="EdgeProperty" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0" />
+      <xs:element name ="Property" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0" />
       <xs:element name ="TargetVertex" type ="mstns:SchemaVertexView" maxOccurs ="1" minOccurs ="1"/>
     </xs:sequence>
   </xs:complexType>  
@@ -47,7 +47,13 @@
       <xs:sequence>        
         <xs:element name ="Property"        type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0"/>
         <xs:element name ="BinaryProperty"  type ="mstns:BinaryData" maxOccurs ="unbounded" minOccurs ="0"/>
-        <xs:element name ="Edge"           type ="mstns:SchemaHyperEdgeView" maxOccurs="unbounded" minOccurs="0"/>        
+        <xs:element name ="Edges">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name ="Edge" type ="mstns:SchemaHyperEdgeView" maxOccurs="unbounded" minOccurs="0"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
       </xs:sequence>    
   </xs:complexType>
 
@@ -56,13 +62,20 @@
       <xs:element name ="ID" type ="xs:string"/>
       <xs:element name ="Content" type ="xs:hexBinary"/>
     </xs:sequence>
-  </xs:complexType>  
+  </xs:complexType>
 
+  
   <xs:element name="Result">    
     <xs:complexType>      
       <xs:sequence>        
         <xs:element ref ="Query" />
-        <xs:element name ="VertexView" type ="mstns:SchemaVertexView" maxOccurs ="unbounded" minOccurs ="0"/>
+        <xs:element name="VertexViews">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name ="VertexView" type ="mstns:SchemaVertexView" maxOccurs ="unbounded" minOccurs ="0"/>
+            </xs:sequence>
+          </xs:complexType>            
+        </xs:element>
       </xs:sequence>
       <xs:attribute name ="Version" type ="xs:string"/>
     </xs:complexType>

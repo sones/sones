@@ -139,7 +139,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
 
                                 foreach (var value in ((ICollectionWrapper)_property.Item2))
                                 {
-                                    values.Add(new JObject(new JProperty(value.ToString())));
+                                    values.Add(new JArray(value.ToString()));
                                 }
 
                                 _properties.Add(new JProperty(_property.Item1, values));
@@ -207,14 +207,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                         edgeProperties.Add(new JObject(new JProperty(singleEdgeProp.Item1, singleEdgeProp.Item2.ToString())));
                     }
 
-                    /*if (edgeProperties.Count == 0)
-                    {
-                        Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(singleEdge.GetTargetVertex()))))));
-                    }
-                    else
-                    {*/
-                        Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Properties", new JArray(edgeProperties))), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(singleEdge.GetTargetVertex()))))));
-                    //}
+                    Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Properties", new JArray(edgeProperties))), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(singleEdge.GetTargetVertex()))))));
                     
                     edgeProperties.Clear();                    
                 }                
@@ -229,14 +222,8 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                     edgeProperties.Add(new JObject(new JProperty(property.Item1, property.Item2)));
                 }
 
-                /*if (edgeProperties.Count == 0)
-                {
-                    Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(((ISingleEdgeView)aEdge).GetTargetVertex()))))));
-                }
-                else
-                {*/
-                    Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Properties", edgeProperties)), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(((ISingleEdgeView)aEdge).GetTargetVertex()))))));
-               // }
+                Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Properties", edgeProperties)), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(((ISingleEdgeView)aEdge).GetTargetVertex()))))));
+               
             }
 
             return Output;

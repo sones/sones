@@ -120,7 +120,7 @@ namespace SchemaToClassesGenerator {
         
         private bool countOfPropertiesFieldSpecified;
         
-        private Property[] edgePropertyField;
+        private Property[] propertyField;
         
         private SchemaVertexView targetVertexField;
         
@@ -146,13 +146,13 @@ namespace SchemaToClassesGenerator {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("EdgeProperty")]
-        public Property[] EdgeProperty {
+        [System.Xml.Serialization.XmlElementAttribute("Property")]
+        public Property[] Property {
             get {
-                return this.edgePropertyField;
+                return this.propertyField;
             }
             set {
-                this.edgePropertyField = value;
+                this.propertyField = value;
             }
         }
         
@@ -180,7 +180,7 @@ namespace SchemaToClassesGenerator {
         
         private BinaryData[] binaryPropertyField;
         
-        private SchemaHyperEdgeView[] edgeField;
+        private SchemaHyperEdgeView[] edgesField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("Property")]
@@ -205,13 +205,13 @@ namespace SchemaToClassesGenerator {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Edge")]
-        public SchemaHyperEdgeView[] Edge {
+        [System.Xml.Serialization.XmlArrayItemAttribute("Edge", IsNullable=false)]
+        public SchemaHyperEdgeView[] Edges {
             get {
-                return this.edgeField;
+                return this.edgesField;
             }
             set {
-                this.edgeField = value;
+                this.edgesField = value;
             }
         }
     }
@@ -350,7 +350,7 @@ namespace SchemaToClassesGenerator {
         
         private Query queryField;
         
-        private SchemaVertexView[] vertexViewField;
+        private SchemaVertexView[] vertexViewsField;
         
         private string versionField;
         
@@ -365,13 +365,13 @@ namespace SchemaToClassesGenerator {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("VertexView")]
-        public SchemaVertexView[] VertexView {
+        [System.Xml.Serialization.XmlArrayItemAttribute("VertexView", IsNullable=false)]
+        public SchemaVertexView[] VertexViews {
             get {
-                return this.vertexViewField;
+                return this.vertexViewsField;
             }
             set {
-                this.vertexViewField = value;
+                this.vertexViewsField = value;
             }
         }
         
