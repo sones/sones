@@ -168,7 +168,6 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                         #region set hyperedge properties
 
                         var edgeProperties = aEdge.Item2.GetAllProperties().ToArray();
-                        hyperEdge.CountOfProperties = edgeProperties.Count();
                         hyperEdge.Properties = new Property[edgeProperties.Count()];
 
                         for (Int32 i = 0; i < edgeProperties.Count(); i++)
@@ -187,9 +186,8 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                         {
                             hyperEdge.SingleEdges[i] = new SchemaSingleEdgeView();
                             var SingleEdgesProperties = innerVertices[i].Item2.ToArray();
-
-                            hyperEdge.SingleEdges[i].CountOfProperties = SingleEdgesProperties.Count();
-                            hyperEdge.SingleEdges[i].Property = new Property[hyperEdge.SingleEdges[i].CountOfProperties];
+                            
+                            hyperEdge.SingleEdges[i].Property = new Property[SingleEdgesProperties.Count()];
 
                             #region single edge properties
 
@@ -235,7 +233,6 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                         SingleEdges.Name = aEdge.Item1;
 
                         var edgeProperties = aEdge.Item2.GetAllProperties().ToArray();
-                        SingleEdges.CountOfProperties = edgeProperties.Count();
 
                         #region properties
 

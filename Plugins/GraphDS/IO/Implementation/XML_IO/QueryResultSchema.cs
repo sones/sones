@@ -12,8 +12,6 @@ namespace SchemaToClassesGenerator {
         
         private string nameField;
         
-        private int countOfPropertiesField;
-        
         private Property[] propertiesField;
         
         private SchemaSingleEdgeView[] singleEdgesField;
@@ -25,16 +23,6 @@ namespace SchemaToClassesGenerator {
             }
             set {
                 this.nameField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public int CountOfProperties {
-            get {
-                return this.countOfPropertiesField;
-            }
-            set {
-                this.countOfPropertiesField = value;
             }
         }
         
@@ -116,34 +104,9 @@ namespace SchemaToClassesGenerator {
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class SchemaSingleEdgeView {
         
-        private int countOfPropertiesField;
-        
-        private bool countOfPropertiesFieldSpecified;
-        
         private Property[] propertyField;
         
         private SchemaVertexView targetVertexField;
-        
-        /// <remarks/>
-        public int CountOfProperties {
-            get {
-                return this.countOfPropertiesField;
-            }
-            set {
-                this.countOfPropertiesField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool CountOfPropertiesSpecified {
-            get {
-                return this.countOfPropertiesFieldSpecified;
-            }
-            set {
-                this.countOfPropertiesFieldSpecified = value;
-            }
-        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("Property")]
