@@ -121,7 +121,7 @@ namespace sones.sonesGraphDBStarter
                 Console.WriteLine();
                 Console.WriteLine("   * REST Service is started at http://localhost:"+Properties.Settings.Default.ListeningPort);
                 Console.WriteLine("      * access it directly like in this example: ");
-                Console.WriteLine("           http://localhost:"+Properties.Settings.Default.ListeningPort+"/gql?DESCRIBE%20TYPES");
+                Console.WriteLine("           http://localhost:"+Properties.Settings.Default.ListeningPort+"/gql?DESCRIBE%20VERTEX%20TYPES");
                 Console.WriteLine("      * if you want JSON Output add ACCEPT: application/json ");
                 Console.WriteLine("        to the client request header (or application/xml or");
                 Console.WriteLine("        application/text)");
