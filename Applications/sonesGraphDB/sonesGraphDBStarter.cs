@@ -131,11 +131,22 @@ namespace sones.sonesGraphDBStarter
                 Console.WriteLine("        the username \""+Properties.Settings.Default.Username+"\" and password \""+Properties.Settings.Default.Password+"\"");
                 Console.WriteLine();
 
-                while (true)
-                {
-                    Thread.Sleep(1000);
-                }
+                Console.WriteLine("Enter 'shutdown' to initiate the shutdown of this instance.");
             }
+
+            bool shutdown = false;
+            while (!shutdown)
+            {
+                String command = Console.ReadLine();
+
+                if (command.ToUpper() == "SHUTDOWN")
+                    shutdown = true;
+            }
+
+            _dsServer.Shutdown(null);
+
+            //GraphDB.Shutdown(null);
+
             #endregion
         }
     }
