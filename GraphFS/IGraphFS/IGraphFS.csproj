@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\AGraphFSException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\VertexAlreadyExistException.cs" />
     <Compile Include="ErrorHandling\CouldNotFindUnStructuredEdgePropertyException.cs" />
     <Compile Include="ErrorHandling\CouldNotFindStructuredEdgePropertyException.cs" />

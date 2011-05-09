@@ -15,6 +15,15 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <typeparam name="TResult">The type of the result</typeparam>
         /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myVertexCount">The count of vertices</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult GetVertexCountResultConverter<out TResult>(IRequestStatistics myRequestStatistics, UInt64 myVertexCount);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <param name="myCreatedVertex">The vertex that has been created</param>
         /// <returns>A TResult</returns>
         public delegate TResult InsertResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IVertex myCreatedVertex);

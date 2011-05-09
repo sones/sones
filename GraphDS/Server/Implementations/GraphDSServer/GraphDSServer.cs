@@ -437,6 +437,15 @@ namespace sones.GraphDSServer
             get { return _ID; }
         }
 
+        public TResult GetVertexCount<TResult>(Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexCount myRequestGetVertexCount, Converter.GetVertexCountResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.GetVertexCount<TResult>(
+                mySecurityToken,
+                myTransactionToken,
+                myRequestGetVertexCount,
+                myOutputconverter);
+        }
+
         #endregion
 
         #region ITransactionable Members

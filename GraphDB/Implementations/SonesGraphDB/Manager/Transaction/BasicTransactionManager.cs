@@ -165,6 +165,11 @@ namespace sones.GraphDB.Manager.Transaction
             _vertexStore.RemoveVertices(mySecurityToken, myTransactionToken, myVertexTypeID, myToBeDeltedVertices);
         }
 
+        public ulong GetVertexCount(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID)
+        {
+            return _vertexStore.GetVertexCount(mySecurityToken, myTransactionToken, myVertexTypeID);
+        }
+
         #endregion
 
         #region IPluginable Members

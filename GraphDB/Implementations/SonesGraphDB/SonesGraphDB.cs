@@ -466,6 +466,19 @@ namespace sones.GraphDB
 
         #endregion
 
+        #region GetVertexCount
+
+        public TResult GetVertexCount<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexCount myRequestGetVertexCount, Converter.GetVertexCountResultConverter<TResult> myOutputconverter)
+        {
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableGetVertexCountRequest(myRequestGetVertexCount,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
+
+            return ((PipelineableGetVertexCountRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
         #endregion
 
         #region misc

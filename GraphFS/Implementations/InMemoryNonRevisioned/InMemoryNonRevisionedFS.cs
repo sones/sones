@@ -143,6 +143,18 @@ namespace sones.GraphFS
             return false;
         }
 
+        public ulong GetVertexCount(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID)
+        {
+            ConcurrentDictionary<Int64, InMemoryVertex> vertices;
+
+            if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
+            {
+                return Convert.ToUInt64(vertices.Count());
+            }
+
+            throw new VertexTypeDoesNotExistException(myVertexTypeID);
+        }
+
         public IVertex GetVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
                                  long myVertexID, long myVertexTypeID, string myEdition = null,
                                  Int64 myVertexRevisionID = 0L)

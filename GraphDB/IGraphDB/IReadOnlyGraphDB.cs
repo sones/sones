@@ -134,11 +134,38 @@ namespace sones.GraphDB
                                             RequestGetAllEdgeTypes myRequestGetAllEdgeTypes,
                                             Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter);
 
-        TResult DescribeIndex<TResult>(SecurityToken mySecurityToken,
+        /// <summary>
+        /// Gets the index definition
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestDescribeIndex">The request to get the index definitions</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult DescribeIndex<TResult>(     SecurityToken mySecurityToken,
                                             TransactionToken myTransactionToken,
-                                            RequestDescribeIndex myRequestGetAllEdgeTypes,
+                                            RequestDescribeIndex myRequestDescribeIndex,
                                             Converter.DescribeIndexResultConverter<TResult> myOutputconverter);
         
+        #endregion
+
+        #region GetVertexCount
+
+        /// <summary>
+        /// Returns the count of vertices corresponding to a vertex type
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestGetVertexCount">The request to get the vertex count</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult GetVertexCount<TResult>(SecurityToken mySecurityToken,
+                                        TransactionToken myTransactionToken,
+                                        RequestGetVertexCount myRequestGetVertexCount,
+                                        Converter.GetVertexCountResultConverter<TResult> myOutputconverter);
+
         #endregion
 
         #endregion

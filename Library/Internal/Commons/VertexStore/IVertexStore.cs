@@ -13,6 +13,18 @@ namespace sones.Library.Commons.VertexStore
     public interface IVertexStore
     {
         /// <summary>
+        /// Returns the count of vertices corresponding to a vertex type
+        /// </summary>
+        /// <param name="mySecurityToken">The current session token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="myVertexTypeID">The interesting vertex type id</param>
+        /// <returns>The count of vertices corresponding to a vertex type</returns>
+        UInt64 GetVertexCount(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken, 
+            Int64 myVertexTypeID);
+
+        /// <summary>
         /// Checks if a vertex exists
         /// </summary>
         /// <param name="mySecurityToken">The current security token</param>

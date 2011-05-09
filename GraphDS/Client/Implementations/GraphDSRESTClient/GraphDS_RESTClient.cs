@@ -207,6 +207,11 @@ namespace sones.GraphDS.GraphDSRESTClient
             get { throw new NotImplementedException(); }
         }
 
+        public TResult GetVertexCount<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexCount myRequestGetVertexCount, Converter.GetVertexCountResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region ITransactionable Members / Not Implemented
