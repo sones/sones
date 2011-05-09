@@ -501,7 +501,7 @@ namespace sones.GraphDB.Manager.Vertex
             else if (myIndexProps.Count == 1)
             {
                 IComparable toBeIndexedValue;
-                if (myProperties.TryGetValue(myIndexProps[0].Name, out toBeIndexedValue))
+                if (myProperties != null && myProperties.TryGetValue(myIndexProps[0].Name, out toBeIndexedValue))
                 {
                     return toBeIndexedValue;
                 }
@@ -527,7 +527,7 @@ namespace sones.GraphDB.Manager.Vertex
             else if (myIndexProps.Count == 1)
             {
                 IComparable toBeIndexedValue;
-                if (myProperties.TryGetValue(myIndexProps[0].ID, out toBeIndexedValue))
+                if (myProperties != null && myProperties.TryGetValue(myIndexProps[0].ID, out toBeIndexedValue))
                 {
                     return toBeIndexedValue;
                 }
