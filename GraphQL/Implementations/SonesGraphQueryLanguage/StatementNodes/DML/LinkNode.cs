@@ -186,10 +186,6 @@ namespace sones.GraphQL.StatementNodes.DML
                 ProcessUpdate(myToBeUpdatedVertices, myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
 
             }
-            else
-            {
-                throw new NotImplementedException();
-            }
 
             sw.Stop();
 
