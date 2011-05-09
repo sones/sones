@@ -154,9 +154,9 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                         #region single edges
 
-                        foreach (var singleEdge in ((HyperEdgeView)aEdge.Item2).GetAllEdges())
+                        foreach (var SingleEdges in ((HyperEdgeView)aEdge.Item2).GetAllEdges())
                         {
-                            innerVertices.Add(new Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>(GenerateVertexView(singleEdge.GetTargetVertex()), singleEdge.GetAllProperties()));
+                            innerVertices.Add(new Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>(GenerateVertexView(SingleEdges.GetTargetVertex()), SingleEdges.GetAllProperties()));
                         }
 
                         #endregion
@@ -169,57 +169,57 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                         var edgeProperties = aEdge.Item2.GetAllProperties().ToArray();
                         hyperEdge.CountOfProperties = edgeProperties.Count();
-                        hyperEdge.Property = new Property[edgeProperties.Count()];
+                        hyperEdge.Properties = new Property[edgeProperties.Count()];
 
                         for (Int32 i = 0; i < edgeProperties.Count(); i++)
                         {
-                            hyperEdge.Property[i] = new Property();
-                            hyperEdge.Property[i].ID = edgeProperties[i].Item1;
-                            hyperEdge.Property[i].Type = edgeProperties[i].Item2.GetType().Name;
-                            hyperEdge.Property[i].Value = edgeProperties[i].Item2.ToString();
+                            hyperEdge.Properties[i] = new Property();
+                            hyperEdge.Properties[i].ID = edgeProperties[i].Item1;
+                            hyperEdge.Properties[i].Type = edgeProperties[i].Item2.GetType().Name;
+                            hyperEdge.Properties[i].Value = edgeProperties[i].Item2.ToString();
                         }
 
                         #endregion
 
-                        hyperEdge.SingleEdge = new SchemaSingleEdgeView[innerVertices.Count];
+                        hyperEdge.SingleEdges = new SchemaSingleEdgeView[innerVertices.Count];
 
                         for (Int32 i = 0; i < innerVertices.Count; i++)
                         {
-                            hyperEdge.SingleEdge[i] = new SchemaSingleEdgeView();
-                            var singleEdgeProperties = innerVertices[i].Item2.ToArray();
+                            hyperEdge.SingleEdges[i] = new SchemaSingleEdgeView();
+                            var SingleEdgesProperties = innerVertices[i].Item2.ToArray();
 
-                            hyperEdge.SingleEdge[i].CountOfProperties = singleEdgeProperties.Count();
-                            hyperEdge.SingleEdge[i].Property = new Property[hyperEdge.SingleEdge[i].CountOfProperties];
+                            hyperEdge.SingleEdges[i].CountOfProperties = SingleEdgesProperties.Count();
+                            hyperEdge.SingleEdges[i].Property = new Property[hyperEdge.SingleEdges[i].CountOfProperties];
 
                             #region single edge properties
 
-                            for (Int32 j = 0; j < singleEdgeProperties.Count(); j++)
+                            for (Int32 j = 0; j < SingleEdgesProperties.Count(); j++)
                             {
-                                hyperEdge.SingleEdge[i].Property[j] = new Property();
-                                hyperEdge.SingleEdge[i].Property[j].ID = singleEdgeProperties[j].Item1;
-                                hyperEdge.SingleEdge[i].Property[j].Type = singleEdgeProperties[j].Item2.GetType().Name;
-                                hyperEdge.SingleEdge[i].Property[j].Value = singleEdgeProperties[j].Item2.ToString();
+                                hyperEdge.SingleEdges[i].Property[j] = new Property();
+                                hyperEdge.SingleEdges[i].Property[j].ID = SingleEdgesProperties[j].Item1;
+                                hyperEdge.SingleEdges[i].Property[j].Type = SingleEdgesProperties[j].Item2.GetType().Name;
+                                hyperEdge.SingleEdges[i].Property[j].Value = SingleEdgesProperties[j].Item2.ToString();
                             }
 
                             #endregion
 
                             #region target vertex
 
-                            hyperEdge.SingleEdge[i].TargetVertex = new SchemaVertexView();
+                            hyperEdge.SingleEdges[i].TargetVertex = new SchemaVertexView();
                             
                             if (innerVertices[i].Item1.Properties != null)
                             {
-                                hyperEdge.SingleEdge[i].TargetVertex.Properties = innerVertices[i].Item1.Properties.ToArray();
+                                hyperEdge.SingleEdges[i].TargetVertex.Properties = innerVertices[i].Item1.Properties.ToArray();
                             }
 
                             if (innerVertices[i].Item1.BinaryProperties != null)
                             {
-                                hyperEdge.SingleEdge[i].TargetVertex.BinaryProperties = innerVertices[i].Item1.BinaryProperties.ToArray();
+                                hyperEdge.SingleEdges[i].TargetVertex.BinaryProperties = innerVertices[i].Item1.BinaryProperties.ToArray();
                             }
 
                             if (innerVertices[i].Item1.Edges != null)
                             {
-                                hyperEdge.SingleEdge[i].TargetVertex.Edges = innerVertices[i].Item1.Edges.ToArray();
+                                hyperEdge.SingleEdges[i].TargetVertex.Edges = innerVertices[i].Item1.Edges.ToArray();
                             }
 
                             #endregion
@@ -230,33 +230,33 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                     }
                     else
                     {
-                        var singleEdge = new SchemaHyperEdgeView();
+                        var SingleEdges = new SchemaHyperEdgeView();
 
-                        singleEdge.Name = aEdge.Item1;
+                        SingleEdges.Name = aEdge.Item1;
 
                         var edgeProperties = aEdge.Item2.GetAllProperties().ToArray();
-                        singleEdge.CountOfProperties = edgeProperties.Count();
+                        SingleEdges.CountOfProperties = edgeProperties.Count();
 
                         #region properties
 
-                        singleEdge.Property = new Property[edgeProperties.Count()];
+                        SingleEdges.Properties = new Property[edgeProperties.Count()];
 
                         for (Int32 i = 0; i < edgeProperties.Count(); i++)
                         {
-                            singleEdge.Property[i] = new Property();
-                            singleEdge.Property[i].ID = edgeProperties[i].Item1;
-                            singleEdge.Property[i].Type = edgeProperties[i].Item2.GetType().Name;
-                            singleEdge.Property[i].Value = edgeProperties[i].Item2.ToString();
+                            SingleEdges.Properties[i] = new Property();
+                            SingleEdges.Properties[i].ID = edgeProperties[i].Item1;
+                            SingleEdges.Properties[i].Type = edgeProperties[i].Item2.GetType().Name;
+                            SingleEdges.Properties[i].Value = edgeProperties[i].Item2.ToString();
                         }
 
                         #endregion
 
                         #region target vertex
 
-                        singleEdge.SingleEdge = new SchemaSingleEdgeView[1];
+                        SingleEdges.SingleEdges = new SchemaSingleEdgeView[1];
 
-                        singleEdge.SingleEdge[0] = new SchemaSingleEdgeView();
-                        singleEdge.SingleEdge[0].TargetVertex = new SchemaVertexView();
+                        SingleEdges.SingleEdges[0] = new SchemaSingleEdgeView();
+                        SingleEdges.SingleEdges[0].TargetVertex = new SchemaVertexView();
 
                         var edgeTargetVertex = ((SingleEdgeView)aEdge.Item2).GetTargetVertex();
 
@@ -264,14 +264,14 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                         if (edgeTargetVertex != null)
                         {
-                            singleEdge.SingleEdge[0].TargetVertex.Properties = targetVertex.Properties.ToArray();
-                            singleEdge.SingleEdge[0].TargetVertex.BinaryProperties = targetVertex.BinaryProperties.ToArray();
-                            singleEdge.SingleEdge[0].TargetVertex.Edges = targetVertex.Edges.ToArray();
+                            SingleEdges.SingleEdges[0].TargetVertex.Properties = targetVertex.Properties.ToArray();
+                            SingleEdges.SingleEdges[0].TargetVertex.BinaryProperties = targetVertex.BinaryProperties.ToArray();
+                            SingleEdges.SingleEdges[0].TargetVertex.Edges = targetVertex.Edges.ToArray();
                         }
 
                         #endregion
 
-                        edges.Add(singleEdge);
+                        edges.Add(SingleEdges);
 
                     }
 
@@ -403,6 +403,31 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             }
         }
 
+        private Object TypeMapper(String myType, String myValue)
+        {
+            switch (myType)
+            {
+                case "String":
+                    return myValue;
+                    break;
+                case "Int32":
+                    return System.Convert.ToInt32(myValue);
+                    break;
+                case "Int64":
+                    return System.Convert.ToInt64(myValue);
+                    break;
+                case "UInt32":
+                    return System.Convert.ToUInt32(myValue);
+                    break;
+                case "UInt64":
+                    return System.Convert.ToUInt64(myValue);
+                    break;
+                
+                default:
+                    return myValue;
+            }
+        }
+
         private Tuple<String, Object> ParseProperties(XmlNode myVertexNode)
         {
             var property = myVertexNode.FirstChild;
@@ -410,6 +435,8 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             String key = String.Empty;
             Object value = null;
             String type = String.Empty;
+            Boolean isCollectionSet = false;
+            Boolean isCollectionList = false;
 
             while (property != null)
             {
@@ -422,9 +449,16 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                             break;
 
                         case "Type":
-                            if (type.Contains(typeof(ListCollectionWrapper).Name) || type.Contains(typeof(SetCollectionWrapper).Name))
+
+                            if (property.InnerText.Contains(typeof(ListCollectionWrapper).Name))
                             {
-                                type = property.InnerText.Split('(', ')').First();
+                                type = property.InnerText.Split('(', ')').ElementAt(1);
+                                isCollectionList = true;
+                            }
+                            else if(property.InnerText.Contains(typeof(SetCollectionWrapper).Name))
+                            {
+                                type = property.InnerText.Split('(', ')').ElementAt(1);
+                                isCollectionSet = true;
                             }
                             else
                             {
@@ -435,60 +469,42 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                         case "Value":
 
-                            if (type.Contains(typeof(ListCollectionWrapper).Name) || type.Contains(typeof(SetCollectionWrapper).Name))
+                            if (isCollectionList)
                             {
                                 Regex regExp = new Regex(@"\[(/?[^\]]+)\]");
 
                                 var matches = regExp.Matches(property.InnerText);
+                                value = new ListCollectionWrapper();
 
                                 foreach (var item in matches)
                                 {
-                                    switch (type)
-                                    {
-                                        case "String":
-                                            value = property.InnerText;
-                                            break;
-                                        case "Int32":
-                                            value = System.Convert.ToInt32(property.InnerText);
-                                            break;
-                                        case "Int64":
-                                            value = System.Convert.ToInt64(property.InnerText);
-                                            break;
-                                        case "UInt32":
-                                            value = System.Convert.ToUInt32(property.InnerText);
-                                            break;
-                                        case "UInt64":
-                                            value = System.Convert.ToUInt64(property.InnerText);
-                                            break;
-                                    }
+                                    ((ListCollectionWrapper)value).Add((IComparable)TypeMapper(type, item.ToString()));
                                 }
 
+                                isCollectionList = false;
+                            }
+                            else if(isCollectionSet)
+                            {
+                                Regex regExp = new Regex(@"\[(/?[^\]]+)\]");
+
+                                var matches = regExp.Matches(property.InnerText);
+                                value = new SetCollectionWrapper();
+
+                                foreach (var item in matches)
+                                {
+                                    ((SetCollectionWrapper)value).Add((IComparable)TypeMapper(type, item.ToString()));
+                                }
+                                
+                                isCollectionSet = false;
                             }
                             else
                             {
-                                switch (type)
-                                {
-                                    case "String":
-                                        value = property.InnerText;
-                                        break;
-                                    case "Int32":
-                                        value = System.Convert.ToInt32(property.InnerText);
-                                        break;
-                                    case "Int64":
-                                        value = System.Convert.ToInt64(property.InnerText);
-                                        break;
-                                    case "UInt32":
-                                        value = System.Convert.ToUInt32(property.InnerText);
-                                        break;
-                                    case "UInt64":
-                                        value = System.Convert.ToUInt64(property.InnerText);
-                                        break;
-                                }
+                                value = TypeMapper(type, property.InnerText);
                             }
                             break;
                     }
                 }
-
+                
                 property = property.NextSibling;
             }
 
@@ -604,12 +620,25 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                                 name = edge.InnerText;
                                 break;
                             
-                            case "Property":
-                                ParseEdgeProperties(edge, ref edgeProps);
+                            case "Properties":
+                                var edgeProperty = edge.FirstChild;
+
+                                while (edgeProperty != null)
+                                {
+                                    ParseEdgeProperties(edgeProperty, ref edgeProps);
+                                    edgeProperty = edgeProperty.NextSibling;
+                                }
+
                                 break;
 
-                            case "SingleEdge" :
-                                singleEdges.Add(ParseSingleEdge(edge));
+                            case "SingleEdges" :
+                                var sEdge = edge.FirstChild;
+
+                                while (sEdge != null)
+                                {
+                                    singleEdges.Add(ParseSingleEdge(sEdge));
+                                    sEdge = sEdge.NextSibling;
+                                }
                                 break;
                         }
                         

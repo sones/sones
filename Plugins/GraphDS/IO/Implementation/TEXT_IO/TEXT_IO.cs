@@ -7,6 +7,7 @@ using sones.Library.VersionedPluginManager;
 using sones.Library.Settings;
 using sones.GraphQL.Result;
 using System.IO;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.Plugins.GraphDS.IO
 {
@@ -62,18 +63,18 @@ namespace sones.Plugins.GraphDS.IO
         public string GenerateOutputResult(QueryResult myQueryResult)
         {
             StringBuilder Output = new StringBuilder();
-            Output.AppendLine("query:\t\t"+myQueryResult.Query);
-            Output.AppendLine("result:\t\t"+myQueryResult.TypeOfResult.ToString());
-            Output.AppendLine("duration:\t"+myQueryResult.Duration+" ms");
+            Output.AppendLine("Query:\t\t"+myQueryResult.Query);
+            Output.AppendLine("Result:\t\t"+myQueryResult.TypeOfResult.ToString());
+            Output.AppendLine("Duration:\t"+myQueryResult.Duration+" ms");
 
             if (myQueryResult.Error != null)
             {
-                Output.AppendLine("error: \t\t"+myQueryResult.Error.GetType().ToString() + " - " + HandleQueryExceptions(myQueryResult));
+                Output.AppendLine("Error: \t\t"+myQueryResult.Error.GetType().ToString() + " - " + HandleQueryExceptions(myQueryResult));
             }
 
             if (myQueryResult.Vertices != null)
             {
-                Output.AppendLine("vertices:");
+                Output.AppendLine("Vertices:");
 
                 foreach (IVertexView _vertex in myQueryResult.Vertices)
                 {
@@ -107,18 +108,38 @@ namespace sones.Plugins.GraphDS.IO
                 foreach (var _property in aVertex.GetAllProperties())
                 {
                     if (_property.Item2 == null)
-                        Output.AppendLine(Header+_property.Item1);
+                    {
+                        Output.AppendLine(Header + _property.Item1);
+                    }
                     else
+                    {
                         if (_property.Item2 is Stream)
-                            Output.AppendLine(Header+_property.Item1+"\t BinaryProperty");
+                        {
+                            Output.AppendLine(Header + _property.Item1 + "\t BinaryProperty");
+                        }
                         else
-                            Output.AppendLine(Header+_property.Item1+"\t "+_property.Item2.ToString());
+                        {
+                            if (_property.Item2 is ICollectionWrapper)
+                            {
+                                Output.AppendLine(Header + _property.Item1);
+
+                                foreach (var item in ((ICollectionWrapper)_property.Item2))
+                                {
+                                    Output.AppendLine(Header + "\t " + item.ToString());
+                                }
+                            }
+                            else
+                            {
+                                Output.AppendLine(Header + _property.Item1 + "\t " + _property.Item2.ToString());
+                            }
+                        }
+                    }
                 }
             }
             #endregion
 
             #region Edges
-            Output.AppendLine(Header + "\t edges:");
+            Output.AppendLine(Header + "\t Edges:");
             foreach (var _edge in aVertex.GetAllEdges())
             {
                 if (_edge.Item2 == null)
@@ -140,9 +161,10 @@ namespace sones.Plugins.GraphDS.IO
             StringBuilder Output = new StringBuilder();
 
             #region Edge Properties
+            Output.AppendLine(Header + "\t Edge");
+
             if (aEdge.GetCountOfProperties() > 0)
             {
-                Output.AppendLine(Header+"\t edges");
                 foreach (var _property in aEdge.GetAllProperties())
                 {
                     if (_property.Item2 == null)
@@ -150,21 +172,72 @@ namespace sones.Plugins.GraphDS.IO
                     else
                         if (_property.Item2 is Stream)
                         {
-                            Output.AppendLine(Header + _property.Item1+"\t BinaryProperty");
+                            Output.AppendLine(Header + "\t\t"+_property.Item1+"\t BinaryProperty");
                         }
                         else
-                            Output.AppendLine(Header + _property.Item1 + "\t " + _property.Item2.ToString());
+                            Output.AppendLine(Header + "\t\t"+_property.Item1 + "\t " + _property.Item2.ToString());
                 }
             }
             #endregion
 
-            #region Target Vertices
-            Output.AppendLine(Header + "\t targetvertices");
-            foreach (IVertexView _vertex in aEdge.GetTargetVertices())
+            if (aEdge is IHyperEdgeView)
             {
-                Output.Append(GenerateVertexViewText(Header+"\t\t",_vertex));
+                foreach (var singleEdge in ((IHyperEdgeView)aEdge).GetAllEdges())
+                {
+                    foreach (var _property in singleEdge.GetAllProperties())
+                    {
+                        if (_property.Item2 == null)
+                        {
+                            Output.AppendLine(Header + "\t\t\t\t " + _property.Item1);
+                        }
+                        else
+                        {
+                            if (_property.Item2 is Stream)
+                            {
+                                Output.AppendLine(Header + "\t\t\t\t " + _property.Item1 + "\t\t\t BinaryProperty");
+                            }
+                            else
+                            {
+                                Output.AppendLine(Header + "\t\t\t\t " + _property.Item1 + "\t\t " + _property.Item2.ToString());
+                            }
+                        }
+                    }
+
+                    if (singleEdge.GetTargetVertex() != null)
+                    {
+                        Output.AppendLine(Header + "\t\t\t\t TargetVertex");
+                        Output.Append(GenerateVertexViewText(Header + "\t\t\t", singleEdge.GetTargetVertex()));
+                    }                    
+                }
             }
-            #endregion
+            else
+            {
+                foreach (var _property in aEdge.GetAllProperties())
+                {
+                    if (_property.Item2 == null)
+                    {
+                        Output.AppendLine(Header + "\t\t\t\t" + _property.Item1);
+                    }
+                    else
+                    {
+                        if (_property.Item2 is Stream)
+                        {
+                            Output.AppendLine(Header + "\t\t\t\t\t" + _property.Item1 + "\t\t\t BinaryProperty");
+                        }
+                        else
+                        {
+                            Output.AppendLine(Header + "\t\t\t\t\t" + _property.Item1 + "\t\t " + _property.Item2.ToString());
+                        }
+                    }
+                }
+
+                if (((ISingleEdgeView)aEdge).GetTargetVertex() != null)
+                {
+                    Output.AppendLine(Header + "\t\t\t\t TargetVertex");
+                    Output.Append(GenerateVertexViewText(Header + "\t\t\t", ((ISingleEdgeView)aEdge).GetTargetVertex()));
+                }
+
+            }
 
             return Output.ToString();
         }

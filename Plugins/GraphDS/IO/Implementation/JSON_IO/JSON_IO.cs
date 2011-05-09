@@ -214,16 +214,27 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                 
             }
             else
-            {                
-                var edgeProperties = new JArray();                
+            {
+                var edgeProperties = new JArray();
+                JProperty _newEdge = null;
 
-                foreach (var property in aEdge.GetAllProperties())
+                foreach (var _property in aEdge.GetAllProperties())
                 {
-                    edgeProperties.Add(new JObject(new JProperty(property.Item1, property.Item2)));
+                    if (_property.Item2 == null)
+                        _newEdge = new JProperty(_property.Item1, "");
+                    else
+                        if (_property.Item2 is Stream)
+                        {
+                            _newEdge = new JProperty(_property.Item1, "BinaryProperty");
+                        }
+                        else
+                            _newEdge = new JProperty(_property.Item1, _property.Item2.ToString());
+
+                    edgeProperties.Add(new JObject(_newEdge));
                 }
 
                 Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Properties", edgeProperties)), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(((ISingleEdgeView)aEdge).GetTargetVertex()))))));
-               
+
             }
 
             return Output;

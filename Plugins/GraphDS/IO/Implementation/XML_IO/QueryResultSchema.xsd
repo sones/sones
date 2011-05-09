@@ -22,17 +22,29 @@
     <xs:sequence>
       <xs:element name ="Name" type ="xs:string"/>
       <xs:element name ="CountOfProperties" type ="xs:int"/>
-      <xs:element name ="Property" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0"/>
-      <xs:element name ="SingleEdge" type ="mstns:SchemaSingleEdgeView" maxOccurs ="unbounded" minOccurs ="0"/>
+      <xs:element name ="Properties">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name ="Property" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name ="SingleEdges">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name ="SingleEdge" type ="mstns:SchemaSingleEdgeView" maxOccurs ="unbounded" minOccurs ="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="SchemaSingleEdgeView">
-    <xs:sequence>
-      <xs:element name ="CountOfProperties" type ="xs:int" minOccurs="0"/>
-      <xs:element name ="Property" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0" />
-      <xs:element name ="TargetVertex" type ="mstns:SchemaVertexView" maxOccurs ="1" minOccurs ="1"/>
-    </xs:sequence>
+    <xs:sequence>      
+      <xs:element name ="CountOfProperties" type ="xs:int" minOccurs="0"/>      
+      <xs:element name ="Property" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0"/>          
+      <xs:element name ="TargetVertex" type ="mstns:SchemaVertexView" maxOccurs="1" minOccurs="1"/>
+    </xs:sequence>   
   </xs:complexType>  
  
   <xs:complexType name="Property">
@@ -45,7 +57,7 @@
   
   <xs:complexType name="SchemaVertexView">        
       <xs:sequence>
-        <xs:element name="Properties" >
+        <xs:element name="Properties">
           <xs:complexType>
             <xs:sequence>
               <xs:element name ="Property" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0"/>
