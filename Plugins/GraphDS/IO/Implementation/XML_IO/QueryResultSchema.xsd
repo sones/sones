@@ -44,9 +44,21 @@
   </xs:complexType>
   
   <xs:complexType name="SchemaVertexView">        
-      <xs:sequence>        
-        <xs:element name ="Property"        type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0"/>
-        <xs:element name ="BinaryProperty"  type ="mstns:BinaryData" maxOccurs ="unbounded" minOccurs ="0"/>
+      <xs:sequence>
+        <xs:element name="Properties" >
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name ="Property" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0"/>
+            </xs:sequence>
+          </xs:complexType>        
+        </xs:element>
+        <xs:element name="BinaryProperties">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name ="BinaryProperty"  type ="mstns:BinaryData" maxOccurs ="unbounded" minOccurs ="0"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
         <xs:element name ="Edges">
           <xs:complexType>
             <xs:sequence>

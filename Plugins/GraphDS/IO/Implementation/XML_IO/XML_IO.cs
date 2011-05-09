@@ -11,6 +11,7 @@ using SchemaToClassesGenerator;
 using sones.Plugins.GraphDS.IO.XML_IO.ErrorHandling;
 using System.Text;
 using sones.GraphDB.Expression.Tree.Literals;
+using System.Text.RegularExpressions;
 
 
 namespace sones.Plugins.GraphDS.IO.XML_IO
@@ -95,13 +96,15 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                             {
                                 property.Value = property.Value.Remove(index, 1);
                             }
+
+                            property.Type = aProperty.Item2.GetType().Name + "(" + propertyElementType.Name + ")";
                         }
                         else
                         {
                             property.Value = aProperty.Item2.ToString();
+                            property.Type = aProperty.Item2.GetType().Name;
                         }
                         
-                        property.Type = aProperty.Item2.GetType().Name + "<" + propertyElementType.Name + ">";
                     }
                     else
                     {
@@ -112,7 +115,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                     properties.Add(property);
                 }
 
-                resultVertex.Property = properties.ToArray();
+                resultVertex.Properties = properties.ToArray();
 
                 #endregion
 
@@ -133,7 +136,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                     binProperties.Add(binProp);
                 }
 
-                resultVertex.BinaryProperty = binProperties.ToArray();
+                resultVertex.BinaryProperties = binProperties.ToArray();
 
                 #endregion
 
@@ -204,14 +207,14 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                             hyperEdge.SingleEdge[i].TargetVertex = new SchemaVertexView();
                             
-                            if (innerVertices[i].Item1.Property != null)
+                            if (innerVertices[i].Item1.Properties != null)
                             {
-                                hyperEdge.SingleEdge[i].TargetVertex.Property = innerVertices[i].Item1.Property.ToArray();
+                                hyperEdge.SingleEdge[i].TargetVertex.Properties = innerVertices[i].Item1.Properties.ToArray();
                             }
 
-                            if (innerVertices[i].Item1.BinaryProperty != null)
+                            if (innerVertices[i].Item1.BinaryProperties != null)
                             {
-                                hyperEdge.SingleEdge[i].TargetVertex.BinaryProperty = innerVertices[i].Item1.BinaryProperty.ToArray();
+                                hyperEdge.SingleEdge[i].TargetVertex.BinaryProperties = innerVertices[i].Item1.BinaryProperties.ToArray();
                             }
 
                             if (innerVertices[i].Item1.Edges != null)
@@ -261,8 +264,8 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                         if (edgeTargetVertex != null)
                         {
-                            singleEdge.SingleEdge[0].TargetVertex.Property = targetVertex.Property.ToArray();
-                            singleEdge.SingleEdge[0].TargetVertex.BinaryProperty = targetVertex.BinaryProperty.ToArray();
+                            singleEdge.SingleEdge[0].TargetVertex.Properties = targetVertex.Properties.ToArray();
+                            singleEdge.SingleEdge[0].TargetVertex.BinaryProperties = targetVertex.BinaryProperties.ToArray();
                             singleEdge.SingleEdge[0].TargetVertex.Edges = targetVertex.Edges.ToArray();
                         }
 
@@ -419,14 +422,47 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                             break;
 
                         case "Type":
-                            type = property.InnerText;
+                            if (type.Contains(typeof(ListCollectionWrapper).Name) || type.Contains(typeof(SetCollectionWrapper).Name))
+                            {
+                                type = property.InnerText.Split('(', ')').First();
+                            }
+                            else
+                            {
+                                type = property.InnerText;
+                            }
+                            
                             break;
 
                         case "Value":
 
                             if (type.Contains(typeof(ListCollectionWrapper).Name) || type.Contains(typeof(SetCollectionWrapper).Name))
                             {
-                                
+                                Regex regExp = new Regex(@"\[(/?[^\]]+)\]");
+
+                                var matches = regExp.Matches(property.InnerText);
+
+                                foreach (var item in matches)
+                                {
+                                    switch (type)
+                                    {
+                                        case "String":
+                                            value = property.InnerText;
+                                            break;
+                                        case "Int32":
+                                            value = System.Convert.ToInt32(property.InnerText);
+                                            break;
+                                        case "Int64":
+                                            value = System.Convert.ToInt64(property.InnerText);
+                                            break;
+                                        case "UInt32":
+                                            value = System.Convert.ToUInt32(property.InnerText);
+                                            break;
+                                        case "UInt64":
+                                            value = System.Convert.ToUInt64(property.InnerText);
+                                            break;
+                                    }
+                                }
+
                             }
                             else
                             {
@@ -611,26 +647,42 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                     {
                         switch (items.Name)
                         {
-                            case "Property":
-                                var prop = ParseProperties(items);
-                                propList.Add(prop.Item1, prop.Item2);
+                            case "Properties":
+                                
+                                var propItems = items.FirstChild;
+
+                                while (propItems != null)
+                                {
+                                    var prop = ParseProperties(propItems);
+                                    propList.Add(prop.Item1, prop.Item2);
+                                    propItems = propItems.NextSibling;
+                                }
+                                
                                 break;
 
-                            case "BinaryProperty":
-                                var binProp = ParseBinaryVertex(items);
-                                binaryProperties.Add(binProp.Item1, binProp.Item2);
-                                    
-                                foreach (var item in binaryProperties)
+                            case "BinaryProperties":
+
+                                var binPropItems = items.FirstChild;
+
+                                while (binPropItems != null)
                                 {
-                                    if (propList.ContainsKey(item.Key))
+                                    var binProp = ParseBinaryVertex(binPropItems);
+                                    binaryProperties.Add(binProp.Item1, binProp.Item2);
+
+                                    foreach (var item in binaryProperties)
                                     {
-                                        propList[item.Key] = item.Value;
-                                    }
-                                    else
-                                    {
-                                        propList.Add(item.Key, item.Value);
-                                    }
-                                }                                    
+                                        if (propList.ContainsKey(item.Key))
+                                        {
+                                            propList[item.Key] = item.Value;
+                                        }
+                                        else
+                                        {
+                                            propList.Add(item.Key, item.Value);
+                                        }
+                                    }                                    
+                                    
+                                    binPropItems = binPropItems.NextSibling;
+                                }
 
                                 break;
 

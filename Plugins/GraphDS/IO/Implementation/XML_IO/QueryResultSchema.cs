@@ -176,31 +176,31 @@ namespace SchemaToClassesGenerator {
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class SchemaVertexView {
         
-        private Property[] propertyField;
+        private Property[] propertiesField;
         
-        private BinaryData[] binaryPropertyField;
+        private BinaryData[] binaryPropertiesField;
         
         private SchemaHyperEdgeView[] edgesField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Property")]
-        public Property[] Property {
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public Property[] Properties {
             get {
-                return this.propertyField;
+                return this.propertiesField;
             }
             set {
-                this.propertyField = value;
+                this.propertiesField = value;
             }
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("BinaryProperty")]
-        public BinaryData[] BinaryProperty {
+        [System.Xml.Serialization.XmlArrayItemAttribute("BinaryProperty", IsNullable=false)]
+        public BinaryData[] BinaryProperties {
             get {
-                return this.binaryPropertyField;
+                return this.binaryPropertiesField;
             }
             set {
-                this.binaryPropertyField = value;
+                this.binaryPropertiesField = value;
             }
         }
         
