@@ -1025,7 +1025,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             this.TruncateVertexType(vertexType.ID, myTransactionToken, mySecurityToken);
         }
 
-        public override void AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override IVertexType AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             var vertexType = GetVertexType(myAlterVertexTypeRequest.VertexTypeName, myTransactionToken, mySecurityToken);
 
@@ -1065,7 +1065,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             //done
             AddAttributes(myAlterVertexTypeRequest.ToBeAddedBinaryProperties,
                           myAlterVertexTypeRequest.ToBeAddedIncomingEdges,
-                          myAlterVertexTypeRequest.ToBeAddedOutgoingEdges, 
+                          myAlterVertexTypeRequest.ToBeAddedOutgoingEdges,
                           myAlterVertexTypeRequest.ToBeAddedProperties,
                           vertexType, myTransactionToken, mySecurityToken);
 
@@ -1086,6 +1086,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             #endregion
 
             CleanUpTypes();
+
+            return GetVertexType(vertexType.ID, myTransactionToken, mySecurityToken);
         }
 
         /// <summary>
@@ -1140,8 +1142,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="vertexType"></param>
         /// <param name="myTransactionToken"></param>
         /// <param name="mySecurityToken"></param>
-        private void AddAttributes(IEnumerable<BinaryPropertyPredefinition> myToBeAddedBinaryProperties, IEnumerable<IncomingEdgePredefinition> myToBeAddedIncomingEdges, IEnumerable<OutgoingEdgePredefinition> myToBeAddedOutgoingEdges, IEnumerable<PropertyPredefinition> myToBeAddedProperties, IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        private void AddAttributes(
+            IEnumerable<BinaryPropertyPredefinition> myToBeAddedBinaryProperties, 
+            IEnumerable<IncomingEdgePredefinition> myToBeAddedIncomingEdges, 
+            IEnumerable<OutgoingEdgePredefinition> myToBeAddedOutgoingEdges, 
+            IEnumerable<PropertyPredefinition> myToBeAddedProperties, 
+            IVertexType vertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
+            
             if (myToBeAddedProperties.IsNotNullOrEmpty())
             {
                 ProcessAddPropery(myToBeAddedProperties, mySecurityToken, myTransactionToken, vertexType);
@@ -1179,7 +1187,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 BaseGraphStorageManager.StoreOutgoingEdge(_vertexManager.ExecuteManager.VertexStore,
                     new VertexInformation((long)BaseTypes.OutgoingEdge,
-                        _idManager[(long)BaseTypes.OutgoingEdge].GetNextID()), aToBeAddedOutgoingEdge.AttributeName,
+                        _idManager[(long)BaseTypes.Attribute].GetNextID()), aToBeAddedOutgoingEdge.AttributeName,
                         aToBeAddedOutgoingEdge.Comment,
                         true,
                         DateTime.UtcNow.ToBinary(),
@@ -1199,7 +1207,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 BaseGraphStorageManager.StoreProperty(
                     _vertexManager.ExecuteManager.VertexStore,
                     new VertexInformation((long)BaseTypes.Property,
-                        _idManager[(long)BaseTypes.Property].GetNextID()),
+                        _idManager[(long)BaseTypes.Attribute].GetNextID()),
                         aProperty.AttributeName,
                         aProperty.Comment,
                         DateTime.UtcNow.ToBinary(),
@@ -1225,7 +1233,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 BaseGraphStorageManager.StoreIncomingEdge(
                     _vertexManager.ExecuteManager.VertexStore,
-                    new VertexInformation((long)BaseTypes.IncomingEdge, _idManager[(long)BaseTypes.IncomingEdge].GetNextID()),
+                    new VertexInformation((long)BaseTypes.Attribute, _idManager[(long)BaseTypes.IncomingEdge].GetNextID()),
                         aIncomingEdgeProperty.AttributeName,
                         aIncomingEdgeProperty.Comment,
                         true,
@@ -1245,8 +1253,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 BaseGraphStorageManager.StoreBinaryProperty(
                     _vertexManager.ExecuteManager.VertexStore, 
-                    new VertexInformation((long)BaseTypes.BinaryProperty, 
-                        _idManager[(long)BaseTypes.BinaryProperty].GetNextID()), 
+                    new VertexInformation((long)BaseTypes.BinaryProperty,
+                        _idManager[(long)BaseTypes.Attribute].GetNextID()), 
                         aBinaryProperty.AttributeName, 
                         aBinaryProperty.Comment, 
                         true, 

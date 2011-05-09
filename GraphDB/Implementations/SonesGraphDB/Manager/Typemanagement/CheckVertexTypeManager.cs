@@ -110,9 +110,40 @@ namespace sones.GraphDB.Manager.TypeManagement
             GetVertexType(myVertexTypeName, myTransactionToken, mySecurityToken);
         }
 
-        public override void AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override IVertexType AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             var vertexType =  _vertexTypeManager.GetVertexType(myAlterVertexTypeRequest.VertexTypeName, myTransactionToken, mySecurityToken);
+
+            if (myAlterVertexTypeRequest.ToBeAddedUnknownAttributes != null)
+            {
+                var toBeConverted = myAlterVertexTypeRequest.ToBeAddedUnknownAttributes.ToArray();
+                foreach (var unknown in toBeConverted)
+                {
+                    if (BinaryPropertyPredefinition.TypeName.Equals(unknown.AttributeType))
+                    {
+                        var prop = ConvertUnknownToBinaryProperty(unknown);
+
+                        myAlterVertexTypeRequest.AddBinaryProperty(prop);
+                    }
+                    else if (IsBaseType(unknown.AttributeType))
+                    {
+                        var prop = ConvertUnknownToProperty(unknown);
+
+                        myAlterVertexTypeRequest.AddProperty(prop);
+                    }
+                    else if (unknown.AttributeType.Contains(IncomingEdgePredefinition.TypeSeparator))
+                    {
+                        var prop = ConvertUnknownToIncomingEdge(unknown);
+                        myAlterVertexTypeRequest.AddIncomingEdge(prop);
+                    }
+                    else
+                    {
+                        var prop = ConvertUnknownToOutgoingEdge(unknown);
+                        myAlterVertexTypeRequest.AddOutgoingEdge(prop);
+                    }
+                }
+                myAlterVertexTypeRequest.ResetUnknown();
+            }
 
             #region checks
 
@@ -126,6 +157,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             CheckToBeRemovedIndices(myAlterVertexTypeRequest.ToBeRemovedIndices, vertexType, mySecurityToken, myTransactionToken);
 
             #endregion
+
+            return null;
         }
 
         #endregion

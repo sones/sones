@@ -620,5 +620,11 @@ namespace sones.GraphDB.Request
         #endregion
 
         #endregion
+
+        public void ResetUnknown()
+        {
+            _toBeAddedAttributes.RemoveAll(x => x is UnknownAttributePredefinition);
+            _addUnknown = 0;
+        }
     }
 }

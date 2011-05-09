@@ -102,7 +102,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myAlterVertexTypeRequest">The alter vertex type request</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
-        void AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        IVertexType AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
         void CleanUpTypes();
     }
