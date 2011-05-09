@@ -26,22 +26,26 @@ namespace sones.GraphDSServer
     internal class PasswordValidator : UserNamePasswordValidator
     {
         private readonly IUserAuthentication _dbauth;
+        private String _Username;
+        private String _Password;
 
-        public PasswordValidator(IUserAuthentication dbAuthentcator)
+        public PasswordValidator(IUserAuthentication dbAuthentcator, String Username, String Password)
         {
             _dbauth = dbAuthentcator;
+            _Username = Username;
+            _Password = Password;
         }
 
         public override void Validate(string userName, string password)
         {
-            if (!(userName == "test" && password == "test"))
+            if (!(userName ==  _Username && password == _Password))
             {
                 throw new SecurityTokenException("Username or password incorrect.");
             }
         }
     }
     
-    public sealed class GraphDSServer : IGraphDSServer
+    public sealed class GraphDS_Server : IGraphDSServer
     {
         #region Data
 
@@ -83,8 +87,8 @@ namespace sones.GraphDSServer
         /// <param name="myIPAddress">the IP adress this GraphDS Server should bind itself to</param>
         /// <param name="myPort">the port this GraphDS Server should listen on</param>
         /// <param name="PluginDefinitions">the plugins that shall be loaded and their according parameters</param>
-        public GraphDSServer(IGraphDB myGraphDB, ushort myPort, IPAddress myIPAddress,GraphDSPlugins Plugins = null)
-        {
+        public GraphDS_Server(IGraphDB myGraphDB, ushort myPort, String Username, String Password, IPAddress myIPAddress,GraphDSPlugins Plugins = null)
+        {        
             _iGraphDB = myGraphDB;
             _pluginManager = new GraphDSPluginManager();
             _ID = new Guid();
@@ -184,7 +188,7 @@ namespace sones.GraphDSServer
                 var security = new HTTPSecurity()
                 {
                     CredentialType = HttpClientCredentialType.Basic,
-                    UserNamePasswordValidator = new PasswordValidator(_iGraphDB)
+                    UserNamePasswordValidator = new PasswordValidator(_iGraphDB,Username,Password)
                 };
 
                 var restService = new GraphDSREST_Service();
