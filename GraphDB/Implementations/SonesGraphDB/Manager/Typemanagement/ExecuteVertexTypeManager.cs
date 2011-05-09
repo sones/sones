@@ -393,6 +393,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
             #endregion
 
+            CleanUpTypes();
+
             return result;
         }
 
