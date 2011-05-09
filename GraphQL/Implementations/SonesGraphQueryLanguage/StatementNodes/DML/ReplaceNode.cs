@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphQL.Result;
@@ -12,6 +13,10 @@ using System.Collections.Generic;
 using sones.GraphQL.Structure.Nodes.Misc;
 using sones.GraphQL.Structure.Nodes.DML;
 using sones.GraphQL.Structure.Nodes.Expressions;
+using sones.GraphDB.TypeSystem;
+using sones.GraphDB.Request;
+using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
+using sones.GraphQL.ErrorHandling;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -22,6 +27,7 @@ namespace sones.GraphQL.StatementNodes.DML
         private BinaryExpressionDefinition _whereExpression;
         private String _TypeName;
         private List<AAttributeAssignOrUpdate> _AttributeAssignList;
+        private string _query;
 
         #endregion
 
@@ -60,11 +66,57 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            //var qresult = graphDBSession.Replace(_TypeName, _AttributeAssignList, _whereExpression);
-            //qresult.PushIExceptional(ParsingResult);
-            //return qresult;
+            _query = myQuery;
 
-            return null;
+            //prepare
+            var vertexType = myGraphDB.GetVertexType<IVertexType>(
+                mySecurityToken,
+                myTransactionToken,
+                new RequestGetVertexType(_TypeName),
+                (stats, vtype) => vtype);
+
+            //validate
+            _whereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+
+            //calculate
+            var expressionGraph = _whereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+
+            //extract
+            var myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
+
+            switch (myToBeUpdatedVertices.Count)
+            {
+                case 0:
+                    //insert
+                    throw new ReplaceException("There are no vertices that match the where expression, so it's not possible to execute a Replace statement. Try using InsertOrUpdate.");
+
+                case 1:
+                    //delete
+                    ProcessDelete(myToBeUpdatedVertices[0], myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+
+                    //insert
+                    return ProcessInsert(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+
+                default:
+                    //error
+                    throw new NotImplementedQLException("It's currenty not implemented to InsertOrReplace more than one vertex");
+            }
+        }
+
+        private QueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            InsertNode insert = new InsertNode();
+            insert.Init(_TypeName, _AttributeAssignList);
+            return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
+        }
+
+        private void ProcessDelete(long toBeDeletedVertexID, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            myGraphDB.Delete<bool>(
+                mySecurityToken,
+                myTransactionToken,
+                new RequestDelete(new RequestGetVertices(_TypeName, new List<long> { toBeDeletedVertexID })),
+                (stats) => true);
         }
 
         #endregion

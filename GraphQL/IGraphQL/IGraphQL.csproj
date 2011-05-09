@@ -88,6 +88,7 @@
     <Compile Include="ErrorHandling\OperatorErrors\InvalidInRangeOperationException.cs" />
     <Compile Include="ErrorHandling\OperatorErrors\OperatorDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\OperatorErrors\AGraphQLOperatorException.cs" />
+    <Compile Include="ErrorHandling\Replace\ReplaceException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\AGraphQLSelectException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\DuplicateAttributeSelectionException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\MultipleResultsException.cs" />
