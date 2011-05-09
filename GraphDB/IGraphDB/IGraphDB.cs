@@ -43,6 +43,12 @@ namespace sones.GraphDB
         /// </summary>
         Guid ID { get; }
 
+        /// <summary>
+        /// Shutdown the graphdb
+        /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        void Shutdown(SecurityToken mySecurityToken);
+
         #endregion
     }
 }

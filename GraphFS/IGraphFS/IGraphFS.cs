@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.VersionedPluginManager;
 using sones.Library.Commons.VertexStore;
+using sones.Library.Commons.Security;
 
 namespace sones.GraphFS
 {
@@ -139,6 +140,16 @@ namespace sones.GraphFS
         /// <param name="myReplicationStream">An enumerable of vertices</param>
         /// <param name="myAppend">False: create a new FS, True: append to the current one</param>
         void ReplicateFileSystem(IEnumerable<IVertex> myReplicationStream, Boolean myAppend = false);
+
+        #endregion
+
+        #region misc
+
+        /// <summary>
+        /// Shutdown the graphFS
+        /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        void Shutdown(SecurityToken mySecurityToken);
 
         #endregion
     }

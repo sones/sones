@@ -38,12 +38,6 @@ namespace sones.GraphDS
     public interface IGraphDS : IGraphDB
     {
         /// <summary>
-        /// Shutdown of the current database
-        /// </summary>
-        /// <param name="mySecurityToken"></param>
-        void Shutdown(SecurityToken mySecurityToken);
-
-        /// <summary>
         /// Returns a query result by passing a query string
         /// </summary>
         /// <param name="mySecurityToken">The current security token</param>

@@ -579,6 +579,11 @@ namespace sones.GraphFS
             return updatedVertex;
         }
 
+        public void Shutdown(SecurityToken mySecurityToken)
+        {
+            //do nothing here
+        }
+
         #endregion
 
         #region IPluginable Members

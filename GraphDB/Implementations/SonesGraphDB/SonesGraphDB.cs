@@ -488,6 +488,11 @@ namespace sones.GraphDB
             get { return _id; }
         }
 
+        public void Shutdown(SecurityToken mySecurityToken)
+        {
+            _iGraphFS.Shutdown(mySecurityToken);
+        }
+
         #endregion
 
         #region Transaction

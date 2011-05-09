@@ -266,7 +266,8 @@ namespace sones.GraphDSServer
         public void Shutdown(sones.Library.Commons.Security.SecurityToken mySecurityToken)
         {
             _httpServer.StopAndWait();
-            _httpServer.Dispose(); 
+            _httpServer.Dispose();
+            _iGraphDB.Shutdown(mySecurityToken);
         }
 
         public QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)
