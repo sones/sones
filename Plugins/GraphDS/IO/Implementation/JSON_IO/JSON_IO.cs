@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mime;
 using System.IO;
-using System.Xml.Schema;
 using sones.GraphQL.Result;
-using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
-using System.Xml;
-using System.Reflection;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using sones.GraphDB.Expression.Tree.Literals;
@@ -197,7 +192,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                     else
                         _newEdge = new JProperty(_property.Item1, _property.Item2.ToString());
 
-                Output.Add(new JObject(new JProperty("EdgeProperties", new JObject(_newEdge))));
+                Output.Add(new JObject(new JProperty("Properties", new JObject(_newEdge))));
             }
             #endregion
 
@@ -212,14 +207,14 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                         edgeProperties.Add(new JObject(new JProperty(singleEdgeProp.Item1, singleEdgeProp.Item2.ToString())));
                     }
 
-                    if (edgeProperties.Count == 0)
+                    /*if (edgeProperties.Count == 0)
                     {
-                        Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Targetvertex", GenerateVertexViewJSON(singleEdge.GetTargetVertex()))))));
+                        Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(singleEdge.GetTargetVertex()))))));
                     }
                     else
-                    {
-                        Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("EdgeProperties", new JArray(edgeProperties))), new JObject(new JProperty("Targetvertex", GenerateVertexViewJSON(singleEdge.GetTargetVertex()))))));
-                    }
+                    {*/
+                        Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Properties", new JArray(edgeProperties))), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(singleEdge.GetTargetVertex()))))));
+                    //}
                     
                     edgeProperties.Clear();                    
                 }                
@@ -234,14 +229,14 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                     edgeProperties.Add(new JObject(new JProperty(property.Item1, property.Item2)));
                 }
 
-                if (edgeProperties.Count == 0)
+                /*if (edgeProperties.Count == 0)
                 {
                     Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(((ISingleEdgeView)aEdge).GetTargetVertex()))))));
                 }
                 else
-                {
-                    Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("EdgeProperties", edgeProperties)), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(((ISingleEdgeView)aEdge).GetTargetVertex()))))));
-                }
+                {*/
+                    Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Properties", edgeProperties)), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(((ISingleEdgeView)aEdge).GetTargetVertex()))))));
+               // }
             }
 
             return Output;
