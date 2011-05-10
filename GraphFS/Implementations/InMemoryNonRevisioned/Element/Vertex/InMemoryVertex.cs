@@ -496,28 +496,33 @@ namespace sones.GraphFS.Element.Vertex
         {
             lock (_lockobject)
             {
-                if (myStructuredUpdates.Deleted != null)
+                if (myStructuredUpdates != null)
                 {
-                    foreach (var item in myStructuredUpdates.Deleted)
+
+                    if (myStructuredUpdates.Deleted != null)
                     {
-                        _structuredProperties.Remove(item);
+                        foreach (var item in myStructuredUpdates.Deleted)
+                        {
+                            _structuredProperties.Remove(item);
+                        }
+                    }
+
+                    if (myStructuredUpdates.Updated != null)
+                    {
+                        foreach (var item in myStructuredUpdates.Updated)
+                        {
+                            if (_structuredProperties.ContainsKey(item.Key))
+                            {
+                                _structuredProperties[item.Key] = item.Value;
+                            }
+                            else
+                            {
+                                _structuredProperties.Add(item.Key, item.Value);
+                            }
+                        }
                     }
                 }
 
-                if (myStructuredUpdates.Updated != null)
-                {
-                    foreach (var item in myStructuredUpdates.Updated)
-                    {
-                        if (_structuredProperties.ContainsKey(item.Key))
-                        {
-                            _structuredProperties[item.Key] = item.Value;
-                        }
-                        else
-                        {
-                            _structuredProperties.Add(item.Key, item.Value);
-                        }
-                    }
-                }
             }
         }
 
