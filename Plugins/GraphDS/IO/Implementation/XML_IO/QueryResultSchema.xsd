@@ -17,33 +17,46 @@
       <xs:attribute name = "VerticesCount" type ="xs:long" use ="required"/>
     </xs:complexType>
   </xs:element>
-  
-  <xs:complexType name ="SchemaHyperEdgeView">
+
+  <xs:element name="Name">    
+    <xs:complexType>
+      <xs:attribute name ="Name" type="xs:string" use="required"/>
+      <xs:attribute name ="IsHyperEdge" type="xs:boolean" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name ="EdgeView" abstract="1">
     <xs:sequence>
-      <xs:element name ="Name" type ="xs:string"/>      
+      <xs:element name ="Name" type="xs:string" maxOccurs="1" minOccurs="0"/>
       <xs:element name ="Properties">
         <xs:complexType>
           <xs:sequence>
             <xs:element name ="Property" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0"/>
           </xs:sequence>
         </xs:complexType>
-      </xs:element>     
-      <xs:element name ="SingleEdge" type ="mstns:SchemaSingleEdgeView" maxOccurs ="unbounded" minOccurs ="0"/>      
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
+  
+  <xs:complexType name ="HyperEdgeView">
+    <xs:complexContent>
+      <xs:extension base="EdgeView" >
+        <xs:sequence>
+          <xs:element name ="SingleEdge" type ="mstns:SingleEdgeView" maxOccurs ="unbounded" minOccurs ="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
 
-  <xs:complexType name="SchemaSingleEdgeView">
-    <xs:sequence>
-      <xs:element name="Properties" maxOccurs="1" minOccurs="0">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name ="Property" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name ="TargetVertex" type ="mstns:SchemaVertexView" maxOccurs="1" minOccurs="1"/>
-    </xs:sequence>   
-  </xs:complexType>  
+  <xs:complexType name="SingleEdgeView">
+    <xs:complexContent>
+      <xs:extension base="EdgeView">
+        <xs:sequence minOccurs="1" maxOccurs="1">
+          <xs:element name ="TargetVertex" type ="mstns:VertexView" maxOccurs="1" minOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
  
   <xs:complexType name="Property">
     <xs:sequence>
@@ -53,7 +66,7 @@
     </xs:sequence>
   </xs:complexType>
   
-  <xs:complexType name="SchemaVertexView">        
+  <xs:complexType name="VertexView">        
       <xs:sequence>
         <xs:element name="Properties">
           <xs:complexType>
@@ -72,7 +85,7 @@
         <xs:element name ="Edges">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name ="Edge" type ="mstns:SchemaHyperEdgeView" maxOccurs="unbounded" minOccurs="0"/>
+              <xs:element name ="Edge" type ="mstns:EdgeView" maxOccurs="unbounded" minOccurs="0"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -94,7 +107,7 @@
         <xs:element name="VertexViews">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name ="VertexView" type ="mstns:SchemaVertexView" maxOccurs ="unbounded" minOccurs ="0"/>
+              <xs:element name ="VertexView" type ="mstns:VertexView" maxOccurs ="unbounded" minOccurs ="0"/>
             </xs:sequence>
           </xs:complexType>            
         </xs:element>

@@ -12,6 +12,7 @@ using sones.Plugins.GraphDS.IO.XML_IO.ErrorHandling;
 using System.Text;
 using sones.GraphDB.Expression.Tree.Literals;
 using System.Text.RegularExpressions;
+using VertexView = sones.GraphQL.Result.VertexView;
 
 
 namespace sones.Plugins.GraphDS.IO.XML_IO
@@ -43,8 +44,8 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             result.Version = IOInterfaceCompatibility.MaxVersion.ToString();
 
             result.Query = new Query() { Duration = myQueryResult.Duration, ResultType = Enum.GetName(typeof(ResultType), myQueryResult.TypeOfResult), Language = myQueryResult.NameOfQuerylanguage, Value = myQueryResult.Query, VerticesCount = myQueryResult.Vertices.LongCount(), Error = myQueryResult.Error == null ? null : HandleQueryExceptions(myQueryResult) };
-                     
-            List<SchemaVertexView> vertices = new List<SchemaVertexView>();
+
+            List<SchemaToClassesGenerator.VertexView> vertices = new List<SchemaToClassesGenerator.VertexView>();
 
             foreach (var aVertex in myQueryResult)
             {
@@ -61,10 +62,10 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             return System.Text.Encoding.UTF8.GetString(stream.ToArray());
         }
 
-        private SchemaVertexView GenerateVertexView(IVertexView aVertex)
+        private SchemaToClassesGenerator.VertexView GenerateVertexView(IVertexView aVertex)
         {
-           
-            var resultVertex = new SchemaVertexView();
+
+            var resultVertex = new SchemaToClassesGenerator.VertexView();
 
             if (aVertex != null)
             {
@@ -142,7 +143,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                 #region edges
 
-                List<SchemaHyperEdgeView> edges = new List<SchemaHyperEdgeView>();
+                List<SchemaToClassesGenerator.EdgeView> edges = new List<SchemaToClassesGenerator.EdgeView>();
 
                 foreach (var aEdge in aVertex.GetAllEdges())
                 {
@@ -150,18 +151,18 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                     if (aEdge.Item2 is IHyperEdgeView)
                     {
 
-                        List<Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>> innerVertices = new List<Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>>();
+                        List<Tuple<SchemaToClassesGenerator.VertexView, IEnumerable<Tuple<String, Object>>>> innerVertices = new List<Tuple<SchemaToClassesGenerator.VertexView, IEnumerable<Tuple<String, Object>>>>();
 
                         #region single edges
 
-                        foreach (var SingleEdges in ((HyperEdgeView)aEdge.Item2).GetAllEdges())
+                        foreach (var SingleEdges in ((sones.GraphQL.Result.HyperEdgeView)aEdge.Item2).GetAllEdges())
                         {
-                            innerVertices.Add(new Tuple<SchemaVertexView, IEnumerable<Tuple<String, Object>>>(GenerateVertexView(SingleEdges.GetTargetVertex()), SingleEdges.GetAllProperties()));
+                            innerVertices.Add(new Tuple<SchemaToClassesGenerator.VertexView, IEnumerable<Tuple<String, Object>>>(GenerateVertexView(SingleEdges.GetTargetVertex()), SingleEdges.GetAllProperties()));
                         }
 
                         #endregion
 
-                        var hyperEdge = new SchemaHyperEdgeView();
+                        var hyperEdge = new SchemaToClassesGenerator.HyperEdgeView();
 
                         hyperEdge.Name = aEdge.Item1;
 
@@ -180,11 +181,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                         #endregion
 
-                        hyperEdge.SingleEdge = new SchemaSingleEdgeView[innerVertices.Count];
+                        hyperEdge.SingleEdge = new SchemaToClassesGenerator.SingleEdgeView[innerVertices.Count];
 
                         for (Int32 i = 0; i < innerVertices.Count; i++)
                         {
-                            hyperEdge.SingleEdge[i] = new SchemaSingleEdgeView();
+                            hyperEdge.SingleEdge[i] = new SchemaToClassesGenerator.SingleEdgeView();
                             var SingleEdgesProperties = innerVertices[i].Item2.ToArray();
                             
                             hyperEdge.SingleEdge[i].Properties = new Property[SingleEdgesProperties.Count()];
@@ -203,7 +204,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                             #region target vertex
 
-                            hyperEdge.SingleEdge[i].TargetVertex = new SchemaVertexView();
+                            hyperEdge.SingleEdge[i].TargetVertex = new SchemaToClassesGenerator.VertexView();
                             
                             if (innerVertices[i].Item1.Properties != null)
                             {
@@ -228,7 +229,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                     }
                     else
                     {
-                        var SingleEdges = new SchemaHyperEdgeView();
+                        var SingleEdges = new SchemaToClassesGenerator.SingleEdgeView();
 
                         SingleEdges.Name = aEdge.Item1;
 
@@ -250,20 +251,17 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                         #region target vertex
 
-                        SingleEdges.SingleEdge = new SchemaSingleEdgeView[1];
-
-                        SingleEdges.SingleEdge[0] = new SchemaSingleEdgeView();
-                        SingleEdges.SingleEdge[0].TargetVertex = new SchemaVertexView();
-
-                        var edgeTargetVertex = ((SingleEdgeView)aEdge.Item2).GetTargetVertex();
+                        SingleEdges.TargetVertex = new SchemaToClassesGenerator.VertexView();
+                        
+                        var edgeTargetVertex = ((sones.GraphQL.Result.SingleEdgeView)aEdge.Item2).GetTargetVertex();
 
                         var targetVertex = GenerateVertexView(edgeTargetVertex);
 
                         if (edgeTargetVertex != null)
                         {
-                            SingleEdges.SingleEdge[0].TargetVertex.Properties = targetVertex.Properties.ToArray();
-                            SingleEdges.SingleEdge[0].TargetVertex.BinaryProperties = targetVertex.BinaryProperties.ToArray();
-                            SingleEdges.SingleEdge[0].TargetVertex.Edges = targetVertex.Edges.ToArray();
+                            SingleEdges.TargetVertex.Properties = targetVertex.Properties.ToArray();
+                            SingleEdges.TargetVertex.BinaryProperties = targetVertex.BinaryProperties.ToArray();
+                            SingleEdges.TargetVertex.Edges = targetVertex.Edges.ToArray();
                         }
 
                         #endregion
@@ -320,7 +318,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             ResultType result = ResultType.Failed;
             UInt64 duration = 0;
             Int64  nrOfVertices = 0;
-            List<VertexView> vertices = new List<VertexView>();
+            List<sones.GraphQL.Result.VertexView> vertices = new List<sones.GraphQL.Result.VertexView>();
 
             var nextNode = rootNode.FirstChild;
 
@@ -581,7 +579,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 }
             }
                 
-            return new SingleEdgeView(new Dictionary<String, Object>(edgeProperties), target);            
+            return new sones.GraphQL.Result.SingleEdgeView(new Dictionary<String, Object>(edgeProperties), target);            
         }
 
         private void ParseEdgeProperties(XmlNode myEdgeProp, ref Dictionary<String, Object> myEdgeProperties)
@@ -609,8 +607,12 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             var edgeProps = new Dictionary<String, Object>();
             var singleEdges = new List<ISingleEdgeView>();
             var edge = myEdge.FirstChild;
-            var name = String.Empty;     
+            var name = String.Empty;
+            VertexView targetVertex = null; 
+            Boolean isHyperEdge = false;
 
+            isHyperEdge = myEdge.Attributes["xsi:type"].Value == "HyperEdgeView";
+            
 
             if (edge.HasChildNodes)
             {
@@ -638,6 +640,10 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                             case "SingleEdge" :
                                 singleEdges.Add(ParseSingleEdge(edge));
                                 break;
+
+                            case "TargetVertex":
+                                targetVertex = ParseVertex(edge);
+                                break;
                         }
                         
                     }
@@ -646,20 +652,19 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 }
             }
 
-            if (singleEdges.Count > 1)
+            if (isHyperEdge)
             {
-                edgeView = new HyperEdgeView(edgeProps, singleEdges);
+                edgeView = new sones.GraphQL.Result.HyperEdgeView(edgeProps, singleEdges);
             }
             else
             {
-                var singleEdge = new SingleEdgeView(edgeProps, singleEdges.First().GetTargetVertex());
-                edgeView = singleEdge;
+                edgeView = new sones.GraphQL.Result.SingleEdgeView(edgeProps, targetVertex);
             }
 
             return new Tuple<string, IEdgeView>(name, edgeView);
         }
 
-        private VertexView ParseVertex(XmlNode myVertex)
+        private sones.GraphQL.Result.VertexView ParseVertex(XmlNode myVertex)
         {                        
             Dictionary<String, Object> propList = new Dictionary<string,object>();
             Dictionary<String, IEdgeView> edges = new Dictionary<string, IEdgeView>();
@@ -717,6 +722,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                             case "Edges" :
 
                                 var edgeItem = items.FirstChild;
+                                
 
                                 while (edgeItem != null)
                                 {
@@ -732,7 +738,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 }               
             }            
 
-            return new VertexView(propList, edges);
+            return new sones.GraphQL.Result.VertexView(propList, edges);
         }
 
         #endregion

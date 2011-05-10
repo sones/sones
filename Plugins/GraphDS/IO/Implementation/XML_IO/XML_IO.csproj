@@ -55,7 +55,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>QueryResultSchema.xsd</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Include="XML_IO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -107,8 +106,8 @@
       <SubType>Designer</SubType>
       <Generator>SchemaToClassesGenerator</Generator>
       <CustomToolNamespace>SchemaToClassesGenerator</CustomToolNamespace>
-      <LastGenOutput>QueryResultSchema.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <LastGenOutput>QueryResultSchema.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

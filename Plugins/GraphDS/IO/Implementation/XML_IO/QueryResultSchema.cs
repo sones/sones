@@ -2,19 +2,19 @@ namespace SchemaToClassesGenerator {
     
     
     /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(SingleEdgeView))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(HyperEdgeView))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
-    public partial class SchemaHyperEdgeView {
+    public abstract partial class EdgeView {
         
         private string nameField;
         
         private Property[] propertiesField;
-        
-        private SchemaSingleEdgeView[] singleEdgeField;
         
         /// <remarks/>
         public string Name {
@@ -34,17 +34,6 @@ namespace SchemaToClassesGenerator {
             }
             set {
                 this.propertiesField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("SingleEdge")]
-        public SchemaSingleEdgeView[] SingleEdge {
-            get {
-                return this.singleEdgeField;
-            }
-            set {
-                this.singleEdgeField = value;
             }
         }
     }
@@ -102,48 +91,13 @@ namespace SchemaToClassesGenerator {
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
-    public partial class SchemaSingleEdgeView {
-        
-        private Property[] propertiesField;
-        
-        private SchemaVertexView targetVertexField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
-        public Property[] Properties {
-            get {
-                return this.propertiesField;
-            }
-            set {
-                this.propertiesField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public SchemaVertexView TargetVertex {
-            get {
-                return this.targetVertexField;
-            }
-            set {
-                this.targetVertexField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
-    public partial class SchemaVertexView {
+    public partial class VertexView {
         
         private Property[] propertiesField;
         
         private BinaryData[] binaryPropertiesField;
         
-        private SchemaHyperEdgeView[] edgesField;
+        private EdgeView[] edgesField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
@@ -169,7 +123,7 @@ namespace SchemaToClassesGenerator {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute("Edge", IsNullable=false)]
-        public SchemaHyperEdgeView[] Edges {
+        public EdgeView[] Edges {
             get {
                 return this.edgesField;
             }
@@ -210,6 +164,51 @@ namespace SchemaToClassesGenerator {
             }
             set {
                 this.contentField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
+    public partial class HyperEdgeView : EdgeView {
+        
+        private SingleEdgeView[] singleEdgeField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("SingleEdge")]
+        public SingleEdgeView[] SingleEdge {
+            get {
+                return this.singleEdgeField;
+            }
+            set {
+                this.singleEdgeField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
+    public partial class SingleEdgeView : EdgeView {
+        
+        private VertexView targetVertexField;
+        
+        /// <remarks/>
+        public VertexView TargetVertex {
+            get {
+                return this.targetVertexField;
+            }
+            set {
+                this.targetVertexField = value;
             }
         }
     }
@@ -309,11 +308,47 @@ namespace SchemaToClassesGenerator {
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://sones.com/QueryResultSchema.xsd")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=false)]
+    public partial class Name {
+        
+        private string name1Field;
+        
+        private bool isHyperEdgeField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("Name")]
+        public string Name1 {
+            get {
+                return this.name1Field;
+            }
+            set {
+                this.name1Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool IsHyperEdge {
+            get {
+                return this.isHyperEdgeField;
+            }
+            set {
+                this.isHyperEdgeField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=false)]
     public partial class Result {
         
         private Query queryField;
         
-        private SchemaVertexView[] vertexViewsField;
+        private VertexView[] vertexViewsField;
         
         private string versionField;
         
@@ -328,8 +363,8 @@ namespace SchemaToClassesGenerator {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("VertexView", IsNullable=false)]
-        public SchemaVertexView[] VertexViews {
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public VertexView[] VertexViews {
             get {
                 return this.vertexViewsField;
             }
