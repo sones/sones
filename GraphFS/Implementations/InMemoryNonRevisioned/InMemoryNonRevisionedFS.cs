@@ -814,8 +814,11 @@ namespace sones.GraphFS
                                                     VertexUpdateDefinition myVertexUpdate)
         {
             #region udpate comment
-            
-            toBeUpdatedVertex.UpdateComment(myVertexUpdate.CommentUpdate);
+
+            if (myVertexUpdate.CommentUpdate != null)
+            {
+                toBeUpdatedVertex.UpdateComment(myVertexUpdate.CommentUpdate);
+            }
 
             #endregion
 
@@ -1009,95 +1012,115 @@ namespace sones.GraphFS
 
                                     lock (hyperEdge.ContainedSingleEdges)
                                     {
-                                        var newEdges = new List<SingleEdge>();
-
-                                        foreach (var contEdge in item.Value.ToBeUpdatedSingleEdges)
+                                        if (item.Value.ToBeDeletedSingleEdges != null)
                                         {
-                                            var targetVertex =
-                                                GetOrCreateTargetVertex(contEdge.TargetVertex.VertexTypeID,
-                                                                        contEdge.TargetVertex.VertexID);
-
-                                            foreach (var singleEdgeItem in hyperEdge.ContainedSingleEdges)
+                                            foreach (var singleEdge in item.Value.ToBeDeletedSingleEdges)
                                             {
-                                                var correspondTarget =
+                                                var targetVertex = GetOrCreateTargetVertex(singleEdge.TargetVertex.VertexTypeID, singleEdge.TargetVertex.VertexID);
+                                                RemoveIncommingEdgeFromTargetVertex(targetVertex, toBeUpdatedVertex.VertexTypeID, item.Key, toBeUpdatedVertex);
+                                                hyperEdge.ContainedSingleEdges.RemoveAll(sEdge => (sEdge.SourceVertex.VertexTypeID == singleEdge.SourceVertex.VertexTypeID && sEdge.SourceVertex.VertexID == singleEdge.SourceVertex.VertexID) && (sEdge.TargetVertex.VertexID == singleEdge.TargetVertex.VertexID && sEdge.TargetVertex.VertexTypeID == singleEdge.TargetVertex.VertexTypeID));
+                                            }
+                                        }
+
+                                        if (item.Value.ToBeUpdatedSingleEdges != null)
+                                        {
+                                            var newEdges = new List<SingleEdge>();
+
+                                            foreach (var contEdge in item.Value.ToBeUpdatedSingleEdges)
+                                            {
+                                                var targetVertex =
                                                     GetOrCreateTargetVertex(contEdge.TargetVertex.VertexTypeID,
                                                                             contEdge.TargetVertex.VertexID);
 
-                                                var correspondSource =
-                                                    GetOrCreateTargetVertex(contEdge.SourceVertex.VertexTypeID,
-                                                                            contEdge.SourceVertex.VertexID);
-
-                                                if (correspondTarget == singleEdgeItem.TargetVertex &&
-                                                    singleEdgeItem.SourceVertex == correspondSource)
+                                                foreach (var singleEdgeItem in hyperEdge.ContainedSingleEdges)
                                                 {
-                                                    if (contEdge.CommentUpdate != null)
-                                                    {
-                                                        singleEdgeItem.UpdateComment(contEdge.CommentUpdate);
-                                                    }
+                                                    var correspondTarget =
+                                                        GetOrCreateTargetVertex(contEdge.TargetVertex.VertexTypeID,
+                                                                                contEdge.TargetVertex.VertexID);
 
-                                                    if (contEdge.EdgeTypeID != null)
-                                                    {
-                                                        singleEdgeItem.UpdateEdgeType(contEdge.EdgeTypeID);
-                                                    }
+                                                    var correspondSource =
+                                                        GetOrCreateTargetVertex(contEdge.SourceVertex.VertexTypeID,
+                                                                                contEdge.SourceVertex.VertexID);
 
-                                                    if (contEdge.UpdatedStructuredProperties != null)
+                                                    if (correspondTarget == singleEdgeItem.TargetVertex &&
+                                                        singleEdgeItem.SourceVertex == correspondSource)
                                                     {
-                                                        singleEdgeItem.UpdateStructuredProperties(
-                                                            contEdge.UpdatedStructuredProperties.Updated,
-                                                            contEdge.UpdatedStructuredProperties.Deleted);
-                                                    }
-
-                                                    if (contEdge.UpdatedUnstructuredProperties != null)
-                                                    {
-                                                        singleEdgeItem.UpdateUnStructuredProperties(
-                                                            contEdge.UpdatedUnstructuredProperties.Updated,
-                                                            contEdge.UpdatedUnstructuredProperties.Deleted);
-                                                    }
-
-                                                    if (contEdge.TargetVertex != null)
-                                                    {
-                                                        lock (singleEdgeItem.TargetVertex)
+                                                        if (contEdge.CommentUpdate != null)
                                                         {
-                                                            singleEdgeItem.TargetVertex = targetVertex;
+                                                            singleEdgeItem.UpdateComment(contEdge.CommentUpdate);
+                                                        }
+
+                                                        if (contEdge.EdgeTypeID != null)
+                                                        {
+                                                            singleEdgeItem.UpdateEdgeType(contEdge.EdgeTypeID);
+                                                        }
+
+                                                        if (contEdge.UpdatedStructuredProperties != null)
+                                                        {
+                                                            singleEdgeItem.UpdateStructuredProperties(
+                                                                contEdge.UpdatedStructuredProperties.Updated,
+                                                                contEdge.UpdatedStructuredProperties.Deleted);
+                                                        }
+
+                                                        if (contEdge.UpdatedUnstructuredProperties != null)
+                                                        {
+                                                            singleEdgeItem.UpdateUnStructuredProperties(
+                                                                contEdge.UpdatedUnstructuredProperties.Updated,
+                                                                contEdge.UpdatedUnstructuredProperties.Deleted);
+                                                        }
+
+                                                        if (contEdge.TargetVertex != null)
+                                                        {
+                                                            lock (singleEdgeItem.TargetVertex)
+                                                            {
+                                                                singleEdgeItem.TargetVertex = targetVertex;
+                                                            }
+                                                        }
+
+                                                        if (contEdge.SourceVertex != null)
+                                                        {
+                                                            lock (singleEdgeItem.SourceVertex)
+                                                            {
+                                                                singleEdgeItem.SourceVertex =
+                                                                    GetOrCreateTargetVertex(
+                                                                        contEdge.SourceVertex.VertexTypeID,
+                                                                        contEdge.SourceVertex.VertexID);
+                                                            }
                                                         }
                                                     }
-
-                                                    if (contEdge.SourceVertex != null)
+                                                    else
                                                     {
-                                                        lock (singleEdgeItem.SourceVertex)
-                                                        {
-                                                            singleEdgeItem.SourceVertex =
-                                                                GetOrCreateTargetVertex(
-                                                                    contEdge.SourceVertex.VertexTypeID,
-                                                                    contEdge.SourceVertex.VertexID);
-                                                        }
+                                                        newEdges.Add(new SingleEdge(contEdge.EdgeTypeID,
+                                                                                    toBeUpdatedVertex,
+                                                                                    GetOrCreateTargetVertex(
+                                                                                        contEdge.TargetVertex.
+                                                                                            VertexTypeID,
+                                                                                        contEdge.TargetVertex.VertexID),
+                                                                                    contEdge.CommentUpdate, 0, 0,
+                                                                                    contEdge.UpdatedStructuredProperties ==
+                                                                                    null
+                                                                                        ? null
+                                                                                        : contEdge.
+                                                                                              UpdatedStructuredProperties
+                                                                                              .
+                                                                                              Updated,
+                                                                                    contEdge.
+                                                                                        UpdatedUnstructuredProperties ==
+                                                                                    null
+                                                                                        ? null
+                                                                                        : contEdge.
+                                                                                              UpdatedUnstructuredProperties
+                                                                                              .
+                                                                                              Updated));
                                                     }
                                                 }
-                                                else
-                                                {
-                                                    newEdges.Add(new SingleEdge(contEdge.EdgeTypeID, toBeUpdatedVertex,
-                                                                                GetOrCreateTargetVertex(
-                                                                                    contEdge.TargetVertex.VertexTypeID,
-                                                                                    contEdge.TargetVertex.VertexID),
-                                                                                contEdge.CommentUpdate, 0, 0,
-                                                                                contEdge.UpdatedStructuredProperties ==
-                                                                                null
-                                                                                    ? null
-                                                                                    : contEdge.
-                                                                                          UpdatedStructuredProperties.
-                                                                                          Updated,
-                                                                                contEdge.UpdatedUnstructuredProperties ==
-                                                                                null
-                                                                                    ? null
-                                                                                    : contEdge.
-                                                                                          UpdatedUnstructuredProperties.
-                                                                                          Updated));
-                                                }
+
+                                                CreateOrUpdateIncomingEdgesOnVertex(targetVertex,
+                                                                                    toBeUpdatedVertex.VertexTypeID,
+                                                                                    item.Key, toBeUpdatedVertex);
+                                                hyperEdge.ContainedSingleEdges.AddRange(newEdges);
+                                                newEdges.Clear();
                                             }
-
-                                            CreateOrUpdateIncomingEdgesOnVertex(targetVertex, toBeUpdatedVertex.VertexTypeID, item.Key, toBeUpdatedVertex);
-                                            hyperEdge.ContainedSingleEdges.AddRange(newEdges);
-                                            newEdges.Clear();
                                         }
                                     }
 
