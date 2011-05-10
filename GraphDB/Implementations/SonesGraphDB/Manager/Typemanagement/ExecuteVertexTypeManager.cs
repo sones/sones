@@ -174,7 +174,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             //now we store each vertex type
             for (var current = defsTopologically.First; current != null; current = current.Next)
             {
-               var r = new VertexType(BaseGraphStorageManager.StoreVertexType(
+               var newVertexType = new VertexType(BaseGraphStorageManager.StoreVertexType(
                     _vertexManager.ExecuteManager.VertexStore,
                     typeInfos[current.Value.VertexTypeName].VertexInfo,
                     current.Value.VertexTypeName,
@@ -184,14 +184,14 @@ namespace sones.GraphDB.Manager.TypeManagement
                     current.Value.IsSealed,
                     true,
                     typeInfos[current.Value.SuperVertexTypeName].VertexInfo,
-                    null, //TODO uniques
+                    null, 
                     mySecurity,
                     myTransaction));
 
-                 result[resultPos++] = r;
+                 result[resultPos++] = newVertexType;
                 _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName).Add(current.Value.VertexTypeName, typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID);
 
-                _baseTypes.Add( typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID, r);
+                _baseTypes.Add( typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID, newVertexType);
                 _nameIndex.Add(current.Value.VertexTypeName, typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID);
             }
 
