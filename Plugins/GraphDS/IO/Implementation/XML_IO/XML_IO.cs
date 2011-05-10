@@ -187,16 +187,16 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                             hyperEdge.SingleEdges[i] = new SchemaSingleEdgeView();
                             var SingleEdgesProperties = innerVertices[i].Item2.ToArray();
                             
-                            hyperEdge.SingleEdges[i].Property = new Property[SingleEdgesProperties.Count()];
+                            hyperEdge.SingleEdges[i].Properties = new Property[SingleEdgesProperties.Count()];
 
                             #region single edge properties
 
                             for (Int32 j = 0; j < SingleEdgesProperties.Count(); j++)
                             {
-                                hyperEdge.SingleEdges[i].Property[j] = new Property();
-                                hyperEdge.SingleEdges[i].Property[j].ID = SingleEdgesProperties[j].Item1;
-                                hyperEdge.SingleEdges[i].Property[j].Type = SingleEdgesProperties[j].Item2.GetType().Name;
-                                hyperEdge.SingleEdges[i].Property[j].Value = SingleEdgesProperties[j].Item2.ToString();
+                                hyperEdge.SingleEdges[i].Properties[j] = new Property();
+                                hyperEdge.SingleEdges[i].Properties[j].ID = SingleEdgesProperties[j].Item1;
+                                hyperEdge.SingleEdges[i].Properties[j].Type = SingleEdgesProperties[j].Item2.GetType().Name;
+                                hyperEdge.SingleEdges[i].Properties[j].Value = SingleEdgesProperties[j].Item2.ToString();
                             }
 
                             #endregion
@@ -560,9 +560,16 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 {
                     switch (edgeItems.Name)
                     { 
-                        case "Property":
-                            var edgeProp = ParseProperties(edgeItems);
-                            edgeProperties.Add(edgeProp.Item1, edgeProp.Item2);
+                        case "Properties":
+                            var prop = edgeItems.FirstChild;
+
+                            while (prop != null)
+                            {
+                                var edgeProp = ParseProperties(prop);
+                                edgeProperties.Add(edgeProp.Item1, edgeProp.Item2);
+                                prop = prop.NextSibling;
+                            }
+
                             break;
                             
                         case "TargetVertex":

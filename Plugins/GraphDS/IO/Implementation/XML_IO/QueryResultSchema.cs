@@ -104,18 +104,18 @@ namespace SchemaToClassesGenerator {
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class SchemaSingleEdgeView {
         
-        private Property[] propertyField;
+        private Property[] propertiesField;
         
         private SchemaVertexView targetVertexField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Property")]
-        public Property[] Property {
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public Property[] Properties {
             get {
-                return this.propertyField;
+                return this.propertiesField;
             }
             set {
-                this.propertyField = value;
+                this.propertiesField = value;
             }
         }
         
