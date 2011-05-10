@@ -34,6 +34,16 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
+        public override int GetHashCode()
+        {
+            return ID.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as IAttributeDefinition);
+        }
+
 
     }
 }

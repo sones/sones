@@ -203,16 +203,16 @@ namespace sones.GraphDB.Manager.Index
                 }
             }
 
-            var result = myVertexType.GetIndexDefinitions(true).Where(_ => myPropertyDefinition.SequenceEqual(_.IndexedProperties));
+            var result = myVertexType.GetIndexDefinitions(false).Where(_ => myPropertyDefinition.SequenceEqual(_.IndexedProperties)).ToArray();
 
-            if (!result.CountIsGreater(0))
+            if (result.Length == 0)
                 return null;
 
-            if (result.CountIsGreater(1))
+            if (result.Length > 1)
                 //TODO better exception here.
                 throw new UnknownDBException("There are more than one indices on the same sequence of properties.");
 
-            return _indices[result.First().ID];
+            return _indices[result[0].ID];
 
         }
 
@@ -421,7 +421,7 @@ namespace sones.GraphDB.Manager.Index
         public IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             myVertexType.CheckNull("myVertexType");
-            return myVertexType.GetIndexDefinitions(false).Where(_=>_.IndexedProperties.Contains(myPropertyDefinition)).Select(_ => _indices[_.ID]);
+            return myVertexType.GetIndexDefinitions(false).Where(_=>_.IndexedProperties.Count == 1 && _.IndexedProperties.Contains(myPropertyDefinition)).Select(_ => _indices[_.ID]);
             //return myPropertyDefinition.InIndices.Where(_ => myVertexType.Equals(_.VertexType)).Select(_ => _indices[_.ID]);
             
         }

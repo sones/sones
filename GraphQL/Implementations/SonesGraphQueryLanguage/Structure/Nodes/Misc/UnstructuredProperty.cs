@@ -84,5 +84,16 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
         #endregion
 
+        public override int GetHashCode()
+        {
+            return ID.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as IAttributeDefinition);
+        }
+
+
     }
 }
