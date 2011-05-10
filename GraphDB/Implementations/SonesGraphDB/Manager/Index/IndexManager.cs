@@ -131,6 +131,10 @@ namespace sones.GraphDB.Manager.Index
             {
                 var childID = _idManager[(long)BaseTypes.Index].GetNextID();
                 var childName = string.Join("_", "sones", myIndexDefinition.Name, childType.Name);
+
+    
+                var childIndex = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(typeClass, parameter, childID);
+
                 BaseGraphStorageManager.StoreIndex(
                                 _vertexStore,
                                 new VertexInformation((long)BaseTypes.Index, childID),
@@ -149,7 +153,7 @@ namespace sones.GraphDB.Manager.Index
                                 myTransaction);
 
                 _ownIndex.Add(childName, childID);
-                _indices.Add(childID, index);
+                _indices.Add(childID, childIndex);
 
             }
 
