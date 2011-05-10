@@ -180,44 +180,44 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                         #endregion
 
-                        hyperEdge.SingleEdges = new SchemaSingleEdgeView[innerVertices.Count];
+                        hyperEdge.SingleEdge = new SchemaSingleEdgeView[innerVertices.Count];
 
                         for (Int32 i = 0; i < innerVertices.Count; i++)
                         {
-                            hyperEdge.SingleEdges[i] = new SchemaSingleEdgeView();
+                            hyperEdge.SingleEdge[i] = new SchemaSingleEdgeView();
                             var SingleEdgesProperties = innerVertices[i].Item2.ToArray();
                             
-                            hyperEdge.SingleEdges[i].Properties = new Property[SingleEdgesProperties.Count()];
+                            hyperEdge.SingleEdge[i].Properties = new Property[SingleEdgesProperties.Count()];
 
                             #region single edge properties
 
                             for (Int32 j = 0; j < SingleEdgesProperties.Count(); j++)
                             {
-                                hyperEdge.SingleEdges[i].Properties[j] = new Property();
-                                hyperEdge.SingleEdges[i].Properties[j].ID = SingleEdgesProperties[j].Item1;
-                                hyperEdge.SingleEdges[i].Properties[j].Type = SingleEdgesProperties[j].Item2.GetType().Name;
-                                hyperEdge.SingleEdges[i].Properties[j].Value = SingleEdgesProperties[j].Item2.ToString();
+                                hyperEdge.SingleEdge[i].Properties[j] = new Property();
+                                hyperEdge.SingleEdge[i].Properties[j].ID = SingleEdgesProperties[j].Item1;
+                                hyperEdge.SingleEdge[i].Properties[j].Type = SingleEdgesProperties[j].Item2.GetType().Name;
+                                hyperEdge.SingleEdge[i].Properties[j].Value = SingleEdgesProperties[j].Item2.ToString();
                             }
 
                             #endregion
 
                             #region target vertex
 
-                            hyperEdge.SingleEdges[i].TargetVertex = new SchemaVertexView();
+                            hyperEdge.SingleEdge[i].TargetVertex = new SchemaVertexView();
                             
                             if (innerVertices[i].Item1.Properties != null)
                             {
-                                hyperEdge.SingleEdges[i].TargetVertex.Properties = innerVertices[i].Item1.Properties.ToArray();
+                                hyperEdge.SingleEdge[i].TargetVertex.Properties = innerVertices[i].Item1.Properties.ToArray();
                             }
 
                             if (innerVertices[i].Item1.BinaryProperties != null)
                             {
-                                hyperEdge.SingleEdges[i].TargetVertex.BinaryProperties = innerVertices[i].Item1.BinaryProperties.ToArray();
+                                hyperEdge.SingleEdge[i].TargetVertex.BinaryProperties = innerVertices[i].Item1.BinaryProperties.ToArray();
                             }
 
                             if (innerVertices[i].Item1.Edges != null)
                             {
-                                hyperEdge.SingleEdges[i].TargetVertex.Edges = innerVertices[i].Item1.Edges.ToArray();
+                                hyperEdge.SingleEdge[i].TargetVertex.Edges = innerVertices[i].Item1.Edges.ToArray();
                             }
 
                             #endregion
@@ -250,10 +250,10 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                         #region target vertex
 
-                        SingleEdges.SingleEdges = new SchemaSingleEdgeView[1];
+                        SingleEdges.SingleEdge = new SchemaSingleEdgeView[1];
 
-                        SingleEdges.SingleEdges[0] = new SchemaSingleEdgeView();
-                        SingleEdges.SingleEdges[0].TargetVertex = new SchemaVertexView();
+                        SingleEdges.SingleEdge[0] = new SchemaSingleEdgeView();
+                        SingleEdges.SingleEdge[0].TargetVertex = new SchemaVertexView();
 
                         var edgeTargetVertex = ((SingleEdgeView)aEdge.Item2).GetTargetVertex();
 
@@ -261,9 +261,9 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                         if (edgeTargetVertex != null)
                         {
-                            SingleEdges.SingleEdges[0].TargetVertex.Properties = targetVertex.Properties.ToArray();
-                            SingleEdges.SingleEdges[0].TargetVertex.BinaryProperties = targetVertex.BinaryProperties.ToArray();
-                            SingleEdges.SingleEdges[0].TargetVertex.Edges = targetVertex.Edges.ToArray();
+                            SingleEdges.SingleEdge[0].TargetVertex.Properties = targetVertex.Properties.ToArray();
+                            SingleEdges.SingleEdge[0].TargetVertex.BinaryProperties = targetVertex.BinaryProperties.ToArray();
+                            SingleEdges.SingleEdge[0].TargetVertex.Edges = targetVertex.Edges.ToArray();
                         }
 
                         #endregion
@@ -635,14 +635,8 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                                 break;
 
-                            case "SingleEdges" :
-                                var sEdge = edge.FirstChild;
-
-                                while (sEdge != null)
-                                {
-                                    singleEdges.Add(ParseSingleEdge(sEdge));
-                                    sEdge = sEdge.NextSibling;
-                                }
+                            case "SingleEdge" :
+                                singleEdges.Add(ParseSingleEdge(edge));
                                 break;
                         }
                         
@@ -658,7 +652,8 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             }
             else
             {
-                edgeView = singleEdges.First();
+                var singleEdge = new SingleEdgeView(edgeProps, singleEdges.First().GetTargetVertex());
+                edgeView = singleEdge;
             }
 
             return new Tuple<string, IEdgeView>(name, edgeView);

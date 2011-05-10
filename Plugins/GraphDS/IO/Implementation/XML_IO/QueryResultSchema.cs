@@ -14,7 +14,7 @@ namespace SchemaToClassesGenerator {
         
         private Property[] propertiesField;
         
-        private SchemaSingleEdgeView[] singleEdgesField;
+        private SchemaSingleEdgeView[] singleEdgeField;
         
         /// <remarks/>
         public string Name {
@@ -38,13 +38,13 @@ namespace SchemaToClassesGenerator {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("SingleEdge", IsNullable=false)]
-        public SchemaSingleEdgeView[] SingleEdges {
+        [System.Xml.Serialization.XmlElementAttribute("SingleEdge")]
+        public SchemaSingleEdgeView[] SingleEdge {
             get {
-                return this.singleEdgesField;
+                return this.singleEdgeField;
             }
             set {
-                this.singleEdgesField = value;
+                this.singleEdgeField = value;
             }
         }
     }

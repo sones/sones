@@ -27,14 +27,8 @@
             <xs:element name ="Property" type ="mstns:Property" maxOccurs ="unbounded" minOccurs ="0"/>
           </xs:sequence>
         </xs:complexType>
-      </xs:element>
-      <xs:element name ="SingleEdges">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name ="SingleEdge" type ="mstns:SchemaSingleEdgeView" maxOccurs ="unbounded" minOccurs ="0"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
+      </xs:element>     
+      <xs:element name ="SingleEdge" type ="mstns:SchemaSingleEdgeView" maxOccurs ="unbounded" minOccurs ="0"/>      
     </xs:sequence>
   </xs:complexType>
 
