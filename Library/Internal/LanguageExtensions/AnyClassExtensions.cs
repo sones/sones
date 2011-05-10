@@ -24,12 +24,7 @@ namespace sones.Library.LanguageExtensions
 
         public static IComparable ConvertToIComparable(this Object myObject, Type myConvertType)
         {
-            if (typeof(DateTime).Equals(myConvertType))
-            {
-                return DateTime.FromBinary((long)Convert.ChangeType(myObject, typeof(long)));
-            } 
-            else 
-                return (IComparable) Convert.ChangeType(myObject, myConvertType);
+            return (IComparable) Convert.ChangeType(myObject, myConvertType);
         }
 
     }

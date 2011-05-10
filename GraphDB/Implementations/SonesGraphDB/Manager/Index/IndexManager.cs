@@ -130,10 +130,11 @@ namespace sones.GraphDB.Manager.Index
             foreach (var childType in vertexType.GetChildVertexTypes(true, false))
             {
                 var childID = _idManager[(long)BaseTypes.Index].GetNextID();
+                var childName = string.Join("_", "sones", myIndexDefinition.Name, childType.Name);
                 BaseGraphStorageManager.StoreIndex(
                                 _vertexStore,
                                 new VertexInformation((long)BaseTypes.Index, childID),
-                                string.Join("_", myIndexDefinition.Name, childType.Name),
+                                childName,
                                 myIndexDefinition.Name, //we store the source index name as comment
                                 date,
                                 myIndexDefinition.TypeName,
@@ -141,13 +142,13 @@ namespace sones.GraphDB.Manager.Index
                                 GetIsRangeValue(index),
                                 GetIsVersionedValue(index),
                                 false,
-                                new VertexInformation((long)BaseTypes.VertexType, vertexType.ID),
+                                new VertexInformation((long)BaseTypes.VertexType, childType.ID),
                                 info,
                                 props,
                                 mySecurity,
                                 myTransaction);
 
-                _ownIndex.Add(myIndexDefinition.Name, childID);
+                _ownIndex.Add(childName, childID);
                 _indices.Add(childID, index);
 
             }
