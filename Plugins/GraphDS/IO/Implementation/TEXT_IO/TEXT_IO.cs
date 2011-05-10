@@ -148,6 +148,7 @@ namespace sones.Plugins.GraphDS.IO
                 }
                 else
                 {
+                    Output.AppendLine(Header+"\t\t"+_edge.Item2.GetType().Name);
                     Output.AppendLine(Header+"\t\t"+_edge.Item1).Append(GenerateEdgeViewText(Header+"\t\t\t",_edge.Item2));
                 }
             }
@@ -163,6 +164,7 @@ namespace sones.Plugins.GraphDS.IO
             #region Edge Properties
             Output.AppendLine(Header + "\t Edge");
 
+            Output.AppendLine(Header + "\t Properties");
             if (aEdge.GetCountOfProperties() > 0)
             {
                 foreach (var _property in aEdge.GetAllProperties())
@@ -181,9 +183,11 @@ namespace sones.Plugins.GraphDS.IO
             #endregion
 
             if (aEdge is IHyperEdgeView)
-            {
+            {                
                 foreach (var singleEdge in ((IHyperEdgeView)aEdge).GetAllEdges())
                 {
+                    Output.AppendLine(Header + "\t SingleEdge");
+                    Output.AppendLine(Header + "\t\t\tProperties");
                     foreach (var _property in singleEdge.GetAllProperties())
                     {
                         if (_property.Item2 == null)
@@ -205,35 +209,16 @@ namespace sones.Plugins.GraphDS.IO
 
                     if (singleEdge.GetTargetVertex() != null)
                     {
-                        Output.AppendLine(Header + "\t\t\t\t TargetVertex");
+                        Output.AppendLine(Header + "\t\t\tTargetVertex");
                         Output.Append(GenerateVertexViewText(Header + "\t\t\t", singleEdge.GetTargetVertex()));
                     }                    
                 }
             }
             else
             {
-                foreach (var _property in aEdge.GetAllProperties())
-                {
-                    if (_property.Item2 == null)
-                    {
-                        Output.AppendLine(Header + "\t\t\t\t" + _property.Item1);
-                    }
-                    else
-                    {
-                        if (_property.Item2 is Stream)
-                        {
-                            Output.AppendLine(Header + "\t\t\t\t\t" + _property.Item1 + "\t\t\t BinaryProperty");
-                        }
-                        else
-                        {
-                            Output.AppendLine(Header + "\t\t\t\t\t" + _property.Item1 + "\t\t " + _property.Item2.ToString());
-                        }
-                    }
-                }
-
                 if (((ISingleEdgeView)aEdge).GetTargetVertex() != null)
                 {
-                    Output.AppendLine(Header + "\t\t\t\t TargetVertex");
+                    Output.AppendLine(Header + "\t\t\t\tTargetVertex");
                     Output.Append(GenerateVertexViewText(Header + "\t\t\t", ((ISingleEdgeView)aEdge).GetTargetVertex()));
                 }
 

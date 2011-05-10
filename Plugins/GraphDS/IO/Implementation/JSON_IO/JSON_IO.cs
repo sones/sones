@@ -165,7 +165,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                     else
                     {
                         JArray _newEdge = GenerateEdgeViewJSON(_edge.Item2);
-                        _edges.Add(new JObject(new JProperty(_edge.Item1, _newEdge)));
+                        _edges.Add(new JObject(new JProperty(_edge.Item2.GetType().Name, new JObject(new JProperty(_edge.Item1, _newEdge)))));
                     }
                 }
                 // add to the results...
@@ -215,25 +215,25 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             }
             else
             {
-                var edgeProperties = new JArray();
-                JProperty _newEdge = null;
+                //var edgeProperties = new JArray();
+                //JProperty _newEdge = null;
 
-                foreach (var _property in aEdge.GetAllProperties())
-                {
-                    if (_property.Item2 == null)
-                        _newEdge = new JProperty(_property.Item1, "");
-                    else
-                        if (_property.Item2 is Stream)
-                        {
-                            _newEdge = new JProperty(_property.Item1, "BinaryProperty");
-                        }
-                        else
-                            _newEdge = new JProperty(_property.Item1, _property.Item2.ToString());
+                //foreach (var _property in aEdge.GetAllProperties())
+                //{
+                //    if (_property.Item2 == null)
+                //        _newEdge = new JProperty(_property.Item1, "");
+                //    else
+                //        if (_property.Item2 is Stream)
+                //        {
+                //            _newEdge = new JProperty(_property.Item1, "BinaryProperty");
+                //        }
+                //        else
+                //            _newEdge = new JProperty(_property.Item1, _property.Item2.ToString());
 
-                    edgeProperties.Add(new JObject(_newEdge));
-                }
+                //    edgeProperties.Add(new JObject(_newEdge));
+                //}
 
-                Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Properties", edgeProperties)), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(((ISingleEdgeView)aEdge).GetTargetVertex()))))));
+                Output.Add(new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(((ISingleEdgeView)aEdge).GetTargetVertex()))));
 
             }
 
