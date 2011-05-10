@@ -66,7 +66,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
                 total++;
             }
 
-            var aggregateResult = ArithmeticOperations.Div(divType, sum, total);
+            var aggregateResult = ArithmeticOperations.Div(typeof(Double), sum, total);
 
             return new FuncParameter(aggregateResult, myPropertyDefinition);
         }
