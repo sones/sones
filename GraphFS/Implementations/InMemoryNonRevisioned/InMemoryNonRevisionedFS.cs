@@ -1177,7 +1177,7 @@ namespace sones.GraphFS
             
             if (myVertexUpdate.UpdatedUnstructuredProperties != null)
             {
-                toBeUpdatedVertex.UpdateStructuredProperties(myVertexUpdate.UpdatedStructuredProperties);
+                toBeUpdatedVertex.UpdateUnstructuredProperties(myVertexUpdate.UpdatedUnstructuredProperties);
             }
 
             #endregion
@@ -1186,7 +1186,7 @@ namespace sones.GraphFS
             
             if (myVertexUpdate.UpdatedStructuredProperties != null)
             {
-                toBeUpdatedVertex.UpdateUnstructuredProperties(myVertexUpdate.UpdatedUnstructuredProperties);
+                toBeUpdatedVertex.UpdateStructuredProperties(myVertexUpdate.UpdatedStructuredProperties);
             }
 
             #endregion
