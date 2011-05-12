@@ -1,4 +1,24 @@
-ï»¿using System;
+/*
+* sones GraphDB - Community Edition - http://www.sones.com
+* Copyright (C) 2007-2011 sones GmbH
+*
+* This file is part of sones GraphDB Community Edition.
+*
+* sones GraphDB is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.TypeSystem;
@@ -11,7 +31,7 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
         ///// <summary>
         ///// Sucht im Graphen nach Knoten "myEnd" ausgehend vom Knoten "myStart", bis zur max. Tiefe "myMaxDepth".
         ///// </summary>
-        ///// <param name="myTypeAttribute">Kante Ã¼ber die gesucht werden soll</param>
+        ///// <param name="myTypeAttribute">Kante über die gesucht werden soll</param>
         ///// <param name="myDBContext"></param>
         ///// <param name="myStart">Startknoten</param>
         ///// <param name="myEnd">gesuchter Knoten</param>
@@ -169,11 +189,11 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
         ///// <summary>
         ///// Sucht im Graphen nach Knoten "myEnd" ausgehend von der Knotenmenge "myEdge", bis zur max. Tiefe "myMaxDepth".
         ///// </summary>
-        ///// <param name="myTypeAttribute">Kante Ã¼ber die gesucht werden soll</param>
+        ///// <param name="myTypeAttribute">Kante über die gesucht werden soll</param>
         ///// <param name="myDBContext"></param>
         ///// <param name="myStart">Startknoten</param>
         ///// <param name="myEnd">gesuchter Knoten</param>
-        ///// <param name="myEdge">Menge an Knoten, ausgehend vom Startknoten welche mittels einer Funktion eingeschrÃ¤nkt wurde</param>
+        ///// <param name="myEdge">Menge an Knoten, ausgehend vom Startknoten welche mittels einer Funktion eingeschränkt wurde</param>
         ///// <param name="myMaxDepth">max. Tiefe</param>
         ///// <returns>true wenn gesuchter Knoten min. 1 mal gefunden, false sonst</returns>
         //public bool Find(IAttributeDefinition myTypeAttribute, IVertex myStart, IVertex myEnd, IEdge myEdge, byte myMaxDepth)
