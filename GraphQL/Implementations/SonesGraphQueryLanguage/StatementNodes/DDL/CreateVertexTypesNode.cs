@@ -256,7 +256,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             {
                 foreach (var aIndex in aDefinition.Indices)
                 {
-                    result.AddIndex(GenerateIndex(aIndex));
+                    result.AddIndex(GenerateIndex(aIndex, aDefinition.Name));
                 }
             }
 
@@ -270,7 +270,7 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// </summary>
         /// <param name="aIndex">The index definition by the gql</param>
         /// <returns>An IndexPredefinition</returns>
-        private IndexPredefinition GenerateIndex(IndexDefinition aIndex)
+        private IndexPredefinition GenerateIndex(IndexDefinition aIndex, String myVertexType)
         {
             IndexPredefinition result;
 
@@ -282,7 +282,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             {
                 result = new IndexPredefinition(aIndex.IndexName);
             }
-
+            result.SetVertexType(myVertexType);
             if (!String.IsNullOrEmpty(aIndex.IndexType))
             {
                 result.SetIndexType(aIndex.IndexType);
