@@ -3,6 +3,7 @@
 *.pdb
 *.dll
 *.vshost
+*.suo
 [Bb]in*/
 [Dd]ebug*/
 [Rr]elease*/
