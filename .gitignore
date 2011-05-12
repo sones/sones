@@ -4,8 +4,8 @@
 *.dll
 *.vshost
 *.suo
-[Bb]in*/
-[Dd]ebug*/
-[Rr]elease*/
+[Bb]in/
+[Dd]ebug/
+[Rr]elease/
 *.pidb
 _ReSharper*/
