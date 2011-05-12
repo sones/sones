@@ -1,0 +1,13 @@
+
+.DS_Store
+*.pdb
+*.dll
+*.vshost
+*.suo
+[Bb]in/
+[Dd]ebug/
+[Rr]elease/
+*.pidb
+_ReSharper*/
+CoreDeveloper.suo
+CoreDeveloper.userprefs
