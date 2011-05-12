@@ -1,1 +1,9 @@
+
 .DS_Store
+*.pdb
+*.dll
+*.vshost
+[Bb]in*/
+[Dd]ebug*/
+[Rr]elease*/
+*.pidb
