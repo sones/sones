@@ -1250,7 +1250,7 @@ namespace sones.GraphQL
 
             #region UPDATE
 
-            updateStmt.Rule = S_UPDATE + VertexTypeWrapper + S_SET + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + whereClauseOpt;
+            updateStmt.Rule = S_UPDATE + Id_simple + S_SET + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + whereClauseOpt;
 
             AttrUpdateList.Rule = MakePlusRule(AttrUpdateList, S_comma, AttrUpdateOrAssign);
 
