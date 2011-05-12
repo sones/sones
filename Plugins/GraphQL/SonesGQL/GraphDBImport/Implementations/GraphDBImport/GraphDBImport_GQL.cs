@@ -75,7 +75,7 @@ namespace sones.Plugins.SonesGQL.DBImport
             }
             catch (Exception ex)
             {
-                #region thrwo new exception
+                #region throw new exception
                 error = new ImportFailedException(ex);
                 result = new QueryResult("", ImportFormat, 0L, ResultType.Failed, null, error);
                 return result; 
@@ -235,8 +235,6 @@ namespace sones.Plugins.SonesGQL.DBImport
                 var tempResult = ExecuteQuery(query, myIGraphQL, mySecurityToken, myTransactionToken);
                 #endregion
 
-                aggregatedResults.Add(tempResult.Vertices);
-
                 #region Add errors and break execution
 
                 if (tempResult.TypeOfResult == ResultType.Failed)
@@ -253,6 +251,8 @@ namespace sones.Plugins.SonesGQL.DBImport
                         break;
                     }
                 }
+
+                aggregatedResults.Add(tempResult.Vertices);
 
                 #endregion
 
