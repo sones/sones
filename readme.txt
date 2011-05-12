@@ -1,6 +1,6 @@
-This is the readme file of the sones GraphDB Open Source Edition version 1.1 - Last updated 
-on 1st of October 2010
-(C) sones GmbH 2007 - 2010
+This is the readme file of the sones GraphDB Open Source Edition version 1.2 - Last updated 
+on 12th of May 2011
+(C) sones GmbH 2007 - 2011
 
 The sones is an object-orientated graph data storage for a large amount of highly connected semi-structured data
 in a distributed environment. In contrast to classical relational but also purely object orientated databases
