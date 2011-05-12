@@ -151,15 +151,27 @@ namespace sones.GraphQL.StatementNodes.DML
 
             if (_vertexIDs == null)
             {
-                //validate
-                _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+                if (_WhereExpression != null)
+                {
+                    //validate
+                    _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
 
-                //calculate
-                var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+                    //calculate
+                    var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
 
-                //extract
+                    //extract
 
-                toBeupdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
+                    toBeupdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
+                }
+                else
+                {
+                    toBeupdatedVertices = myGraphDB.GetVertices<IEnumerable<long>>(
+                        mySecurityToken,
+                        myTransactionToken,
+                        new RequestGetVertices(vertexType.ID),
+                        (stats, vertices) => vertices.Select(_ => _.VertexID));
+                }
+                
             }
             else
             {
