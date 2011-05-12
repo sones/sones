@@ -67,14 +67,26 @@ namespace sones.Plugins.SonesGQL.Functions
 
             var pos = Convert.ToInt32(myParams[0].Value);
 
-            StringBuilder resString = new StringBuilder((myCallingObject as String).ToString().Substring(0, pos));
+            StringBuilder resString = new StringBuilder();
+            bool dontInsert = false;
+
+            if (pos > (myCallingObject as String).Length)
+            {
+                dontInsert = true;
+                resString.Append((myCallingObject as String).ToString());
+            }
+            else
+            {
+                resString.Append((myCallingObject as String).ToString().Substring(0, pos));
+            }
             
             foreach (FuncParameter fp in myParams.Skip(1))
             {
                 resString.Append(fp.Value as String);
             }
 
-            resString.Append((myCallingObject as String).ToString().Substring(pos));
+            if(!dontInsert)
+                resString.Append((myCallingObject as String).ToString().Substring(pos));
 
             return new FuncParameter(resString.ToString());
         }
