@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product Id="83111110-1011-1557-1114-971121046865" Language="1033" Manufacturer="sones GmbH" Name="GraphDB Server v2.0" Version="2.0">
+        <Package Id="83111110-1011-1550-0000-000000000001" Keywords="Installer" Description="To install the Sones GraphDB Server" Manufacturer="sones GmbH" InstallerVersion="100" Compressed="yes" />
+        <Media Id="1" EmbedCab="yes" DiskPrompt="CD-ROM #1" Cabinet="setup.cab" />
+        <Property Id="DiskPrompt" Value="Sones GraphDB Server [1]" />
+        <Condition Message="You need to be administrator to install this software.">Privileged</Condition>
+        <UI />
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder" Name="PFiles" DiskId="1">
+                <Directory Id="SONESSETUP" Name="Sones">
+                    <Directory Id="GRAPHDBSERVER" Name="GraphDB Server" DiskId="1">
+                        <Component Id="sonesGraphDBStarter.exe" DiskId="1" Guid="E8A51DAC-E7BD-4D57-B093-A2F5CB090690">
+                            <File Id="sonesGraphDBStarter.exe" Name="sonesGraphDBStarter.exe" Source="..\Applications\sonesGraphDB\bin\Release\sonesGraphDBStarter.exe">
+                                <Shortcut Id="graphdbserverPrgMenuShortcut" Name="GraphDB Server" Directory="ProgramMenuDir" WorkingDirectory="GRAPHDBSERVER" Icon="DesktopIcon.exe" />
+                                <Shortcut Id="graphdbserverDesktopShortcut" Name="GraphDB Server" Directory="DesktopFolder" Icon="DesktopIcon.exe" WorkingDirectory="GRAPHDBSERVER" />
+                                <!--<Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="Sones GraphDB Server" WorkingDirectory="INSTALLDIR" Advertise="yes" Icon="DesktopIcon.exe" IconIndex="0" /> -->
+                            </File>
+                            <RegistryKey Root="HKCU" Key="Software\Sones\Uninstall\Menu">
+                                <RegistryValue Type="string" Value="ProgramMenuEntry" KeyPath="yes" />
+                            </RegistryKey>
+                            <RegistryKey Key="Software\Sones\Uninstall\Desktop" Root="HKCU">
+                                <RegistryValue KeyPath="no" Type="string" Value="DesktopMenuEntry" />
+                            </RegistryKey>
+                        </Component>
+                        <Component Id="Libraries" Guid="8FA5B46E-844C-4D93-B940-77C848FE5D6F" DiskId="1">
+                            <File Id="Arithmetics.dll" Name="Arithmetics.dll" Source="..\Applications\sonesGraphDB\bin\Release\Arithmetics.dll" />
+                            <File Id="Commons.dll" Name="Commons.dll" Source="..\Applications\sonesGraphDB\bin\Release\Commons.dll" />
+                            <File Id="DataStructures.dll" Name="DataStructures.dll" Source="..\Applications\sonesGraphDB\bin\Release\DataStructures.dll" />
+                            <File Id="DiscordianDate.dll" Name="DiscordianDate.dll" Source="..\Applications\sonesGraphDB\bin\Release\DiscordianDate.dll" />
+                            <File Id="DrainPipeLog.dll" Name="DrainPipeLog.dll" Source="..\Applications\sonesGraphDB\bin\Release\DrainPipeLog.dll" />
+                            <File Id="ErrorHandling.dll" Name="ErrorHandling.dll" Source="..\Applications\sonesGraphDB\bin\Release\ErrorHandling.dll" />
+                            <File Id="GQLAggregates.dll" Name="GQLAggregates.dll" Source="..\Applications\sonesGraphDB\bin\Release\GQLAggregates.dll" />
+                            <File Id="GQLFunctions.dll" Name="GQLFunctions.dll" Source="..\Applications\sonesGraphDB\bin\Release\GQLFunctions.dll" />
+                            <File Id="GraphDBExport.dll" Name="GraphDBExport.dll" Source="..\Applications\sonesGraphDB\bin\Release\GraphDBExport.dll" />
+                            <File Id="GraphDBImport.dll" Name="GraphDBImport.dll" Source="..\Applications\sonesGraphDB\bin\Release\GraphDBImport.dll" />
+                            <File Id="GraphDSPluginManager.dll" Name="GraphDSPluginManager.dll" Source="..\Applications\sonesGraphDB\bin\Release\GraphDSPluginManager.dll" />
+                            <File Id="GraphDSREST.dll" Name="GraphDSREST.dll" Source="..\Applications\sonesGraphDB\bin\Release\GraphDSREST.dll" />
+                            <File Id="GraphDSServer.dll" Name="GraphDSServer.dll" Source="..\Applications\sonesGraphDB\bin\Release\GraphDSServer.dll" />
+                            <File Id="HTML_IO.dll" Name="HTML_IO.dll" Source="..\Applications\sonesGraphDB\bin\Release\HTML_IO.dll" />
+                            <File Id="IDrainPipe.dll" Name="IDrainPipe.dll" Source="..\Applications\sonesGraphDB\bin\Release\IDrainPipe.dll" />
+                            <File Id="IGraphDB.dll" Name="IGraphDB.dll" Source="..\Applications\sonesGraphDB\bin\Release\IGraphDB.dll" />
+                            <File Id="IGraphDBExport.dll" Name="IGraphDBExport.dll" Source="..\Applications\sonesGraphDB\bin\Release\IGraphDBExport.dll" />
+                            <File Id="IGraphDBImport.dll" Name="IGraphDBImport.dll" Source="..\Applications\sonesGraphDB\bin\Release\IGraphDBImport.dll" />
+                            <File Id="IGraphDS.dll" Name="IGraphDS.dll" Source="..\Applications\sonesGraphDB\bin\Release\IGraphDS.dll" />
+                            <File Id="IGraphDSServer.dll" Name="IGraphDSServer.dll" Source="..\Applications\sonesGraphDB\bin\Release\IGraphDSServer.dll" />
+                            <File Id="IGraphFS.dll" Name="IGraphFS.dll" Source="..\Applications\sonesGraphDB\bin\Release\IGraphFS.dll" />
+                            <File Id="IGraphQL.dll" Name="IGraphQL.dll" Source="..\Applications\sonesGraphDB\bin\Release\IGraphQL.dll" />
+                            <File Id="InMemoryNonRevisioned.dll" Name="InMemoryNonRevisioned.dll" Source="..\Applications\sonesGraphDB\bin\Release\InMemoryNonRevisioned.dll" />
+                            <File Id="IOInterface.dll" Name="IOInterface.dll" Source="..\Applications\sonesGraphDB\bin\Release\IOInterface.dll" />
+                            <File Id="IPluginable.dll" Name="IPluginable.dll" Source="..\Applications\sonesGraphDB\bin\Release\IPluginable.dll" />
+                            <File Id="Irony.dll" Name="Irony.dll" Source="..\Applications\sonesGraphDB\bin\Release\Irony.dll" />
+                            <File Id="ISonesGQLAggregate.dll" Name="ISonesGQLAggregate.dll" Source="..\Applications\sonesGraphDB\bin\Release\ISonesGQLAggregate.dll" />
+                            <File Id="ISonesGQLFunction.dll" Name="ISonesGQLFunction.dll" Source="..\Applications\sonesGraphDB\bin\Release\ISonesGQLFunction.dll" />
+                            <File Id="ISonesIndex.dll" Name="ISonesIndex.dll" Source="..\Applications\sonesGraphDB\bin\Release\ISonesIndex.dll" />
+                            <File Id="ISonesRESTService.dll" Name="ISonesRESTService.dll" Source="..\Applications\sonesGraphDB\bin\Release\ISonesRESTService.dll" />
+                            <File Id="JSON_IO.dll" Name="JSON_IO.dll" Source="..\Applications\sonesGraphDB\bin\Release\JSON_IO.dll" />
+                            <File Id="LanguageExtensions.dll" Name="LanguageExtensions.dll" Source="..\Applications\sonesGraphDB\bin\Release\LanguageExtensions.dll" />
+                            <File Id="Networking.dll" Name="Networking.dll" Source="..\Applications\sonesGraphDB\bin\Release\Networking.dll" />
+                            <File Id="NewFastSerializer.dll" Name="NewFastSerializer.dll" Source="..\Applications\sonesGraphDB\bin\Release\NewFastSerializer.dll" />
+                            <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="..\Applications\sonesGraphDB\bin\Release\Newtonsoft.Json.dll" />
+                            <File Id="PluginDefinition.dll" Name="PluginDefinition.dll" Source="..\Applications\sonesGraphDB\bin\Release\PluginDefinition.dll" />
+                            <File Id="PropertyHyperGraph.dll" Name="PropertyHyperGraph.dll" Source="..\Applications\sonesGraphDB\bin\Release\PropertyHyperGraph.dll" />
+                            <File Id="QueryResult.dll" Name="QueryResult.dll" Source="..\Applications\sonesGraphDB\bin\Release\QueryResult.dll" />
+                            <File Id="RESTServicePluginManager.dll" Name="RESTServicePluginManager.dll" Source="..\Applications\sonesGraphDB\bin\Release\RESTServicePluginManager.dll" />
+                            <File Id="Settings.dll" Name="Settings.dll" Source="..\Applications\sonesGraphDB\bin\Release\Settings.dll" />
+                            <File Id="SonesGraphDB.dll" Name="SonesGraphDB.dll" Source="..\Applications\sonesGraphDB\bin\Release\SonesGraphDB.dll" />
+                            <File Id="SonesGraphQueryLanguage.dll" Name="SonesGraphQueryLanguage.dll" Source="..\Applications\sonesGraphDB\bin\Release\SonesGraphQueryLanguage.dll" />
+                            <File Id="SonesIndices.dll" Name="SonesIndices.dll" Source="..\Applications\sonesGraphDB\bin\Release\SonesIndices.dll" />
+                            <File Id="TEXT_IO.dll" Name="TEXT_IO.dll" Source="..\Applications\sonesGraphDB\bin\Release\TEXT_IO.dll" />
+                            <File Id="VersionedPluginManager.dll" Name="VersionedPluginManager.dll" Source="..\Applications\sonesGraphDB\bin\Release\VersionedPluginManager.dll" />
+                            <File Id="XML_IO.dll" Name="XML_IO.dll" Source="..\Applications\sonesGraphDB\bin\Release\XML_IO.dll" />
+                            <File Id="sonesGraphDBStarter.exe.config" Name="sonesGraphDBStarter.exe.config" Source="..\Applications\sonesGraphDB\bin\Release\sonesGraphDBStarter.exe.config" />
+                            <File Id="Newtonsoft.Json.xml" Name="Newtonsoft.Json.xml" Source="..\Applications\sonesGraphDB\bin\Release\Newtonsoft.Json.xml" />
+                            <File Id="QueryResultSchema.xsd" Name="QueryResultSchema.xsd" Source="..\Applications\sonesGraphDB\bin\Release\QueryResultSchema.xsd" />
+                        </Component>
+                        <Directory Id="links" Name="links">
+                            <Component Id="LinksComponent" Guid="24485085-1E4C-46C5-8248-8A10DCBA9D7B" DiskId="1">
+                                <File Id="Webshell.txt" Name="Webshell.url" Source="links\Webshell.txt">
+                                    <Shortcut Id="webshellLink" Name="Intern" Directory="ProgramMenuDir" LongName="Sones Webshell" WorkingDirectory="INSTALLDIR" Icon="DesktopIcon.exe" />
+                                </File>
+                                <RegistryKey Key="Software\Sones\Uninstall\Menu" Root="HKCU">
+                                    <RegistryValue Type="string" Value="ProgramMenuEntry" KeyPath="yes" />
+                                </RegistryKey>
+                            </Component>
+                        </Directory>
+                        <Directory Id="license" Name="license">
+                            <Component Id="license" Guid="53681D66-A51E-4A20-A9BF-F6C8FC2C0EDE" DiskId="1">
+                                <File Id="AGPL_v3.txt" Name="AGPL_v3.txt" Source="license\AGPL_v3.txt" />
+                            </Component>
+                        </Directory>
+                        <Directory Id="doc" DiskId="1">
+                            <Component Id="Documentation" Guid="03372F12-96FF-4111-96C1-9D0D8EE971EC" DiskId="1">
+                                <File Id="ReadMe.txt" Name="ReadMe.txt" Source="doc\ReadMe.txt" />
+                            </Component>
+                        </Directory>
+                    </Directory>
+                </Directory>
+            </Directory>
+            <Directory Id="ProgramMenuFolder" Name="PMenu" DiskId="1">
+                <Directory Id="ProgramMenuDir" Name="Sones">
+                    <Component Id="ProgramMenuDirComponent" Guid="C7A4E3F7-E24B-44E2-B286-FEBFA3E259D2">
+                        <RegistryKey Root="HKCU" Key="Software\Sones\Uninstall\Menu">
+                            <RegistryValue Value="ProgramMenuEntry" Type="string" KeyPath="yes" />
+                        </RegistryKey>
+                        <RemoveFolder Id="RemoveProgramMenuDir" On="uninstall" Directory="ProgramMenuDir" />
+                    </Component>
+                </Directory>
+            </Directory>
+            <Directory Id="DesktopFolder" Name="Desktop" DiskId="1">
+                <Component Id="DesktopShortcutComponent" Guid="ED4F3586-70DE-40E6-B656-E552B39C8725">
+                    <RegistryKey Key="Software\Sones\Uninstall\Desktop" Root="HKCU">
+                        <RegistryValue KeyPath="yes" Type="string" Value="DesktopMenuEntry" />
+                    </RegistryKey>
+                    <RemoveFile Id="RemoveDesktopShortcut" Name="GraphDB Server.lnk" On="uninstall" Directory="DesktopFolder" />
+                </Component>
+            </Directory>
+        </Directory>
+        <Feature Id="SonesGraphDB" Level="1" Title="Sones GraphDB" Description="The Sones GraphDB Server" Display="expand" ConfigurableDirectory="SONESSETUP" Absent="disallow">
+            <ComponentRef Id="sonesGraphDBStarter.exe" />
+            <ComponentRef Id="Libraries" />
+            <ComponentRef Id="license" />
+        </Feature>
+        <Feature Id="ProgramMenuAndShortcuts" Level="1" Absent="disallow" Description="The program menu entries and desktop shortcuts" Display="expand" Title="Program menu entries and desktop shortcuts">
+            <ComponentRef Id="LinksComponent" />
+            <ComponentRef Id="ProgramMenuDirComponent" />
+            <ComponentRef Id="DesktopShortcutComponent" />
+        </Feature>
+        <Feature Id="Documentation" Level="1" Description="The ReadMe.txt file" Absent="disallow" Display="expand" Title="Documentation">
+            <ComponentRef Id="Documentation" />
+        </Feature>
+        <UIRef Id="WixUI_Mondo" />
+        <UIRef Id="WixUI_ErrorProgressText" />
+        <Icon Id="DesktopIcon.exe" SourceFile="pics\sones.ico" />
+        <Icon Id="DocuIcon.exe" SourceFile="pics\docu.ico" />
+        <WixVariable Id="WixUILicenseRtf" Value="license\License.rtf" />
+        <WixVariable Id="WixUIBannerBmp" Value="pics\bannrbmp.bmp" />
+        <WixVariable Id="WixUIDialogBmp" Value="pics\dlgbmp.bmp" />
+    </Product>
+</Wix>
