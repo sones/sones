@@ -68,7 +68,7 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             #region get type for name
 
-            _TypeName = GetTypeReferenceDefinitions(context).First().TypeName;
+            _TypeName = ((AstNode)parseNode.ChildNodes[2].AstNode).AsString;
 
             #endregion
 

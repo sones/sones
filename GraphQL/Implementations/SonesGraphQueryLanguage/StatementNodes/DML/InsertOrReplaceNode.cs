@@ -68,7 +68,7 @@ namespace sones.GraphQL.StatementNodes.DML
                 //get type
                 if (parseNode.ChildNodes[1] != null && parseNode.ChildNodes[1].AstNode != null)
                 {
-                    _Type = ((ATypeNode)(parseNode.ChildNodes[1].AstNode)).ReferenceAndType.TypeName;
+                    _Type = ((AstNode)(parseNode.ChildNodes[1].AstNode)).AsString;
                 }
                 else
                 {

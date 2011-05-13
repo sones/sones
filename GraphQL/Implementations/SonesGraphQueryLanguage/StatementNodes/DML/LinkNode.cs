@@ -45,7 +45,7 @@ namespace sones.GraphQL.StatementNodes.DML
     {
         #region Data
 
-        private TypeReferenceDefinition                     _SourceType;
+        private String                                      _SourceType;
         private TupleDefinition                             _Sources;
         private HashSet<AAttributeAssignOrUpdateOrRemove>   _Targets;
         private BinaryExpressionDefinition                  _Condition;
@@ -69,10 +69,10 @@ namespace sones.GraphQL.StatementNodes.DML
             _Targets = new HashSet<AAttributeAssignOrUpdateOrRemove>();
 
 
-            #region FROM Sources
+            #region FROM Sources            
 
-            var typeNode = (myParseTreeNode.ChildNodes[1].AstNode as ATypeNode);
-            _SourceType = typeNode.ReferenceAndType;
+            _SourceType = ((AstNode)myParseTreeNode.ChildNodes[1].AstNode).AsString;
+            var typeNode = _SourceType;
 
             _Sources = (myParseTreeNode.ChildNodes[2].AstNode as TupleNode).TupleDefinition;
 
@@ -117,7 +117,7 @@ namespace sones.GraphQL.StatementNodes.DML
             // Semantic Web Yoda-style...
             if (myParseTreeNode.ChildNodes[5].Token.KeyTerm == _GraphQLGrammar.S_TO)
             {
-                typeNode = (myParseTreeNode.ChildNodes[6].ChildNodes[0].AstNode as ATypeNode);
+                typeNode = ((AstNode)(myParseTreeNode.ChildNodes[6].ChildNodes[0].AstNode)).AsString;
                 tupleDef = (myParseTreeNode.ChildNodes[6].ChildNodes[1].AstNode as TupleNode).TupleDefinition;
             }
 
@@ -125,7 +125,7 @@ namespace sones.GraphQL.StatementNodes.DML
             {
                 if (myParseTreeNode.ChildNodes[3].Token.KeyTerm == _GraphQLGrammar.S_TO)
                 {
-                    typeNode = (myParseTreeNode.ChildNodes[4].ChildNodes[0].AstNode as ATypeNode);
+                    typeNode = ((AstNode)myParseTreeNode.ChildNodes[4].ChildNodes[0].AstNode).AsString;
                     tupleDef = (myParseTreeNode.ChildNodes[4].ChildNodes[1].AstNode as TupleNode).TupleDefinition;
                 }
             }
@@ -133,15 +133,13 @@ namespace sones.GraphQL.StatementNodes.DML
             #endregion
 
             #region Processing...
-
-            var _TargetType        = typeNode.ReferenceAndType;
+                        
             var tupleDefTargetType = new TupleDefinition(tupleDef.KindOfTuple);
 
             foreach (var item in tupleDef.TupleElements)
-            {
-
-                var attrName = _TargetType.TypeName + SonesGQLConstants.EdgeTraversalDelimiterSymbol + ((IDChainDefinition)((BinaryExpressionDefinition)item.Value).Left).ContentString;
-                var leftNode = new IDChainDefinition(attrName, new List<TypeReferenceDefinition>() { _TargetType });
+            {                
+                var attrName = typeNode + SonesGQLConstants.EdgeTraversalDelimiterSymbol + ((IDChainDefinition)((BinaryExpressionDefinition)item.Value).Left).ContentString;
+                var leftNode = new IDChainDefinition(attrName, new List<TypeReferenceDefinition>() { new TypeReferenceDefinition(typeNode, typeNode) });
                 leftNode.AddPart(new ChainPartTypeOrAttributeDefinition(((IDChainDefinition)((BinaryExpressionDefinition)item.Value).Left).ContentString));
                 var rightNode = ((BinaryExpressionDefinition)item.Value).Right;
 
@@ -186,7 +184,7 @@ namespace sones.GraphQL.StatementNodes.DML
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
                 mySecurityToken,
                 myTransactionToken,
-                new RequestGetVertexType(_SourceType.TypeName),
+                new RequestGetVertexType(_SourceType),
                 (stats, vtype) => vtype);
 
             //validate
@@ -224,7 +222,7 @@ namespace sones.GraphQL.StatementNodes.DML
         private void ProcessUpdate(IEnumerable<long> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             UpdateNode update = new UpdateNode();
-            update.Init(_SourceType.TypeName, _Targets, myVertexIDs);
+            update.Init(_SourceType, _Targets, myVertexIDs);
 
             update.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }

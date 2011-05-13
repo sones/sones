@@ -1231,7 +1231,7 @@ namespace sones.GraphQL
 
             #region INSERT
 
-            InsertStmt.Rule = S_INSERT + S_INTO + VertexTypeWrapper + insertValuesOpt;
+            InsertStmt.Rule = S_INSERT + S_INTO + Id_simple + insertValuesOpt;
 
             insertValuesOpt.Rule = Empty
                                     | S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT;
@@ -1357,19 +1357,19 @@ namespace sones.GraphQL
 
             #region INSERTORUPDATE
 
-            insertorupdateStmt.Rule = S_INSERTORUPDATE + VertexTypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + whereClauseOpt;
+            insertorupdateStmt.Rule = S_INSERTORUPDATE + Id_simple + S_VALUES + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + whereClauseOpt;
 
             #endregion
 
             #region INSERTORREPLACE
 
-            insertorreplaceStmt.Rule = S_INSERTORREPLACE + VertexTypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + whereClauseOpt;
+            insertorreplaceStmt.Rule = S_INSERTORREPLACE + Id_simple + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + whereClauseOpt;
 
             #endregion
 
             #region REPLACE
 
-            replaceStmt.Rule = S_REPLACE + VertexTypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + S_WHERE + BNF_Expression;
+            replaceStmt.Rule = S_REPLACE + Id_simple + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + S_WHERE + BNF_Expression;
 
             #endregion
 
@@ -1445,8 +1445,8 @@ namespace sones.GraphQL
             #region LINK
 
             // Semantic Web Yoda-Style and human language style
-            linkStmt.Rule = S_LINK + VertexTypeWrapper + CollectionTuple + S_VIA + Id + S_TO + LinkCondition |
-                            S_LINK + VertexTypeWrapper + CollectionTuple + S_TO + LinkCondition + S_VIA + Id;
+            linkStmt.Rule = S_LINK + Id_simple + CollectionTuple + S_VIA + Id + S_TO + LinkCondition |
+                            S_LINK + Id_simple + CollectionTuple + S_TO + LinkCondition + S_VIA + Id;
 
             LinkCondition.Rule = VertexTypeWrapper + CollectionTuple;
 
@@ -1454,8 +1454,8 @@ namespace sones.GraphQL
 
             #region UNLINK
 
-            unlinkStmt.Rule = S_UNLINK + VertexTypeWrapper + CollectionTuple + S_VIA + Id + S_FROM + LinkCondition |
-                              S_UNLINK + VertexTypeWrapper + CollectionTuple + S_FROM + LinkCondition + S_VIA + Id;
+            unlinkStmt.Rule = S_UNLINK + Id_simple + CollectionTuple + S_VIA + Id + S_FROM + LinkCondition |
+                              S_UNLINK + Id_simple + CollectionTuple + S_FROM + LinkCondition + S_VIA + Id;
 
             #endregion
 

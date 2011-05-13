@@ -44,7 +44,7 @@ namespace sones.GraphQL.StatementNodes.DML
     {
         #region data
 
-        private TypeReferenceDefinition                     _SourceType;
+        private String                                      _SourceType;
         private TupleDefinition                             _Targets;
         private HashSet<AAttributeAssignOrUpdateOrRemove>   _Sources;
         private BinaryExpressionDefinition                  _Condition;
@@ -82,7 +82,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
             #region sources
 
-            var typeNode = (parseNode.ChildNodes[1].AstNode as ATypeNode);
+            var typeNode = ((AstNode)parseNode.ChildNodes[1].AstNode).AsString;
 
             var tupleDef = (parseNode.ChildNodes[2].AstNode as TupleNode).TupleDefinition;
 
@@ -90,8 +90,8 @@ namespace sones.GraphQL.StatementNodes.DML
 
             foreach (var item in tupleDef.TupleElements)
             {
-                var attrName = typeNode.ReferenceAndType.TypeName + SonesGQLConstants.EdgeTraversalDelimiterSymbol + ((IDChainDefinition)((BinaryExpressionDefinition)item.Value).Left).ContentString;
-                var leftNode = new IDChainDefinition(attrName, new List<TypeReferenceDefinition>() { typeNode.ReferenceAndType });
+                var attrName = typeNode + SonesGQLConstants.EdgeTraversalDelimiterSymbol + ((IDChainDefinition)((BinaryExpressionDefinition)item.Value).Left).ContentString;
+                var leftNode = new IDChainDefinition(attrName, new List<TypeReferenceDefinition>() { new TypeReferenceDefinition(typeNode, typeNode) });
                 leftNode.AddPart(new ChainPartTypeOrAttributeDefinition(((IDChainDefinition)((BinaryExpressionDefinition)item.Value).Left).ContentString));
                 var rightNode = ((BinaryExpressionDefinition)item.Value).Right;
 
@@ -108,16 +108,16 @@ namespace sones.GraphQL.StatementNodes.DML
 
             if (parseNode.ChildNodes[6].ChildNodes[0].AstNode is ATypeNode)  //Semantic Web Yoda style
             {
-                typeNode = (parseNode.ChildNodes[6].ChildNodes[0].AstNode as ATypeNode);
+                typeNode = ((AstNode)parseNode.ChildNodes[6].ChildNodes[0].AstNode).AsString;
                 _Targets = (parseNode.ChildNodes[6].ChildNodes[1].AstNode as TupleNode).TupleDefinition;
             }
             else  //Human language style
             {
-                typeNode = (parseNode.ChildNodes[4].ChildNodes[0].AstNode as ATypeNode);
+                typeNode = ((AstNode)parseNode.ChildNodes[4].ChildNodes[0].AstNode).AsString;
                 _Targets = (parseNode.ChildNodes[4].ChildNodes[1].AstNode as TupleNode).TupleDefinition;
             }
 
-            _SourceType = typeNode.ReferenceAndType;
+            _SourceType = typeNode;
 
             if (_Targets.Count() > 1)
             {
@@ -158,7 +158,7 @@ namespace sones.GraphQL.StatementNodes.DML
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
                 mySecurityToken,
                 myTransactionToken,
-                new RequestGetVertexType(_SourceType.TypeName),
+                new RequestGetVertexType(_SourceType),
                 (stats, vtype) => vtype);
 
             //validate
@@ -196,7 +196,7 @@ namespace sones.GraphQL.StatementNodes.DML
         private void ProcessUpdate(IEnumerable<long> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             UpdateNode update = new UpdateNode();
-            update.Init(_SourceType.TypeName, _Sources, myVertexIDs);
+            update.Init(_SourceType, _Sources, myVertexIDs);
 
             update.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
