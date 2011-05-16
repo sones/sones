@@ -179,3 +179,148 @@
         }
 
     };
+
+ //extend Webshell
+    $(document).ready(function () {
+        //history module
+        goosh.module.history = function () {
+
+            this.name = "history";
+            this.aliases = new Array("history");
+            this.help = "show last commands";
+
+            this.call = function (args) {
+                var out = "";
+                if (goosh.keyboard.hist.length > 0) {
+                    out = "<ol class=\"historylist\">";
+                    for (i = 0; i < goosh.keyboard.hist.length; i++) {
+                        out += "<li>" + goosh.keyboard.hist[i] + "</li>";
+                    }
+                    out += "</ol>";
+                }
+
+                goosh.gui.outln(out);
+            };
+        };
+
+        goosh.modules.register("history");
+        //eo history module
+
+
+        //the GUI is waiting for an AJAX-Response
+        goosh.gui.waiting = false;
+        goosh.gui.setWaiting = function (waitingFlag) {
+            goosh.gui.waiting = (waitingFlag == true) ? true : false;
+            if (goosh.gui.waiting) {
+                $("<img src=\"/resources/WebShell/waitingimg.gif\" alt=\"processing...\" class=\"waitingimg\" />").appendTo("#prompt");
+            } else {
+                $(".waitingimg").remove();
+            }
+        };
+
+
+        //update goosh-configuration
+        goosh.config.user = "GraphDB";
+        goosh.config.host = jQuery.url.attr("host");
+        goosh.config.mode = "gql";
+        goosh.config.webservice_protocol = jQuery.url.attr("protocol");
+        goosh.config.webservice_host = jQuery.url.attr("host");
+        goosh.config.webservice_path = jQuery.url.attr("directory").substring(0, jQuery.url.attr("directory").lastIndexOf('/'));
+        goosh.config.webservice_port = jQuery.url.attr("port");
+        goosh.config.webservice_default_format = "json";
+        goosh.config.webservice_formats = new Array("xml", "json", "text", "gexf");
+
+        //sones.licence
+        goosh.module.license = function () {
+
+            this.name = "license";
+            this.aliases = new Array("license", "l");
+
+            this.help = "displays license information";
+
+            this.call = function (args) {
+
+                var out = "";
+                out += "<pre>";
+                out += "Copyright (c) 2010, sones GmbH\n";
+                out += "All rights reserved.\n";
+                out += "\n";
+                out += "New BSD License\n";
+                out += "\n";
+                out += "Redistribution and use in source and binary forms, with or without\n";
+                out += "modification, are permitted provided that the following conditions are met:\n";
+                out += "    * Redistributions of source code must retain the above copyright\n";
+                out += "      notice, this list of conditions and the following disclaimer.\n";
+                out += "    * Redistributions in binary form must reproduce the above copyright\n";
+                out += "      notice, this list of conditions and the following disclaimer in the\n";
+                out += "      documentation and/or other materials provided with the distribution.\n";
+                out += "    * Neither the name of the sones GmbH nor the\n";
+                out += "      names of its contributors may be used to endorse or promote products\n";
+                out += "      derived from this software without specific prior written permission.\n";
+                out += "\n";
+                out += "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n";
+                out += "ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n";
+                out += "WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n";
+                out += "DISCLAIMED. IN NO EVENT SHALL sones GmbH BE LIABLE FOR ANY\n";
+                out += "DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n";
+                out += "(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n";
+                out += "LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n";
+                out += "ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n";
+                out += "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n";
+                out += "SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n";
+                out += "\n";
+                out += "\n";
+                out += "jQuery JavaScript Library - Copyright (c) 2009 John Resig\n";
+                out += "Dual licensed under the MIT and GPL licenses.\n";
+                out += "http://docs.jquery.com/License\n";
+                out += "\n";
+                out += "goosh is written by Stefan Grothkopp <grothkopp@gmail.com>\n";
+                out += "goosh is open source under the Artistic License/GPL.\n";
+                out += "http://www.goosh.org\n";
+                out += "</pre>";
+                goosh.gui.outln(out);
+            }
+        }
+
+        goosh.modules.register("license");
+        //eo sones.licence
+
+
+        //GQL handler
+        goosh.module.gql = function () {
+            this.name = "gql";
+            this.aliases = new Array("gql", "g");
+            this.help = "switch to gql mode";
+
+            this.call = function (args) {
+                if (goosh.config.mode != "gql") {
+                    goosh.config.mode = "gql";
+                    goosh.gui.updateprompt();
+                } else {
+                    //result is XML
+                    var result = doQuery(args);
+                    if (result != undefined) {
+                        if (goosh.config.webservice_default_format == 'xml') {
+                            printXMLResult(result.firstChild);
+                        } else if (goosh.config.webservice_default_format == 'gexf') {
+                            printXMLResult(result.firstChild);
+                        }
+                        else if (goosh.config.webservice_default_format == 'json') { //json
+                            /*
+                            * json is currently displayed as one line string
+                            * String can be parsed to JSON Object via eval()                    
+                            */
+                            //goosh.gui.out(printJSONResult(eval('(' + result + ')')));                    
+                            goosh.gui.out(result);
+                        } else { //text
+                            goosh.gui.out(result);
+                        }
+                    } else { //result is undefined
+                        goosh.gui.error("Internal");
+                    }
+                }
+            }
+        }
+        goosh.modules.register("gql");
+        //eo GQL handler
+    });
