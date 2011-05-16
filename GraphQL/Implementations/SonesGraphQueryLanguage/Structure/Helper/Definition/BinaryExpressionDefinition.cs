@@ -126,7 +126,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
                 if (IsEncapsulatedBinaryExpression(_Left as TupleDefinition))
                 {
-                    _Left = TryGetBinexpression((_Left as TupleDefinition).First().Value, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken);
+                    _Left = TryGetBinexpression((_Left as TupleDefinition).First().Value, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, types);
                     TypeOfBinaryExpression = TypesOfBinaryExpression.LeftComplex;
                 }
                 else
@@ -151,7 +151,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
             {
                 #region try binexpr
 
-                _Left = TryGetBinexpression(_Left, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken);
+                _Left = TryGetBinexpression(_Left, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, types);
                 TypeOfBinaryExpression = TypesOfBinaryExpression.LeftComplex;
 
                 #endregion
@@ -192,7 +192,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
                 if (IsEncapsulatedBinaryExpression(_Right as TupleDefinition))
                 {
-                    _Right = TryGetBinexpression((_Right as TupleDefinition).First().Value, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken);
+                    _Right = TryGetBinexpression((_Right as TupleDefinition).First().Value, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, types);
                     if (TypeOfBinaryExpression == TypesOfBinaryExpression.LeftComplex)
                     {
                         TypeOfBinaryExpression = TypesOfBinaryExpression.Complex;
@@ -221,7 +221,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
             {
                 #region try binexpr
 
-                _Right = TryGetBinexpression(_Right, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken);
+                _Right = TryGetBinexpression(_Right, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, types);
                 if (TypeOfBinaryExpression == TypesOfBinaryExpression.LeftComplex)
                 {
                     TypeOfBinaryExpression = TypesOfBinaryExpression.Complex;
@@ -355,12 +355,12 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
             }
         }
 
-        private AExpressionDefinition TryGetBinexpression(AExpressionDefinition expression, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private AExpressionDefinition TryGetBinexpression(AExpressionDefinition expression, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params IVertexType[] types)
         {
 
             if (expression is BinaryExpressionDefinition)
             {
-                (expression as BinaryExpressionDefinition).Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken);
+                (expression as BinaryExpressionDefinition).Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, types);
                 return expression as BinaryExpressionDefinition;
             }
             else
