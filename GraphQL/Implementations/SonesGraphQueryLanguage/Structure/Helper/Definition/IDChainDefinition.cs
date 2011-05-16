@@ -799,7 +799,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
                         #region The previous attribute seems to be an reference attribute
 
-                        _LastType = GetDBTypeByAttribute(_LastAttribute);
+                        _LastType = GetTargetVertexTypeByAttribute(_LastAttribute);
 
                         typeOrAttr.DBType = _LastType;
                         typeOrAttr.TypeAttribute = typeOrAttr.DBType.GetAttributeDefinition(typeOrAttr.TypeOrAttributeName);
@@ -1055,7 +1055,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
             LevelKey = new LevelKey(Edges, myGraphDB, mySecurityToken, myTransactionToken);
         }
 
-        private IVertexType GetDBTypeByAttribute(IAttributeDefinition _LastAttribute)
+        private IVertexType GetTargetVertexTypeByAttribute(IAttributeDefinition _LastAttribute)
         {
             switch (_LastAttribute.Kind)
             {
@@ -1067,13 +1067,12 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
                 case AttributeType.OutgoingEdge:
                     
                     var outgoingEdgeAttribute = (IOutgoingEdgeDefinition)_LastAttribute;
-                    return outgoingEdgeAttribute.SourceVertexType;
+                    return outgoingEdgeAttribute.TargetVertexType;
 
                 case AttributeType.Property:
                 default:
 
                     return null;
-                    break;
             }
         }
 

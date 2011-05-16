@@ -67,19 +67,19 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         #region IExpressionLevel Members
 
-        public void AddNodeAndBackwardEdge(LevelKey myPath, Int64 aDBInt64, EdgeKey backwardDirection, Int64 backwardDestination, IComparable EdgeWeight, IComparable NodeWeight)
+        public void AddNodeAndBackwardEdge(LevelKey myPath, IVertex aVertex, EdgeKey backwardDirection, Int64 backwardDestination, IComparable EdgeWeight, IComparable NodeWeight)
         {
             lock (_Content)
             {
                 if (_Content.ContainsKey(myPath))
                 {
                     //the level exists
-                    if (_Content[myPath].Nodes.ContainsKey(aDBInt64))
+                    if (_Content[myPath].Nodes.ContainsKey(aVertex.VertexID))
                     {
 
 
                         //Node exists
-                        _Content[myPath].Nodes[aDBInt64].AddBackwardEdge(backwardDirection, backwardDestination, EdgeWeight);
+                        _Content[myPath].Nodes[aVertex.VertexID].AddBackwardEdge(backwardDirection, backwardDestination, EdgeWeight);
 
 
                     }
@@ -87,8 +87,8 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                     {
 
                         //Node does not exist
-                        _Content[myPath].Nodes.Add(aDBInt64, new ExpressionNode(aDBInt64, NodeWeight));
-                        _Content[myPath].Nodes[aDBInt64].AddBackwardEdge(backwardDirection, backwardDestination, EdgeWeight);
+                        _Content[myPath].Nodes.Add(aVertex.VertexID, new ExpressionNode(aVertex, NodeWeight));
+                        _Content[myPath].Nodes[aVertex.VertexID].AddBackwardEdge(backwardDirection, backwardDestination, EdgeWeight);
 
                     }
                 }
@@ -97,47 +97,8 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                     HashSet<IExpressionEdge> backwardEdges = new HashSet<IExpressionEdge>() { new ExpressionEdge(backwardDestination, EdgeWeight, backwardDirection) };
 
                     _Content.Add(myPath, new ExpressionLevelEntry(myPath));
-                    _Content[myPath].Nodes.Add(aDBInt64, new ExpressionNode(aDBInt64, NodeWeight));
-                    _Content[myPath].Nodes[aDBInt64].AddBackwardEdge(backwardDirection, backwardDestination, EdgeWeight);
-
-                }
-
-            }
-        }
-
-        public void AddNodeAndBackwardEdge(LevelKey myPath, IVertex aIVertex, EdgeKey backwardDirection, Int64 backwardDestination, IComparable EdgeWeight, IComparable NodeWeight)
-        {
-            lock (_Content)
-            {
-                if (_Content.ContainsKey(myPath))
-                {
-                    //the level exists
-                    if (_Content[myPath].Nodes.ContainsKey(aIVertex.VertexID))
-                    {
-
-
-                        //Node exists
-                        _Content[myPath].Nodes[aIVertex.VertexID].AddBackwardEdge(backwardDirection, backwardDestination, EdgeWeight);
-
-
-                    }
-                    else
-                    {
-
-                        //Node does not exist
-                        _Content[myPath].Nodes.Add(aIVertex.VertexID, new ExpressionNode(aIVertex, NodeWeight));
-                        _Content[myPath].Nodes[aIVertex.VertexID].AddBackwardEdge(backwardDirection, backwardDestination, EdgeWeight);
-
-                    }
-                }
-                else
-                {
-                    HashSet<IExpressionEdge> backwardEdges = new HashSet<IExpressionEdge>() { new ExpressionEdge(backwardDestination, EdgeWeight, backwardDirection) };
-
-
-                    _Content.Add(myPath, new ExpressionLevelEntry(myPath));
-                    _Content[myPath].Nodes.Add(aIVertex.VertexID, new ExpressionNode(aIVertex, NodeWeight));
-                    _Content[myPath].Nodes[aIVertex.VertexID].AddBackwardEdge(backwardDirection, backwardDestination, EdgeWeight);
+                    _Content[myPath].Nodes.Add(aVertex.VertexID, new ExpressionNode(aVertex, NodeWeight));
+                    _Content[myPath].Nodes[aVertex.VertexID].AddBackwardEdge(backwardDirection, backwardDestination, EdgeWeight);
 
                 }
 
@@ -204,7 +165,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             {
                 if (_Content.ContainsKey(levelKey))
                 {
-                    var tempInt64 = expressionNode.GetVertexID();
+                    var tempInt64 = expressionNode.GetIVertex().VertexID;
 
                     if (_Content[levelKey].Nodes.ContainsKey(tempInt64))
                     {
@@ -227,7 +188,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                 else
                 {
                     _Content.Add(levelKey, new ExpressionLevelEntry(levelKey));
-                    _Content[levelKey].Nodes.Add(expressionNode.GetVertexID(), expressionNode);
+                    _Content[levelKey].Nodes.Add(expressionNode.GetIVertex().VertexID, expressionNode);
                 }
             }
         }

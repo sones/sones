@@ -82,17 +82,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         void AddNodeAndBackwardEdge(LevelKey myPath, IVertex myDBObject, EdgeKey myBackwardDirection, Int64 myBackwardDestination, IComparable myEdgeWeight, IComparable myNodeWeight);
 
         /// <summary>
-        /// Adds a node and a BackwardEdge
-        /// </summary>
-        /// <param name="myPath">The LevelKey of the node</param>
-        /// <param name="myVertexID">The ObjectUUID for the new node</param>
-        /// <param name="myBackwardDirection">The backward direction of the edge</param>
-        /// <param name="myBackwardDestination">The backward destination of the edge</param>
-        /// <param name="myEdgeWeight">The weight of the backward edge</param>
-        /// <param name="myNodeWeight">The weight of the node</param>
-        void AddNodeAndBackwardEdge(LevelKey myPath, Int64 myVertexID, EdgeKey myBackwardDirection, Int64 myBackwardDestination, IComparable myEdgeWeight, IComparable myNodeWeight);
-
-        /// <summary>
         /// Get all ExpressionNodes of this level
         /// </summary>
         /// <param name="myLevelKey">The Level</param>

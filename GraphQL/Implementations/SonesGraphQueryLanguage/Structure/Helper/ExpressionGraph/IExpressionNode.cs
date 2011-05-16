@@ -54,16 +54,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         #region IVertex
 
         /// <summary>
-        /// Return the ObjectUUID of the node
-        /// </summary>
-        /// <returns>An ObjectUUID</returns>
-        Int64 GetVertexID();
-
-        /// <summary>
         /// Returns the IVertex of the node
         /// </summary>
         /// <returns>A IVertex</returns>
-        IVertex GetIVertex(IGraphDB myGraphDB, Int64 myVertexTypeID, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        IVertex GetIVertex();
 
         #endregion
 

@@ -648,13 +648,13 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <summary>
         /// This is the main function. It will check all selections on this type and will create the readouts
         /// </summary>
-        private IEnumerable<IVertexView> ExamineVertex(long myResolutionDepth, String myReference, IVertexType myReferencedDBType, EdgeList myLevelKey, bool myUsingGraph, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private IEnumerable<IVertexView> ExamineVertex(long myResolutionDepth, String myReference, IVertexType myRelatedVertexType, EdgeList myLevelKey, bool myUsingGraph, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
 
             #region Get all selections and aggregates for this reference, type and level
 
-            var _Selections = getAttributeSelections(myReference, myReferencedDBType, myLevelKey);
-            var aggregates = getAttributeAggregates(myReference, myReferencedDBType, myLevelKey);
+            var _Selections = getAttributeSelections(myReference, myLevelKey);
+            var aggregates = getAttributeAggregates(myReference, myLevelKey);
 
             #endregion
 
@@ -677,7 +677,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                         _Selection.Alias, 
                         new HyperEdgeView(
                             null,
-                            ExamineVertex(myResolutionDepth, myReference, myReferencedDBType, myLevelKey + edgeKey, myUsingGraph, mySecurityToken, myTransactionToken)
+                            ExamineVertex(myResolutionDepth, myReference, _Selection.RelatedIDChainDefinition.LastType, myLevelKey + edgeKey, myUsingGraph, mySecurityToken, myTransactionToken)
                             .Select(aVertex =>
                                         {
                                             return new SingleEdgeView(null, aVertex);
@@ -708,7 +708,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                     dbos = _graphdb.GetVertices<IEnumerable<IVertex>>(
                         mySecurityToken,
                         myTransactionToken,
-                        new RequestGetVertices(myLevelKey.Edges[0].VertexTypeID),
+                        new RequestGetVertices(myRelatedVertexType.ID),
                         (stats, vertices) => vertices);
                 }
 
@@ -716,7 +716,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 if (aggregates.IsNotNullOrEmpty())
                 {
-                    foreach (var val in ExamineDBO_Aggregates(myTransactionToken, mySecurityToken, dbos, aggregates, _Selections, myReferencedDBType, myUsingGraph, myResolutionDepth))
+                    foreach (var val in ExamineDBO_Aggregates(myTransactionToken, mySecurityToken, dbos, aggregates, _Selections, myUsingGraph, myResolutionDepth))
                     {
                         if (val != null)
                         {
@@ -727,7 +727,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 else if (_Groupings.IsNotNullOrEmpty())
                 {
-                    foreach (var val in ExamineDBO_Groupings(dbos, _Selections, myReferencedDBType))
+                    foreach (var val in ExamineDBO_Groupings(dbos, _Selections))
                     {
                         if (val != null)
                         {
@@ -741,11 +741,17 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                     #region Usually attribute selections
 
+                    var vertexType = _graphdb.GetVertexType<IVertexType>(
+                        mySecurityToken,
+                        myTransactionToken,
+                        new RequestGetVertexType(myLevelKey.LastEdge.VertexTypeID),
+                        (stats, type) => type);
+
                     foreach (var aDBObject in dbos)
                     {
                         #region Create a readoutObject for this DBO and yield it: on failure throw an exception
 
-                        Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> Attributes = GetAllSelectedAttributesFromVertex(mySecurityToken, myTransactionToken, aDBObject, myReferencedDBType, myResolutionDepth, myLevelKey, myReference, myUsingGraph);
+                        Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> Attributes = GetAllSelectedAttributesFromVertex(mySecurityToken, myTransactionToken, aDBObject, vertexType, myResolutionDepth, myLevelKey, myReference, myUsingGraph);
 
                         if (Attributes != null && (Attributes.Item1.Count > 0 || Attributes.Item2.Count > 0))
                         {
@@ -829,7 +835,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="reference"></param>
         /// <param name="myUsingGraph"></param>
         /// <returns></returns>
-        public Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> GetAllSelectedAttributesFromVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertex myDBObject, IVertexType myDBType, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph, Boolean selectAllAttributes = false)
+        public Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> GetAllSelectedAttributesFromVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertex myDBObject, IVertexType myDBType, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
         {
             IDictionary<String, Object> properties = new Dictionary<string, object>();
             IDictionary<String, IEdgeView> edges = new Dictionary<string, IEdgeView>();
@@ -841,12 +847,9 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             IEnumerable<SelectionElement> attributeSelections = null;
 
-            if (!selectAllAttributes)
-            {
-                attributeSelections = getAttributeSelections(myReference, myDBType, myLevelKey);
-            }
+            attributeSelections = getAttributeSelections(myReference, myLevelKey);
 
-            if (attributeSelections.IsNullOrEmpty() || selectAllAttributes)// && myLevelKey.Level > 0)
+            if (attributeSelections.IsNullOrEmpty())
             {
 
                 #region Get all attributes from the DBO if nothing special was selected
@@ -1019,7 +1022,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                             var attr = (attrSel as SelectionElementFunction).Element;
 
-                            if (Depth > myLevelKey.Level || getAttributeSelections(myReference, myDBType, myLevelKey + new EdgeKey(attr.RelatedType.ID, attr.ID)).IsNotNullOrEmpty())
+                            if (Depth > myLevelKey.Level || getAttributeSelections(myReference, myLevelKey + new EdgeKey(attr.RelatedType.ID, attr.ID)).IsNotNullOrEmpty())
                             {
 
                                 myUsingGraph = false;
@@ -1331,7 +1334,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 if (tempResult != null)
                 {
-                    myAttributes.Item1.Add(aProperty.Name, aProperty.ExtractValue(myDBObject));
+                    myAttributes.Item1.Add(aProperty.Name, tempResult);
                 }
             }
 
@@ -1507,11 +1510,11 @@ namespace sones.GraphQL.GQL.Manager.Select
                 {
                     var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject, true);
 
-                    resultList = GetVertices(mySecurityToken, myTransactionToken, attrDefinition.SourceVertexType, dbos, myDepth, myEdgeList, reference, myUsingGraph);
+                    resultList = GetVertices(mySecurityToken, myTransactionToken, attrDefinition.TargetVertexType, dbos, myDepth, myEdgeList, reference, myUsingGraph);
                 }
                 else
                 {
-                    resultList = GetVertices(mySecurityToken, myTransactionToken, attrDefinition.SourceVertexType, attributeValue, myDepth, myEdgeList, reference, myUsingGraph);
+                    resultList = GetVertices(mySecurityToken, myTransactionToken, attrDefinition.TargetVertexType, attributeValue, myDepth, myEdgeList, reference, myUsingGraph);
                 }
 
                 return new HyperEdgeView(null, resultList.Select(aTargetVertex => new SingleEdgeView(null, aTargetVertex)));
@@ -1533,9 +1536,9 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <summary>
         /// This will load the vertex (check for load errors) and get all selected attributes of this vertex
         /// </summary>
-        private VertexView LoadAndResolveVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertex myObjectUUID, IVertexType myTypeOfAttribute, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph, bool mySelectAllAttributes = false)
+        private VertexView LoadAndResolveVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertex myObjectUUID, IVertexType myTypeOfAttribute, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
         {
-            var tuple = GetAllSelectedAttributesFromVertex(mySecurityToken, myTransactionToken, myObjectUUID, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph, mySelectAllAttributes);
+            var tuple = GetAllSelectedAttributesFromVertex(mySecurityToken, myTransactionToken, myObjectUUID, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph);
             return new VertexView(tuple.Item1, tuple.Item2);
         }
 
@@ -1581,7 +1584,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="myType"></param>
         /// <param name="myLevelKey"></param>
         /// <returns></returns>
-        private List<SelectionElement> getAttributeSelections(String myReference, IVertexType myType, EdgeList myLevelKey)
+        private List<SelectionElement> getAttributeSelections(String myReference, EdgeList myLevelKey)
         {
             if (_Selections.ContainsKey(myReference) && (_Selections[myReference].ContainsKey(myLevelKey)))
             {
@@ -1601,7 +1604,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="myType"></param>
         /// <param name="myLevelKey"></param>
         /// <returns></returns>
-        private List<SelectionElementAggregate> getAttributeAggregates(String myReference, IVertexType myType, EdgeList myLevelKey)
+        private List<SelectionElementAggregate> getAttributeAggregates(String myReference, EdgeList myLevelKey)
         {
             if (_Aggregates.ContainsKey(myReference) && (_Aggregates[myReference].ContainsKey(myLevelKey)))
             {
@@ -1622,7 +1625,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="myDBOs"></param>
         /// <param name="myReferencedDBType"></param>
         /// <returns></returns>
-        private IEnumerable<IVertexView> ExamineDBO_Aggregates(TransactionToken myTransactionToken, SecurityToken mySecurityToken, IEnumerable<IVertex> myDBOs, List<SelectionElementAggregate> myAggregates, List<SelectionElement> mySelections, IVertexType myReferencedDBType, Boolean myUsingGraph, Int64 myDepth)
+        private IEnumerable<IVertexView> ExamineDBO_Aggregates(TransactionToken myTransactionToken, SecurityToken mySecurityToken, IEnumerable<IVertex> myDBOs, List<SelectionElementAggregate> myAggregates, List<SelectionElement> mySelections, Boolean myUsingGraph, Int64 myDepth)
         {
 
             #region Aggregate
@@ -1638,8 +1641,6 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 var groupedDBOs = myDBOs.ToLookup((dbo) =>
                 {
-                    CheckLoadedDBObjectStream(dbo, myReferencedDBType);
-
                     #region Create GroupingKey based on the group values and attributes
 
                     Dictionary<GroupingValuesKey, IComparable> groupingVals = new Dictionary<GroupingValuesKey, IComparable>();
@@ -1657,8 +1658,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 }, (dbo) =>
                 {
-                    CheckLoadedDBObjectStream(dbo, myReferencedDBType);
-
+                   
                     return dbo;
                 });
 
@@ -1853,15 +1853,13 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="mySelections"></param>
         /// <param name="myReferencedDBType"></param>
         /// <returns></returns>
-        private IEnumerable<IVertexView> ExamineDBO_Groupings(IEnumerable<IVertex> myDBObjectStreams, List<SelectionElement> mySelections, IVertexType myReferencedDBType)
+        private IEnumerable<IVertexView> ExamineDBO_Groupings(IEnumerable<IVertex> myDBObjectStreams, List<SelectionElement> mySelections)
         {
 
             #region Create groupings using the ILookup
 
             var _GroupedVertices = myDBObjectStreams.ToLookup((dbo) =>
             {
-
-                CheckLoadedDBObjectStream(dbo, myReferencedDBType);
 
                 #region Create GroupingKey based on the group values and attributes
 
@@ -1890,8 +1888,6 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             }, (dbo) =>
             {
-                CheckLoadedDBObjectStream(dbo, myReferencedDBType);
-
                 return dbo;
             });
 
