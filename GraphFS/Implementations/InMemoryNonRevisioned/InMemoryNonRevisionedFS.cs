@@ -912,12 +912,20 @@ namespace sones.GraphFS
                                     }
 
                                     singleEdge.UpdateEdgeType(item.Value.EdgeTypeID);
-                                    singleEdge.UpdateStructuredProperties(
+
+                                    if (item.Value.UpdatedStructuredProperties != null)
+                                    {
+                                        singleEdge.UpdateStructuredProperties(
                                         item.Value.UpdatedStructuredProperties.Updated,
                                         item.Value.UpdatedStructuredProperties.Deleted);
-                                    singleEdge.UpdateUnStructuredProperties(
+                                    }
+
+                                    if (item.Value.UpdatedUnstructuredProperties != null)
+                                    {
+                                        singleEdge.UpdateUnStructuredProperties(
                                         item.Value.UpdatedUnstructuredProperties.Updated,
                                         item.Value.UpdatedUnstructuredProperties.Deleted);
+                                    }
 
                                     if (item.Value.SourceVertex != null)
                                     {
