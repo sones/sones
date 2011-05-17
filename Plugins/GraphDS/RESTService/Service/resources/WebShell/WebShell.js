@@ -242,7 +242,7 @@
 
                 var out = "";
                 out += "<pre>";
-                out += "Copyright (c) 2010, sones GmbH\n";
+                out += "Copyright (c) 2007-2011, sones GmbH - www.sones.com\n";
                 out += "All rights reserved.\n";
                 out += "\n";
                 out += "New BSD License\n";
