@@ -108,10 +108,15 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                             foreach (var value in ((ICollectionWrapper)aProperty.Item2))
                             {
                                 property.Value += "[" + value.ToString() + "],";
-                                propertyElementType = property.Value.GetType();
+                                propertyElementType = value.GetType();
                             }
 
-                            var index = property.Value.LastIndexOf(',');
+                            var index = -1;
+
+                            if (property.Value != null)
+                            {
+                                index = property.Value.LastIndexOf(',');
+                            }
 
                             if (index > -1)
                             {
@@ -486,13 +491,13 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                             if (isCollectionList)
                             {
-                                Regex regExp = new Regex(@"\[(/?[^\]]+)\]");
+                                Regex regExp = new Regex(@"(?<=\[)(.*?)(?=\])");
 
-                                var matches = regExp.Matches(property.InnerText);
+                                var matches = regExp.Matches(property.InnerText);                                
                                 value = new ListCollectionWrapper();
 
                                 foreach (var item in matches)
-                                {
+                                {                                    
                                     ((ListCollectionWrapper)value).Add((IComparable)TypeMapper(type, item.ToString()));
                                 }
 
@@ -521,6 +526,19 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 }
                 
                 property = property.NextSibling;
+            }
+
+            if (value == null)
+            {
+                if (isCollectionList)
+                {
+                    value = new ListCollectionWrapper();
+                }
+
+                if (isCollectionSet)
+                {
+                    value = new SetCollectionWrapper();
+                }
             }
 
             return new Tuple<string, object>(key, value);

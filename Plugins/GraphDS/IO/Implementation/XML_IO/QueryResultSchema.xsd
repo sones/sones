@@ -62,7 +62,7 @@
     <xs:sequence>
       <xs:element name ="ID" type ="xs:string"/>
       <xs:element name ="Type" type ="xs:string"/>
-      <xs:element name ="Value" type ="xs:string"/>
+      <xs:element name ="Value" type ="xs:string" maxOccurs="1" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
   
