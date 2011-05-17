@@ -658,41 +658,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             #endregion
 
-            if (
-                (_Selections.IsNotNullOrEmpty() && _Selections.All(s => s.IsReferenceToSkip(myLevelKey)) && aggregates.IsNotNullOrEmpty() && aggregates.All(a => a.IsReferenceToSkip(myLevelKey)))
-                || (_Selections.IsNotNullOrEmpty() && _Selections.All(s => s.IsReferenceToSkip(myLevelKey)) && aggregates.IsNullOrEmpty())
-               )
-            {
-
-                #region If there are only references in this level, we will skip this level (and add the attribute as placeholder) and step to the next one
-
-                var Attributes = new Dictionary<String, IEdgeView>();
-
-                foreach (var _Selection in _Selections)
-                {
-
-                    var edgeKey = new EdgeKey(_Selection.Element.RelatedType.ID, _Selection.Element.ID);
-                    Attributes.Add(
-                        _Selection.Alias, 
-                        new HyperEdgeView(
-                            null,
-                            ExamineVertex(myResolutionDepth, myReference, _Selection.RelatedIDChainDefinition.LastType, myLevelKey + edgeKey, myUsingGraph, mySecurityToken, myTransactionToken)
-                            .Select(aVertex =>
-                                        {
-                                            return new SingleEdgeView(null, aVertex);
-                                        })));
-
-                }
-
-                yield return new VertexView(null, Attributes);
-
-                #endregion
-
-            }
-
-            else
-            {
-
+            
                 #region Otherwise load all dbos until this level and return them
 
                 #region Get dbos enumerable of the first level - either from ExpressionGraph or via index
@@ -767,7 +733,6 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 #endregion
 
-            }
 
         }
 
