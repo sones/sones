@@ -1255,7 +1255,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 BaseGraphStorageManager.StoreIncomingEdge(
                     _vertexManager.ExecuteManager.VertexStore,
-                    new VertexInformation((long)BaseTypes.Attribute, _idManager[(long)BaseTypes.IncomingEdge].GetNextID()),
+                    new VertexInformation((long)BaseTypes.IncomingEdge, _idManager[(long)BaseTypes.IncomingEdge].GetNextID()),
                         aIncomingEdgeProperty.AttributeName,
                         aIncomingEdgeProperty.Comment,
                         true,
