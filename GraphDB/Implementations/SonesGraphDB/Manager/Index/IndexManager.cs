@@ -97,7 +97,15 @@ namespace sones.GraphDB.Manager.Index
         {
             myIndexDefinition.CheckNull("myIndexDefinition");
 
-            if (_ownIndex.ContainsKey(myIndexDefinition.Name))
+            if (myIndexDefinition.Name != null && myIndexDefinition.Name.StartsWith("sones"))
+                throw new Exception("It is not allowed to add an index with a name, that starts with 'sones'.");
+
+            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myIndexDefinition.VertexTypeName, myTransaction, mySecurity);
+
+            
+            var indexName = myIndexDefinition.Name ?? CreateIndexName(myIndexDefinition, vertexType);
+
+            if (_ownIndex.ContainsKey(indexName))
                 //TODO a better exception here.
                 throw new Exception("An index with that name already exists.");
 
@@ -105,7 +113,6 @@ namespace sones.GraphDB.Manager.Index
                 throw new Exception("Index without properties is not allowed.");
             
 
-            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myIndexDefinition.VertexTypeName, myTransaction, mySecurity);
 
             foreach (var prop in myIndexDefinition.Properties)
             {
@@ -130,7 +137,7 @@ namespace sones.GraphDB.Manager.Index
             var indexVertex = BaseGraphStorageManager.StoreIndex(
                                 _vertexStore,
                                 info,
-                                myIndexDefinition.Name,
+                                indexName,
                                 myIndexDefinition.Comment,
                                 date,
                                 myIndexDefinition.TypeName,
@@ -144,13 +151,13 @@ namespace sones.GraphDB.Manager.Index
                                 mySecurity,
                                 myTransaction);
 
-            _ownIndex.Add(myIndexDefinition.Name, indexID);
+            _ownIndex.Add(indexName, indexID);
             _indices.Add(indexID, index);
 
             foreach (var childType in vertexType.GetChildVertexTypes(true, false))
             {
                 var childID = _idManager[(long)BaseTypes.Index].GetNextID();
-                var childName = string.Join("_", "sones", myIndexDefinition.Name, childType.Name);
+                var childName = CreateIndexName(myIndexDefinition, childType);
 
     
                 var childIndex = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(typeClass, parameter, childID);
@@ -159,7 +166,7 @@ namespace sones.GraphDB.Manager.Index
                                 _vertexStore,
                                 new VertexInformation((long)BaseTypes.Index, childID),
                                 childName,
-                                myIndexDefinition.Name, //we store the source index name as comment
+                                indexName, //we store the source index name as comment
                                 date,
                                 myIndexDefinition.TypeName,
                                 GetIsSingleValue(index),
@@ -191,6 +198,12 @@ namespace sones.GraphDB.Manager.Index
             }
 
             return indexDefinition;
+        }
+
+        private string CreateIndexName(IndexPredefinition myIndexDefinition, IVertexType vertexType)
+        {
+            var propNames = string.Join("&", myIndexDefinition.Properties);
+            return string.Join("_", "sones", propNames, vertexType.Name);
         }
 
         public bool HasIndex(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
