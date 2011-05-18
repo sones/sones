@@ -1527,11 +1527,14 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             #region properties
 
-            foreach (var aProperty in myInnerEdgeType.GetPropertyDefinitions(true))
+            if (myInnerEdgeType != null)
             {
-                if (aSingleEdge.HasProperty(aProperty.ID))
+                foreach (var aProperty in myInnerEdgeType.GetPropertyDefinitions(true))
                 {
-                    result.Add(aProperty.Name, aSingleEdge.GetProperty(aProperty.ID));
+                    if (aSingleEdge.HasProperty(aProperty.ID))
+                    {
+                        result.Add(aProperty.Name, aSingleEdge.GetProperty(aProperty.ID));
+                    }
                 }
             }
 
