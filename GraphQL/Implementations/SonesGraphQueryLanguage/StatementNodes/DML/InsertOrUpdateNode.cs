@@ -118,6 +118,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
             _query = myQuery;
 
+            IEnumerable<long> myToBeUpdatedVertices = null;
             //prepare
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
                 mySecurityToken,
@@ -125,17 +126,27 @@ namespace sones.GraphQL.StatementNodes.DML
                 new RequestGetVertexType(_Type),
                 (stats, vtype) => vtype);
 
-            //validate
-            _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+            if (_WhereExpression != null)
+            {
+                //validate
+                _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
 
-            //calculate
-            var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+                //calculate
+                var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
 
-            //extract
+                //extract
+                myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
+            }
+            else
+            {
+                myToBeUpdatedVertices = myGraphDB.GetVertices<IEnumerable<long>>(
+                    mySecurityToken,
+                    myTransactionToken,
+                    new RequestGetVertices(vertexType.ID),
+                    (stats, vertices) => vertices.Select(_ => _.VertexID));
+            }
 
-            var myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
-
-            if (myToBeUpdatedVertices.Count > 0)
+            if (myToBeUpdatedVertices != null && myToBeUpdatedVertices.Count() > 0)
             {
 
                 //update
