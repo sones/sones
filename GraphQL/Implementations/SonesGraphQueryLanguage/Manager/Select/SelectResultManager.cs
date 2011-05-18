@@ -658,42 +658,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             #endregion
 
-            if (
-                (_Selections.IsNotNullOrEmpty() && _Selections.All(s => s.IsReferenceToSkip(myLevelKey)) && aggregates.IsNotNullOrEmpty() && aggregates.All(a => a.IsReferenceToSkip(myLevelKey)))
-                || (_Selections.IsNotNullOrEmpty() && _Selections.All(s => s.IsReferenceToSkip(myLevelKey)) && aggregates.IsNullOrEmpty())
-               )
-            {
-
-                #region If there are only references in this level, we will skip this level (and add the attribute as placeholder) and step to the next one
-
-                var Attributes = new Dictionary<String, IEdgeView>();
-
-                foreach (var _Selection in _Selections)
-                {
-
-                    var edgeKey = new EdgeKey(_Selection.Element.RelatedType.ID, _Selection.Element.ID);
-
-                    Attributes.Add(
-                        _Selection.Alias, 
-                        new HyperEdgeView(
-                            null,
-                            ExamineVertex(myResolutionDepth, myReference, _Selection.RelatedIDChainDefinition.LastType, myLevelKey + edgeKey, myUsingGraph, mySecurityToken, myTransactionToken)
-                            .Select(aVertex =>
-                                        {
-                                            return new SingleEdgeView(null, aVertex);
-                                        })));
-
-                }
-
-                yield return new VertexView(null, Attributes);
-
-                #endregion
-
-            }
-
-            else
-            {
-
+            
                 #region Otherwise load all dbos until this level and return them
 
                 #region Get dbos enumerable of the first level - either from ExpressionGraph or via index
@@ -768,7 +733,6 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 #endregion
 
-            }
 
         }
 
@@ -1226,7 +1190,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                         {
                             if (myDepth > 0)
 					        {
-                                attributeValue = ResolveAttributeValue((IOutgoingEdgeDefinition)typeAttribute, dbos.GetTargetVertices() ,myDepth, myLevelKey, myDBObject, reference, myUsingGraph, mySecurityToken, myTransactionToken);
+                                attributeValue = ResolveAttributeValue((IOutgoingEdgeDefinition)typeAttribute, dbos ,myDepth, myLevelKey, myDBObject, reference, myUsingGraph, mySecurityToken, myTransactionToken);
                             }
                             else
 	                        {
@@ -1363,7 +1327,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                             outgoingEdgeDefinition.Name, 
                             ResolveAttributeValue(
                                 outgoingEdgeDefinition, 
-                                myDBObject.GetOutgoingEdge(outgoingEdgeDefinition.ID).GetTargetVertices(), 
+                                myDBObject.GetOutgoingEdge(outgoingEdgeDefinition.ID), 
                                 myDepth, 
                                 myEdgeList, 
                                 myDBObject, 
@@ -1478,6 +1442,116 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <summary>
         /// Resolves an attribute 
         /// </summary>
+        private IEdgeView ResolveAttributeValue(IOutgoingEdgeDefinition attrDefinition, IEdge myEdge, Int64 myDepth, EdgeList myEdgeList, IVertex mySourceDBObject, String reference, Boolean myUsingGraph, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            #region Get levelKey and UsingGraph
+
+            if (myEdgeList.Level == 0)
+            {
+                myEdgeList = new EdgeList(new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.ID));
+            }
+            else
+            {
+                myEdgeList += new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.ID);
+            }
+
+            // at some deeper level we could get into graph independend results. From this time, we can use the GUID index rather than asking the graph all the time
+            if (myUsingGraph)
+            {
+                myUsingGraph = _ExpressionGraph.IsGraphRelevant(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject);
+            }
+
+            #endregion
+
+            if (attrDefinition.Multiplicity != EdgeMultiplicity.SingleEdge)
+            {
+
+                #region SetReference attribute -> return new Edge
+
+                IEnumerable<SingleEdgeView> resultList = null;
+
+                if (myUsingGraph)
+                {
+                    var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject, true).ToList();
+
+                    //Todo: find a better way to get the edge properties
+                    resultList = GenerateSingleEdgeViews(mySecurityToken, myTransactionToken,
+                        ((IHyperEdge)myEdge).GetAllEdges((aSingleEdge) => dbos.Contains(aSingleEdge.GetTargetVertex())),
+                        attrDefinition.TargetVertexType, myDepth, myEdgeList, reference, myUsingGraph, attrDefinition.InnerEdgeType);
+
+                }
+                else
+                {
+
+                    resultList = GenerateSingleEdgeViews(mySecurityToken, myTransactionToken,
+                        ((IHyperEdge)myEdge).GetAllEdges(),
+                        attrDefinition.TargetVertexType, myDepth, myEdgeList, reference, myUsingGraph, attrDefinition.InnerEdgeType);
+                }
+
+                return new HyperEdgeView(null, resultList);
+                #endregion
+
+            }
+            else
+            {
+
+                #region Single reference
+
+                return GenerateSingleEdgeViews(mySecurityToken, myTransactionToken,
+                    new List<ISingleEdge> { (ISingleEdge)myEdge },
+                    attrDefinition.TargetVertexType, myDepth, myEdgeList, reference, myUsingGraph, attrDefinition.InnerEdgeType).FirstOrDefault();
+
+                #endregion
+
+            }
+        }
+
+        private IEnumerable<SingleEdgeView> GenerateSingleEdgeViews(SecurityToken mySecurityToken, TransactionToken myTransactionToken, IEnumerable<ISingleEdge> mySingleEdges, IVertexType myVertexType, long myDepth, EdgeList myEdgeList, string reference, bool myUsingGraph, IEdgeType myInnerEdgeType)
+        {
+            foreach (var aSingleEdge in mySingleEdges)
+            {
+                yield return GenerateASingleEdgeView(mySecurityToken, myTransactionToken, aSingleEdge, myVertexType, myDepth, myEdgeList, reference, myUsingGraph, myInnerEdgeType);
+            }
+
+            yield break;
+        }
+
+        private SingleEdgeView GenerateASingleEdgeView(SecurityToken mySecurityToken, TransactionToken myTransactionToken, ISingleEdge aSingleEdge, IVertexType myVertexType, long myDepth, EdgeList myEdgeList, string reference, bool myUsingGraph, IEdgeType myInnerEdgeType)
+        {
+            return new SingleEdgeView(GetEdgeProperties(aSingleEdge, myInnerEdgeType), LoadAndResolveVertex(mySecurityToken, myTransactionToken, aSingleEdge.GetTargetVertex(), myVertexType, myDepth, myEdgeList, reference, myUsingGraph));
+        }
+
+        private IDictionary<string, object> GetEdgeProperties(ISingleEdge aSingleEdge, IEdgeType myInnerEdgeType)
+        {
+            Dictionary<String, Object> result = new Dictionary<string, object>();
+
+            #region properties
+
+            foreach (var aProperty in myInnerEdgeType.GetPropertyDefinitions(true))
+            {
+                if (aSingleEdge.HasProperty(aProperty.ID))
+                {
+                    result.Add(aProperty.Name, aSingleEdge.GetProperty(aProperty.ID));
+                }
+            }
+
+            #endregion
+
+            #region unstructured data
+
+            foreach (var aUnstructuredProperty in aSingleEdge.GetAllUnstructuredProperties())
+            {
+                result.Add(aUnstructuredProperty.Item1, aUnstructuredProperty.Item2);
+            }
+
+            #endregion
+
+            return result;
+        }
+
+        /// <summary>
+        /// Resolves an attribute 
+        /// </summary>
         private IEdgeView ResolveAttributeValue(IOutgoingEdgeDefinition attrDefinition, IEnumerable<IVertex> attributeValue, Int64 myDepth, EdgeList myEdgeList, IVertex mySourceDBObject, String reference, Boolean myUsingGraph, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             #region Get levelKey and UsingGraph
@@ -1532,6 +1606,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             }
         }
+
 
         /// <summary>
         /// This will load the vertex (check for load errors) and get all selected attributes of this vertex

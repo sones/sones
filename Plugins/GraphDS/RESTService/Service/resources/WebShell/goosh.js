@@ -505,61 +505,6 @@ InitGoosh = function (goosh) {
     //eo help module
 
 
-    //intern license modul
-    goosh.module.license = function () {
-
-        this.name = "license";
-        this.aliases = new Array("license", "l");
-
-        this.help = "displays license information";
-
-        this.call = function (args) {
-
-            var out = "";
-            out += "<pre>";
-            out += "Copyright (c) 2010, sones GmbH\n";
-            out += "All rights reserved.\n";
-            out += "\n";
-            out += "New BSD License\n";
-            out += "\n";
-            out += "Redistribution and use in source and binary forms, with or without\n";
-            out += "modification, are permitted provided that the following conditions are met:\n";
-            out += "    * Redistributions of source code must retain the above copyright\n";
-            out += "      notice, this list of conditions and the following disclaimer.\n";
-            out += "    * Redistributions in binary form must reproduce the above copyright\n";
-            out += "      notice, this list of conditions and the following disclaimer in the\n";
-            out += "      documentation and/or other materials provided with the distribution.\n";
-            out += "    * Neither the name of the sones GmbH nor the\n";
-            out += "      names of its contributors may be used to endorse or promote products\n";
-            out += "      derived from this software without specific prior written permission.\n";
-            out += "\n";
-            out += "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\n";
-            out += "ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\n";
-            out += "WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n";
-            out += "DISCLAIMED. IN NO EVENT SHALL sones GmbH BE LIABLE FOR ANY\n";
-            out += "DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n";
-            out += "(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n";
-            out += "LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n";
-            out += "ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n";
-            out += "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\n";
-            out += "SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n";
-            out += "\n";
-            out += "\n";
-            out += "jQuery JavaScript Library - Copyright (c) 2009 John Resig\n";
-            out += "Dual licensed under the MIT and GPL licenses.\n";
-            out += "http://docs.jquery.com/License\n";
-            out += "\n";
-            out += "goosh is written by Stefan Grothkopp <grothkopp@gmail.com>\n";
-            out += "goosh is open source under the Artistic License/GPL.\n";
-            out += "http://www.goosh.org\n";
-            out += "</pre>";
-            goosh.gui.outln(out);
-        }
-    }
-
-    goosh.modules.register("license");
-    //eo license module
-
 
     //clear module
     goosh.module.clear = function () {
@@ -660,6 +605,9 @@ InitGoosh = function (goosh) {
 
     //goosh.js
     goosh.command = function () {
+    	//show waiting image
+        goosh.gui.setWaiting(true);
+        
         var cmdpar = goosh.gui.inputfield.value;
         var tokens = cmdpar.split(" ");
         var args = new Array();
@@ -722,6 +670,9 @@ InitGoosh = function (goosh) {
         goosh.gui.scroll();
         goosh.gui.inputfield.value = '';
         goosh.gui.focusinput();
+
+		//hide waiting image
+        goosh.gui.setWaiting(false);
 
         return false;
     }
