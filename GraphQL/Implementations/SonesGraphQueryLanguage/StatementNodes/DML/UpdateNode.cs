@@ -601,18 +601,18 @@ namespace sones.GraphQL.StatementNodes.DML
 
         private QueryResult GenerateOutput(IRequestStatistics myStats, IEnumerable<IVertex> myVertices)
         {
-            var dict = new Dictionary<String, object>();
+            List<IVertexView> list = new List<IVertexView>();
 
             foreach (var vertex in myVertices)
             {
-                dict.Add("Updated ", vertex.VertexID);
+                list.Add(new VertexView(new Dictionary<String, Object>{ { "Updated ", vertex.VertexID } }, null));
             }
 
             return new QueryResult(Query, 
                                     "GQL", 
                                     Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), 
                                     ResultType.Successful,
-                                    new List<IVertexView> { new VertexView(dict, new Dictionary<String, IEdgeView>()) });
+                                    list);
         }
 
         #endregion

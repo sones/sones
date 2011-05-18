@@ -770,7 +770,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 {
                     foreach (var inEdge in outEdge.TargetVertexType.GetIncomingEdgeDefinitions(true))
                     {
-                        if (inEdge.RelatedEdgeDefinition.ID.Equals(outEdge.ID))
+                        if (inEdge.RelatedEdgeDefinition.ID.Equals(outEdge.ID) && inEdge.RelatedType.ID != delType.ID)
                             //
                             throw new VertexTypeRemoveException(delType.Name, "There are other types which have incoming edges, whose related type is a outgoing edge of the type which should be removed.");
                     }
@@ -1183,7 +1183,6 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 ProcessAddBinaryPropery(myToBeAddedBinaryProperties, mySecurityToken, myTransactionToken, vertexType);
             }
-
 
             if (myToBeAddedOutgoingEdges.IsNotNullOrEmpty())
             {

@@ -594,8 +594,15 @@ namespace sones.GraphDB.Manager.TypeManagement
                 #region check that the delete type has no incoming edges
 
                 if (delType.HasIncomingEdges(false))
-                    //all incoming edges has to be deletet by user
-                    throw new VertexTypeRemoveException(delType.Name, "The given type has incoming edges and cannot be removed.");
+                {
+                    foreach (var edge in delType.GetIncomingEdgeDefinitions(false))
+                    {
+                        //just throw Exception if incomingedge doesn't point to the type itself
+                        if (edge.RelatedType.ID != delType.ID)
+                            //all incoming edges has to be deletet by user
+                            throw new VertexTypeRemoveException(delType.Name, "The given type has incoming edges and cannot be removed.");
+                    }
+                }
 
                 #endregion
 

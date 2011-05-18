@@ -145,7 +145,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 edges.Add("Edges", new HyperEdgeView(null, GenerateEdgesOutput(myType, myType.GetOutgoingEdgeDefinitions(true))));
 
-                edges.Add("BackwardEdges", new HyperEdgeView(null, GenerateEdgesOutput(myType, myType.GetIncomingEdgeDefinitions(true))));
+                edges.Add("Incomingedges", new HyperEdgeView(null, GenerateEdgesOutput(myType, myType.GetIncomingEdgeDefinitions(true))));
 
                 edges.Add("UniqueAttributes", new HyperEdgeView(null, GenerateUniquePropertiesOutput(myType, myType.GetUniqueDefinitions(true))));
 
