@@ -683,6 +683,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 vertexTypeDefinition.CheckNull("Element in myVertexTypeDefinitions");
 
                 ConvertUnknownAttributes(vertexTypeDefinition);
+                ConvertPropertyUniques(vertexTypeDefinition);
 
                 CheckSealedAndAbstract(vertexTypeDefinition);
                 CheckVertexTypeName(vertexTypeDefinition);
@@ -726,7 +727,14 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private static void CheckUniques(VertexTypePredefinition vertexTypeDefinition)
         {
-            //TODO
+        }
+
+        private static void ConvertPropertyUniques(VertexTypePredefinition vertexTypeDefinition)
+        {
+            foreach (var uniqueProp in vertexTypeDefinition.Properties.Where(_ => _.IsUnique))
+            {
+                vertexTypeDefinition.AddUnique(new UniquePredefinition(uniqueProp.AttributeName));
+            }
         }
 
         /// <summary>
@@ -877,6 +885,12 @@ namespace sones.GraphDB.Manager.TypeManagement
                            .SetDefaultValue(unknown.DefaultValue)
                            .SetAttributeType(unknown.AttributeType)
                            .SetComment(unknown.Comment);
+
+            if (unknown.IsUnique)
+                prop.SetAsUnique();
+
+            if (unknown.IsMandatory)
+                prop.SetAsMandatory();
 
             if (unknown.Multiplicity != null)
                 switch (unknown.Multiplicity)

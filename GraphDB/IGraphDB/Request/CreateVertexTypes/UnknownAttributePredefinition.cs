@@ -45,6 +45,10 @@ namespace sones.GraphDB.Request.CreateVertexTypes
 
         public String InnerEdgeType { get; private set; }
 
+        public bool IsMandatory { get; private set; }
+
+        public bool IsUnique { get; private set; }
+
         public UnknownAttributePredefinition(String myAttributeName)
             : base(myAttributeName)
         {
@@ -79,6 +83,20 @@ namespace sones.GraphDB.Request.CreateVertexTypes
             return this;
         }
 
+        public UnknownAttributePredefinition SetAsMandatory()
+        {
+            IsMandatory = true;
+
+            return this;
+        }
+
+        public UnknownAttributePredefinition SetAsUnique()
+        {
+            IsUnique = true;
+
+            return this;
+        }
+
         public UnknownAttributePredefinition SetInnerEdgeType(String myEdgeType)
         {
             InnerEdgeType = myEdgeType;
@@ -99,7 +117,5 @@ namespace sones.GraphDB.Request.CreateVertexTypes
 
             return this;
         }
-
-
     }
 }
