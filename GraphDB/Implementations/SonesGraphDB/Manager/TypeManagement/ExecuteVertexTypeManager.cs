@@ -1301,8 +1301,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 foreach (var aToBeAddedIndex in myToBeAddedIndices)
                 {
-                    IndexPredefinition predef = new IndexPredefinition();
-                    predef.AddProperty(aToBeAddedIndex.Properties);
+                    IndexPredefinition predef = new IndexPredefinition().AddProperty(aToBeAddedIndex.Properties).SetVertexType(vertexType.Name);
 
                     _indexManager.CreateIndex(predef, mySecurityToken, myTransactionToken);
                 }          
