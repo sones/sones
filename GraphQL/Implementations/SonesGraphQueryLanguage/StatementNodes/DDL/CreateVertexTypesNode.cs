@@ -338,7 +338,7 @@ namespace sones.GraphQL.StatementNodes.DDL
         private UnknownAttributePredefinition GenerateUnknownAttribute(KeyValuePair<AttributeDefinition, string> aAttribute)
         {
             UnknownAttributePredefinition result = new UnknownAttributePredefinition(aAttribute.Key.AttributeName);
-
+            
             result.SetAttributeType(aAttribute.Value);
 
             if (aAttribute.Key.AttributeType.EdgeType != null)
@@ -365,6 +365,17 @@ namespace sones.GraphQL.StatementNodes.DDL
 
                     break;
             }
+
+            if (aAttribute.Key.DefaultValue != null)
+                result.SetDefaultValue(aAttribute.Key.DefaultValue.ToString());
+
+
+            if (aAttribute.Key.AttributeType.TypeCharacteristics.IsMandatory)
+                result.SetAsMandatory();
+
+            if (aAttribute.Key.AttributeType.TypeCharacteristics.IsUnique)
+                result.SetAsUnique();
+
 
 
             return result;
