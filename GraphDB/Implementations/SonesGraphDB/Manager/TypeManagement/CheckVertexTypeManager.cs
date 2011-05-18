@@ -724,10 +724,11 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private static void ConvertPropertyUniques(VertexTypePredefinition vertexTypeDefinition)
         {
-            foreach (var uniqueProp in vertexTypeDefinition.Properties.Where(_ => _.IsUnique))
-            {
-                vertexTypeDefinition.AddUnique(new UniquePredefinition(uniqueProp.AttributeName));
-            }
+            if (vertexTypeDefinition.Properties != null)
+                foreach (var uniqueProp in vertexTypeDefinition.Properties.Where(_ => _.IsUnique))
+                {
+                    vertexTypeDefinition.AddUnique(new UniquePredefinition(uniqueProp.AttributeName));
+                }
         }
 
         /// <summary>
