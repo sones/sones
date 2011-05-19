@@ -45,7 +45,7 @@ namespace sones.GraphFS.Element.Edge
         /// <summary>
         /// The single edges that are contained within this hyper edge
         /// </summary>
-        public List<SingleEdge> ContainedSingleEdges;
+        public HashSet<SingleEdge> ContainedSingleEdges;
 
         /// <summary>
         /// The source vertex
@@ -68,7 +68,7 @@ namespace sones.GraphFS.Element.Edge
         /// <param name="myStructuredProperties">The structured properties of this element</param>
         /// <param name="myUnstructuredProperties">The unstructured properties of this element</param>
         public HyperEdge(
-            List<SingleEdge> myContainedSingleEdges,
+            HashSet<SingleEdge> myContainedSingleEdges,
             Int64 myEdgeTypeID,
             InMemoryVertex mySourceVertex,
             String myComment,

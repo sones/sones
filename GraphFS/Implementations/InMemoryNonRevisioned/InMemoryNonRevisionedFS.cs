@@ -386,10 +386,8 @@ namespace sones.GraphFS
                                         
                                         lock (hyperEdge.ContainedSingleEdges)
                                         {
-                                            var edgesToBeRemove = hyperEdge.ContainedSingleEdges.Where(item => item.TargetVertex.VertexID == myVertexID &&
+                                           hyperEdge.ContainedSingleEdges.RemoveWhere(item => item.TargetVertex.VertexID == myVertexID &&
                                                 item.TargetVertex.VertexTypeID == myVertexTypeID);
-
-                                            hyperEdge.ContainedSingleEdges = hyperEdge.ContainedSingleEdges.Except(edgesToBeRemove).ToList();
                                         }
                                     }
                                     else
@@ -669,7 +667,7 @@ namespace sones.GraphFS
             {
                 foreach (var aHyperEdgeDefinition in myVertexDefinition.OutgoingHyperEdges)
                 {
-                    List<SingleEdge> containedSingleEdges = new List<SingleEdge>();
+                    var containedSingleEdges = new HashSet<SingleEdge>();
 
                     foreach (var aSingleEdgeDefinition in aHyperEdgeDefinition.ContainedSingleEdges)
                     {
@@ -1046,7 +1044,7 @@ namespace sones.GraphFS
                                             {
                                                 var targetVertex = GetOrCreateTargetVertex(singleEdge.TargetVertex.VertexTypeID, singleEdge.TargetVertex.VertexID);
                                                 RemoveIncommingEdgeFromTargetVertex(targetVertex, toBeUpdatedVertex.VertexTypeID, item.Key, toBeUpdatedVertex);
-                                                hyperEdge.ContainedSingleEdges.RemoveAll(sEdge => (sEdge.SourceVertex.VertexTypeID == singleEdge.SourceVertex.VertexTypeID && sEdge.SourceVertex.VertexID == singleEdge.SourceVertex.VertexID) && (sEdge.TargetVertex.VertexID == singleEdge.TargetVertex.VertexID && sEdge.TargetVertex.VertexTypeID == singleEdge.TargetVertex.VertexTypeID));
+                                                hyperEdge.ContainedSingleEdges.RemoveWhere(sEdge => (sEdge.SourceVertex.VertexTypeID == singleEdge.SourceVertex.VertexTypeID && sEdge.SourceVertex.VertexID == singleEdge.SourceVertex.VertexID) && (sEdge.TargetVertex.VertexID == singleEdge.TargetVertex.VertexID && sEdge.TargetVertex.VertexTypeID == singleEdge.TargetVertex.VertexTypeID));
                                             }
                                         }
 
@@ -1146,7 +1144,7 @@ namespace sones.GraphFS
                                                 CreateOrUpdateIncomingEdgesOnVertex(targetVertex,
                                                                                     toBeUpdatedVertex.VertexTypeID,
                                                                                     item.Key, toBeUpdatedVertex);
-                                                hyperEdge.ContainedSingleEdges.AddRange(newEdges);
+                                                hyperEdge.ContainedSingleEdges.UnionWith(newEdges);
                                                 newEdges.Clear();
                                             }
                                         }
@@ -1158,7 +1156,7 @@ namespace sones.GraphFS
                             else
                             {
 
-                                var singleEdges = new List<SingleEdge>();
+                                var singleEdges = new HashSet<SingleEdge>();
 
                                 if (item.Value.ToBeUpdatedSingleEdges != null)
                                 {
