@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -140,7 +140,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager</Name>
+      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphDS\DrainPipeLog\IDrainPipe\IDrainPipe.csproj">
       <Project>{F51DA5BD-5808-409E-A907-4EF93B2C5E71}</Project>
@@ -148,7 +148,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphDS\DrainPipeLog\Implementation\DrainPipeLog.csproj">
       <Project>{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}</Project>
-      <Name>DrainPipeLog</Name>
+      <Name>DrainPipeLog %28Plugins\GraphDS\DrainPipeLog\Implementation\DrainPipeLog%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementation\HTML_IO\HTML_IO.csproj">
       <Project>{80D5F893-014A-4FA4-AD9B-CADEDABF0874}</Project>
@@ -180,7 +180,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\GraphDBExport\GraphDBExport.csproj">
       <Project>{95295FE7-C0EB-45ED-88B0-2B66902BEE0C}</Project>
-      <Name>GraphDBExport</Name>
+      <Name>GraphDBExport %28Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\GraphDBExport%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\GraphDBImport\SonesGraphDBImport.csproj">
       <Project>{51C8E5F7-F888-4500-B1EE-D20337FA451F}</Project>
