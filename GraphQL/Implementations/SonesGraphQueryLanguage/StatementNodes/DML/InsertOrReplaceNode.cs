@@ -108,6 +108,7 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             _query = myQuery;
 
+            List<long> myToBeUpdatedVertices = new List<long>();
             //prepare
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
                 mySecurityToken,
@@ -115,14 +116,17 @@ namespace sones.GraphQL.StatementNodes.DML
                 new RequestGetVertexType(_Type),
                 (stats, vtype) => vtype);
 
-            //validate
-            _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+            if (_WhereExpression != null)
+            {
+                //validate
+                _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
 
-            //calculate
-            var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+                //calculate
+                var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
 
-            //extract
-            var myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
+                //extract
+                myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
+            }
 
             switch (myToBeUpdatedVertices.Count)
             {

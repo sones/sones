@@ -137,14 +137,6 @@ namespace sones.GraphQL.StatementNodes.DML
                 //extract
                 myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
             }
-            else
-            {
-                myToBeUpdatedVertices = myGraphDB.GetVertices<IEnumerable<long>>(
-                    mySecurityToken,
-                    myTransactionToken,
-                    new RequestGetVertices(vertexType.ID),
-                    (stats, vertices) => vertices.Select(_ => _.VertexID));
-            }
 
             if (myToBeUpdatedVertices != null && myToBeUpdatedVertices.Count() > 0)
             {
