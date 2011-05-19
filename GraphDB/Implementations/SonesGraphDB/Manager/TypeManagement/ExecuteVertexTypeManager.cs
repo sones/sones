@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Expression;
 using sones.GraphDB.Manager.BaseGraph;
@@ -1053,6 +1054,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #region remove stuff
 
+            CheckRemoveOutgoingEdges(myAlterVertexTypeRequest, vertexType, mySecurityToken, myTransactionToken);
+
             //done
             RemoveMandatoryConstraint(myAlterVertexTypeRequest.ToBeRemovedMandatories, vertexType, myTransactionToken,
                                       mySecurityToken);
@@ -1110,6 +1113,45 @@ namespace sones.GraphDB.Manager.TypeManagement
             CleanUpTypes();
 
             return GetVertexType(vertexType.ID, myTransactionToken, mySecurityToken);
+        }
+
+        private void CheckRemoveOutgoingEdges(RequestAlterVertexType myAlterVertexTypeRequest, IVertexType myVertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            if (myAlterVertexTypeRequest.ToBeRemovedOutgoingEdges != null)
+            {
+                #region get the list of incoming edges that will be deleted too
+
+                var toBeRemovedIncomingEdgeIDs = new List<long>();
+
+                if (myAlterVertexTypeRequest.ToBeRemovedIncomingEdges != null)
+                    toBeRemovedIncomingEdgeIDs.AddRange(
+                        myAlterVertexTypeRequest.ToBeRemovedIncomingEdges.Select(
+                            _ => myVertexType.GetIncomingEdgeDefinition(_).ID));
+
+                #endregion
+
+                foreach (var aOutgoingEdge in myAlterVertexTypeRequest.ToBeRemovedOutgoingEdges)
+                {
+                    var attrDef = myVertexType.GetOutgoingEdgeDefinition(aOutgoingEdge);
+
+                    var vertex = _vertexManager.ExecuteManager.GetVertex((long) BaseTypes.OutgoingEdge, attrDef.ID, null,
+                                                                         null, myTransactionToken, mySecurityToken);
+
+                    var incomingEdges = vertex.GetIncomingVertices((long) BaseTypes.IncomingEdge,
+                                                                   (long)
+                                                                   AttributeDefinitions.IncomingEdgeDotRelatedEgde);
+
+                    foreach (var incomingEdge in incomingEdges)
+                    {
+                        if (!toBeRemovedIncomingEdgeIDs.Contains(incomingEdge.VertexID))
+                        {
+                            //TODO a better exception here
+                            throw new Exception(
+                                "The outgoing edge can not be removed, because there are related incoming edges.");
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -1203,7 +1245,13 @@ namespace sones.GraphDB.Manager.TypeManagement
             foreach (var aToBeAddedOutgoingEdge in myToBeAddedOutgoingEdges)
             {
                 var edgeType = _edgeManager.ExecuteManager.GetEdgeType(aToBeAddedOutgoingEdge.EdgeType, myTransactionToken, mySecurityToken);
-                var innerEdgeType = _edgeManager.ExecuteManager.GetEdgeType(aToBeAddedOutgoingEdge.InnerEdgeType, myTransactionToken, mySecurityToken);
+                var innerEdgeType = (aToBeAddedOutgoingEdge.InnerEdgeType != null)
+                                        ? _edgeManager.ExecuteManager.GetEdgeType(aToBeAddedOutgoingEdge.InnerEdgeType, myTransactionToken, mySecurityToken)
+                                        : null;
+                VertexInformation? innerEdgeTypeInfo = null;
+                if (innerEdgeType != null)
+                    innerEdgeTypeInfo = new VertexInformation((long) BaseTypes.EdgeType, innerEdgeType.ID);
+
                 var targetVertexType = GetVertexType(aToBeAddedOutgoingEdge.AttributeType, myTransactionToken, mySecurityToken);
 
                 BaseGraphStorageManager.StoreOutgoingEdge(_vertexManager.ExecuteManager.VertexStore,
@@ -1215,7 +1263,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         aToBeAddedOutgoingEdge.Multiplicity,
                         new VertexInformation((long)BaseTypes.VertexType, vertexType.ID),
                         new VertexInformation((long)BaseTypes.EdgeType, edgeType.ID),
-                        new VertexInformation((long)BaseTypes.EdgeType, innerEdgeType.ID),
+                        innerEdgeTypeInfo,
                         new VertexInformation((long)BaseTypes.VertexType, targetVertexType.ID),
                         mySecurityToken, myTransactionToken);
             }
@@ -1254,7 +1302,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 BaseGraphStorageManager.StoreIncomingEdge(
                     _vertexManager.ExecuteManager.VertexStore,
-                    new VertexInformation((long)BaseTypes.IncomingEdge, _idManager[(long)BaseTypes.IncomingEdge].GetNextID()),
+                    new VertexInformation((long)BaseTypes.IncomingEdge, _idManager[(long)BaseTypes.Attribute].GetNextID()),
                         aIncomingEdgeProperty.AttributeName,
                         aIncomingEdgeProperty.Comment,
                         true,

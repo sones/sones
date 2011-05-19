@@ -48,9 +48,11 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Attributes which are to be removed
         /// </summary>
-        private List<String>                    _toBeRemovedAttributes;
+        private List<String>                    _toBeRemovedProperties;
+        private List<String>                    _toBeRemovedBinaryProperties;
         private List<String>                    _toBeRemovedIncomingEdges;
         private List<String>                    _toBeRemovedOutgoingEdges;
+        private List<String>                    _toBeRemovedUnknownAttributes;
         private Dictionary<String, String>      _toBeRemovedIndices;
         private List<String>                    _toBeRemovedUniques;
         private List<String>                    _toBeRemovedMandatories;
@@ -60,104 +62,32 @@ namespace sones.GraphDB.Request
 
         #region add counter
 
-        private int _addProperties  = 0;
-        private int _addIncoming    = 0;
-        private int _addOutgoing    = 0;
-        private int _addBinaries    = 0;
-        private int _addUnknown     = 0;
-        private int _addUnique      = 0;
-        private int _addMandatory   = 0;
-        private int _addIndices     = 0;
+        public int AddPropertyCount { get; private set; }
+        public int AddIncomingEdgeCount { get; private set; }
+        public int AddOutgoingEdgeCount { get; private set; }
+        public int AddBinaryPropertyCount { get; private set; }
+        public int AddUnknownPropertyCount { get; private set; }
+        public int AddUniqueCount { get; private set; }
+        public int AddMandatoryCount { get; private set; }
+        public int AddIndicesCount { get; private set; }
+        public int AddAttributeCount { get { return (_toBeAddedAttributes == null) ? 0 : _toBeAddedAttributes.Count; } }
 
-        public int AddPropertyCount
-        {
-            get { return _addProperties; }
-        }
-
-        public int AddIncomingEdgeCount
-        {
-            get { return _addIncoming; }
-        }
-
-        public int AddOutgoingEdgeCount
-        {
-            get { return _addOutgoing; }
-        }
-
-        public int AddAttributeCount
-        {
-            get { return (_toBeAddedAttributes == null) ? 0 : _toBeAddedAttributes.Count; }
-        }
-
-        public int AddBinaryPropertyCount
-        {
-            get { return _addBinaries; }
-        }
-
-        public int AddUniquePropertyCount
-        {
-            get { return _addUnique; }
-        }
-        
-        public int AddMandatoryPropertyCount
-        {
-            get { return _addMandatory; }
-        }
-
-        public int AddUnknownPropertyCount
-        {
-            get { return _addUnknown; }
-        }
-
-        public int AddIndicesPropertyCount
-        {
-            get { return _addIndices; }
-        }
         #endregion
 
         #region remove counter
-        private int _removeAttributes   = 0;
-        private int _removeIncoming     = 0;
-        private int _removeOutgoing     = 0;
-        private int _removeBinaries     = 0;
-        private int _removeUnique       = 0;
-        private int _removeMandatory    = 0;
-        private int _removeIndices      = 0;
-
-        public int RemoveMandatoryCount
-        {
-            get { return _removeMandatory; }
-        }
 
         public int RemoveAttributeCount
         {
-            get { return _removeAttributes; }
+            get
+            {
+                return _toBeRemovedProperties.Count +
+                       _toBeRemovedBinaryProperties.Count +
+                       _toBeRemovedIncomingEdges.Count +
+                       _toBeRemovedOutgoingEdges.Count +
+                       _toBeRemovedUnknownAttributes.Count;
+            }
         }
 
-        public int RemoveIncomingEdgeCount
-        {
-            get { return _removeIncoming; }
-        }
-
-        public int RemoveOutgoingEdgeCount
-        {
-            get { return _removeOutgoing; }
-        }
-
-        public int RemoveBinaryPropertyCount
-        {
-            get { return _removeBinaries; }
-        }
-
-        public int RemoveUniquePropertyCount
-        {
-            get { return _removeUnique; }
-        }
-
-        public int RemoveIndicesPropertyCount
-        {
-            get { return _removeIndices; }
-        }
         #endregion
 
         #region rename counter
@@ -240,19 +170,11 @@ namespace sones.GraphDB.Request
         #region remove
 
         /// <summary>
-        /// Mandatory attributes to be removed from the altered type.
-        /// </summary>
-        public IEnumerable<String> ToBeRemovedMandatories
-        {
-            get { return (_toBeRemovedMandatories == null) ? null : _toBeRemovedMandatories; }
-        }
-
-        /// <summary>
         /// Properties to be removed from the altered type.
         /// </summary>
         public IEnumerable<String> ToBeRemovedProperties
         {
-            get { return (_toBeRemovedAttributes == null) ? null : _toBeRemovedAttributes; }
+            get { return _toBeRemovedProperties; }
         }
 
         /// <summary>
@@ -260,7 +182,12 @@ namespace sones.GraphDB.Request
         /// </summary>
         public IEnumerable<String> ToBeRemovedOutgoingEdges
         {
-            get { return (_toBeRemovedOutgoingEdges == null) ? null : _toBeRemovedOutgoingEdges.OfType<String>(); }
+            get { return _toBeRemovedOutgoingEdges; }
+        }
+
+        public IEnumerable<String> ToBeRemovedBinaryProperties
+        {
+            get { return _toBeRemovedBinaryProperties; }
         }
 
         /// <summary>
@@ -268,7 +195,20 @@ namespace sones.GraphDB.Request
         /// </summary>
         public IEnumerable<String> ToBeRemovedIncomingEdges
         {
-            get { return (_toBeRemovedIncomingEdges == null) ? null : _toBeRemovedIncomingEdges.OfType<String>(); }
+            get { return _toBeRemovedIncomingEdges; }
+        }
+
+        /// <summary>
+        /// Incoming edges to be removed from the altered type.
+        /// </summary>
+        public IEnumerable<String> ToBeRemovedUnknownAttributes
+        {
+            get { return _toBeRemovedUnknownAttributes; }
+        }
+
+        public void ClearToBeRemovedUnknownAttributes()
+        {
+            _toBeRemovedUnknownAttributes.Clear();
         }
 
         /// <summary>
@@ -276,7 +216,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         public Dictionary<String, String> ToBeRemovedIndices
         {
-            get { return (_toBeRemovedIndices == null) ? null : _toBeRemovedIndices; }
+            get { return _toBeRemovedIndices; }
         }
         
         /// <summary>
@@ -284,8 +224,17 @@ namespace sones.GraphDB.Request
         /// </summary>
         public IEnumerable<String> ToBeRemovedUniques
         {
-            get { return (_toBeRemovedUniques == null) ? null : _toBeRemovedUniques.AsReadOnly(); }
+            get { return _toBeRemovedUniques; }
         }
+
+        /// <summary>
+        /// Mandatory attributes to be removed from the altered type.
+        /// </summary>
+        public IEnumerable<String> ToBeRemovedMandatories
+        {
+            get { return _toBeRemovedMandatories; }
+        }
+
         #endregion
 
         #region rename
@@ -348,7 +297,7 @@ namespace sones.GraphDB.Request
             {
                 _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AttributePredefinition>();
                 _toBeAddedAttributes.Add(myUnknownPredefinition);
-                _addUnknown++;
+                AddUnknownPropertyCount++;
             }
 
             return this;
@@ -365,7 +314,7 @@ namespace sones.GraphDB.Request
             {
                 _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AttributePredefinition>();
                 _toBeAddedAttributes.Add(myPropertyDefinition);
-                _addProperties++;
+                AddPropertyCount++;
             }
 
             return this;
@@ -382,7 +331,7 @@ namespace sones.GraphDB.Request
             {
                 _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AttributePredefinition>();
                 _toBeAddedAttributes.Add(myOutgoingEdgePredefinition);
-                _addOutgoing++;
+                AddOutgoingEdgeCount++;
             }
 
             return this;
@@ -399,7 +348,7 @@ namespace sones.GraphDB.Request
             {
                 _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AttributePredefinition>();
                 _toBeAddedAttributes.Add(myBinaryPropertyPredefinition);
-                _addBinaries++;
+                AddBinaryPropertyCount++;
             }
 
             return this;
@@ -416,7 +365,7 @@ namespace sones.GraphDB.Request
             {
                 _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AttributePredefinition>();
                 _toBeAddedAttributes.Add(myIncomingEdgePredefinition);
-                _addIncoming++;
+                AddIncomingEdgeCount++;
             }
 
             return this;
@@ -433,7 +382,7 @@ namespace sones.GraphDB.Request
             {
                 _toBeAddedUniques = (_toBeAddedUniques) ?? new List<UniquePredefinition>();
                 _toBeAddedUniques.Add(myUniqueDefinition);
-                _addUnique++;
+                AddUniqueCount++;
             }
 
             return this;
@@ -450,7 +399,7 @@ namespace sones.GraphDB.Request
             {
                 _toBeAddedMandatories = (_toBeAddedMandatories) ?? new List<MandatoryPredefinition>();
                 _toBeAddedMandatories.Add(myMandatoryDefinition);
-                _addMandatory++;
+                AddMandatoryCount++;
             }
 
             return this;
@@ -467,7 +416,7 @@ namespace sones.GraphDB.Request
             {
                 _toBeAddedIndices = (_toBeAddedIndices) ?? new List<IndexPredefinition>();
                 _toBeAddedIndices.Add(myIndexDefinition);
-                _addIndices++;
+                AddIndicesCount++;
             }
 
             return this;
@@ -475,18 +424,50 @@ namespace sones.GraphDB.Request
         #endregion
 
         #region remove
+
         /// <summary>
         /// Removes a property to be removed
         /// </summary>
         /// <param name="myAttrName">The property name that is going to be added</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestAlterVertexType RemoveAttribute(String myAttrName)
+        public RequestAlterVertexType RemoveUnknownAttribute(String myAttrName)
         {
             if (!String.IsNullOrWhiteSpace(myAttrName))
             {
-                _toBeRemovedAttributes = (_toBeRemovedAttributes) ?? new List<String>();
-                _toBeRemovedAttributes.Add(myAttrName);
-                _removeAttributes++;
+                _toBeRemovedUnknownAttributes = (_toBeRemovedUnknownAttributes) ?? new List<String>();
+                _toBeRemovedUnknownAttributes.Add(myAttrName);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes a property.
+        /// </summary>
+        /// <param name="myProperty">The property.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestAlterVertexType RemoveProperty(String myProperty)
+        {
+            if (!String.IsNullOrWhiteSpace(myProperty))
+            {
+                _toBeRemovedProperties = (_toBeRemovedProperties) ?? new List<String>();
+                _toBeRemovedProperties.Add(myProperty);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes a binary property.
+        /// </summary>
+        /// <param name="myBinaryProperty">The binary property.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestAlterVertexType RemoveBinaryProperty(String myBinaryProperty)
+        {
+            if (!String.IsNullOrWhiteSpace(myBinaryProperty))
+            {
+                _toBeRemovedBinaryProperties = (_toBeRemovedBinaryProperties) ?? new List<String>();
+                _toBeRemovedBinaryProperties.Add(myBinaryProperty);
             }
 
             return this;
@@ -503,7 +484,6 @@ namespace sones.GraphDB.Request
             {
                 _toBeRemovedOutgoingEdges = (_toBeRemovedOutgoingEdges) ?? new List<String>();
                 _toBeRemovedOutgoingEdges.Add(myOutgoingEdge);
-                _removeOutgoing++;
             }
 
             return this;
@@ -520,7 +500,6 @@ namespace sones.GraphDB.Request
             {
                 _toBeRemovedIncomingEdges = (_toBeRemovedIncomingEdges) ?? new List<String>();
                 _toBeRemovedIncomingEdges.Add(myIncomingEdge);
-                _removeIncoming++;
             }
 
             return this;
@@ -537,7 +516,6 @@ namespace sones.GraphDB.Request
             {
                 _toBeRemovedUniques = (_toBeRemovedUniques) ?? new List<String>();
                 _toBeRemovedUniques.Add(myUnique);
-                _removeUnique++;
             }
 
             return this;
@@ -554,7 +532,6 @@ namespace sones.GraphDB.Request
             {
                 _toBeRemovedMandatories = (_toBeRemovedMandatories) ?? new List<String>();
                 _toBeRemovedMandatories.Add(myMandatory);
-                _removeMandatory++;
             }
 
             return this;
@@ -574,7 +551,6 @@ namespace sones.GraphDB.Request
                 if (!_toBeRemovedIndices.ContainsKey(myIndexName))
                 {
                     _toBeRemovedIndices.Add(myIndexName, myEdition);
-                    _removeIndices++;
                 }
             }
 
@@ -644,7 +620,7 @@ namespace sones.GraphDB.Request
         public void ResetUnknown()
         {
             _toBeAddedAttributes.RemoveAll(x => x is UnknownAttributePredefinition);
-            _addUnknown = 0;
+            AddUnknownPropertyCount = 0;
         }
     }
 }

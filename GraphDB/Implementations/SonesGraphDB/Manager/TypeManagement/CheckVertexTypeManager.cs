@@ -165,6 +165,35 @@ namespace sones.GraphDB.Manager.TypeManagement
                 myAlterVertexTypeRequest.ResetUnknown();
             }
 
+            if (myAlterVertexTypeRequest.ToBeRemovedUnknownAttributes != null)
+            {
+                foreach (var unknownProp in myAlterVertexTypeRequest.ToBeRemovedUnknownAttributes)
+                {
+                    var attrDef = vertexType.GetAttributeDefinition(unknownProp);
+                    if (attrDef == null)
+                        throw new VertexAttributeIsNotDefinedException(unknownProp);
+
+                    switch (attrDef.Kind)
+                    {
+                        case AttributeType.Property:
+                            myAlterVertexTypeRequest.RemoveProperty(unknownProp);
+                            break;
+                        case AttributeType.OutgoingEdge:
+                            myAlterVertexTypeRequest.RemoveOutgoingEdge(unknownProp);
+                            break;
+                        case AttributeType.IncomingEdge:
+                            myAlterVertexTypeRequest.RemoveIncomingEdge(unknownProp);
+                            break;
+                        case AttributeType.BinaryProperty:
+                            myAlterVertexTypeRequest.RemoveBinaryProperty(unknownProp);
+                            break;
+                        default:
+                            throw new Exception("The enumeration AttributeType was changed, but not this switch statement.");
+                    }
+                }
+                myAlterVertexTypeRequest.ClearToBeRemovedUnknownAttributes();
+            }
+
             #region checks
 
             CheckToBeAddedAttributes(myAlterVertexTypeRequest, vertexType);

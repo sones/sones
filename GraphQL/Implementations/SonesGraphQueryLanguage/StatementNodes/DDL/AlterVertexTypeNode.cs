@@ -328,7 +328,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
             foreach (var aAttribute in command.ListOfAttributes)
             {
-                result.RemoveAttribute(aAttribute);
+                result.RemoveUnknownAttribute(aAttribute);
             }
         }
 
