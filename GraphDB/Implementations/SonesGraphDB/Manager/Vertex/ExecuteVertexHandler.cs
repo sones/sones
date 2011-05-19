@@ -458,8 +458,18 @@ namespace sones.GraphDB.Manager.Vertex
 
             CheckMandatoryConstraint(edgeDef, myEdgeType);
             CheckTargetVertices(myTargetType, vertexIDs);
-
+            AddDefaultValues(edgeDef, myEdgeType);
             return new SingleEdgeAddDefinition(myAttributeID, myEdgeType.ID, source, vertexIDs.First(), edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, myEdgeType), edgeDef.UnstructuredProperties);
+        }
+
+        private void AddDefaultValues(EdgePredefinition edgeDef, IEdgeType myEdgeType)
+        {
+            var mandatoryProps = myEdgeType.GetPropertyDefinitions(true).Where(_=>_.IsMandatory);
+            foreach (var propertyDefinition in mandatoryProps)
+            {
+                if (edgeDef.StructuredProperties == null || !edgeDef.StructuredProperties.ContainsKey(propertyDefinition.Name))
+                    edgeDef.AddStructuredProperty(propertyDefinition.Name, propertyDefinition.DefaultValue);
+            }
         }
 
         private static void CheckTargetVertices(IVertexType myTargetVertexType, IEnumerable<VertexInformation> vertexIDs)
