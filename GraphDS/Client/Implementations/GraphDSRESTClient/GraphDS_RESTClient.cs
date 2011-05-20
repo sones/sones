@@ -279,6 +279,7 @@ namespace sones.GraphDS.GraphDSRESTClient
 
                 request.Credentials = _Credentials;
                 request.ContentType = "application/xml";
+                request.Accept = "application/xml";
                 request.UserAgent = "GraphDSRESTClient";
                 request.KeepAlive = false;
                 StreamReader reader;
