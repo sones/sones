@@ -26,6 +26,7 @@ using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.VertexStore.Definitions.Update;
+using sones.Library.BinaryStreamStructure;
 
 namespace sones.GraphFS.Element.Vertex
 {
@@ -118,6 +119,10 @@ namespace sones.GraphFS.Element.Vertex
             IsBulkVertex = false;
         }
 
+        #endregion
+
+        #region private methods
+
         /// <summary>
         /// Creates a new bulk vertex
         /// </summary>
@@ -129,10 +134,10 @@ namespace sones.GraphFS.Element.Vertex
         {
             _vertexID = myVertexID;
             _vertexTypeID = myVertexTypeID;
-            
+
             IsBulkVertex = true;
         }
-
+        
         #endregion
 
         #region IVertex Members
@@ -284,7 +289,23 @@ namespace sones.GraphFS.Element.Vertex
 
         public Stream GetBinaryProperty(long myPropertyID)
         {
-            return _binaryProperties != null && _binaryProperties.ContainsKey(myPropertyID) ? _binaryProperties[myPropertyID] : null;
+            if(_binaryProperties != null)
+            {
+               if(_binaryProperties.ContainsKey(myPropertyID))
+               {
+                   var prop = _binaryProperties[myPropertyID];
+
+                   return new StreamProxy(prop);
+               }
+               else
+               {
+                    return null;
+               }
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public IEnumerable<Tuple<long, Stream>> GetAllBinaryProperties(PropertyHyperGraphFilter.BinaryPropertyFilter myFilter = null)
