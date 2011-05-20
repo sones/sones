@@ -151,7 +151,8 @@ namespace sones.GraphDB.TypeManagement
             var result = GetAttributes_private().Values.FirstOrDefault(_=>_.ID == myAttributeID);
 
             if (result == null)
-                result = GetParentType().GetAttributeDefinition(myAttributeID);
+                if (GetParentType() != null)
+                    result = GetParentType().GetAttributeDefinition(myAttributeID);
 
             return result;
         }

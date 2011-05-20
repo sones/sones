@@ -33,6 +33,7 @@ using sones.Library.Commons.Security;
 using System.Net;
 using System.Threading;
 using sones.GraphDB.Manager.Plugin;
+using System.IO;
 
 namespace sones.sonesGraphDBStarter
 {
@@ -74,9 +75,39 @@ namespace sones.sonesGraphDBStarter
             IGraphDB GraphDB;
 
             if (Properties.Settings.Default.UsePersistence)
-                GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin",new Dictionary<string, object>() { { "location", new Uri(Properties.Settings.Default.PersistenceLocation) } })));
+            {
+
+                string configuredLocation = Properties.Settings.Default.PersistenceLocation;
+                Uri location = null;
+
+                if (configuredLocation.Contains("file:"))
+                {
+                    location = new Uri(configuredLocation);
+                }
+                else
+                {
+                    string rootPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location);
+                    string dataPath = rootPath + Path.DirectorySeparatorChar + configuredLocation;
+                    location = new Uri(@dataPath);
+                }
+
+                try
+                {
+                    //Make a new GraphDB instance
+                    GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location } })));
+                }
+                catch
+                {
+                    Console.Error.WriteLine("Could not access the data directory " + location.AbsoluteUri + ". Please make sure you that you have the right file access permissions!");
+                    Console.Error.WriteLine("Using in memory storage instead.");
+
+                    GraphDB = new SonesGraphDB();
+                }
+            }
             else
+            {
                 GraphDB = new SonesGraphDB();
+            }
 
             #region Configure PlugIns
             // Plugins are loaded by the GraphDS with their according PluginDefinition and only if they are listed
