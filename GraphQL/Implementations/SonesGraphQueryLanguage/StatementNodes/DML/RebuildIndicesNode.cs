@@ -102,7 +102,7 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             return new QueryResult(Query,
                                     "sones.gql",
-                                    Convert.ToUInt64(myStats.ExecutionTime),
+                                    Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds),
                                     ResultType.Successful,
                                     new List<IVertexView>());
         }

@@ -141,12 +141,16 @@ namespace sones.GraphFS.Element.Edge
 
         public bool HasProperty(long myPropertyID)
         {
-            return _structuredProperties.ContainsKey(myPropertyID);
+            return (_structuredProperties == null)
+                        ? false
+                        : _structuredProperties.ContainsKey(myPropertyID);
         }
 
         public int GetCountOfProperties()
         {
-            return _structuredProperties.Count;
+            return (_structuredProperties == null)
+                        ? 0
+                        : _structuredProperties.Count;
         }
 
         public IEnumerable<Tuple<long, IComparable>> GetAllProperties(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null)

@@ -162,9 +162,13 @@ namespace sones.GraphQL.StatementNodes.DML
 
             #endregion
 
-            foreach (var aAttributeDefinition in _AttributeAssignList)
+            if (_AttributeAssignList != null)
             {
-                ProcessAAttributeDefinition(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType, aAttributeDefinition, ref result);
+                foreach (var aAttributeDefinition in _AttributeAssignList)
+                {
+                    ProcessAAttributeDefinition(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken,
+                                                vertexType, aAttributeDefinition, ref result);
+                }
             }
 
             return result;

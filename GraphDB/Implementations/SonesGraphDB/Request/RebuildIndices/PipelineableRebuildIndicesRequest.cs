@@ -18,15 +18,12 @@
 * 
 */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.Library.LanguageExtensions;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.ErrorHandling;
-using sones.GraphDB.ErrorHandling.IndexErrors;
 
 namespace sones.GraphDB.Request.RebuildIndices
 {
@@ -65,13 +62,13 @@ namespace sones.GraphDB.Request.RebuildIndices
         {
             IEnumerable<IVertexType> typesToRebuild = null;
             
-            if (_request.Types == null)
+            if (_request.Types == null || !_request.Types.CountIsGreater(0))
             {
                 typesToRebuild = myMetaManager.VertexTypeManager.ExecuteManager.GetAllVertexTypes(TransactionToken, SecurityToken);
             }
             else
             {
-
+                HashSet<IVertexType> types = new HashSet<IVertexType>();
                 #region Get types by name and return on error
 
                 foreach (var typeName in _request.Types)
@@ -83,8 +80,10 @@ namespace sones.GraphDB.Request.RebuildIndices
                         throw new IndexTypeDoesNotExistException(typeName, "");
                     }
                     
-                    (typesToRebuild as HashSet<IVertexType>).Add(type);
+                    types.Add(type);
                 }
+
+                typesToRebuild = types;
 
                 #endregion
 

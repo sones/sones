@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Collections;
 
 namespace sones.Library.LanguageExtensions
 {
@@ -40,6 +41,9 @@ namespace sones.Library.LanguageExtensions
         {
             if (myIEnumerable == null)
                 return false;
+
+            if (myIEnumerable is ICollection)
+                return (myIEnumerable as ICollection).Count > myNumberOfElements;
 
             var rator = myIEnumerable.GetEnumerator();
 

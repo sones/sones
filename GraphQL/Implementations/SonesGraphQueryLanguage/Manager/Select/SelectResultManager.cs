@@ -568,15 +568,15 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// This will return the result of all examined DBOs, including calculated aggregates and groupings.
         /// The Value of the returned GraphResult is of type IEnumerable&lt;Vertex&gt;
         /// </summary>
-        public IEnumerable<IVertexView> GetResult(IEnumerable<IVertexView> myVertices)
-        {
+        //public IEnumerable<IVertexView> GetResult(IEnumerable<IVertexView> myVertices)
+        //{
 
-            foreach (var _Vertex in myVertices)
-            {
-                yield return _Vertex;
-            }
+        //    foreach (var _Vertex in myVertices)
+        //    {
+        //        yield return _Vertex;
+        //    }
 
-        }
+        //}
 
         #endregion
 

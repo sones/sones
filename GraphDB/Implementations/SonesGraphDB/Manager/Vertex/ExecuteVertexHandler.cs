@@ -197,10 +197,13 @@ namespace sones.GraphDB.Manager.Vertex
 
                 foreach (var vtype in definingVertexType.GetChildVertexTypes(true, true))
                 {
-                    var index = _indexManager.GetIndex(vtype, unique.CorrespondingIndex.IndexedProperties, mySecurity, myTransaction);
+                    var indices = _indexManager.GetIndices(vtype, unique.CorrespondingIndex.IndexedProperties, mySecurity, myTransaction);
 
-                    if (index.ContainsKey(key))
-                        throw new IndexUniqueConstrainViolationException(myInsertDefinition.VertexTypeName, unique.CorrespondingIndex.Name);
+                    foreach (var index in indices)
+                    {
+                        if (index.ContainsKey(key))
+                            throw new IndexUniqueConstrainViolationException(myInsertDefinition.VertexTypeName, unique.CorrespondingIndex.Name); 
+                    }
                 }
             }
 
@@ -218,7 +221,7 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     //do sth if there is a value corresponding to the index definition
 
-                    var index = _indexManager.GetIndex(vertexType, indexDef.IndexedProperties, mySecurity, myTransaction);
+                    var index = _indexManager.GetIndex(indexDef.Name, mySecurity, myTransaction);
 
                     if (index is ISingleValueIndex<IComparable, Int64>)
                     {
@@ -228,15 +231,15 @@ namespace sones.GraphDB.Manager.Vertex
                     {
                         //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
                         //TODO: Refactor IIndex structure
-                        (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> { result.VertexID });
+                        (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> {result.VertexID});
                     }
                     else
                     {
-                        throw new NotImplementedException("Indices other than single or multiple value indices are not supported yet.");
+                        throw new NotImplementedException(
+                            "Indices other than single or multiple value indices are not supported yet.");
                     }
 
                 }
-
             }
 
             return result;
@@ -458,8 +461,18 @@ namespace sones.GraphDB.Manager.Vertex
 
             CheckMandatoryConstraint(edgeDef, myEdgeType);
             CheckTargetVertices(myTargetType, vertexIDs);
-
+            AddDefaultValues(edgeDef, myEdgeType);
             return new SingleEdgeAddDefinition(myAttributeID, myEdgeType.ID, source, vertexIDs.First(), edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, myEdgeType), edgeDef.UnstructuredProperties);
+        }
+
+        private void AddDefaultValues(EdgePredefinition edgeDef, IEdgeType myEdgeType)
+        {
+            var mandatoryProps = myEdgeType.GetPropertyDefinitions(true).Where(_=>_.IsMandatory);
+            foreach (var propertyDefinition in mandatoryProps)
+            {
+                if (edgeDef.StructuredProperties == null || !edgeDef.StructuredProperties.ContainsKey(propertyDefinition.Name))
+                    edgeDef.AddStructuredProperty(propertyDefinition.Name, propertyDefinition.DefaultValue);
+            }
         }
 
         private static void CheckTargetVertices(IVertexType myTargetVertexType, IEnumerable<VertexInformation> vertexIDs)
@@ -746,7 +759,7 @@ namespace sones.GraphDB.Manager.Vertex
                                     RemoveVertexPropertyFromIndex(
                                         aVertex,
                                         aIndexDefinition,
-                                        _indexManager.GetIndex(vertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken)
+                                        _indexManager.GetIndices(vertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken)
                                         , mySecurityToken, myTransactionToken);
                                 }
 
@@ -845,35 +858,39 @@ namespace sones.GraphDB.Manager.Vertex
                         RemoveVertexPropertyFromIndex(
                             aVertex,
                             aIndexDefinition,
-                            _indexManager.GetIndex(myVertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken)
+                            _indexManager.GetIndices(myVertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken)
                             , mySecurityToken, myTransactionToken);
                     }
                 }
             }
         }
 
-        private void RemoveVertexPropertyFromIndex(IVertex aVertex, IIndexDefinition aIndexDefinition, IIndex<IComparable, long> iIndex, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void RemoveVertexPropertyFromIndex(IVertex aVertex, IIndexDefinition aIndexDefinition, IEnumerable<IIndex<IComparable, long>> myIndices, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             var entry = CreateIndexEntry(aIndexDefinition.IndexedProperties, aVertex.GetAllProperties().ToDictionary(key => key.Item1, value => value.Item2));
 
-            if (iIndex is IMultipleValueIndex<IComparable, long>)
+            foreach (var iIndex in myIndices)
             {
-                lock (iIndex)
+                if (iIndex is IMultipleValueIndex<IComparable, long>)
                 {
-                    if (iIndex.ContainsKey(entry))
+                    lock (iIndex)
                     {
-                        var toBeUpdatedIndex = (IMultipleValueIndex<IComparable, long>)iIndex;
+                        if (iIndex.ContainsKey(entry))
+                        {
+                            var toBeUpdatedIndex = (IMultipleValueIndex<IComparable, long>)iIndex;
 
-                        var payLoad = toBeUpdatedIndex[entry];
-                        payLoad.Remove(aVertex.VertexID);
+                            var payLoad = toBeUpdatedIndex[entry];
+                            payLoad.Remove(aVertex.VertexID);
 
-                        toBeUpdatedIndex.Add(entry, payLoad, IndexAddStrategy.REPLACE);
+                            toBeUpdatedIndex.Add(entry, payLoad, IndexAddStrategy.REPLACE);
+                        }
                     }
                 }
-            }
-            else
-            {
-                iIndex.Remove(entry);
+                else
+                {
+                    iIndex.Remove(entry);
+                }
+
             }
         }
 
@@ -946,8 +963,10 @@ namespace sones.GraphDB.Manager.Vertex
             {
                 var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(group.Key, myTransaction, mySecurity);
 
-                var indices = vertexType.GetIndexDefinitions(false).ToDictionary(_ => _indexManager.GetIndex(vertexType, _.IndexedProperties, mySecurity, myTransaction), _=>_.IndexedProperties);
-                var neededPropNames = indices.SelectMany(_=>_.Value).Select(_=>_.Name).Distinct().Intersect(myChangedProperties);
+                var indexedProps = vertexType.GetIndexDefinitions(false).Select(_ => _.IndexedProperties);
+                var indices = indexedProps.ToDictionary(_ => _, _ => _indexManager.GetIndices(vertexType, _, mySecurity, myTransaction));
+                                                                            //_ => ));
+                var neededPropNames = indexedProps.SelectMany(_=>_).Select(_=>_.Name).Distinct().Intersect(myChangedProperties);
 
                 foreach (var vertex in group)
                 {
@@ -977,58 +996,70 @@ namespace sones.GraphDB.Manager.Vertex
             return result;
         }
 
-        private void AddToIndex(IDictionary<string, IComparable> structured, long id, IVertexType vertexType, Dictionary<IIndex<IComparable, long>, IList<IPropertyDefinition>> indices, TransactionToken myTransaction, SecurityToken mySecurity)
+        private void AddToIndex(IDictionary<string, IComparable> structured, long id, IVertexType vertexType, IDictionary<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, long>>> indices, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            foreach (var index in indices)
+            foreach (var indexGroup in indices)
             {
-                var entry = CreateIndexEntry(index.Value, structured);
+                foreach (var index in indexGroup.Value)
+                {
+                    var entry = CreateIndexEntry(indexGroup.Key, structured);
 
-                if (index.Key is ISingleValueIndex<IComparable, long>)
-                {
-                    (index.Key as ISingleValueIndex<IComparable, long>).Add(entry, id);
+                    if (index is ISingleValueIndex<IComparable, long>)
+                    {
+                        (index as ISingleValueIndex<IComparable, long>).Add(entry, id);
+                    }
+                    else if (index is IMultipleValueIndex<IComparable, long>)
+                    {
+                        //Ask: Why do I need to create a hashset for a single value??? *aaarghhh*
+                        (index as IMultipleValueIndex<IComparable, long>).Add(entry, new HashSet<long>(new[] {id}));
+                    }
+                    else
+                        throw new NotImplementedException("Other index types are not known.");
                 }
-                else if (index.Key is IMultipleValueIndex<IComparable, long>)
-                {
-                    //Ask: Why do I need to create a hashset for a single value??? *aaarghhh*
-                    (index.Key as IMultipleValueIndex<IComparable, long>).Add(entry, new HashSet<long>(new[] { id }));
-                }
-                else
-                    throw new NotImplementedException("Other index types are not known.");
             }
         }
 
-        private void RemoveFromIndex(long myVertexID, IDictionary<string, IComparable> structured, IVertexType vertexType, Dictionary<IIndex<IComparable, long>, IList<IPropertyDefinition>> indices, TransactionToken myTransaction, SecurityToken mySecurity)
+        private void RemoveFromIndex(
+            long myVertexID, 
+            IDictionary<string, IComparable> structured, 
+            IVertexType vertexType, 
+            IEnumerable<KeyValuePair<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, long>>>> indices, 
+            TransactionToken myTransaction, 
+            SecurityToken mySecurity)
         {
-            foreach (var index in indices)
+            foreach (var indexGroup in indices)
             {
-                var entry = CreateIndexEntry(index.Value, structured);
-
-                if (entry != null)
+                foreach (var index in indexGroup.Value)
                 {
+                    var entry = CreateIndexEntry(indexGroup.Key, structured);
 
-
-                if (index.Key is IMultipleValueIndex<IComparable, long>)
-                {
-                    lock (index.Key)
+                    if (entry != null)
                     {
-                        if (index.Key.ContainsKey(entry))
+                        if (index is IMultipleValueIndex<IComparable, long>)
                         {
-                            var toBeUpdatedIndex = (IMultipleValueIndex<IComparable, long>)index.Key;
+                            lock (index)
+                            {
+                                if (index.ContainsKey(entry))
+                                {
+                                    var toBeUpdatedIndex = (IMultipleValueIndex<IComparable, long>) index;
 
-                            var payLoad = toBeUpdatedIndex[entry];
-                            payLoad.Remove(myVertexID);
+                                    var payLoad = toBeUpdatedIndex[entry];
+                                    payLoad.Remove(myVertexID);
 
-                            toBeUpdatedIndex.Add(entry, payLoad, IndexAddStrategy.REPLACE);
+                                    toBeUpdatedIndex.Add(entry, payLoad, IndexAddStrategy.REPLACE);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            index.Remove(entry);
                         }
                     }
-                }
-                else
-                {
-                    index.Key.Remove(entry);
-                }
+
                 }
 
             }
+
         }
 
         private IDictionary<String, IComparable> GetStructuredFromVertex(IVertex vertex, IVertexType vertexType, IEnumerable<string> neededPropNames)

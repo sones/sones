@@ -203,7 +203,15 @@ namespace sones.GraphDB.Manager.Index
         private string CreateIndexName(IndexPredefinition myIndexDefinition, IVertexType vertexType)
         {
             var propNames = string.Join("&", myIndexDefinition.Properties);
-            return string.Join("_", "sones", propNames, vertexType.Name);
+
+            int count = 0;
+            string result;
+            do
+            {
+                result = string.Join("_", "sones", propNames, vertexType.Name, count++);
+            } while (_ownIndex.ContainsKey(result));
+
+            return result;
         }
 
         public bool HasIndex(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
@@ -216,7 +224,7 @@ namespace sones.GraphDB.Manager.Index
             return myPropertyDefinition.InIndices.Select(_ => _indices[_.ID]);
         }
 
-        public IIndex<IComparable, long> GetIndex(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             myVertexType.CheckNull("myVertexType");
             myPropertyDefinition.CheckNull("myPropertyDefinition");
@@ -236,16 +244,9 @@ namespace sones.GraphDB.Manager.Index
                 }
             }
 
-            var result = myVertexType.GetIndexDefinitions(false).Where(_ => myPropertyDefinition.SequenceEqual(_.IndexedProperties)).ToArray();
+            var result = myVertexType.GetIndexDefinitions(false).Where(_ => myPropertyDefinition.SequenceEqual(_.IndexedProperties)).Select(_=>_indices[_.ID]).ToArray();
 
-            if (result.Length == 0)
-                return null;
-
-            if (result.Length > 1)
-                //TODO better exception here.
-                throw new UnknownDBException("There are more than one indices on the same sequence of properties.");
-
-            return _indices[result[0].ID];
+            return result;
 
         }
 
@@ -328,15 +329,11 @@ namespace sones.GraphDB.Manager.Index
 
         private void RebuildIndices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, bool myOnlyNonPersistent)
         {
-            Dictionary<IIndex<IComparable, Int64>, IList<IPropertyDefinition>> toRebuild = new Dictionary<IIndex<IComparable, long>, IList<IPropertyDefinition>>();
+            Dictionary<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, Int64>>> toRebuild = new Dictionary<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, long>>>();
             foreach (var indexDef in myVertexType.GetIndexDefinitions(false))
             {
-                var index = GetIndex(myVertexType, indexDef.IndexedProperties, mySecurity, myTransaction);
-                if (!myOnlyNonPersistent || !index.IsPersistent)
-                {
-                    index.ClearIndex();
-                    toRebuild.Add(index, indexDef.IndexedProperties);
-                }
+                var indices = GetIndices(myVertexType, indexDef.IndexedProperties, mySecurity, myTransaction).Where(_=>!myOnlyNonPersistent || !_.IsPersistent);
+                toRebuild.Add(indexDef.IndexedProperties, indices);
             }
 
             if (toRebuild.Count > 0)
@@ -345,24 +342,26 @@ namespace sones.GraphDB.Manager.Index
 
                 foreach (var vertex in vertices)
                 {
-                    foreach (var index in toRebuild)
-                    {
-                        var key = CreateIndexKey(index.Value, vertex);
-                        if (index.Key is ISingleValueIndex<IComparable, Int64>)
+                    foreach (var indexGroup in toRebuild)
+                        foreach (var index in indexGroup.Value)
                         {
-                            (index.Key as ISingleValueIndex<IComparable, Int64>).Add(key, vertex.VertexID);
+                            var key = CreateIndexKey(indexGroup.Key, vertex);
+                            if (index is ISingleValueIndex<IComparable, Int64>)
+                            {
+                                (index as ISingleValueIndex<IComparable, Int64>).Add(key, vertex.VertexID);
+                            }
+                            else if (index is IMultipleValueIndex<IComparable, Int64>)
+                            {
+                                //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
+                                //TODO: Refactor IIndex structure
+                                (index as IMultipleValueIndex<IComparable, Int64>).Add(key,new HashSet<Int64>{vertex.VertexID});
+                            }
+                            else
+                            {
+                                throw new NotImplementedException(
+                                    "Indices other than single or multiple value indices are not supported yet.");
+                            }
                         }
-                        else if (index.Key is IMultipleValueIndex<IComparable, Int64>)
-                        {
-                            //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
-                            //TODO: Refactor IIndex structure
-                            (index.Key as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> { vertex.VertexID });
-                        }
-                        else
-                        {
-                            throw new NotImplementedException("Indices other than single or multiple value indices are not supported yet.");
-                        }
-                    }
 
                 }
             }
@@ -502,5 +501,16 @@ namespace sones.GraphDB.Manager.Index
         }
 
         #endregion
+
+
+        public IIndex<IComparable, long> GetIndex(string myIndexName, SecurityToken mySecurity, TransactionToken myTransaction)
+        {
+            if (_ownIndex.ContainsKey(myIndexName))
+            {
+                return _indices[_ownIndex[myIndexName]];
+            }
+
+            return null;
+        }
     }
 }
