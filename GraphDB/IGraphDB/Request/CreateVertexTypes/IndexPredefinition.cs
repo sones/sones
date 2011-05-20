@@ -27,6 +27,8 @@ namespace sones.GraphDB.Request.CreateVertexTypes
 {
     public class IndexPredefinition
     {
+        public string Edition { get; private set; }
+
         /// <summary>
         /// The name of the index type.
         /// </summary>
@@ -112,6 +114,14 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         public IndexPredefinition SetComment(String myComment)
         {
             Comment = myComment;
+
+            return this;
+        }
+
+
+        public IndexPredefinition SetEdition(string myEdition)
+        {
+            Edition = myEdition;
 
             return this;
         }

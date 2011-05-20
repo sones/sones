@@ -122,7 +122,7 @@ namespace sones.GraphDB.Manager.Index
             }
 
             var indexID = _idManager[(long)BaseTypes.Index].GetNextID();
-            var info = new VertexInformation((long)BaseTypes.Index, indexID);
+            var info = new VertexInformation((long)BaseTypes.Index, indexID, 0, myIndexDefinition.Edition);
 
             var typeClass = myIndexDefinition.TypeName ?? GetBestMatchingIndexName(false, false, false);
             var parameter = (_indexPluginParameter.ContainsKey(typeClass))

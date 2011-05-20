@@ -251,6 +251,8 @@ namespace sones.GraphQL.StatementNodes.DDL
                 result.SetIndexType(aIndex.IndexType);
             }
 
+            result.SetEdition(aIndex.Edition);
+
             foreach (var aIndexProperty in aIndex.IndexAttributeDefinitions)
             {
                 result.AddProperty(aIndexProperty.IndexAttribute.ContentString);

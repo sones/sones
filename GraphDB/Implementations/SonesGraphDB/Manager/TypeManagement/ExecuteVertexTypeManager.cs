@@ -1353,7 +1353,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         ? new IndexPredefinition()
                         : new IndexPredefinition(aToBeAddedIndex.Name);
 
-                    predef.AddProperty(aToBeAddedIndex.Properties).SetVertexType(vertexType.Name);
+                    predef.AddProperty(aToBeAddedIndex.Properties).SetEdition(aToBeAddedIndex.Edition).SetVertexType(vertexType.Name);
 
                     _indexManager.CreateIndex(predef, mySecurityToken, myTransactionToken);
                 }          
