@@ -458,7 +458,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             #region If there was a result for this typeNode we will add a new SelectionListElementResult
 
-            _Vertices = mySelectResultManager.GetResult(_Vertices);
+//            _Vertices = mySelectResultManager.GetResult(_Vertices);
 
             #region OrderBy
 
