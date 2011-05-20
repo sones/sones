@@ -198,12 +198,8 @@ namespace sones.Library.BinaryStreamStructure
                 return _Position;
             }
             set
-            {
-                lock (_Stream)
-                {                    
-                    _Stream.Position = value;
-                    _Position = value;
-                }
+            {                
+                _Position = value;                
             }
         }
 

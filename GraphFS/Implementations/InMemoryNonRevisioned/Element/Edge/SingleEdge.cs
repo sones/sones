@@ -187,7 +187,7 @@ namespace sones.GraphFS.Element.Edge
 
         public int GetCountOfUnstructuredProperties()
         {
-            return _unstructuredProperties.Count;
+            return _unstructuredProperties == null ? 0 : _unstructuredProperties.Count;
         }
 
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(
@@ -247,7 +247,10 @@ namespace sones.GraphFS.Element.Edge
 
         public void UpdateEdgeType(Int64 myEdgeType)
         {
-            _edgeTypeID = myEdgeType;
+            lock (_lockobject)
+            {
+                _edgeTypeID = myEdgeType;
+            }
         }
 
         public void UpdateStructuredProperties(IDictionary<long, IComparable> myUpdatedProperties, IEnumerable<long> myDeletedProperties)
@@ -256,21 +259,36 @@ namespace sones.GraphFS.Element.Edge
             {
                 if (myDeletedProperties != null)
                 {
-                    foreach (var item in myDeletedProperties)
+                    if (_structuredProperties != null)
                     {
-                        _structuredProperties.Remove(item);
+                        foreach (var item in myDeletedProperties)
+                        {
+                            _structuredProperties.Remove(item);                            
+                        }
                     }
                 }
 
                 if (myUpdatedProperties != null)
                 {
-                    foreach (var item in _structuredProperties)
+                    if (_structuredProperties != null)
                     {
-                        if (_structuredProperties.ContainsKey(item.Key))
+                        foreach (var item in _structuredProperties)
                         {
-                            _structuredProperties[item.Key] = item.Value;
+                            if (_structuredProperties.ContainsKey(item.Key))
+                            {
+                                _structuredProperties[item.Key] = item.Value;
+                            }
+                            else
+                            {
+                                _structuredProperties.Add(item.Key, item.Value);
+                            }
                         }
-                        else
+                    }
+                    else
+                    {
+                        _structuredProperties = new Dictionary<Int64, IComparable>();
+
+                        foreach (var item in myUpdatedProperties)
                         {
                             _structuredProperties.Add(item.Key, item.Value);
                         }
@@ -285,21 +303,36 @@ namespace sones.GraphFS.Element.Edge
             {
                 if (myDeletedProperties != null)
                 {
-                    foreach (var item in myDeletedProperties)
+                    if (_unstructuredProperties != null)
                     {
-                        _unstructuredProperties.Remove(item);
+                        foreach (var item in myDeletedProperties)
+                        {
+                            _unstructuredProperties.Remove(item);
+                        }
                     }
                 }
 
                 if (myUpdatedProperties != null)
                 {
-                    foreach (var item in myUpdatedProperties)
+                    if (_unstructuredProperties != null)
                     {
-                        if (_unstructuredProperties.ContainsKey(item.Key))
+                        foreach (var item in myUpdatedProperties)
                         {
-                            _unstructuredProperties[item.Key] = item.Value;
+                            if (_unstructuredProperties.ContainsKey(item.Key))
+                            {
+                                _unstructuredProperties[item.Key] = item.Value;
+                            }
+                            else
+                            {
+                                _unstructuredProperties.Add(item.Key, item.Value);
+                            }
                         }
-                        else
+                    }
+                    else
+                    {
+                        _unstructuredProperties = new Dictionary<string, Object>();
+
+                        foreach (var item in myUpdatedProperties)
                         {
                             _unstructuredProperties.Add(item.Key, item.Value);
                         }

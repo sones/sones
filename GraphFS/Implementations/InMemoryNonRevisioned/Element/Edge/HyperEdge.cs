@@ -91,7 +91,10 @@ namespace sones.GraphFS.Element.Edge
 
         public void UpdateEdgeType(Int64 myEdgeType)
         {
-            _edgeTypeID = myEdgeType;
+            lock (_lockobject)
+            {
+                _edgeTypeID = myEdgeType;
+            }
         }
 
         public void UpdateComment(String myComment)
@@ -111,21 +114,36 @@ namespace sones.GraphFS.Element.Edge
             {
                 if (myDeletedProperties != null)
                 {
-                    foreach (var item in myDeletedProperties)
+                    if (_structuredProperties != null)
                     {
-                        _structuredProperties.Remove(item);
+                        foreach (var item in myDeletedProperties)
+                        {                            
+                            _structuredProperties.Remove(item);
+                        }
                     }
                 }
 
                 if (myUpdatedProperties != null)
                 {
-                    foreach (var item in _structuredProperties)
+                    if (_structuredProperties != null)
                     {
-                        if (_structuredProperties.ContainsKey(item.Key))
+                        foreach (var item in myUpdatedProperties)
                         {
-                            _structuredProperties[item.Key] = item.Value;
+                            if (_structuredProperties.ContainsKey(item.Key))
+                            {
+                                _structuredProperties[item.Key] = item.Value;
+                            }
+                            else
+                            {
+                                _structuredProperties.Add(item.Key, item.Value);
+                            }
                         }
-                        else
+                    }
+                    else
+                    {
+                        _structuredProperties = new Dictionary<Int64, IComparable>();
+
+                        foreach (var item in myUpdatedProperties)
                         {
                             _structuredProperties.Add(item.Key, item.Value);
                         }
@@ -140,21 +158,36 @@ namespace sones.GraphFS.Element.Edge
             {
                 if (myDeletedProperties != null)
                 {
-                    foreach (var item in myDeletedProperties)
+                    if (_unstructuredProperties != null)
                     {
-                        _unstructuredProperties.Remove(item);
+                        foreach (var item in myDeletedProperties)
+                        {
+                            _unstructuredProperties.Remove(item);
+                        }
                     }
                 }
 
                 if (myUpdatedProperties != null)
                 {
-                    foreach (var item in myUpdatedProperties)
+                    if (_unstructuredProperties != null)
                     {
-                        if (_unstructuredProperties.ContainsKey(item.Key))
+                        foreach (var item in myUpdatedProperties)
                         {
-                            _unstructuredProperties[item.Key] = item.Value;
+                            if (_unstructuredProperties.ContainsKey(item.Key))
+                            {
+                                _unstructuredProperties[item.Key] = item.Value;
+                            }
+                            else
+                            {
+                                _unstructuredProperties.Add(item.Key, item.Value);
+                            }
                         }
-                        else
+                    }
+                    else
+                    {
+                        _unstructuredProperties = new Dictionary<string, Object>();
+
+                        foreach (var item in myUpdatedProperties)
                         {
                             _unstructuredProperties.Add(item.Key, item.Value);
                         }
@@ -246,12 +279,26 @@ namespace sones.GraphFS.Element.Edge
 
         public bool HasProperty(long myPropertyID)
         {
-            return _structuredProperties.ContainsKey(myPropertyID);
+            if (_structuredProperties != null)
+            {
+                return _structuredProperties.ContainsKey(myPropertyID);
+            }
+            else
+            {
+                return false;
+            }            
         }
 
         public int GetCountOfProperties()
         {
-            return _structuredProperties.Count;
+            if (_structuredProperties != null)
+            {
+                return _structuredProperties.Count;
+            }
+            else
+            {
+                return 0;
+            }            
         }
 
         public IEnumerable<Tuple<long, IComparable>> GetAllProperties(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null)
@@ -283,12 +330,26 @@ namespace sones.GraphFS.Element.Edge
 
         public bool HasUnstructuredProperty(string myPropertyName)
         {
-            return _unstructuredProperties.ContainsKey(myPropertyName);
+            if (_unstructuredProperties != null)
+            {
+                return _unstructuredProperties.ContainsKey(myPropertyName);
+            }
+            else
+            {
+                return false;    
+            }
         }
 
         public int GetCountOfUnstructuredProperties()
         {
-            return _unstructuredProperties.Count;
+            if (_unstructuredProperties != null)
+            {
+                return _unstructuredProperties.Count;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(

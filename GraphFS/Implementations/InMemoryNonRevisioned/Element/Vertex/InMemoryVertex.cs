@@ -510,21 +510,36 @@ namespace sones.GraphFS.Element.Vertex
             {
                 if (myDeletedBinaryProperties != null)
                 {
-                    foreach (var item in myDeletedBinaryProperties)
+                    if (_binaryProperties != null)
                     {
-                        _binaryProperties.Remove(item);
+                        foreach (var item in myDeletedBinaryProperties)
+                        {
+                            _binaryProperties.Remove(item);
+                        }
                     }
                 }
 
                 if (myBinaryUpdatedProperties != null)
                 {
-                    foreach (var item in myBinaryUpdatedProperties)
+                    if (_binaryProperties != null)
                     {
-                        if (_binaryProperties.ContainsKey(item.Value.PropertyID))
+                        foreach (var item in myBinaryUpdatedProperties)
                         {
-                            _binaryProperties[item.Value.PropertyID] = item.Value.Stream;
+                            if (_binaryProperties.ContainsKey(item.Value.PropertyID))
+                            {
+                                _binaryProperties[item.Value.PropertyID] = item.Value.Stream;
+                            }
+                            else
+                            {
+                                _binaryProperties.Add(item.Value.PropertyID, item.Value.Stream);
+                            }
                         }
-                        else
+                    }
+                    else 
+                    {
+                        _binaryProperties = new Dictionary<Int64, Stream>();
+
+                        foreach (var item in myBinaryUpdatedProperties)
                         {
                             _binaryProperties.Add(item.Value.PropertyID, item.Value.Stream);
                         }
@@ -542,21 +557,36 @@ namespace sones.GraphFS.Element.Vertex
 
                     if (myStructuredUpdates.Deleted != null)
                     {
-                        foreach (var item in myStructuredUpdates.Deleted)
+                        if (_structuredProperties != null)
                         {
-                            _structuredProperties.Remove(item);
+                            foreach (var item in myStructuredUpdates.Deleted)
+                            {
+                                _structuredProperties.Remove(item);
+                            }
                         }
                     }
 
                     if (myStructuredUpdates.Updated != null)
                     {
-                        foreach (var item in myStructuredUpdates.Updated)
+                        if (_structuredProperties != null)
                         {
-                            if (_structuredProperties.ContainsKey(item.Key))
+                            foreach (var item in myStructuredUpdates.Updated)
                             {
-                                _structuredProperties[item.Key] = item.Value;
+                                if (_structuredProperties.ContainsKey(item.Key))
+                                {
+                                    _structuredProperties[item.Key] = item.Value;
+                                }
+                                else
+                                {
+                                    _structuredProperties.Add(item.Key, item.Value);
+                                }
                             }
-                            else
+                        }
+                        else
+                        {
+                            _structuredProperties = new Dictionary<Int64, IComparable>();
+
+                            foreach (var item in myStructuredUpdates.Updated)
                             {
                                 _structuredProperties.Add(item.Key, item.Value);
                             }
@@ -575,23 +605,37 @@ namespace sones.GraphFS.Element.Vertex
                 {
                     if (myUnstructuredUpdates.Deleted != null)
                     {
-                        foreach (var item in myUnstructuredUpdates.Deleted)
+                        if (_unstructuredProperties != null)
                         {
-                            if (_unstructuredProperties != null)
-                                _unstructuredProperties.Remove(item);
+                            foreach (var item in myUnstructuredUpdates.Deleted)
+                            {
+                                if (_unstructuredProperties != null)
+                                    _unstructuredProperties.Remove(item);
+                            }
                         }
                     }
 
                     if (myUnstructuredUpdates.Updated != null)
                     {
-                        foreach (var item in myUnstructuredUpdates.Updated)
+                        if (_unstructuredProperties != null)
                         {
-                            _unstructuredProperties = _unstructuredProperties ?? new Dictionary<String, object>();
-                            if (_unstructuredProperties.ContainsKey(item.Key))
+                            foreach (var item in myUnstructuredUpdates.Updated)
                             {
-                                _unstructuredProperties[item.Key] = item.Value;
+                                if (_unstructuredProperties.ContainsKey(item.Key))
+                                {
+                                    _unstructuredProperties[item.Key] = item.Value;
+                                }
+                                else
+                                {
+                                    _unstructuredProperties.Add(item.Key, item.Value);
+                                }
                             }
-                            else
+                        }
+                        else
+                        {
+                            _unstructuredProperties = new Dictionary<String, Object>();
+
+                            foreach (var item in myUnstructuredUpdates.Updated)
                             {
                                 _unstructuredProperties.Add(item.Key, item.Value);
                             }
