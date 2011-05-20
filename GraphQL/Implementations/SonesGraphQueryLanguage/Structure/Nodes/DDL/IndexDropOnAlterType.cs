@@ -61,7 +61,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
             {
                 foreach (var aIndexNameToken in parseNode.ChildNodes[1].ChildNodes[0].ChildNodes)
                 {
-                    _DropIndexList.Add(aIndexNameToken.Token.ValueString, String.Empty);
+                    _DropIndexList.Add(aIndexNameToken.Token.ValueString, null);
                 }
             }
         }
