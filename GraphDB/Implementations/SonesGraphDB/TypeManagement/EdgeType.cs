@@ -18,39 +18,22 @@
 * 
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
-using sones.Library.LanguageExtensions;
 using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.Manager.BaseGraph;
-using System.Collections;
 
 namespace sones.GraphDB.TypeManagement
 {
     internal class EdgeType: BaseType, IEdgeType
     {
 
-        #region Constants
-
-        /// <summary>
-        /// This is the initialization count of the result list of a GetChildVertices method
-        /// </summary>
-        private const int ExpectedChildTypes = 50;
-
-        /// <summary>
-        /// This is the initialization count of the result list of a GetAttributes method
-        /// </summary>
-        private const int ExpectedAttributes = 50;
-
-        #endregion
-
         #region Data
 
         private IEnumerable<IEdgeType> _childs;
-        private bool _hasChilds;
+        private readonly bool _hasChilds;
 
         #endregion
 
@@ -76,15 +59,12 @@ namespace sones.GraphDB.TypeManagement
 
         protected override BaseType GetParentType()
         {
-            if (HasParentType)
-                return new EdgeType(GetOutgoingSingleEdge(AttributeDefinitions.EdgeTypeDotParent).GetTargetVertex());
-
-            return null;
+            return HasParentType ? new EdgeType(GetOutgoingSingleEdge(AttributeDefinitions.EdgeTypeDotParent).GetTargetVertex()) : null;
         }
 
         protected override IDictionary<string, IAttributeDefinition> RetrieveAttributes()
         {
-            return BaseGraphStorageManager.GetPropertiesFromFS(_vertex, this).Cast<IAttributeDefinition>().ToDictionary(x => x.Name);
+            return BaseGraphStorageManager.GetPropertiesFromFS(Vertex, this).Cast<IAttributeDefinition>().ToDictionary(x => x.Name);
         }
 
         #region IEdgeType Members
@@ -106,12 +86,12 @@ namespace sones.GraphDB.TypeManagement
             {
                 yield return aChildEdgeType;
 
-                if (myRecursive)
+                if (!myRecursive) 
+                    continue;
+
+                foreach (var aVertex in aChildEdgeType.GetChildEdgeTypes())
                 {
-                    foreach (var aVertex in aChildEdgeType.GetChildEdgeTypes(true))
-                    {
-                        yield return aVertex;
-                    }
+                    yield return aVertex;
                 }
             }
 
@@ -125,7 +105,7 @@ namespace sones.GraphDB.TypeManagement
         private IEnumerable<IEdgeType> GetChilds()
         {
             if (_childs == null)
-                lock (_lock)
+                lock (LockObject)
                 {
                     if (_childs == null)
                         _childs = RetrieveChilds();

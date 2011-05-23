@@ -840,6 +840,8 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
+        #endregion
+
         private void RemoveVertex(IVertex aVertex, IVertexType myVertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             RemoveVertexFromIndices(aVertex, myVertexType, mySecurityToken, myTransactionToken);
@@ -1074,11 +1076,6 @@ namespace sones.GraphDB.Manager.Vertex
             }
 
             return result;
-        }
-
-        private IVertex UpdateVertex(IVertex vertex, VertexUpdateDefinition update, String myEdition, TransactionToken myTransaction, SecurityToken mySecurity)
-        {
-            return _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, vertex.VertexTypeID, update, myEdition);
         }
 
         private Tuple<long?, String, VertexUpdateDefinition> CreateVertexUpdateDefinition(IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IPropertyProvider myPropertyCopy, TransactionToken myTransaction, SecurityToken mySecurity)
@@ -1492,46 +1489,6 @@ namespace sones.GraphDB.Manager.Vertex
             return Tuple.Create(revision, edition, new VertexUpdateDefinition(comment, updateStructured, updateUnstructured, updateBinaries, updateSingle, updateHyper));
         }
 
-        //HACK: this code style = lassitude * lack of time
-        private void CreateEdgeUpdateDefinition(
-            IVertex myVertex, IVertexType myVertexType, RequestUpdate myUpdate, IPropertyProvider myPropertyCopy, TransactionToken myTransaction, SecurityToken mySecurity,
-            out IDictionary<long, SingleEdgeUpdateDefinition> outUpdatedSingle,
-            out IDictionary<long, HyperEdgeUpdateDefinition> outUpdatedHyper,
-            out IDictionary<long, IComparable> outUpdatedStructured,
-            out IDictionary<string, object> outUpdatedUnstructured,
-            out IDictionary<long, StreamAddDefinition> outUpdatedBinaries,
-            out long? outRevision,
-            out String outEdition,
-            out String outComment)
-        {
-            #region predefine
-
-            IDictionary<long, SingleEdgeUpdateDefinition> toBeUpdatedSingle = null;
-            IDictionary<long, HyperEdgeUpdateDefinition> toBeUpdatedHyper = null;
-            IDictionary<long, IComparable> toBeUpdatedStructured = null;
-            IDictionary<string, object> toBeUpdatedUnstructured = null;
-            IDictionary<long, StreamAddDefinition> toBeUpdatedBinaries = null;
-            long? revision = null;
-            String edition = myUpdate.UpdatedEdition;
-            String comment = myUpdate.UpdatedComment;
-
-            #endregion
-
-            #endregion
-
-            #region return
-
-            outUpdatedSingle       = toBeUpdatedSingle;
-            outUpdatedHyper        = toBeUpdatedHyper;
-            outUpdatedStructured   = toBeUpdatedStructured;
-            outUpdatedUnstructured = toBeUpdatedUnstructured;
-            outUpdatedBinaries     = toBeUpdatedBinaries;
-            outRevision = revision;
-            outEdition = edition;
-            outComment = comment;
-
-            #endregion
-        }
 
         private IEnumerable<SingleEdgeDeleteDefinition> CreateSingleEdgeDeleteDefinitions(VertexInformation mySource, TransactionToken myTransaction,SecurityToken mySecurity,EdgePredefinition myEdge,IOutgoingEdgeDefinition edgeDef)
         {
@@ -1648,37 +1605,6 @@ namespace sones.GraphDB.Manager.Vertex
                 default:
                     throw new Exception("The enumeration PropertyMultiplicity was changed, but not this switch statement.");
             }
-        }
-
-        private void CreateEdgeDeleteDefinition(
-            IVertex myVertex, IVertexType myVertexType, IEnumerable<string> myRemoveAttributes,
-            out IEnumerable<long> outDeletedSingle,
-            out IEnumerable<long> outDeletedHyper,
-            out IEnumerable<long> outDeletedStructured,
-            out IEnumerable<string> outDeletedUnstructured,
-            out IEnumerable<long> outDeletedBinaries)
-        {
-            #region predefine
-
-            List<long> toBeDeletedSingle = null;
-            List<long> toBeDeletedHyper = null;
-            List<long> toBeDeletedStructured = null;
-            List<String> toBeDeletedUnstructured = null;
-            List<long> toBeDeletedBinaries = null;
-
-            #endregion
-
-
-            #region return
-
-            outDeletedSingle = toBeDeletedSingle;
-            outDeletedHyper = toBeDeletedHyper;
-            outDeletedStructured = toBeDeletedStructured;
-            outDeletedUnstructured = toBeDeletedUnstructured;
-            outDeletedBinaries = toBeDeletedBinaries;
-
-            #endregion
-
         }
 
         #endregion

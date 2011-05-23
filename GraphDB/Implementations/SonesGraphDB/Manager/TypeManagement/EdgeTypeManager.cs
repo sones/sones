@@ -18,14 +18,9 @@
 * 
 */
 
-using sones.GraphDB.Request;
-using sones.GraphDB.TypeSystem;
+using System;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using sones.GraphDB.TypeManagement.Base;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -33,8 +28,8 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         #region Data
 
-        private CheckEdgeTypeManager _check;
-        private ExecuteEdgeTypeManager _execute;
+        private readonly CheckEdgeTypeManager _check;
+        private readonly ExecuteEdgeTypeManager _execute;
 
         #endregion
 

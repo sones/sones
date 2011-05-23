@@ -18,17 +18,12 @@
 * 
 */
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
-using sones.Library.LanguageExtensions;
-using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Manager.BaseGraph;
-using sones.GraphDB.Index;
 
 namespace sones.GraphDB.TypeManagement
 {
@@ -42,28 +37,14 @@ namespace sones.GraphDB.TypeManagement
     /// </remarks>
     internal class VertexType: BaseType, IVertexType
     {
-        #region Constants
-
-        /// <summary>
-        /// This is the initialization count of the result list of a GetChildVertices method
-        /// </summary>
-        private const int ExpectedChildTypes = 50;
-
-        /// <summary>
-        /// This is the initialization count of the result list of a GetAttributes method
-        /// </summary>
-        private const int ExpectedAttributes = 50;
-
-        #endregion
-
         #region Data
 
         private IEnumerable<IUniqueDefinition> _uniques;
-        private bool _hasOwnUniques;
+        private readonly bool _hasOwnUniques;
         private IEnumerable<IIndexDefinition> _indices;
-        private bool _hasOwnIndices;
+        private readonly bool _hasOwnIndices;
         private IEnumerable<IVertexType> _childs;
-        private bool _hasChilds;
+        private readonly bool _hasChilds;
 
         #endregion
 
@@ -72,7 +53,7 @@ namespace sones.GraphDB.TypeManagement
         /// <summary>
         /// Creates a new instance of VertexType.
         /// </summary>
-        /// <param name="myVertex">An IVertex that represents the vertex type.</param>
+        /// <param name="myVertexTypeVertex">An IVertex that represents the vertex type.</param>
         internal VertexType(IVertex myVertexTypeVertex)
             : base(myVertexTypeVertex)
         {
@@ -97,18 +78,15 @@ namespace sones.GraphDB.TypeManagement
 
         protected override BaseType GetParentType()
         {
-            if (HasParentType)
-                return new VertexType(GetOutgoingSingleEdge(AttributeDefinitions.VertexTypeDotParent).GetTargetVertex());
-
-            return null;
+            return HasParentType ? new VertexType(GetOutgoingSingleEdge(AttributeDefinitions.VertexTypeDotParent).GetTargetVertex()) : null;
         }
 
         protected override IDictionary<string, IAttributeDefinition> RetrieveAttributes()
         {
-            return BaseGraphStorageManager.GetBinaryPropertiesFromFS(_vertex, this).Cast<IAttributeDefinition>()
-                .Union(BaseGraphStorageManager.GetPropertiesFromFS(_vertex, this).Cast<IAttributeDefinition>())
-                .Union(BaseGraphStorageManager.GetOutgoingEdgesFromFS(_vertex, this).Cast<IAttributeDefinition>())
-                .Union(BaseGraphStorageManager.GetIncomingEdgesFromFS(_vertex, this).Cast<IAttributeDefinition>())
+            return BaseGraphStorageManager.GetBinaryPropertiesFromFS(Vertex, this).Cast<IAttributeDefinition>()
+                .Union(BaseGraphStorageManager.GetPropertiesFromFS(Vertex, this))
+                .Union(BaseGraphStorageManager.GetOutgoingEdgesFromFS(Vertex, this))
+                .Union(BaseGraphStorageManager.GetIncomingEdgesFromFS(Vertex, this))
                 .ToDictionary(x => x.Name);
         }
 
@@ -135,12 +113,12 @@ namespace sones.GraphDB.TypeManagement
             {
                 yield return aChildVertexType;
 
-                if (myRecursive)
+                if (!myRecursive) 
+                    continue;
+
+                foreach (var aVertex in aChildVertexType.GetChildVertexTypes())
                 {
-                    foreach (var aVertex in aChildVertexType.GetChildVertexTypes(true))
-                    {
-                        yield return aVertex;
-                    }
+                    yield return aVertex;
                 }
             }
 
@@ -265,7 +243,7 @@ namespace sones.GraphDB.TypeManagement
         private IEnumerable<IVertexType> GetChilds()
         {
             if (_childs == null)
-                lock (_lock)
+                lock (LockObject)
                 {
                     if (_childs == null)
                         _childs = RetrieveChilds();
@@ -287,7 +265,7 @@ namespace sones.GraphDB.TypeManagement
         private IEnumerable<IUniqueDefinition> GetUniques()
         {
             if (_uniques == null)
-                lock (_lock)
+                lock (LockObject)
                 {
                     if (_uniques == null)
                         _uniques = RetrieveUniques();
@@ -303,12 +281,12 @@ namespace sones.GraphDB.TypeManagement
                 var edge = GetOutgoingHyperEdge(AttributeDefinitions.VertexTypeDotUniquenessDefinitions);
                 var vertices = edge.GetTargetVertices();
                 var indices = vertices.Select(x => BaseGraphStorageManager.CreateIndexDefinition(x, this));
-                return indices.Select(IIndexDefinitionToIUniqueDefinition).ToArray();
+                return indices.Select(ConvertIIndexDefinitionToIUniqueDefinition).ToArray();
             }
             return Enumerable.Empty<IUniqueDefinition>();
         }
 
-        private IUniqueDefinition IIndexDefinitionToIUniqueDefinition(IIndexDefinition myIndexDefinition)
+        private IUniqueDefinition ConvertIIndexDefinitionToIUniqueDefinition(IIndexDefinition myIndexDefinition)
         {
             return new UniqueDefinition
             {
@@ -321,7 +299,7 @@ namespace sones.GraphDB.TypeManagement
         private IEnumerable<IIndexDefinition> GetIndices()
         {
             if (_indices == null)
-                lock (_lock)
+                lock (LockObject)
                 {
                     if (_indices == null)
                         _indices = RetrieveIndices();

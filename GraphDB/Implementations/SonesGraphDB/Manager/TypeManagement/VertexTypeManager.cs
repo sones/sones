@@ -19,27 +19,8 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using sones.GraphDB.ErrorHandling;
-using sones.GraphDB.Expression;
-using sones.GraphDB.Request;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.Base;
-using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.Library.LanguageExtensions;
-using System.Collections;
-using sones.GraphDB.Manager.Vertex;
-using sones.GraphDB.Manager.Index;
-using sones.Library.PropertyHyperGraph;
-using sones.Library.Commons.VertexStore.Definitions;
-using System.Threading;
-using sones.GraphDB.Manager.BaseGraph;
-using sones.GraphDB.Index;
-using sones.Library.Commons.VertexStore.Definitions.Update;
-using sones.GraphDB.Request.CreateVertexTypes;
 
 /*
  * edge cases:
@@ -79,8 +60,8 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         #region Data
 
-        private CheckVertexTypeManager _check;
-        private ExecuteVertexTypeManager _execute;
+        private readonly CheckVertexTypeManager _check;
+        private readonly ExecuteVertexTypeManager _execute;
 
         #endregion
 

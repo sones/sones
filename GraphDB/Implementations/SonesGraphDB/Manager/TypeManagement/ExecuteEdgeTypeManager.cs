@@ -21,22 +21,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using sones.GraphDB.TypeSystem;
-using sones.Library.Commons.Transaction;
-using sones.Library.Commons.Security;
-using sones.GraphDB.Request;
-using sones.GraphDB.TypeManagement.Base;
-using sones.GraphDB.TypeManagement;
-using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.Expression;
 using sones.GraphDB.Manager.Vertex;
+using sones.GraphDB.Request;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.Base;
+using sones.GraphDB.TypeSystem;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
     internal class ExecuteEdgeTypeManager: IEdgeTypeHandler
     {
-        private IDictionary<string, IEdgeType> _baseTypes = new Dictionary<String, IEdgeType>();
+        private readonly IDictionary<string, IEdgeType> _baseTypes = new Dictionary<String, IEdgeType>();
         private IDManager _idManager;
         private IManagerOf<IVertexHandler> _vertexManager;
         
@@ -114,10 +113,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.EdgeType.ToString(), myTransaction, mySecurity);
 
-            if (vertices == null)
-                return Enumerable.Empty<IEdgeType>();
-
-            return vertices.Select(x => new EdgeType(x));
+            return vertices == null ? Enumerable.Empty<IEdgeType>() : vertices.Select(x => new EdgeType(x));
         }
 
         IEdgeType IEdgeTypeHandler.AddEdgeType(IEnumerable<EdgeTypePredefinition> myEdgeTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)

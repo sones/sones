@@ -20,14 +20,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
     public class IDManager
     {
-        private Dictionary<Int64, UniqueID> _vertexIDs;
+        private readonly Dictionary<Int64, UniqueID> _vertexIDs;
 
 
         public IDManager()

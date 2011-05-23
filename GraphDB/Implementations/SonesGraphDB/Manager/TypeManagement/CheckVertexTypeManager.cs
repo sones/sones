@@ -21,16 +21,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using sones.Library.Commons.Transaction;
-using sones.Library.Commons.Security;
-using sones.GraphDB.TypeSystem;
-using sones.GraphDB.Request;
 using sones.GraphDB.ErrorHandling;
-using sones.GraphDB.TypeManagement.Base;
-using sones.Library.LanguageExtensions;
+using sones.GraphDB.Request;
 using sones.GraphDB.Request.CreateVertexTypes;
-using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.Base;
+using sones.GraphDB.TypeSystem;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
+using sones.Library.LanguageExtensions;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -40,9 +38,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private IVertexTypeHandler _vertexTypeManager;
 
-
         #endregion
-
 
         #region IVertexTypeManager Members
 
@@ -84,7 +80,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #endregion
 
-            CheckAdd(myVertexTypeDefinitions, myTransaction, mySecurity);
+            CheckAdd(myVertexTypeDefinitions);
             return null;
         }
 
@@ -107,17 +103,6 @@ namespace sones.GraphDB.Manager.TypeManagement
             #endregion
 
             return null;
-        }
-
-        public override void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
-        {
-            #region check arguments
-
-            myVertexTypeDefinitions.CheckNull("myVertexTypeDefinitions");
-
-            #endregion
-
-            CanUpdate(myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
         public override void TruncateVertexType(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
@@ -200,10 +185,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             CheckToBeRemovedAttributes(myAlterVertexTypeRequest, vertexType);
             CheckToBeRenamedAttributes(myAlterVertexTypeRequest, vertexType);
             CheckNewVertexTypeName(myAlterVertexTypeRequest.AlteredVertexTypeName, mySecurityToken, myTransactionToken);
-            CheckToBeAddedMandatoryAndUniques(myAlterVertexTypeRequest.ToBeAddedMandatories, myAlterVertexTypeRequest.ToBeAddedUniques, vertexType);
+            CheckToBeAddedMandatory(myAlterVertexTypeRequest.ToBeAddedMandatories, vertexType);
+            CheckToBeAddedUniques(myAlterVertexTypeRequest.ToBeAddedUniques, vertexType);
             CheckToBeRemovedMandatoryAndUnique(myAlterVertexTypeRequest.ToBeRemovedMandatories, myAlterVertexTypeRequest.ToBeRemovedUniques, vertexType);
-            CheckToBeAddedIndices(myAlterVertexTypeRequest.ToBeAddedIndices, vertexType, mySecurityToken, myTransactionToken);
-            CheckToBeRemovedIndices(myAlterVertexTypeRequest.ToBeRemovedIndices, vertexType, mySecurityToken, myTransactionToken);
+            CheckToBeAddedIndices(myAlterVertexTypeRequest.ToBeAddedIndices, vertexType);
+            CheckToBeRemovedIndices(myAlterVertexTypeRequest.ToBeRemovedIndices, vertexType);
 
             #endregion
 
@@ -219,20 +205,18 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myToBeRemovedIndices"></param>
         /// <param name="vertexType"></param>
-        /// <param name="mySecurityToken"></param>
-        /// <param name="myTransactionToken"></param>
-        private void CheckToBeRemovedIndices(Dictionary<string, string> myToBeRemovedIndices, IVertexType vertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private static void CheckToBeRemovedIndices(Dictionary<string, string> myToBeRemovedIndices, IVertexType vertexType)
         {
-            if (myToBeRemovedIndices != null)
-            {
-                var indexDefinitions = vertexType.GetIndexDefinitions(true).ToList();
+            if (myToBeRemovedIndices == null)
+                return;
 
-                foreach (var aKV in myToBeRemovedIndices)
+            var indexDefinitions = vertexType.GetIndexDefinitions(true).ToList();
+
+            foreach (var aKV in myToBeRemovedIndices)
+            {
+                if (!indexDefinitions.Any(_ => _.Name == aKV.Key && _.Edition == aKV.Value))
                 {
-                    if (!indexDefinitions.Any(_ => _.Name == aKV.Key && _.Edition == aKV.Value))
-                    {
-                        throw new IndexRemoveException(aKV.Key, aKV.Value, "The desired index does not exist.");
-                    }
+                    throw new IndexRemoveException(aKV.Key, aKV.Value, "The desired index does not exist.");
                 }
             }
         }
@@ -242,37 +226,35 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myToBeAddedIndices"></param>
         /// <param name="vertexType"></param>
-        /// <param name="mySecurityToken"></param>
-        /// <param name="myTransactionToken"></param>
-        private void CheckToBeAddedIndices(IEnumerable<IndexPredefinition> myToBeAddedIndices, IVertexType vertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private static void CheckToBeAddedIndices(IEnumerable<IndexPredefinition> myToBeAddedIndices, IVertexType vertexType)
         {
-            if (myToBeAddedIndices != null)
+            if (myToBeAddedIndices == null)
+                return;
+
+            var indexDefinitions = vertexType.GetIndexDefinitions(true).ToList();
+
+            foreach (var aIndexPredefinition in myToBeAddedIndices)
             {
-                var indexDefinitions = vertexType.GetIndexDefinitions(true).ToList();
+                #region check the properties
 
-                foreach (var aIndexPredefinition in myToBeAddedIndices)
+                foreach (var aProperty in aIndexPredefinition.Properties)
                 {
-                    #region check the properties
-
-                    foreach (var aProperty in aIndexPredefinition.Properties)
+                    if (!vertexType.HasProperty(aProperty))
                     {
-                        if (!vertexType.HasProperty(aProperty))
-                        {
-                            throw new AttributeDoesNotExistException(aProperty, vertexType.Name);
-                        }
+                        throw new AttributeDoesNotExistException(aProperty, vertexType.Name);
                     }
-
-                    #endregion
-
-                    #region check the idx name, etc
-
-                    if (indexDefinitions.Any(_ => _.Name == aIndexPredefinition.Name))
-                    {
-                        throw new IndexCreationException(aIndexPredefinition, "This index definition is ambiguous.");
-                    }
-
-                    #endregion
                 }
+
+                #endregion
+
+                #region check the idx name, etc
+
+                if (indexDefinitions.Any(_ => _.Name == aIndexPredefinition.Name))
+                {
+                    throw new IndexCreationException(aIndexPredefinition, "This index definition is ambiguous.");
+                }
+
+                #endregion
             }
         }
 
@@ -282,91 +264,78 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myMandatories"></param>
         /// <param name="myUniques"></param>
         /// <param name="vertexType"></param>
-        private void CheckToBeRemovedMandatoryAndUnique(IEnumerable<string> myMandatories, IEnumerable<string> myUniques, IVertexType vertexType)
+        private static void CheckToBeRemovedMandatoryAndUnique(IEnumerable<string> myMandatories, IEnumerable<string> myUniques, IVertexType vertexType)
         {
-            if (myMandatories != null || myUniques != null)
+            CheckToBeRemovedMandatory(myMandatories, vertexType);
+
+            CheckToBeRemovedUniques(myUniques, vertexType);
+        }
+
+        private static void CheckToBeRemovedUniques(IEnumerable<string> myUniques, IVertexType vertexType)
+        {
+            if (myUniques == null)
+                return;
+
+            var attributes = vertexType.GetAttributeDefinitions(false).ToList(); 
+
+            foreach (var aUnique in myUniques)
             {
-                List<IAttributeDefinition> attributes = vertexType.GetAttributeDefinitions(false).ToList();
-
-                #region mandatories
-
-                if (myMandatories != null)
+                if (!attributes.Any(_ => _.Name == aUnique))
                 {
-                    foreach (var aMandatory in myMandatories)
-                    {
-                        if (!attributes.Any(_ => _.Name == aMandatory))
-                        {
-                            throw new AttributeDoesNotExistException(aMandatory, vertexType.Name);
-                        }
-                    }
+                    throw new AttributeDoesNotExistException(aUnique, vertexType.Name);
                 }
-
-                #endregion
-
-                #region uniques
-
-                if (myUniques != null)
-                {
-                    foreach (var aUnique in myUniques)
-                    {
-                        if (!attributes.Any(_ => _.Name == aUnique))
-                        {
-                            throw new AttributeDoesNotExistException(aUnique, vertexType.Name);
-                        }
-                    }
-                }
-
-                #endregion
             }
         }
 
-        /// <summary>
-        /// Checks if the mandatories can be added
-        /// </summary>
-        /// <param name="myMandatories"></param>
-        /// <param name="myUniques"></param>
-        /// <param name="vertexType"></param>
-        private void CheckToBeAddedMandatoryAndUniques(IEnumerable<MandatoryPredefinition> myMandatories, IEnumerable<UniquePredefinition> myUniques, IVertexType vertexType)
+        private static void CheckToBeRemovedMandatory(IEnumerable<string> myMandatories, IVertexType vertexType)
         {
-            if (myMandatories != null || myUniques != null)
+            if (myMandatories == null)
+                return;
+
+            var attributes = vertexType.GetAttributeDefinitions(false).ToList();
+
+            foreach (var aMandatory in myMandatories)
             {
-                List<IAttributeDefinition> attributes = vertexType.GetAttributeDefinitions(false).ToList();
-
-                #region mandatories
-
-                if (myMandatories != null)
+                if (!attributes.Any(_ => _.Name == aMandatory))
                 {
-                    foreach (var aMandatory in myMandatories)
-                    {
-                        if (!attributes.Any(_ => _.Name == aMandatory.MandatoryAttribute))
-                        {
-                            throw new AttributeDoesNotExistException(aMandatory.MandatoryAttribute, vertexType.Name);
-                        }
-                    }
+                    throw new AttributeDoesNotExistException(aMandatory, vertexType.Name);
                 }
-
-                #endregion
-
-                #region uniques
-
-                if (myUniques != null)
-                {
-                    foreach (var aUnique in myUniques)
-                    {
-                        foreach (var aAttribute in aUnique.Properties)
-                        {
-                            if (!attributes.Any(_ => _.Name == aAttribute))
-                            {
-                                throw new AttributeDoesNotExistException(aAttribute, vertexType.Name);
-                            }
-                        }
-                    }
-                }
-
-                #endregion
-
             }
+        }
 
+        private static void CheckToBeAddedUniques(IEnumerable<UniquePredefinition> myUniques, IVertexType vertexType)
+        {
+            if (myUniques == null)
+                return;
+
+            var attributes = vertexType.GetAttributeDefinitions(false).ToList();
+
+            foreach (var aUnique in myUniques)
+            {
+                foreach (var aAttribute in aUnique.Properties)
+                {
+                    if (!attributes.Any(_ => _.Name == aAttribute))
+                    {
+                        throw new AttributeDoesNotExistException(aAttribute, vertexType.Name);
+                    }
+                }
+            }
+        }
+
+        private static void CheckToBeAddedMandatory(IEnumerable<MandatoryPredefinition> myMandatories, IVertexType vertexType)
+        {
+            if (myMandatories == null)
+                return;
+
+            var attributes = vertexType.GetAttributeDefinitions(false).ToList();
+
+            foreach (var aMandatory in myMandatories)
+            {
+                if (!attributes.Any(_ => _.Name == aMandatory.MandatoryAttribute))
+                {
+                    throw new AttributeDoesNotExistException(aMandatory.MandatoryAttribute, vertexType.Name);
+                }
+            }
         }
 
         /// <summary>
@@ -390,19 +359,23 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="vertexType"></param>
         private static void CheckToBeRenamedAttributes(RequestAlterVertexType myAlterVertexTypeRequest, IVertexType vertexType)
         {
-            if (myAlterVertexTypeRequest.ToBeRenamedProperties != null)
-            {
-                foreach (var aToBeRenamedAttributes in myAlterVertexTypeRequest.ToBeRenamedProperties)
-                {
-                    if (!CheckOldName(aToBeRenamedAttributes.Key, vertexType))
-                    {
-                        throw new InvalidAlterVertexTypeException(String.Format("It is not possible to rename {0} into {1}. The to be renamed attribute does not exist."));
-                    }
+            if (myAlterVertexTypeRequest.ToBeRenamedProperties == null)
+                return;
 
-                    if (!CheckNewName(aToBeRenamedAttributes.Value, vertexType))
-                    {
-                        throw new InvalidAlterVertexTypeException(String.Format("It is not possible to rename {0} into {1}. The new attribute name already exists."));
-                    }
+            foreach (var aToBeRenamedAttributes in myAlterVertexTypeRequest.ToBeRenamedProperties)
+            {
+                if (!CheckOldName(aToBeRenamedAttributes.Key, vertexType))
+                {
+                    throw new InvalidAlterVertexTypeException(
+                        String.Format(
+                            "It is not possible to rename {0} into {1}. The to be renamed attribute does not exist.", aToBeRenamedAttributes.Key, aToBeRenamedAttributes.Value));
+                }
+
+                if (!CheckNewName(aToBeRenamedAttributes.Value, vertexType))
+                {
+                    throw new InvalidAlterVertexTypeException(
+                        String.Format(
+                            "It is not possible to rename {0} into {1}. The new attribute name already exists.", aToBeRenamedAttributes.Key, aToBeRenamedAttributes.Value));
                 }
             }
         }
@@ -417,15 +390,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myNewAttributeName != null)
             {
-                foreach (var aVertexType in vertexType.GetChildVertexTypes(true, true))
-                {
-                    var attributesOfCurrentVertexType = aVertexType.GetAttributeDefinitions(false).ToList();
-
-                    if (attributesOfCurrentVertexType.Any(_ => _.Name == myNewAttributeName))
-                    {
-                        return false;
-                    }
-                }
+                return vertexType.GetChildVertexTypes(true, true)
+                    .Select(aVertexType => aVertexType.GetAttributeDefinitions(false).ToArray())
+                    .All(attributesOfCurrentVertexType => !attributesOfCurrentVertexType.Any(_ => _.Name == myNewAttributeName));
             }
 
             return true;
@@ -592,7 +559,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #endregion
 
-        private bool CanRemove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
+        private static void CanRemove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region check if specified types can be removed
             //get child vertex types and check if they are specified by user
@@ -613,10 +580,10 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 #region check that existing child types are specified
 
-                foreach (var child in delType.GetChildVertexTypes())
-                    if (!myVertexTypes.Contains(child))
-                        //all child types has to be specified by user
-                        throw new VertexTypeRemoveException(delType.Name, "The given type has child types and cannot be removed.");
+                if (delType.GetChildVertexTypes().Any(child => !myVertexTypes.Contains(child)))
+                {
+                    throw new VertexTypeRemoveException(delType.Name, "The given type has child types and cannot be removed.");
+                }
 
                 #endregion
 
@@ -624,12 +591,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 if (delType.HasIncomingEdges(false))
                 {
-                    foreach (var edge in delType.GetIncomingEdgeDefinitions(false))
+                    if (delType.GetIncomingEdgeDefinitions(false).Any(edge => edge.RelatedType.ID != delType.ID))
                     {
-                        //just throw Exception if incomingedge doesn't point to the type itself
-                        if (edge.RelatedType.ID != delType.ID)
-                            //all incoming edges has to be deletet by user
-                            throw new VertexTypeRemoveException(delType.Name, "The given type has incoming edges and cannot be removed.");
+                        throw new VertexTypeRemoveException(delType.Name, "The given type has incoming edges and cannot be removed.");
                     }
                 }
 
@@ -638,23 +602,15 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
             #endregion
 
-            return true;
-        }
-
-        private bool CanUpdate(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
-        {
-            throw new NotImplementedException();
+            return;
         }
 
         /// <summary>
         /// Checks if the given vertex type predefinitions will succeed.
         /// </summary>
         /// <param name="myVertexTypeDefinitions">The list of vertex type predefinitions.<remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
-        /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurity">A security token for this operation.</param>
-        private void CheckAdd(
-            IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, 
-            TransactionToken myTransaction, SecurityToken mySecurity)
+        private static void CheckAdd(
+            IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
         {
             #region prolog
             // Basically first check the pre-definitions itself without asking the IVertexManager. 
@@ -737,7 +693,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             CheckBinaryPropertiesUniqueName(vertexTypeDefinition, uniqueNameSet);
         }
 
-        private static void CheckBinaryPropertiesUniqueName(VertexTypePredefinition myVertexTypeDefinition, HashSet<string> myUniqueNameSet)
+        private static void CheckBinaryPropertiesUniqueName(VertexTypePredefinition myVertexTypeDefinition, ISet<string> myUniqueNameSet)
         {
             if (myVertexTypeDefinition.BinaryProperties != null)
                 foreach (var prop in myVertexTypeDefinition.BinaryProperties)

@@ -19,13 +19,10 @@
 */
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using sones.GraphDB.Request;
 using sones.Library.ErrorHandling;
-using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
 using System.Diagnostics;
 

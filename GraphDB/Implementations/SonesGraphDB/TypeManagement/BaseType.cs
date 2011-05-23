@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.TypeManagement.Base;
@@ -31,25 +30,25 @@ namespace sones.GraphDB.TypeManagement
 {
     internal abstract class BaseType: IBaseType
     {
-        protected Object _lock = new Object();
+        protected Object LockObject = new Object();
 
         #region Data
 
         /// <summary>
         /// Stores the FS vertex.
         /// </summary>
-        protected IVertex _vertex;
+        protected readonly IVertex Vertex;
 
         /// <summary>
         /// The attributes indexed by name.
         /// </summary>
-        protected IDictionary<String, IAttributeDefinition> _attributes;
+        protected IDictionary<String, IAttributeDefinition> Attributes;
 
-        private long _id;
-        private string _name;
-        private bool _isSealed;
-        private bool _isAbstract;
-        private bool _IsUserDefined;
+        private readonly long _id;
+        private readonly string _name;
+        private readonly bool _isSealed;
+        private readonly bool _isAbstract;
+        private readonly bool _isUserDefined;
 
         #endregion
 
@@ -65,12 +64,12 @@ namespace sones.GraphDB.TypeManagement
 
             #region assignment
 
-            _vertex = myBaseTypeVertex;
-            _id = _vertex.VertexID;
+            Vertex = myBaseTypeVertex;
+            _id = Vertex.VertexID;
             _name = GetProperty<String>(AttributeDefinitions.BaseTypeDotName);
             _isSealed = GetProperty<bool>(AttributeDefinitions.BaseTypeDotIsSealed);
             _isAbstract = GetProperty<bool>(AttributeDefinitions.BaseTypeDotIsAbstract);
-            _IsUserDefined = GetProperty<bool>(AttributeDefinitions.BaseTypeDotIsUserDefined);
+            _isUserDefined = GetProperty<bool>(AttributeDefinitions.BaseTypeDotIsUserDefined);
 
             #endregion
         }
@@ -110,7 +109,7 @@ namespace sones.GraphDB.TypeManagement
 
         public string Comment
         {
-            get { return _vertex.Comment; }
+            get { return Vertex.Comment; }
         }
 
         public bool IsAbstract
@@ -120,7 +119,7 @@ namespace sones.GraphDB.TypeManagement
 
         public bool IsUserDefined
         {
-            get { return _IsUserDefined; }
+            get { return _isUserDefined; }
         }
 
         public bool IsSealed
@@ -129,7 +128,7 @@ namespace sones.GraphDB.TypeManagement
         }
         public bool HasAttribute(string myAttributeName)
         {
-            var result = GetAttributes_private().ContainsKey(myAttributeName);
+            var result = GetAttributesPrivate().ContainsKey(myAttributeName);
             if (!result && HasParentType)
                 result = GetParentType().HasAttribute(myAttributeName);
 
@@ -139,7 +138,7 @@ namespace sones.GraphDB.TypeManagement
         public IAttributeDefinition GetAttributeDefinition(string myAttributeName)
         {
             IAttributeDefinition result;
-            if (GetAttributes_private().TryGetValue(myAttributeName, out result) || !HasParentType)
+            if (GetAttributesPrivate().TryGetValue(myAttributeName, out result) || !HasParentType)
                 return result;
 
 
@@ -148,7 +147,7 @@ namespace sones.GraphDB.TypeManagement
 
         public IAttributeDefinition GetAttributeDefinition(long myAttributeID)
         {
-            var result = GetAttributes_private().Values.FirstOrDefault(_=>_.ID == myAttributeID);
+            var result = GetAttributesPrivate().Values.FirstOrDefault(_=>_.ID == myAttributeID);
 
             if (result == null)
                 if (GetParentType() != null)
@@ -160,15 +159,15 @@ namespace sones.GraphDB.TypeManagement
         public bool HasAttributes(bool myIncludeAncestorDefinitions)
         {
             return (myIncludeAncestorDefinitions && HasParentType)
-                ? GetAttributes_private().Count > 0 || GetParentType().HasAttributes(true)
-                : GetAttributes_private().Count > 0 ;
+                ? GetAttributesPrivate().Count > 0 || GetParentType().HasAttributes(true)
+                : GetAttributesPrivate().Count > 0 ;
         }
 
         public IEnumerable<IAttributeDefinition> GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
         {
             return (myIncludeAncestorDefinitions && HasParentType)
-                ? GetAttributes_private().Values.Union(GetParentType().GetAttributeDefinitions(true))
-                : GetAttributes_private().Values;
+                ? GetAttributesPrivate().Values.Union(GetParentType().GetAttributeDefinitions(true))
+                : GetAttributesPrivate().Values;
         }
 
         public bool HasProperty(string myAttributeName)
@@ -200,15 +199,12 @@ namespace sones.GraphDB.TypeManagement
         {
             myPropertyNames.CheckNull("myPropertyNames");
 
-            return myPropertyNames.Select(_=>GetPropertyDefinition(_));
+            return myPropertyNames.Select(GetPropertyDefinition);
         }
 
         public bool IsAncestor(IBaseType myOtherType)
         {
-            if (myOtherType == null)
-                return false;
-
-            return myOtherType.IsDescendant(this);
+            return myOtherType != null && myOtherType.IsDescendant(this);
         }
 
         public bool IsAncestorOrSelf(IBaseType myOtherType)
@@ -218,7 +214,7 @@ namespace sones.GraphDB.TypeManagement
 
         public bool IsDescendant(IBaseType myOtherType)
         {
-            for (var current = this.GetParentType(); current != null; current = current.GetParentType())
+            for (var current = GetParentType(); current != null; current = current.GetParentType())
             {
                 if (current.Equals(myOtherType))
                     return true;
@@ -237,7 +233,7 @@ namespace sones.GraphDB.TypeManagement
 
         public bool Equals(IBaseType other)
         {
-            return (other != null) && this._id == other.ID;
+            return (other != null) && _id == other.ID;
         }
 
         #endregion
@@ -246,32 +242,32 @@ namespace sones.GraphDB.TypeManagement
 
         protected T GetProperty<T>(AttributeDefinitions myDefinition)
         {
-            return _vertex.GetProperty<T>((long)myDefinition);
+            return Vertex.GetProperty<T>((long)myDefinition);
         }
 
         protected bool HasOutgoingEdge(AttributeDefinitions myDefinition)
         {
-            return _vertex.HasOutgoingEdge((long)myDefinition);
+            return Vertex.HasOutgoingEdge((long)myDefinition);
         }
 
         protected ISingleEdge GetOutgoingSingleEdge(AttributeDefinitions myDefinition)
         {
-            return _vertex.GetOutgoingSingleEdge((long)myDefinition);
+            return Vertex.GetOutgoingSingleEdge((long)myDefinition);
         }
 
         protected IHyperEdge GetOutgoingHyperEdge(AttributeDefinitions myDefinition)
         {
-            return _vertex.GetOutgoingHyperEdge((long)myDefinition);
+            return Vertex.GetOutgoingHyperEdge((long)myDefinition);
         }
 
         protected IEnumerable<IVertex> GetIncomingVertices(BaseTypes myBaseType, AttributeDefinitions myDefinition)
         {
-            return _vertex.GetIncomingVertices((long)myBaseType, (long)myDefinition);
+            return Vertex.GetIncomingVertices((long)myBaseType, (long)myDefinition);
         }
 
         protected bool HasIncomingVertices(BaseTypes myBaseType, AttributeDefinitions myDefinition)
         {
-            return _vertex.HasIncomingVertices((long)myBaseType, (long)myDefinition);
+            return Vertex.HasIncomingVertices((long)myBaseType, (long)myDefinition);
         }
 
         protected bool HasTypedAttribute<T>(string myAttributeName)
@@ -298,24 +294,24 @@ namespace sones.GraphDB.TypeManagement
 
         protected bool HasTypedAttributes<T>(bool myIncludeAncestorDefinitions)
         {
-            var hasOwnProperties = GetAttributes_private().Values.Where(_=>_ is T).CountIsGreater(0);
+            var hasOwnProperties = GetAttributesPrivate().Values.Where(_=>_ is T).CountIsGreater(0);
             
             return (myIncludeAncestorDefinitions)
-                ? hasOwnProperties || GetParentType().GetAttributeDefinitions(myIncludeAncestorDefinitions).Where(_=>_ is T).CountIsGreater(0)
+                ? hasOwnProperties || GetParentType().GetAttributeDefinitions(true).Where(_=>_ is T).CountIsGreater(0)
                 : hasOwnProperties;
         }
         #endregion
 
-        private IDictionary<String, IAttributeDefinition> GetAttributes_private()
+        private IDictionary<String, IAttributeDefinition> GetAttributesPrivate()
         {
-            if (_attributes == null)
-                lock (_lock)
+            if (Attributes == null)
+                lock (LockObject)
                 {
-                    if (_attributes == null)
-                        _attributes = RetrieveAttributes();
+                    if (Attributes == null)
+                        Attributes = RetrieveAttributes();
                 }
 
-            return _attributes;
+            return Attributes;
         }
         
     }

@@ -18,10 +18,7 @@
 * 
 */
 
-using System;
 using sones.GraphDB.TypeSystem;
-using sones.Library.PropertyHyperGraph;
-using System.Collections.Generic;
 
 namespace sones.GraphDB.TypeManagement
 {

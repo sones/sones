@@ -18,12 +18,12 @@
 * 
 */
 
+using System;
 using System.Collections.Generic;
 using sones.GraphDB.Request;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using System;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -91,14 +91,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// All types will be removed.
         /// All types are removed simultaneously. This means that edges between the types are not need to be removed before.
         IEnumerable<long> ClearDB(TransactionToken myTransaction, SecurityToken mySecurity);
-
-        /// <summary>
-        /// Updates existing vertex types.
-        /// </summary>
-        /// <param name="myVertexTypeDefinitions">TODO: for update use VertexTypeUpdateDefinition</param>
-        /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurity">A security token for this operation.</param>
-        void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Removes all vertices of a given vertex type

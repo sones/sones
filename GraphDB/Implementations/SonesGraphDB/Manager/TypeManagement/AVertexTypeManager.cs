@@ -19,17 +19,16 @@
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using sones.Library.Commons.Transaction;
-using sones.Library.Commons.Security;
-using sones.GraphDB.TypeSystem;
-using sones.GraphDB.Request;
-using sones.Library.LanguageExtensions;
-using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.ErrorHandling;
-using System.Collections;
+using sones.GraphDB.Request;
+using sones.GraphDB.TypeManagement.Base;
+using sones.GraphDB.TypeSystem;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
+using sones.Library.LanguageExtensions;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -48,8 +47,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         public abstract Dictionary<Int64, String> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity);
 
         public abstract IEnumerable<long> ClearDB(TransactionToken myTransaction, SecurityToken mySecurity);
-
-        public abstract void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
 
         public abstract void TruncateVertexType(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
         
@@ -114,15 +111,15 @@ namespace sones.GraphDB.Manager.TypeManagement
             //Thus we can add all predefinitions, that has parent predefinition in the list to the end of the list.
             for (var current = result.First; current != null; current = current.Next)
             {
-                if (myDefsByParentVertexName.ContainsKey(current.Value.VertexTypeName))
-                {
-                    //All predefinitions, that has the current predefintion as parent vertex type.
-                    var corrects = myDefsByParentVertexName[current.Value.VertexTypeName];
+                if (!myDefsByParentVertexName.ContainsKey(current.Value.VertexTypeName)) 
+                    continue;
 
-                    foreach (var correct in corrects)
-                    {
-                        result.AddLast(correct);
-                    }
+                //All predefinitions, that has the current predefintion as parent vertex type.
+                var corrects = myDefsByParentVertexName[current.Value.VertexTypeName];
+
+                foreach (var correct in corrects)
+                {
+                    result.AddLast(correct);
                 }
             }
 

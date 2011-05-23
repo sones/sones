@@ -36,37 +36,30 @@ namespace sones.GraphDB.TypeManagement
 
         public IComparable ExtractValue(IVertex aVertex)
         {
-            if (RelatedType.ID == (long)BaseTypes.Vertex)
-            {
-                switch (ID)
-                {
-                    case (long)AttributeDefinitions.VertexDotUUID:
-                        return aVertex.VertexID;
-                    case (long)AttributeDefinitions.VertexDotCreationDate:
-                        return aVertex.CreationDate;
-                    case (long)AttributeDefinitions.VertexDotModificationDate:
-                        return aVertex.ModificationDate;
-                    case (long)AttributeDefinitions.VertexDotComment:
-                        return aVertex.Comment;
-                    case (long)AttributeDefinitions.VertexDotEdition:
-                        return aVertex.EditionName;
-                    case (long)AttributeDefinitions.VertexDotRevision:
-                        return aVertex.VertexRevisionID;
-                    case (long)AttributeDefinitions.VertexDotTypeID:
-                        return aVertex.VertexTypeID;
-                    default:
-                        return null;
-                }
-            }
-            else
+            if (RelatedType.ID != (long) BaseTypes.Vertex)
             {
                 //A usual property like Age or Name...
-                if (aVertex.HasProperty(ID))
-                {
-                    return aVertex.GetProperty(ID);                    
-                }
-                
-                return null;
+                return aVertex.HasProperty(ID) ? aVertex.GetProperty(ID) : null;
+            }
+
+            switch (ID)
+            {
+                case (long) AttributeDefinitions.VertexDotUUID:
+                    return aVertex.VertexID;
+                case (long) AttributeDefinitions.VertexDotCreationDate:
+                    return aVertex.CreationDate;
+                case (long) AttributeDefinitions.VertexDotModificationDate:
+                    return aVertex.ModificationDate;
+                case (long) AttributeDefinitions.VertexDotComment:
+                    return aVertex.Comment;
+                case (long) AttributeDefinitions.VertexDotEdition:
+                    return aVertex.EditionName;
+                case (long) AttributeDefinitions.VertexDotRevision:
+                    return aVertex.VertexRevisionID;
+                case (long) AttributeDefinitions.VertexDotTypeID:
+                    return aVertex.VertexTypeID;
+                default:
+                    return null;
             }
         }
 

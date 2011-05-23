@@ -23,11 +23,8 @@ using System.Collections.Generic;
 using System.Threading;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.Security;
-using sones.Library.Settings;
 using sones.Library.Commons.Transaction;
 using sones.Library.VersionedPluginManager;
-using sones.Library.Commons.VertexStore;
-using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.VertexStore;
 using sones.Library.Commons.VertexStore.Definitions;
 

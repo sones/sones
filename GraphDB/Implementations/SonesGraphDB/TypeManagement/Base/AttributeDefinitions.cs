@@ -19,7 +19,6 @@
 */
 
 using System;
-using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.TypeManagement.Base
 {
