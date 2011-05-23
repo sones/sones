@@ -40,6 +40,7 @@ using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 using System.Collections;
 using sones.GraphQL.GQL.Structure.Nodes.Misc;
 using sones.GraphDB.ErrorHandling;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.GraphQL.GQL.Manager.Select
 {
@@ -377,17 +378,18 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             #region Check for index aggregate
 
-            foreach (var edge in mySelectionPartAggregate.EdgeList.Edges)
+            if (mySelectionPartAggregate.EdgeList.Edges.Count == 1)
             {
+
                 var vertexType = _graphdb.GetVertexType<IVertexType>(
                         mySecurityToken,
                         myTransactionToken,
-                        new RequestGetVertexType(edge.VertexTypeID),
+                        new RequestGetVertexType(mySelectionPartAggregate.EdgeList.Edges.First().VertexTypeID),
                         (stats, vType) => vType);
 
                 #region COUNT(*)
 
-                if (!edge.IsAttributeSet)
+                if (!mySelectionPartAggregate.EdgeList.Edges.First().IsAttributeSet)
                 {
                     //mySelectionPartAggregate.Element = _DBContext.DBTypeManager.GetUUIDTypeAttribute();
                     mySelectionPartAggregate.Element = vertexType.GetAttributeDefinition("UUID");
@@ -398,8 +400,9 @@ namespace sones.GraphQL.GQL.Manager.Select
                 else
                 {
                     // if the GetAttributeIndex did not return null we will pass this as the aggregate operation value
-                    mySelectionPartAggregate.Element = vertexType.GetAttributeDefinition(edge.AttributeID);
+                    mySelectionPartAggregate.Element = vertexType.GetAttributeDefinition(mySelectionPartAggregate.EdgeList.Edges.First().AttributeID);
                 }
+
             }
 
             #endregion
@@ -426,10 +429,10 @@ namespace sones.GraphQL.GQL.Manager.Select
         public void AddGroupElementToSelection(string myReference, IDChainDefinition myIDChainDefinition)
         {
 
-            if (myIDChainDefinition.Edges.Count > 1)
-            {
-                throw new InvalidGroupByLevelException(myIDChainDefinition.Edges.Count.ToString(), myIDChainDefinition.ContentString);
-            }
+            //if (myIDChainDefinition.Edges.Count > 1)
+            //{
+            //    throw new InvalidGroupByLevelException(myIDChainDefinition.Edges.Count.ToString(), myIDChainDefinition.ContentString);
+            //}
 
             // if the grouped attr is not selected
             if ((!_Selections.ContainsKey(myReference) || !_Selections[myReference].Any(l => l.Value.Any(se => se.Element != null && se.Element == myIDChainDefinition.LastAttribute))) && !myIDChainDefinition.IsUndefinedAttribute)
@@ -587,19 +590,17 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="myTypeNode">The type node which should be examined on selections</param>
         /// <param name="myUsingGraph">True if there is a valid where expression of this typeNode</param>
         /// <returns>True if succeeded, false if there was nothing to select for this type</returns>
-        public Boolean Examine(Int64 myResolutionDepth, String myReference, IVertexType myReferencedDBType, Boolean myUsingGraph, ref IEnumerable<IVertexView> myVertices, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public void Examine(Int64 myResolutionDepth, String myReference, IVertexType myReferencedDBType, Boolean myUsingGraph, ref IEnumerable<IVertexView> myVertices, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-
             if ((!_Selections.ContainsKey(myReference) || !_Selections[myReference].ContainsKey(new EdgeList(myReferencedDBType.ID))) && _Aggregates.IsNullOrEmpty())
             {
-                return false;
+                myVertices = Enumerable.Empty<IVertexView>();
+                return;
             }
 
             var levelKey = new EdgeList(myReferencedDBType.ID);
 
             myVertices = ExamineVertex(myResolutionDepth, myReference, myReferencedDBType, levelKey, myUsingGraph, mySecurityToken, myTransactionToken);
-
-            return true;
         }
 
         #endregion
@@ -658,73 +659,86 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             #endregion
 
-            
-                #region Otherwise load all dbos until this level and return them
+            #region Otherwise load all dbos until this level and return them
 
-                #region Get dbos enumerable of the first level - either from ExpressionGraph or via index
+            #region Get dbos enumerable of the first level - either from ExpressionGraph or via index
 
-                IEnumerable<IVertex> dbos;
-                if (myUsingGraph)
+            IEnumerable<IVertex> dbos;
+            if (myUsingGraph)
+            {
+                dbos = _ExpressionGraph.Select(new LevelKey(myLevelKey.Edges, _graphdb, mySecurityToken, myTransactionToken), null, true);
+            }
+            else // using GUID index
+            {
+                dbos = _graphdb.GetVertices<IEnumerable<IVertex>>(
+                    mySecurityToken,
+                    myTransactionToken,
+                    new RequestGetVertices(myRelatedVertexType.ID),
+                    (stats, vertices) => vertices);
+            }
+
+            #endregion
+
+            IEnumerable<IVertexView> selectedVertexViews = GetUsualSelections(_Selections, dbos, myResolutionDepth, myReference, myRelatedVertexType, myLevelKey, myUsingGraph, mySecurityToken, myTransactionToken);
+
+            IEnumerable<IVertexView> groupedVertexViews = GetGroupedViews(_Groupings, myReference, selectedVertexViews, mySecurityToken, myTransactionToken);
+
+            IEnumerable<IVertexView> aggregatedVertexViews = GetAggregatedViews(aggregates, groupedVertexViews, myResolutionDepth, mySecurityToken, myTransactionToken);
+
+            #endregion
+
+            return aggregatedVertexViews;
+        }
+
+        private IEnumerable<IVertexView> GetAggregatedViews(List<SelectionElementAggregate> aggregates, IEnumerable<IVertexView> groupedVertexViews, long myDepth, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            if (aggregates.IsNotNullOrEmpty())
+            {
+                return ExamineDBO_Aggregates(myTransactionToken, mySecurityToken, groupedVertexViews, aggregates, myDepth);
+            }
+            else
+	        {
+                return groupedVertexViews;
+	        }
+        }
+
+        private IEnumerable<IVertexView> GetGroupedViews(Dictionary<string, List<SelectionElement>> myGroupings, String myReference, IEnumerable<IVertexView> selectedVertexViews, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            if (myGroupings.IsNotNullOrEmpty())
+            {
+                if (myGroupings.ContainsKey(myReference))
                 {
-                    dbos = _ExpressionGraph.Select(new LevelKey(myLevelKey.Edges, _graphdb, mySecurityToken, myTransactionToken), null, true);
+                    return ExamineDBO_Groupings(selectedVertexViews, myGroupings[myReference], mySecurityToken, myTransactionToken);
                 }
-                else // using GUID index
-                {
-                    dbos = _graphdb.GetVertices<IEnumerable<IVertex>>(
-                        mySecurityToken,
-                        myTransactionToken,
-                        new RequestGetVertices(myRelatedVertexType.ID),
-                        (stats, vertices) => vertices);
-                }
 
-                #endregion
+            }
 
-                if (aggregates.IsNotNullOrEmpty())
+            return selectedVertexViews;
+
+        }
+
+        private IEnumerable<IVertexView> GetUsualSelections(List<SelectionElement> _Selections, IEnumerable<IVertex> dbos, long myResolutionDepth, string myReference, IVertexType myRelatedVertexType, EdgeList myLevelKey, bool myUsingGraph, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            if (!_Selections.IsNullOrEmpty() || !_Aggregates.IsNullOrEmpty())
+            {
+
+                #region Usually attribute selections
+
+                var vertexType = _graphdb.GetVertexType<IVertexType>(
+                    mySecurityToken,
+                    myTransactionToken,
+                    new RequestGetVertexType(myLevelKey.LastEdge.VertexTypeID),
+                    (stats, type) => type);
+
+                foreach (var aDBObject in dbos)
                 {
-                    foreach (var val in ExamineDBO_Aggregates(myTransactionToken, mySecurityToken, dbos, aggregates, _Selections, myUsingGraph, myResolutionDepth))
+                    #region Create a readoutObject for this DBO and yield it: on failure throw an exception
+
+                    Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> Attributes = GetAllSelectedAttributesFromVertex(mySecurityToken, myTransactionToken, aDBObject, vertexType, myResolutionDepth, myLevelKey, myReference, myUsingGraph);
+
+                    if (Attributes != null && (Attributes.Item1.Count > 0 || Attributes.Item2.Count > 0))
                     {
-                        if (val != null)
-                        {
-                            yield return val;
-                        }
-                    }
-                }
-
-                else if (_Groupings.IsNotNullOrEmpty())
-                {
-                    foreach (var val in ExamineDBO_Groupings(dbos, _Selections))
-                    {
-                        if (val != null)
-                        {
-                            yield return val;
-                        }
-                    }
-                }
-
-                else if (!_Selections.IsNullOrEmpty())
-                {
-
-                    #region Usually attribute selections
-
-                    var vertexType = _graphdb.GetVertexType<IVertexType>(
-                        mySecurityToken,
-                        myTransactionToken,
-                        new RequestGetVertexType(myLevelKey.LastEdge.VertexTypeID),
-                        (stats, type) => type);
-
-                    foreach (var aDBObject in dbos)
-                    {
-                        #region Create a readoutObject for this DBO and yield it: on failure throw an exception
-
-                        Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> Attributes = GetAllSelectedAttributesFromVertex(mySecurityToken, myTransactionToken, aDBObject, vertexType, myResolutionDepth, myLevelKey, myReference, myUsingGraph);
-
-                        if (Attributes != null && (Attributes.Item1.Count > 0 || Attributes.Item2.Count > 0))
-                        {
-                            yield return new VertexView(Attributes.Item1, Attributes.Item2);
-                        }
-
-                        #endregion
-
+                        yield return new VertexView(Attributes.Item1, Attributes.Item2);
                     }
 
                     #endregion
@@ -733,7 +747,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 #endregion
 
-
+            }
         }
 
         public IEnumerable<IVertexView> GetTypeIndependendResult(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
@@ -1664,15 +1678,23 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <returns></returns>
         private List<SelectionElement> getAttributeSelections(String myReference, EdgeList myLevelKey)
         {
-            if (_Selections.ContainsKey(myReference) && (_Selections[myReference].ContainsKey(myLevelKey)))
+            List<SelectionElement> result = null;
+
+            if (_Selections != null && _Selections.ContainsKey(myReference) && (_Selections[myReference].ContainsKey(myLevelKey)))
             {
-                return _Selections[myReference][myLevelKey];
-            }
-            else
-            {
-                return null;
+                result = new List<SelectionElement>(_Selections[myReference][myLevelKey]);
             }
 
+            if (_Aggregates != null && _Aggregates.ContainsKey(myReference) && (_Aggregates[myReference].ContainsKey(myLevelKey)))
+            {
+                if (result == null)
+                {
+                    result = new List<SelectionElement>();
+                }
+
+                result.AddRange(_Aggregates[myReference][myLevelKey]);
+            }
+            return result;
         }
 
         /// <summary>
@@ -1703,101 +1725,17 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="myDBOs"></param>
         /// <param name="myReferencedDBType"></param>
         /// <returns></returns>
-        private IEnumerable<IVertexView> ExamineDBO_Aggregates(TransactionToken myTransactionToken, SecurityToken mySecurityToken, IEnumerable<IVertex> myDBOs, List<SelectionElementAggregate> myAggregates, List<SelectionElement> mySelections, Boolean myUsingGraph, Int64 myDepth)
+        private IEnumerable<IVertexView> ExamineDBO_Aggregates(TransactionToken myTransactionToken, SecurityToken mySecurityToken, IEnumerable<IVertexView> myDBOs, List<SelectionElementAggregate> myAggregates, long myDepth)
         {
 
             #region Aggregate
 
-            if (mySelections.CountIsGreater(0))
+            if (_Groupings.CountIsGreater(0))
             {
-
-                #region Grouping - each selection is grouped (checked prior)
-
-                var aggregatedGroupings = new Dictionary<GroupingKey, SelectionElementAggregate>();
-
-                #region Create groupings using the ILookup
-
-                var groupedDBOs = myDBOs.ToLookup((dbo) =>
-                {
-                    #region Create GroupingKey based on the group values and attributes
-
-                    Dictionary<GroupingValuesKey, IComparable> groupingVals = new Dictionary<GroupingValuesKey, IComparable>();
-                    foreach (var selection in mySelections)
-                    {
-                        var attrValue = dbo.GetProperty(selection.Element.ID);
-
-                        groupingVals.Add(new GroupingValuesKey(selection.Element, selection.Alias), attrValue);
-                    }
-                    GroupingKey groupingKey = new GroupingKey(groupingVals);
-
-                    #endregion
-
-                    return groupingKey;
-
-                }, (dbo) =>
-                {
-                   
-                    return dbo;
-                });
-
-                #endregion
-
-                foreach (var group in groupedDBOs)
-                {
-
-                    #region Create group readouts
-
-                    var aggregatedAttributes = new Dictionary<String, Object>();
-
-                    foreach (var aggr in myAggregates)
-                    {
-                        var aggrResult =
-                            aggr.Aggregate.Aggregate(
-                                (group as IEnumerable<IVertex>).Select(
-                                    aVertex => aVertex.GetProperty(aggr.Element.ID)), (IPropertyDefinition)aggr.Element);
-                        
-                        if (aggrResult.Value != null)
-                        {
-                            //aggregatedAttributes.Add(aggr.Alias, aggrResult.Value.Value.GetReadoutValue());
-                            aggregatedAttributes.Add(aggr.Alias, ResolveAggregateResult(aggrResult, myDepth));
-                        }
-
-                    }
-
-                    foreach (var groupingKeyVal in group.Key.Values)
-                    {
-                        aggregatedAttributes.Add(groupingKeyVal.Key.AttributeAlias, groupingKeyVal.Value);
-                    }
-
-                    var dbObjectReadout = new VertexView(aggregatedAttributes, null);
-
-                    #endregion
-
-                    #region Evaluate having if exist and yield return
-
-                    if (_HavingExpression != null)
-                    {
-                        var res = _HavingExpression.IsSatisfyHaving(dbObjectReadout);
-                        if (res)
-                            yield return dbObjectReadout;
-                    }
-                    else
-                    {
-                        yield return dbObjectReadout;
-                    }
-
-                    #endregion
-
-                }
-
-                yield break;
-
-                #endregion
-
+                throw new NotImplementedQLException("Currently it's not implemented to combine aggregates and groupings");
             }
             else
             {
-
                 #region No grouping, just aggregates
 
                 var aggregatedAttributes = new Dictionary<String, Object>();
@@ -1817,10 +1755,10 @@ namespace sones.GraphQL.GQL.Manager.Select
                     {
                         aggrResult =
                             aggr.Aggregate.Aggregate(
-                                myDBOs.Where(aVertex => aVertex.HasProperty(aggr.Element.ID)).Select(
-                                    dbo => dbo.GetProperty(aggr.Element.ID)), (IPropertyDefinition)aggr.Element);
+                                myDBOs.Where(aVertex => aVertex.HasProperty(aggr.Alias)).Select(
+                                    dbo => dbo.GetProperty<IComparable>(aggr.Alias)), (IPropertyDefinition)aggr.Element);
                     }
-                    
+
 
                     //aggregatedAttributes.Add(aggr.Alias, aggrResult.Value.GetReadoutValue());
                     if (aggrResult.Value != null)
@@ -1856,7 +1794,6 @@ namespace sones.GraphQL.GQL.Manager.Select
             }
 
             #endregion
-
         }
 
         /// <summary>
@@ -1931,90 +1868,149 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="mySelections"></param>
         /// <param name="myReferencedDBType"></param>
         /// <returns></returns>
-        private IEnumerable<IVertexView> ExamineDBO_Groupings(IEnumerable<IVertex> myDBObjectStreams, List<SelectionElement> mySelections)
+        private IEnumerable<IVertexView> ExamineDBO_Groupings(IEnumerable<IVertexView> myDBObjectStreams, List<SelectionElement> _Groupings, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
+            Dictionary<SelectionElement, Dictionary<Object, List<IVertexView>>> groupings = new Dictionary<SelectionElement,Dictionary<object,List<IVertexView>>>();
 
-            #region Create groupings using the ILookup
-
-            var _GroupedVertices = myDBObjectStreams.ToLookup((dbo) =>
+            foreach (var aVertexView in myDBObjectStreams)
             {
-
-                #region Create GroupingKey based on the group values and attributes
-
-                var groupingVals = new Dictionary<GroupingValuesKey, IComparable>();
-
-                foreach (var selection in mySelections)
+                foreach (var aToBeGroupedElement in _Groupings)
                 {
+                    Dictionary<Object, List<IVertexView>> singleGrouping = new Dictionary<object, List<IVertexView>>();
+                    var edgeStrings = ExtractEdges(aToBeGroupedElement.RelatedIDChainDefinition, mySecurityToken, myTransactionToken).Select(_ => _.Name);
+                    var propertyDefinition = aToBeGroupedElement.RelatedIDChainDefinition.LastAttribute as IPropertyDefinition;
 
-                    if (!dbo.HasProperty(selection.Element.ID))
+                    foreach (var aVertex in GetVerticesForLevelKey(aVertexView, edgeStrings))
                     {
-                        continue;
+                        if (!aVertex.HasProperty(propertyDefinition.Name))
+                        {
+                            continue;
+                        }
+
+                        var attrValue = aVertex.GetProperty<Object>(propertyDefinition.Name);
+
+                        if (singleGrouping.ContainsKey(attrValue))
+                        {
+                            singleGrouping[attrValue].Add(aVertex);
+                        }
+                        else
+                        {
+                            singleGrouping.Add(attrValue, new List<IVertexView> { aVertex });
+                        }
                     }
 
-                    var attrValue = dbo.GetProperty(selection.Element.ID);
-                    
-
-                    groupingVals.Add(new GroupingValuesKey(selection.Element, selection.Alias), attrValue);
-
+                    if (groupings.ContainsKey(aToBeGroupedElement))
+                    {
+                        //merge
+                        groupings[aToBeGroupedElement] = MergeSingleGroupings(groupings[aToBeGroupedElement], singleGrouping);
+                    }
+                    else
+                    {
+                        groupings.Add(aToBeGroupedElement, singleGrouping);
+                    }
                 }
-
-                GroupingKey groupingKey = new GroupingKey(groupingVals);
-
-                #endregion
-
-                return groupingKey;
-
-            }, (dbo) =>
-            {
-                return dbo;
-            });
-
-            #endregion
-
-            foreach (var group in _GroupedVertices)
-            {
-
-                #region No valid grouping keys found
-
-                if (group.Key.Values.IsNullOrEmpty())
-                {
-                    continue;
-                }
-
-                #endregion
-
-                var groupedAttributes = new Dictionary<String, Object>();
-
-                foreach (var groupingKeyVal in group.Key.Values)
-                {
-                    groupedAttributes.Add(groupingKeyVal.Key.AttributeAlias, groupingKeyVal.Value);
-                }
-
-                var _VertexGroup = new VertexView(groupedAttributes, null);
-
-                #region Check having
-
-                if (_HavingExpression != null)
-                {
-
-                    var res = _HavingExpression.IsSatisfyHaving(_VertexGroup);
-
-                    if (res)
-                        yield return _VertexGroup;
-
-                }
-
-                else
-                {
-                    yield return _VertexGroup;
-                }
-
-                #endregion
-
             }
 
+            if (_Groupings.Count > 1)
+            {
+                throw new NotImplementedQLException("Currently it's not implemented to group more than one element.");
+            }
+
+            if (_HavingExpression != null)
+            {
+                throw new NotImplementedQLException("Currently it's not implemented to use HAVING");
+            }
+
+            foreach (var aGrouping in groupings)
+            {
+                foreach (var aGroupedResult in aGrouping.Value)
+                {
+                    yield return new VertexView(
+                        new Dictionary<String, Object> 
+                        { 
+                            { aGrouping.Key.RelatedIDChainDefinition.LastAttribute.Name, aGroupedResult.Key } 
+                        }, 
+                        new Dictionary<String, IEdgeView> 
+                        { 
+                            { "ContainedVertices", new HyperEdgeView(null, aGroupedResult.Value.Select(_ => new SingleEdgeView(null, _))) } 
+                        });
+                }
+            }
+
+            yield break;
         }
 
+        private Dictionary<object, List<IVertexView>> MergeSingleGroupings(Dictionary<object, List<IVertexView>> dictionary, Dictionary<object, List<IVertexView>> singleGrouping)
+        {
+            var result = new Dictionary<object, List<IVertexView>>(dictionary);
+
+            foreach (var aKV in singleGrouping)
+            {
+                if (result.ContainsKey(aKV.Key))
+                {
+                    result[aKV.Key].AddRange(aKV.Value);
+                }
+                else
+                {
+                    result.Add(aKV.Key, aKV.Value);
+                }
+            }
+
+            return result;
+        }
+
+
+        private List<IAttributeDefinition> ExtractEdges(IDChainDefinition iDChainDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            var result = new List<IAttributeDefinition>();
+
+            foreach (var aEdgeKey in iDChainDefinition.LevelKey.Edges)
+            {
+                if (aEdgeKey.IsAttributeSet)
+                {
+                    var attribute = _graphdb.GetVertexType<IAttributeDefinition>(
+                                    mySecurityToken,
+                                    myTransactionToken,
+                                    new RequestGetVertexType(aEdgeKey.VertexTypeID),
+                                    (stats, vertexType) => vertexType.GetAttributeDefinition(aEdgeKey.AttributeID));
+
+                    if (attribute.Kind == AttributeType.OutgoingEdge || attribute.Kind == AttributeType.IncomingEdge)
+                    {
+                        result.Add(attribute);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        IEnumerable<IVertexView> GetVerticesForLevelKey(IVertexView myStartingPoint, IEnumerable<String> myEdgeStrings)
+        {
+            List<IVertexView> result = new List<IVertexView>();
+
+            if (myEdgeStrings.IsNotNullOrEmpty())
+            {
+                #region traverse to interesting vertices
+
+                var interestingAttribute = myEdgeStrings.First();
+
+                if (myStartingPoint.HasEdge(interestingAttribute))
+                {
+                    foreach (var aOutgoingVertex in myStartingPoint.GetEdge(interestingAttribute).GetTargetVertices())
+                    {
+                        result.AddRange(GetVerticesForLevelKey(aOutgoingVertex, myEdgeStrings.Skip(1)));
+                    }
+                }
+
+                #endregion
+            }
+            else
+            {
+                result.Add(myStartingPoint);
+            }
+
+            return result;
+        }
 
         #endregion
     }

@@ -60,6 +60,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Grammar\SonesGQLGrammar.cs" />
     <Compile Include="Manager\Plugin\GQLPluginManager.cs" />
+    <Compile Include="Manager\Select\GroupingValue.cs" />
     <Compile Include="Manager\Select\EdgeList.cs" />
     <Compile Include="Manager\Select\GroupingKey.cs" />
     <Compile Include="Manager\Select\SelectionElement.cs" />

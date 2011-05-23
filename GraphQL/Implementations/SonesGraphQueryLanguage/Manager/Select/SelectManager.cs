@@ -443,16 +443,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             #region Create an IEnumerable of Readouts for this typeNode
 
-            var result = mySelectResultManager.Examine(myResolutionDepth, myTypeReference.Key, myTypeReference.Value, isInterestingWhere, ref _Vertices, mySecurityToken, myTransactionToken);
-
-            #endregion
-
-            #region If this type did not returned any result, we wont add it to the result
-
-            if (!result)
-            {
-                return new List<IVertexView>();
-            }
+            mySelectResultManager.Examine(myResolutionDepth, myTypeReference.Key, myTypeReference.Value, isInterestingWhere, ref _Vertices, mySecurityToken, myTransactionToken);
 
             #endregion
 
