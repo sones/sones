@@ -477,6 +477,7 @@ namespace sones.GraphFS
             var vertexRevisionID = 0L;
 
             Dictionary<Int64, Stream> binaryProperties;
+
             if (myVertexDefinition.BinaryProperties == null)
             {
                 binaryProperties = null;
@@ -909,7 +910,10 @@ namespace sones.GraphFS
                                         singleEdge.UpdateComment(item.Value.CommentUpdate);
                                     }
 
-                                    singleEdge.UpdateEdgeType(item.Value.EdgeTypeID);
+                                    if (item.Value.EdgeTypeID != null)
+                                    {
+                                        singleEdge.UpdateEdgeType(item.Value.EdgeTypeID);
+                                    }
 
                                     if (item.Value.UpdatedStructuredProperties != null)
                                     {
@@ -933,12 +937,16 @@ namespace sones.GraphFS
                                         }
                                     }
 
-                                    if (singleEdge.TargetVertex != null)
+                                    if (item.Value.TargetVertex != null)
                                     {
-                                        lock (singleEdge.TargetVertex)
+                                        lock (singleEdge)
                                         {
-                                            singleEdge.TargetVertex = targetVertex;
+                                            if (singleEdge.TargetVertex != null)
+                                            {
+                                                RemoveIncommingEdgeFromTargetVertex(singleEdge.TargetVertex, toBeUpdatedVertex.VertexTypeID, item.Key, toBeUpdatedVertex);
+                                            }
 
+                                            singleEdge.TargetVertex = targetVertex;                                           
                                         }
                                     }
                                 }
@@ -1023,7 +1031,11 @@ namespace sones.GraphFS
                                         hyperEdge.UpdateComment(item.Value.CommentUpdate);
                                     }
 
-                                    hyperEdge.UpdateEdgeType(item.Value.EdgeTypeID);
+                                    if (item.Value.EdgeTypeID != null)
+                                    {
+                                        hyperEdge.UpdateEdgeType(item.Value.EdgeTypeID);
+                                    }
+
                                     if (item.Value.UpdatedUnstructuredProperties != null)
                                         hyperEdge.UpdateUnStructuredProperties(
                                             item.Value.UpdatedUnstructuredProperties.Updated,
@@ -1096,16 +1108,21 @@ namespace sones.GraphFS
                                                         }
 
                                                         if (contEdge.TargetVertex != null)
-                                                        {
-                                                            lock (singleEdgeItem.TargetVertex)
+                                                        {                                                            
+                                                            lock (singleEdgeItem)
                                                             {
+                                                                if (singleEdgeItem.TargetVertex != null)
+                                                                {
+                                                                    RemoveIncommingEdgeFromTargetVertex(singleEdgeItem.TargetVertex, toBeUpdatedVertex.VertexTypeID, item.Key, toBeUpdatedVertex);
+                                                                }
+
                                                                 singleEdgeItem.TargetVertex = targetVertex;
                                                             }
                                                         }
 
                                                         if (contEdge.SourceVertex != null)
                                                         {
-                                                            lock (singleEdgeItem.SourceVertex)
+                                                            lock (singleEdgeItem)
                                                             {
                                                                 singleEdgeItem.SourceVertex =
                                                                     GetOrCreateTargetVertex(

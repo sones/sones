@@ -113,7 +113,17 @@ namespace sones.GraphFS.Element.Vertex
             _vertexTypeID = myVertexTypeID;
             _vertexRevisionID = myVertexRevisionID;
             _edition = myEdition;
-            _binaryProperties = myBinaryProperties;
+
+            if (myBinaryProperties != null)
+            {
+                _binaryProperties = new Dictionary<Int64, Stream>();
+
+                foreach (var item in myBinaryProperties)
+                {
+                    _binaryProperties.Add(item.Key, CopyBinaryStream(item.Value));
+                }
+            }
+
             OutgoingEdges = (Dictionary<long, IEdge>)myOutgoingEdges;
             
             IsBulkVertex = false;
@@ -137,7 +147,28 @@ namespace sones.GraphFS.Element.Vertex
 
             IsBulkVertex = true;
         }
-        
+
+        /// <summary>
+        /// Copy a binary stream.
+        /// </summary>
+        /// <param name="myBinStream">The binary stream, which is to copy.</param>
+        /// <returns>A copy of the stream.</returns>
+        private Stream CopyBinaryStream(Stream myBinStream)
+        {
+            var tmpStream = new MemoryStream();
+
+            var lastPos = myBinStream.Position;
+            
+            myBinStream.Position = 0;
+
+            myBinStream.CopyTo(tmpStream);
+            
+            myBinStream.Position = lastPos;
+            tmpStream.Position = 0;
+
+            return tmpStream;            
+        }
+
         #endregion
 
         #region IVertex Members
@@ -514,6 +545,7 @@ namespace sones.GraphFS.Element.Vertex
                     {
                         foreach (var item in myDeletedBinaryProperties)
                         {
+                            _binaryProperties[item].Close();
                             _binaryProperties.Remove(item);
                         }
                     }
@@ -527,11 +559,13 @@ namespace sones.GraphFS.Element.Vertex
                         {
                             if (_binaryProperties.ContainsKey(item.Value.PropertyID))
                             {
-                                _binaryProperties[item.Value.PropertyID] = item.Value.Stream;
+                                var streamCopy = CopyBinaryStream(item.Value.Stream);
+                                _binaryProperties[item.Value.PropertyID].Close();
+                                _binaryProperties[item.Value.PropertyID] = streamCopy;
                             }
                             else
                             {
-                                _binaryProperties.Add(item.Value.PropertyID, item.Value.Stream);
+                                _binaryProperties.Add(item.Value.PropertyID, CopyBinaryStream(item.Value.Stream));
                             }
                         }
                     }
@@ -541,7 +575,7 @@ namespace sones.GraphFS.Element.Vertex
 
                         foreach (var item in myBinaryUpdatedProperties)
                         {
-                            _binaryProperties.Add(item.Value.PropertyID, item.Value.Stream);
+                            _binaryProperties.Add(item.Value.PropertyID, CopyBinaryStream(item.Value.Stream));
                         }
                     }
                 }
@@ -719,8 +753,17 @@ namespace sones.GraphFS.Element.Vertex
         {
             lock (_lockobject)
             {
-                //copy the values
-                _binaryProperties = binaryProperties;
+                if (binaryProperties != null)
+                {
+                    _binaryProperties = new Dictionary<Int64, Stream>();
+
+                    //copy the values
+                    foreach (var item in binaryProperties)
+                    {
+                        _binaryProperties.Add(item.Key, CopyBinaryStream(item.Value));
+                    }
+                }
+
                 _comment = Comment;
                 _creationDate = CreationDate;
                 _modificationDate = ModificationDate;
