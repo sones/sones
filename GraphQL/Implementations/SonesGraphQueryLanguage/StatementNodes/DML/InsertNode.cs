@@ -131,7 +131,7 @@ namespace sones.GraphQL.StatementNodes.DML
         private QueryResult CreateQueryResult(IRequestStatistics myStats, IVertex myCreatedVertex)
         {
             return new QueryResult(_queryString, SonesGQLConstants.GQL,
-                                   Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), ResultType.Successful,
+                                   Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds), ResultType.Successful,
                                    new List<IVertexView> {CreateAVertexView(myCreatedVertex)});
         }
 

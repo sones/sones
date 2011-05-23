@@ -38,7 +38,7 @@ namespace sones.GraphQL.ErrorHandling
         public NotImplementedQLException(String myMessage)
         {            
             Message = myMessage;
-            _msg = String.Format("Stacktrace" + Environment.NewLine + "{0}" + Environment.NewLine + Environment.NewLine + Message, StackTrace);
+            _msg = myMessage;
         }
 
     }
