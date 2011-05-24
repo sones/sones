@@ -48,7 +48,7 @@ using sones.Plugins.SonesGQL.Functions;
 using sones.GraphDB.Request;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphDB.Expression.Tree.Literals;
+using sones.Library.CollectionWrapper;
 
 namespace sones.GraphQL
 {

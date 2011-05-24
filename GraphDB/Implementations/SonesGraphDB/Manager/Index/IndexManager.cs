@@ -37,8 +37,8 @@ using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.TypeManagement.Base;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.PropertyHyperGraph;
-using sones.GraphDB.Expression.Tree.Literals;
 using sones.GraphDB.Request;
+using sones.Library.CollectionWrapper;
 
 namespace sones.GraphDB.Manager.Index
 {

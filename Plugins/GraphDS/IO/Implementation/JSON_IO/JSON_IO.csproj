@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -44,10 +44,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
-      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
-      <Name>IGraphDB</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
       <Name>IGraphQL</Name>
@@ -59,6 +55,10 @@
     <ProjectReference Include="..\..\..\..\..\Library\External\Newtonsoft.Json\Newtonsoft.Json.csproj">
       <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\CollectionWrapper\CollectionWrapper.csproj">
+      <Project>{7748D9BA-FB40-42F9-9F51-F636F9F1DA8E}</Project>
+      <Name>CollectionWrapper</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
