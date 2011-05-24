@@ -48,10 +48,6 @@
       <Project>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</Project>
       <Name>NewFastSerializer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TypeCodes\TypeCodeDefinition.csproj">
-      <Project>{90D26D64-57EA-4796-A195-15D044FCAF1A}</Project>
-      <Name>TypeCodeDefinition</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

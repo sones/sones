@@ -159,10 +159,7 @@ namespace sones.Library.CollectionWrapper
         #region IFastSerialize Members
 
         public void Serialize(ref SerializationWriter mySerializationWriter)
-        {
-            //type code for the list collection wrapper
-            mySerializationWriter.WriteInt16(0);
-            
+        {            
             mySerializationWriter.WriteInt32(Value.Count);
 
             foreach (var item in Value)
@@ -174,8 +171,6 @@ namespace sones.Library.CollectionWrapper
         public void Deserialize(ref SerializationReader mySerializationReader)
         {
             Value = new List<IComparable>();
-
-            var typeCode = mySerializationReader.ReadInt16();
             
             var itemCnt = mySerializationReader.ReadInt32();
 

@@ -24,7 +24,6 @@ using System.Linq;
 using System.Text;
 using sones.Library.Serializer;
 using sones.Library.NewFastSerializer;
-using sones.Library.TypeCodes;
 
 namespace sones.Library.UserdefinedDataType
 {
@@ -45,14 +44,12 @@ namespace sones.Library.UserdefinedDataType
         #region IFastSerialize Members
 
         public void Serialize(ref SerializationWriter mySerializationWriter)
-        {
-            mySerializationWriter.WriteByte((byte)TypeCodeDefinition.UserDefinedType);
+        {            
             mySerializationWriter.WriteString(TypeName);
         }
 
         public void Deserialize(ref SerializationReader mySerializationReader)
-        {
-            var typeCode = (TypeCodeDefinition)mySerializationReader.ReadByte();
+        {           
             TypeName = mySerializationReader.ReadString();
         }
 
