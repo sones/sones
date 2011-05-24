@@ -28,6 +28,7 @@ using sones.GraphDB.Expression.Tree;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.VertexStore;
 using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -39,7 +40,23 @@ namespace sones.GraphDB.Manager.Vertex
     {
         #region Get Vertices
 
-        IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken);
+        /// <summary>
+        /// Gets all vertices correspondig to a vertex type
+        /// </summary>
+        /// <param name="myVertexType">The interesting vertex type</param>
+        /// <param name="myTransaction">The current transaction token</param>
+        /// <param name="mySecurity">The current security token</param>
+        /// <returns>An enumerable of all vertices</returns>
+        IEnumerable<IVertex> GetVertices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes = true);
+
+        /// <summary>
+        /// Gets all vertices depending to a request
+        /// </summary>
+        /// <param name="myRequest">The request</param>
+        /// <param name="TransactionToken">The current transaction token</param>
+        /// <param name="SecurityToken">The current security token</param>
+        /// <returns>An enumerable of all vertices</returns>
+        IEnumerable<IVertex> GetVertices(RequestGetVertices myRequest, TransactionToken TransactionToken, SecurityToken SecurityToken);
 
         /// <summary>
         /// Gets all vertices for one vertex type.
@@ -50,7 +67,7 @@ namespace sones.GraphDB.Manager.Vertex
         /// <returns>
         /// All vertices of the interesting vertex type.
         /// </returns>
-        IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransaction, SecurityToken mySecurity);
+        IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes = true);
 
         /// <summary>
         /// Gets all vertices for one vertex type ID.
@@ -61,7 +78,7 @@ namespace sones.GraphDB.Manager.Vertex
         /// <returns>
         /// All vertices of the interesting vertex type.
         /// </returns>
-        IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity);
+        IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes = true);
 
         /// <summary>
         /// Returns the list of vertices that matches the expression.

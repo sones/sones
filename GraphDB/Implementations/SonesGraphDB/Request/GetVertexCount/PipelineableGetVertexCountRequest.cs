@@ -27,6 +27,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
 using System;
+using System.Linq;
 
 namespace sones.GraphDB.Request
 {
@@ -84,18 +85,21 @@ namespace sones.GraphDB.Request
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            long vertexTypeID;
+            IEnumerable<long> vertexTypeID;
 
             if (_request.VertexTypeName != null)
             {
-                vertexTypeID = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken).ID;
+                vertexTypeID = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken).GetChildVertexTypes(true, true).Select(_ => _.ID);
             }
             else
             {
-                vertexTypeID = _request.VertexTypeID;
+                vertexTypeID = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.VertexTypeID, TransactionToken, SecurityToken).GetChildVertexTypes(true, true).Select(_ => _.ID);
             }
 
-            _vertexCount = myMetaManager.VertexManager.ExecuteManager.VertexStore.GetVertexCount(SecurityToken, TransactionToken, vertexTypeID);
+            foreach (var aCount in vertexTypeID.Select(_ => myMetaManager.VertexManager.ExecuteManager.VertexStore.GetVertexCount(SecurityToken, TransactionToken, _)))
+            {
+                _vertexCount += aCount;
+            }
         }
 
         public override IRequest GetRequest()

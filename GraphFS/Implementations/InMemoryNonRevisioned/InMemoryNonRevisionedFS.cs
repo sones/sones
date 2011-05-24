@@ -172,7 +172,7 @@ namespace sones.GraphFS
                 return Convert.ToUInt64(vertices.Count());
             }
 
-            throw new VertexTypeDoesNotExistException(myVertexTypeID);
+            return 0UL;
         }
 
         public IVertex GetVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 

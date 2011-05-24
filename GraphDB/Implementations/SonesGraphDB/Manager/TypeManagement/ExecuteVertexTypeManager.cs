@@ -131,7 +131,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override IEnumerable<IVertexType> GetAllVertexTypes(TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.VertexType.ToString(), myTransaction, mySecurity);
+            var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.VertexType.ToString(), myTransaction, mySecurity, false);
 
             return vertices == null ? Enumerable.Empty<IVertexType>() : vertices.Select(x => new VertexType(x));
         }
@@ -958,7 +958,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private long GetMaxID(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertices = _vertexManager.ExecuteManager.GetVertices(myTypeID, myTransaction, mySecurity);
+            var vertices = _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurity, myTransaction, myTypeID);
+            
             if (vertices == null)
                 //TODO better exception here
                 throw new Exception("The base vertex types are not available.");

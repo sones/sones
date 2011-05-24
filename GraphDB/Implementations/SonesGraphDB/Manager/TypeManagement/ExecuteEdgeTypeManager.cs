@@ -111,7 +111,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         IEnumerable<IEdgeType> IEdgeTypeHandler.GetAllEdgeTypes(TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.EdgeType.ToString(), myTransaction, mySecurity);
+            var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.EdgeType.ToString(), myTransaction, mySecurity, false);
 
             return vertices == null ? Enumerable.Empty<IEdgeType>() : vertices.Select(x => new EdgeType(x));
         }
