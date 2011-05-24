@@ -20,8 +20,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace sones.GraphDB.TypeSystem
 {
@@ -116,6 +114,57 @@ namespace sones.GraphDB.TypeSystem
         /// <param name="myOtherType">The given type.</param>
         /// <returns>True, if the given type is a descendant of the current type or the current type itself, otherwise false.</returns>
         bool IsDescendantOrSelf(IBaseType myOtherType);
+
+        #endregion
+
+        #region Inheritance
+
+        /// <summary>
+        /// Returns the descendantr of this IBaseType.
+        /// </summary>
+        /// <returns>An enumeration of IBaseTypes that are descendant of this IBaseType.</returns>
+        IEnumerable<IBaseType> GetDescendantTypes();
+
+        /// <summary>
+        /// Returns the descendantr of this IBaseType and this IBaseType in one enumeration.
+        /// </summary>
+        /// <returns>An enumeration of IBaseTypes that are descendant of this IBaseType and this IBaseType itself.</returns>
+        IEnumerable<IBaseType> GetDescendantTypesAndSelf();
+
+        /// <summary>
+        /// Returns the ancestor of this IBaseType.
+        /// </summary>
+        /// <returns>An enumeration of IBaseTypes that are ancestors of this IBaseType.</returns>
+        IEnumerable<IBaseType> GetAncestorTypes();
+
+        /// <summary>
+        /// Returns the ancestor of this IBaseType and this IBaseType in one enumeration.
+        /// </summary>
+        /// <returns>An enumeration of IBaseTypes that are ancestors of this IBaseType and this IBaseType itself.</returns>
+        IEnumerable<IBaseType> GetAncestorTypesAndSelf();
+
+        /// <summary>
+        /// Returns all descendant and ancestors of this IBaseType.
+        /// </summary>
+        /// <returns>An enumeration of all IBaseType that are ancestors or descendant of this IBaseType.</returns>
+        IEnumerable<IBaseType> GetKinsmenTypes();
+
+        /// <summary>
+        /// Returns all descendant and ancestors of this IBaseType and this IBaseType in one enumeration. 
+        /// </summary>
+        /// <returns>An enumeration of all IBaseType that are ancestors or descendant of this IBaseType and this IBaseType itself.</returns>
+        IEnumerable<IBaseType> GetKinsmenTypesAndSelf();
+
+        /// <summary>
+        /// Returns the direct children of this IBaseType.
+        /// </summary>
+        /// <returns>An enumeration of all direct children of this IBaseType.</returns>
+        IEnumerable<IBaseType> ChildrenTypes { get; }
+
+        /// <summary>
+        /// Gets the parent of this IBaseType.
+        /// </summary>
+        IBaseType ParentType { get; }
 
         #endregion
 
