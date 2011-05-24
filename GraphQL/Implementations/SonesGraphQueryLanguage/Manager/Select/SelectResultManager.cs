@@ -948,6 +948,10 @@ namespace sones.GraphQL.GQL.Manager.Select
                                     break;
 
                                 case AttributeType.Property:
+
+                                    callingObject = GetCallingObject(myDBObject, selectionElementFunction.Element);
+                                    break;
+
                                 case AttributeType.BinaryProperty:
                                 default:
                                     continue;

@@ -61,7 +61,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
         /// </summary>
         public FuncParameter Aggregate(IEnumerable<IComparable> myValues, IPropertyDefinition myPropertyDefinition)
         {
-            return new FuncParameter(myValues.Count(), myPropertyDefinition);
+            return new FuncParameter(Convert.ToUInt64(myValues.Count()), myPropertyDefinition);
         }
 
         #endregion
