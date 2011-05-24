@@ -40,7 +40,6 @@ using sones.GraphQL.Structure.Nodes.Misc;
 using sones.Library.DataStructures;
 using sones.Library.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
-using sones.Plugins.Index.Interfaces;
 using sones.Plugins.SonesGQL.Aggregates;
 using sones.Plugins.SonesGQL.DBExport;
 using sones.Plugins.SonesGQL.DBImport;
@@ -2286,6 +2285,7 @@ namespace sones.GraphQL
         {
 
             var stringBuilder = new StringBuilder();
+            String delimiter = ", ";
             stringBuilder.AppendFormat("{0} ", myVertexType.Name);
 
             #region parent type
@@ -2328,6 +2328,7 @@ namespace sones.GraphQL
                     #endregion
 
                     stringBuilder.RemoveSuffix(" ");
+                    stringBuilder.RemoveSuffix(delimiter);
                     stringBuilder.Append(S_BRACKET_RIGHT);
 
                 }
@@ -2393,14 +2394,16 @@ namespace sones.GraphQL
             foreach (var _AttributeIndex in myIndexDefinitions)
             {
 
-                if (_AttributeIndex.IsUserdefined)
+                if (!_AttributeIndex.IsUserdefined)
                     continue;
 
                 _StringBuilder.Append(String.Concat(S_BRACKET_LEFT, _AttributeIndex.Name));
 
                 _StringBuilder.Append(String.Concat(" ", S_EDITION.ToUpperString(), " ", _AttributeIndex.Edition));
 
-                _StringBuilder.Append(String.Concat(" ", S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexTypeName));
+                if(!String.IsNullOrWhiteSpace(_AttributeIndex.IndexTypeName))
+                    _StringBuilder.Append(String.Concat(" ", S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexTypeName));
+
                 _StringBuilder.Append(String.Concat(" ", S_ON.ToUpperString(), " " + S_ATTRIBUTES.ToUpperString(), " ", 
                                                     GetIndexedPropertyNames(_AttributeIndex.IndexedProperties)));
 
@@ -2427,7 +2430,7 @@ namespace sones.GraphQL
 
             #region build string for index properties
 
-            stringBuilder.Append(S_BRACKET_LEFT);
+            //stringBuilder.Append(S_BRACKET_LEFT);
 
             foreach (var aIndexedProperty in myIndexedProperties)
             {
@@ -2440,7 +2443,7 @@ namespace sones.GraphQL
                 stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
             }
 
-            stringBuilder.Append(S_BRACKET_RIGHT);
+            //stringBuilder.Append(S_BRACKET_RIGHT);
 
             #endregion
 
@@ -2532,10 +2535,10 @@ namespace sones.GraphQL
                 stringBuilder.Append(delimiter);
             }
 
-            if (stringBuilder.Length > delimiter.Length)
-            {
-                stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
-            }
+            //if (stringBuilder.Length > delimiter.Length)
+            //{
+            //    stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
+            //}
 
             #endregion
 
