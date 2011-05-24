@@ -90,15 +90,27 @@ namespace sones.GraphDB.Manager.Vertex
             return queryPlan.Execute();
         }
 
-        public IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
+        public IEnumerable<IVertex> GetVertices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
         {
-            var vertextype = _vertexTypeManager.ExecuteManager.GetVertexType(myVertexType, myTransaction, mySecurity);
-            return _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, vertextype.ID);
+            if (includeSubtypes)
+            {
+                return myVertexType.GetDescendantVertexTypesAndSelf().SelectMany(_ => _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, _.ID));
+            }
+            else
+            {
+                return _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, myVertexType.ID);
+            }
+
         }
 
-        public IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity)
+        public IEnumerable<IVertex> GetVertices(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
         {
-            return _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, myTypeID);
+            return GetVertices(_vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeName, myTransaction, mySecurity), myTransaction, mySecurity, includeSubtypes);
+        }
+
+        public IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
+        {
+            return GetVertices(_vertexTypeManager.ExecuteManager.GetVertexType(myTypeID, myTransaction, mySecurity), myTransaction, mySecurity, includeSubtypes);
         }
 
         public IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken)
@@ -133,7 +145,7 @@ namespace sones.GraphDB.Manager.Vertex
                 else
                 {
                     //2.1.2 no vertex ids ... take all
-                    result = GetVertices(_request.VertexTypeName, TransactionToken, SecurityToken);
+                    result = GetVertices(_request.VertexTypeName, TransactionToken, SecurityToken, true);
                 }
             }
             else
@@ -154,7 +166,7 @@ namespace sones.GraphDB.Manager.Vertex
                 else
                 {
                     //2.2.2 no vertex ids ... take all
-                    result = GetVertices(_request.VertexTypeID, TransactionToken, SecurityToken);
+                    result = GetVertices(_request.VertexTypeID, TransactionToken, SecurityToken, true);
                 }
             }
 
@@ -196,7 +208,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                 var definingVertexType = unique.DefiningVertexType;
 
-                foreach (var vtype in definingVertexType.GetChildVertexTypes(true, true))
+                foreach (var vtype in definingVertexType.GetDescendantVertexTypesAndSelf())
                 {
                     var indices = _indexManager.GetIndices(vtype, unique.CorrespondingIndex.IndexedProperties, mySecurity, myTransaction);
 
@@ -479,7 +491,7 @@ namespace sones.GraphDB.Manager.Vertex
         private static void CheckTargetVertices(IVertexType myTargetVertexType, IEnumerable<VertexInformation> vertexIDs)
         {
             var distinctTypeIDS = new HashSet<Int64>(vertexIDs.Select(x => x.VertexTypeID));
-            var allowedTypeIDs = new HashSet<Int64>(myTargetVertexType.GetChildVertexTypes(true, true).Select(x => x.ID));
+            var allowedTypeIDs = new HashSet<Int64>(myTargetVertexType.GetDescendantVertexTypesAndSelf().Select(x => x.ID));
             distinctTypeIDS.ExceptWith(allowedTypeIDs);
             if (distinctTypeIDS.Count > 0)
                 throw new Exception("A target vertex has a type, that is not assignable to the target vertex type of the edge.");

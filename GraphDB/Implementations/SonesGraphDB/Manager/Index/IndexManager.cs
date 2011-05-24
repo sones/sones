@@ -154,7 +154,7 @@ namespace sones.GraphDB.Manager.Index
             _ownIndex.Add(indexName, indexID);
             _indices.Add(indexID, index);
 
-            foreach (var childType in vertexType.GetChildVertexTypes(true, false))
+            foreach (var childType in vertexType.GetDescendantVertexTypes())
             {
                 var childID = _idManager[(long)BaseTypes.Index].GetNextID();
                 var childName = CreateIndexName(myIndexDefinition, childType);
@@ -192,7 +192,7 @@ namespace sones.GraphDB.Manager.Index
 
             var reloadedVertexType = _vertexTypeManager.ExecuteManager.GetVertexType(vertexType.Name, myTransaction, mySecurity);
 
-            foreach(var type in reloadedVertexType.GetChildVertexTypes(true, true))
+            foreach(var type in reloadedVertexType.GetDescendantVertexTypesAndSelf())
             {
                 RebuildIndices(type, myTransaction, mySecurity);
             }
@@ -486,7 +486,7 @@ namespace sones.GraphDB.Manager.Index
 
         private void ProcessDropIndex(IEnumerable<IIndexDefinition> myToBeDroppedIndices, IVertexType vertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            foreach (var aVertexType in vertexType.GetChildVertexTypes(true, true))
+            foreach (var aVertexType in vertexType.GetDescendantVertexTypesAndSelf())
             {
                 foreach (var aIndexDefinition in myToBeDroppedIndices)
                 {

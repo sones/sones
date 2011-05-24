@@ -131,7 +131,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override IEnumerable<IVertexType> GetAllVertexTypes(TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.VertexType.ToString(), myTransaction, mySecurity);
+            var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.VertexType.ToString(), myTransaction, mySecurity, false);
 
             return vertices == null ? Enumerable.Empty<IVertexType>() : vertices.Select(x => new VertexType(x));
         }
@@ -393,7 +393,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     foreach (var index in result[resultPos].ParentVertexType.GetIndexDefinitions(true))
                     {
                         _indexManager.CreateIndex(
-                            new IndexPredefinition(index.Name).AddProperty(index.IndexedProperties.Select(x => x.Name)).SetVertexType(current.Value.VertexTypeName).SetIndexType(index.IndexTypeName),
+                            new IndexPredefinition().AddProperty(index.IndexedProperties.Select(x => x.Name)).SetVertexType(current.Value.VertexTypeName).SetIndexType(index.IndexTypeName),
                             mySecurity,
                             myTransaction);
                     }
@@ -958,7 +958,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private long GetMaxID(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertices = _vertexManager.ExecuteManager.GetVertices(myTypeID, myTransaction, mySecurity);
+            var vertices = _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurity, myTransaction, myTypeID);
+            
             if (vertices == null)
                 //TODO better exception here
                 throw new Exception("The base vertex types are not available.");
@@ -1385,7 +1386,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                     var vertexDefaultValueUpdate = new VertexUpdateDefinition(null, new StructuredPropertiesUpdate(new Dictionary<long, IComparable> { { property.ID, defaultValue } }));
 
-                    foreach (var aVertexType in vertexType.GetChildVertexTypes(true, true))
+                    foreach (var aVertexType in vertexType.GetDescendantVertexTypesAndSelf())
                     {
                         foreach (var aVertexWithoutPropery in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, vertexType.ID).Where(_ => !_.HasProperty(property.ID)).ToList())
                         {
@@ -1489,7 +1490,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     //find the source
                     IIndexDefinition sourceIndexDefinition = vertexType.GetIndexDefinitions(false).Where(_ => _.Name == aIndex.Key && _.Edition == aIndex.Value).FirstOrDefault();
 
-                    foreach (var aVertexType in vertexType.GetChildVertexTypes())
+                    foreach (var aVertexType in vertexType.GetDescendantVertexTypes())
                     {
                         foreach (var aInnerIndex in aVertexType.GetIndexDefinitions(false).Where(_=>_.SourceIndex.ID == sourceIndexDefinition.ID))
                         {
@@ -1515,7 +1516,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 foreach (var aUniqueConstraint in myUniqueConstraints)
                 {
-                    foreach (var item in myVertexType.GetChildVertexTypes(true, true))
+                    foreach (var item in myVertexType.GetDescendantVertexTypesAndSelf())
                     {
                         foreach (var aUniqueDefinition in item.GetUniqueDefinitions(false))
                         {

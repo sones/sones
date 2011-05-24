@@ -29,7 +29,6 @@ namespace sones.GraphDB.TypeManagement
 {
     internal class EdgeType: BaseType, IEdgeType
     {
-
         #region Data
 
         private IEnumerable<IEdgeType> _childs;
@@ -46,6 +45,7 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
+        #region BaseType Members
 
         public override bool HasParentType
         {
@@ -57,7 +57,7 @@ namespace sones.GraphDB.TypeManagement
             get { return _hasChilds; }
         }
 
-        protected override BaseType GetParentType()
+        protected override BaseType RetrieveParentType()
         {
             return HasParentType ? new EdgeType(GetOutgoingSingleEdge(AttributeDefinitions.EdgeTypeDotParent).GetTargetVertex()) : null;
         }
@@ -67,64 +67,65 @@ namespace sones.GraphDB.TypeManagement
             return BaseGraphStorageManager.GetPropertiesFromFS(Vertex, this).Cast<IAttributeDefinition>().ToDictionary(x => x.Name);
         }
 
-        #region IEdgeType Members
-
-        public IEdgeType ParentEdgeType
-        {
-            get 
-            {
-                return GetParentType() as IEdgeType;
-            }
-        }
-
-        public IEnumerable<IEdgeType> GetChildEdgeTypes(bool myRecursive = true, bool myIncludeSelf = false)
-        {
-            if (myIncludeSelf)
-                yield return this;
-
-            foreach (var aChildEdgeType in GetChilds())
-            {
-                yield return aChildEdgeType;
-
-                if (!myRecursive) 
-                    continue;
-
-                foreach (var aVertex in aChildEdgeType.GetChildEdgeTypes())
-                {
-                    yield return aVertex;
-                }
-            }
-
-            yield break;
-        }
-
-        #endregion
-
-        #region private methods
-
-        private IEnumerable<IEdgeType> GetChilds()
-        {
-            if (_childs == null)
-                lock (LockObject)
-                {
-                    if (_childs == null)
-                        _childs = RetrieveChilds();
-                }
-
-            return _childs;
-        }
-
-        private IEnumerable<IEdgeType> RetrieveChilds()
+        protected override IEnumerable<BaseType> RetrieveChildrenTypes()
         {
             if (!HasChildTypes)
-                return Enumerable.Empty<IEdgeType>();
+                return Enumerable.Empty<EdgeType>();
 
             var vertices = GetIncomingVertices(BaseTypes.EdgeType, AttributeDefinitions.EdgeTypeDotParent);
 
             return vertices.Select(vertex => new EdgeType(vertex)).ToArray();
         }
 
+        #endregion
+
+        #region IEdgeType Members
+
+        #region Inheritance
+
+        public IEnumerable<IEdgeType> GetDescendantEdgeTypes()
+        {
+            return GetDescendantTypes().Cast<IEdgeType>().ToArray();
+        }
+
+        public IEnumerable<IEdgeType> GetDescendantEdgeTypesAndSelf()
+        {
+            return GetDescendantTypesAndSelf().Cast<IEdgeType>().ToArray();
+        }
+
+        public IEnumerable<IEdgeType> GetAncestorEdgeTypes()
+        {
+            return GetAncestorTypes().Cast<IEdgeType>().ToArray();
+        }
+
+        public IEnumerable<IEdgeType> GetAncestorEdgeTypesAndSelf()
+        {
+            return GetAncestorTypesAndSelf().Cast<IEdgeType>().ToArray();
+        }
+
+        public IEnumerable<IEdgeType> GetKinsmenEdgeTypes()
+        {
+            return GetKinsmenTypes().Cast<IEdgeType>().ToArray();
+        }
+
+        public IEnumerable<IEdgeType> GetKinsmenEdgeTypesAndSelf()
+        {
+            return GetKinsmenTypesAndSelf().Cast<IEdgeType>().ToArray();
+        }
+
+        public IEdgeType ParentEdgeType
+        {
+            get { return ParentType as IEdgeType; }
+        }
+
+        public IEnumerable<IEdgeType> ChildrenEdgeTypes
+        {
+            get { return ChildrenTypes.Cast<IEdgeType>().ToArray(); }
+        }
 
         #endregion
+
+        #endregion
+
     }
 }

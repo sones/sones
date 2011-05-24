@@ -38,7 +38,7 @@ using sones.Library.LanguageExtensions;
 
 namespace sones.GraphDB.Manager.Vertex
 {
-    class CheckVertexHandler: AVertexHandler, IVertexHandler
+    sealed class CheckVertexHandler: AVertexHandler, IVertexHandler
     {
         #region IVertexHandler Members
 
@@ -79,13 +79,22 @@ namespace sones.GraphDB.Manager.Vertex
             return null;
         }
 
-        public IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity)
+        public IEnumerable<IVertex> GetVertices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
+        {
+            if (myVertexType == null)
+            {
+                throw new ArgumentNullException("myVertexType");
+            }
+            return null;
+        }
+
+        public IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
         {
             _vertexTypeManager.CheckManager.GetVertexType(myTypeID, myTransaction, mySecurity);
             return null;
         }
 
-        public IEnumerable<IVertex> GetVertices(string myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
+        public IEnumerable<IVertex> GetVertices(string myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
         {
             _vertexTypeManager.CheckManager.GetVertexType(myVertexType, myTransaction, mySecurity);
             return null;

@@ -390,7 +390,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myNewAttributeName != null)
             {
-                return vertexType.GetChildVertexTypes(true, true)
+                return vertexType.GetKinsmenVertexTypesAndSelf()
                     .Select(aVertexType => aVertexType.GetAttributeDefinitions(false).ToArray())
                     .All(attributesOfCurrentVertexType => !attributesOfCurrentVertexType.Any(_ => _.Name == myNewAttributeName));
             }
@@ -478,7 +478,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="vertexType"></param>
         private static void CheckToBeAddedAttributes(RequestAlterVertexType myAlterVertexTypeRequest, IVertexType vertexType)
         {
-            foreach (var aVertexType in vertexType.GetChildVertexTypes(true, true))
+            foreach (var aVertexType in vertexType.GetDescendantVertexTypesAndSelf())
             {
                 var attributesOfCurrentVertexType = aVertexType.GetAttributeDefinitions(false).ToList();
 
@@ -580,7 +580,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 #region check that existing child types are specified
 
-                if (delType.GetChildVertexTypes().Any(child => !myVertexTypes.Contains(child)))
+                if (delType.GetDescendantVertexTypes().Any(child => !myVertexTypes.Contains(child)))
                 {
                     throw new VertexTypeRemoveException(delType.Name, "The given type has child types and cannot be removed.");
                 }

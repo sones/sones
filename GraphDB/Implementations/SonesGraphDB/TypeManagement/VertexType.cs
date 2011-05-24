@@ -76,9 +76,20 @@ namespace sones.GraphDB.TypeManagement
             get { return _hasChilds; }
         }
 
-        protected override BaseType GetParentType()
+        protected override BaseType RetrieveParentType()
         {
             return HasParentType ? new VertexType(GetOutgoingSingleEdge(AttributeDefinitions.VertexTypeDotParent).GetTargetVertex()) : null;
+        }
+
+        protected override IEnumerable<BaseType> RetrieveChildrenTypes()
+        {
+            if (!HasChildTypes)
+                return Enumerable.Empty<VertexType>();
+
+            var vertices = GetIncomingVertices(BaseTypes.VertexType, AttributeDefinitions.VertexTypeDotParent);
+
+            return vertices.Select(vertex => new VertexType(vertex)).ToArray();
+            
         }
 
         protected override IDictionary<string, IAttributeDefinition> RetrieveAttributes()
@@ -96,34 +107,47 @@ namespace sones.GraphDB.TypeManagement
 
         #region Inheritance
 
+        public IEnumerable<IVertexType> GetDescendantVertexTypes()
+        {
+            return GetDescendantTypes().Cast<IVertexType>().ToArray();
+        }
+
+        public IEnumerable<IVertexType> GetDescendantVertexTypesAndSelf()
+        {
+            return GetDescendantTypesAndSelf().Cast<IVertexType>().ToArray();
+        }
+
+        public IEnumerable<IVertexType> GetAncestorVertexTypes()
+        {
+            return GetAncestorTypes().Cast<IVertexType>().ToArray();
+        }
+
+        public IEnumerable<IVertexType> GetAncestorVertexTypesAndSelf()
+        {
+            return GetAncestorTypesAndSelf().Cast<IVertexType>().ToArray();
+        }
+
+        public IEnumerable<IVertexType> GetKinsmenVertexTypes()
+        {
+            return GetKinsmenTypes().Cast<IVertexType>().ToArray();
+        }
+
+        public IEnumerable<IVertexType> GetKinsmenVertexTypesAndSelf()
+        {
+            return GetKinsmenTypesAndSelf().Cast<IVertexType>().ToArray();
+        }
+
         public IVertexType ParentVertexType
         {
-            get 
+            get
             {
-                return GetParentType() as IVertexType;
+                return ParentType as IVertexType;
             }
         }
 
-        public IEnumerable<IVertexType> GetChildVertexTypes(bool myRecursive = true, bool myIncludeSelf = false)
+        public IEnumerable<IVertexType> ChildrenVertexTypes
         {
-            if (myIncludeSelf)
-                yield return this;
-
-            foreach (var aChildVertexType in GetChilds())
-            {
-                yield return aChildVertexType;
-
-                if (!myRecursive) 
-                    continue;
-
-                foreach (var aVertex in aChildVertexType.GetChildVertexTypes())
-                {
-                    yield return aVertex;
-                }
-            }
-
-            yield break;
-
+            get { return ChildrenTypes.Cast<IVertexType>().ToArray(); }
         }
 
         #endregion
@@ -239,28 +263,6 @@ namespace sones.GraphDB.TypeManagement
         #endregion
 
         #region private members
-
-        private IEnumerable<IVertexType> GetChilds()
-        {
-            if (_childs == null)
-                lock (LockObject)
-                {
-                    if (_childs == null)
-                        _childs = RetrieveChilds();
-                }
-
-            return _childs;
-        }
-
-        private IEnumerable<IVertexType> RetrieveChilds()
-        {
-            if (!HasChildTypes)
-                return Enumerable.Empty<IVertexType>();
-
-            var vertices = GetIncomingVertices(BaseTypes.VertexType, AttributeDefinitions.VertexTypeDotParent);
-
-            return vertices.Select(vertex => new VertexType(vertex)).ToArray();
-        }
 
         private IEnumerable<IUniqueDefinition> GetUniques()
         {

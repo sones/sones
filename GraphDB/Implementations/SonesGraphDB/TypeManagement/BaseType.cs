@@ -44,6 +44,9 @@ namespace sones.GraphDB.TypeManagement
         /// </summary>
         protected IDictionary<String, IAttributeDefinition> Attributes;
 
+        private BaseType _parent;
+        private IEnumerable<BaseType> _children;
+
         private readonly long _id;
         private readonly string _name;
         private readonly bool _isSealed;
@@ -83,7 +86,9 @@ namespace sones.GraphDB.TypeManagement
 
         public abstract bool HasChildTypes{ get; }
 
-        protected abstract BaseType GetParentType();
+        protected abstract BaseType RetrieveParentType();
+
+        protected abstract IEnumerable<BaseType> RetrieveChildrenTypes();
 
         protected abstract IDictionary<String, IAttributeDefinition> RetrieveAttributes();
 
@@ -130,7 +135,7 @@ namespace sones.GraphDB.TypeManagement
         {
             var result = GetAttributesPrivate().ContainsKey(myAttributeName);
             if (!result && HasParentType)
-                result = GetParentType().HasAttribute(myAttributeName);
+                result = RetrieveParentType().HasAttribute(myAttributeName);
 
             return result;
         }
@@ -142,7 +147,7 @@ namespace sones.GraphDB.TypeManagement
                 return result;
 
 
-            return GetParentType().GetAttributeDefinition(myAttributeName);
+            return RetrieveParentType().GetAttributeDefinition(myAttributeName);
         }
 
         public IAttributeDefinition GetAttributeDefinition(long myAttributeID)
@@ -150,8 +155,8 @@ namespace sones.GraphDB.TypeManagement
             var result = GetAttributesPrivate().Values.FirstOrDefault(_=>_.ID == myAttributeID);
 
             if (result == null)
-                if (GetParentType() != null)
-                    result = GetParentType().GetAttributeDefinition(myAttributeID);
+                if (RetrieveParentType() != null)
+                    result = RetrieveParentType().GetAttributeDefinition(myAttributeID);
 
             return result;
         }
@@ -159,14 +164,14 @@ namespace sones.GraphDB.TypeManagement
         public bool HasAttributes(bool myIncludeAncestorDefinitions)
         {
             return (myIncludeAncestorDefinitions && HasParentType)
-                ? GetAttributesPrivate().Count > 0 || GetParentType().HasAttributes(true)
+                ? GetAttributesPrivate().Count > 0 || RetrieveParentType().HasAttributes(true)
                 : GetAttributesPrivate().Count > 0 ;
         }
 
         public IEnumerable<IAttributeDefinition> GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
         {
             return (myIncludeAncestorDefinitions && HasParentType)
-                ? GetAttributesPrivate().Values.Union(GetParentType().GetAttributeDefinitions(true))
+                ? GetAttributesPrivate().Values.Union(RetrieveParentType().GetAttributeDefinitions(true))
                 : GetAttributesPrivate().Values;
         }
 
@@ -214,7 +219,7 @@ namespace sones.GraphDB.TypeManagement
 
         public bool IsDescendant(IBaseType myOtherType)
         {
-            for (var current = GetParentType(); current != null; current = current.GetParentType())
+            for (var current = RetrieveParentType(); current != null; current = current.RetrieveParentType())
             {
                 if (current.Equals(myOtherType))
                     return true;
@@ -225,6 +230,72 @@ namespace sones.GraphDB.TypeManagement
         public bool IsDescendantOrSelf(IBaseType myOtherType)
         {
             return Equals(myOtherType) || IsDescendant(myOtherType);
+        }
+
+        #endregion
+
+        #region Inheritance
+
+        public IEnumerable<IBaseType> GetDescendantTypes()
+        {
+            foreach (var childrenType in GetChildrenTypes())
+            {
+                yield return childrenType;
+
+                foreach (var descendant in childrenType.GetDescendantTypes())
+                {
+                    yield return descendant;
+                }
+            }
+        }
+
+        public IEnumerable<IBaseType> GetDescendantTypesAndSelf()
+        {
+            yield return this;
+
+            foreach (var ancestor in GetDescendantTypes())
+                yield return ancestor;
+        }
+
+        public IEnumerable<IBaseType> GetAncestorTypes()
+        {
+            for (var current = GetParentType(); current != null; current = current.GetParentType())
+                yield return current;
+        }
+
+        public IEnumerable<IBaseType> GetAncestorTypesAndSelf()
+        {
+            yield return this;
+
+            foreach (var ancestor in GetAncestorTypes())
+                yield return ancestor;
+        }
+
+        public IEnumerable<IBaseType> GetKinsmenTypes()
+        {
+            foreach (var ancestorType in GetAncestorTypes())
+                yield return ancestorType;
+
+            foreach (var descendantType in GetDescendantTypes())
+                yield return descendantType;
+        }
+
+        public IEnumerable<IBaseType> GetKinsmenTypesAndSelf()
+        {
+            yield return this;
+
+            foreach (var ancestor in GetKinsmenTypes())
+                yield return ancestor;
+        }
+
+        public IEnumerable<IBaseType> ChildrenTypes
+        {
+            get { return GetChildrenTypes(); }
+        }
+
+        public IBaseType ParentType
+        {
+            get { return GetParentType(); }
         }
 
         #endregion
@@ -297,7 +368,7 @@ namespace sones.GraphDB.TypeManagement
             var hasOwnProperties = GetAttributesPrivate().Values.Where(_=>_ is T).CountIsGreater(0);
             
             return (myIncludeAncestorDefinitions)
-                ? hasOwnProperties || GetParentType().GetAttributeDefinitions(true).Where(_=>_ is T).CountIsGreater(0)
+                ? hasOwnProperties || RetrieveParentType().GetAttributeDefinitions(true).Where(_=>_ is T).CountIsGreater(0)
                 : hasOwnProperties;
         }
         #endregion
@@ -313,6 +384,36 @@ namespace sones.GraphDB.TypeManagement
 
             return Attributes;
         }
-        
+
+
+        private BaseType GetParentType()
+        {
+            if (_parent == null && HasParentType)
+            {
+                lock (LockObject)
+                {
+                    if (_parent == null)
+                    {
+                        _parent = RetrieveParentType();
+                    }
+                }
+            }
+            return _parent;
+        }
+
+        private IEnumerable<BaseType> GetChildrenTypes()
+        {
+            if (_children == null)
+            {
+                lock (LockObject)
+                {
+                    if (_children == null)
+                    {
+                        _children = RetrieveChildrenTypes();
+                    }
+                }
+            }
+            return _children;
+        }
     }
 }
