@@ -28,22 +28,75 @@ namespace sones.GraphDB.TypeSystem
     /// </summary>
     public interface IEdgeType: IBaseType
     {
-
         #region Inheritance
 
         /// <summary>
-        /// Gets the parent vertex type
+        /// Returns the descendant of this IEdgeType.
         /// </summary>
-        /// <returns>The parent vertex type</returns>
-        IEdgeType ParentEdgeType { get; }
+        /// <returns>An enumeration of IEdgeType that are descendant of this IEdgeType.</returns>
+        /// <seealso cref="IBaseType.GetDescendantTypes"/>
+        IEnumerable<IEdgeType> GetDescendantEdgeTypes();
 
         /// <summary>
-        /// Get all child edge types.
+        /// Returns the descendant of this IEdgeType and this IEdgeType in one enumeration.
         /// </summary>
-        /// <param name="myRecursive">Include all dexcendant.</param>
-        /// <param name="myIncludeSelf">If true, this edge type will be included to the result list.</param>
-        /// <returns>An enumerable of child vertex types, never <c>NULL</c>.</returns>
-        IEnumerable<IEdgeType> GetChildEdgeTypes(bool myRecursive = true, bool myIncludeSelf = false);
+        /// <returns>An enumeration of IEdgeType that are descendant of this IEdgeType and this IEdgeType itself.</returns>
+        /// <seealso cref="IBaseType.GetDescendantTypesAndSelf"/>
+        IEnumerable<IEdgeType> GetDescendantEdgeTypesAndSelf();
+
+        /// <summary>
+        /// Returns the ancestor of this IEdgeType.
+        /// </summary>
+        /// <returns>An enumeration of IEdgeType that are ancestors of this IEdgeType.</returns>
+        /// <seealso cref="IBaseType.GetAncestorTypes"/>
+        IEnumerable<IEdgeType> GetAncestorEdgeTypes();
+
+        /// <summary>
+        /// Returns the ancestor of this IEdgeType and this IEdgeType in one enumeration.
+        /// </summary>
+        /// <returns>An enumeration of IEdgeType that are ancestors of this IEdgeType and this IEdgeType itself.</returns>
+        /// <seealso cref="IBaseType.GetAncestorTypesAndSelf"/>
+        IEnumerable<IEdgeType> GetAncestorEdgeTypesAndSelf();
+        
+        /// <summary>
+        /// Returns all descendant and ancestors of this IEdgeType.
+        /// </summary>
+        /// <returns>An enumeration of all IEdgeType that are ancestors or descendant of this IEdgeType.</returns>
+        /// <seealso cref="IBaseType.GetKinsmenTypes"/>
+        IEnumerable<IEdgeType> GetKinsmenEdgeTypes();
+
+        /// <summary>
+        /// Returns all descendant and ancestors of this IEdgeType and this IEdgeType in one enumeration. 
+        /// </summary>
+        /// <returns>An enumeration of all IEdgeType that are ancestors or descendant of this IEdgeType and this IEdgeType itself.</returns>
+        /// <seealso cref="IBaseType.GetKinsmenTypesAndSelf"/>
+        IEnumerable<IEdgeType> GetKinsmenEdgeTypesAndSelf();
+
+        /// <summary>
+        /// Returns the direct children of this IEdgeType.
+        /// </summary>
+        /// <seealso cref="IBaseType.ChildrenTypes"/>
+        IEnumerable<IEdgeType> ChildrenEdgeTypes { get; }
+
+        /// <summary>
+        /// Gets the parent of this IEdgeType.
+        /// </summary>
+        /// <seealso cref="IBaseType.ParentType"/>
+        IEdgeType ParentEdgeType { get; }
+
+        ///// <summary>
+        ///// Gets the parent vertex type
+        ///// </summary>
+        ///// <returns>The parent vertex type</returns>
+        //IEdgeType ParentEdgeType { get; }
+
+        ///// <summary>
+        ///// Get all child edge types.
+        ///// </summary>
+        ///// <param name="myRecursive">Include all dexcendant.</param>
+        ///// <param name="myIncludeSelf">If true, this edge type will be included to the result list.</param>
+        ///// <returns>An enumerable of child vertex types, never <c>NULL</c>.</returns>
+        //IEnumerable<IEdgeType> GetChildEdgeTypes(bool myRecursive = true, bool myIncludeSelf = false);
 
         #endregion
 

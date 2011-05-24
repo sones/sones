@@ -45,9 +45,9 @@ namespace sones.GraphQL.StatementNodes.DML
     {
         #region data
 		
-        private BinaryExpressionDefinition _WhereExpression;
-        private List<AAttributeAssignOrUpdate> _AttributeAssignList;
-        private String _Type;
+        private BinaryExpressionDefinition _whereExpression;
+        private List<AAttributeAssignOrUpdate> _attributeAssignList;
+        private String _type;
         private String _query;
 
 	    #endregion
@@ -68,7 +68,7 @@ namespace sones.GraphQL.StatementNodes.DML
                 //get type
                 if (parseNode.ChildNodes[1] != null && parseNode.ChildNodes[1].AstNode != null)
                 {
-                    _Type = ((AstNode)(parseNode.ChildNodes[1].AstNode)).AsString;
+                    _type = ((AstNode)(parseNode.ChildNodes[1].AstNode)).AsString;
                 }
                 else
                 {
@@ -78,13 +78,13 @@ namespace sones.GraphQL.StatementNodes.DML
                 if (parseNode.ChildNodes[3] != null && HasChildNodes(parseNode.ChildNodes[3]))
                 {
 
-                    _AttributeAssignList = (parseNode.ChildNodes[3].AstNode as AttributeAssignListNode).AttributeAssigns;
+                    _attributeAssignList = (parseNode.ChildNodes[3].AstNode as AttributeAssignListNode).AttributeAssigns;
 
                 }
 
                 if (parseNode.ChildNodes[4] != null && ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinaryExpressionDefinition != null)
                 {
-                    _WhereExpression = ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinaryExpressionDefinition;
+                    _whereExpression = ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinaryExpressionDefinition;
 
                 }
             }   
@@ -113,16 +113,16 @@ namespace sones.GraphQL.StatementNodes.DML
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
                 mySecurityToken,
                 myTransactionToken,
-                new RequestGetVertexType(_Type),
+                new RequestGetVertexType(_type),
                 (stats, vtype) => vtype);
 
-            if (_WhereExpression != null)
+            if (_whereExpression != null)
             {
                 //validate
-                _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+                _whereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
 
                 //calculate
-                var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+                var expressionGraph = _whereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
 
                 //extract
                 myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
@@ -150,7 +150,7 @@ namespace sones.GraphQL.StatementNodes.DML
         private QueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             InsertNode insert = new InsertNode();
-            insert.Init(_Type, _AttributeAssignList);
+            insert.Init(_type, _attributeAssignList);
             return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
@@ -159,7 +159,7 @@ namespace sones.GraphQL.StatementNodes.DML
             myGraphDB.Delete<bool>(
                 mySecurityToken,
                 myTransactionToken, 
-                new RequestDelete(new RequestGetVertices(_Type, new List<long>{toBeDeletedVertexID})),
+                new RequestDelete(new RequestGetVertices(_type, new List<long>{toBeDeletedVertexID})),
                 (stats) => true);
         }
 

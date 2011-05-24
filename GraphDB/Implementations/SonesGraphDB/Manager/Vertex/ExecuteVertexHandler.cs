@@ -93,7 +93,7 @@ namespace sones.GraphDB.Manager.Vertex
         {
             if (includeSubtypes)
             {
-                return myVertexType.GetChildVertexTypes(true, true).SelectMany(_ => _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, _.ID));
+                return myVertexType.GetDescendantVertexTypesAndSelf().SelectMany(_ => _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, _.ID));
             }
             else
             {
@@ -207,7 +207,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                 var definingVertexType = unique.DefiningVertexType;
 
-                foreach (var vtype in definingVertexType.GetChildVertexTypes(true, true))
+                foreach (var vtype in definingVertexType.GetDescendantVertexTypesAndSelf())
                 {
                     var indices = _indexManager.GetIndices(vtype, unique.CorrespondingIndex.IndexedProperties, mySecurity, myTransaction);
 
@@ -490,7 +490,7 @@ namespace sones.GraphDB.Manager.Vertex
         private static void CheckTargetVertices(IVertexType myTargetVertexType, IEnumerable<VertexInformation> vertexIDs)
         {
             var distinctTypeIDS = new HashSet<Int64>(vertexIDs.Select(x => x.VertexTypeID));
-            var allowedTypeIDs = new HashSet<Int64>(myTargetVertexType.GetChildVertexTypes(true, true).Select(x => x.ID));
+            var allowedTypeIDs = new HashSet<Int64>(myTargetVertexType.GetDescendantVertexTypesAndSelf().Select(x => x.ID));
             distinctTypeIDS.ExceptWith(allowedTypeIDs);
             if (distinctTypeIDS.Count > 0)
                 throw new Exception("A target vertex has a type, that is not assignable to the target vertex type of the edge.");

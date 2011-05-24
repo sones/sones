@@ -89,11 +89,11 @@ namespace sones.GraphDB.Request
 
             if (_request.VertexTypeName != null)
             {
-                vertexTypeID = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken).GetChildVertexTypes(true, true).Select(_ => _.ID);
+                vertexTypeID = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken).GetDescendantVertexTypesAndSelf().Select(_ => _.ID);
             }
             else
             {
-                vertexTypeID = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.VertexTypeID, TransactionToken, SecurityToken).GetChildVertexTypes(true, true).Select(_ => _.ID);
+                vertexTypeID = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.VertexTypeID, TransactionToken, SecurityToken).GetDescendantVertexTypesAndSelf().Select(_ => _.ID);
             }
 
             foreach (var aCount in vertexTypeID.Select(_ => myMetaManager.VertexManager.ExecuteManager.VertexStore.GetVertexCount(SecurityToken, TransactionToken, _)))

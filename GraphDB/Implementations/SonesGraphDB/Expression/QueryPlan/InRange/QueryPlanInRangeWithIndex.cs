@@ -150,7 +150,7 @@ namespace sones.GraphDB.Expression.QueryPlan
 
             #region child types
 
-            foreach (var aChildVertexType in myVertexType.GetChildVertexTypes())
+            foreach (var aChildVertexType in myVertexType.GetDescendantVertexTypes())
             {
                 foreach (var aVertex in Execute_private(aChildVertexType))
                 {
