@@ -2313,7 +2313,7 @@ namespace sones.GraphQL
 
                     if (myVertexType.GetAttributeDefinitions(false).Any(aAttribute => aAttribute.Kind == AttributeType.Property))
                     {
-                        stringBuilder.Append(CreateGraphDDLOfProperties(myVertexType.GetPropertyDefinitions(false)) + " ");
+                        stringBuilder.Append(String.Concat(CreateGraphDDLOfProperties(myVertexType.GetPropertyDefinitions(false))));
                     }
 
                     #endregion
@@ -2322,14 +2322,15 @@ namespace sones.GraphQL
 
                     if (myVertexType.GetAttributeDefinitions(false).Any(aAttribute => aAttribute.Kind == AttributeType.OutgoingEdge))
                     {
-                        stringBuilder.Append(CreateGraphDDLOfOutgoingEdges(myVertexType.GetOutgoingEdgeDefinitions(false), myVertexType) + " ");
+                        stringBuilder.Append(String.Concat(CreateGraphDDLOfOutgoingEdges(myVertexType.GetOutgoingEdgeDefinitions(false), myVertexType)));
                     }
 
                     #endregion
 
-                    stringBuilder.RemoveSuffix(" ");
-                    stringBuilder.RemoveSuffix(delimiter);
-                    stringBuilder.Append(S_BRACKET_RIGHT);
+                    if(stringBuilder.ToString().EndsWith(delimiter))
+                        stringBuilder.RemoveSuffix(delimiter);
+
+                    stringBuilder.Append(String.Concat(S_BRACKET_RIGHT, " "));
 
                 }
 
@@ -2339,7 +2340,7 @@ namespace sones.GraphQL
 
                 if (myVertexType.GetAttributeDefinitions(false).Any(aAttribute => aAttribute.Kind == AttributeType.IncomingEdge))
                 {
-                    stringBuilder.Append(S_INCOMINGEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfIncomingEdges(myVertexType.GetIncomingEdgeDefinitions(false)) + S_BRACKET_RIGHT.ToUpperString() + " ");
+                    stringBuilder.Append(String.Concat(S_INCOMINGEDGES.ToUpperString(), " ",S_BRACKET_LEFT.ToUpperString(), CreateGraphDDLOfIncomingEdges(myVertexType.GetIncomingEdgeDefinitions(false)), S_BRACKET_RIGHT.ToUpperString(), " "));
                 }
 
                 #endregion
@@ -2353,7 +2354,7 @@ namespace sones.GraphQL
             {
                 if (myVertexType.GetUniqueDefinitions(false).Count() > 0)
                 {
-                    stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfUniqueAttributes(myVertexType.GetUniqueDefinitions(false)) + S_BRACKET_RIGHT.Symbol + " ");
+                    stringBuilder.Append(S_UNIQUE.ToUpperString() + " " + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfUniqueAttributes(myVertexType.GetUniqueDefinitions(false)) + S_BRACKET_RIGHT.Symbol + " ");
                 }
             }
 
@@ -2365,7 +2366,7 @@ namespace sones.GraphQL
             {
                 if (myVertexType.GetPropertyDefinitions(false).Any(aProperty => aProperty.IsMandatory))
                 {
-                    stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfMandatoryAttributes(myVertexType.GetPropertyDefinitions(false).Where(aProperty => aProperty.IsMandatory)) + S_BRACKET_RIGHT.Symbol + " ");
+                    stringBuilder.Append(S_MANDATORY.ToUpperString() + " " + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfMandatoryAttributes(myVertexType.GetPropertyDefinitions(false).Where(aProperty => aProperty.IsMandatory)) + S_BRACKET_RIGHT.Symbol + " ");
                 }
             }
 
@@ -2375,7 +2376,7 @@ namespace sones.GraphQL
 
             if (myVertexType.GetIndexDefinitions(false).Count() > 0)
             {
-                stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myVertexType.GetIndexDefinitions(false), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+                stringBuilder.Append(S_INDICES.ToUpperString() + " " + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myVertexType.GetIndexDefinitions(false), myVertexType) + S_BRACKET_RIGHT.Symbol);
             }
 
             #endregion
@@ -2430,8 +2431,6 @@ namespace sones.GraphQL
 
             #region build string for index properties
 
-            //stringBuilder.Append(S_BRACKET_LEFT);
-
             foreach (var aIndexedProperty in myIndexedProperties)
             {
                 stringBuilder.Append(aIndexedProperty.Name);
@@ -2442,8 +2441,6 @@ namespace sones.GraphQL
             {
                 stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
             }
-
-            //stringBuilder.Append(S_BRACKET_RIGHT);
 
             #endregion
 
