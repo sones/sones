@@ -2378,9 +2378,13 @@ namespace sones.GraphQL
 
             #region Indices
 
-            if (myVertexType.GetIndexDefinitions(false).Count() > 0)
+            var indices =
+                myVertexType.GetIndexDefinitions(false).Except(
+                    myVertexType.GetUniqueDefinitions(false).Select(_ => _.CorrespondingIndex));
+
+            if (indices.Count() > 0)
             {
-                stringBuilder.Append(S_INDICES.ToUpperString() + " " + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myVertexType.GetIndexDefinitions(false), myVertexType) + S_BRACKET_RIGHT.Symbol);
+                stringBuilder.Append(S_INDICES.ToUpperString() + " " + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(indices, myVertexType) + S_BRACKET_RIGHT.Symbol);
             }
 
             #endregion
@@ -2402,9 +2406,12 @@ namespace sones.GraphQL
                 if (!_AttributeIndex.IsUserdefined)
                     continue;
 
-                _StringBuilder.Append(String.Concat(S_BRACKET_LEFT, _AttributeIndex.Name));
+                if (!_AttributeIndex.Name.StartsWith("sones"))
+                    _StringBuilder.Append(String.Concat(S_BRACKET_LEFT, _AttributeIndex.Name, " "));
+                else
+                    _StringBuilder.Append(S_BRACKET_LEFT);
 
-                _StringBuilder.Append(String.Concat(" ", S_EDITION.ToUpperString(), " ", _AttributeIndex.Edition));
+                _StringBuilder.Append(String.Concat(S_EDITION.ToUpperString(), " ", _AttributeIndex.Edition));
 
                 if(!String.IsNullOrWhiteSpace(_AttributeIndex.IndexTypeName))
                     _StringBuilder.Append(String.Concat(" ", S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexTypeName));
@@ -2986,12 +2993,12 @@ namespace sones.GraphQL
 
                         stringBuilder.Append(delimiter);
                     }
+
+                    stringBuilder.RemoveSuffix(delimiter);
+                    stringBuilder.Append(S_BRACKET_RIGHT);
+
+                    stringBuilder.Append(delimiter);
                 }
-
-                stringBuilder.RemoveSuffix(delimiter);
-                stringBuilder.Append(S_BRACKET_RIGHT);
-
-                stringBuilder.Append(delimiter);
             }
 
             return stringBuilder.ToString();

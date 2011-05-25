@@ -202,7 +202,7 @@ namespace sones.GraphDB.Manager.Index
 
         private string CreateIndexName(IndexPredefinition myIndexDefinition, IVertexType vertexType)
         {
-            var propNames = string.Join("&", myIndexDefinition.Properties);
+            var propNames = string.Join("AND", myIndexDefinition.Properties);
 
             int count = 0;
             string result;
@@ -310,7 +310,7 @@ namespace sones.GraphDB.Manager.Index
             }
             else
             {
-                throw new ArgumentOutOfRangeException("myIndexID", "No index with available with that id.");
+                throw new ArgumentOutOfRangeException("myIndexID", "No index available with that id.");
             }
         }
 

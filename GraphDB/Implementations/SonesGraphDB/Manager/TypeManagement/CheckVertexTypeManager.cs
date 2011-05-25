@@ -84,7 +84,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             return null;
         }
 
-        public override Dictionary<Int64, String> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override Dictionary<Int64, String> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, bool myIgnoreReprimands = false)
         {
             #region check arguments
 

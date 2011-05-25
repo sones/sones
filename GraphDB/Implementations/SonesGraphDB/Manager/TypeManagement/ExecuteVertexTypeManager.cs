@@ -141,9 +141,9 @@ namespace sones.GraphDB.Manager.TypeManagement
             return Add(myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
-        public override Dictionary<Int64, String> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override Dictionary<Int64, String> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, bool myIgnoreReprimands = false)
         {
-            return Remove(myVertexTypes, myTransaction, mySecurity);
+            return Remove(myVertexTypes, myTransaction, mySecurity, myIgnoreReprimands);
         }
 
         public override IEnumerable<long> ClearDB(TransactionToken myTransaction, SecurityToken mySecurity)
@@ -722,13 +722,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransaction">Transaction token.</param>
         /// <param name="mySecurity">Security Token.</param>
         /// <returns>Set of deleted vertex type IDs.</returns>
-        private Dictionary<Int64, String> Remove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
+        private Dictionary<Int64, String> Remove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, bool myIgnoreReprimands = false)
         {
             //the attribute types on delete types which have to be removed
             var toDeleteAttributeDefinitions = new List<IAttributeDefinition>();
 
             //the indices on the delete types
-            var toDeleteIndexDefinitions = new List<IUniqueDefinition>();
+            var toDeleteUniqueDefinitions = new List<IUniqueDefinition>();
+            var toDeleteIndexDefinitions = new List<IIndexDefinition>();
 
             #region get propertydefinitions
             
@@ -755,7 +756,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 foreach (var outEdge in delType.GetOutgoingEdgeDefinitions(false))
                 {
-                    if (outEdge.TargetVertexType.GetIncomingEdgeDefinitions(true).Any(inEdge => inEdge.RelatedEdgeDefinition.ID.Equals(outEdge.ID) && inEdge.RelatedType.ID != delType.ID))
+                    if (outEdge.TargetVertexType.GetIncomingEdgeDefinitions(true).Any(inEdge => inEdge.RelatedEdgeDefinition.ID.Equals(outEdge.ID) && inEdge.RelatedType.ID != delType.ID) && !myIgnoreReprimands)
                     {
                         throw new VertexTypeRemoveException(delType.Name, "There are other types which have incoming edges, whose related type is a outgoing edge of the type which should be removed.");
                     }
@@ -765,7 +766,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 toDeleteAttributeDefinitions.AddRange(delType.GetAttributeDefinitions(false));
 
-                toDeleteIndexDefinitions.AddRange(delType.GetUniqueDefinitions(false));
+                //toDeleteUniqueDefinitions.AddRange(delType.GetUniqueDefinitions(false));
+                toDeleteIndexDefinitions.AddRange(delType.GetIndexDefinitions(false));
             }
             
             #endregion
@@ -778,8 +780,13 @@ namespace sones.GraphDB.Manager.TypeManagement
             //remove indices on types
             foreach (var index in toDeleteIndexDefinitions)
             {
-                _indexManager.RemoveIndexInstance(index.CorrespondingIndex.ID, myTransaction, mySecurity);
-            } 
+                _indexManager.RemoveIndexInstance(index.ID, myTransaction, mySecurity);
+            }
+            
+            //foreach (var index in toDeleteUniqueDefinitions)
+            //{
+            //    _indexManager.RemoveIndexInstance(index.CorrespondingIndex.ID, myTransaction, mySecurity);
+            //}
             
             #endregion
 
@@ -859,16 +866,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <returns>Set of deleted vertex type IDs.</returns>
         private IEnumerable<long> Clear(TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            //the attribute types on delete types which have to be removed
-            var toDeleteAttributeDefinitions = new List<IAttributeDefinition>();
-
-            //the indices on the delete types
-            var toDeleteIndexDefinitions = new List<IUniqueDefinition>();
-
             //the types to delete
             var toDeleteVertexTypes = new List<IVertexType>();
 
             #region check if specified types can be removed
+
             //get child vertex types and check if they are specified by user
             foreach (var delType in GetAllVertexTypes(myTransaction, mySecurity))
             {
@@ -879,68 +881,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 #endregion
 
-                toDeleteAttributeDefinitions.AddRange(delType.GetAttributeDefinitions(false));
-
-                toDeleteIndexDefinitions.AddRange(delType.GetUniqueDefinitions(false));
-
                 toDeleteVertexTypes.Add(delType);
-
             }
+
             #endregion
 
-            //the IDs of the deleted vertices
-            var deletedTypeIDs = new List<long>(toDeleteVertexTypes.Select(item => item.ID));
-
-            #region remove attribute types on delete types
-            //delete attribute vertices
-            foreach (var attr in toDeleteAttributeDefinitions)
-            {
-                switch (attr.Kind)
-                {
-                    case (AttributeType.Property):
-                        _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, attr.ID, (long)BaseTypes.Property);
-                        break;
-
-                    case (AttributeType.IncomingEdge):
-                        _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, attr.ID, (long)BaseTypes.IncomingEdge);
-                        break;
-
-                    case (AttributeType.OutgoingEdge):
-                        _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, attr.ID, (long)BaseTypes.OutgoingEdge);
-                        break;
-
-                    case (AttributeType.BinaryProperty):
-                        _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, attr.ID, (long)BaseTypes.BinaryProperty);
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-            #endregion
-
-            #region remove indices
-            //remove indices on types
-            foreach (var index in toDeleteIndexDefinitions)
-            {
-                _indexManager.RemoveIndexInstance(index.CorrespondingIndex.ID, myTransaction, mySecurity);
-            }
-            #endregion
-
-            #region remove vertices
-            //delete the vertices
-            foreach (var type in toDeleteVertexTypes)
-            {
-                _vertexManager.ExecuteManager.VertexStore.RemoveVertices(mySecurity, myTransaction, type.ID);
-
-                //removes the vertexType
-                _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, type.ID, (long)BaseTypes.VertexType);
-            }
-            #endregion
-
-            toDeleteVertexTypes.Clear();
-                        
-            return deletedTypeIDs;
+            return RemoveVertexTypes(toDeleteVertexTypes, myTransaction, mySecurity, true).Select(x => x.Key).ToList();
         }
 
         private void LoadBaseType(TransactionToken myTransaction, SecurityToken mySecurity, params BaseTypes[] myBaseTypes)

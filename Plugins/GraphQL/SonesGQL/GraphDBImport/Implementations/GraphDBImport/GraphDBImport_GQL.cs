@@ -254,7 +254,7 @@ namespace sones.Plugins.SonesGQL
 
                 #endregion
 
-                query += _Line;
+                query = _Line;
 
                 #region execute query
                 StopWatchLine.Reset();
@@ -284,8 +284,8 @@ namespace sones.Plugins.SonesGQL
 
                 #endregion
 
-                query = String.Empty;
-                queryResult = tempResult;
+                //query = String.Empty;
+                //queryResult = tempResult;
             } 
             StopWatchLines.Stop();
             #endregion
