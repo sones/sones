@@ -32,12 +32,18 @@ using sones.Plugins.GraphDS.IO.XML_IO;
 using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.Request.GetIndex;
+using System.Reflection;
+
+
+
+
 
 namespace sones.GraphDS.GraphDSRESTClient
 {
     /// <summary>
     /// A GraphDS client that communicates via REST
     /// </summary>
+    /// 
     public sealed class GraphDS_RESTClient : IGraphDSClient
     {
         #region Data
@@ -53,7 +59,7 @@ namespace sones.GraphDS.GraphDSRESTClient
         {
          return this._Host; 
         }
-         
+                        
         private void setHost(String myHost){
             if (!myHost.Contains("http://"))
             {
@@ -73,6 +79,8 @@ namespace sones.GraphDS.GraphDSRESTClient
 
         private XML_IO _Parser;
 
+       
+
         #endregion
 
         #region Constructors
@@ -88,6 +96,28 @@ namespace sones.GraphDS.GraphDSRESTClient
             _GQLUri = getHost() + ":" + _Port.ToString() + _GQLPATTERN;
 
             _Parser = new XML_IO();
+
+
+            //workaround to communicate with graphds server running on mono
+            Assembly curSection = Assembly.GetAssembly(typeof(System.Net.Configuration.SettingsSection));
+            if (curSection != null)
+            {
+                Type setting = curSection.GetType("System.Net.Configuration.SettingsSectionInternal");
+                if (setting != null)
+                {
+                    var instance = setting.InvokeMember("Section", BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.NonPublic, null, null, new object[] { });
+
+                    if (instance != null)
+                    {
+                        FieldInfo unsafeParsing = setting.GetField("useUnsafeHeaderParsing", BindingFlags.NonPublic | BindingFlags.Instance);
+                        if (unsafeParsing != null)
+                        {
+                            unsafeParsing.SetValue(instance, true);
+                        }
+                    }
+                }
+            }
+           
          }
         #endregion
 
@@ -271,29 +301,27 @@ namespace sones.GraphDS.GraphDSRESTClient
 
         private String FetchGraphDBOutput(String myQueryString)
         {
-            String fullRESTUri = _GQLUri + "?" + HttpUtility.HtmlEncode(myQueryString);
+            String fullRESTUri = String.Format("{0}?{1}",_GQLUri, HttpUtility.HtmlEncode(myQueryString));
             try
             {
 
                 HttpWebRequest request = WebRequest.Create(fullRESTUri) as HttpWebRequest;
-
+                
                 request.Credentials = _Credentials;
-                request.ContentType = "application/xml";
                 request.Accept = "application/xml";
                 request.UserAgent = "GraphDSRESTClient";
                 request.KeepAlive = false;
+                
                 StreamReader reader;
                 StringBuilder resonseXML = null;
 
                 HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-
-
                 if (request.HaveResponse == true && response != null)
                 {
                     reader = new StreamReader(response.GetResponseStream());
                     resonseXML = new StringBuilder(reader.ReadToEnd());
                 }
+                response.Close();
                 return resonseXML.ToString();
 
             }
