@@ -160,6 +160,9 @@ namespace sones.GraphDB.Expression.Tree.Literals
 
         public void Serialize(ref SerializationWriter mySerializationWriter)
         {
+            //type code for the list collection wrapper
+            mySerializationWriter.WriteInt16(0);
+            
             mySerializationWriter.WriteInt32(Value.Count);
 
             foreach (var item in Value)
@@ -172,6 +175,8 @@ namespace sones.GraphDB.Expression.Tree.Literals
         {
             Value = new List<IComparable>();
 
+            var typeCode = mySerializationReader.ReadInt16();
+            
             var itemCnt = mySerializationReader.ReadInt32();
 
             for (int i = 0; i < itemCnt; i++)

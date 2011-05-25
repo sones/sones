@@ -22,6 +22,7 @@ using System;
 using sones.GraphDB.Expression.Tree;
 using System.Collections;
 using System.Collections.Generic;
+using sones.Library.CollectionWrapper;
 using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.GraphDB.Expression

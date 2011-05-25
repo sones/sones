@@ -43,6 +43,7 @@ using sones.Library.LanguageExtensions;
 using System.IO;
 using sones.GraphDB.TypeManagement.Base;
 using sones.Plugins.Index.Helper;
+using sones.Library.CollectionWrapper;
 
 namespace sones.GraphDB.Manager.Vertex
 {

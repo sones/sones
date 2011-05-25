@@ -25,7 +25,6 @@ using System.Text;
 using sones.GraphQL.Structure.Helper.Enums;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Expression;
-using sones.GraphDB.Expression.Tree.Literals;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
@@ -36,6 +35,7 @@ using sones.GraphQL.ErrorHandling;
 using sones.GraphQL.GQL.Manager.Plugin;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
+using sones.Library.CollectionWrapper;
 
 namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 {

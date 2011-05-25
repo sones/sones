@@ -27,7 +27,7 @@ using sones.Library.VersionedPluginManager;
 using sones.Library.Settings;
 using sones.GraphQL.Result;
 using System.IO;
-using sones.GraphDB.Expression.Tree.Literals;
+using sones.Library.CollectionWrapper;
 
 namespace sones.Plugins.GraphDS.IO
 {

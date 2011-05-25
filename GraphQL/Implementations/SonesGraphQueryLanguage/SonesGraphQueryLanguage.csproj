@@ -282,6 +282,10 @@
       <Project>{E33D0E75-43A1-4643-928D-DA9E5D99E041}</Project>
       <Name>Arithmetics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\CollectionWrapper\CollectionWrapper.csproj">
+      <Project>{7748D9BA-FB40-42F9-9F51-F636F9F1DA8E}</Project>
+      <Name>CollectionWrapper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>

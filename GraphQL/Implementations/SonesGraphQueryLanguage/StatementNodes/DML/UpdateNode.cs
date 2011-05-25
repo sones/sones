@@ -39,8 +39,8 @@ using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.ErrorHandling;
 using sones.GraphQL.GQL.Structure.Helper.Definition;
-using sones.GraphDB.Expression.Tree.Literals;
 using sones.Library.LanguageExtensions;
+using sones.Library.CollectionWrapper;
 
 namespace sones.GraphQL.StatementNodes.DML
 {

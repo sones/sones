@@ -40,8 +40,8 @@ using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.ErrorHandling;
-using sones.GraphDB.Expression.Tree.Literals;
 using sones.Library.LanguageExtensions;
+using sones.Library.CollectionWrapper;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
