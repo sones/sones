@@ -991,7 +991,8 @@ namespace sones.GraphQL
                             | "!="
                             | "AND"
                             | "OR"
-                            | "INRANGE";
+                            | "INRANGE"
+                            | "LIKE";
 
             notOpt.Rule = Empty
                             | S_NOT;

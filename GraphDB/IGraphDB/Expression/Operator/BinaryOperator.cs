@@ -41,6 +41,7 @@ namespace sones.GraphDB.Expression
         LessThan,
         NotEquals,
         //NotIn,
+        Like,
 
         #endregion
 

@@ -53,6 +53,8 @@
     <Compile Include="Expression\QueryPlan\LessOrEquals\QueryPlanLessOrEqualsThanWithoutIndex.cs" />
     <Compile Include="Expression\QueryPlan\Less\QueryPlanLessThanWithIndex.cs" />
     <Compile Include="Expression\QueryPlan\Less\QueryPlanLessThanWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Like\QueryPlanLikeWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Like\QueryPlanLikeWithoutIndex.cs" />
     <Compile Include="Expression\QueryPlan\NotEquals\QueryPlanNotEqualsWithIndex.cs" />
     <Compile Include="Expression\QueryPlan\NotEquals\QueryPlanNotEqualsWithoutIndex.cs" />
     <Compile Include="Expression\QueryPlan\OR\QueryPlanORSequentiell.cs" />

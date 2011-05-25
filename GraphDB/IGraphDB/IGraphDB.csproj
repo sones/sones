@@ -47,6 +47,7 @@
     <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeErrors\AGraphDBVertexTypeException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeErrors\EmptyVertexTypeNameException.cs" />
+    <Compile Include="ErrorHandling\Expression\InvalidLikeOperationException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexRemoveException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexAttributeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexCreationException.cs" />
