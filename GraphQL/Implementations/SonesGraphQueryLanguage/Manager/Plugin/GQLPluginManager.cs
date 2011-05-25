@@ -30,6 +30,7 @@ using sones.Plugins.SonesGQL.Functions;
 using sones.Plugins.SonesGQL.Aggregates;
 using sones.Plugins.SonesGQL.DBImport;
 using sones.Plugins.SonesGQL.DBExport;
+using sones.Plugins.SonesGQL.Statements;
 
 namespace sones.GraphQL.GQL.Manager.Plugin
 {
@@ -79,7 +80,13 @@ namespace sones.GraphQL.GQL.Manager.Plugin
 
                 .Register<ISingleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
                 .Register<IVersionedIndex<IComparable, Int64, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
-                .Register<IMultipleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion);
+                .Register<IMultipleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
+
+            #endregion
+
+            #region statements
+
+                .Register<IGQLStatementPlugin>(IGQLStatementPluginVersionCompatibility.MinVersion, IGQLStatementPluginVersionCompatibility.MaxVersion);
 
             #endregion
 
@@ -98,6 +105,7 @@ namespace sones.GraphQL.GQL.Manager.Plugin
             FillLookup<IGQLFunction>(componentName, _ => _.FunctionName);
             FillLookup<IGraphDBImport>(componentName, _ => _.ImporterName);
             FillLookup<IGraphDBExport>(componentName, _ => _.ExporterName);
+            FillLookup<IGQLStatementPlugin>(componentName, _ => _.StatementName);
 
             #endregion
         }

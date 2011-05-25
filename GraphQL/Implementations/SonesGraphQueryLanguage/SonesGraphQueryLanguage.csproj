@@ -334,6 +334,10 @@
       <Project>{CDAE254B-77D9-4E59-9C07-C18F0085F570}</Project>
       <Name>ISonesGQLFunction</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\Statements\IGQLStatementPlugin\IGQLStatementPlugin.csproj">
+      <Project>{47F01C51-E6DA-496D-8F78-F475727C8708}</Project>
+      <Name>IGQLStatementPlugin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
       <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
       <Name>ISonesIndex</Name>
