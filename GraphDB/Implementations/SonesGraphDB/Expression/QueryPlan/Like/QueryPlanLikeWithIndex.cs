@@ -29,6 +29,7 @@ using sones.Library.Commons.Transaction;
 using sones.Plugins.Index.Interfaces;
 using System.Linq;
 using sones.GraphDB.Expression.Tree.Literals;
+using System.Text.RegularExpressions;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -73,10 +74,14 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         public override IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, long> mySingleValueIndex, IComparable myIComparable)
         {
-            if (mySingleValueIndex.ContainsKey(myIComparable))
-            {
-                yield return mySingleValueIndex[myIComparable];
+            var regexpression = new Regex((String)myIComparable);
 
+            foreach (var aKV in mySingleValueIndex)
+            {
+                if (regexpression.IsMatch((String)aKV.Key))
+                {
+                    yield return aKV.Value;
+                }
             }
 
             yield break;
@@ -84,12 +89,18 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         public override IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, long> myMultipleValueIndex, IComparable myIComparable)
         {
-            if (myMultipleValueIndex.ContainsKey(myIComparable))
+            var regexpression = new Regex((String)myIComparable);
+            List<long> ids = new List<long>();
+
+            foreach (var aKV in myMultipleValueIndex)
             {
-                return myMultipleValueIndex[myIComparable];
+                if (regexpression.IsMatch((String)aKV.Key))
+                {
+                    ids.AddRange(aKV.Value);
+                }
             }
 
-            return Enumerable.Empty<long>();
+            return ids;
         }
 
         #endregion
