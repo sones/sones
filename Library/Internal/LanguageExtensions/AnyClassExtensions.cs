@@ -44,6 +44,16 @@ namespace sones.Library.LanguageExtensions
 
         public static IComparable ConvertToIComparable(this Object myObject, Type myConvertType)
         {
+            if (myObject == null)
+                throw new NullReferenceException();
+
+            #region some special magic
+
+            if (typeof(DateTime).Equals(myConvertType) && typeof(long).Equals(myObject.GetType()))
+                return DateTime.FromBinary((long) myObject);
+
+            #endregion
+
             return (IComparable) Convert.ChangeType(myObject, myConvertType);
         }
 

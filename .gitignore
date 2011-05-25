@@ -3,6 +3,7 @@
 *.pdb
 *.dll
 *.vshost
+*.vs10x
 *.suo
 [Bb]in/
 [Dd]ebug/
@@ -13,3 +14,4 @@ CoreDeveloper.suo
 CoreDeveloper.userprefs
 *.sln.docstates
 *.user
+*.userprefs

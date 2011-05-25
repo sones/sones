@@ -30,9 +30,9 @@ using sones.Library.VersionedPluginManager;
 using SchemaToClassesGenerator;
 using sones.Plugins.GraphDS.IO.XML_IO.ErrorHandling;
 using System.Text;
-using sones.GraphDB.Expression.Tree.Literals;
 using System.Text.RegularExpressions;
 using VertexView = sones.GraphQL.Result.VertexView;
+using sones.Library.CollectionWrapper;
 
 
 namespace sones.Plugins.GraphDS.IO.XML_IO

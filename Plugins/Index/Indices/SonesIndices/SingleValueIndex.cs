@@ -29,8 +29,6 @@ using sones.Plugins.Index.ErrorHandling;
 using sones.Plugins.Index.Helper;
 using sones.Plugins.Index.Interfaces;
 using sones.Library.VersionedPluginManager;
-using sones.Library.Settings;
-
 #endregion
 
 namespace sones.Plugins.Index

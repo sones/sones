@@ -53,10 +53,6 @@
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Internal\Settings\Settings.csproj">
-      <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
-      <Name>Settings</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\ISonesIndex\ISonesIndex.csproj">
       <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
       <Name>ISonesIndex</Name>

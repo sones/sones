@@ -282,6 +282,10 @@
       <Project>{E33D0E75-43A1-4643-928D-DA9E5D99E041}</Project>
       <Name>Arithmetics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\CollectionWrapper\CollectionWrapper.csproj">
+      <Project>{7748D9BA-FB40-42F9-9F51-F636F9F1DA8E}</Project>
+      <Name>CollectionWrapper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
@@ -329,6 +333,10 @@
     <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\ISonesGQLFunction\ISonesGQLFunction.csproj">
       <Project>{CDAE254B-77D9-4E59-9C07-C18F0085F570}</Project>
       <Name>ISonesGQLFunction</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\Statements\IGQLStatementPlugin\IGQLStatementPlugin.csproj">
+      <Project>{47F01C51-E6DA-496D-8F78-F475727C8708}</Project>
+      <Name>IGQLStatementPlugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
       <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>

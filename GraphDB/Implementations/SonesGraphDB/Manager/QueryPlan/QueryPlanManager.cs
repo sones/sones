@@ -27,6 +27,7 @@ using sones.Library.Commons.Transaction;
 using sones.Library.Commons.VertexStore;
 using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Expression.Tree.Literals;
+using sones.GraphDB.ErrorHandling.Expression;
 
 namespace sones.GraphDB.Manager.QueryPlan
 {
@@ -146,6 +147,7 @@ namespace sones.GraphDB.Manager.QueryPlan
                 #region comparative
 
                 case BinaryOperator.Equals:
+                case BinaryOperator.Like:
                 case BinaryOperator.GreaterOrEqualsThan:
                 case BinaryOperator.GreaterThan:
                 case BinaryOperator.LessOrEqualsThan:
@@ -253,6 +255,9 @@ namespace sones.GraphDB.Manager.QueryPlan
 
                 case BinaryOperator.NotEquals:
                     return GenerateNotEqualsPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);
+
+                case BinaryOperator.Like:
+                    return GenerateLikePlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);
 
                 #endregion
 
@@ -365,6 +370,44 @@ namespace sones.GraphDB.Manager.QueryPlan
             else
             {
                 return new QueryPlanInRangeWithoutIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning);
+            }
+        }
+
+        /// <summary>
+        /// Generats a like query plan
+        /// </summary>
+        /// <param name="binaryExpression">The binary expression that has to be transfered into a like query plan</param>
+        /// <param name="myIsLongRunning">Determines whether it is anticipated that the request could take longer</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <returns>A like query plan</returns>
+        private IQueryPlan GenerateLikePlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            QueryPlanProperty property;
+            ILiteralExpression constant;
+
+            FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
+
+            //check property
+            if (property.Property.BaseType != typeof(String))
+            {
+                throw new InvalidLikeOperationException(String.Format("The property {0} is not of type String.", property.Property.Name));
+            }
+
+            //check constant
+            if (!(constant.Value is String))
+            {
+                throw new InvalidLikeOperationException(String.Format("There has to be a String (current: {0}) constant to create a regular expression for a Like operation.", constant.Value.GetType().Name));
+            }
+
+            //is there an index on this property?
+            if (_indexManager != null && _indexManager.HasIndex(property.Property, mySecurityToken, myTransactionToken))
+            {
+                return new QueryPlanLikeWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
+            }
+            else
+            {
+                return new QueryPlanLikeWithoutIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning);
             }
         }
 

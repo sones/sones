@@ -26,6 +26,7 @@ using System.Text;
 using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphDB;
+using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 using sones.GraphQL.StatementNodes.DDL;
@@ -40,7 +41,6 @@ using sones.GraphQL.Structure.Nodes.Misc;
 using sones.Library.DataStructures;
 using sones.Library.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
-using sones.Plugins.Index.Interfaces;
 using sones.Plugins.SonesGQL.Aggregates;
 using sones.Plugins.SonesGQL.DBExport;
 using sones.Plugins.SonesGQL.DBImport;
@@ -48,7 +48,8 @@ using sones.Plugins.SonesGQL.Functions;
 using sones.GraphDB.Request;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphDB.Expression.Tree.Literals;
+using sones.Library.CollectionWrapper;
+using sones.Plugins.SonesGQL.Statements;
 
 namespace sones.GraphQL
 {
@@ -60,6 +61,8 @@ namespace sones.GraphQL
         /// The IGraphDB instance that is used to get some information
         /// </summary>
         private readonly IGraphDB _iGraphDB;
+
+        private Dictionary<long, string> _vertexTypes;
 
         #region Consts
 
@@ -87,20 +90,22 @@ namespace sones.GraphQL
 
         #region NonTerminals
 
-        //public NonTerminal BNF_VertexTypes { get; private set; }
-
         #region class scope NonTerminal - need for IExtendableGrammar
 
-        private readonly NonTerminal BNF_ImportStmt;     //If no import format is found from plugin the statement must be removed
-        private readonly NonTerminal BNF_ImportFormat;
+        public readonly NonTerminal NT_ImportStmt;     //If no import format is found from plugin the statement must be removed
+        public readonly NonTerminal NT_ImportFormat;
 
-        private readonly NonTerminal BNF_FuncCall;
-        private readonly NonTerminal BNF_FunArgs;
+        public readonly NonTerminal NT_FuncCall;
+        public readonly NonTerminal NT_FunArgs;
 
-        private readonly NonTerminal BNF_Aggregate;
-        private readonly NonTerminal BNF_AggregateArg;
+        public readonly NonTerminal NT_Aggregate;
+        public readonly NonTerminal NT_AggregateArg;
 
-        private readonly NonTerminal BNF_IndexTypeOpt;
+        public readonly NonTerminal NT_IndexTypeOpt;
+
+        public readonly NonTerminal NT_AType;
+        public readonly NonTerminal NT_whereClauseOpt;
+        public readonly NonTerminal NT_Id;
 
         #endregion
 
@@ -470,7 +475,7 @@ namespace sones.GraphQL
 
             #region ID related
 
-            var Id = new NonTerminal("Id", CreateIDNode);
+            NT_Id = new NonTerminal("Id", CreateIDNode);
             var Id_simple = new NonTerminal("id_simple", typeof(AstNode));
             var id_typeAndAttribute = new NonTerminal("id_typeAndAttribute");
             var idlist = new NonTerminal("idlist");
@@ -518,7 +523,7 @@ namespace sones.GraphQL
             var orderByAttributeList = new NonTerminal("orderByAttributeList");
             var orderByAttributeListMember = new NonTerminal("orderByAttributeListMember");
             var AttributeOrderDirectionOpt = new NonTerminal("AttributeOrderDirectionOpt");
-            BNF_IndexTypeOpt = new NonTerminal("indexTypeOpt", typeof(IndexTypeOptNode));
+            NT_IndexTypeOpt = new NonTerminal("indexTypeOpt", typeof(IndexTypeOptNode));
             var indexNameOpt = new NonTerminal("indextNameOpt", typeof(IndexNameOptNode));
             var editionOpt = new NonTerminal("editionOpt", typeof(EditionOptNode));
             var alterCmd = new NonTerminal("alterCmd", typeof(AlterCommandNode));
@@ -526,7 +531,7 @@ namespace sones.GraphQL
             var insertData = new NonTerminal("insertData");
             var intoOpt = new NonTerminal("intoOpt");
             var assignList = new NonTerminal("assignList");
-            var whereClauseOpt = new NonTerminal("whereClauseOpt", CreateWhereExpressionNode);
+            NT_whereClauseOpt = new NonTerminal("whereClauseOpt", CreateWhereExpressionNode);
             var extendsOpt = new NonTerminal("extendsOpt");
             var abstractOpt = new NonTerminal("abstractOpt");
             var commentOpt = new NonTerminal("CommentOpt");
@@ -565,12 +570,12 @@ namespace sones.GraphQL
 
             #region Aggregates & Functions
 
-            BNF_Aggregate = new NonTerminal("aggregate", CreateAggregateNode);
-            BNF_AggregateArg = new NonTerminal("aggregateArg");
+            NT_Aggregate = new NonTerminal("aggregate", CreateAggregateNode);
+            NT_AggregateArg = new NonTerminal("aggregateArg");
             var function = new NonTerminal("function", CreateFunctionCallNode);
             var functionName = new NonTerminal("functionName");
-            BNF_FunArgs = new NonTerminal("funArgs");
-            BNF_FuncCall = new NonTerminal("funCall", CreateFunctionCallNode);
+            NT_FunArgs = new NonTerminal("funArgs");
+            NT_FuncCall = new NonTerminal("funCall", CreateFunctionCallNode);
 
             #endregion
 
@@ -594,7 +599,7 @@ namespace sones.GraphQL
             var PrefixOperation = new NonTerminal("PrefixOperation");
             var ParameterList = new NonTerminal("ParameterList");
             var VertexTypeList = new NonTerminal("TypeList", CreateVertexTypeListNode);
-            var AType = new NonTerminal("AType", CreateATypeNode);
+            NT_AType = new NonTerminal("AType", CreateATypeNode);
             var VertexTypeWrapper = new NonTerminal("TypeWrapper");
 
             #region Attribute changes
@@ -722,8 +727,8 @@ namespace sones.GraphQL
 
             #region Import
 
-            BNF_ImportFormat = new NonTerminal("importFormat");
-            BNF_ImportStmt = new NonTerminal("import", CreateImportNode);
+            NT_ImportFormat = new NonTerminal("importFormat");
+            NT_ImportStmt = new NonTerminal("import", CreateImportNode);
             var paramParallelTasks = new NonTerminal("parallelTasks", CreateParallelTaskNode);
             var paramComments = new NonTerminal("comments", CreateCommentsNode);
             var verbosity = new NonTerminal("verbosity", CreateVerbosityNode);
@@ -758,7 +763,7 @@ namespace sones.GraphQL
                             | transactStmt
                             | commitRollBackTransactStmt
                             | rebuildIndicesStmt
-                            | BNF_ImportStmt
+                            | NT_ImportStmt
                             | linkStmt
                             | unlinkStmt;
 
@@ -775,23 +780,23 @@ namespace sones.GraphQL
 
             EdgeTraversalWithOutFunctions.Rule = dotWrapper + Id_simple;
 
-            Id.SetFlag(TermFlags.IsList);
-            Id.Rule = Id_simple
-                        | Id + EdgeTraversalWithOutFunctions;
+            NT_Id.SetFlag(TermFlags.IsList);
+            NT_Id.Rule = Id_simple
+                        | NT_Id + EdgeTraversalWithOutFunctions;
             //old
             //Id.Rule = MakePlusRule(Id, dotWrapper, Id_simple);
 
-            idlist.Rule = MakePlusRule(idlist, S_comma, Id);
+            idlist.Rule = MakePlusRule(idlist, S_comma, NT_Id);
             id_simpleList.Rule = MakePlusRule(id_simpleList, S_comma, Id_simple);
             id_simpleDotList.Rule = MakePlusRule(id_simpleDotList, S_dot, Id_simple);
-            id_typeAndAttribute.Rule = VertexTypeWrapper + S_dot + Id;
+            id_typeAndAttribute.Rule = VertexTypeWrapper + S_dot + NT_Id;
 
             #endregion
 
             #region ID_or_Func
 
             IdOrFunc.Rule = name
-                            | BNF_FuncCall;
+                            | NT_FuncCall;
 
             dotWrapper.Rule = S_edgeTraversalDelimiter;
 
@@ -818,15 +823,15 @@ namespace sones.GraphQL
 
             #region typeList
 
-            VertexTypeList.Rule = MakePlusRule(VertexTypeList, S_comma, AType);
+            VertexTypeList.Rule = MakePlusRule(VertexTypeList, S_comma, NT_AType);
 
-            AType.Rule = Id_simple + Id_simple
+            NT_AType.Rule = Id_simple + Id_simple
                         | Id_simple;
 
             //AType.Rule = Id + Id_simple
             //                | Id;
 
-            VertexTypeWrapper.Rule = AType;
+            VertexTypeWrapper.Rule = NT_AType;
 
             #endregion
 
@@ -947,7 +952,7 @@ namespace sones.GraphQL
                             | string_literal      //'lala'
                             | number              //10
                 //|   funcCall            //EXISTS ( SelectStatement )
-                            | BNF_Aggregate           //COUNT ( SelectStatement )
+                            | NT_Aggregate           //COUNT ( SelectStatement )
                             | tuple               //(d.Name, 'Henning', (SelectStatement))
                             | parSelectStmt      //(FROM User u Select u.Name)
                             | S_TRUE
@@ -989,7 +994,8 @@ namespace sones.GraphQL
                             | "!="
                             | "AND"
                             | "OR"
-                            | "INRANGE";
+                            | "INRANGE"
+                            | "LIKE";
 
             notOpt.Rule = Empty
                             | S_NOT;
@@ -1006,7 +1012,7 @@ namespace sones.GraphQL
             //BNF_FuncCall.Rule = Empty;
 
 
-            BNF_FunArgs.Rule = SelectStmtGraph
+            NT_FunArgs.Rule = SelectStmtGraph
                             | BNF_ExprList;
 
             #endregion
@@ -1016,7 +1022,7 @@ namespace sones.GraphQL
             //Operators
             RegisterOperators(10, "*", "/", "%");
             RegisterOperators(9, "+", "-");
-            RegisterOperators(8, "=", ">", "<", ">=", "<=", "<>", "!=", "INRANGE");
+            RegisterOperators(8, "=", ">", "<", ">=", "<=", "<>", "!=", "INRANGE", "LIKE");
             RegisterOperators(7, "^", "&", "|");
             RegisterOperators(6, "NOT");
             RegisterOperators(5, "AND", "OR");
@@ -1045,15 +1051,15 @@ namespace sones.GraphQL
 
             #region CREATE INDEX
 
-            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + S_VERTEX + S_TYPE + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt
-                | S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt; // due to compatibility the  + S_TYPE is optional
+            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + S_VERTEX + S_TYPE + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + NT_IndexTypeOpt
+                | S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + NT_IndexTypeOpt; // due to compatibility the  + S_TYPE is optional
 
             uniqueOpt.Rule = Empty | S_UNIQUE;
 
             editionOpt.Rule = Empty
                                 | S_EDITION + Id_simple;
 
-            BNF_IndexTypeOpt.Rule = Empty
+            NT_IndexTypeOpt.Rule = Empty
                                 | S_INDEXTYPE + Id_simple;
 
             indexNameOpt.Rule = Empty
@@ -1113,8 +1119,8 @@ namespace sones.GraphQL
 
             IndexOptOnCreateTypeMemberList.Rule = MakePlusRule(IndexOptOnCreateTypeMemberList, S_comma, IndexOptOnCreateTypeMember);
 
-            IndexOptOnCreateTypeMember.Rule = S_BRACKET_LEFT + indexNameOpt + editionOpt + BNF_IndexTypeOpt + S_ON + S_ATTRIBUTES + IndexAttributeList + S_BRACKET_RIGHT
-                                            | S_BRACKET_LEFT + indexNameOpt + editionOpt + BNF_IndexTypeOpt + S_ON + IndexAttributeList + S_BRACKET_RIGHT // due to compatibility the  + S_ATTRIBUTES is optional
+            IndexOptOnCreateTypeMember.Rule = S_BRACKET_LEFT + indexNameOpt + editionOpt + NT_IndexTypeOpt + S_ON + S_ATTRIBUTES + IndexAttributeList + S_BRACKET_RIGHT
+                                            | S_BRACKET_LEFT + indexNameOpt + editionOpt + NT_IndexTypeOpt + S_ON + IndexAttributeList + S_BRACKET_RIGHT // due to compatibility the  + S_ATTRIBUTES is optional
                                             | S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT;
 
             AttrDefaultOpValue.Rule = Empty
@@ -1154,7 +1160,7 @@ namespace sones.GraphQL
 
             #region SELECT
 
-            SelectStmtGraph.Rule = S_FROM + VertexTypeList + S_SELECT + selList + whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
+            SelectStmtGraph.Rule = S_FROM + VertexTypeList + S_SELECT + selList + NT_whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
 
             resolutionDepthOpt.Rule = Empty
                                         | S_DEPTH + number;
@@ -1173,7 +1179,7 @@ namespace sones.GraphQL
             selectionList.Rule = MakePlusRule(selectionList, S_comma, selectionListElement);
 
             selectionListElement.Rule = S_ASTERISK
-                                        | BNF_Aggregate + aliasOpt
+                                        | NT_Aggregate + aliasOpt
                                         | IdOrFuncList + aliasOpt;
 
             aliasOptName.Rule = Id_simple | string_literal;
@@ -1186,7 +1192,7 @@ namespace sones.GraphQL
 
             //BNF_Aggregate.Rule = BNF_AggregateName + S_BRACKET_LEFT + name + S_BRACKET_RIGHT;
 
-            BNF_AggregateArg.Rule = Id
+            NT_AggregateArg.Rule = NT_Id
                                     | S_ASTERISK;
             /*
             aggregateName.Rule =        S_COUNT 
@@ -1209,7 +1215,7 @@ namespace sones.GraphQL
 
             #endregion
 
-            whereClauseOpt.Rule = Empty
+            NT_whereClauseOpt.Rule = Empty
                                     | S_WHERE + BNF_Expression;
 
             groupClauseOpt.Rule = Empty
@@ -1219,7 +1225,7 @@ namespace sones.GraphQL
                                     | "HAVING" + BNF_Expression;
 
 
-            orderByAttributeListMember.Rule = Id
+            orderByAttributeListMember.Rule = NT_Id
                                                 | string_literal;
 
             orderByAttributeList.Rule = MakePlusRule(orderByAttributeList, S_comma, orderByAttributeListMember);
@@ -1238,9 +1244,9 @@ namespace sones.GraphQL
 
             AttrAssignList.Rule = MakePlusRule(AttrAssignList, S_comma, AttrAssign);
 
-            AttrAssign.Rule = Id + "=" + BNF_Expression
-                                | Id + "=" + Reference
-                                | Id + "=" + CollectionOfDBObjects;
+            AttrAssign.Rule = NT_Id + "=" + BNF_Expression
+                                | NT_Id + "=" + Reference
+                                | NT_Id + "=" + CollectionOfDBObjects;
 
             CollectionOfDBObjects.Rule =        S_SETOF + CollectionTuple
                                             |   S_LISTOF + CollectionTuple
@@ -1270,7 +1276,7 @@ namespace sones.GraphQL
 
             #region UPDATE
 
-            updateStmt.Rule = S_UPDATE + Id_simple + S_SET + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + whereClauseOpt;
+            updateStmt.Rule = S_UPDATE + Id_simple + S_SET + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + NT_whereClauseOpt;
 
             AttrUpdateList.Rule = MakePlusRule(AttrUpdateList, S_comma, AttrUpdateOrAssign);
 
@@ -1287,11 +1293,11 @@ namespace sones.GraphQL
             AddToListAttrUpdate.Rule = AddToListAttrUpdateAddTo
                                         | AddToListAttrUpdateOperator;
 
-            AddToListAttrUpdateAddTo.Rule = S_ADD + S_TO + Id + CollectionOfDBObjects;
-            AddToListAttrUpdateOperator.Rule = Id + S_ADDTOLIST + CollectionOfDBObjects;
+            AddToListAttrUpdateAddTo.Rule = S_ADD + S_TO + NT_Id + CollectionOfDBObjects;
+            AddToListAttrUpdateOperator.Rule = NT_Id + S_ADDTOLIST + CollectionOfDBObjects;
 
-            RemoveFromListAttrUpdateAddToRemoveFrom.Rule = S_REMOVE + S_FROM + Id + tuple;
-            RemoveFromListAttrUpdateAddToOperator.Rule = Id + RemoveFromListAttrUpdateScope;
+            RemoveFromListAttrUpdateAddToRemoveFrom.Rule = S_REMOVE + S_FROM + NT_Id + tuple;
+            RemoveFromListAttrUpdateAddToOperator.Rule = NT_Id + RemoveFromListAttrUpdateScope;
             RemoveFromListAttrUpdateScope.Rule = S_REMOVEFROMLIST + tuple | S_REMOVEFROMLIST + CollectionOfDBObjects;
 
             #endregion
@@ -1317,7 +1323,7 @@ namespace sones.GraphQL
             #region DELETE
 
             deleteStmtMember.Rule = Empty | idlist;
-            deleteStmt.Rule = S_FROM + Id_simple + S_DELETE + deleteStmtMember + whereClauseOpt;
+            deleteStmt.Rule = S_FROM + Id_simple + S_DELETE + deleteStmtMember + NT_whereClauseOpt;
 
             #endregion
 
@@ -1357,13 +1363,13 @@ namespace sones.GraphQL
 
             #region INSERTORUPDATE
 
-            insertorupdateStmt.Rule = S_INSERTORUPDATE + Id_simple + S_VALUES + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + whereClauseOpt;
+            insertorupdateStmt.Rule = S_INSERTORUPDATE + Id_simple + S_VALUES + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + NT_whereClauseOpt;
 
             #endregion
 
             #region INSERTORREPLACE
 
-            insertorreplaceStmt.Rule = S_INSERTORREPLACE + Id_simple + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + whereClauseOpt;
+            insertorreplaceStmt.Rule = S_INSERTORREPLACE + Id_simple + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + NT_whereClauseOpt;
 
             #endregion
 
@@ -1438,15 +1444,15 @@ namespace sones.GraphQL
 
             //BNF_ImportFormat.Rule = Empty;
 
-            BNF_ImportStmt.Rule = S_IMPORT + S_FROM + location_literal + S_FORMAT + BNF_ImportFormat + paramParallelTasks + paramComments + offsetOpt + limitOpt + verbosity;
+            NT_ImportStmt.Rule = S_IMPORT + S_FROM + location_literal + S_FORMAT + NT_ImportFormat + paramParallelTasks + paramComments + offsetOpt + limitOpt + verbosity;
 
             #endregion
 
             #region LINK
 
             // Semantic Web Yoda-Style and human language style
-            linkStmt.Rule = S_LINK + Id_simple + CollectionTuple + S_VIA + Id + S_TO + LinkCondition |
-                            S_LINK + Id_simple + CollectionTuple + S_TO + LinkCondition + S_VIA + Id;
+            linkStmt.Rule = S_LINK + Id_simple + CollectionTuple + S_VIA + NT_Id + S_TO + LinkCondition |
+                            S_LINK + Id_simple + CollectionTuple + S_TO + LinkCondition + S_VIA + NT_Id;
 
             LinkCondition.Rule = VertexTypeWrapper + CollectionTuple;
 
@@ -1454,8 +1460,8 @@ namespace sones.GraphQL
 
             #region UNLINK
 
-            unlinkStmt.Rule = S_UNLINK + Id_simple + CollectionTuple + S_VIA + Id + S_FROM + LinkCondition |
-                              S_UNLINK + Id_simple + CollectionTuple + S_FROM + LinkCondition + S_VIA + Id;
+            unlinkStmt.Rule = S_UNLINK + Id_simple + CollectionTuple + S_VIA + NT_Id + S_FROM + LinkCondition |
+                              S_UNLINK + Id_simple + CollectionTuple + S_FROM + LinkCondition + S_VIA + NT_Id;
 
             #endregion
 
@@ -1477,16 +1483,16 @@ namespace sones.GraphQL
             #endregion
 
             base.MarkTransient(
-                singlestmt, Id_simple, selList, /* selectionSource, */BNF_Expression, term, BNF_FunArgs
+                singlestmt, Id_simple, selList, /* selectionSource, */BNF_Expression, term, NT_FunArgs
                 , unOp, /*binOp, */ /*aliasOpt, */ aliasOptName, orderByAttributeListMember
                 //, KeyValuePair
                 //, EdgeTypeParam
                 , EdgeType_SortedMember, AttrUpdateOrAssign, ListAttrUpdate, DescrArgument,
                 VertexTypeWrapper //is used as a wrapper for AType
                 , IdOrFunc //, IdOrFuncList
-                , BNF_ExprList, BNF_AggregateArg,
+                , BNF_ExprList, NT_AggregateArg,
                 //ExtendedExpressionList,
-                BNF_ImportFormat, BNF_FuncCall, BNF_Aggregate, verbosityTypes/*,
+                NT_ImportFormat, NT_FuncCall, NT_Aggregate, verbosityTypes/*,
                 vertexType, BNF_VertexTypes*/);
 
             #endregion
@@ -2286,6 +2292,7 @@ namespace sones.GraphQL
         {
 
             var stringBuilder = new StringBuilder();
+            String delimiter = ", ";
             stringBuilder.AppendFormat("{0} ", myVertexType.Name);
 
             #region parent type
@@ -2313,7 +2320,7 @@ namespace sones.GraphQL
 
                     if (myVertexType.GetAttributeDefinitions(false).Any(aAttribute => aAttribute.Kind == AttributeType.Property))
                     {
-                        stringBuilder.Append(CreateGraphDDLOfProperties(myVertexType.GetPropertyDefinitions(false)) + " ");
+                        stringBuilder.Append(String.Concat(CreateGraphDDLOfProperties(myVertexType.GetPropertyDefinitions(false))));
                     }
 
                     #endregion
@@ -2322,13 +2329,15 @@ namespace sones.GraphQL
 
                     if (myVertexType.GetAttributeDefinitions(false).Any(aAttribute => aAttribute.Kind == AttributeType.OutgoingEdge))
                     {
-                        stringBuilder.Append(CreateGraphDDLOfOutgoingEdges(myVertexType.GetOutgoingEdgeDefinitions(false), myVertexType) + " ");
+                        stringBuilder.Append(String.Concat(CreateGraphDDLOfOutgoingEdges(myVertexType.GetOutgoingEdgeDefinitions(false), myVertexType)));
                     }
 
                     #endregion
 
-                    stringBuilder.RemoveSuffix(" ");
-                    stringBuilder.Append(S_BRACKET_RIGHT);
+                    if(stringBuilder.ToString().EndsWith(delimiter))
+                        stringBuilder.RemoveSuffix(delimiter);
+
+                    stringBuilder.Append(String.Concat(S_BRACKET_RIGHT, " "));
 
                 }
 
@@ -2338,7 +2347,7 @@ namespace sones.GraphQL
 
                 if (myVertexType.GetAttributeDefinitions(false).Any(aAttribute => aAttribute.Kind == AttributeType.IncomingEdge))
                 {
-                    stringBuilder.Append(S_INCOMINGEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfIncomingEdges(myVertexType.GetIncomingEdgeDefinitions(false)) + S_BRACKET_RIGHT.ToUpperString() + " ");
+                    stringBuilder.Append(String.Concat(S_INCOMINGEDGES.ToUpperString(), " ",S_BRACKET_LEFT.ToUpperString(), CreateGraphDDLOfIncomingEdges(myVertexType.GetIncomingEdgeDefinitions(false)), S_BRACKET_RIGHT.ToUpperString(), " "));
                 }
 
                 #endregion
@@ -2352,7 +2361,7 @@ namespace sones.GraphQL
             {
                 if (myVertexType.GetUniqueDefinitions(false).Count() > 0)
                 {
-                    stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfUniqueAttributes(myVertexType.GetUniqueDefinitions(false)) + S_BRACKET_RIGHT.Symbol + " ");
+                    stringBuilder.Append(S_UNIQUE.ToUpperString() + " " + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfUniqueAttributes(myVertexType.GetUniqueDefinitions(false)) + S_BRACKET_RIGHT.Symbol + " ");
                 }
             }
 
@@ -2364,7 +2373,7 @@ namespace sones.GraphQL
             {
                 if (myVertexType.GetPropertyDefinitions(false).Any(aProperty => aProperty.IsMandatory))
                 {
-                    stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfMandatoryAttributes(myVertexType.GetPropertyDefinitions(false).Where(aProperty => aProperty.IsMandatory)) + S_BRACKET_RIGHT.Symbol + " ");
+                    stringBuilder.Append(S_MANDATORY.ToUpperString() + " " + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfMandatoryAttributes(myVertexType.GetPropertyDefinitions(false).Where(aProperty => aProperty.IsMandatory)) + S_BRACKET_RIGHT.Symbol + " ");
                 }
             }
 
@@ -2372,9 +2381,13 @@ namespace sones.GraphQL
 
             #region Indices
 
-            if (myVertexType.GetIndexDefinitions(false).Count() > 0)
+            var indices =
+                myVertexType.GetIndexDefinitions(false).Except(
+                    myVertexType.GetUniqueDefinitions(false).Select(_ => _.CorrespondingIndex));
+
+            if (indices.Count() > 0)
             {
-                stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myVertexType.GetIndexDefinitions(false), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+                stringBuilder.Append(S_INDICES.ToUpperString() + " " + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(indices, myVertexType) + S_BRACKET_RIGHT.Symbol);
             }
 
             #endregion
@@ -2393,14 +2406,19 @@ namespace sones.GraphQL
             foreach (var _AttributeIndex in myIndexDefinitions)
             {
 
-                if (_AttributeIndex.IsUserdefined)
+                if (!_AttributeIndex.IsUserdefined)
                     continue;
 
-                _StringBuilder.Append(String.Concat(S_BRACKET_LEFT, _AttributeIndex.Name));
+                if (!_AttributeIndex.Name.StartsWith("sones"))
+                    _StringBuilder.Append(String.Concat(S_BRACKET_LEFT, _AttributeIndex.Name, " "));
+                else
+                    _StringBuilder.Append(S_BRACKET_LEFT);
 
-                _StringBuilder.Append(String.Concat(" ", S_EDITION.ToUpperString(), " ", _AttributeIndex.Edition));
+                _StringBuilder.Append(String.Concat(S_EDITION.ToUpperString(), " ", _AttributeIndex.Edition));
 
-                _StringBuilder.Append(String.Concat(" ", S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexTypeName));
+                if(!String.IsNullOrWhiteSpace(_AttributeIndex.IndexTypeName))
+                    _StringBuilder.Append(String.Concat(" ", S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexTypeName));
+
                 _StringBuilder.Append(String.Concat(" ", S_ON.ToUpperString(), " " + S_ATTRIBUTES.ToUpperString(), " ", 
                                                     GetIndexedPropertyNames(_AttributeIndex.IndexedProperties)));
 
@@ -2427,8 +2445,6 @@ namespace sones.GraphQL
 
             #region build string for index properties
 
-            stringBuilder.Append(S_BRACKET_LEFT);
-
             foreach (var aIndexedProperty in myIndexedProperties)
             {
                 stringBuilder.Append(aIndexedProperty.Name);
@@ -2439,8 +2455,6 @@ namespace sones.GraphQL
             {
                 stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
             }
-
-            stringBuilder.Append(S_BRACKET_RIGHT);
 
             #endregion
 
@@ -2532,10 +2546,10 @@ namespace sones.GraphQL
                 stringBuilder.Append(delimiter);
             }
 
-            if (stringBuilder.Length > delimiter.Length)
-            {
-                stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
-            }
+            //if (stringBuilder.Length > delimiter.Length)
+            //{
+            //    stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
+            //}
 
             #endregion
 
@@ -2657,6 +2671,8 @@ namespace sones.GraphQL
                                                     TransactionToken myTransactionToken)
         {
             var queries = new List<String>();
+
+            CreateVertexTypesDict(mySecurityToken, myTransactionToken);
 
             #region Go through each type
 
@@ -2927,7 +2943,7 @@ namespace sones.GraphQL
 
                 var def = myOutgoingEdgeDefinitions[edge.Item1];
 
-                stringBuilder.Append(String.Concat(def.Name, " = ", S_REFUUID.ToUpperString(), TERMINAL_LT, myVertexType.Name, TERMINAL_GT, S_BRACKET_LEFT));
+                stringBuilder.Append(String.Concat(def.Name, " = ", S_REFUUID.ToUpperString(), TERMINAL_LT, _vertexTypes[edge.Item2.GetTargetVertex().VertexTypeID], TERMINAL_GT, S_BRACKET_LEFT));
 
                 stringBuilder.Append(String.Concat(edge.Item2.GetTargetVertex().VertexID, delimiter));
 
@@ -2962,26 +2978,30 @@ namespace sones.GraphQL
 
                 var outgoingEdgeDef = myOutgoingEdgeDefinitions[hyperEdge.Item1];
 
-                stringBuilder.Append(String.Concat(outgoingEdgeDef.Name, " = ", S_SETOFUUIDS.ToUpperString(), TERMINAL_LT, myVertexType.Name, TERMINAL_GT, S_BRACKET_LEFT));
-
-                foreach (var edge in hyperEdge.Item2.GetAllEdges())
+                foreach (var aEdge in hyperEdge.Item2.GetAllEdges().GroupBy(x => x.GetTargetVertex().VertexTypeID, y => y))
                 {
-                    stringBuilder.Append(String.Concat(edge.GetTargetVertex().VertexID));
-
-                    if (edge.GetAllProperties().Count() > 0)
+                    stringBuilder.Append(String.Concat(outgoingEdgeDef.Name, " = ", S_SETOFUUIDS.ToUpperString(), TERMINAL_LT, _vertexTypes[aEdge.Key], TERMINAL_GT, S_BRACKET_LEFT));
+                        
+                    foreach (var edge in aEdge)
                     {
-                        stringBuilder.Append(CreateGraphDMLforVertexDefinedProperties(edge.GetAllProperties(), outgoingEdgeDef.InnerEdgeType.GetAttributeDefinitions(false).ToDictionary(key => key.ID, value => value as IPropertyDefinition)));
+                        stringBuilder.Append(String.Concat(edge.GetTargetVertex().VertexID));
 
-                        stringBuilder.RemoveSuffix(delimiter);
+                        if (edge.GetAllProperties().Count() > 0)
+                        {
+                            stringBuilder.Append(CreateGraphDMLforVertexDefinedProperties(edge.GetAllProperties(), 
+                                                                                            outgoingEdgeDef.InnerEdgeType.GetAttributeDefinitions(false).ToDictionary(key => key.ID, value => value as IPropertyDefinition)));
+
+                            stringBuilder.RemoveSuffix(delimiter);
+                        }
+
+                        stringBuilder.Append(delimiter);
                     }
+
+                    stringBuilder.RemoveSuffix(delimiter);
+                    stringBuilder.Append(S_BRACKET_RIGHT);
 
                     stringBuilder.Append(delimiter);
                 }
-
-                stringBuilder.RemoveSuffix(delimiter);
-                stringBuilder.Append(S_BRACKET_RIGHT);
-
-                stringBuilder.Append(delimiter);
             }
 
             return stringBuilder.ToString();
@@ -3053,6 +3073,16 @@ namespace sones.GraphQL
             return _iGraphDB.GetVertices<IEnumerable<IVertex>>(mySecurityToken, myTransactionToken, request, (stats, vertices) => vertices);
         }
 
+        #region private helper
+
+        private void CreateVertexTypesDict(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            _vertexTypes =
+                _iGraphDB.GetAllVertexTypes(mySecurityToken, myTransactionToken, new RequestGetAllVertexTypes(),
+                                            (stats, vertices) => vertices).ToDictionary(x => x.ID, y => y.Name);
+        }
+
+        #endregion
         #endregion
         #endregion
 
@@ -3065,7 +3095,7 @@ namespace sones.GraphQL
             if (aggregates == null || aggregates.Count() == 0)
             {
                 /// empty is not the best solution, Maybe: remove complete rule if no importer exist
-                BNF_Aggregate.Rule = Empty;
+                NT_Aggregate.Rule = Empty;
             }
             else
             {
@@ -3074,15 +3104,15 @@ namespace sones.GraphQL
                     //BNF_AggregateName + S_BRACKET_LEFT + aggregateArg + S_BRACKET_RIGHT;
 
                     var aggrRule = new NonTerminal("aggr_" + aggr.AggregateName, CreateAggregateNode);
-                    aggrRule.Rule = aggr.AggregateName + S_BRACKET_LEFT + BNF_AggregateArg + S_BRACKET_RIGHT;
+                    aggrRule.Rule = aggr.AggregateName + S_BRACKET_LEFT + NT_AggregateArg + S_BRACKET_RIGHT;
 
-                    if (BNF_Aggregate.Rule == null)
+                    if (NT_Aggregate.Rule == null)
                     {
-                        BNF_Aggregate.Rule = aggrRule;
+                        NT_Aggregate.Rule = aggrRule;
                     }
                     else
                     {
-                        BNF_Aggregate.Rule |= aggrRule;
+                        NT_Aggregate.Rule |= aggrRule;
                     }
                 }
             }
@@ -3097,7 +3127,7 @@ namespace sones.GraphQL
             if (functions == null || functions.Count() == 0)
             {
                 /// empty is not the best solution, Maybe: remove complete rule if no importer exist
-                BNF_FuncCall.Rule = Empty;
+                NT_FuncCall.Rule = Empty;
             }
             else
             {
@@ -3138,20 +3168,20 @@ namespace sones.GraphQL
 
                         #endregion
 
-                        funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + BNF_FunArgs + S_BRACKET_RIGHT;
+                        funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + NT_FunArgs + S_BRACKET_RIGHT;
                     }
 
                     #endregion
 
                     #region Add funcNonTerminal to the BNF_FuncCall
 
-                    if (BNF_FuncCall.Rule == null)
+                    if (NT_FuncCall.Rule == null)
                     {
-                        BNF_FuncCall.Rule = funcNonTerminal;
+                        NT_FuncCall.Rule = funcNonTerminal;
                     }
                     else
                     {
-                        BNF_FuncCall.Rule |= funcNonTerminal;
+                        NT_FuncCall.Rule |= funcNonTerminal;
                     }
 
                     #endregion
@@ -3169,19 +3199,19 @@ namespace sones.GraphQL
             if (indices == null || indices.Count() == 0)
             {
                 /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
-                BNF_IndexTypeOpt.Rule = Empty;
+                NT_IndexTypeOpt.Rule = Empty;
             }
             else
             {
                 foreach (var idx in indices)
                 {
-                    if (BNF_IndexTypeOpt.Rule == null)
+                    if (NT_IndexTypeOpt.Rule == null)
                     {
-                        BNF_IndexTypeOpt.Rule = S_INDEXTYPE + ToTerm(idx);
+                        NT_IndexTypeOpt.Rule = S_INDEXTYPE + ToTerm(idx);
                     }
                     else
                     {
-                        BNF_IndexTypeOpt.Rule |= S_INDEXTYPE + ToTerm(idx);
+                        NT_IndexTypeOpt.Rule |= S_INDEXTYPE + ToTerm(idx);
                     }
                 }
             }
@@ -3196,20 +3226,20 @@ namespace sones.GraphQL
             if (graphDBImporter == null || graphDBImporter.Count() == 0)
             {
                 /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
-                BNF_ImportFormat.Rule = Empty;
-                BNF_ImportStmt.Rule = Empty;
+                NT_ImportFormat.Rule = Empty;
+                NT_ImportStmt.Rule = Empty;
             }
             else
             {
                 foreach (var importer in graphDBImporter)
                 {
-                    if (BNF_ImportFormat.Rule == null)
+                    if (NT_ImportFormat.Rule == null)
                     {
-                        BNF_ImportFormat.Rule = ToTerm(importer.ImportFormat);
+                        NT_ImportFormat.Rule = ToTerm(importer.ImportFormat);
                     }
                     else
                     {
-                        BNF_ImportFormat.Rule |= ToTerm(importer.ImportFormat);
+                        NT_ImportFormat.Rule |= ToTerm(importer.ImportFormat);
                     }
                 }
             }
@@ -3224,21 +3254,36 @@ namespace sones.GraphQL
             if (graphDBExporter == null || graphDBExporter.Count() == 0)
             {
                 /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
-                BNF_ImportFormat.Rule = Empty;
-                BNF_ImportStmt.Rule = Empty;
+                NT_ImportFormat.Rule = Empty;
+                NT_ImportStmt.Rule = Empty;
             }
             else
             {
                 foreach (var importer in graphDBExporter)
                 {
-                    if (BNF_ImportFormat.Rule == null)
+                    if (NT_ImportFormat.Rule == null)
                     {
-                        BNF_ImportFormat.Rule = ToTerm(importer.ExportFormat);
+                        NT_ImportFormat.Rule = ToTerm(importer.ExportFormat);
                     }
                     else
                     {
-                        BNF_ImportFormat.Rule |= ToTerm(importer.ExportFormat);
+                        NT_ImportFormat.Rule |= ToTerm(importer.ExportFormat);
                     }
+                }
+            }
+
+            #endregion
+        }
+
+        public void SetStatements(IEnumerable<IGQLStatementPlugin> myAdditionalStatements)
+        {
+            #region Add additional statements to the grammar
+
+            if (myAdditionalStatements != null && myAdditionalStatements.Count() > 0)
+            {
+                foreach (var aStatement in myAdditionalStatements)
+                {
+                    this.Root.Rule |= aStatement.Grammar.Root;
                 }
             }
 

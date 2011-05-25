@@ -33,8 +33,9 @@ using sones.Library.ErrorHandling;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.SonesGQL.DBImport.ErrorHandling;
 using sones.Library.DataStructures;
+using sones.Plugins.SonesGQL.DBImport;
 
-namespace sones.Plugins.SonesGQL.DBImport
+namespace sones.Plugins.SonesGQL
 {
     public sealed class GraphDBImport_GQL : IGraphDBImport, IPluginable
     {
@@ -120,13 +121,13 @@ namespace sones.Plugins.SonesGQL.DBImport
 
             if (myOffset != null)
             {
-                throw new NotImplementedException();
-                //lines = lines.SkipULong(myOffset.Value);
+                if(lines != null)
+                    lines = lines.Skip<String>(Convert.ToInt32(myOffset.Value));
             }
             if (myLimit != null)
             {
-                throw new NotImplementedException();
-                //lines = lines.TakeULong(myLimit.Value);
+                if(lines != null)
+                    lines = lines.Take<String>(Convert.ToInt32(myLimit.Value));
             }
 
             #endregion
@@ -224,13 +225,17 @@ namespace sones.Plugins.SonesGQL.DBImport
         {
 
             #region data
-            QueryResult queryResult = new QueryResult("", ImportFormat, 0L, ResultType.Failed);
+            QueryResult queryResult = null;
             Int64 numberOfLine = 0;
             var query = String.Empty;
             var aggregatedResults = new List<IEnumerable<IVertexView>>(); 
+            Stopwatch StopWatchLine = new Stopwatch();
+            Stopwatch StopWatchLines = new Stopwatch();
             #endregion
 
             #region check lines and execute query
+            StopWatchLines.Reset();
+            StopWatchLines.Start();
             foreach (var _Line in myLines)
             {
                 numberOfLine++;
@@ -249,10 +254,13 @@ namespace sones.Plugins.SonesGQL.DBImport
 
                 #endregion
 
-                query += _Line;
+                query = _Line;
 
                 #region execute query
+                StopWatchLine.Reset();
+                StopWatchLine.Start();
                 var tempResult = ExecuteQuery(query, myIGraphQL, mySecurityToken, myTransactionToken);
+                StopWatchLine.Stop();
                 #endregion
 
                 #region Add errors and break execution
@@ -266,7 +274,7 @@ namespace sones.Plugins.SonesGQL.DBImport
 
                     if (myVerbosityType == VerbosityTypes.Errors)
                     {
-                        queryResult = tempResult;
+                        queryResult = new QueryResult(query, ImportFormat, Convert.ToUInt64(StopWatchLine.ElapsedMilliseconds), ResultType.Failed, tempResult.Vertices, tempResult.Error);
 
                         break;
                     }
@@ -276,13 +284,17 @@ namespace sones.Plugins.SonesGQL.DBImport
 
                 #endregion
 
-                query = String.Empty;
-                queryResult = tempResult;
+                //query = String.Empty;
+                //queryResult = tempResult;
             } 
+            StopWatchLines.Stop();
             #endregion
 
             //add the results of each query into the queryResult
-            queryResult.Vertices = AggregateListOfListOfVertices(aggregatedResults);
+            if(queryResult != null)
+                queryResult = new QueryResult(query, ImportFormat, Convert.ToUInt64(StopWatchLines.ElapsedMilliseconds), queryResult.TypeOfResult, AggregateListOfListOfVertices(aggregatedResults), queryResult.Error);
+            else
+                queryResult = new QueryResult(query, ImportFormat, Convert.ToUInt64(StopWatchLines.ElapsedMilliseconds), ResultType.Successful, AggregateListOfListOfVertices(aggregatedResults));
 
             return queryResult;
 

@@ -40,6 +40,7 @@ using sones.Plugins.SonesGQL.DBImport;
 using sones.GraphDB.TypeSystem;
 using sones.Library.DataStructures;
 using sones.Plugins.SonesGQL.DBExport;
+using sones.Plugins.SonesGQL.Statements;
 
 namespace sones.GraphQL
 {
@@ -339,6 +340,23 @@ namespace sones.GraphQL
                 throw new GQLGrammarSetExtandableMemberException(typeof(IGraphDBExport), "There is no plugin found to set in GQL grammar.");
             }
             myGQLGrammar.SetGraphDBExporter(exporter);
+
+            #endregion
+
+            #region additional statements
+
+            List<IGQLStatementPlugin> statements = new List<IGQLStatementPlugin>();
+            foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGQLStatementPlugin>())
+            {
+                statements.Add(_GQLPluginManager.GetAndInitializePlugin<IGQLStatementPlugin>(plugin,
+                    new Dictionary<string, object>
+                    {
+                        {"sonesGQL", myGQLGrammar},
+                        {"graphDB", _IGraphDBInstance}
+                    }));
+            }
+
+            myGQLGrammar.SetStatements(statements);
 
             #endregion
         }

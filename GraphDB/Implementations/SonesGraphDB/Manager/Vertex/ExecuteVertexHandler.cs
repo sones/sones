@@ -43,6 +43,7 @@ using sones.Library.LanguageExtensions;
 using System.IO;
 using sones.GraphDB.TypeManagement.Base;
 using sones.Plugins.Index.Helper;
+using sones.Library.CollectionWrapper;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -307,7 +308,7 @@ namespace sones.GraphDB.Manager.Vertex
                             toDelete = structure.Key;
                             break;
                         case AttributeDefinitions.VertexDotCreationDate:
-                            creationdate = ((DateTime)structure.Value).ToBinary();
+                            creationdate = (long)structure.Value;
                             toDelete = structure.Key;
                             break;
                         case AttributeDefinitions.VertexDotEdition:
@@ -315,7 +316,7 @@ namespace sones.GraphDB.Manager.Vertex
                             toDelete = structure.Key;
                             break;
                         case AttributeDefinitions.VertexDotModificationDate:
-                            modificationDate = ((DateTime)structure.Value).ToBinary();
+                            modificationDate = (long)structure.Value;
                             toDelete = structure.Key;
                             break;
                         case AttributeDefinitions.VertexDotRevision:

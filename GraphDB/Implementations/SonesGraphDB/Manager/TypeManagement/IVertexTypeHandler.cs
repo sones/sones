@@ -81,7 +81,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// All types will be removed unless there are no edges that point to at least one of the given types.
         /// If there is such an IncomingEdge, remove the IncomingEdge by altering the type that holds it or remove this type too.
         /// All types are removed simultaneously. This means that edges between the types are not need to be removed before.
-        Dictionary<Int64, String> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity);
+        Dictionary<Int64, String> RemoveVertexTypes(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, bool myIgnoreReprimands = false);
 
         /// <summary>
         /// Clears the graphDB and removes all user defined types.
