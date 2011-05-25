@@ -874,7 +874,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 #region check that the remove type is no base type
 
-                if (delType.IsUserDefined)
+                if (!delType.IsUserDefined)
                     continue;
 
                 #endregion

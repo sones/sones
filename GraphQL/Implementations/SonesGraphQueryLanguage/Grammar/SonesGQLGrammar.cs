@@ -26,6 +26,7 @@ using System.Text;
 using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphDB;
+using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 using sones.GraphQL.StatementNodes.DDL;
@@ -59,6 +60,8 @@ namespace sones.GraphQL
         /// The IGraphDB instance that is used to get some information
         /// </summary>
         private readonly IGraphDB _iGraphDB;
+
+        private Dictionary<long, string> _vertexTypes;
 
         #region Consts
 
@@ -2658,6 +2661,8 @@ namespace sones.GraphQL
         {
             var queries = new List<String>();
 
+            CreateVertexTypesDict(mySecurityToken, myTransactionToken);
+
             #region Go through each type
 
             foreach (var aVertexType in myTypesToDump)
@@ -2927,7 +2932,7 @@ namespace sones.GraphQL
 
                 var def = myOutgoingEdgeDefinitions[edge.Item1];
 
-                stringBuilder.Append(String.Concat(def.Name, " = ", S_REFUUID.ToUpperString(), TERMINAL_LT, myVertexType.Name, TERMINAL_GT, S_BRACKET_LEFT));
+                stringBuilder.Append(String.Concat(def.Name, " = ", S_REFUUID.ToUpperString(), TERMINAL_LT, _vertexTypes[edge.Item2.GetTargetVertex().VertexTypeID], TERMINAL_GT, S_BRACKET_LEFT));
 
                 stringBuilder.Append(String.Concat(edge.Item2.GetTargetVertex().VertexID, delimiter));
 
@@ -2962,20 +2967,24 @@ namespace sones.GraphQL
 
                 var outgoingEdgeDef = myOutgoingEdgeDefinitions[hyperEdge.Item1];
 
-                stringBuilder.Append(String.Concat(outgoingEdgeDef.Name, " = ", S_SETOFUUIDS.ToUpperString(), TERMINAL_LT, myVertexType.Name, TERMINAL_GT, S_BRACKET_LEFT));
-
-                foreach (var edge in hyperEdge.Item2.GetAllEdges())
+                foreach (var aEdge in hyperEdge.Item2.GetAllEdges().GroupBy(x => x.GetTargetVertex().VertexTypeID, y => y))
                 {
-                    stringBuilder.Append(String.Concat(edge.GetTargetVertex().VertexID));
-
-                    if (edge.GetAllProperties().Count() > 0)
+                    stringBuilder.Append(String.Concat(outgoingEdgeDef.Name, " = ", S_SETOFUUIDS.ToUpperString(), TERMINAL_LT, _vertexTypes[aEdge.Key], TERMINAL_GT, S_BRACKET_LEFT));
+                        
+                    foreach (var edge in aEdge)
                     {
-                        stringBuilder.Append(CreateGraphDMLforVertexDefinedProperties(edge.GetAllProperties(), outgoingEdgeDef.InnerEdgeType.GetAttributeDefinitions(false).ToDictionary(key => key.ID, value => value as IPropertyDefinition)));
+                        stringBuilder.Append(String.Concat(edge.GetTargetVertex().VertexID));
 
-                        stringBuilder.RemoveSuffix(delimiter);
+                        if (edge.GetAllProperties().Count() > 0)
+                        {
+                            stringBuilder.Append(CreateGraphDMLforVertexDefinedProperties(edge.GetAllProperties(), 
+                                                                                            outgoingEdgeDef.InnerEdgeType.GetAttributeDefinitions(false).ToDictionary(key => key.ID, value => value as IPropertyDefinition)));
+
+                            stringBuilder.RemoveSuffix(delimiter);
+                        }
+
+                        stringBuilder.Append(delimiter);
                     }
-
-                    stringBuilder.Append(delimiter);
                 }
 
                 stringBuilder.RemoveSuffix(delimiter);
@@ -3053,6 +3062,16 @@ namespace sones.GraphQL
             return _iGraphDB.GetVertices<IEnumerable<IVertex>>(mySecurityToken, myTransactionToken, request, (stats, vertices) => vertices);
         }
 
+        #region private helper
+
+        private void CreateVertexTypesDict(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            _vertexTypes =
+                _iGraphDB.GetAllVertexTypes(mySecurityToken, myTransactionToken, new RequestGetAllVertexTypes(),
+                                            (stats, vertices) => vertices).ToDictionary(x => x.ID, y => y.Name);
+        }
+
+        #endregion
         #endregion
         #endregion
 
