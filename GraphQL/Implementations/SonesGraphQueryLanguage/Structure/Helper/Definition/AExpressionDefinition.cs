@@ -60,6 +60,9 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
                 case "INRANGE":
                     return BinaryOperator.InRange;
 
+                case "LIKE":
+                    return BinaryOperator.Like;
+
                 default:
 
                     throw new NotImplementedQLException(String.Format("The operator {0} is not yet implemented.", myOperatorSymbol));

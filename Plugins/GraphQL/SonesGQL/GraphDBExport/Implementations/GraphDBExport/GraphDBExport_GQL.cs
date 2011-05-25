@@ -35,6 +35,7 @@ using sones.Library.DataStructures;
 using sones.Library.ErrorHandling;
 using sones.Library.VersionedPluginManager;
 using sones.Library.LanguageExtensions;
+using System.Text;
 
 namespace sones.Plugins.SonesGQL.DBExport
 {
@@ -250,6 +251,9 @@ namespace sones.Plugins.SonesGQL.DBExport
                 _TypeOfOutputDestination = TypeOfOutputDestination.File;
                 try
                 {
+                    if (!destination.EndsWith(".gql"))
+                        destination = new StringBuilder(destination).Append(".gql").ToString();
+
                     _Stream = new StreamWriter(File.Create(destination.Substring(@"file:\\".Length).TrimStart('\\')));
                 }
                 catch (Exception ex)
