@@ -1019,7 +1019,7 @@ namespace sones.GraphQL
             //Operators
             RegisterOperators(10, "*", "/", "%");
             RegisterOperators(9, "+", "-");
-            RegisterOperators(8, "=", ">", "<", ">=", "<=", "<>", "!=", "INRANGE");
+            RegisterOperators(8, "=", ">", "<", ">=", "<=", "<>", "!=", "INRANGE", "LIKE");
             RegisterOperators(7, "^", "&", "|");
             RegisterOperators(6, "NOT");
             RegisterOperators(5, "AND", "OR");
