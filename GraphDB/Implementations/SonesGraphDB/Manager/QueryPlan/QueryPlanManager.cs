@@ -147,6 +147,7 @@ namespace sones.GraphDB.Manager.QueryPlan
                 #region comparative
 
                 case BinaryOperator.Equals:
+                case BinaryOperator.Like:
                 case BinaryOperator.GreaterOrEqualsThan:
                 case BinaryOperator.GreaterThan:
                 case BinaryOperator.LessOrEqualsThan:
