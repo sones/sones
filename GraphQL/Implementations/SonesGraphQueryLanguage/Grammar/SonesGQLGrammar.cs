@@ -1427,7 +1427,7 @@ namespace sones.GraphQL
 
             dumpType.Rule = Empty | S_ALL | S_GDDL | S_GDML;      // If empty => create both
             dumpFormat.Rule = Empty | S_AS + S_GQL;                 // If empty => create GQL
-            typeOptionalList.Rule = Empty | S_VERTEX + S_TYPES + VertexTypeList;
+            typeOptionalList.Rule = Empty | S_VERTEX + S_TYPES + id_simpleList;
 
             dumpDestination.Rule = Empty | S_INTO + location_literal | S_TO + location_literal;
 
@@ -2752,7 +2752,9 @@ namespace sones.GraphQL
 
             #endregion
 
-            stringBuilder.RemoveSuffix(delimiter);
+            if(stringBuilder.ToString().EndsWith(delimiter))
+                stringBuilder.RemoveSuffix(delimiter);
+
             stringBuilder.Append(S_BRACKET_RIGHT);
 
             return stringBuilder.ToString();
@@ -2826,9 +2828,9 @@ namespace sones.GraphQL
                         #region Single
 
                         if (typeAttribute.BaseType == typeof(String))
-                            stringBuilder.Append(String.Concat(typeAttribute.Name, " = '", CreateGraphDMLforSingleAttribute(attribute.Item2), "'", delimiter));
+                            stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", CreateGraphDMLforSingleAttribute(attribute.Item2), delimiter));
                         else
-                            if(typeAttribute.Name.Equals("Weight"))
+                            if(!typeAttribute.IsUserDefined && typeAttribute.Name.Equals("Weight"))
                                 stringBuilder.Append(String.Concat(" : ", S_BRACKET_LEFT, typeAttribute.Name, " = ", CreateGraphDMLforSingleAttribute(attribute.Item2), S_BRACKET_RIGHT, delimiter));
                             else
                                 stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", CreateGraphDMLforSingleAttribute(attribute.Item2), delimiter));
@@ -2891,7 +2893,10 @@ namespace sones.GraphQL
         {
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.Append(String.Concat(mySingleAttribute.ToString().Replace(",", ".")));
+            if(mySingleAttribute.GetType() == typeof(String))
+                stringBuilder.Append(String.Concat("'", mySingleAttribute.ToString().Replace(",", "."), "'"));
+            else
+                stringBuilder.Append(String.Concat(mySingleAttribute.ToString().Replace(",", ".")));
 
             return stringBuilder.ToString();
         }
