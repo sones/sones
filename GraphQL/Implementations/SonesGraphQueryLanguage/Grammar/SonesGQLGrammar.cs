@@ -1427,7 +1427,7 @@ namespace sones.GraphQL
 
             dumpType.Rule = Empty | S_ALL | S_GDDL | S_GDML;      // If empty => create both
             dumpFormat.Rule = Empty | S_AS + S_GQL;                 // If empty => create GQL
-            typeOptionalList.Rule = Empty | S_VERTEX + S_TYPES + VertexTypeList;
+            typeOptionalList.Rule = Empty | S_VERTEX + S_TYPES + id_simpleList;
 
             dumpDestination.Rule = Empty | S_INTO + location_literal | S_TO + location_literal;
 
