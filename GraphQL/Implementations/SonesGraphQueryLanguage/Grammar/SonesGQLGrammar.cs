@@ -2751,7 +2751,9 @@ namespace sones.GraphQL
 
             #endregion
 
-            stringBuilder.RemoveSuffix(delimiter);
+            if(stringBuilder.ToString().EndsWith(delimiter))
+                stringBuilder.RemoveSuffix(delimiter);
+
             stringBuilder.Append(S_BRACKET_RIGHT);
 
             return stringBuilder.ToString();
@@ -2825,9 +2827,9 @@ namespace sones.GraphQL
                         #region Single
 
                         if (typeAttribute.BaseType == typeof(String))
-                            stringBuilder.Append(String.Concat(typeAttribute.Name, " = '", CreateGraphDMLforSingleAttribute(attribute.Item2), "'", delimiter));
+                            stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", CreateGraphDMLforSingleAttribute(attribute.Item2), delimiter));
                         else
-                            if(typeAttribute.Name.Equals("Weight"))
+                            if(!typeAttribute.IsUserDefined && typeAttribute.Name.Equals("Weight"))
                                 stringBuilder.Append(String.Concat(" : ", S_BRACKET_LEFT, typeAttribute.Name, " = ", CreateGraphDMLforSingleAttribute(attribute.Item2), S_BRACKET_RIGHT, delimiter));
                             else
                                 stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", CreateGraphDMLforSingleAttribute(attribute.Item2), delimiter));
@@ -2890,7 +2892,10 @@ namespace sones.GraphQL
         {
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.Append(String.Concat(mySingleAttribute.ToString().Replace(",", ".")));
+            if(mySingleAttribute.GetType() == typeof(String))
+                stringBuilder.Append(String.Concat("'", mySingleAttribute.ToString().Replace(",", "."), "'"));
+            else
+                stringBuilder.Append(String.Concat(mySingleAttribute.ToString().Replace(",", ".")));
 
             return stringBuilder.ToString();
         }

@@ -87,6 +87,8 @@ namespace sones.Plugins.SonesGQL.DBExport
             try
             {
                 OpenStream(destination);
+
+
             }
             catch (ASonesException e)
             {
@@ -114,7 +116,10 @@ namespace sones.Plugins.SonesGQL.DBExport
             
             #endregion
 
-            return new QueryResult("", ExportFormat, 0L, result.TypeOfResult, result.Vertices, error);
+            if(error != null)
+                return new QueryResult("", ExportFormat, 0L, ResultType.Failed, result.Vertices, error);
+            else
+                return new QueryResult("", ExportFormat, 0L, result.TypeOfResult, result.Vertices);
         }
 
         private QueryResult Export(IDumpable myGrammar, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IEnumerable<IVertexType> myTypes, DumpTypes myDumpType)
