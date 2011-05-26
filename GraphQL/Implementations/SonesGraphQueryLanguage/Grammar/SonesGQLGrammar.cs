@@ -106,6 +106,7 @@ namespace sones.GraphQL
         public readonly NonTerminal NT_AType;
         public readonly NonTerminal NT_whereClauseOpt;
         public readonly NonTerminal NT_Id;
+        public readonly NonTerminal NT_Expression;
 
         #endregion
 
@@ -406,7 +407,7 @@ namespace sones.GraphQL
             S_LISTOF = ToTerm(SonesGQLConstants.LISTOF);
             S_SETOF = ToTerm(SonesGQLConstants.SETOF);
             S_SETOFUUIDS = ToTerm(SonesGQLConstants.SETOFUUIDS);
-            S_UUID = ToTerm("UUID");
+            S_UUID = ToTerm("VertexID");
             S_OFFSET = ToTerm("OFFSET");
             S_TRUNCATE = ToTerm("TRUNCATE");
             S_TRUE = ToTerm(TERMINAL_TRUE);
@@ -542,7 +543,7 @@ namespace sones.GraphQL
 
             #region Expression
 
-            var BNF_Expression = new NonTerminal("expression", typeof(ExpressionNode));
+            NT_Expression = new NonTerminal("expression", typeof(ExpressionNode));
             var expressionOfAList = new NonTerminal("expressionOfAList", typeof(ExpressionOfAListNode));
             var BNF_ExprList = new NonTerminal("exprList");
             var unExpr = new NonTerminal("unExpr", CreateUnExpressionNode);
@@ -939,13 +940,13 @@ namespace sones.GraphQL
             #region expression
 
             //Expression
-            BNF_ExprList.Rule = MakeStarRule(BNF_ExprList, S_comma, BNF_Expression);
+            BNF_ExprList.Rule = MakeStarRule(BNF_ExprList, S_comma, NT_Expression);
 
-            BNF_Expression.Rule = term
+            NT_Expression.Rule = term
                                 | unExpr
                                 | binExpr;
 
-            expressionOfAList.Rule = BNF_Expression + ListParametersForExpression;
+            expressionOfAList.Rule = NT_Expression + ListParametersForExpression;
 
 
             term.Rule = IdOrFuncList                  //d.Name 
@@ -976,7 +977,7 @@ namespace sones.GraphQL
                             | "-"
                             | "~";
 
-            binExpr.Rule = BNF_Expression + binOp + BNF_Expression;
+            binExpr.Rule = NT_Expression + binOp + NT_Expression;
 
             binOp.Rule = ToTerm("+")
                             | "-"
@@ -1042,8 +1043,8 @@ namespace sones.GraphQL
 
             PrefixOperation.Rule = Id_simple + S_BRACKET_LEFT + ParameterList + S_BRACKET_RIGHT;
 
-            ParameterList.Rule = ParameterList + S_comma + BNF_Expression
-                                    | BNF_Expression;
+            ParameterList.Rule = ParameterList + S_comma + NT_Expression
+                                    | NT_Expression;
 
             #endregion
 
@@ -1216,13 +1217,13 @@ namespace sones.GraphQL
             #endregion
 
             NT_whereClauseOpt.Rule = Empty
-                                    | S_WHERE + BNF_Expression;
+                                    | S_WHERE + NT_Expression;
 
             groupClauseOpt.Rule = Empty
                                     | "GROUP" + S_BY + idlist;
 
             havingClauseOpt.Rule = Empty
-                                    | "HAVING" + BNF_Expression;
+                                    | "HAVING" + NT_Expression;
 
 
             orderByAttributeListMember.Rule = NT_Id
@@ -1244,7 +1245,7 @@ namespace sones.GraphQL
 
             AttrAssignList.Rule = MakePlusRule(AttrAssignList, S_comma, AttrAssign);
 
-            AttrAssign.Rule = NT_Id + "=" + BNF_Expression
+            AttrAssign.Rule = NT_Id + "=" + NT_Expression
                                 | NT_Id + "=" + Reference
                                 | NT_Id + "=" + CollectionOfDBObjects;
 
@@ -1263,7 +1264,7 @@ namespace sones.GraphQL
 
             ExtendedExpressionList.Rule = MakePlusRule(ExtendedExpressionList, S_comma, ExtendedExpression);
 
-            ExtendedExpression.Rule = BNF_Expression + ListParametersForExpression;
+            ExtendedExpression.Rule = NT_Expression + ListParametersForExpression;
 
             Reference.Rule = S_REFERENCE + tuple + ListParametersForExpression
                            | S_REF + tuple + ListParametersForExpression
@@ -1375,7 +1376,7 @@ namespace sones.GraphQL
 
             #region REPLACE
 
-            replaceStmt.Rule = S_REPLACE + Id_simple + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + S_WHERE + BNF_Expression;
+            replaceStmt.Rule = S_REPLACE + Id_simple + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + S_WHERE + NT_Expression;
 
             #endregion
 
@@ -1483,7 +1484,7 @@ namespace sones.GraphQL
             #endregion
 
             base.MarkTransient(
-                singlestmt, Id_simple, selList, /* selectionSource, */BNF_Expression, term, NT_FunArgs
+                singlestmt, Id_simple, selList, /* selectionSource, */NT_Expression, term, NT_FunArgs
                 , unOp, /*binOp, */ /*aliasOpt, */ aliasOptName, orderByAttributeListMember
                 //, KeyValuePair
                 //, EdgeTypeParam
@@ -2699,7 +2700,7 @@ namespace sones.GraphQL
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
-            //INSERT INTO ... VALUES (UUID = ...,
+            //INSERT INTO ... VALUES (VertexID = ...,
             stringBuilder.Append(String.Concat(S_INSERT.ToUpperString(), " ", S_INTO.ToUpperString(), " ", myVertexType.Name, " ", S_VALUES.ToUpperString(), " ", S_BRACKET_LEFT));
             stringBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = ", myVertex.VertexID.ToString(), delimiter));
 

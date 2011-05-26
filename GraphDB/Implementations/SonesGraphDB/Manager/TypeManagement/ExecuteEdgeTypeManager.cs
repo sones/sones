@@ -45,9 +45,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         private readonly IExpression _vertexTypeNameExpression = new PropertyExpression(BaseTypes.EdgeType.ToString(), "Name");
 
         /// <summary>
-        /// A property expression on UUID
+        /// A property expression on VertexID
         /// </summary>
-        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.EdgeType.ToString(), "UUID");
+        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.EdgeType.ToString(), "VertexID");
 
 
         public ExecuteEdgeTypeManager(IDManager myIDManager)

@@ -390,7 +390,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                 if (!edge.IsAttributeSet)
                 {
                     //mySelectionPartAggregate.Element = _DBContext.DBTypeManager.GetUUIDTypeAttribute();
-                    mySelectionPartAggregate.Element = vertexType.GetAttributeDefinition("UUID");
+                    mySelectionPartAggregate.Element = vertexType.GetAttributeDefinition("VertexID");
                 }
 
                 #endregion

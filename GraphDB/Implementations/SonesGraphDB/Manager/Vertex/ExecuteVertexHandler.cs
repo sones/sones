@@ -323,7 +323,7 @@ namespace sones.GraphDB.Manager.Vertex
                             revision = (long)structure.Value;
                             toDelete = structure.Key;
                             break;
-                        case AttributeDefinitions.VertexDotUUID:
+                        case AttributeDefinitions.VertexDotVertexID:
                             vertexID = (long)structure.Value;
                             toDelete = structure.Key;
                             break;

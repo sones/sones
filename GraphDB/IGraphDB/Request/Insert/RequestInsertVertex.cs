@@ -49,7 +49,7 @@ namespace sones.GraphDB.Request
         public string Edition { get; private set; }
 
         /// <summary>
-        /// The UUID of the vertex.
+        /// The VertexID of the vertex.
         /// </summary>
         public long? VertexUUID { get; private set; }
 
@@ -114,7 +114,7 @@ namespace sones.GraphDB.Request
 
 
         /// <summary>
-        /// Sets the UUID of the vertex. If this is not done, an ID is creted by the system.
+        /// Sets the VertexID of the vertex. If this is not done, an ID is creted by the system.
         /// </summary>
         /// <param name="myID">The ID of the vertex.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>

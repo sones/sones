@@ -110,7 +110,7 @@ namespace sones.GraphQL.StatementNodes.Transactions
                 var readoutVals = new Dictionary<String, Object>();
 
                 readoutVals.Add("TransactionToken", TransactionToken);
-                readoutVals.Add("UUID", TransactionToken.ID);
+                readoutVals.Add("VertexID", TransactionToken.ID);
                 readoutVals.Add("Created", TimeStamp);
                 readoutVals.Add("Distributed", IsDistributed);
                 readoutVals.Add("IsolationLevel", Isolation);
