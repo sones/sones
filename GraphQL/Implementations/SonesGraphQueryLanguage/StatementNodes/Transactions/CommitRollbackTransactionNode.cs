@@ -108,7 +108,7 @@ namespace sones.GraphQL.StatementNodes.Transactions
                 myGraphDB.RollbackTransaction(mySecurityToken, myTransactionToken);
             }
 
-            _ReturnValues.Add("UUID", myTransactionToken.ID);
+            _ReturnValues.Add("VertexID", myTransactionToken.ID);
             _ReturnValues.Add("ExecutedCommand", Command_Type);
             _ReturnValues.Add("Name", Name == null ? "" : Name);
             _ReturnValues.Add("ASync", ASync);

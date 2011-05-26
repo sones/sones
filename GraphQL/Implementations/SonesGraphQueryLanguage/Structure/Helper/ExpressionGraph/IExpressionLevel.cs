@@ -99,7 +99,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// This method removes a Node from a Level.
         /// </summary>
         /// <param name="myLevelKey">The place where the node should be removed.</param>
-        /// <param name="myVertexID">The UUID that identifies the Node.</param>
+        /// <param name="myVertexID">The VertexID that identifies the Node.</param>
         void RemoveNode(LevelKey myLevelKey, Int64 myVertexID);
 
         /// <summary>

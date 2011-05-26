@@ -407,7 +407,7 @@ namespace sones.GraphQL
             S_LISTOF = ToTerm(SonesGQLConstants.LISTOF);
             S_SETOF = ToTerm(SonesGQLConstants.SETOF);
             S_SETOFUUIDS = ToTerm(SonesGQLConstants.SETOFUUIDS);
-            S_UUID = ToTerm("UUID");
+            S_UUID = ToTerm("VertexID");
             S_OFFSET = ToTerm("OFFSET");
             S_TRUNCATE = ToTerm("TRUNCATE");
             S_TRUE = ToTerm(TERMINAL_TRUE);
@@ -2700,7 +2700,7 @@ namespace sones.GraphQL
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
-            //INSERT INTO ... VALUES (UUID = ...,
+            //INSERT INTO ... VALUES (VertexID = ...,
             stringBuilder.Append(String.Concat(S_INSERT.ToUpperString(), " ", S_INTO.ToUpperString(), " ", myVertexType.Name, " ", S_VALUES.ToUpperString(), " ", S_BRACKET_LEFT));
             stringBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = ", myVertex.VertexID.ToString(), delimiter));
 

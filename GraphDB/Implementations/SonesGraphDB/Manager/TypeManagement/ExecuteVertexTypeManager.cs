@@ -62,7 +62,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// A property expression on VertexType.ID
         /// </summary>
-        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), "UUID");
+        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), "VertexID");
 
         /// <summary>
         /// A property expression on OutgoingEdge.Name

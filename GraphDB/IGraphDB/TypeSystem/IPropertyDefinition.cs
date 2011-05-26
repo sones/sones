@@ -63,7 +63,7 @@ namespace sones.GraphDB.TypeSystem
         /// Extracts the this property from a given vertex...
         /// </summary>
         /// With this method it is possible to create several PropertyDefinitions for things like usual properties (Age, Name, etc...)
-        /// or for properties that are directly connected to IVertices like UUID --> VertexID or Creation --> CreationDate
+        /// or for properties that are directly connected to IVertices like VertexID --> VertexID or Creation --> CreationDate
         /// <param name="aVertex">The vertex that needs to be consulted</param>
         /// <returns>The value as IComparable</returns>
         IComparable ExtractValue(IVertex aVertex);

@@ -27,7 +27,7 @@ namespace sones.GraphDB.TypeManagement.Base
     {
         #region Vertex
 
-        VertexDotUUID = Int64.MinValue,
+        VertexDotVertexID = Int64.MinValue,
         VertexDotCreationDate,
         VertexDotModificationDate,
         VertexDotRevision,

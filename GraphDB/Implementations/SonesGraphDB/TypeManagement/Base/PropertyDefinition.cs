@@ -44,7 +44,7 @@ namespace sones.GraphDB.TypeManagement
 
             switch (ID)
             {
-                case (long) AttributeDefinitions.VertexDotUUID:
+                case (long) AttributeDefinitions.VertexDotVertexID:
                     return aVertex.VertexID;
                 case (long) AttributeDefinitions.VertexDotCreationDate:
                     return aVertex.CreationDate;

@@ -930,7 +930,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
                                 #region 3.1
 
-                                //_Edges.Add(new EdgeKey(typeOrAttr.DBType.UUID, typeOrAttr.TypeAttribute.UUID));
+                                //_Edges.Add(new EdgeKey(typeOrAttr.DBType.VertexID, typeOrAttr.TypeAttribute.VertexID));
                                 _LastAttribute = typeOrAttr.TypeAttribute;
                                 _LastType = typeOrAttr.DBType;
                                 _Reference = new Tuple<string, IVertexType>(reference, typeOrAttr.DBType); //T1 -->key in context dictionary
@@ -1080,7 +1080,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
         /// This method adds a new EdgeKey to the IDNode
         /// </summary>
         /// <param name="myStartingType">The type that corresponds to the attribute.</param>
-        /// <param name="tempTypeAttributeUUID">The attribute uuid.</param>
+        /// <param name="tempTypeAttributeUUID">The attribute VertexID.</param>
         private void AddNewEdgeKey(IVertexType myStartingType, Int64 tempTypeAttributeUUID)
         {
             EdgeKey tempEdgeKey = new EdgeKey(myStartingType.ID, tempTypeAttributeUUID);

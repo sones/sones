@@ -37,7 +37,7 @@ namespace sones.GraphDB.ErrorHandling
         public DBObjectCollisionException(String myOBject)
         {
             Object = myOBject;
-            _msg = String.Format("A DBObject collision occurred. The DBObject with attributes \"{0}\" has been inserted with a UUID that already exists!", Object);
+            _msg = String.Format("A DBObject collision occurred. The DBObject with attributes \"{0}\" has been inserted with a VertexID that already exists!", Object);
         }     
 
     }
