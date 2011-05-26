@@ -168,12 +168,12 @@ namespace sones.GraphQL.StatementNodes.DML
             return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
-        private void ProcessUpdate(IEnumerable<long> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private QueryResult ProcessUpdate(IEnumerable<long> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             UpdateNode update = new UpdateNode();
             update.Init(_Type, _AttributeAssignList, myVertexIDs);
 
-            update.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
+            return update.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
         #endregion
