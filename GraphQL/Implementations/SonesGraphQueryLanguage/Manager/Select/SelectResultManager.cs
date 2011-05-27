@@ -1819,10 +1819,11 @@ namespace sones.GraphQL.GQL.Manager.Select
                     }
                     else
                     {
-                        aggrResult =
-                            aggr.Aggregate.Aggregate(
-                                myDBOs.Where(aVertex => aVertex.HasProperty(aggr.Element.ID)).Select(
-                                    dbo => dbo.GetProperty(aggr.Element.ID)), (IPropertyDefinition)aggr.Element);
+                            aggrResult =
+                                aggr.Aggregate.Aggregate(
+                                    myDBOs.Where(aVertex => aVertex.HasProperty(aggr.Element.ID)).Select(
+                                        dbo => dbo.GetProperty(aggr.Element.ID)), (IPropertyDefinition)aggr.Element);
+
                     }
                     
 

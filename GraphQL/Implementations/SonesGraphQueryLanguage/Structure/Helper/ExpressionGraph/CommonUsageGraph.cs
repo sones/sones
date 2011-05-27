@@ -453,8 +453,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
             #endregion
 
-            #endregion
-
             #region build level differences
 
             var diffForThis = GetLevelKeyDifference(this, anotherGraph);
@@ -578,6 +576,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             }
         }
 
+        #endregion
 
         #region private methods
 
