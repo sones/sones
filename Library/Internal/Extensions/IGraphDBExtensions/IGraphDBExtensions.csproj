@@ -48,7 +48,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Constants\Constants.csproj">
+    <ProjectReference Include="..\..\Constants\Constants.csproj">
       <Project>{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723}</Project>
       <Name>Constants</Name>
     </ProjectReference>

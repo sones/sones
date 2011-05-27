@@ -303,7 +303,7 @@
       <Name>IGraphDBExtensions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\Extensions\LanguageExtensions\LanguageExtensions.csproj">
-      <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
+      <Project>{E4A4B5FF-2203-48AA-99A9-41A52407452E}</Project>
       <Name>LanguageExtensions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
