@@ -605,7 +605,11 @@ namespace sones.GraphQL.StatementNodes.DML
 
             foreach (var vertex in myVertices)
             {
-                list.Add(new VertexView(new Dictionary<String, Object>{ { "Updated ", vertex.VertexID } }, null));
+                list.Add(new VertexView(new Dictionary<String, Object>
+                                            {
+                                                { "VertexID", vertex.VertexID },
+                                                { "VertexTypeID", vertex.VertexTypeID }
+                                            }, null));
             }
 
             return new QueryResult(Query, 
