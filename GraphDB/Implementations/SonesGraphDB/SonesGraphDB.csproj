@@ -165,6 +165,10 @@
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Constants\Constants.csproj">
+      <Project>{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723}</Project>
+      <Name>Constants</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>

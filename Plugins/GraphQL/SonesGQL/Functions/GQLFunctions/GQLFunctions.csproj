@@ -59,6 +59,10 @@
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\GraphQL\Implementations\SonesGraphQueryLanguage\SonesGraphQueryLanguage.csproj">
+      <Project>{26BFEE62-82B9-4EFA-9F91-08FD947551A8}</Project>
+      <Name>SonesGraphQueryLanguage</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>

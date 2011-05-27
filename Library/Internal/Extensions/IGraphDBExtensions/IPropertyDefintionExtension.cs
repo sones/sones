@@ -7,19 +7,46 @@ namespace sones.GraphDB.Extensions
 {
     public static class IPropertyDefintionExtension
     {
-        public static bool HasValue(this IPropertyDefinition myProperty, IEdge myEdge)
+
+        public static bool HasValue(this IPropertyDefinition myProperty, IGraphElement myElement)
         {
             if (myProperty == null)
                 throw new NullReferenceException();
 
+            if (myElement == null)
+                throw new ArgumentNullException("myElement");
+
+            if (myElement is IVertex)
+                return HasValue(myProperty, myElement as IVertex);
+            
+            if (myElement is IEdge)
+                return HasValue(myProperty, myElement as IEdge);
+
+            throw new Exception("Unknown IGraphElement.");
+        }
+
+        public static IComparable GetValue(this IPropertyDefinition myProperty, IGraphElement myElement)
+        {
+            if (!HasValue(myProperty, myElement))
+                return null;
+
+            if (myElement is IVertex)
+                return GetValue(myProperty, myElement as IVertex);
+
+            if (myElement is IEdge)
+                return GetValue(myProperty, myElement as IEdge);
+
+            throw new Exception("Unknown IGraphElement.");
+            
+        }
+
+        private static bool HasValue(this IPropertyDefinition myProperty, IEdge myEdge)
+        {
             return myEdge.HasProperty(myProperty.ID);
         }
 
-        public static bool HasValue(this IPropertyDefinition myProperty, IVertex myVertex)
+        private static bool HasValue(this IPropertyDefinition myProperty, IVertex myVertex)
         {
-            if (myProperty == null)
-                throw new NullReferenceException();
-
             if (myProperty.RelatedType == null)
                 throw new ArgumentException("A property with nor related type is not allowed.");
 
@@ -48,19 +75,13 @@ namespace sones.GraphDB.Extensions
         }
 
 
-        public static IComparable GetValue(this IPropertyDefinition myProperty, IEdge myEdge)
+        private static IComparable GetValue(this IPropertyDefinition myProperty, IEdge myEdge)
         {
-            if (myProperty == null)
-                throw new NullReferenceException();
-
             return myEdge.GetProperty<IComparable>(myProperty.ID);
         }
 
-        public static IComparable GetValue(this IPropertyDefinition myProperty, IVertex myVertex)
+        private static IComparable GetValue(this IPropertyDefinition myProperty, IVertex myVertex)
         {
-            if (myProperty == null)
-                throw new NullReferenceException();
-
             if (myProperty.RelatedType == null)
                 throw new ArgumentException("A property with nor related type is not allowed.");
 
