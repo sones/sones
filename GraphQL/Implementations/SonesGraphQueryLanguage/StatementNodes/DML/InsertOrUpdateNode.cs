@@ -142,7 +142,7 @@ namespace sones.GraphQL.StatementNodes.DML
             {
 
                 //update
-                ProcessUpdate(myToBeUpdatedVertices, myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+                return ProcessUpdate(myToBeUpdatedVertices, myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
 
             }
             else

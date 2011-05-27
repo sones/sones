@@ -15,7 +15,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="PersistenceLocation" Type="System.String" Scope="User">
-      <Value Profile="(Default)">.\\GraphFS_Pages</Value>
+      <Value Profile="(Default)">data</Value>
     </Setting>
   </Settings>
 </SettingsFile>
