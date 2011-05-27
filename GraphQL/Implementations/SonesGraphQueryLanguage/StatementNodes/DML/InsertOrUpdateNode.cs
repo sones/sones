@@ -115,7 +115,7 @@ namespace sones.GraphQL.StatementNodes.DML
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
-
+            QueryResult result = null;
             _query = myQuery;
 
             IEnumerable<long> myToBeUpdatedVertices = null;
@@ -142,23 +142,50 @@ namespace sones.GraphQL.StatementNodes.DML
             {
 
                 //update
-                return ProcessUpdate(myToBeUpdatedVertices, myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+                result = ProcessUpdate(myToBeUpdatedVertices, myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+                
+                result = GenerateResult(sw.Elapsed.TotalMilliseconds, result);
 
             }
             else
             {
                 //insert
-                return ProcessInsert(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+                result = ProcessInsert(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+
+                result = GenerateResult(sw.Elapsed.TotalMilliseconds, result, true);
             }
 
             sw.Stop();
 
-            return GenerateResult(sw.Elapsed.TotalMilliseconds);
+            return result;
         }
 
-        private QueryResult GenerateResult(double myElapsedTotalMilliseconds)
+        private QueryResult GenerateResult(double myElapsedTotalMilliseconds, QueryResult myResult, bool inserted = false)
         {
-            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myElapsedTotalMilliseconds), ResultType.Successful, new List<IVertexView>());
+            List<IVertexView> view = new List<IVertexView>();
+
+            if(myResult != null)
+            {
+                foreach (var item in myResult.Vertices)
+                {
+                    var dict = new Dictionary<string, object>();
+
+                    if(item.HasProperty("VertexID"))
+                        dict.Add("VertexID", item.GetProperty<IComparable>("VertexID"));
+
+                    if(item.HasProperty("VertexTypeID"))
+                        dict.Add("VertexTypeID", item.GetProperty<IComparable>("VertexTypeID"));
+
+                    if(inserted)
+                        dict.Add("Command", "Insert");
+                    else
+                        dict.Add("Command", "Update");
+
+                    view.Add(new VertexView(dict, null));
+                }
+            }
+
+            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myElapsedTotalMilliseconds), ResultType.Successful, view);
         }
 
         private QueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)

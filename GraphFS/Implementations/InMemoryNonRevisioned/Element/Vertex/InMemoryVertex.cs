@@ -330,12 +330,12 @@ namespace sones.GraphFS.Element.Vertex
                }
                else
                {
-                    return null;
+                   throw new BinaryNotExistentException(myPropertyID);
                }
             }
             else
             {
-                return null;
+                throw new BinaryNotExistentException(myPropertyID);
             }
         }
 
