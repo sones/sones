@@ -25,6 +25,7 @@ using System.Text;
 using ISonesGQLFunction.Structure;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB;
+using sones.GraphDB.Extensions;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
@@ -65,13 +66,13 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             var currentInnerEdgeType = ((IOutgoingEdgeDefinition)myAttributeDefinition).InnerEdgeType;
             bool orderByWeight = false;
-            Int64 weightPropertyID = 0;
+            IPropertyDefinition weightProperty = null;
             int numOfEntries = Convert.ToInt32(myParams[0].Value);
 
             if (currentInnerEdgeType.HasProperty("Weight"))
             {
                 orderByWeight = true;
-                weightPropertyID = currentInnerEdgeType.GetPropertyDefinition("Weight").ID;
+                weightProperty = currentInnerEdgeType.GetPropertyDefinition("Weight");
             }
 
             if (myCallingObject is IHyperEdge)
@@ -83,7 +84,7 @@ namespace sones.Plugins.SonesGQL.Functions
                     var topVertices = hyperEdge.InvokeHyperEdgeFunc<IEnumerable<IVertex>>(singleEdges =>
                     {
                         return singleEdges
-                            .OrderByDescending(edge => edge.GetProperty(weightPropertyID))
+                            .OrderByDescending(edge => weightProperty.GetValue(edge))
                             .Select(aOrderedEdge => aOrderedEdge.GetTargetVertex());
                     }).Take(numOfEntries);
 

@@ -134,6 +134,10 @@
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\Extensions\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
+      <Name>LanguageExtensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\PluginDefinition\PluginDefinition.csproj">
       <Project>{CE9BF2C2-C785-4661-8F4F-64266C697343}</Project>
       <Name>PluginDefinition</Name>

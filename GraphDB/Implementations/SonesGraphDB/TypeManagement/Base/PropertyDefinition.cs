@@ -19,10 +19,8 @@
 */
 
 using System;
-using sones.GraphDB.TypeSystem;
-using sones.Library.PropertyHyperGraph;
 using System.Collections.Generic;
-using sones.GraphDB.TypeManagement.Base;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.TypeManagement
 {
@@ -33,35 +31,6 @@ namespace sones.GraphDB.TypeManagement
     {
 
         #region IPropertyDefinition Members
-
-        public IComparable ExtractValue(IVertex aVertex)
-        {
-            if (RelatedType.ID != (long) BaseTypes.Vertex)
-            {
-                //A usual property like Age or Name...
-                return aVertex.HasProperty(ID) ? aVertex.GetProperty(ID) : null;
-            }
-
-            switch (ID)
-            {
-                case (long) AttributeDefinitions.VertexDotVertexID:
-                    return aVertex.VertexID;
-                case (long) AttributeDefinitions.VertexDotCreationDate:
-                    return aVertex.CreationDate;
-                case (long) AttributeDefinitions.VertexDotModificationDate:
-                    return aVertex.ModificationDate;
-                case (long) AttributeDefinitions.VertexDotComment:
-                    return aVertex.Comment;
-                case (long) AttributeDefinitions.VertexDotEdition:
-                    return aVertex.EditionName;
-                case (long) AttributeDefinitions.VertexDotRevision:
-                    return aVertex.VertexRevisionID;
-                case (long) AttributeDefinitions.VertexDotTypeID:
-                    return aVertex.VertexTypeID;
-                default:
-                    return null;
-            }
-        }
 
         public bool IsMandatory { get; internal set; }
 

@@ -21,10 +21,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ISonesGQLFunction.Structure;
 using sones.GraphDB;
 using sones.GraphDB.Request;
+using sones.GraphDB.Extensions;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.GQL.Manager.Plugin;
 using sones.GraphQL.Result;
@@ -37,7 +37,6 @@ using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphQL.GQL.Structure.Nodes.Expressions;
-using System.Collections;
 using sones.GraphQL.GQL.Structure.Nodes.Misc;
 using sones.GraphDB.ErrorHandling;
 
@@ -1087,7 +1086,7 @@ namespace sones.GraphQL.GQL.Manager.Select
             {
                 case AttributeType.Property:
 
-                    return ((IPropertyDefinition)iAttributeDefinition).ExtractValue(myDBObject);
+                    return ((IPropertyDefinition)iAttributeDefinition).GetValue(myDBObject);
 
                 case AttributeType.IncomingEdge:
 
@@ -1148,7 +1147,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                     var property = (IPropertyDefinition)typeAttribute;
                     
-                    attributeValue = property.ExtractValue(myDBObject);
+                    attributeValue = property.GetValue(myDBObject);
 
                     return attributeValue != null;
 
@@ -1298,7 +1297,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             foreach (var aProperty in myType.GetPropertyDefinitions(true))
             {
-                var tempResult = aProperty.ExtractValue(myDBObject);
+                var tempResult = aProperty.GetValue(myDBObject);
 
                 if (tempResult != null)
                 {
@@ -1537,7 +1536,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                 {
                     if (aSingleEdge.HasProperty(aProperty.ID))
                     {
-                        result.Add(aProperty.Name, aSingleEdge.GetProperty(aProperty.ID));
+                        result.Add(aProperty.Name, aProperty.GetValue(aSingleEdge));
                     }
                 }
             }
@@ -1728,7 +1727,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                     Dictionary<GroupingValuesKey, IComparable> groupingVals = new Dictionary<GroupingValuesKey, IComparable>();
                     foreach (var selection in mySelections)
                     {
-                        var attrValue = dbo.GetProperty(selection.Element.ID);
+                        var attrValue = (selection.Element as IPropertyDefinition).GetValue(dbo);
 
                         groupingVals.Add(new GroupingValuesKey(selection.Element, selection.Alias), attrValue);
                     }
@@ -1757,8 +1756,8 @@ namespace sones.GraphQL.GQL.Manager.Select
                     {
                         var aggrResult =
                             aggr.Aggregate.Aggregate(
-                                (group as IEnumerable<IVertex>).Select(
-                                    aVertex => aVertex.GetProperty(aggr.Element.ID)), (IPropertyDefinition)aggr.Element);
+                                (group).Select(
+                                    aVertex => (aggr.Element as IPropertyDefinition).GetValue(aVertex)), (IPropertyDefinition)aggr.Element);
                         
                         if (aggrResult.Value != null)
                         {
@@ -1821,8 +1820,8 @@ namespace sones.GraphQL.GQL.Manager.Select
                     {
                         aggrResult =
                             aggr.Aggregate.Aggregate(
-                                myDBOs.Where(aVertex => aVertex.HasProperty(aggr.Element.ID)).Select(
-                                    dbo => dbo.GetProperty(aggr.Element.ID)), (IPropertyDefinition)aggr.Element);
+                                myDBOs.Where(aVertex => (aggr.Element as IPropertyDefinition).HasValue(aVertex)).Select(
+                                    dbo => (aggr.Element as IPropertyDefinition).GetValue(dbo)), (IPropertyDefinition)aggr.Element);
                     }
                     
 
@@ -1955,7 +1954,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                         continue;
                     }
 
-                    var attrValue = dbo.GetProperty(selection.Element.ID);
+                    var attrValue = (selection.Element as IPropertyDefinition).GetValue(dbo);
                     
 
                     groupingVals.Add(new GroupingValuesKey(selection.Element, selection.Alias), attrValue);

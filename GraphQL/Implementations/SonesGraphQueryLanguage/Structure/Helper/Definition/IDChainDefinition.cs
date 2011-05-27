@@ -21,23 +21,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using sones.Plugins.SonesGQL.Aggregates;
+using ISonesGQLFunction.Structure;
 using sones.GraphDB;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using sones.GraphQL.GQL.Manager.Plugin;
 using sones.GraphDB.ErrorHandling;
-using sones.GraphQL.ErrorHandling;
+using sones.GraphDB.Extensions;
 using sones.GraphDB.TypeSystem;
+using sones.GraphQL.ErrorHandling;
+using sones.GraphQL.GQL.Manager.Plugin;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph.Helper;
-using sones.Plugins.SonesGQL.Functions;
 using sones.GraphQL.GQL.Structure.Nodes.Expressions;
-using sones.Plugins.SonesGQL.Function.ErrorHandling;
-using ISonesGQLFunction.Structure;
-using sones.Library.PropertyHyperGraph;
 using sones.GraphQL.Structure.Helper.Enums;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
+using sones.Library.PropertyHyperGraph;
+using sones.Plugins.SonesGQL.Aggregates;
+using sones.Plugins.SonesGQL.Function.ErrorHandling;
+using sones.Plugins.SonesGQL.Functions;
 
 namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 {
@@ -234,7 +234,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
                                         if (myDBObject.HasProperty(propertyDefinition.ID))
 	                                    {
-                                            value = myDBObject.GetProperty(propertyDefinition.ID);
+                                            value = propertyDefinition.GetValue(myDBObject);
 	                                    }
 
                                         #region validation

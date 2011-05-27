@@ -21,29 +21,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using sones.Library.Commons.VertexStore.Definitions;
+using sones.GraphDB.ErrorHandling;
+using sones.GraphDB.Expression;
+using sones.GraphDB.Expression.Tree;
+using sones.GraphDB.Extensions;
+using sones.GraphDB.Manager.Index;
+using sones.GraphDB.Manager.QueryPlan;
+using sones.GraphDB.Manager.TypeManagement;
+using sones.GraphDB.Request;
+using sones.GraphDB.Request.Insert;
+using sones.GraphDB.TypeManagement.Base;
+using sones.GraphDB.TypeSystem;
+using sones.Library.CollectionWrapper;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphDB.TypeSystem;
-using sones.GraphDB.Expression.Tree;
-using sones.GraphDB.Request;
-using sones.GraphDB.Manager.TypeManagement;
 using sones.Library.Commons.VertexStore;
-using sones.GraphDB.Manager.Index;
-using sones.Library.PropertyHyperGraph;
-using sones.GraphDB.Manager.QueryPlan;
-using sones.GraphDB.Request.Insert;
-using sones.GraphDB.Expression;
-using sones.GraphDB.ErrorHandling;
-using sones.GraphDB.Expression.Tree.Literals;
-using sones.Plugins.Index.Interfaces;
+using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.VertexStore.Definitions.Update;
 using sones.Library.LanguageExtensions;
-using System.IO;
-using sones.GraphDB.TypeManagement.Base;
+using sones.Library.PropertyHyperGraph;
 using sones.Plugins.Index.Helper;
-using sones.Library.CollectionWrapper;
+using sones.Plugins.Index.Interfaces;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -1082,10 +1080,10 @@ namespace sones.GraphDB.Manager.Vertex
             var result = new Dictionary<String, IComparable>();
             foreach (var propName in neededPropNames)
             {
-                var id = vertexType.GetPropertyDefinition(propName).ID;
+                var propDef = vertexType.GetPropertyDefinition(propName);
 
-                if (vertex.HasProperty(id))
-                    result.Add(propName, vertex.GetProperty<IComparable>(id));
+                if (propDef.HasValue(vertex))
+                    result.Add(propName, propDef.GetValue(vertex));
             }
 
             return result;
@@ -1231,7 +1229,7 @@ namespace sones.GraphDB.Manager.Vertex
                                 ? null
                                 : (propDef == null)
                                     ? myVertex.GetUnstructuredProperty<ICollectionWrapper>(added.Key)
-                                    : myVertex.GetProperty<ICollectionWrapper>(propDef.ID);
+                                    : (ICollectionWrapper) propDef.GetValue(myVertex);
 
                             PropertyMultiplicity mult;
                             if (propDef != null)
@@ -1285,7 +1283,7 @@ namespace sones.GraphDB.Manager.Vertex
                             //if it is not ICollectionWrapper something wrong with deserialization
                             var extractedValue = (propDef == null)
                                 ? myVertex.GetUnstructuredProperty<ICollectionWrapper>(remove.Key)
-                                : myVertex.GetProperty<ICollectionWrapper>(propDef.ID);
+                                : (ICollectionWrapper) propDef.GetValue(myVertex);
 
                             PropertyMultiplicity mult = (propDef != null)
                                 ? propDef.Multiplicity

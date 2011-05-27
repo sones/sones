@@ -19,24 +19,23 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using sones.GraphDB;
+using sones.GraphDB.Expression;
+using sones.GraphDB.TypeSystem;
+using sones.GraphDB.Extensions;
+using sones.GraphQL.ErrorHandling;
+using sones.GraphQL.GQL.ErrorHandling;
+using sones.GraphQL.GQL.Manager.Plugin;
+using sones.GraphQL.GQL.Manager.Select;
+using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
+using sones.GraphQL.GQL.Structure.Helper.Operator;
+using sones.GraphQL.GQL.Structure.Nodes.Misc;
+using sones.GraphQL.Result;
+using sones.GraphQL.Structure.Helper.Enums;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphDB.TypeSystem;
-using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
-using sones.GraphQL.Structure.Helper.Enums;
-using sones.GraphQL.GQL.Structure.Nodes.Misc;
-using sones.GraphQL.GQL.Manager.Plugin;
-using sones.GraphQL.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
-using sones.GraphQL.GQL.ErrorHandling;
-using sones.GraphQL.Result;
-using sones.GraphQL.GQL.Manager.Select;
-using sones.GraphQL.GQL.Structure.Helper.Operator;
-using sones.GraphDB.Expression;
 
 namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 {
@@ -480,7 +479,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
         private ValueDefinition GetAtomValue(IDChainDefinition iDNode, IVertex aDBObject)
         {
-            return new ValueDefinition(aDBObject.GetProperty(iDNode.LastAttribute.ID));
+            return new ValueDefinition((iDNode.LastAttribute as IPropertyDefinition).GetValue(aDBObject));
         }
 
         /// <summary>
