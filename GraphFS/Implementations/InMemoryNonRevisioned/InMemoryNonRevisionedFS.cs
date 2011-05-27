@@ -792,6 +792,13 @@ namespace sones.GraphFS
             _vertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
         }
         
+        /// <summary>
+        /// Removes the incomming edge from a target vertex.
+        /// </summary>
+        /// <param name="myTargetVertex">The target vertex.</param>
+        /// <param name="myIncommingVertexTypeID">The target vertex type id.</param>
+        /// <param name="myIncommingEdgePropID">The edge property id.</param>
+        /// <param name="myIncommingVertex">The vertex which is to be updated.</param>
         private void RemoveIncommingEdgeFromTargetVertex(InMemoryVertex myTargetVertex, Int64 myIncommingVertexTypeID, Int64 myIncommingEdgePropID, IVertex myIncommingVertex)
         {
             if(myTargetVertex.IncomingEdges != null)
