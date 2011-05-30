@@ -160,6 +160,9 @@ namespace sones.GraphQL.StatementNodes.DML
                     throw new NotImplementedQLException("It's currenty not implemented to InsertOrReplace more than one vertex");
             }
 
+            if (result.Error != null)
+                throw result.Error;
+
             return GenerateResult(sw.ElapsedMilliseconds, result, myAction);
         }
 

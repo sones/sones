@@ -145,7 +145,6 @@ namespace sones.GraphQL.StatementNodes.DML
 
                 //update
                 result = ProcessUpdate(myToBeUpdatedVertices, myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
-
                 myAction = "Updated";
 
             }
@@ -156,6 +155,9 @@ namespace sones.GraphQL.StatementNodes.DML
 
                 myAction = "Inserted";
             }
+            
+            if (result.Error != null)
+                throw result.Error;
 
             sw.Stop();
 
