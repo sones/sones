@@ -23,6 +23,7 @@ using sones.Library.PropertyHyperGraph;
 using System;
 using sones.Library.Commons.VertexStore;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDB.Extensions;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 
@@ -79,7 +80,7 @@ namespace sones.GraphDB.Expression.QueryPlan
             {
                 foreach (var aVertex in _vertexStore.GetVerticesByTypeID(_securityToken, _transactionToken, myInterestingVertexType.ID, _property.Edition, VertexRevisionFilter))
                 {
-                    var value = _property.Property.ExtractValue(aVertex);
+                    var value = _property.Property.GetValue(aVertex);
 
                     if (value != null &&
                             (value.CompareTo(_constantRange.Lower) >= 0) &&
@@ -93,7 +94,7 @@ namespace sones.GraphDB.Expression.QueryPlan
             {
                 foreach (var aVertex in _vertexStore.GetVerticesByTypeID(_securityToken, _transactionToken, myInterestingVertexType.ID, _property.Edition, VertexRevisionFilter))
                 {
-                    var value = _property.Property.ExtractValue(aVertex);
+                    var value = _property.Property.GetValue(aVertex);
 
                     if (value != null &&
                             (value.CompareTo(_constantRange.Lower) > 0) &&

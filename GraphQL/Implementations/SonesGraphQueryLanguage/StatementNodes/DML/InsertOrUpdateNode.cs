@@ -115,10 +115,12 @@ namespace sones.GraphQL.StatementNodes.DML
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
+            
             QueryResult result = null;
             _query = myQuery;
-
+            String myAction = "";
             IEnumerable<long> myToBeUpdatedVertices = null;
+            
             //prepare
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
                 mySecurityToken,
@@ -143,8 +145,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
                 //update
                 result = ProcessUpdate(myToBeUpdatedVertices, myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
-                
-                result = GenerateResult(sw.Elapsed.TotalMilliseconds, result);
+                myAction = "Updated";
 
             }
             else
@@ -152,15 +153,18 @@ namespace sones.GraphQL.StatementNodes.DML
                 //insert
                 result = ProcessInsert(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
 
-                result = GenerateResult(sw.Elapsed.TotalMilliseconds, result, true);
+                myAction = "Inserted";
             }
+            
+            if (result.Error != null)
+                throw result.Error;
 
             sw.Stop();
 
-            return result;
+            return GenerateResult(sw.Elapsed.TotalMilliseconds, result, myAction);
         }
 
-        private QueryResult GenerateResult(double myElapsedTotalMilliseconds, QueryResult myResult, bool inserted = false)
+        private QueryResult GenerateResult(double myElapsedTotalMilliseconds, QueryResult myResult, String myAction)
         {
             List<IVertexView> view = new List<IVertexView>();
 
@@ -176,10 +180,7 @@ namespace sones.GraphQL.StatementNodes.DML
                     if(item.HasProperty("VertexTypeID"))
                         dict.Add("VertexTypeID", item.GetProperty<IComparable>("VertexTypeID"));
 
-                    if(inserted)
-                        dict.Add("Command", "Insert");
-                    else
-                        dict.Add("Command", "Update");
+                    dict.Add("Action", myAction);
 
                     view.Add(new VertexView(dict, null));
                 }

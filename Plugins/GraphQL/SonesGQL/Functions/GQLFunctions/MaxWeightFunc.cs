@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ISonesGQLFunction.Structure;
 using sones.GraphDB;
+using sones.GraphDB.Extensions;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
@@ -78,13 +79,15 @@ namespace sones.Plugins.SonesGQL.Functions
 
                 if (currentInnerEdgeType.HasProperty("Weight"))
                 {
-                    var weightPropertyID = currentInnerEdgeType.GetPropertyDefinition("Weight").ID;
+                    var weightProperty = currentInnerEdgeType.GetPropertyDefinition("Weight");
 
                     var maxWeight = hyperEdge.InvokeHyperEdgeFunc<Double>(singleEdges =>
                     {
-                        return Convert.ToDouble(singleEdges
-                            .OrderByDescending(edge => edge.GetProperty(weightPropertyID))
-                            .First().GetProperty(weightPropertyID));
+                        return Convert.ToDouble(
+                            weightProperty.GetValue(
+                            singleEdges
+                            .OrderByDescending(edge => weightProperty.GetValue(edge))
+                            .First()));
                     });
 
                     return new FuncParameter(maxWeight);

@@ -106,9 +106,13 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            _query = myQuery;
+            Stopwatch sw = Stopwatch.StartNew();
 
+            _query = myQuery;
+            QueryResult result = null;
+            String myAction = "";
             List<long> myToBeUpdatedVertices = new List<long>();
+            
             //prepare
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
                 mySecurityToken,
@@ -131,36 +135,78 @@ namespace sones.GraphQL.StatementNodes.DML
             switch (myToBeUpdatedVertices.Count)
             {
                 case 0:
+                    
                     //insert
-                    return ProcessInsert(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+                    result = ProcessInsert(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+
+                    myAction = "Inserted";
+
+                    break;
 
                 case 1:
+                
                     //delete
                     ProcessDelete(myToBeUpdatedVertices[0], myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
 
                     //insert
-                    return ProcessInsert(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+                    result = ProcessInsert(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
+
+                    myAction = "Replaced";
+
+                    break;
 
                 default:
                     //error
                     throw new NotImplementedQLException("It's currenty not implemented to InsertOrReplace more than one vertex");
             }
+
+            if (result.Error != null)
+                throw result.Error;
+
+            return GenerateResult(sw.ElapsedMilliseconds, result, myAction);
         }
 
         private QueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             InsertNode insert = new InsertNode();
+
             insert.Init(_type, _attributeAssignList);
+
             return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
         private void ProcessDelete(long toBeDeletedVertexID, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            myGraphDB.Delete<bool>(
-                mySecurityToken,
-                myTransactionToken, 
-                new RequestDelete(new RequestGetVertices(_type, new List<long>{toBeDeletedVertexID})),
-                (stats) => true);
+            var stat = myGraphDB.Delete(mySecurityToken,
+                                         myTransactionToken,
+                                         new RequestDelete(new RequestGetVertices(_type, new List<long> {toBeDeletedVertexID})),
+                                         (stats) => stats);
+        }
+
+        private QueryResult GenerateResult(double myElapsedTotalMilliseconds, QueryResult myResult, String myAction)
+        {
+            List<IVertexView> view = new List<IVertexView>();
+
+            if (myResult != null)
+            {
+                foreach (var item in myResult.Vertices)
+                {
+                    var dict = new Dictionary<string, object>();
+
+                    if (item.HasProperty("VertexID"))
+                        dict.Add("VertexID", item.GetProperty<IComparable>("VertexID"));
+
+                    if (item.HasProperty("VertexTypeID"))
+                        dict.Add("VertexTypeID", item.GetProperty<IComparable>("VertexTypeID"));
+
+                    dict.Add("Action", myAction);
+
+                    view.Add(new VertexView(dict, null));
+                }
+            }
+
+            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myElapsedTotalMilliseconds),
+                                   ResultType.Successful, view);
         }
 
         #endregion

@@ -22,7 +22,6 @@ using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Manager.Plugin;
 using System.Collections.Generic;
 using sones.Library.VersionedPluginManager;
-using sones.Library.Settings;
 using System.Linq;
 using System;
 using sones.Library.Commons.Security;
@@ -33,10 +32,10 @@ using sones.GraphDB.Request.CreateVertexTypes;
 using sones.GraphDB.Manager.BaseGraph;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.Library.LanguageExtensions;
-using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.TypeManagement.Base;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.PropertyHyperGraph;
+using sones.GraphDB.Extensions;
 using sones.GraphDB.Request;
 using sones.Library.CollectionWrapper;
 
@@ -375,7 +374,7 @@ namespace sones.GraphDB.Manager.Index
                 List<IComparable> values = new List<IComparable>(myIndexProps.Count);
                 for (int i = 0; i < myIndexProps.Count; i++)
                 {
-                    values[i] = myIndexProps[i].ExtractValue(vertex);
+                    values[i] = myIndexProps[i].GetValue(vertex);
                 }
 
                 //using ListCollectionWrapper from Expressions, maybe this class should go to Lib
@@ -383,7 +382,7 @@ namespace sones.GraphDB.Manager.Index
             }
             else if (myIndexProps.Count == 1)
             {
-                return myIndexProps[0].ExtractValue(vertex);
+                return myIndexProps[0].GetValue(vertex);
             }
             throw new ArgumentOutOfRangeException("myIndexProps", "At least one property must be indexed.");
         }

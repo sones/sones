@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -120,8 +120,8 @@
       <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
       <Name>DataStructures</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LanguageExtensions\LanguageExtensions.csproj">
-      <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
+    <ProjectReference Include="..\Extensions\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{E4A4B5FF-2203-48AA-99A9-41A52407452E}</Project>
       <Name>LanguageExtensions</Name>
     </ProjectReference>
   </ItemGroup>

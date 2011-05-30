@@ -19,7 +19,6 @@
 */
 
 using System;
-using sones.Library.PropertyHyperGraph;
 using System.Collections.Generic;
 
 namespace sones.GraphDB.TypeSystem
@@ -59,13 +58,5 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         IEnumerable<IIndexDefinition> InIndices { get; }
 
-        /// <summary>
-        /// Extracts the this property from a given vertex...
-        /// </summary>
-        /// With this method it is possible to create several PropertyDefinitions for things like usual properties (Age, Name, etc...)
-        /// or for properties that are directly connected to IVertices like VertexID --> VertexID or Creation --> CreationDate
-        /// <param name="aVertex">The vertex that needs to be consulted</param>
-        /// <returns>The value as IComparable</returns>
-        IComparable ExtractValue(IVertex aVertex);
     }
 }

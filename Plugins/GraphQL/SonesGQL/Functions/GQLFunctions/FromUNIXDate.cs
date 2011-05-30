@@ -20,18 +20,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.GraphDB.TypeSystem;
 using ISonesGQLFunction.Structure;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.Library.LanguageExtensions;
-using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.ErrorHandling.Type;
 using sones.Library.VersionedPluginManager;
 using sones.Library.PropertyHyperGraph;
+using sones.Library.LanguageExtensions;
 
 namespace sones.Plugins.SonesGQL.Functions
 {

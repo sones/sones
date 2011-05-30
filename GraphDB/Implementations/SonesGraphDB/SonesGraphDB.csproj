@@ -165,17 +165,25 @@
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Constants\Constants.csproj">
+      <Project>{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723}</Project>
+      <Name>Constants</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Extensions\IGraphDBExtensions\IGraphDBExtensions.csproj">
+      <Project>{33A00226-6C65-49DF-AFCA-89440AF492E5}</Project>
+      <Name>IGraphDBExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Extensions\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{E4A4B5FF-2203-48AA-99A9-41A52407452E}</Project>
+      <Name>LanguageExtensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\LanguageExtensions\LanguageExtensions.csproj">
-      <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
-      <Name>LanguageExtensions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\PluginDefinition\PluginDefinition.csproj">
       <Project>{CE9BF2C2-C785-4661-8F4F-64266C697343}</Project>

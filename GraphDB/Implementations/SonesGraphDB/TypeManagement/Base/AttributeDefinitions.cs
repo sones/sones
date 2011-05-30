@@ -33,8 +33,8 @@ namespace sones.GraphDB.TypeManagement.Base
         VertexDotRevision,
         VertexDotEdition,
         VertexDotComment,
-        VertexDotTypeID,
-        VertexDotTypeName,
+        VertexDotVertexTypeID,
+        VertexDotVertexTypeName,
 
         #endregion
 

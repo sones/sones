@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -59,6 +59,10 @@
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\GraphQL\Implementations\SonesGraphQueryLanguage\SonesGraphQueryLanguage.csproj">
+      <Project>{26BFEE62-82B9-4EFA-9F91-08FD947551A8}</Project>
+      <Name>SonesGraphQueryLanguage</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
@@ -67,13 +71,17 @@
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\Extensions\IGraphDBExtensions\IGraphDBExtensions.csproj">
+      <Project>{33A00226-6C65-49DF-AFCA-89440AF492E5}</Project>
+      <Name>IGraphDBExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\Extensions\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{E4A4B5FF-2203-48AA-99A9-41A52407452E}</Project>
+      <Name>LanguageExtensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Library\Internal\LanguageExtensions\LanguageExtensions.csproj">
-      <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
-      <Name>LanguageExtensions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
