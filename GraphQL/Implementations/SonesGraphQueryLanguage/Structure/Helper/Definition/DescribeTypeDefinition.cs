@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using sones.GraphDB;
+using System.Linq;
 using sones.GraphDB.Request;
 using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.TypeSystem;
@@ -129,7 +130,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             var edges = new Dictionary<String, IEdgeView>();
 
             retVal.Add("VertexID", myType.ID);
-            retVal.Add("TYPE", myType.GetType());
+            retVal.Add("TYPE", myType.GetType().Name);
             retVal.Add("Name", myType.Name);
 
             if (!string.IsNullOrWhiteSpace(myType.Comment))
@@ -183,7 +184,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 var Attributes = new Dictionary<String, Object>();
 
                 Attributes.Add("ID", property.ID);
-                Attributes.Add("TYPE", property.BaseType);
+                Attributes.Add("TYPE", property.BaseType.Name);
                 Attributes.Add("Name", property.Name);
                 Attributes.Add("UserDefined", property.IsUserDefinedType);
 
@@ -238,16 +239,22 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         {
 
             var _AttributeReadout = new List<ISingleEdgeView>();
-
+            
             foreach (var unique in myUniques)
             {
 
                 var Attributes = new Dictionary<String, Object>();
                 
-                Attributes.Add("CorrespondingIndex", unique.CorrespondingIndex);
-                Attributes.Add("DefiningVertexType", unique.DefiningVertexType);
-                Attributes.Add("UniqueProperties", GeneratePropertiesOutput(myType, unique.UniquePropertyDefinitions));
-                
+                Attributes.Add("CorrespondingIndex", unique.CorrespondingIndex.Name);
+                Attributes.Add("DefiningVertexType", unique.DefiningVertexType.Name);
+
+                List<String> props = new List<String>();
+
+                foreach (var item in unique.UniquePropertyDefinitions)
+                    props.Add(item.Name);
+
+                Attributes.Add("UniqueProperties", props);                
+
                 _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
 
             }
@@ -308,9 +315,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 }
                 else if (edge.Kind == AttributeType.OutgoingEdge)
                 {
-                    Attributes.Add("TYPE", (edge as IOutgoingEdgeDefinition).EdgeType);
-                    Attributes.Add("SourceVertexType", (edge as IOutgoingEdgeDefinition).SourceVertexType);
-                    Attributes.Add("TargetVertexType", (edge as IOutgoingEdgeDefinition).TargetVertexType);
+                    Attributes.Add("TYPE", (edge as IOutgoingEdgeDefinition).EdgeType.Name);
+                    Attributes.Add("SourceVertexType", (edge as IOutgoingEdgeDefinition).SourceVertexType.GetType().Name);
+                    Attributes.Add("TargetVertexType", (edge as IOutgoingEdgeDefinition).TargetVertexType.GetType().Name);
                 }
 
                 Attributes.Add("VertexID", edge.ID);
