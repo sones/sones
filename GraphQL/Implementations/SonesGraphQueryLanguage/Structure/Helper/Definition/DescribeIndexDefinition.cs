@@ -28,7 +28,9 @@ using sones.GraphQL.GQL.Manager.Plugin;
 using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using System.Linq;
 using sones.Library.ErrorHandling;
+using sones.Library.CollectionWrapper;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition
 {
@@ -85,9 +87,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             #endregion
 
             if(error != null)
-                return new QueryResult("", "GQL", 0L, ResultType.Failed, resultingVertices, error);
+                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Failed, resultingVertices, error);
             else
-                return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices);
+                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Successful, resultingVertices);
         }
 
         #region Output
@@ -113,15 +115,12 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 _Index.Add("IndexTypeName", index.IndexTypeName);
                 _Index.Add("IsUserDefinied", index.IsUserdefined);
 
+                ListCollectionWrapper list = new ListCollectionWrapper();
                 foreach (var prop in index.IndexedProperties)
-                {
-                    _Prop.Add("Name", prop.Name);
-                    _Prop.Add("DefaultValue", prop.DefaultValue);
-                    _Prop.Add("IsUserDefined", prop.IsUserDefinedType);
-                    _Prop.Add("Multiplicity", prop.Multiplicity);
-                }
+                    list.Add(prop.Name);
 
-                var temp = new Dictionary<String, IEdgeView> { {"IndexedProperty", new SingleEdgeView(_Prop, null)} };
+                _Index.Add("IndexedProperties", list);
+
             }
 
             return new VertexView(_Index, new Dictionary<String, IEdgeView>());

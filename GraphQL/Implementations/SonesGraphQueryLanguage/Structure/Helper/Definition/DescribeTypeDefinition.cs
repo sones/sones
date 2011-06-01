@@ -148,9 +148,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 edges.Add("UniqueAttributes", new HyperEdgeView(null, GenerateUniquePropertiesOutput(myType, myType.GetUniqueDefinitions(true))));
 
-                //needless
-                //edges.Add("Attributes", new HyperEdgeView(null, GenerateAttributesOutput(myType, myType.GetAttributeDefinitions(true).Where(x => x.Kind != AttributeType.Property))));
-
                 edges.Add("Indices", new HyperEdgeView(null, GenerateIndicesOutput(myType)));
 
                 if (myType.HasParentType)
@@ -203,42 +200,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                     if (property.DefaultValue != null)
                         Attributes.Add("DefaultValue", property.DefaultValue);
-                }
-
-                _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
-
-            }
-
-            return _AttributeReadout;
-
-        }
-
-        /// <summary>
-        /// output for the type attributes
-        /// </summary>
-        /// <param name="myType">The db type</param>
-        /// <param name="myDBContext">The db context</param>
-        /// <param name="myAttributes">The attributeDefinitions</param>
-        /// <returns>a list of readouts, contains the attributes</returns>
-        private IEnumerable<ISingleEdgeView> GenerateAttributesOutput(IVertexType myType, IEnumerable<IAttributeDefinition> myAttributes)
-        {
-
-            var _AttributeReadout = new List<ISingleEdgeView>();
-
-            foreach (var attr in myAttributes)
-            {
-
-                var Attributes = new Dictionary<String, Object>();
-
-                Attributes.Add("ID", attr.ID);
-                Attributes.Add("Type", attr.Kind);
-                Attributes.Add("Name", attr.Name);
-                Attributes.Add("IsUserDefinded", attr.IsUserDefined);
-
-                if (attr.Kind == AttributeType.Property)
-                {
-                    Attributes.Add("IsMandatory", (attr as IPropertyDefinition).IsMandatory);
-                    Attributes.Add("Multiplicity", (attr as IPropertyDefinition).Multiplicity);
                 }
 
                 _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
