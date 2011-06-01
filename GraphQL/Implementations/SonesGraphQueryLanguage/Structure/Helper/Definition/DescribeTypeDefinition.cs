@@ -186,7 +186,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 Attributes.Add("ID", property.ID);
                 Attributes.Add("TYPE", property.BaseType.Name);
                 Attributes.Add("Name", property.Name);
-                Attributes.Add("UserDefined", property.IsUserDefinedType);
+                Attributes.Add("IsUserDefined", property.IsUserDefined);
 
                 if (property.DefaultValue != null)
                     Attributes.Add("DefaultValue", property.DefaultValue);
