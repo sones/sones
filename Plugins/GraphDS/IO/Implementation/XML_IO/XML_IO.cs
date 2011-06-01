@@ -55,7 +55,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
         #region Constructors
 
         /// <summary>
-        /// Creates a new xml io instance.
+        /// Constructor for a xml io instance.
         /// </summary>
         public XML_IO()
         {
@@ -98,11 +98,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
         /// </summary>
         /// <param name="myItemProperty">The property of the item(edge, hyperedge, vertex).</param>
         /// <param name="myPropertyToFill">The schema property which is to fill.</param>
-        private void HandleListProperties(Object myItemProperty, ref Property myPropertyToFill)
+        private void HandleListProperties(ICollectionWrapper myItemProperty, ref Property myPropertyToFill)
         {
             Type propertyElementType = typeof(Object);
             
-            foreach (var value in ((ICollectionWrapper)myItemProperty))
+            foreach (var value in myItemProperty)
             {
                 myPropertyToFill.Value += "[" + value.ToString() + "],";
                 propertyElementType = value.GetType();
@@ -148,7 +148,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                     {
                         if (aProperty.Item2 is ICollectionWrapper)
                         {
-                            HandleListProperties(aProperty.Item2, ref property);
+                            HandleListProperties((ICollectionWrapper)aProperty.Item2, ref property);
                         }
                         else
                         {
@@ -226,7 +226,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                             if (edgeProperties[i].Item2 is ICollectionWrapper)
                             {
-                                HandleListProperties(edgeProperties[i].Item2, ref hyperEdge.Properties[i]);
+                                HandleListProperties((ICollectionWrapper)edgeProperties[i].Item2, ref hyperEdge.Properties[i]);
                             }
                             else
                             {
@@ -255,7 +255,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                                 if (SingleEdgesProperties[j].Item2 is ICollectionWrapper)
                                 {
-                                    HandleListProperties(SingleEdgesProperties[j].Item2, ref hyperEdge.SingleEdge[i].Properties[j]);
+                                    HandleListProperties((ICollectionWrapper)SingleEdgesProperties[j].Item2, ref hyperEdge.SingleEdge[i].Properties[j]);
                                 }
                                 else
                                 {
@@ -310,7 +310,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                             if (edgeProperties[i].Item2 is ICollectionWrapper)
                             {
-                                HandleListProperties(edgeProperties[i].Item2, ref SingleEdges.Properties[i]);
+                                HandleListProperties((ICollectionWrapper)edgeProperties[i].Item2, ref SingleEdges.Properties[i]);
                             }
                             else
                             {
