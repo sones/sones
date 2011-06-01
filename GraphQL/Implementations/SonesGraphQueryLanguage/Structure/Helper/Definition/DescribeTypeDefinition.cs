@@ -150,7 +150,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 edges.Add("UniqueAttributes", new HyperEdgeView(null, GenerateUniquePropertiesOutput(myType, myType.GetUniqueDefinitions(true))));
 
-                edges.Add("Attributes", new HyperEdgeView(null, GenerateAttributesOutput(myType, myType.GetAttributeDefinitions(true))));
+                edges.Add("Attributes", new HyperEdgeView(null, GenerateAttributesOutput(myType, myType.GetAttributeDefinitions(true).Where(x => x.Kind != AttributeType.Property))));
 
                 edges.Add("Indices", new HyperEdgeView(null, GenerateIndicesOutput(myType)));
 
@@ -188,6 +188,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 Attributes.Add("Name", property.Name);
                 Attributes.Add("Multiplicity", property.Multiplicity);
                 Attributes.Add("IsUserDefined", property.IsUserDefined);
+                Attributes.Add("IsMandatory", property.IsMandatory);
 
                 if (property.DefaultValue != null)
                     Attributes.Add("DefaultValue", property.DefaultValue);
@@ -220,7 +221,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 Attributes.Add("ID", attr.ID);
                 Attributes.Add("Type", attr.Kind);
                 Attributes.Add("Name", attr.Name);
-                
+                Attributes.Add("IsUserDefinded", attr.IsUserDefined);
+
+                if (attr.Kind == AttributeType.Property)
+                {
+                    Attributes.Add("IsMandatory", (attr as IPropertyDefinition).IsMandatory);
+                    Attributes.Add("Multiplicity", (attr as IPropertyDefinition).Multiplicity);
+                }
+
                 _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
 
             }
@@ -255,6 +263,36 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                     props.Add(item.Name);
 
                 Attributes.Add("UniqueProperties", props);                
+
+                _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
+
+            }
+
+            return _AttributeReadout;
+
+        }
+
+        /// <summary>
+        /// output for the type mandatories
+        /// </summary>
+        /// <param name="myType">The db type</param>
+        /// <param name="myDBContext">The db context</param>
+        /// <param name="myMadatories">The uniqueDefinitions</param>
+        /// <returns>a list of readouts, contains the attributes</returns>
+        private IEnumerable<ISingleEdgeView> GenerateMandatoryPropertiesOutput(IVertexType myType, IEnumerable<IPropertyDefinition> myMandatories)
+        {
+
+            var _AttributeReadout = new List<ISingleEdgeView>();
+
+            foreach (var mandatory in myMandatories)
+            {
+
+                var Attributes = new Dictionary<String, Object>();
+
+                Attributes.Add("ID", mandatory.ID);
+                Attributes.Add("Type", mandatory.Kind);
+                Attributes.Add("Name", mandatory.Name);
+                Attributes.Add("IsMandatory", mandatory.IsMandatory);
 
                 _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
 
