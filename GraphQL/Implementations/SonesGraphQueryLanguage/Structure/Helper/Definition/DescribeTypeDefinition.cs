@@ -130,7 +130,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             var edges = new Dictionary<String, IEdgeView>();
 
             retVal.Add("VertexID", myType.ID);
-            retVal.Add("TYPE", myType.GetType().Name);
+            retVal.Add("Type", myType.GetType().Name);
             retVal.Add("Name", myType.Name);
 
             if (!string.IsNullOrWhiteSpace(myType.Comment))
@@ -184,8 +184,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 var Attributes = new Dictionary<String, Object>();
 
                 Attributes.Add("ID", property.ID);
-                Attributes.Add("TYPE", property.BaseType.Name);
+                Attributes.Add("Type", property.BaseType.Name);
                 Attributes.Add("Name", property.Name);
+                Attributes.Add("Multiplicity", property.Multiplicity);
                 Attributes.Add("IsUserDefined", property.IsUserDefined);
 
                 if (property.DefaultValue != null)
@@ -217,7 +218,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 var Attributes = new Dictionary<String, Object>();
 
                 Attributes.Add("ID", attr.ID);
-                Attributes.Add("TYPE", attr.Kind);
+                Attributes.Add("Type", attr.Kind);
                 Attributes.Add("Name", attr.Name);
                 
                 _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
@@ -280,7 +281,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 var Attributes = new Dictionary<String, Object>();
 
                 Attributes.Add("VertexID", idx.ID);
-                Attributes.Add("TYPE", idx.IndexTypeName);
+                Attributes.Add("Type", idx.IndexTypeName);
                 Attributes.Add("Name", idx.Name);
                 Attributes.Add("Edition", idx.Edition);
 
@@ -315,12 +316,12 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 }
                 else if (edge.Kind == AttributeType.OutgoingEdge)
                 {
-                    Attributes.Add("TYPE", (edge as IOutgoingEdgeDefinition).EdgeType.Name);
+                    Attributes.Add("Type", (edge as IOutgoingEdgeDefinition).EdgeType.Name);
                     Attributes.Add("SourceVertexType", (edge as IOutgoingEdgeDefinition).SourceVertexType.GetType().Name);
                     Attributes.Add("TargetVertexType", (edge as IOutgoingEdgeDefinition).TargetVertexType.GetType().Name);
                 }
 
-                Attributes.Add("VertexID", edge.ID);
+                Attributes.Add("ID", edge.ID);
                 Attributes.Add("Name", edge.Name);
                 
                 _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
