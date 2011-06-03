@@ -30,6 +30,7 @@ using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.ErrorHandling;
+using sones.Library.CollectionWrapper;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition
 {
@@ -101,9 +102,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             }
 
             if(error != null)
-                return new QueryResult("", "GQL", 0L, ResultType.Failed, resultingVertices, error);
+                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Failed, resultingVertices, error);
             else
-                return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices);
+                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Successful, resultingVertices);
         }
 
         #region Output
@@ -117,20 +118,22 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         private IVertexView GenerateOutput(IEdgeType myEdge, String myEdgeName)
         {
 
-            string Temp = "";
-            int Pos = 0;
-
-            Temp = myEdge.ToString();
-            Pos = Temp.IndexOf(",");
-
             var Edge = new Dictionary<String, Object>();
 
-            if (!String.IsNullOrWhiteSpace(myEdgeName))
-                Edge.Add("Name", myEdgeName);
-            else
-                Edge.Add("Name", Temp.Substring(Pos + 1, Temp.Length - (Pos + 1)));
+            Edge.Add("ID", myEdge.ID);
+            Edge.Add("Type", myEdge.GetType().Name);
+            Edge.Add("Name", myEdge.Name);
+            Edge.Add("IsAbstract", myEdge.IsAbstract);
+            Edge.Add("IsUserDefined", myEdge.IsUserDefined);
+            Edge.Add("IsSealed", myEdge.IsSealed);
+            Edge.Add("ParentEdgeType", myEdge.ParentEdgeType.Name);
 
-            Edge.Add("EdgeType", Convert.ToUInt32(Temp.Substring(0, Pos)));
+            var list = new ListCollectionWrapper();
+            foreach (var child in myEdge.ChildrenEdgeTypes)
+                list.Add(child.Name);
+            
+            Edge.Add("ChildrenEdgeTypes", list);
+            Edge.Add("Comment", myEdge.Comment);
 
             return new VertexView(Edge, new Dictionary<String,IEdgeView>());
 

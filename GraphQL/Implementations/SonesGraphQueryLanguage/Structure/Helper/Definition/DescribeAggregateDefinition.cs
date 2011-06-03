@@ -139,7 +139,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 #endregion
 
             }
-
             else
             {
 
@@ -173,9 +172,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             //an error occured
             if(error != null)
-                return new QueryResult("", "GQL", 0L, ResultType.Failed, resultingVertices, error);
+                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Failed, resultingVertices, error);
             else
-                return new QueryResult("", "GQL", 0L, ResultType.Successful, resultingVertices);
+                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Successful, resultingVertices);
         }
 
         #region GenerateOutput
