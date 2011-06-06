@@ -27,7 +27,6 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Diagnostics;
 using System.IO;
-using System.IdentityModel.Tokens;
 
 namespace sones.Library.Network.HttpServer
 {
@@ -67,12 +66,12 @@ namespace sones.Library.Network.HttpServer
         /// <summary>
         /// Stores an instance of an url parser.
         /// </summary>
-        private readonly URLParser _parser;
+        private readonly UrlParser _parser;
 
         /// <summary>
         /// Stores the security validation algorithm.
         /// </summary>
-        private IServerSecurity _security;
+        private readonly IServerSecurity _security;
 
         #endregion
 
@@ -108,7 +107,7 @@ namespace sones.Library.Network.HttpServer
 
             _serverThread = new Thread(DoListen);
 
-            _parser = new URLParser(new[] {'/'});
+            _parser = new UrlParser(new[] {'/'});
             ParseInterface();
             CreateListener();
 
@@ -152,12 +151,12 @@ namespace sones.Library.Network.HttpServer
         /// <remarks>After the call of this method, the server will listening for new connections.</remarks>
         public void Start()
         {
-            if (!IsRunning)
-            {
-                _cancelSource = new CancellationTokenSource();
-                _serverThread.Start();
-                IsRunning = true;
-            }
+            if (IsRunning) 
+                return;
+
+            _cancelSource = new CancellationTokenSource();
+            _serverThread.Start();
+            IsRunning = true;
         }
 
         /// <summary>
@@ -170,12 +169,12 @@ namespace sones.Library.Network.HttpServer
         /// </remarks>
         public void Stop()
         {
-            if (IsRunning)
-            {
-                _cancelSource.Cancel();
-                _serverThread.Join();
-                IsRunning = false;
-            }
+            if (!IsRunning) 
+                return;
+
+            _cancelSource.Cancel();
+            _serverThread.Join();
+            IsRunning = false;
         }
 
 
@@ -318,10 +317,7 @@ namespace sones.Library.Network.HttpServer
         {
             var callback = _parser.GetCallback(myRequest.RawUrl, myRequest.HttpMethod);
 
-            if (callback.Item1.NeedsExplicitAuthentication)
-                return _security.SchemaSelector(myRequest);
-            
-            return AuthenticationSchemes.Anonymous;
+            return callback.Item1.NeedsExplicitAuthentication ? _security.SchemaSelector(myRequest) : AuthenticationSchemes.Anonymous;
         }
 
 
@@ -366,16 +362,9 @@ namespace sones.Library.Network.HttpServer
 
                     try
                     {
+                        var method = callback.Item2 == null ? null : callback.Item2.ToArray();
 
-                        Object targetInvocationResult;
-                        if (callback.Item2 == null)
-                        {
-                            targetInvocationResult = callback.Item1.Callback.Invoke(_logic, null);
-                        }
-                        else
-                        {
-                            targetInvocationResult = callback.Item1.Callback.Invoke(_logic, callback.Item2.ToArray());
-                        }
+                        var targetInvocationResult = callback.Item1.Callback.Invoke(_logic, method);
 
                         if (context.Response.ContentLength64 == 0)
                         {
@@ -384,7 +373,7 @@ namespace sones.Library.Network.HttpServer
 
                             if (targetInvocationResult is Stream)
                             {
-                                Stream result = targetInvocationResult as Stream;
+                                var result = targetInvocationResult as Stream;
                                 result.Seek(0, SeekOrigin.Begin);
                                 result.CopyTo(context.Response.OutputStream);
 
@@ -423,7 +412,7 @@ namespace sones.Library.Network.HttpServer
         /// A method that creates a 404 response.
         /// </summary>
         /// <param name="context">The context of the request, that caused the 404.</param>
-        private void NoPatternFound404(HttpListenerContext context)
+        private static void NoPatternFound404(HttpListenerContext context)
         {
             Debug.WriteLine("Could not find a valid handler for URI: " + context.Request.RawUrl);
             var responseBodyBytes = Encoding.UTF8.GetBytes("Could not find a valid handler for URI: " + context.Request.RawUrl);

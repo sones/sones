@@ -47,7 +47,7 @@ namespace sones.Library.Network.HttpServer
     /// <summary>
     /// The URLParser class which parses some URLs
     /// </summary>
-    public class URLParser
+    public class UrlParser
     {
 
         #region data
@@ -55,20 +55,20 @@ namespace sones.Library.Network.HttpServer
         //NLOG: temporarily commented
         //private static Logger //_Logger = LogManager.GetCurrentClassLogger();
 
-        private char[] _Separators;
+        private readonly char[] _separators;
         /// <summary>
         /// &lt;WebMethod, &lt;location, UrlNode&gt;&gt;
         /// </summary>
-        private Dictionary<String, Dictionary<String, UrlNode>> _RootNodes;
+        private readonly Dictionary<String, Dictionary<String, UrlNode>> _rootNodes;
 
         #endregion
 
         #region constructors
 
-        public URLParser(char[] separators)
+        public UrlParser(char[] separators)
         {
-            _RootNodes = new Dictionary<String, Dictionary<String, UrlNode>>();
-            _Separators = separators;
+            _rootNodes = new Dictionary<String, Dictionary<String, UrlNode>>();
+            _separators = separators;
         }
 
         #endregion
@@ -86,24 +86,24 @@ namespace sones.Library.Network.HttpServer
         {
 
             url = url.ToLower();
-            String[] ValueArray = url.Split(_Separators);
+            var valueArray = url.Split(_separators);
 
-            if (ValueArray.Length == 0)
+            if (valueArray.Length == 0)
             {
                 return;
             }
 
             var node = new Dictionary<String, UrlNode>();
-            if (_RootNodes.ContainsKey(webMethod))
+            if (_rootNodes.ContainsKey(webMethod))
             {
-                node = _RootNodes[webMethod];
+                node = _rootNodes[webMethod];
             }
             else
             {
-                _RootNodes.Add(webMethod, node);
+                _rootNodes.Add(webMethod, node);
             }
 
-            AddNode(node, ValueArray, method, url, 0, needsExplicitAuthentication);
+            AddNode(node, valueArray, method, needsExplicitAuthentication);
 
         }
 
@@ -113,16 +113,15 @@ namespace sones.Library.Network.HttpServer
         /// <param name="urlNodes"></param>
         /// <param name="urlParts"></param>
         /// <param name="methodInfo"></param>
-        /// <param name="url">The uriginal url - this is needed to get the real parameter before splitting. Due to the split we lost the seperator char</param>
-        /// <param name="posInUrl">The current pos in the url - this is needed to get the real parameter before splitting. Due to the split we lost the seperator char</param>
-        private void AddNode(Dictionary<String, UrlNode> urlNodes, IEnumerable<String> urlParts, MethodInfo methodInfo, String url, Int32 posInUrl, Boolean needsExplicitAuthentication)
+        /// <param name="needsExplicitAuthentication"></param>
+        private static void AddNode(IDictionary<string, UrlNode> urlNodes, IEnumerable<String> urlParts, MethodInfo methodInfo, Boolean needsExplicitAuthentication)
         {
 
             var val = urlParts.FirstOrDefault();
 
             if (val == null)
             {
-                throw new ArgumentNullException("urlParts.First");
+                throw new ArgumentException("The enumerable does not contain a value.", "urlParts");
             }
 
             #region SpeedUp by removing all between {...}
@@ -134,7 +133,7 @@ namespace sones.Library.Network.HttpServer
 
             #endregion
 
-            UrlNode curUrlNode = null;
+            UrlNode curUrlNode;
 
             #region Use an existing node or add a new one
 
@@ -144,8 +143,10 @@ namespace sones.Library.Network.HttpServer
             }
             else
             {
-                curUrlNode = new UrlNode();
-                curUrlNode.NeedsExplicitAuthentication = needsExplicitAuthentication;
+                curUrlNode = new UrlNode
+                                 {
+                                     NeedsExplicitAuthentication = needsExplicitAuthentication
+                                 };
                 urlNodes.Add(val, curUrlNode);
             }
 
@@ -156,7 +157,7 @@ namespace sones.Library.Network.HttpServer
             if (urlParts.Count() > 1)
             {
                 // there are still some more parts of the URL
-                AddNode(curUrlNode.ChildNodes, urlParts.Skip(1), methodInfo, url, posInUrl, needsExplicitAuthentication);
+                AddNode(curUrlNode.ChildNodes, urlParts.Skip(1), methodInfo, needsExplicitAuthentication);
             }
             else
             {
@@ -176,6 +177,7 @@ namespace sones.Library.Network.HttpServer
         /// Get the next matching callback for the <paramref name="url"/>
         /// </summary>
         /// <param name="url">The url</param>
+        /// <param name="webMethod"></param>
         /// <returns>The methodInfo callback and the optional parameters</returns>
         public Tuple<UrlNode, List<Object>> GetCallback(String url, String webMethod = "GET")
         {
@@ -194,14 +196,14 @@ namespace sones.Library.Network.HttpServer
 
             #endregion
 
-            if (!_RootNodes.ContainsKey(webMethod)) // try to find the method
+            if (!_rootNodes.ContainsKey(webMethod)) // try to find the method
             {
                 return null;
             }
         
-            var urlParts = url.Split(_Separators); // skip the first one because this is all in front of the first "/" and this is odd
+            var urlParts = url.Split(_separators); // skip the first one because this is all in front of the first "/" and this is odd
 
-            return GetCallback(_RootNodes[webMethod], urlParts, new List<Object>(), url, 0);
+            return GetCallback(_rootNodes[webMethod], urlParts, new List<Object>(), url, 0);
 
         }
 
@@ -214,18 +216,18 @@ namespace sones.Library.Network.HttpServer
         /// <param name="url">The uriginal url - this is needed to get the real parameter before splitting. Due to the split we lost the seperator char</param>
         /// <param name="posInUrl">The current pos in the url - this is needed to get the real parameter before splitting. Due to the split we lost the seperator char</param>
         /// <returns></returns>
-        private Tuple<UrlNode, List<Object>> GetCallback(Dictionary<String, UrlNode> urlNodes, IEnumerable<String> urlParts, List<Object> parameters, String url, Int32 posInUrl)
+        private static Tuple<UrlNode, List<Object>> GetCallback(IDictionary<string, UrlNode> urlNodes, IEnumerable<String> urlParts, List<Object> parameters, String url, Int32 posInUrl)
         {
 
             var val = urlParts.FirstOrDefault();
 
             if (val == null)
             {
-                throw new ArgumentNullException("urlParts.First");
+                throw new ArgumentException("The enumerable does not contain a value.", "urlParts");
             }
             val = val.ToLower();
 
-            UrlNode curUrlNode = null;
+            UrlNode curUrlNode;
             if (urlNodes.ContainsKey(val))
             {
 
@@ -247,22 +249,19 @@ namespace sones.Library.Network.HttpServer
                 {
                     // this is the last parameter - so add the rest of the url as well
                     parameters.Add(url.Substring(posInUrl));
-                    posInUrl = url.Length;
                     return new Tuple<UrlNode, List<object>>(curUrlNode, parameters);
+                }
+                
+                // just add this part and proceed
+                if (url.Length > posInUrl)
+                {
+                    //parameters.Add(url.Substring(posInUrl, (val.Length == 0) ? 1 : val.Length));
+                    parameters.Add(url.Substring(posInUrl, val.Length));
+                    posInUrl += val.Length + 1; // add 1 for the missing seperator char
                 }
                 else
                 {
-                    // just add this part and proceed
-                    if (url.Length > posInUrl)
-                    {
-                        //parameters.Add(url.Substring(posInUrl, (val.Length == 0) ? 1 : val.Length));
-                        parameters.Add(url.Substring(posInUrl, val.Length));
-                        posInUrl += val.Length + 1; // add 1 for the missing seperator char
-                    }
-                    else
-                    {
-                        parameters.Add("");
-                    }
+                    parameters.Add("");
                 }
 
                 #endregion
@@ -286,7 +285,7 @@ namespace sones.Library.Network.HttpServer
                 #region There are more url parts AND childs in the current node
 
                 // we have some more childs defined
-                Tuple<UrlNode, List<object>> retval = null;
+                Tuple<UrlNode, List<object>> retval;
                 var newParams = new List<Object>();
                 do
                 {
@@ -294,80 +293,64 @@ namespace sones.Library.Network.HttpServer
                     #region As long as we can go deeper lets do it
 
                     retval = GetCallback(curUrlNode.ChildNodes, urlParts.Skip(1), newParams, url, posInUrl);
-                    if (retval == null)
+                    if (retval != null) 
+                        continue;
+
+                    #region There is no hit for the current nodes childs and the next url parts
+
+                    if (!curUrlNode.ChildNodes.ContainsKey("{}"))
                     {
+                        #region This part is still not valid, return null to proceed with the predecessor level
 
-                        #region There is no hit for the current nodes childs and the next url parts
+                        return null;
 
-                        if (curUrlNode.ChildNodes.ContainsKey("{}"))
+                        #endregion
+                    }
+
+                    #region But the childs contains a wildcard we could use
+
+                    curUrlNode = curUrlNode.ChildNodes["{}"];
+                    if (curUrlNode.ChildNodes.IsNullOrEmpty())
+                    {
+                        #region The wildcard child has no more childs to verify, so lets take it
+
+                        parameters.Add(url.Substring(posInUrl));
+                        retval = new Tuple<UrlNode, List<object>>(curUrlNode, newParams); //parameters);
+
+                        #endregion
+                    }
+                    else
+                    {
+                        #region The wildcard child have mor childs which needs to be verified
+
+                        urlParts = urlParts.Skip(1);
+                        if (GetCallback(curUrlNode.ChildNodes, urlParts.Skip(1), newParams, url, posInUrl) == null)
                         {
+                            #region The next parts do not leed into a successfull mapping, lets use this wildcard
 
-                            #region But the childs contains a wildcard we could use
-
-                            curUrlNode = curUrlNode.ChildNodes["{}"];
-                            if (curUrlNode.ChildNodes.IsNullOrEmpty())
-                            {
-
-                                #region The wildcard child has no more childs to verify, so lets take it
-
-                                parameters.Add(url.Substring(posInUrl));
-                                retval = new Tuple<UrlNode, List<object>>(curUrlNode, newParams);//parameters);
-
-                                #endregion
-
-                            }
-                            else
-                            {
-
-                                #region The wildcard child have mor childs which needs to be verified
-
-                                urlParts = urlParts.Skip(1);
-                                if (GetCallback(curUrlNode.ChildNodes, urlParts.Skip(1), newParams, url, posInUrl) == null)
-                                {
-
-                                    #region The next parts do not leed into a successfull mapping, lets use this wildcard
-
-                                    parameters.Add(url.Substring(posInUrl));
-                                    retval = new Tuple<UrlNode, List<object>>(curUrlNode, parameters);
-                                    parameters = null;
-
-                                    #endregion
-
-                                }
-                                else
-                                {
-
-                                    #region Take this wildcard as parameter and proceed
-
-                                    val = urlParts.First();
-                                    newParams.Add(url.Substring(posInUrl, (val.Length == 0) ? 1 : val.Length));
-                                    posInUrl += (val.Length == 0) ? 1 : val.Length + 1;
-
-                                    #endregion
-
-                                }
-
-                                #endregion
-
-                            }
+                            parameters.Add(url.Substring(posInUrl));
+                            retval = new Tuple<UrlNode, List<object>>(curUrlNode, parameters);
+                            parameters = null;
 
                             #endregion
-
                         }
                         else
                         {
+                            #region Take this wildcard as parameter and proceed
 
-                            #region This part is still not valid, return null to proceed with the predecessor level
-
-                            return null;
+                            val = urlParts.First();
+                            newParams.Add(url.Substring(posInUrl, (val.Length == 0) ? 1 : val.Length));
+                            posInUrl += (val.Length == 0) ? 1 : val.Length + 1;
 
                             #endregion
-
                         }
 
                         #endregion
-
                     }
+
+                    #endregion
+
+                    #endregion
 
                     #endregion
 
@@ -375,7 +358,7 @@ namespace sones.Library.Network.HttpServer
 
                 #region Are there any parameters to add to the result?
 
-                if (!parameters.IsNullOrEmpty())
+                if (!(parameters == null || parameters.Count == 0))
                 {
                     #region We need to swap the parameters due to recursive call
 
@@ -394,7 +377,7 @@ namespace sones.Library.Network.HttpServer
             }
 
 
-            else if (curUrlNode.Callback == null && !curUrlNode.ChildNodes.IsNullOrEmpty() && curUrlNode.ChildNodes.ContainsKey("{}"))
+            if (curUrlNode.Callback == null && !curUrlNode.ChildNodes.IsNullOrEmpty() && curUrlNode.ChildNodes.ContainsKey("{}"))
             {
 
                 #region The current callback is null AND this is the last part of the url
