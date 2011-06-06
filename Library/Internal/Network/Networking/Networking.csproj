@@ -116,11 +116,11 @@
     <Content Include="Multithreading\SmartThreadPool\license.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataStructures\DataStructures.csproj">
+    <ProjectReference Include="..\..\DataStructures\DataStructures.csproj">
       <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
       <Name>DataStructures</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Extensions\LanguageExtensions\LanguageExtensions.csproj">
+    <ProjectReference Include="..\..\Extensions\LanguageExtensions\LanguageExtensions.csproj">
       <Project>{E4A4B5FF-2203-48AA-99A9-41A52407452E}</Project>
       <Name>LanguageExtensions</Name>
     </ProjectReference>
