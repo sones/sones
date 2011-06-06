@@ -1,0 +1,412 @@
+﻿/*
+* sones GraphDB - Community Edition - http://www.sones.com
+* Copyright (C) 2007-2011 sones GmbH
+*
+* This file is part of sones GraphDB Community Edition.
+*
+* sones GraphDB is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
+using System.Linq;
+using System.Text;
+using System.Net;
+using System.Threading;
+using System.ServiceModel;
+using System.ServiceModel.Web;
+using System.Diagnostics;
+using System.IO;
+
+namespace sones.Library.Network.HttpServer
+{
+    /// <summary>
+    /// An instance of this class maps urls to methods.
+    /// </summary>
+    public class HttpServer
+    {
+        /// <summary>
+        /// A thread static variable, that stores the current http context.
+        /// </summary>
+        [ThreadStatic]
+        public static HttpListenerContext HttpContext;
+
+        #region Data
+
+        /// <summary>
+        /// Stores the current server logic object.
+        /// </summary>
+        private readonly object _logic;
+        
+        /// <summary>
+        /// Stores the http listener.
+        /// </summary>
+        private HttpListener _listener;
+
+        /// <summary>
+        /// Stores a thread that polls the http listener.
+        /// </summary>
+        private readonly Thread _serverThread;
+
+        /// <summary>
+        /// Stores a cancel source for the server thread.
+        /// </summary>
+        private CancellationTokenSource _cancelSource;
+
+        /// <summary>
+        /// Stores an instance of an url parser.
+        /// </summary>
+        private readonly URLParser _parser;
+
+        #endregion
+
+        #region c'tor
+
+        /// <summary>
+        /// Creates a new instance of HttpServer.
+        /// </summary>
+        /// <param name="myIPAddress">The IP address this server will listen for new connections.</param>
+        /// <param name="myPort">The port this server will listen for new connections.</param>
+        /// <param name="myServerLogic">An instance of the server logic. The class of this instance must implement at least one interface that is decorated with a ServiceContractAttribute.</param>
+        /// <param name="myAutoStart">If true, the method Start is called implicitly, otherwise not.</param>
+        /// <param name="mySecureConnection">If true, this server will listen for request with HTTPS protocol, otherwise HTTP.</param>
+        /// <exception cref="ArgumentNullException">If myIPAddress is <c>NULL</c>.</exception>
+        /// <exception cref="ArgumentNullException">If myServerLogic is <c>NULL</c>.</exception>
+        public HttpServer(IPAddress myIPAddress, UInt16 myPort, Object myServerLogic, Boolean myAutoStart = false, Boolean mySecureConnection = false)
+        {
+            if (myIPAddress == null)
+                throw new ArgumentNullException("myIPAddress");
+
+            if (myServerLogic == null)
+                throw new ArgumentNullException("myServerLogic");
+
+            ListeningAddress = myIPAddress;
+            ListeningPort = myPort;
+            IsSecureConnection = mySecureConnection;
+            IsRunning = false;
+
+            _logic = myServerLogic;
+            
+
+            _serverThread = new Thread(DoListen);
+
+            _parser = new URLParser(new[] {'/'});
+            ParseInterface();
+            CreateListener();
+
+            if (myAutoStart)
+                Start();
+
+        }
+
+        #endregion
+
+        #region public properties
+
+        /// <summary>
+        /// The IP address this server is listening for new connections.
+        /// </summary>
+        public IPAddress ListeningAddress { get; private set; }
+
+        /// <summary>
+        /// The port this server is listening for new connections.
+        /// </summary>
+        public ushort ListeningPort { get; private set; }
+
+        /// <summary>
+        /// Gets whether this server is listening for requests on HTTPS protocol or on HTTP protocol.
+        /// </summary>
+        public bool IsSecureConnection { get; private set; }
+
+        /// <summary>
+        /// Gets whether this server is listening for requests.
+        /// </summary>
+        public bool IsRunning { get; private set; }
+
+
+        #endregion
+
+        #region Start/Stop
+
+        /// <summary>
+        /// Starts this server.
+        /// </summary>
+        /// <remarks>After the call of this method, the server will listening for new connections.</remarks>
+        public void Start()
+        {
+            if (!IsRunning)
+            {
+                _cancelSource = new CancellationTokenSource();
+                _serverThread.Start();
+                IsRunning = true;
+            }
+        }
+
+        /// <summary>
+        /// Stops the server.
+        /// </summary>
+        /// <remarks>
+        /// The call of this method stops the listening process. 
+        /// Connections that were accepted before this call are processed normally. 
+        /// The call of this method waits until all connections are handled.
+        /// </remarks>
+        public void Stop()
+        {
+            if (IsRunning)
+            {
+                _cancelSource.Cancel();
+                _serverThread.Join();
+                IsRunning = false;
+            }
+        }
+
+
+        #endregion
+
+        #region private members
+
+        /// <summary>
+        /// Creates the instance of the http listener reagarding the ListeningAddress, ListeningPort.
+        /// </summary>
+        /// <exception cref="ArgumentException">If ListeningAddress is a 'none' ip address.</exception>
+        /// <exception cref="ArgumentException">If ListeningAddress is a 'broadcast' ip address.</exception>
+        private void CreateListener()
+        {
+            if (IPAddress.None.Equals(ListeningAddress) || IPAddress.IPv6None.Equals(ListeningAddress))
+                throw new ArgumentException("It is not allowed to bind this server to an ip address 'none'.");
+
+            if (IPAddress.Broadcast.Equals(ListeningAddress))
+                throw new ArgumentException("It is not allowed to bind this server to an broadcast address.");
+
+            var protocol = (IsSecureConnection) ? "https://" : "http://";
+
+            var prefix = (IPAddress.IPv6Any.Equals(ListeningAddress) || IPAddress.Any.Equals(ListeningAddress))
+                              ? protocol + "*:" + ListeningPort + "/"
+                              : protocol + ListeningAddress + ":" + ListeningPort + "/";
+            
+            _listener = new HttpListener();
+            _listener.Prefixes.Add(prefix);
+        }
+
+        /// <summary>
+        /// Parses the class of _logic for interesting attributes.
+        /// </summary>
+        /// <remarks>
+        /// Searches for interesting attributes in the inheritance hierarchy of the class of the _logic. 
+        /// After that it parses the attributes and builds a connection from the url pattern to the implementation method.
+        /// </remarks>
+        private void ParseInterface()
+        {
+
+            #region Find the correct interface
+
+            var allInterfaces =  from interfaceInst
+                                 in _logic.GetType().GetInterfaces()
+                                 where interfaceInst.GetCustomAttributes(typeof (ServiceContractAttribute), false).Count() > 0
+                                 select interfaceInst;
+
+            var count = allInterfaces.Count();
+
+            if (count == 0)
+                throw new ArgumentException("Could not find any valid interface having the ServiceContract attribute!");
+
+            #endregion
+
+            foreach (var currentInterfaces in allInterfaces)
+            {
+                #region Check global Force-/NoAuthenticationAttribute
+
+                var globalNeedsExplicitAuthentication = false;
+
+                if (currentInterfaces.GetCustomAttributes(typeof (ForceAuthenticationAttribute), false).Count() > 0)
+                    globalNeedsExplicitAuthentication = true;
+
+                #endregion
+
+
+                foreach (var method in currentInterfaces.GetMethods())
+                {
+
+                    var needsExplicitAuthentication = globalNeedsExplicitAuthentication;
+
+                    var attributes = method.GetCustomAttributes(false);
+
+                    #region Authentication
+
+                    if (attributes.Any(_ => _.GetType() == typeof(NoAuthenticationAttribute)))
+                        needsExplicitAuthentication = false;
+
+                    if (attributes.Any(_ => _.GetType() == typeof(ForceAuthenticationAttribute)))
+                        needsExplicitAuthentication = true;
+
+                    #endregion
+
+                    foreach (var attribute in attributes)
+                    {
+                        String aURIPattern = null;
+                        String webMethod = null;
+
+                        #region WebGet
+
+                        var webAttribute = attribute as WebGetAttribute;
+                        if (webAttribute != null)
+                        {
+                            aURIPattern = webAttribute.UriTemplate.ToLower();
+                            webMethod = "GET";
+                        }
+
+                        #endregion
+
+                        #region WebInvoke
+
+                        var webInvokeAttribute = attribute as WebInvokeAttribute;
+                        if (webInvokeAttribute != null)
+                        {
+                            aURIPattern = webInvokeAttribute.UriTemplate.ToLower();
+                            webMethod = webInvokeAttribute.Method;
+                        }
+
+                        #endregion
+
+                        if (aURIPattern != null)
+                            _parser.AddUrl(aURIPattern, method, needsExplicitAuthentication, webMethod);
+
+                    }
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// The method the sever thread executes.
+        /// </summary>
+        private void DoListen()
+        {
+            _listener.Start();
+            _listener.AuthenticationSchemeSelectorDelegate = new AuthenticationSchemeSelector(SchemaSelector);
+
+            while (!_cancelSource.Token.IsCancellationRequested)
+            {
+                _listener.BeginGetContext(AsyncGetContext, _listener);
+                Thread.Sleep(2);
+            }
+
+            _listener.Stop();
+        }
+
+
+
+        private AuthenticationSchemes SchemaSelector(HttpListenerRequest myRequest)
+        {
+            var callback = _parser.GetCallback(myRequest.RawUrl, myRequest.HttpMethod);
+
+            if (callback.Item1.NeedsExplicitAuthentication)
+                return AuthenticationSchemes.Basic;
+            
+            return AuthenticationSchemes.None;
+        }
+
+
+        /// <summary>
+        /// The entire method that is called if a connection was established.
+        /// </summary>
+        /// <param name="myResult">The IAsyncResult object that was created be HttpListener.BeginGetContext.</param>
+        private void AsyncGetContext(IAsyncResult myResult)
+        {
+            var context = _listener.EndGetContext(myResult);
+            
+            HttpContext = context;
+
+            //gets the method that will be invoked
+            var callback = _parser.GetCallback(context.Request.RawUrl, context.Request.HttpMethod);
+
+            if (callback == null || callback.Item1 == null)
+            {
+                NoPatternFound404(context);
+
+            }
+            else
+            {
+
+                //Check authentification
+                try
+                {
+
+                    Object targetInvocationResult;
+                    if (callback.Item2 == null)
+                    {
+                        targetInvocationResult = callback.Item1.Callback.Invoke(_logic, null);
+                    }
+                    else
+                    {
+                        targetInvocationResult = callback.Item1.Callback.Invoke(_logic, callback.Item2.ToArray());
+                    }
+
+                    if (context.Response.ContentLength64 == 0)
+                    {
+                        // The user did not write into the stream itself - we will add header and the invocation result
+                        #region Get invocation result and create header and body
+
+                        if (targetInvocationResult is Stream)
+                        {
+                            Stream result = targetInvocationResult as Stream;
+                            result.Seek(0, SeekOrigin.Begin);
+                            result.CopyTo(context.Response.OutputStream);
+
+                        }
+                        else if (targetInvocationResult is String)
+                        {
+                            var toWrite = Encoding.UTF8.GetBytes((string)(targetInvocationResult));
+                            context.Response.OutputStream.Write(toWrite, 0, toWrite.Length);
+                        }
+
+                        #endregion
+                    }
+                }
+                catch (Exception ex)
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                    var msg = Encoding.UTF8.GetBytes(ex.ToString());
+                    context.Response.OutputStream.Write(msg, 0, msg.Length);
+
+                }
+                finally
+                {
+                    context.Response.Close();
+                }
+
+            }
+
+
+        }
+
+        /// <summary>
+        /// A method that creates a 404 response.
+        /// </summary>
+        /// <param name="context">The context of the request, that caused the 404.</param>
+        private void NoPatternFound404(HttpListenerContext context)
+        {
+            Debug.WriteLine("Could not find a valid handler for URI: " + context.Request.RawUrl);
+            var responseBodyBytes = Encoding.UTF8.GetBytes("Could not find a valid handler for URI: " + context.Request.RawUrl);
+
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            context.Response.ContentType = "text/plain";
+            context.Response.OutputStream.Write(responseBodyBytes, 0, responseBodyBytes.Length);
+        }
+
+        #endregion
+
+
+    }
+}

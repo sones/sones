@@ -33,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commons", "Library\Internal
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Networking", "Networking", "{BB6BDFAB-482E-42B7-B954-84F33CFFFFB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networking", "Library\Internal\Networking\Networking.csproj", "{DDC48D4C-6885-462C-B57A-216658EB94AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networking", "Library\Internal\Network\Networking\Networking.csproj", "{DDC48D4C-6885-462C-B57A-216658EB94AE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStructures", "Library\Internal\DataStructures\DataStructures.csproj", "{CBE38660-10C5-4082-A1B9-A5002D961EA1}"
 EndProject
