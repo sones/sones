@@ -27,6 +27,7 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Diagnostics;
 using System.IO;
+using System.IdentityModel.Tokens;
 
 namespace sones.Library.Network.HttpServer
 {
@@ -68,6 +69,11 @@ namespace sones.Library.Network.HttpServer
         /// </summary>
         private readonly URLParser _parser;
 
+        /// <summary>
+        /// Stores the security validation algorithm.
+        /// </summary>
+        private IServerSecurity _security;
+
         #endregion
 
         #region c'tor
@@ -78,11 +84,12 @@ namespace sones.Library.Network.HttpServer
         /// <param name="myIPAddress">The IP address this server will listen for new connections.</param>
         /// <param name="myPort">The port this server will listen for new connections.</param>
         /// <param name="myServerLogic">An instance of the server logic. The class of this instance must implement at least one interface that is decorated with a ServiceContractAttribute.</param>
-        /// <param name="myAutoStart">If true, the method Start is called implicitly, otherwise not.</param>
+        /// <param name="mySecurity"></param>
         /// <param name="mySecureConnection">If true, this server will listen for request with HTTPS protocol, otherwise HTTP.</param>
+        /// <param name="myAutoStart">If true, the method Start is called implicitly, otherwise not.</param>
         /// <exception cref="ArgumentNullException">If myIPAddress is <c>NULL</c>.</exception>
         /// <exception cref="ArgumentNullException">If myServerLogic is <c>NULL</c>.</exception>
-        public HttpServer(IPAddress myIPAddress, UInt16 myPort, Object myServerLogic, Boolean myAutoStart = false, Boolean mySecureConnection = false)
+        public HttpServer(IPAddress myIPAddress, ushort myPort, object myServerLogic, IServerSecurity mySecurity = null, bool mySecureConnection = false, bool myAutoStart = false)
         {
             if (myIPAddress == null)
                 throw new ArgumentNullException("myIPAddress");
@@ -96,6 +103,7 @@ namespace sones.Library.Network.HttpServer
             IsRunning = false;
 
             _logic = myServerLogic;
+            _security = mySecurity;
             
 
             _serverThread = new Thread(DoListen);
@@ -311,9 +319,9 @@ namespace sones.Library.Network.HttpServer
             var callback = _parser.GetCallback(myRequest.RawUrl, myRequest.HttpMethod);
 
             if (callback.Item1.NeedsExplicitAuthentication)
-                return AuthenticationSchemes.Basic;
+                return _security.SchemaSelector(myRequest);
             
-            return AuthenticationSchemes.None;
+            return AuthenticationSchemes.Anonymous;
         }
 
 
@@ -337,49 +345,69 @@ namespace sones.Library.Network.HttpServer
             }
             else
             {
-
-                //Check authentification
                 try
                 {
+                    #region Check authentification
 
-                    Object targetInvocationResult;
-                    if (callback.Item2 == null)
+                    try
                     {
-                        targetInvocationResult = callback.Item1.Callback.Invoke(_logic, null);
-                    }
-                    else
-                    {
-                        targetInvocationResult = callback.Item1.Callback.Invoke(_logic, callback.Item2.ToArray());
-                    }
-
-                    if (context.Response.ContentLength64 == 0)
-                    {
-                        // The user did not write into the stream itself - we will add header and the invocation result
-                        #region Get invocation result and create header and body
-
-                        if (targetInvocationResult is Stream)
+                        if (callback.Item1.NeedsExplicitAuthentication)
                         {
-                            Stream result = targetInvocationResult as Stream;
-                            result.Seek(0, SeekOrigin.Begin);
-                            result.CopyTo(context.Response.OutputStream);
-
+                            _security.Authentificate(context.User.Identity);
                         }
-                        else if (targetInvocationResult is String)
-                        {
-                            var toWrite = Encoding.UTF8.GetBytes((string)(targetInvocationResult));
-                            context.Response.OutputStream.Write(toWrite, 0, toWrite.Length);
-                        }
-
-                        #endregion
                     }
-                }
-                catch (Exception ex)
-                {
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    catch (Exception)
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        return;
+                    }
 
-                    var msg = Encoding.UTF8.GetBytes(ex.ToString());
-                    context.Response.OutputStream.Write(msg, 0, msg.Length);
+                    #endregion
 
+                    try
+                    {
+
+                        Object targetInvocationResult;
+                        if (callback.Item2 == null)
+                        {
+                            targetInvocationResult = callback.Item1.Callback.Invoke(_logic, null);
+                        }
+                        else
+                        {
+                            targetInvocationResult = callback.Item1.Callback.Invoke(_logic, callback.Item2.ToArray());
+                        }
+
+                        if (context.Response.ContentLength64 == 0)
+                        {
+                            // The user did not write into the stream itself - we will add header and the invocation result
+                            #region Get invocation result and create header and body
+
+                            if (targetInvocationResult is Stream)
+                            {
+                                Stream result = targetInvocationResult as Stream;
+                                result.Seek(0, SeekOrigin.Begin);
+                                result.CopyTo(context.Response.OutputStream);
+
+                            }
+                            else if (targetInvocationResult is String)
+                            {
+                                var toWrite = Encoding.UTF8.GetBytes((string)(targetInvocationResult));
+                                context.Response.OutputStream.Write(toWrite, 0, toWrite.Length);
+                            }
+
+                            #endregion
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                        var msg = Encoding.UTF8.GetBytes(ex.ToString());
+                        context.Response.OutputStream.Write(msg, 0, msg.Length);
+
+                        return;
+
+                    }
                 }
                 finally
                 {
