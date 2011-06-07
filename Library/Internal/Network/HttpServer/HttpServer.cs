@@ -66,7 +66,12 @@ namespace sones.Library.Network.HttpServer
         /// <summary>
         /// Stores an instance of an url parser.
         /// </summary>
-        private readonly URLParser _parser;
+        private readonly UrlParser _parser;
+
+        /// <summary>
+        /// Stores the security validation algorithm.
+        /// </summary>
+        private readonly IServerSecurity _security;
 
         #endregion
 
@@ -78,11 +83,12 @@ namespace sones.Library.Network.HttpServer
         /// <param name="myIPAddress">The IP address this server will listen for new connections.</param>
         /// <param name="myPort">The port this server will listen for new connections.</param>
         /// <param name="myServerLogic">An instance of the server logic. The class of this instance must implement at least one interface that is decorated with a ServiceContractAttribute.</param>
-        /// <param name="myAutoStart">If true, the method Start is called implicitly, otherwise not.</param>
+        /// <param name="mySecurity"></param>
         /// <param name="mySecureConnection">If true, this server will listen for request with HTTPS protocol, otherwise HTTP.</param>
+        /// <param name="myAutoStart">If true, the method Start is called implicitly, otherwise not.</param>
         /// <exception cref="ArgumentNullException">If myIPAddress is <c>NULL</c>.</exception>
         /// <exception cref="ArgumentNullException">If myServerLogic is <c>NULL</c>.</exception>
-        public HttpServer(IPAddress myIPAddress, UInt16 myPort, Object myServerLogic, Boolean myAutoStart = false, Boolean mySecureConnection = false)
+        public HttpServer(IPAddress myIPAddress, ushort myPort, object myServerLogic, IServerSecurity mySecurity = null, bool mySecureConnection = false, bool myAutoStart = false)
         {
             if (myIPAddress == null)
                 throw new ArgumentNullException("myIPAddress");
@@ -96,11 +102,12 @@ namespace sones.Library.Network.HttpServer
             IsRunning = false;
 
             _logic = myServerLogic;
+            _security = mySecurity;
             
 
             _serverThread = new Thread(DoListen);
 
-            _parser = new URLParser(new[] {'/'});
+            _parser = new UrlParser(new[] {'/'});
             ParseInterface();
             CreateListener();
 
@@ -144,12 +151,12 @@ namespace sones.Library.Network.HttpServer
         /// <remarks>After the call of this method, the server will listening for new connections.</remarks>
         public void Start()
         {
-            if (!IsRunning)
-            {
-                _cancelSource = new CancellationTokenSource();
-                _serverThread.Start();
-                IsRunning = true;
-            }
+            if (IsRunning) 
+                return;
+
+            _cancelSource = new CancellationTokenSource();
+            _serverThread.Start();
+            IsRunning = true;
         }
 
         /// <summary>
@@ -162,12 +169,12 @@ namespace sones.Library.Network.HttpServer
         /// </remarks>
         public void Stop()
         {
-            if (IsRunning)
-            {
-                _cancelSource.Cancel();
-                _serverThread.Join();
-                IsRunning = false;
-            }
+            if (!IsRunning) 
+                return;
+
+            _cancelSource.Cancel();
+            _serverThread.Join();
+            IsRunning = false;
         }
 
 
@@ -310,10 +317,7 @@ namespace sones.Library.Network.HttpServer
         {
             var callback = _parser.GetCallback(myRequest.RawUrl, myRequest.HttpMethod);
 
-            if (callback.Item1.NeedsExplicitAuthentication)
-                return AuthenticationSchemes.Basic;
-            
-            return AuthenticationSchemes.None;
+            return callback.Item1.NeedsExplicitAuthentication ? _security.SchemaSelector(myRequest) : AuthenticationSchemes.Anonymous;
         }
 
 
@@ -337,49 +341,62 @@ namespace sones.Library.Network.HttpServer
             }
             else
             {
-
-                //Check authentification
                 try
                 {
+                    #region Check authentification
 
-                    Object targetInvocationResult;
-                    if (callback.Item2 == null)
+                    try
                     {
-                        targetInvocationResult = callback.Item1.Callback.Invoke(_logic, null);
-                    }
-                    else
-                    {
-                        targetInvocationResult = callback.Item1.Callback.Invoke(_logic, callback.Item2.ToArray());
-                    }
-
-                    if (context.Response.ContentLength64 == 0)
-                    {
-                        // The user did not write into the stream itself - we will add header and the invocation result
-                        #region Get invocation result and create header and body
-
-                        if (targetInvocationResult is Stream)
+                        if (callback.Item1.NeedsExplicitAuthentication)
                         {
-                            Stream result = targetInvocationResult as Stream;
-                            result.Seek(0, SeekOrigin.Begin);
-                            result.CopyTo(context.Response.OutputStream);
-
+                            _security.Authentificate(context.User.Identity);
                         }
-                        else if (targetInvocationResult is String)
-                        {
-                            var toWrite = Encoding.UTF8.GetBytes((string)(targetInvocationResult));
-                            context.Response.OutputStream.Write(toWrite, 0, toWrite.Length);
-                        }
-
-                        #endregion
                     }
-                }
-                catch (Exception ex)
-                {
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    catch (Exception)
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        return;
+                    }
 
-                    var msg = Encoding.UTF8.GetBytes(ex.ToString());
-                    context.Response.OutputStream.Write(msg, 0, msg.Length);
+                    #endregion
 
+                    try
+                    {
+                        var method = callback.Item2 == null ? null : callback.Item2.ToArray();
+
+                        var targetInvocationResult = callback.Item1.Callback.Invoke(_logic, method);
+
+                        if (context.Response.ContentLength64 == 0)
+                        {
+                            // The user did not write into the stream itself - we will add header and the invocation result
+                            #region Get invocation result and create header and body
+
+                            if (targetInvocationResult is Stream)
+                            {
+                                var result = targetInvocationResult as Stream;
+                                result.Seek(0, SeekOrigin.Begin);
+                                result.CopyTo(context.Response.OutputStream);
+
+                            }
+                            else if (targetInvocationResult is String)
+                            {
+                                var toWrite = Encoding.UTF8.GetBytes((string)(targetInvocationResult));
+                                context.Response.OutputStream.Write(toWrite, 0, toWrite.Length);
+                            }
+
+                            #endregion
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                        var msg = Encoding.UTF8.GetBytes(ex.ToString());
+                        context.Response.OutputStream.Write(msg, 0, msg.Length);
+
+                        return;
+
+                    }
                 }
                 finally
                 {
@@ -395,7 +412,7 @@ namespace sones.Library.Network.HttpServer
         /// A method that creates a 404 response.
         /// </summary>
         /// <param name="context">The context of the request, that caused the 404.</param>
-        private void NoPatternFound404(HttpListenerContext context)
+        private static void NoPatternFound404(HttpListenerContext context)
         {
             Debug.WriteLine("Could not find a valid handler for URI: " + context.Request.RawUrl);
             var responseBodyBytes = Encoding.UTF8.GetBytes("Could not find a valid handler for URI: " + context.Request.RawUrl);

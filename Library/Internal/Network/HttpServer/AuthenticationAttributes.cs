@@ -32,10 +32,10 @@ namespace sones.Library.Network.HttpServer
     public class NeedsAuthenticationAttribute : Attribute
     {
 
-        private Boolean _NeedsAuthentication;
+        private readonly Boolean _needsAuthentication;
         public Boolean NeedsAuthentication
         {
-            get { return _NeedsAuthentication; }
+            get { return _needsAuthentication; }
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace sones.Library.Network.HttpServer
         /// <param name="needsAuthentication">If set to True, this methods of a web interface definition needs authentication. If the server does not provide any, an exception will be thrown. If set to False, no authentication is required even if the server expect one.</param>
         public NeedsAuthenticationAttribute(Boolean needsAuthentication)
         {
-            _NeedsAuthentication = needsAuthentication;
+            _needsAuthentication = needsAuthentication;
         }
 
     }
@@ -54,9 +54,10 @@ namespace sones.Library.Network.HttpServer
 
     #region NoAuthenticationAttribute
 
-    public class NoAuthenticationAttribute : Attribute
+    public class NoAuthenticationAttribute : NeedsAuthenticationAttribute
     {
         public NoAuthenticationAttribute()
+            : base(false)
         {
         }
     }
@@ -65,9 +66,10 @@ namespace sones.Library.Network.HttpServer
 
     #region ForceAuthenticationAttribute
 
-    public class ForceAuthenticationAttribute : Attribute
+    public class ForceAuthenticationAttribute : NeedsAuthenticationAttribute
     {
         public ForceAuthenticationAttribute()
+            : base(true)
         {
         }
     }

@@ -70,7 +70,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Library\Internal\Network\Networking\Networking.csproj">
       <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
-      <Name>Networking %28Library\Internal\Networking\Networking%29</Name>
+      <Name>Networking</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Library\Internal\PluginDefinition\PluginDefinition.csproj">
       <Project>{CE9BF2C2-C785-4661-8F4F-64266C697343}</Project>
