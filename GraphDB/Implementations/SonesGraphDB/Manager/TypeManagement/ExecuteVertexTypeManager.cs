@@ -738,13 +738,13 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 #region check that no other type has a outgoing edge pointing on delete type
 
+                //TODO: use vertex and check if incoming edges existing of user defined types, instead of foreach
+                var VertexOfDelType = _vertexManager.ExecuteManager.VertexStore.GetVertex(mySecurity, myTransaction, delType.ID, (long)BaseTypes.VertexType, null, 0L);
+
                 //get all vertex types and check if they have outgoing edges with target vertex the delete type
                 foreach (var type in GetAllVertexTypes(myTransaction, mySecurity))
                 {
-                    if (type is BaseType)
-                        continue;
-
-                    if (type.GetOutgoingEdgeDefinitions(false).Any(outEdgeDef => outEdgeDef.TargetVertexType.ID.Equals(delType.ID)))
+                    if (type.ID != delType.ID && type.GetOutgoingEdgeDefinitions(false).Any(outEdgeDef => outEdgeDef.TargetVertexType.ID.Equals(delType.ID)))
                     {
                         throw new VertexTypeRemoveException(delType.Name, "There are other types which have outgoing edges pointing to the type, which should be removed.");
                     }
@@ -782,11 +782,6 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 _indexManager.RemoveIndexInstance(index.ID, myTransaction, mySecurity);
             }
-            
-            //foreach (var index in toDeleteUniqueDefinitions)
-            //{
-            //    _indexManager.RemoveIndexInstance(index.CorrespondingIndex.ID, myTransaction, mySecurity);
-            //}
             
             #endregion
 

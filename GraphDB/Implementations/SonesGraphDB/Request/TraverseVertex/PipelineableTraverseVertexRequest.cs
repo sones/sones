@@ -226,14 +226,12 @@ namespace sones.GraphDB.Request
             #region currentVertex match?
             //does the current node match the requirements?
 
-            var match = false;
-
             #region match evaluation
 
-            if (myMatchEvaluator == null)
-                //there is no special function that evaluates if the current vertex matches... so EVERY Vertex matches
-                match = true;
-            else
+            //if there is no match function, every vertex matches
+            var match = true;
+
+            if (myMatchEvaluator != null)
                 //there is a match evaluator... use it
                 match = myMatchEvaluator(myCurrentVertex, myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken));
 
@@ -275,8 +273,6 @@ namespace sones.GraphDB.Request
             //add vertex to visited
             _traversalState.AddVisited(myCurrentVertex.VertexID);
                     
-            
-
             #region traverse by using outgoing edges
             //first do recursive search by using the outgoing edges
 
