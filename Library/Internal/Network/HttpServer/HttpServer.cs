@@ -33,7 +33,8 @@ namespace sones.Library.Network.HttpServer
     /// <summary>
     /// An instance of this class maps urls to methods.
     /// </summary>
-    public class HttpServer
+    public class HttpServer:
+        IDisposable
     {
         /// <summary>
         /// A thread static variable, that stores the current http context.
@@ -42,6 +43,8 @@ namespace sones.Library.Network.HttpServer
         public static HttpListenerContext HttpContext;
 
         #region Data
+
+        private readonly Object _lock = new object();
 
         /// <summary>
         /// Stores the current server logic object.
@@ -57,11 +60,6 @@ namespace sones.Library.Network.HttpServer
         /// Stores a thread that polls the http listener.
         /// </summary>
         private readonly Thread _serverThread;
-
-        /// <summary>
-        /// Stores a cancel source for the server thread.
-        /// </summary>
-        private CancellationTokenSource _cancelSource;
 
         /// <summary>
         /// Stores an instance of an url parser.
@@ -115,7 +113,9 @@ namespace sones.Library.Network.HttpServer
 
             _parser = new UrlParser(new[] {'/'});
             ParseInterface();
-            CreateListener();
+
+            
+            CreateListener(); //create listener as late as possible
 
             if (myAutoStart)
                 Start();
@@ -157,12 +157,16 @@ namespace sones.Library.Network.HttpServer
         /// <remarks>After the call of this method, the server will listening for new connections.</remarks>
         public void Start()
         {
-            if (IsRunning) 
-                return;
+            lock (_lock)
+            {
+                if (IsRunning)
+                    return;
 
-            _cancelSource = new CancellationTokenSource();
-            _serverThread.Start();
-            IsRunning = true;
+                IsRunning = true;
+
+                _listener.Start();
+                _serverThread.Start();
+            }
         }
 
         /// <summary>
@@ -175,12 +179,15 @@ namespace sones.Library.Network.HttpServer
         /// </remarks>
         public void Stop()
         {
-            if (!IsRunning) 
-                return;
+            lock (_lock)
+            {
+                if (!IsRunning)
+                    return;
 
-            _cancelSource.Cancel();
-            _serverThread.Join();
-            IsRunning = false;
+                IsRunning = false;
+                _serverThread.Join();
+                _listener.Stop();
+            }
         }
 
 
@@ -209,6 +216,7 @@ namespace sones.Library.Network.HttpServer
             
             _listener = new HttpListener();
             _listener.Prefixes.Add(prefix);
+            _listener.AuthenticationSchemeSelectorDelegate = new AuthenticationSchemeSelector(SchemaSelector);
         }
 
         /// <summary>
@@ -305,17 +313,11 @@ namespace sones.Library.Network.HttpServer
         /// </summary>
         private void DoListen()
         {
-            _listener.Start();
-            _listener.AuthenticationSchemeSelectorDelegate = new AuthenticationSchemeSelector(SchemaSelector);
-
-            while (!_cancelSource.Token.IsCancellationRequested)
+            while (IsRunning)
             {
                 var asyncCall =_listener.BeginGetContext(AsyncGetContext, _listener);
                 asyncCall.AsyncWaitHandle.WaitOne(AsyncWaitTime); 
-
             }
-
-            _listener.Stop();
         }
 
 
@@ -334,6 +336,9 @@ namespace sones.Library.Network.HttpServer
         /// <param name="myResult">The IAsyncResult object that was created be HttpListener.BeginGetContext.</param>
         private void AsyncGetContext(IAsyncResult myResult)
         {
+            if (!_listener.IsListening)
+                return;
+
             var context = _listener.EndGetContext(myResult);
             
             HttpContext = context;
@@ -432,5 +437,18 @@ namespace sones.Library.Network.HttpServer
         #endregion
 
 
+
+        #region IDisposable Members
+
+        void IDisposable.Dispose()
+        {
+            Stop();
+            if (_listener != null)
+            {
+                _listener.Close();
+            }
+        }
+
+        #endregion
     }
 }
