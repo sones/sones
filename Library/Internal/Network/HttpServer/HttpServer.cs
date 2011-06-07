@@ -75,6 +75,12 @@ namespace sones.Library.Network.HttpServer
 
         #endregion
 
+        /// <summary>
+        /// This is the time span this server waits for new request. After this time it checks if it was stopped. If not it waits again.
+        /// </summary>
+        /// <remarks>If Stop is called it it takes at most AsyncWaitTime plus working time of a request that was received during the AsyncWaitTime.</remarks>
+        public const short AsyncWaitTime = 1000;
+
         #region c'tor
 
         /// <summary>
@@ -304,8 +310,9 @@ namespace sones.Library.Network.HttpServer
 
             while (!_cancelSource.Token.IsCancellationRequested)
             {
-                _listener.BeginGetContext(AsyncGetContext, _listener);
-                Thread.Sleep(2);
+                var asyncCall =_listener.BeginGetContext(AsyncGetContext, _listener);
+                asyncCall.AsyncWaitHandle.WaitOne(AsyncWaitTime); 
+
             }
 
             _listener.Stop();
