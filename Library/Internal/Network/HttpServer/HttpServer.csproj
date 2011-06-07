@@ -80,7 +80,7 @@
     <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="S:\Sources\CommunityEdition\Library\Internal\Extensions\LanguageExtensions\LanguageExtensions.csproj">
+    <ProjectReference Include="..\..\Extensions\LanguageExtensions\LanguageExtensions.csproj">
       <Project>{E4A4B5FF-2203-48AA-99A9-41A52407452E}</Project>
       <Name>LanguageExtensions</Name>
     </ProjectReference>
