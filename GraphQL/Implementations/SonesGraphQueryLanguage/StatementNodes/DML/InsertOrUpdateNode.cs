@@ -150,10 +150,11 @@ namespace sones.GraphQL.StatementNodes.DML
             }
             else
             {
+
                 //insert
                 result = ProcessInsert(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken);
-
                 myAction = "Inserted";
+
             }
             
             if (result.Error != null)
@@ -193,6 +194,7 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             InsertNode insert = new InsertNode();
             insert.Init(_Type, _AttributeAssignList);
+
             return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 

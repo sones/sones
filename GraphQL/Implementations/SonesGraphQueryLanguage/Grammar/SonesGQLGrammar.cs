@@ -1053,7 +1053,7 @@ namespace sones.GraphQL
             #region CREATE INDEX
 
             createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + S_VERTEX + S_TYPE + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + NT_IndexTypeOpt
-                | S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + NT_IndexTypeOpt; // due to compatibility the  + S_TYPE is optional
+                                    | S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + NT_IndexTypeOpt; // due to compatibility the  + S_TYPE is optional
 
             uniqueOpt.Rule = Empty | S_UNIQUE;
 
