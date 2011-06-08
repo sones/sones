@@ -59,7 +59,7 @@ namespace sones.Library.Network.HttpServer
         /// <summary>
         /// Stores a thread that polls the http listener.
         /// </summary>
-        private readonly Thread _serverThread;
+        private Thread _serverThread;
 
         /// <summary>
         /// Stores an instance of an url parser.
@@ -108,9 +108,6 @@ namespace sones.Library.Network.HttpServer
             _logic = myServerLogic;
             _security = mySecurity;
             
-
-            _serverThread = new Thread(DoListen);
-
             _parser = new UrlParser(new[] {'/'});
             ParseInterface();
 
@@ -162,9 +159,10 @@ namespace sones.Library.Network.HttpServer
                 if (IsRunning)
                     return;
 
-                IsRunning = true;
-
                 _listener.Start();
+                _serverThread = new Thread(DoListen);
+
+                IsRunning = true;
                 _serverThread.Start();
             }
         }
@@ -181,11 +179,12 @@ namespace sones.Library.Network.HttpServer
         {
             lock (_lock)
             {
-                if (!IsRunning)
-                    return;
-
                 IsRunning = false;
-                _serverThread.Join();
+                if (_serverThread != null)
+                {
+                    _serverThread.Join();
+                    _serverThread = null;
+                }
                 _listener.Stop();
             }
         }
