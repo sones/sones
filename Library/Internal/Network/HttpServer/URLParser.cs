@@ -381,7 +381,8 @@ namespace sones.Library.Network.HttpServer
             {
 
                 #region The current callback is null AND this is the last part of the url
-
+                if (posInUrl >= url.Length)
+                    return null;
                 parameters.Add(url.Substring(posInUrl));
                 curUrlNode = curUrlNode.ChildNodes["{}"];
 
