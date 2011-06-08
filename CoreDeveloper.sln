@@ -31,9 +31,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settings", "Library\Interna
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commons", "Library\Internal\Commons\Commons.csproj", "{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Networking", "Networking", "{BB6BDFAB-482E-42B7-B954-84F33CFFFFB6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Network", "Network", "{BB6BDFAB-482E-42B7-B954-84F33CFFFFB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networking", "Library\Internal\Networking\Networking.csproj", "{DDC48D4C-6885-462C-B57A-216658EB94AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networking", "Library\Internal\Network\Networking\Networking.csproj", "{DDC48D4C-6885-462C-B57A-216658EB94AE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStructures", "Library\Internal\DataStructures\DataStructures.csproj", "{CBE38660-10C5-4082-A1B9-A5002D961EA1}"
 EndProject
@@ -196,6 +196,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IGraphDBExtensions", "Library\Internal\Extensions\IGraphDBExtensions\IGraphDBExtensions.csproj", "{33A00226-6C65-49DF-AFCA-89440AF492E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Constants", "Library\Internal\Constants\Constants.csproj", "{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpServer", "Library\Internal\Network\HttpServer\HttpServer.csproj", "{85072DC6-7356-449F-9081-939F87AC0CC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -954,6 +956,18 @@ Global
 		{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723}.Release|x64.ActiveCfg = Release|Any CPU
 		{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723}.Release|x86.ActiveCfg = Release|Any CPU
+		{85072DC6-7356-449F-9081-939F87AC0CC5}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{85072DC6-7356-449F-9081-939F87AC0CC5}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{85072DC6-7356-449F-9081-939F87AC0CC5}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{85072DC6-7356-449F-9081-939F87AC0CC5}.Debug|x64.ActiveCfg = Debug|x86
+		{85072DC6-7356-449F-9081-939F87AC0CC5}.Debug|x86.ActiveCfg = Debug|x86
+		{85072DC6-7356-449F-9081-939F87AC0CC5}.Debug|x86.Build.0 = Debug|x86
+		{85072DC6-7356-449F-9081-939F87AC0CC5}.Release|Any CPU.ActiveCfg = Release|x86
+		{85072DC6-7356-449F-9081-939F87AC0CC5}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{85072DC6-7356-449F-9081-939F87AC0CC5}.Release|Mixed Platforms.Build.0 = Release|x86
+		{85072DC6-7356-449F-9081-939F87AC0CC5}.Release|x64.ActiveCfg = Release|x86
+		{85072DC6-7356-449F-9081-939F87AC0CC5}.Release|x86.ActiveCfg = Release|x86
+		{85072DC6-7356-449F-9081-939F87AC0CC5}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -985,6 +999,7 @@ Global
 		{8A905341-9398-4CCF-BF38-FE3E18EDD54C} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{DDC48D4C-6885-462C-B57A-216658EB94AE} = {BB6BDFAB-482E-42B7-B954-84F33CFFFFB6}
+		{85072DC6-7356-449F-9081-939F87AC0CC5} = {BB6BDFAB-482E-42B7-B954-84F33CFFFFB6}
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C} = {A950D82D-E727-4CF5-B4D4-7B872D733E3C}
 		{942F25CF-46A7-4413-B062-E3395C8D1C9A} = {A950D82D-E727-4CF5-B4D4-7B872D733E3C}
 		{45F6BE30-989A-4749-B6A0-69099C8661F4} = {A950D82D-E727-4CF5-B4D4-7B872D733E3C}

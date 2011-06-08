@@ -145,9 +145,9 @@
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Internal\Networking\Networking.csproj">
+    <ProjectReference Include="..\..\..\..\Library\Internal\Network\Networking\Networking.csproj">
       <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
-      <Name>Networking %28Library\Internal\Networking\Networking%29</Name>
+      <Name>Networking</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>

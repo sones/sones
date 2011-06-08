@@ -126,6 +126,7 @@ namespace sones.GraphQL.StatementNodes.DDL
                 var indexDef = new IndexPredefinition(_IndexName);
                 indexDef.SetIndexType(_IndexType);
                 indexDef.SetVertexType(_DBType);
+                indexDef.SetEdition(_IndexEdition);
                 foreach (var aIndexedProperty in _AttributeList)
                 {
                     indexDef.AddProperty(aIndexedProperty.IndexAttribute.ContentString);
