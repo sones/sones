@@ -94,11 +94,17 @@ namespace sones.Library.Network.HttpServer
         /// <exception cref="ArgumentNullException">If myServerLogic is <c>NULL</c>.</exception>
         public HttpServer(IPAddress myIPAddress, ushort myPort, object myServerLogic, IServerSecurity mySecurity = null, bool mySecureConnection = false, bool myAutoStart = false)
         {
+            #region argument checks
+
             if (myIPAddress == null)
                 throw new ArgumentNullException("myIPAddress");
 
             if (myServerLogic == null)
                 throw new ArgumentNullException("myServerLogic");
+
+            #endregion
+
+            #region set data
 
             ListeningAddress = myIPAddress;
             ListeningPort = myPort;
@@ -107,16 +113,24 @@ namespace sones.Library.Network.HttpServer
 
             _logic = myServerLogic;
             _security = mySecurity;
-            
-            _parser = new UrlParser(new[] {'/'});
-            ParseInterface();
+
+            #endregion
+
+            #region parse interface
 
             
+            _parser = ParseInterface();
+
+            #endregion
+
+            #region
+
             CreateListener(); //create listener as late as possible
 
             if (myAutoStart)
                 Start();
 
+            #endregion
         }
 
         #endregion
@@ -225,8 +239,9 @@ namespace sones.Library.Network.HttpServer
         /// Searches for interesting attributes in the inheritance hierarchy of the class of the _logic. 
         /// After that it parses the attributes and builds a connection from the url pattern to the implementation method.
         /// </remarks>
-        private void ParseInterface()
+        private UrlParser ParseInterface()
         {
+            var result = new UrlParser(new[] { '/' });
 
             #region Find the correct interface
 
@@ -299,12 +314,14 @@ namespace sones.Library.Network.HttpServer
                         #endregion
 
                         if (aURIPattern != null)
-                            _parser.AddUrl(aURIPattern, method, needsExplicitAuthentication, webMethod);
+                            result.AddUrl(aURIPattern, method, needsExplicitAuthentication, webMethod);
 
                     }
 
                 }
             }
+
+            return result;
         }
 
         /// <summary>
