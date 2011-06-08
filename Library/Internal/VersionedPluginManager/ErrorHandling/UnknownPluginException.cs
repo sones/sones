@@ -53,7 +53,7 @@ namespace sones.Library.VersionedPluginManager.ErrorHandling
             PluginName = myUnknownPluginName;
             PluginType = myPluginType;
             
-            _msg = String.Format("{0} : The {1} plugin name is unknown!", PluginName, PluginType.Name);
+            _msg = String.Format("{0} : The plugin name '{1}' is unknown! Maybe you are missing a reference?", PluginName, PluginType.Name);
         }
 
         #endregion

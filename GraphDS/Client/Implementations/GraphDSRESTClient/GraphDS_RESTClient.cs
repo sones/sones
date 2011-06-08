@@ -301,7 +301,7 @@ namespace sones.GraphDS.GraphDSRESTClient
 
         private String FetchGraphDBOutput(String myQueryString)
         {
-            String fullRESTUri = String.Format("{0}?{1}",_GQLUri, HttpUtility.UrlPathEncode(myQueryString));
+            String fullRESTUri = String.Format("{0}?{1}",_GQLUri, HttpUtility.UrlEncode(myQueryString));
             try
             {
 
