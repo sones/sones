@@ -114,23 +114,14 @@ namespace sones.Library.Network.HttpServer
             _logic = myServerLogic;
             _security = mySecurity;
 
-            #endregion
-
-            #region parse interface
-
-            
             _parser = ParseInterface();
 
             #endregion
-
-            #region
 
             CreateListener(); //create listener as late as possible
 
             if (myAutoStart)
                 Start();
-
-            #endregion
         }
 
         #endregion
@@ -203,6 +194,20 @@ namespace sones.Library.Network.HttpServer
             }
         }
 
+        /// <summary>
+        /// Closes the server.
+        /// </summary>
+        /// <remarks>
+        /// A call of this method releases all resources. After this, the instance can not be started anymore.
+        /// </remarks>
+        public void Close()
+        {
+            Stop();
+            if (_listener != null)
+            {
+                _listener.Close();
+            }
+        }
 
         #endregion
 
@@ -243,16 +248,14 @@ namespace sones.Library.Network.HttpServer
         {
             var result = new UrlParser(new[] { '/' });
 
-            #region Find the correct interface
+            #region Find the correct interfaces
 
             var allInterfaces =  from interfaceInst
                                  in _logic.GetType().GetInterfaces()
                                  where interfaceInst.GetCustomAttributes(typeof (ServiceContractAttribute), false).Count() > 0
                                  select interfaceInst;
 
-            var count = allInterfaces.Count();
-
-            if (count == 0)
+            if (allInterfaces.Count() == 0)
                 throw new ArgumentException("Could not find any valid interface having the ServiceContract attribute!");
 
             #endregion
@@ -341,8 +344,10 @@ namespace sones.Library.Network.HttpServer
         private AuthenticationSchemes SchemaSelector(HttpListenerRequest myRequest)
         {
             var callback = _parser.GetCallback(myRequest.RawUrl, myRequest.HttpMethod);
-
-            return callback.Item1.NeedsExplicitAuthentication ? _security.SchemaSelector(myRequest) : AuthenticationSchemes.Anonymous;
+            
+            return (callback != null && callback.Item1 != null && callback.Item1.NeedsExplicitAuthentication)
+                ? _security.SchemaSelector(myRequest) 
+                : AuthenticationSchemes.Anonymous;
         }
 
 
@@ -356,20 +361,20 @@ namespace sones.Library.Network.HttpServer
                 return;
 
             var context = _listener.EndGetContext(myResult);
-            
+
             HttpContext = context;
 
             //gets the method that will be invoked
             var callback = _parser.GetCallback(context.Request.RawUrl, context.Request.HttpMethod);
 
-            if (callback == null || callback.Item1 == null)
+            try
             {
-                NoPatternFound404(context);
+                if (callback == null || callback.Item1 == null)
+                {
+                    NoPatternFound404(context);
 
-            }
-            else
-            {
-                try
+                }
+                else
                 {
                     #region Check authentification
 
@@ -382,7 +387,7 @@ namespace sones.Library.Network.HttpServer
                     }
                     catch (Exception)
                     {
-                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        context.Response.StatusCode = (int) HttpStatusCode.Forbidden;
                         return;
                     }
 
@@ -397,6 +402,7 @@ namespace sones.Library.Network.HttpServer
                         if (context.Response.ContentLength64 == 0)
                         {
                             // The user did not write into the stream itself - we will add header and the invocation result
+
                             #region Get invocation result and create header and body
 
                             if (targetInvocationResult is Stream)
@@ -408,7 +414,7 @@ namespace sones.Library.Network.HttpServer
                             }
                             else if (targetInvocationResult is String)
                             {
-                                var toWrite = Encoding.UTF8.GetBytes((string)(targetInvocationResult));
+                                var toWrite = Encoding.UTF8.GetBytes((string) (targetInvocationResult));
                                 context.Response.OutputStream.Write(toWrite, 0, toWrite.Length);
                             }
 
@@ -417,7 +423,7 @@ namespace sones.Library.Network.HttpServer
                     }
                     catch (Exception ex)
                     {
-                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
 
                         var msg = Encoding.UTF8.GetBytes(ex.ToString());
                         context.Response.OutputStream.Write(msg, 0, msg.Length);
@@ -426,13 +432,11 @@ namespace sones.Library.Network.HttpServer
 
                     }
                 }
-                finally
-                {
-                    context.Response.Close();
-                }
-
             }
-
+            finally
+            {
+                context.Response.Close();
+            }
 
         }
 
@@ -458,11 +462,7 @@ namespace sones.Library.Network.HttpServer
 
         void IDisposable.Dispose()
         {
-            Stop();
-            if (_listener != null)
-            {
-                _listener.Close();
-            }
+            Close();
         }
 
         #endregion
