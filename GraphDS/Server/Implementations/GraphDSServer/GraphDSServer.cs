@@ -30,7 +30,6 @@ using sones.GraphDSServer.ErrorHandling;
 using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.Networking.HTTP;
 using sones.Plugins.GraphDS.RESTService;
 using sones.GraphDS.PluginManager.GraphDSPluginManager;
 using sones.GraphQL;
@@ -40,6 +39,8 @@ using sones.GraphDB.Request.GetIndex;
 using sones.Plugins.GraphDS;
 using sones.Library.VersionedPluginManager;
 using sones.GraphDS.PluginManager;
+using sones.Library.Network.HttpServer;
+using sones.Library.Network.HttpServer.Security;
 
 namespace sones.GraphDSServer
 {
@@ -77,7 +78,7 @@ namespace sones.GraphDSServer
         /// <summary>
         /// The web server, which starts the REST service.
         /// </summary>
-        private HTTPServer<GraphDSREST_Service>         _httpServer;
+        private HttpServer                             _httpServer;
 
         /// <summary>
         /// The service guid.
@@ -205,23 +206,17 @@ namespace sones.GraphDSServer
 
             try
             {
-                var security = new HTTPSecurity()
-                {
-                    CredentialType = HttpClientCredentialType.Basic,
-                    UserNamePasswordValidator = new PasswordValidator(_iGraphDB,Username,Password)
-                };
+                var security = new BasicServerSecurity(new PasswordValidator(_iGraphDB, Username, Password));
 
                 var restService = new GraphDSREST_Service();
                 restService.Initialize(this, myPort, myIPAddress);
 
-                _httpServer = new HTTPServer<GraphDSREST_Service>(
-                                    myIPAddress,
-                                    myPort,
-                                    restService,
-                                    myAutoStart: true)
-                {
-                    HTTPSecurity = security,
-                };
+                _httpServer = new HttpServer(
+                    myIPAddress,
+                    myPort,
+                    restService,
+                    mySecurity: security,
+                    myAutoStart: true);
             }
             catch (Exception e)
             {
@@ -269,7 +264,7 @@ namespace sones.GraphDSServer
         {
             try
             {
-                _httpServer.StopAndWait();
+                _httpServer.Stop();
             }
             catch
             {
@@ -285,8 +280,7 @@ namespace sones.GraphDSServer
 
         public void Shutdown(sones.Library.Commons.Security.SecurityToken mySecurityToken)
         {
-            _httpServer.StopAndWait();
-            _httpServer.Dispose();
+            _httpServer.Close();
             _iGraphDB.Shutdown(mySecurityToken);
         }
 

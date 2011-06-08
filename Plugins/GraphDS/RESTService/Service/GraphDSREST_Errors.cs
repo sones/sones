@@ -21,13 +21,12 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Networking.HTTP;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
+using System.Text;
 using sones.Library.LanguageExtensions;
+using sones.Library.Network.HttpServer;
 
 #endregion
 
@@ -54,18 +53,13 @@ namespace sones.Plugins.GraphDS.RESTService
 
         public void Error400_BadRequest(String myErrorMessage)
         {
+            var response = HttpServer.HttpContext.Response;
 
-            var _Header = HTTPServer.HTTPContext.ResponseHeader;
-            var _Content = Encoding.UTF8.GetBytes("Error 400 - Bad Request : " + myErrorMessage);
-
-            _Header.HttpStatusCode = HTTPStatusCodes.BadRequest;
-            _Header.CacheControl = "no-cache";
-            _Header.ServerName = _ServerID;
-            _Header.ContentLength = _Content.ULongLength();
-            _Header.ContentType = GraphDSREST_Constants._TEXT_UTF8;
-
-            HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
-            HTTPServer.HTTPContext.WriteToResponseStream(_Content);
+            response.SetHttpStatusCode(HttpStatusCode.BadRequest);
+            response.SetCacheControl("no-cache");
+            response.SetServerName(_ServerID);
+            response.SetContentType(GraphDSREST_Constants._TEXT_UTF8);
+            response.StatusDescription = "Error 400 - Bad Request : " + myErrorMessage;
 
         }
 
@@ -75,18 +69,13 @@ namespace sones.Plugins.GraphDS.RESTService
 
         public void Error400_QueryFailed(String myErrorMessage)
         {
+            var response = HttpServer.HttpContext.Response;
 
-            var _Header = HTTPServer.HTTPContext.ResponseHeader;
-            var _Content = Encoding.UTF8.GetBytes("Error 400 - Query Failed : " + myErrorMessage);
-
-            _Header.HttpStatusCode = HTTPStatusCodes.BadRequest;
-            _Header.CacheControl = "no-cache";
-            _Header.ServerName = _ServerID;
-            _Header.ContentLength = _Content.ULongLength();
-            _Header.ContentType = GraphDSREST_Constants._TEXT_UTF8;
-
-            HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
-            HTTPServer.HTTPContext.WriteToResponseStream(_Content);
+            response.SetHttpStatusCode(HttpStatusCode.BadRequest);
+            response.SetCacheControl("no-cache");
+            response.SetServerName(_ServerID);
+            response.SetContentType(GraphDSREST_Constants._TEXT_UTF8);
+            response.StatusDescription = "Error 400 - Query Failed : " + myErrorMessage;
 
         }
 
@@ -96,19 +85,17 @@ namespace sones.Plugins.GraphDS.RESTService
 
         public void Error404_NotFound(Stream myCustom404Error)
         {
+            var response = HttpServer.HttpContext.Response;
 
-            var _Header = HTTPServer.HTTPContext.ResponseHeader;
-
-            _Header.HttpStatusCode = HTTPStatusCodes.NotFound;
-            _Header.CacheControl = "no-cache";
-            _Header.ServerName = _ServerID;
+            response.SetHttpStatusCode(HttpStatusCode.NotFound);
+            response.SetCacheControl("no-cache");
+            response.SetServerName(_ServerID);
 
             #region Send custom Error404page...
 
             if (myCustom404Error != null && myCustom404Error.Length > 0)
             {
-                _Header.ContentType = GraphDSREST_Constants._HTML;
-                _Header.ContentLength = (UInt64)myCustom404Error.Length;
+                response.SetContentType(GraphDSREST_Constants._HTML);
             }
 
             #endregion
@@ -117,14 +104,12 @@ namespace sones.Plugins.GraphDS.RESTService
 
             else
             {
-                _Header.ContentType = GraphDSREST_Constants._TEXT_UTF8;
-                _Header.ContentLength = 0;
+                response.SetContentType(GraphDSREST_Constants._TEXT_UTF8);
             }
 
             #endregion
 
-            HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
-            HTTPServer.HTTPContext.WriteToResponseStream(myCustom404Error);
+            myCustom404Error.CopyTo(response.OutputStream);
 
         }
 
@@ -134,18 +119,13 @@ namespace sones.Plugins.GraphDS.RESTService
 
         public void Error406_NotAcceptable(String myCustom406Error)
         {
+            var response = HttpServer.HttpContext.Response;
 
-            var _Header = HTTPServer.HTTPContext.ResponseHeader;
-            var _Content = Encoding.UTF8.GetBytes("Error 406 - Not Acceptable : " + myCustom406Error);
-
-            _Header.HttpStatusCode = HTTPStatusCodes.NotAcceptable;
-            _Header.CacheControl = "no-cache";
-            _Header.ServerName = _ServerID;
-            _Header.ContentLength = _Content.ULongLength();
-            _Header.ContentType = GraphDSREST_Constants._TEXT_UTF8;
-
-            HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
-            HTTPServer.HTTPContext.WriteToResponseStream(_Content);
+            response.SetHttpStatusCode(HttpStatusCode.NotAcceptable);
+            response.SetCacheControl("no-cache");
+            response.SetServerName(_ServerID);
+            response.SetContentType(GraphDSREST_Constants._TEXT_UTF8);
+            response.StatusDescription = "Error 406 - Not Acceptable : " + myCustom406Error;
         }
 
         #endregion
