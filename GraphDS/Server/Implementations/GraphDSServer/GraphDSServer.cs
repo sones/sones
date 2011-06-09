@@ -293,7 +293,7 @@ namespace sones.GraphDSServer
                 // drain every query
                 foreach (KeyValuePair<String,IDrainPipe> _drainpipe in _DrainPipes)
                 {
-                    _drainpipe.Value.Query(mySecurityToken, myTransactionToken, myQueryLanguageName, myQueryLanguageName);
+                    _drainpipe.Value.Query(mySecurityToken, myTransactionToken, myQueryString, myQueryLanguageName);
                 }
 
                 return queryLanguage.Query(mySecurityToken, myTransactionToken, myQueryString);
