@@ -19,13 +19,14 @@
 */
 
 using System;
+using sones.Library.ErrorHandling;
 
-namespace sones.GraphFS.ErrorHandling
+namespace sones.Library.PropertyHyperGraph.ErrorHandling
 {
     /// <summary>
     /// An exception for non existing binary properties.
     /// </summary>
-    public class BinaryNotExistentException : AGraphFSException
+	public class BinaryNotExistentException : ASonesException
     {
         #region data
 
@@ -39,7 +40,7 @@ namespace sones.GraphFS.ErrorHandling
         #region constructor
         
         /// <summary>
-        /// Creates a new binary not exist exception.
+        /// Creates a new binary not existent exception.
         /// </summary>
         /// <param name="myPropertyID">The binary property id.</param>
         public BinaryNotExistentException(Int64 myPropertyID)

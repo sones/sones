@@ -124,6 +124,10 @@ namespace sones.Library.PropertyHyperGraph
         /// </summary>
         /// <param name="myPropertyID">The property id of the specified binary</param>
         /// <returns>A stream</returns>
+		/// 
+		/// <exception cref="sones.Library.PropertyHyperGraph.ErrorHandling.BinaryNotExistentException">
+		/// The requested binary property does not exist on this vertex.
+		/// </exception>
         Stream GetBinaryProperty(Int64 myPropertyID);
 
         /// <summary>
