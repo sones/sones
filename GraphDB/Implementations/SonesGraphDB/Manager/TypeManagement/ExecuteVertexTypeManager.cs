@@ -180,12 +180,12 @@ namespace sones.GraphDB.Manager.TypeManagement
             var creationDate = DateTime.UtcNow.ToBinary();
             var resultPos = 0;
 
-            var result = new IVertexType[count];
+            var result = new IVertex[count];
 
             //now we store each vertex type
             for (var current = defsTopologically.First; current != null; current = current.Next)
             {
-               var newVertexType = new VertexType(BaseGraphStorageManager.StoreVertexType(
+               var newVertexType = BaseGraphStorageManager.StoreVertexType(
                     _vertexManager.ExecuteManager.VertexStore,
                     typeInfos[current.Value.VertexTypeName].VertexInfo,
                     current.Value.VertexTypeName,
@@ -197,12 +197,11 @@ namespace sones.GraphDB.Manager.TypeManagement
                     typeInfos[current.Value.SuperVertexTypeName].VertexInfo,
                     null, 
                     mySecurity,
-                    myTransaction));
+                    myTransaction);
 
                  result[resultPos++] = newVertexType;
                 _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName).Add(current.Value.VertexTypeName, typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID);
 
-                _baseTypes.Add( typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID, newVertexType);
                 _nameIndex.Add(current.Value.VertexTypeName, typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID);
             }
 
@@ -338,6 +337,19 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #endregion
 
+            var resultTypes = new VertexType[result.Length];
+
+            //reload the IVertex objects, that represents the type.
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = _vertexManager.ExecuteManager.VertexStore.GetVertex(mySecurity, myTransaction,
+                                                                                result[i].VertexID,
+                                                                                result[i].VertexTypeID, String.Empty);
+                var newVertexType = new VertexType(result[i]);
+                resultTypes[i] = newVertexType;
+                _baseTypes.Add(typeInfos[newVertexType.Name].VertexInfo.VertexID, newVertexType);    
+
+            }
 
             #endregion
 
@@ -369,7 +381,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                     #region parent uniques
 
-                    foreach (var unique in result[resultPos].ParentVertexType.GetUniqueDefinitions(true))
+                    foreach (var unique in resultTypes[resultPos].ParentVertexType.GetUniqueDefinitions(true))
                     {
                         _indexManager.CreateIndex(
                             new IndexPredefinition().AddProperty(unique.UniquePropertyDefinitions.Select(x => x.Name)).SetIndexType(uniqueIdx).SetVertexType(unique.DefiningVertexType.Name),
@@ -390,7 +402,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                             _indexManager.CreateIndex(index, mySecurity, myTransaction);
                         }
 
-                    foreach (var index in result[resultPos].ParentVertexType.GetIndexDefinitions(true))
+                    foreach (var index in resultTypes[resultPos].ParentVertexType.GetIndexDefinitions(true))
                     {
                         _indexManager.CreateIndex(
                             new IndexPredefinition().AddProperty(index.IndexedProperties.Select(x => x.Name)).SetVertexType(current.Value.VertexTypeName).SetIndexType(index.IndexTypeName),
@@ -406,7 +418,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             CleanUpTypes();
 
-            return result;
+            return resultTypes;
         }
 
         /// <summary>
