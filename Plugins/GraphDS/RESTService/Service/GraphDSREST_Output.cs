@@ -22,23 +22,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Networking.HTTP;
 using System.Diagnostics;
 using System.IO;
-using System.Web;
+using System.Linq;
+using System.Net;
 using System.Net.Mime;
 using System.Reflection;
 using System.ServiceModel.Web;
+using System.Text;
+using System.Web;
 using sones.GraphDS;
 using sones.GraphQL.Result;
-using sones.Library.LanguageExtensions;
-using sones.Plugins.GraphDS.IO;
 using sones.Library.DiscordianDate;
+using sones.Library.Network.HttpServer;
 using sones.Plugins.GraphDS.IO;
-
-
 
 #endregion
 
@@ -70,18 +67,14 @@ namespace sones.Plugins.GraphDS.RESTService
 
         private void ExportContent(String myServerID, byte[] myContent, ContentType myContentType)
         {
-            var _Header = HTTPServer.HTTPContext.ResponseHeader;
+            var _Header = HttpServer.HttpContext.Response;
 
-            _Header.HttpStatusCode = HTTPStatusCodes.OK;
-            _Header.CacheControl = "no-cache";
-            _Header.ServerName = myServerID;
-            _Header.ContentLength = myContent.ULongLength();
-            _Header.ContentType = myContentType;
+            _Header.SetHttpStatusCode(HttpStatusCode.OK);
+            _Header.SetCacheControl("no-cache");
+            _Header.SetServerName(myServerID);
+            _Header.SetContentType(myContentType);
 
-            var _HeaderBytes = _Header.ToBytes();
-
-            HTTPServer.HTTPContext.WriteToResponseStream(_HeaderBytes, 0, _HeaderBytes.Length);
-            HTTPServer.HTTPContext.WriteToResponseStream(myContent);
+            _Header.OutputStream.Write(myContent, 0, myContent.Length);
         }
 
         #endregion
@@ -91,7 +84,7 @@ namespace sones.Plugins.GraphDS.RESTService
         public void GenerateResultOutput(QueryResult myResult, Stopwatch myStopWatch)
         {
 
-            var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT);
+            var _ContentType = HttpServer.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT);
             
            
             IOInterface plugin = null;
@@ -116,13 +109,13 @@ namespace sones.Plugins.GraphDS.RESTService
 
         public String GetGQL()
         {
-            if (HTTPServer.HTTPContext.RequestHeader.QueryString == null)
+            if (HttpServer.HttpContext.Request.QueryString.Count == 0)
             {
                 _ErrorMsg.Error400_BadRequest("[Syntax Error] Please use '...gql?query'!");
                 return String.Empty;
             }
 
-            var _QueryString = HTTPServer.HTTPContext.RequestHeader.QueryString[null];
+            var _QueryString = HttpServer.HttpContext.Request.QueryString[null];
             if (_QueryString == null)
             {
                 _ErrorMsg.Error400_BadRequest("[Syntax Error] Please use '...gql?query'!");
@@ -197,8 +190,8 @@ namespace sones.Plugins.GraphDS.RESTService
 
             #region Return assembly resource...
 
-            var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(GraphDSREST_Constants._GEXF);
-            var _Header = HTTPServer.HTTPContext.ResponseHeader;
+            var _ContentType = HttpServer.GetBestMatchingAcceptHeader(GraphDSREST_Constants._GEXF);
+            var response = HttpServer.HttpContext.Response;
 
             if (_Resources.Contains("GraphDSREST.resources." + myResource))
             {
@@ -208,34 +201,48 @@ namespace sones.Plugins.GraphDS.RESTService
 
                 #region Set the content type - sones REST
 
-                if (HTTPServer.HTTPContext != null)
+                if (HttpServer.HttpContext!= null)
                 {
 
                     var _FileNameSuffix = myResource.Remove(0, myResource.LastIndexOf(".") + 1);
 
                     switch (_FileNameSuffix)
                     {
-                        case "htm": _Header.ContentType = GraphDSREST_Constants._HTML_UTF8; break;
-                        case "html": _Header.ContentType = GraphDSREST_Constants._HTML_UTF8; break;
-                        case "css": _Header.ContentType = GraphDSREST_Constants._CSS; break;
-                        case "gif": _Header.ContentType = GraphDSREST_Constants._GIF; break;
-                        case "ico": _Header.ContentType = GraphDSREST_Constants._ICO; break;
-                        case "swf": _Header.ContentType = new ContentType("application/x-shockwave-flash"); break;
-                        case "js": _Header.ContentType = new ContentType("text/javascript"); break;
-                        default: _Header.ContentType = GraphDSREST_Constants._TEXT_UTF8; break;
+                        case "htm":
+                            response.SetContentType(GraphDSREST_Constants._HTML_UTF8); 
+                            break;
+                        case "html": 
+                            response.SetContentType(GraphDSREST_Constants._HTML_UTF8); 
+                            break;
+                        case "css": 
+                            response.SetContentType(GraphDSREST_Constants._CSS); 
+                            break;
+                        case "gif": 
+                            response.SetContentType(GraphDSREST_Constants._GIF); 
+                            break;
+                        case "ico": 
+                            response.SetContentType(GraphDSREST_Constants._ICO); 
+                            break;
+                        case "swf": 
+                            response.SetContentType(new ContentType("application/x-shockwave-flash")); 
+                            break;
+                        case "js": 
+                            response.SetContentType(new ContentType("text/javascript")); 
+                            break;
+                        default: 
+                            response.SetContentType(GraphDSREST_Constants._TEXT_UTF8); 
+                            break;
                     }
 
                 }
 
                 #endregion
 
-                _Header.HttpStatusCode = HTTPStatusCodes.OK;
-                _Header.CacheControl = "no-cache";
-                _Header.ServerName = _ServerID;
-                _Header.ContentLength = (UInt64)_Content.Length;
+                response.SetHttpStatusCode(HttpStatusCode.OK);
+                response.SetCacheControl("no-cache");
+                response.SetServerName(_ServerID);
 
-                HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
-                HTTPServer.HTTPContext.WriteToResponseStream(_Content);
+                _Content.CopyTo(response.OutputStream);
 
                 return;
 
@@ -253,14 +260,12 @@ namespace sones.Plugins.GraphDS.RESTService
                 if (_Content == null)
                     _Content = new MemoryStream(UTF8Encoding.UTF8.GetBytes("Error 404 - File not found!"));
 
-                _Header.HttpStatusCode = HTTPStatusCodes.NotFound;
-                _Header.CacheControl = "no-cache";
-                _Header.ServerName = _ServerID;
-                _Header.ContentType = GraphDSREST_Constants._HTML;
-                _Header.ContentLength = (UInt64)_Content.Length;
+                response.SetHttpStatusCode(HttpStatusCode.NotFound);
+                response.SetCacheControl("no-cache");
+                response.SetServerName(_ServerID);
+                response.SetContentType(GraphDSREST_Constants._HTML);
 
-                HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
-                HTTPServer.HTTPContext.WriteToResponseStream(_Content);
+                _Content.CopyTo(response.OutputStream);
 
             }
 
@@ -278,9 +283,9 @@ namespace sones.Plugins.GraphDS.RESTService
             {
                 WebOperationContext.Current.OutgoingResponse.ContentType = "text/plain";
             }
-            else if (HTTPServer.HTTPContext != null)
+            else if (HttpServer.HttpContext != null)
             {
-                HTTPServer.HTTPContext.ResponseHeader.ContentType = new System.Net.Mime.ContentType("text/plain");
+                HttpServer.HttpContext.Response.SetContentType(new ContentType("text/plain"));
             }
 
             return new MemoryStream(Encoding.UTF8.GetBytes(new DiscordianDate().ToString()));

@@ -21,24 +21,13 @@
 #region Usings
 
 using System;
-using System.IO;
-using System.Web;
-using System.Text;
-using System.Linq;
-using System.Xml.Linq;
-using System.Net.Mime;
-using System.Reflection;
-using System.Diagnostics;
-using System.ServiceModel;
-using System.ServiceModel.Web;
 using System.Collections.Generic;
-using sones.Plugins.GraphDS.IO;
-using sones.GraphDB;
-using sones.GraphDS.PluginManager.RESTServicePluginManager;
-using sones.Networking;
-using sones.Networking.HTTP;
-using sones.GraphDS;
+using System.IO;
 using System.Net;
+using System.ServiceModel;
+using sones.GraphDS;
+using sones.GraphDS.PluginManager.RESTServicePluginManager;
+using sones.Plugins.GraphDS.IO;
 
 
 #endregion

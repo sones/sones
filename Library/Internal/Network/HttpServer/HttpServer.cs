@@ -27,6 +27,9 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Mime;
+using System.Collections.Generic;
+using sones.Library.LanguageExtensions;
 
 namespace sones.Library.Network.HttpServer
 {
@@ -36,6 +39,46 @@ namespace sones.Library.Network.HttpServer
     public class HttpServer:
         IDisposable
     {
+
+        public static ContentType GetBestMatchingAcceptHeader(params ContentType[] myContentTypes)
+        {
+
+            var AcceptTypes = HttpContext.Request.AcceptTypes.Select((type, idx) => new AcceptType(type, (uint)idx)).ToList();
+
+            var _ListOfFoundAcceptHeaders = new List<AcceptType>();
+            UInt32 pos = 0;
+
+            foreach (var _ContentType in myContentTypes)
+            {
+                
+                var _AcceptType = new AcceptType(_ContentType.ToString(), pos++);
+
+                var _Match = AcceptTypes.Find(_AType => _AType.Equals(_AcceptType));
+                
+                if (_Match != null)
+                {
+
+                    if (_Match.ContentType.GetMediaSubType() == "*") // this was a * and we will set the quality to lowest
+                        _AcceptType.Quality = 0;
+                    
+                    _ListOfFoundAcceptHeaders.Add(_AcceptType); 
+
+                }
+
+            }
+
+            _ListOfFoundAcceptHeaders.Sort();
+
+            if (!_ListOfFoundAcceptHeaders.IsNullOrEmpty())
+                return _ListOfFoundAcceptHeaders.First().ContentType;
+            else if (!myContentTypes.IsNullOrEmpty())
+                return myContentTypes.First();
+            else
+                return null;
+
+        }
+
+
         /// <summary>
         /// A thread static variable, that stores the current http context.
         /// </summary>

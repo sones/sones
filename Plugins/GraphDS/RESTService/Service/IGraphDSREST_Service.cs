@@ -24,7 +24,8 @@ using System;
 using System.IO;
 using System.ServiceModel;
 using System.ServiceModel.Web;
-using sones.Networking.HTTP;
+using sones.Library.Network.HttpServer;
+
 
 #endregion
 
