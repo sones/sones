@@ -27,6 +27,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.VertexStore.Definitions.Update;
 using sones.Library.BinaryStreamStructure;
+using sones.Library.PropertyHyperGraph.ErrorHandling;
 
 namespace sones.GraphFS.Element.Vertex
 {

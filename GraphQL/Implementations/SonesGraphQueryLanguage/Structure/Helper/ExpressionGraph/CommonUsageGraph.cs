@@ -467,10 +467,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             UpgradeGraphStructure(this, diffForThis);
             UpfillGraph(this, diffForThis);
 
-            UpfillGraph(anotherGraph, diffForAnotherGraph);
             UpgradeGraphStructure(anotherGraph, diffForAnotherGraph);
+            UpfillGraph(anotherGraph, diffForAnotherGraph);
             
-
             #endregion
 
             #region merge another into this graph

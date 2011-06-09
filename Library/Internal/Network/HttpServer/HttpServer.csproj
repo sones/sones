@@ -103,7 +103,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AcceptType.cs" />
     <Compile Include="AuthenticationAttributes.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="HttpListenerResponseExtensions.cs" />
     <Compile Include="HttpServer.cs" />
     <Compile Include="IServerSecurity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

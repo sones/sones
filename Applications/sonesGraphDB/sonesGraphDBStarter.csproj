@@ -94,10 +94,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\EnterpriseEdition\GraphFS\PagedFSNonRevisioned\PagedFSNonRevisioned.csproj">
-      <Project>{4B7457CB-A618-4A23-AABC-0C2A7031AC26}</Project>
-      <Name>PagedFSNonRevisioned</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
@@ -201,6 +197,10 @@
     <ProjectReference Include="..\..\Plugins\Index\Indices\SonesIndices\SonesIndices.csproj">
       <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>
       <Name>SonesIndices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QueryLog\QueryLog.csproj">
+      <Project>{1BC7DDCF-B048-4F55-B44F-6471AFB3DAC1}</Project>
+      <Name>QueryLog</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
