@@ -63,20 +63,20 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            QueryResult qresult = null;
+            QueryResult result = new QueryResult(myQuery, SonesGQLConstants.GQL, 0L, ResultType.Failed);
             
             try
             {
                 var stat = myGraphDB.Truncate(mySecurityToken, myTransactionToken, new RequestTruncate(_TypeName), (stats) => stats);
 
-                qresult = new QueryResult(myQuery, "sones.gql", Convert.ToUInt64(stat.ExecutionTime.Milliseconds),ResultType.Successful);
+                result = new QueryResult(myQuery, "sones.gql", Convert.ToUInt64(stat.ExecutionTime.Milliseconds), ResultType.Successful);
             }
             catch(ASonesException e)
             {
-                qresult.Error = e;
+                result.Error = e;
             }
 
-            return qresult;
+            return result;
         }
 
         #endregion

@@ -949,13 +949,13 @@ namespace sones.GraphQL
             expressionOfAList.Rule = NT_Expression + ListParametersForExpression;
 
 
-            term.Rule = IdOrFuncList                  //d.Name 
+            term.Rule = IdOrFuncList              //d.Name 
                             | string_literal      //'lala'
                             | number              //10
-                //|   funcCall            //EXISTS ( SelectStatement )
-                            | NT_Aggregate           //COUNT ( SelectStatement )
+                            //|   funcCall          //EXISTS ( SelectStatement )
+                            | NT_Aggregate        //COUNT ( SelectStatement )
                             | tuple               //(d.Name, 'Henning', (SelectStatement))
-                            | parSelectStmt      //(FROM User u Select u.Name)
+                            | parSelectStmt       //(FROM User u Select u.Name)
                             | S_TRUE
                             | S_FALSE;
 

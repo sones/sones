@@ -75,7 +75,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
             foreach (FuncParameter fp in myParams)
             {
-                resString.Append(fp.Value);
+                resString.Append(fp.Value.ToString());
             }
 
             return new FuncParameter(resString.ToString());
