@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -44,27 +44,27 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GraphDB\IGraphDB\IGraphDB.csproj">
+    <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GraphDS\IGraphDS\IGraphDS.csproj">
+    <ProjectReference Include="..\..\..\..\..\GraphDS\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
       <Name>IGraphDS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GraphQL\IGraphQL\IGraphQL.csproj">
+    <ProjectReference Include="..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
       <Name>IGraphQL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Library\Internal\Commons\Commons.csproj">
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Library\Internal\IPluginable\IPluginable.csproj">
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Plugins\GraphDS\DrainPipeLog\IDrainPipe\IDrainPipe.csproj">
+    <ProjectReference Include="..\..\IDrainPipe\IDrainPipe.csproj">
       <Project>{F51DA5BD-5808-409E-A907-4EF93B2C5E71}</Project>
       <Name>IDrainPipe</Name>
     </ProjectReference>
