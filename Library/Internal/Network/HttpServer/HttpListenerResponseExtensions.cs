@@ -24,7 +24,7 @@ namespace sones.Library.Network.HttpServer
 
         public static void SetContentType(this HttpListenerResponse myResponse, ContentType myContentType)
         {
-            myResponse.ContentType = myContentType.Name;
+            myResponse.ContentType = myContentType.ToString();
         }
 
 

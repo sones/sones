@@ -59,7 +59,7 @@ namespace sones.Plugins.GraphDS.RESTService
             response.SetCacheControl("no-cache");
             response.SetServerName(_ServerID);
             response.SetContentType(GraphDSREST_Constants._TEXT_UTF8);
-            response.StatusDescription = "Error 400 - Bad Request : " + myErrorMessage;
+            //response.StatusDescription = "Error 400 - Bad Request : " + myErrorMessage;
 
         }
 
@@ -75,7 +75,7 @@ namespace sones.Plugins.GraphDS.RESTService
             response.SetCacheControl("no-cache");
             response.SetServerName(_ServerID);
             response.SetContentType(GraphDSREST_Constants._TEXT_UTF8);
-            response.StatusDescription = "Error 400 - Query Failed : " + myErrorMessage;
+            //response.StatusDescription = "Error 400 - Query Failed : " + myErrorMessage;
 
         }
 
@@ -125,7 +125,7 @@ namespace sones.Plugins.GraphDS.RESTService
             response.SetCacheControl("no-cache");
             response.SetServerName(_ServerID);
             response.SetContentType(GraphDSREST_Constants._TEXT_UTF8);
-            response.StatusDescription = "Error 406 - Not Acceptable : " + myCustom406Error;
+            //response.StatusDescription = "Error 406 - Not Acceptable : " + myCustom406Error;
         }
 
         #endregion
