@@ -228,7 +228,7 @@
         goosh.config.webservice_path = jQuery.url.attr("directory").substring(0, jQuery.url.attr("directory").lastIndexOf('/'));
         goosh.config.webservice_port = jQuery.url.attr("port");
         goosh.config.webservice_default_format = "json";
-        goosh.config.webservice_formats = new Array("xml", "json", "text", "gexf");
+        goosh.config.webservice_formats = new Array("xml", "json", "text", "html");
 
         //sones.licence
         goosh.module.license = function () {
