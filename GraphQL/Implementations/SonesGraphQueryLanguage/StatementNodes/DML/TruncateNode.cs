@@ -69,11 +69,11 @@ namespace sones.GraphQL.StatementNodes.DML
             {
                 var stat = myGraphDB.Truncate(mySecurityToken, myTransactionToken, new RequestTruncate(_TypeName), (stats) => stats);
 
-                qresult = new QueryResult(myQuery, SonesGQLConstants.GQL, Convert.ToUInt64(stat.ExecutionTime.Milliseconds), ResultType.Successful);
+                result = new QueryResult(myQuery, SonesGQLConstants.GQL, Convert.ToUInt64(stat.ExecutionTime.Milliseconds), ResultType.Successful);
             }
             catch(ASonesException e)
             {
-                qresult = new QueryResult(myQuery, SonesGQLConstants.GQL, 0, ResultType.Failed, null, e);
+                result = new QueryResult(myQuery, SonesGQLConstants.GQL, 0, ResultType.Failed, null, e);
             }
 
             return result;
