@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace sones.Library.Commons.VertexStore.Definitions
 {
@@ -36,9 +37,9 @@ namespace sones.Library.Commons.VertexStore.Definitions
         public readonly Int64 PropertyID;
 
         /// <summary>
-        /// The id of the incoming vertex
+        /// The ids of the incoming vertices
         /// </summary>
-        public readonly Int64 VertexID;
+        public readonly IEnumerable<Int64> VertexIDs;
 
         /// <summary>
         /// The type id of the incoming vertex
@@ -55,6 +56,8 @@ namespace sones.Library.Commons.VertexStore.Definitions
         /// </summary>
         public readonly Int64 VertexRevisionID;
 
+        private int _hashCode;
+
         #endregion
 
         #region constructor
@@ -64,21 +67,41 @@ namespace sones.Library.Commons.VertexStore.Definitions
         /// </summary>
         /// <param name="myVertexTypeID">The type id of the incoming vertex</param>
         /// <param name="myPropertyID">The property id of the edge that points to another vertex</param>
-        /// <param name="myVertexID">The id of the incoming vertex</param>
+        /// <param name="myVertexIDs">The ids of the incoming vertices</param>
         /// <param name="myVertexRevisionID">The incoming vertex revision id</param>
         /// <param name="myVertexEditionName">The incoming vertex edition name</param>
         public IncomingEdgeAddDefinition(
             Int64 myVertexTypeID,
             Int64 myPropertyID,
-            Int64 myVertexID,
+            IEnumerable<Int64> myVertexIDs,
             Int64 myVertexRevisionID = 0L,
             String myVertexEditionName = null)
         {
             PropertyID = myPropertyID;
-            VertexID = myVertexID;
+            VertexIDs = myVertexIDs;
             VertexTypeID = myVertexTypeID;
             VertexRevisionID = myVertexRevisionID;
             VertexEditionName = myVertexEditionName;
+            _hashCode = 0;
+
+            CalcHashCode();
+        }
+
+        #endregion
+
+        #region private helper
+
+        private void CalcHashCode()
+        {
+            if (VertexIDs != null && VertexIDs.Count() > 0)
+            {
+                foreach (var aIncomingVertex in VertexIDs)
+                {
+                    _hashCode = _hashCode ^ aIncomingVertex.GetHashCode();
+                }
+            }
+
+            _hashCode = _hashCode ^ VertexTypeID.GetHashCode() ^ PropertyID.GetHashCode() ^ VertexEditionName.GetHashCode() ^ VertexRevisionID.GetHashCode();
         }
 
         #endregion
@@ -114,11 +137,39 @@ namespace sones.Library.Commons.VertexStore.Definitions
             }
 
             return
-                (this.VertexID == p.VertexID) &&
                 (this.VertexTypeID == p.VertexTypeID) &&
                 (this.PropertyID == p.PropertyID) &&
                 (this.VertexEditionName == p.VertexEditionName) &&
-                (this.VertexRevisionID == p.VertexRevisionID);
+                (this.VertexRevisionID == p.VertexRevisionID) &&
+                (EqualVertexIDs(this.VertexIDs, p.VertexIDs));
+        }
+
+        private bool EqualVertexIDs(IEnumerable<long> myVertexIDsA, IEnumerable<long> myVertexIDsB)
+        {
+            if (myVertexIDsA == null && myVertexIDsB == null)
+            {
+                return true;
+            }
+
+            if (myVertexIDsA == null || myVertexIDsB == null)
+            {
+                return false;
+            }
+
+            if (myVertexIDsA.Count() != myVertexIDsB.Count())
+            {
+                return false;
+            }
+
+            foreach (var aVertexIDFromA in myVertexIDsA)
+            {
+                if (!myVertexIDsB.Contains(aVertexIDFromA))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static Boolean operator ==(IncomingEdgeAddDefinition a, IncomingEdgeAddDefinition b)
@@ -146,7 +197,7 @@ namespace sones.Library.Commons.VertexStore.Definitions
 
         public override int GetHashCode()
         {
-            return VertexID.GetHashCode() ^ VertexTypeID.GetHashCode() ^ PropertyID.GetHashCode() ^ VertexEditionName.GetHashCode() ^ VertexRevisionID.GetHashCode();
+            return _hashCode;
         }
 
         #endregion
