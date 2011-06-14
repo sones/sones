@@ -33,6 +33,7 @@ using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.Request.GetIndex;
 using System.Reflection;
+using System.Threading;
 
 
 
@@ -311,6 +312,7 @@ namespace sones.GraphDS.GraphDSRESTClient
                 request.Accept = "application/xml";
                 request.UserAgent = "GraphDSRESTClient";
                 request.KeepAlive = false;
+                request.Timeout = Timeout.Infinite;
                 
                 StreamReader reader;
                 StringBuilder resonseXML = null;
