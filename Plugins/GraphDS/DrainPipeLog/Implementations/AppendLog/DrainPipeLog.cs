@@ -143,11 +143,11 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             get { return "sones.drainpipelog"; }
         }
 
-        public Dictionary<string, Type> SetableParameters
+        public PluginParameters<Type> SetableParameters
         {
             get
             {
-                return new Dictionary<string, Type> 
+                return new PluginParameters<Type> 
                 { 
                     { "AsynchronousMode", typeof(Boolean) },
                     { "MaximumAsyncBufferSize", typeof(Int32) },

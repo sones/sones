@@ -61,13 +61,11 @@ namespace sones.GraphDB.Manager
             get { return "BasicLogicExpressionOptimizer"; }
         }
 
-        public Dictionary<String, Type> SetableParameters
+        public PluginParameters<Type> SetableParameters
         {
-            get
-            {
-                return new Dictionary<string, Type>();
-            }
+            get { return new PluginParameters<Type>(); }
         }
+
 
         public IPluginable InitializePlugin(String myUniqueString, Dictionary<String, Object> myParameters)
         {

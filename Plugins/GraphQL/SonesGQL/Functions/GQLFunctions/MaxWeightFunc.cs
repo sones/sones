@@ -103,9 +103,9 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return"sones.maxweight"; }
         }
 
-        public override Dictionary<string, Type> SetableParameters
+        public override PluginParameters<Type> SetableParameters
         {
-            get { return new Dictionary<string,Type>(); }
+            get { return new PluginParameters<Type>(); }
         }
 
         public override IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)

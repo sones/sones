@@ -202,10 +202,11 @@ namespace sones.GraphDB.Manager.Security
             get { return "BasicSecurityManager"; }
         }
 
-        public Dictionary<String, Type> SetableParameters
+        public PluginParameters<Type> SetableParameters
         {
-            get { return new Dictionary<string, Type> { { "vertexStore", typeof(IVertexStore) } }; }
+            get { return new PluginParameters<Type> { { "vertexStore", typeof(IVertexStore) } }; }
         }
+
 
         public IPluginable InitializePlugin(String myUniqueString, Dictionary<String, Object> myParameters)
         {
