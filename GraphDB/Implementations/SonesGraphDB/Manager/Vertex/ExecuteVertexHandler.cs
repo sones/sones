@@ -288,7 +288,7 @@ namespace sones.GraphDB.Manager.Vertex
             //set id to maximum to allow user set UUIDs
             _idManager[myVertexType.ID].SetToMaxID(vertexID);
 
-            return Tuple.Create(revision, new VertexAddDefinition(vertexID, myVertexType.ID, edition, hyperEdges, singleEdges, binaries, comment, creationdate, modificationDate, structured, myInsertDefinition.UnstructuredProperties));
+            return Tuple.Create(revision, new VertexAddDefinition(vertexID, myVertexType.ID, edition, hyperEdges, singleEdges, null, binaries, comment, creationdate, modificationDate, structured, myInsertDefinition.UnstructuredProperties));
         }
 
         private static void ExtractVertexProperties(ref String edition, ref long? revision, ref String comment, ref long vertexID, ref long creationdate, ref long modificationDate, IDictionary<long, IComparable> structured)
