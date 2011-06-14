@@ -375,10 +375,17 @@ namespace sones.Library.Network.HttpServer
         /// </summary>
         private void DoListen()
         {
+            IAsyncResult asyncCall = null;
+            bool hadSignal = true;
+
             while (IsRunning)
             {
-                var asyncCall =_listener.BeginGetContext(AsyncGetContext, _listener);
-                asyncCall.AsyncWaitHandle.WaitOne(AsyncWaitTime); 
+                if (hadSignal)
+                {
+                    asyncCall = _listener.BeginGetContext(AsyncGetContext, _listener);
+                }
+
+                hadSignal = asyncCall.AsyncWaitHandle.WaitOne(AsyncWaitTime); 
             }
         }
 
