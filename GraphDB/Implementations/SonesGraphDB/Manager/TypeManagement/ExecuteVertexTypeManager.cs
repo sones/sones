@@ -860,7 +860,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 //removes the vertexType
                 if(!_vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, type.ID, (long)BaseTypes.VertexType))
-                    throw new VertexTypeRemoveException(type.Name, "Could not remove the vertex representing the type.");
+                    if (_vertexManager.ExecuteManager.VertexStore.VertexExists(mySecurity, myTransaction, type.ID, (long)BaseTypes.VertexType))
+                        throw new VertexTypeRemoveException(type.Name, "Could not remove the vertex representing the type.");
 
             } 
             
