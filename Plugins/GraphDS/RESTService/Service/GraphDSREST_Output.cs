@@ -115,7 +115,19 @@ namespace sones.Plugins.GraphDS.RESTService
                 return String.Empty;
             }
 
+// Mono 2.10.2 has a bug regarding Request.QueryString.
+// Leave this ifdef until this bug is fixed.
+#if __MonoCS__
+
+            //we know we have a '?', so we can access position 1
+            var raw = HttpServer.HttpContext.Request.RawUrl;
+            var index = raw.IndexOf('?') + 1;
+            var _QueryString = raw.Substring(index, raw.Length - index);
+
+#else
             var _QueryString = HttpServer.HttpContext.Request.QueryString[null];
+
+#endif
             if (_QueryString == null)
             {
                 _ErrorMsg.Error400_BadRequest("[Syntax Error] Please use '...gql?query'!");
