@@ -2410,17 +2410,18 @@ namespace sones.GraphQL
                 if (!_AttributeIndex.IsUserdefined)
                     continue;
 
-                if (!_AttributeIndex.Name.StartsWith("sones"))
-                    _StringBuilder.Append(String.Concat(S_BRACKET_LEFT, _AttributeIndex.Name, " "));
-                else
-                    _StringBuilder.Append(S_BRACKET_LEFT);
+                _StringBuilder.Append(S_BRACKET_LEFT);
 
-                _StringBuilder.Append(String.Concat(S_EDITION.ToUpperString(), " ", _AttributeIndex.Edition));
+                if (!_AttributeIndex.Name.StartsWith("sones"))
+                    _StringBuilder.Append(String.Concat(_AttributeIndex.Name, " "));
+
+                if (!String.IsNullOrEmpty(_AttributeIndex.Edition))
+                    _StringBuilder.Append(String.Concat(S_EDITION.ToUpperString(), " ", _AttributeIndex.Edition, " "));
 
                 if(!String.IsNullOrWhiteSpace(_AttributeIndex.IndexTypeName))
-                    _StringBuilder.Append(String.Concat(" ", S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexTypeName));
+                    _StringBuilder.Append(String.Concat(S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexTypeName, " "));
 
-                _StringBuilder.Append(String.Concat(" ", S_ON.ToUpperString(), " " + S_ATTRIBUTES.ToUpperString(), " ", 
+                _StringBuilder.Append(String.Concat(S_ON.ToUpperString(), " " + S_ATTRIBUTES.ToUpperString(), " ", 
                                                     GetIndexedPropertyNames(_AttributeIndex.IndexedProperties)));
 
                 _StringBuilder.Append(S_BRACKET_RIGHT);
@@ -2702,7 +2703,7 @@ namespace sones.GraphQL
 
             //INSERT INTO ... VALUES (VertexID = ...,
             stringBuilder.Append(String.Concat(S_INSERT.ToUpperString(), " ", S_INTO.ToUpperString(), " ", myVertexType.Name, " ", S_VALUES.ToUpperString(), " ", S_BRACKET_LEFT));
-            stringBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = ", myVertex.VertexID.ToString(), delimiter));
+            stringBuilder.Append(String.Concat(S_UUID, " = ", myVertex.VertexID.ToString(), delimiter));
 
             #region standard attributes (creationDate, ...)
 

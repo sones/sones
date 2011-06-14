@@ -328,13 +328,15 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 if (edge.Kind == AttributeType.IncomingEdge)
                 {
-                    Attributes.Add("Type", (edge as IIncomingEdgeDefinition).RelatedEdgeDefinition.EdgeType.Name);
+                    Attributes.Add("RelatedEdgeName", (edge as IIncomingEdgeDefinition).RelatedEdgeDefinition.Name);
+                    Attributes.Add("RelatedEdgeSourceVertexType", (edge as IIncomingEdgeDefinition).RelatedEdgeDefinition.SourceVertexType.Name);
+                    Attributes.Add("RelatedEdgeTargetVertexType", (edge as IIncomingEdgeDefinition).RelatedEdgeDefinition.TargetVertexType.Name);
                 }
                 else if (edge.Kind == AttributeType.OutgoingEdge)
                 {
                     Attributes.Add("Type", (edge as IOutgoingEdgeDefinition).EdgeType.Name);
-                    Attributes.Add("SourceVertexType", (edge as IOutgoingEdgeDefinition).SourceVertexType.GetType().Name);
-                    Attributes.Add("TargetVertexType", (edge as IOutgoingEdgeDefinition).TargetVertexType.GetType().Name);
+                    Attributes.Add("SourceVertexType", (edge as IOutgoingEdgeDefinition).SourceVertexType.Name);
+                    Attributes.Add("TargetVertexType", (edge as IOutgoingEdgeDefinition).TargetVertexType.Name);
                 }
 
                 Attributes.Add("ID", edge.ID);

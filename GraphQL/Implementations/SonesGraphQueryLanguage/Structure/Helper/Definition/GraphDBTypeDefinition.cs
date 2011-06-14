@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.GraphQL.ErrorHandling;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition
 {
@@ -108,6 +109,15 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             Name = myName;
             ParentType = myParentType;
             Attributes = myAttributes;
+
+            //check that no SET or LIST Attribute is set as UNIQUE, it's not possible at this time
+            foreach (var item in Attributes.Keys)
+            {
+                if (item.AttributeType.TypeCharacteristics.IsUnique && 
+                        (item.AttributeType.Type.ToUpper().Equals("SET") || item.AttributeType.Type.ToUpper().Equals("LIST")))
+                    throw new InvalidVertexAttributeKindException(item.AttributeType.Type, "Single");
+            }
+
             BackwardEdgeNodes = myBackwardEdgeNodes;
             Indices = myIndices;
             IsAbstract = myIsAbstract;

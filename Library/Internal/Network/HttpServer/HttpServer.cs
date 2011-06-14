@@ -42,6 +42,8 @@ namespace sones.Library.Network.HttpServer
 
         public static ContentType GetBestMatchingAcceptHeader(params ContentType[] myContentTypes)
         {
+            if (HttpContext.Request.AcceptTypes == null)
+                return new ContentType("text/html");
 
             var AcceptTypes = HttpContext.Request.AcceptTypes.Select((type, idx) => new AcceptType(type, (uint)idx)).ToList();
 
