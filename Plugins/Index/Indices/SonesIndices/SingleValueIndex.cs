@@ -242,11 +242,11 @@ namespace sones.Plugins.Index
             get { return "sones.singlevalueindex"; }
         }
 
-        public Dictionary<String, Type> SetableParameters
+        public PluginParameters<Type> SetableParameters
         {
             get
             {
-                return new Dictionary<string, Type> 
+                return new PluginParameters<Type> 
                 { 
                 };
             }

@@ -93,9 +93,9 @@ namespace sones.Plugins.SonesGQL.Aggregates
             get { return "sones.min"; }
         }
 
-        public Dictionary<string, Type> SetableParameters
+        public PluginParameters<Type> SetableParameters
         {
-            get { return new Dictionary<string, Type>(); }
+            get { return new PluginParameters<Type>(); }
         }
 
         public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
