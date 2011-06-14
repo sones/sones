@@ -832,7 +832,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                         #endregion
 
-                        _vertexStore.UpdateVertex(mySecurityToken, myTransactionToken, aVertex.VertexID, aVertex.VertexTypeID, update, aVertex.EditionName, aVertex.VertexRevisionID, false);
+                        _vertexStore.UpdateVertex(mySecurityToken, myTransactionToken, aVertex.VertexID, aVertex.VertexTypeID, update, true, aVertex.EditionName, aVertex.VertexRevisionID, false);
                     }
                 }
             }
@@ -993,8 +993,8 @@ namespace sones.GraphDB.Manager.Vertex
                     }
                     
                     var updatedVertex = (update.Item1 != null &&  update.Item1.HasValue)
-                        ? _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, group.Key, update.Item3, update.Item2, update.Item1.Value)
-                        : _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, group.Key, update.Item3, update.Item2, 0L, true);
+                        ? _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, group.Key, update.Item3, true, update.Item2, update.Item1.Value)
+                        : _vertexStore.UpdateVertex(mySecurity, myTransaction, vertex.VertexID, group.Key, update.Item3, true, update.Item2, 0L, true);
 
                     result.Add(updatedVertex);
 

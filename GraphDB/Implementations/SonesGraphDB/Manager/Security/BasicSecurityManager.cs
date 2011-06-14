@@ -167,9 +167,9 @@ namespace sones.GraphDB.Manager.Security
             return _vertexStore.AddVertex(mySecurityToken, myTransactionToken, myVertexDefinition, myVertexRevisionID, myCreateIncomingEdges);
         }
 
-        public IVertex UpdateVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID, VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null, Int64 myToBeUpdatedRevisionIDs = 0L, bool myCreateNewRevision = false)
+        public IVertex UpdateVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID, VertexUpdateDefinition myVertexUpdate, bool myCreateIncomingEdges = true, string myToBeUpdatedEditions = null, Int64 myToBeUpdatedRevisionIDs = 0L, bool myCreateNewRevision = false)
         {
-            return _vertexStore.UpdateVertex(mySecurityToken, myTransactionToken, myToBeUpdatedVertexID, myCorrespondingVertexTypeID, myVertexUpdate, myToBeUpdatedEditions, myToBeUpdatedRevisionIDs, myCreateNewRevision);
+            return _vertexStore.UpdateVertex(mySecurityToken, myTransactionToken, myToBeUpdatedVertexID, myCorrespondingVertexTypeID, myVertexUpdate, myCreateIncomingEdges, myToBeUpdatedEditions, myToBeUpdatedRevisionIDs, myCreateNewRevision);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myTypeID, IEnumerable<long> myInterestingVertexIDs, VertexStoreFilter.EditionFilter myEditionsFilterFunc, VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc)
