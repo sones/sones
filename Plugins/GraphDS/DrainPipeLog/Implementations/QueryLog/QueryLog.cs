@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.GraphDB;
 using sones.GraphDB.Request;
 using sones.GraphDB.Request.GetEdgeType;
