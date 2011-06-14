@@ -79,9 +79,9 @@ namespace sones.Plugins.GraphDS.RESTService
 
         #endregion
 
-        #region GenerateResultOutput(myResult, myQuery, myStopWatch)
+        #region GenerateResultOutput(myResult, myQuery)
 
-        public void GenerateResultOutput(QueryResult myResult, Stopwatch myStopWatch)
+        public void GenerateResultOutput(QueryResult myResult)
         {
 
             var _ContentType = HttpServer.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT);
@@ -145,13 +145,9 @@ namespace sones.Plugins.GraphDS.RESTService
             QueryResult _QueryResult = null;
             try
             {
-                var _StopWatch = new Stopwatch();
-
-                _StopWatch.Start();
                 _QueryResult = _GraphDS.Query(null, null, myQuery, "sones.gql");
-                _StopWatch.Stop();
 
-                GenerateResultOutput(_QueryResult, _StopWatch);
+                GenerateResultOutput(_QueryResult);
 
                 return _QueryResult;
 
