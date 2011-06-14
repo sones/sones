@@ -122,7 +122,13 @@ namespace sones.Plugins.GraphDS.RESTService
             //we know we have a '?', so we can access position 1
             var raw = HttpServer.HttpContext.Request.RawUrl;
             var index = raw.IndexOf('?') + 1;
-            var _QueryString = raw.Substring(index, raw.Length - index);
+            raw = raw.Substring(index, raw.Length - index);
+
+            index = raw.IndexOf('&');
+            if (index >= 0)
+                raw = raw.Substring(0, index);
+
+            var _QueryString = raw;
 
 #else
             var _QueryString = HttpServer.HttpContext.Request.QueryString[null];
