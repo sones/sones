@@ -298,14 +298,14 @@ namespace sones.Library.Commons.VertexStore
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexDefinition">The vertex definition that represents the new vertex</param>
         /// <param name="myVertexRevisionID">The revision id of the vertex</param>
-        /// <param name="myCreateIncomingEdges">Create the incoming edges</param>
+        /// <param name="myCreateAutoIncomingEdges">Create the incoming edges</param>
         /// <returns>The added vertex</returns>
         IVertex AddVertex(
             SecurityToken mySecurityToken,
             TransactionToken myTransactionToken,
             VertexAddDefinition myVertexDefinition,
             Int64 myVertexRevisionID = 0L,
-            Boolean myCreateIncomingEdges = true);
+            Boolean myCreateAutoIncomingEdges = true);
 
         /// <summary>
         /// Updates a vertex
@@ -326,7 +326,7 @@ namespace sones.Library.Commons.VertexStore
             Int64 myToBeUpdatedVertexID,
             Int64 myCorrespondingVertexTypeID,
             VertexUpdateDefinition myVertexUpdate,
-            Boolean myCreateIncomingEdges = true,
+            Boolean myCreateAutoIncomingEdges = true,
             String myToBeUpdatedEditions = null,
             Int64 myToBeUpdatedRevisionIDs = 0L,
             Boolean myCreateNewRevision = false);
