@@ -430,19 +430,29 @@ namespace sones.GraphQL.GQL.Manager.Select
                 throw new InvalidGroupByLevelException(myIDChainDefinition.Edges.Count.ToString(), myIDChainDefinition.ContentString);
             }
 
-            // if the grouped attr is not selected
-            if ((!_Selections.ContainsKey(myReference) || !_Selections[myReference].Any(l => l.Value.Any(se => se.Element != null && se.Element == myIDChainDefinition.LastAttribute))) && !myIDChainDefinition.IsUndefinedAttribute)
+            if (_Selections.ContainsKey(myReference))
             {
-                throw new GroupedAttributeIsNotSelectedException(myIDChainDefinition.LastAttribute.Name);
-            }
-            else
-            {
-                if (!_Groupings.ContainsKey(myReference))
+                foreach (var aReference in _Selections[myReference])
                 {
-                    _Groupings.Add(myReference, new List<SelectionElement>());
+                    foreach (var aSelection in aReference.Value)
+                    {
+                        if (aSelection.Element.Equals(myIDChainDefinition.LastAttribute))
+                        {
+                            if (!_Groupings.ContainsKey(myReference))
+                            {
+                                _Groupings.Add(myReference, new List<SelectionElement>());
+                            }
+                            _Groupings[myReference].Add(new SelectionElement(myReference, new EdgeList(myIDChainDefinition.Edges), false, myIDChainDefinition, myIDChainDefinition.LastAttribute));
+
+                            return;
+                        }
+                    }
                 }
-                _Groupings[myReference].Add(new SelectionElement(myReference, new EdgeList(myIDChainDefinition.Edges), false, myIDChainDefinition, myIDChainDefinition.LastAttribute));
             }
+
+            // if the grouped attr is not selected
+            throw new GroupedAttributeIsNotSelectedException(myIDChainDefinition.LastAttribute.Name);
+
         }
 
         /// <summary>
@@ -1949,11 +1959,6 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 foreach (var selection in mySelections)
                 {
-
-                    if (!dbo.HasProperty(selection.Element.ID))
-                    {
-                        continue;
-                    }
 
                     var attrValue = (selection.Element as IPropertyDefinition).GetValue(dbo);
                     

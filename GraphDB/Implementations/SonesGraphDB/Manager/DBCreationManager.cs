@@ -384,8 +384,7 @@ namespace sones.GraphDB.Manager
             BaseGraphStorageManager.StoreProperty(myStore, _VertexDotModificationDate, GlobalConstants.VertexDotModificationDate, "ModificationDateComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
             BaseGraphStorageManager.StoreProperty(myStore, _VertexDotRevision, GlobalConstants.VertexDotRevision, "RevisionComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
             BaseGraphStorageManager.StoreProperty(myStore, _VertexDotEdition, GlobalConstants.VertexDotEdition, "EditionComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeString, _security, _transaction);
-            //TODO comment this in, when IVertex was modified to have the VertexTypeName
-            //            BaseGraphStorageManager.StoreProperty(myStore, _VertexDotTypeName, GlobalConstants.VertexDotVertexTypeName, "TypeNameComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeString, _security, _transaction);
+            BaseGraphStorageManager.StoreProperty(myStore, _VertexDotTypeName, GlobalConstants.VertexDotVertexTypeName, "TypeNameComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeString, _security, _transaction);
             BaseGraphStorageManager.StoreProperty(myStore, _VertexDotTypeID, GlobalConstants.VertexDotVertexTypeID, "TypeIDComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
             BaseGraphStorageManager.StoreProperty(myStore, _VertexDotComment, GlobalConstants.VertexDotComment, "CommentComment", myCreationDate, false, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeString, _security, _transaction);
 
