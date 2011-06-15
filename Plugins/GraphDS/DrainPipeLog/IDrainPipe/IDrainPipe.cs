@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using sones.Library.VersionedPluginManager;
 using sones.GraphDS;
+using sones.GraphQL.Result;
 
 namespace sones.Plugins.GraphDS
 {
@@ -49,6 +50,10 @@ namespace sones.Plugins.GraphDS
 
     public interface IDrainPipe : IGraphDS,IPluginable
     {
-
+        /// <summary>
+        /// this method is called AFTER the query was completed.
+        /// </summary>
+        /// <param name="result">the result of the query</param>
+        void DrainQueryResult(QueryResult result);
     }
 }

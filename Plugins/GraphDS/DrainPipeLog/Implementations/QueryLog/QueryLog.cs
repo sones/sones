@@ -73,6 +73,7 @@ namespace QueryLog
         public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
             _logFile.WriteLine(myQueryString);
+            _logFile.Flush();
             return null;
         }
 
@@ -248,5 +249,40 @@ namespace QueryLog
         }
 
         #endregion
+
+        public void DrainQueryResult(QueryResult result)
+        {
+            DateTime now = DateTime.Now;
+
+            String resultType;
+
+            if (result != null)
+            {
+                 switch(result.TypeOfResult)
+                 {
+                     case ResultType.Failed:
+                         resultType = "failed";
+                         break;
+                     case ResultType.Successful:
+                         resultType = "successful";
+                         break;
+                     default:
+                         resultType = "undetermined";
+                         break;
+                 }
+                 String ErrorMessage = "";
+
+                 if (result.Error != null)
+                     ErrorMessage = result.Error.Message + "(" + result.Error.StackTrace + ")";
+
+                _logFile.WriteLine(now.ToShortDateString() + " " + now.ToShortTimeString() + " " + resultType + " " + result.Duration + " " + result.NumberOfAffectedVertices + " " + result.NameOfQuerylanguage + " '" + result.Query+ "' " + ErrorMessage);
+            }
+            else
+            {
+                _logFile.WriteLine(now.ToShortDateString() + " " + now.ToShortTimeString() + " failed 0 0 none 'none' no result was returned (error)");
+            }
+
+            _logFile.Flush();
+        }
     }
 }

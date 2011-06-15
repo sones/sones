@@ -65,7 +65,8 @@ namespace sones.GraphDB.TypeManagement
 
         public bool Equals(IAttributeDefinition myOther)
         {
-            return myOther != null && myOther.ID == ID;
+            return myOther != null 
+                && myOther.ID == ID;
         }
 
         #endregion

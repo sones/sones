@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.TypeSystem;
 using sones.Constants;
@@ -109,7 +110,7 @@ namespace sones.GraphDB.Extensions
                     return myVertex.VertexTypeID;
 
                 case GlobalConstants.VertexDotVertexTypeName:
-                    throw new NotImplementedException();
+                    return myProperty.RelatedType.GetDescendantTypesAndSelf().Where(_ => _.ID == myVertex.VertexTypeID).Select(__ => __.Name).FirstOrDefault();
 
                 case GlobalConstants.VertexDotVertexID:
                     return myVertex.VertexID;

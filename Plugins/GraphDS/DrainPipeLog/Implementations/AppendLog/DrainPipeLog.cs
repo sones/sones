@@ -434,5 +434,10 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         }
 
         #endregion
+
+        public void DrainQueryResult(GraphQL.Result.QueryResult result)
+        {
+            
+        }
     }
 }
