@@ -60,7 +60,7 @@ namespace sones.GraphQL.StatementNodes.DML
         /// <summary>
         /// substitute for where expression
         /// </summary>
-        private IEnumerable<long> _vertexIDs = null;
+        private IEnumerable<IVertex> _vertexIDs = null;
 
         /// <summary>
         /// The Name of the type which should be updated
@@ -79,7 +79,7 @@ namespace sones.GraphQL.StatementNodes.DML
         /// </summary>
         /// <param name="myTypeName"></param>
         /// <param name="myAttributeAssignList"></param>
-        public void Init(String myTypeName, IEnumerable<AAttributeAssignOrUpdateOrRemove> myAttributeAssignList, IEnumerable<long> myVertexIDs)
+        public void Init(String myTypeName, IEnumerable<AAttributeAssignOrUpdateOrRemove> myAttributeAssignList, IEnumerable<IVertex> myVertexIDs)
         {
             _listOfUpdates = new HashSet<AAttributeAssignOrUpdateOrRemove>(myAttributeAssignList);
             _vertexIDs = myVertexIDs;
@@ -161,7 +161,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
         private RequestUpdate GenerateUpdateRequest(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            IEnumerable<long> toBeupdatedVertices = null;
+            IEnumerable<IVertex> toBeupdatedVertices = null;
             //prepare
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
                 mySecurityToken,
@@ -181,15 +181,15 @@ namespace sones.GraphQL.StatementNodes.DML
 
                     //extract
 
-                    toBeupdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
+                    toBeupdatedVertices = expressionGraph.Select(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
                 }
                 else
                 {
-                    toBeupdatedVertices = myGraphDB.GetVertices<IEnumerable<long>>(
+                    toBeupdatedVertices = myGraphDB.GetVertices<IEnumerable<IVertex>>(
                         mySecurityToken,
                         myTransactionToken,
                         new RequestGetVertices(vertexType.ID),
-                        (stats, vertices) => vertices.Select(_ => _.VertexID));
+                        (stats, vertices) => vertices);
                 }
                 
             }
@@ -199,7 +199,7 @@ namespace sones.GraphQL.StatementNodes.DML
             }
 
 
-            var result = new RequestUpdate(new RequestGetVertices(vertexType.ID, toBeupdatedVertices, false));
+            var result = new RequestUpdate(new RequestGetVertices(vertexType.ID, toBeupdatedVertices.Select(_ => _.VertexID) , false));
 
             ProcessListOfUpdates(vertexType, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, ref result);
 

@@ -38,6 +38,7 @@ using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph.Helper;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.Expression;
 using sones.GraphDB.ErrorHandling;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Operator
 {
@@ -489,7 +490,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             if (myLevelKey.Level > 0)
             {
                 var previousLevelKey = myLevelKey.GetPredecessorLevel(myGraphDB, mySecurityToken, myTransactionToken);
-                HashSet<Int64> toBeDeletedNodes = new HashSet<Int64>();
+                HashSet<VertexInformation> toBeDeletedNodes = new HashSet<VertexInformation>();
 
                 foreach (var aLowerDBO in myGraph.Select(previousLevelKey, null, false))
                 {
@@ -497,11 +498,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                     {
                         foreach (var aVertex in aLowerDBO.GetOutgoingEdge(myLevelKey.LastEdge.AttributeID).GetTargetVertices())
                         {
-                            if (!myGraph.GetLevel(myLevelKey.Level).ExpressionLevels[myLevelKey].Nodes.ContainsKey(aVertex.VertexID))
+                            //took the vertextype id of the levelkey, because it is possible that the vertextypeid of the vertex is something inheritated
+                            VertexInformation node = new VertexInformation(aVertex.VertexTypeID, aVertex.VertexID);
+
+                            if (!myGraph.GetLevel(myLevelKey.Level).ExpressionLevels[myLevelKey].Nodes.ContainsKey(node))
                             {
                                 //a reference occurred that is not in the higher level --> found a Zoidberg
 
-                                toBeDeletedNodes.Add(aVertex.VertexID);
+                                toBeDeletedNodes.Add(node);
                                 break;
                             }
                         }

@@ -28,6 +28,7 @@ using sones.GraphDB;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.Security;
 using sones.GraphDB.Request;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 {
@@ -37,6 +38,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
     public sealed class ExpressionNode : IExpressionNode
     {
         #region Properties
+
+        /// <summary>
+        /// Some information concerning the vertex
+        /// </summary>
+        private readonly VertexInformation _VertexInformation;
 
         /// <summary>
         /// A lock object
@@ -89,9 +95,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// <summary>
         /// Set of weighted ForwardEdges
         /// </summary>
-        private Dictionary<LevelKey, HashSet<Int64>> _ComplexConnection = new Dictionary<LevelKey, HashSet<Int64>>();
+        private Dictionary<LevelKey, HashSet<VertexInformation>> _ComplexConnection = new Dictionary<LevelKey, HashSet<VertexInformation>>();
 
-        public Dictionary<LevelKey, HashSet<Int64>> ComplexConnection
+        public Dictionary<LevelKey, HashSet<VertexInformation>> ComplexConnection
         {
             get
             {
@@ -111,10 +117,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// </summary>
         /// <param name="myObject">The IVertex that is referenced by this node.</param>
         /// <param name="Weight">The Weight of this node.</param>
-        public ExpressionNode(IVertex myObject, IComparable NodeWeight)
+        public ExpressionNode(IVertex myObject, IComparable NodeWeight, VertexInformation myVertexInformation)
             : this(NodeWeight)
         {
             _Object = myObject;
+            _VertexInformation = myVertexInformation;
         }
 
         private ExpressionNode(IComparable NodeWeight)
@@ -141,7 +148,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             }
         }
 
-        public void AddForwardEdges(EdgeKey forwardDestination, Dictionary<Int64, IComparable> validUUIDs)
+        public void AddForwardEdges(EdgeKey forwardDestination, Dictionary<VertexInformation, IComparable> validUUIDs)
         {
             lock (_lockObj)
             {
@@ -220,7 +227,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             }
         }
 
-        public void AddBackwardEdges(EdgeKey backwardDestination, Dictionary<Int64, IComparable> validUUIDs)
+        public void AddBackwardEdges(EdgeKey backwardDestination, Dictionary<VertexInformation, IComparable> validUUIDs)
         {
             lock (_lockObj)
             {
@@ -239,7 +246,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             }
         }
 
-        public void AddForwardEdge(EdgeKey ForwardEdge, Int64 destination, IComparable weight)
+        public void AddForwardEdge(EdgeKey ForwardEdge, VertexInformation destination, IComparable weight)
         {
             lock (_lockObj)
             {
@@ -274,7 +281,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             }
         }
 
-        public void RemoveForwardEdge(EdgeKey myEdgeKey, Int64 myObjectUUID)
+        public void RemoveForwardEdge(EdgeKey myEdgeKey, VertexInformation myObjectUUID)
         {
             lock (_lockObj)
             {
@@ -285,7 +292,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             }
         }
 
-        public void RemoveBackwardEdge(EdgeKey myEdgeKey, Int64 myObjectUUID)
+        public void RemoveBackwardEdge(EdgeKey myEdgeKey, VertexInformation myObjectUUID)
         {
             lock (_lockObj)
             {
@@ -297,7 +304,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             }
         }
 
-        public void AddBackwardEdge(EdgeKey backwardDestination, Int64 validUUIDs, IComparable edgeWeight)
+        public void AddBackwardEdge(EdgeKey backwardDestination, VertexInformation validUUIDs, IComparable edgeWeight)
         {
             lock (_lockObj)
             {
@@ -318,7 +325,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             }
         }
 
-        public void AddComplexConnection(LevelKey myLevelKey, Int64 myUUID)
+        public void AddComplexConnection(LevelKey myLevelKey, VertexInformation myUUID)
         {
             lock (_lockObj)
             {
@@ -328,12 +335,12 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                 }
                 else
                 {
-                    _ComplexConnection.Add(myLevelKey, new HashSet<Int64>() { myUUID });
+                    _ComplexConnection.Add(myLevelKey, new HashSet<VertexInformation>() { myUUID });
                 }
             }
         }
 
-        public void RemoveComplexConnection(LevelKey myLevelKey, Int64 myUUID)
+        public void RemoveComplexConnection(LevelKey myLevelKey, VertexInformation myUUID)
         {
             lock (_lockObj)
             {
@@ -414,6 +421,16 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         public override string ToString()
         {
             return String.Format("{0}", _Object.ToString());
+        }
+
+        #endregion
+
+        #region IExpressionNode Members
+
+
+        public VertexInformation VertexInformation
+        {
+            get { return _VertexInformation; }
         }
 
         #endregion

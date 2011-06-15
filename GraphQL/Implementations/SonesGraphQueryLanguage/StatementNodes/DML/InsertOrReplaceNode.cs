@@ -38,6 +38,7 @@ using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
 using System.Diagnostics;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -111,7 +112,7 @@ namespace sones.GraphQL.StatementNodes.DML
             _query = myQuery;
             QueryResult result = null;
             String myAction = "";
-            List<long> myToBeUpdatedVertices = new List<long>();
+            List<IVertex> myToBeUpdatedVertices = new List<IVertex>();
             
             //prepare
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
@@ -129,7 +130,7 @@ namespace sones.GraphQL.StatementNodes.DML
                 var expressionGraph = _whereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
 
                 //extract
-                myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
+                myToBeUpdatedVertices = expressionGraph.Select(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
             }
 
             switch (myToBeUpdatedVertices.Count)
@@ -175,11 +176,12 @@ namespace sones.GraphQL.StatementNodes.DML
             return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
-        private void ProcessDelete(long toBeDeletedVertexID, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void ProcessDelete(IVertex toBeDeletedVertexID, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
+            //TODO: new RequestDelete(new RequestGetVertices( --> change to sth that uses the IVertex directly
             var stat = myGraphDB.Delete(mySecurityToken,
                                          myTransactionToken,
-                                         new RequestDelete(new RequestGetVertices(_type, new List<long> {toBeDeletedVertexID})),
+                                         new RequestDelete(new RequestGetVertices(toBeDeletedVertexID.VertexTypeID, new List<long> { toBeDeletedVertexID.VertexID })),
                                          (stats) => stats);
         }
 

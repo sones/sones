@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph.Helper;
 using sones.Library.PropertyHyperGraph;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 {
@@ -42,11 +43,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// Adds a single forward edge to a node and creates it.
         /// </summary>
         /// <param name="levelKey">The place where the new node is going to be stored.</param>
-        /// <param name="myVertexID">The ObjectUUID that's going to be a new node.</param>
+        /// <param name="myVertexInformation">The vertex that's going to be a new node.</param>
         /// <param name="forwardEdgeDirection">The forward direction for the forward edge.</param>
         /// <param name="destination">The destination for the forward edge.</param>
         /// <param name="NodeWeight">The weight of the node.</param>
-        void AddForwardEdgeToNode(LevelKey levelKey, Int64 myVertexID, EdgeKey forwardEdgeDirection, Int64 destination, IComparable NodeWeight);
+        void AddForwardEdgeToNode(LevelKey levelKey, VertexInformation myVertexInformation, EdgeKey forwardEdgeDirection, VertexInformation destination, IComparable NodeWeight);
 
         /// <summary>
         /// Adds an expression node to a level corresponding to its LevelKey
@@ -65,10 +66,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// Adds a BackwardEdge to a node
         /// </summary>
         /// <param name="myPath">The LevelKey of the node</param>
-        /// <param name="myVertexID">The ObjectUUID that identifies the node</param>
+        /// <param name="myVertexInformation">The vertex information that identifies the node</param>
         /// <param name="myBackwardDirection">The direction of the Edge</param>
         /// <param name="myBackwardDestinations">The destination of the edge including a EdgeWeight</param>
-        void AddBackwardEdgesToNode(LevelKey myPath, Int64 myVertexID, EdgeKey myBackwardDirection, Dictionary<Int64, IComparable> myBackwardDestinations);
+        void AddBackwardEdgesToNode(LevelKey myPath, VertexInformation myVertexInformation, EdgeKey myBackwardDirection, Dictionary<VertexInformation, IComparable> myBackwardDestinations);
 
         /// <summary>
         /// Adds a node and a BackwardEdge
@@ -79,7 +80,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// <param name="myBackwardDestination">The backward destination of the edge</param>
         /// <param name="myEdgeWeight">The weight of the backward edge</param>
         /// <param name="myNodeWeight">The weight of the node</param>
-        void AddNodeAndBackwardEdge(LevelKey myPath, IVertex myDBObject, EdgeKey myBackwardDirection, Int64 myBackwardDestination, IComparable myEdgeWeight, IComparable myNodeWeight);
+        void AddNodeAndBackwardEdge(LevelKey myPath, IVertex myDBObject, EdgeKey myBackwardDirection, VertexInformation myBackwardDestination, IComparable myEdgeWeight, IComparable myNodeWeight);
 
         /// <summary>
         /// Get all ExpressionNodes of this level
@@ -93,14 +94,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// </summary>
         /// <param name="myLevelKey">The Level</param>
         /// <returns>The node content at this level</returns>
-        Dictionary<Int64, IExpressionNode> GetNode(LevelKey myLevelKey);
+        Dictionary<VertexInformation, IExpressionNode> GetNode(LevelKey myLevelKey);
 
         /// <summary>
         /// This method removes a Node from a Level.
         /// </summary>
         /// <param name="myLevelKey">The place where the node should be removed.</param>
-        /// <param name="myVertexID">The VertexID that identifies the Node.</param>
-        void RemoveNode(LevelKey myLevelKey, Int64 myVertexID);
+        /// <param name="myVertexInformation">The myVertexInformation that identifies the Node.</param>
+        void RemoveNode(LevelKey myLevelKey, VertexInformation myVertexInformation);
 
         /// <summary>
         /// Returns True, if the Level has any Node for the <paramref name="myLevelKey"/>

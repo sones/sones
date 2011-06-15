@@ -119,7 +119,7 @@ namespace sones.GraphQL.StatementNodes.DML
             QueryResult result = null;
             _query = myQuery;
             String myAction = "";
-            IEnumerable<long> myToBeUpdatedVertices = null;
+            IEnumerable<IVertex> myToBeUpdatedVertices = null;
             
             //prepare
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
@@ -137,7 +137,7 @@ namespace sones.GraphQL.StatementNodes.DML
                 var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
 
                 //extract
-                myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
+                myToBeUpdatedVertices = expressionGraph.Select(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
             }
 
             if (myToBeUpdatedVertices != null && myToBeUpdatedVertices.Count() > 0)
@@ -198,7 +198,7 @@ namespace sones.GraphQL.StatementNodes.DML
             return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
-        private QueryResult ProcessUpdate(IEnumerable<long> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private QueryResult ProcessUpdate(IEnumerable<IVertex> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             UpdateNode update = new UpdateNode();
             update.Init(_Type, _AttributeAssignList, myVertexIDs);

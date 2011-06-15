@@ -30,6 +30,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.GraphQL.GQL.ErrorHandling;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph.Helper;
 using sones.GraphDB.Request;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 {
@@ -149,25 +150,29 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                 if (myLevelKey.Level == 0)
                 {
-                    return this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes.ContainsKey(mySourceDBObject.VertexID);
+                    return this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes.ContainsKey(GenerateVertexInfoFromLevelKeyAndVertexID(mySourceDBObject.VertexTypeID, mySourceDBObject.VertexID));
                 }
                 else
                 {
                     if (mySourceDBObject != null)
                     {
+
+                        VertexInformation mySourceDBObjectNode = GenerateVertexInfoFromLevelKeyAndVertexID(mySourceDBObject.VertexTypeID, mySourceDBObject.VertexID);
+
                         var predecessorLevelKey = myLevelKey.GetPredecessorLevel(_iGraphDB, _securityToken, _transactionToken);
 
                         if (!this.ContainsLevelKey(predecessorLevelKey))
                         {
-                            var interestingEdge = new ExpressionEdge(mySourceDBObject.VertexID, null, predecessorLevelKey.LastEdge);
+                            var interestingEdge = new ExpressionEdge(mySourceDBObjectNode, null, predecessorLevelKey.LastEdge);
                             //take the backwardEdges 
                             return this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes.Where(item => item.Value.BackwardEdges[predecessorLevelKey.LastEdge].Contains(interestingEdge)).Count() > 0;
                         }
                         else
                         {
-                            if (this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[mySourceDBObject.VertexID].ForwardEdges.ContainsKey(myLevelKey.LastEdge))
+
+                            if (this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[mySourceDBObjectNode].ForwardEdges.ContainsKey(myLevelKey.LastEdge))
                             {
-                                if (this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[mySourceDBObject.VertexID].ForwardEdges[myLevelKey.LastEdge].Count > 0)
+                                if (this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[mySourceDBObjectNode].ForwardEdges[myLevelKey.LastEdge].Count > 0)
                                 {
                                     return true;
                                 }
@@ -189,6 +194,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                 }
             }
 
+        }
+
+        private VertexInformation GenerateVertexInfoFromLevelKeyAndVertexID(long myVertexTypeID, long myVertexID)
+        {
+            return new VertexInformation(myVertexTypeID, myVertexID);
         }
 
         public override IEnumerable<IVertex> Select(LevelKey myLevelKey, IVertex mySourceDBObject = null, Boolean doLevelGeneration = true)
@@ -231,18 +241,21 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                         if (!this.ContainsLevelKey(predecessorLevelKey))
                         {
+                            var sourceNode = GenerateVertexInfoFromLevelKeyAndVertexID(mySourceDBObject.VertexTypeID, mySourceDBObject.VertexID);
+
                             //take the backwardEdges 
-                            foreach (var aNode in this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes.Where(item => item.Value.BackwardEdges[predecessorLevelKey.LastEdge].Where(aBackWardEdge => aBackWardEdge.Destination == mySourceDBObject.VertexID).Count() > 0))
+                            foreach (var aNode in this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes.Where(item => item.Value.BackwardEdges[predecessorLevelKey.LastEdge].Where(aBackWardEdge => aBackWardEdge.Destination == sourceNode).Count() > 0))
                             {
                                 yield return aNode.Value.GetIVertex();
                             }
                         }
                         else
                         {
+
                             //take the forwardEdges
                             var interestingVertexIDs = this._Levels[predecessorLevelKey.Level]
                                 .ExpressionLevels[predecessorLevelKey]
-                                .Nodes[mySourceDBObject.VertexID]
+                                .Nodes[GenerateVertexInfoFromLevelKeyAndVertexID(mySourceDBObject.VertexTypeID, mySourceDBObject.VertexID)]
                                 .ForwardEdges[myLevelKey.LastEdge].Select(item => item.Destination);
 
                             foreach (var aInterestingID in interestingVertexIDs)
@@ -269,7 +282,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         }
 
-        public override IEnumerable<Int64> SelectVertexIDs(LevelKey myLevelKey, IVertex mySourceDBObject = null, Boolean doLevelGeneration = true)
+        public override IEnumerable<VertexInformation> SelectVertexIDs(LevelKey myLevelKey, IVertex mySourceDBObject = null, Boolean doLevelGeneration = true)
         {
             lock (_Levels)
             {
@@ -293,7 +306,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                         //return all Objects of this levelKey
                         foreach (var aNode in this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes)
                         {
-                            yield return aNode.Value.GetIVertex().VertexID;
+                            yield return aNode.Value.VertexInformation;
                         }
                     }
                     else
@@ -309,18 +322,23 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                         if (!this.ContainsLevelKey(predecessorLevelKey))
                         {
+                            var node = GenerateVertexInfoFromLevelKeyAndVertexID(mySourceDBObject.VertexTypeID, mySourceDBObject.VertexID);
+
                             //take the backwardEdges 
-                            foreach (var aNode in this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes.Where(item => item.Value.BackwardEdges[predecessorLevelKey.LastEdge].Where(aBackWardEdge => aBackWardEdge.Destination == mySourceDBObject.VertexID).Count() > 0))
+                            foreach (var aNode in this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes.Where(item => item.Value.BackwardEdges[predecessorLevelKey.LastEdge].Where(aBackWardEdge => aBackWardEdge.Destination == node).Count() > 0))
                             {
-                                yield return aNode.Value.GetIVertex().VertexID;
+                                yield return aNode.Value.VertexInformation;
                             }
                         }
                         else
                         {
+                            //took the vertextypeid of the levelkey, because the vertextypeid of the sourceDBObject can be sth inheritated
+                            VertexInformation source = GenerateVertexInfoFromLevelKeyAndVertexID(mySourceDBObject.VertexTypeID, mySourceDBObject.VertexID);
+
                             //take the forwardEdges
-                            if (this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[mySourceDBObject.VertexID].ForwardEdges.ContainsKey(myLevelKey.LastEdge))
+                            if (this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[source].ForwardEdges.ContainsKey(myLevelKey.LastEdge))
                             {
-                                foreach (var aUUID in this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[mySourceDBObject.VertexID].ForwardEdges[myLevelKey.LastEdge].Select(item => item.Destination))
+                                foreach (var aUUID in this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[source].ForwardEdges[myLevelKey.LastEdge].Select(item => item.Destination))
                                 {
                                     yield return aUUID;
                                 }
@@ -337,7 +355,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                         //there is no sourceObject given, so return the complete level
                         foreach (var aNode in this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes)
                         {
-                            yield return aNode.Value.GetIVertex().VertexID;
+                            yield return aNode.Value.VertexInformation;
                         }
                     }
                 }
@@ -357,12 +375,17 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         {
             lock (_Levels)
             {
-                if ((AddNodeIfValid(leftDBObject, leftLevelKey, 0, leftDBObject.VertexID, backwardResolutiondepth)) && (AddNodeIfValid(rightDBObject, rightLevelKey, 0, rightDBObject.VertexID, backwardResolutiondepth)))
+                if ((AddNodeIfValid(leftDBObject, leftLevelKey, 0, GenerateVertexInfoFromLevelKeyAndVertexID(leftDBObject.VertexTypeID, leftDBObject.VertexID), backwardResolutiondepth)) && 
+                    (AddNodeIfValid(rightDBObject, rightLevelKey, 0, GenerateVertexInfoFromLevelKeyAndVertexID(rightDBObject.VertexTypeID, rightDBObject.VertexID), backwardResolutiondepth)))
                 {
+                    //took the vertextype id of the levelkey, because it is possible that the vertextypeid of the vertex is something inheritated
+                    VertexInformation leftNode = GenerateVertexInfoFromLevelKeyAndVertexID(leftDBObject.VertexTypeID, leftDBObject.VertexID);
+                    VertexInformation rightNode = GenerateVertexInfoFromLevelKeyAndVertexID(rightDBObject.VertexTypeID, rightDBObject.VertexID);
+
                     //both nodes have been inserted correctly
                     //--> create a connection between both
-                    _Levels[leftLevelKey.Level].ExpressionLevels[leftLevelKey].Nodes[leftDBObject.VertexID].AddComplexConnection(rightLevelKey, rightDBObject.VertexID);
-                    _Levels[rightLevelKey.Level].ExpressionLevels[rightLevelKey].Nodes[rightDBObject.VertexID].AddComplexConnection(leftLevelKey, leftDBObject.VertexID);
+                    _Levels[leftLevelKey.Level].ExpressionLevels[leftLevelKey].Nodes[leftNode].AddComplexConnection(rightLevelKey, rightNode);
+                    _Levels[rightLevelKey.Level].ExpressionLevels[rightLevelKey].Nodes[rightNode].AddComplexConnection(leftLevelKey, leftNode);
                 }
                 else
                 {
@@ -370,11 +393,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                     if (ContainsLevelKey(leftLevelKey))
                     {
-                        _Levels[leftLevelKey.Level].RemoveNode(leftLevelKey, leftDBObject.VertexID);
+                        _Levels[leftLevelKey.Level].RemoveNode(leftLevelKey, GenerateVertexInfoFromLevelKeyAndVertexID(leftDBObject.VertexTypeID, leftDBObject.VertexID));
                     }
                     if (ContainsLevelKey(rightLevelKey))
                     {
-                        _Levels[rightLevelKey.Level].RemoveNode(rightLevelKey, rightDBObject.VertexID);
+                        _Levels[rightLevelKey.Level].RemoveNode(rightLevelKey, GenerateVertexInfoFromLevelKeyAndVertexID(rightDBObject.VertexTypeID, rightDBObject.VertexID));
                     }
 
                     #endregion
@@ -392,7 +415,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         public override void AddNode(IVertex myIVertex, LevelKey myLevelKey, int backwardResolution)
         {
-            AddNodeIfValid(myIVertex, myLevelKey, 0, myIVertex.VertexID, backwardResolution);
+            AddNodeIfValid(myIVertex, myLevelKey, 0, GenerateVertexInfoFromLevelKeyAndVertexID(myIVertex.VertexTypeID, myIVertex.VertexID), backwardResolution);
         }
 
         public override void AddNode(IVertex myIVertex, LevelKey myLevelKey)
@@ -508,7 +531,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             if ((this.Levels.Count == 1) && (anotherGraph.Levels.Count == 1) && (this.Levels.ContainsKey(0)) && (anotherGraph.Levels.ContainsKey(0)) && (this.Levels[0].ExpressionLevels.Count == 1) && (anotherGraph.Levels[0].ExpressionLevels.Count == 1) && (this.Levels[0].ExpressionLevels.First().Key == anotherGraph.Levels[0].ExpressionLevels.First().Key))
             {
                 LevelKey interestingLevelKey = this.Levels[0].ExpressionLevels.First().Key;
-                List<Int64> toBeDeletedNodes = new List<Int64>();
+                List<VertexInformation> toBeDeletedNodes = new List<VertexInformation>();
 
                 foreach (var aNode in this.Levels[0].ExpressionLevels.First().Value.Nodes)
                 {
@@ -602,7 +625,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// <param name="currentBackwardResolution">The current backward resolution (initially 0)</param>
         /// <param name="source">The Int64 of the </param>
         /// <returns>True if it was valid or false otherwise.</returns>
-        private bool AddNodeIfValid(IVertex aDBObject, LevelKey myLevelKey, int currentBackwardResolution, Int64 source, int backwardResolutiondepth)
+        private bool AddNodeIfValid(IVertex aDBObject, LevelKey myLevelKey, int currentBackwardResolution, VertexInformation source, int backwardResolutiondepth)
         {
             #region data
 
@@ -664,15 +687,15 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                 {
                     #region references
 
-                    Dictionary<Int64, IComparable> validUUIDs = new Dictionary<Int64, IComparable>();
+                    Dictionary<VertexInformation, IComparable> validUUIDs = new Dictionary<VertexInformation, IComparable>();
 
                     #region process references recursivly
 
                     foreach (var aReferenceUUID in referenceUUIDs)
                     {
-                        if (AddNodeIfValid(aReferenceUUID, myLevelKey, currentBackwardResolution + 1, aDBObject.VertexID, backwardResolutiondepth))
+                        if (AddNodeIfValid(aReferenceUUID, myLevelKey, currentBackwardResolution + 1, GenerateVertexInfoFromLevelKeyAndVertexID(aDBObject.VertexTypeID, aDBObject.VertexID), backwardResolutiondepth))
                         {
-                            validUUIDs.Add(aReferenceUUID.VertexID, null);
+                            validUUIDs.Add(GenerateVertexInfoFromLevelKeyAndVertexID(aReferenceUUID.VertexTypeID, aReferenceUUID.VertexID), null);
                         }
                     }
 
@@ -724,15 +747,18 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                     {
                         //we have to add forwardEdges and (if not already there) add nodes
                         AddEmptyLevel(newLevelKey);
-                        Levels[0].AddNode(newLevelKey, new ExpressionNode(aDBObject, null));
-                        Levels[0].AddForwardEdgeToNode(newLevelKey, aDBObject.VertexID, new EdgeKey(myLevelKey.Edges[0].VertexTypeID, myLevelKey.Edges[0].AttributeID), source, null);
+
+                        var node = GenerateVertexInfoFromLevelKeyAndVertexID(aDBObject.VertexTypeID, aDBObject.VertexID);
+
+                        Levels[0].AddNode(newLevelKey, new ExpressionNode(aDBObject, null, node));
+                        Levels[0].AddForwardEdgeToNode(newLevelKey, node, new EdgeKey(myLevelKey.Edges[0].VertexTypeID, myLevelKey.Edges[0].AttributeID), source, null);
 
                     }
                     else
                     {
                         //we are in the lowest level and are the first time in this method... so there's no need for adding forward-edges to nodes
                         AddEmptyLevel(newLevelKey);
-                        Levels[0].AddNode(newLevelKey, new ExpressionNode(aDBObject, null));
+                        Levels[0].AddNode(newLevelKey, new ExpressionNode(aDBObject, null, GenerateVertexInfoFromLevelKeyAndVertexID(aDBObject.VertexTypeID, aDBObject.VertexID)));
                     }
 
                     #endregion
@@ -745,10 +771,12 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         }
 
-        private void FillGraph(IVertex aDBObject, LevelKey myPath, int currentBackwardResolution, Int64 source, EdgeKey tempEdgeKey, Dictionary<Int64, IComparable> validUUIDs)
+        private void FillGraph(IVertex aDBObject, LevelKey myPath, int currentBackwardResolution, VertexInformation source, EdgeKey tempEdgeKey, Dictionary<VertexInformation, IComparable> validUUIDs)
         {
             lock (_Levels)
             {
+
+                VertexInformation node = GenerateVertexInfoFromLevelKeyAndVertexID(aDBObject.VertexTypeID, aDBObject.VertexID);
 
                 if (currentBackwardResolution == 0)
                 {
@@ -757,12 +785,12 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                     //there is no need for forward edges, because we are in the maximum level
                     AddEmptyLevel(myPath);
 
-                    if (!_Levels[myPath.Level].ExpressionLevels[myPath].Nodes.ContainsKey(aDBObject.VertexID))
+                    if (!_Levels[myPath.Level].ExpressionLevels[myPath].Nodes.ContainsKey(node))
                     {
-                        _Levels[myPath.Level].ExpressionLevels[myPath].Nodes.Add(aDBObject.VertexID, new ExpressionNode(aDBObject, null));
+                        _Levels[myPath.Level].ExpressionLevels[myPath].Nodes.Add(node, new ExpressionNode(aDBObject, null, node));
                     }
 
-                    _Levels[myPath.Level].AddBackwardEdgesToNode(myPath, aDBObject.VertexID, GetCorrectBackwardEdge(myPath), validUUIDs);
+                    _Levels[myPath.Level].AddBackwardEdgesToNode(myPath, node, GetCorrectBackwardEdge(myPath), validUUIDs);
 
                     #endregion
                 }
@@ -775,7 +803,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                     LevelKey desiredLevelKey = new LevelKey(myPath.Edges.Take(desiredLevel), _iGraphDB, _securityToken, _transactionToken);
                     AddEmptyLevel(desiredLevelKey);
 
-                    _Levels[desiredLevel].AddForwardEdgeToNode(desiredLevelKey, aDBObject.VertexID, new EdgeKey(myPath.Edges[desiredLevel].VertexTypeID, myPath.Edges[desiredLevel].AttributeID), source, null);
+                    _Levels[desiredLevel].AddForwardEdgeToNode(desiredLevelKey, node, new EdgeKey(myPath.Edges[desiredLevel].VertexTypeID, myPath.Edges[desiredLevel].AttributeID), source, null);
 
                     #endregion
                 }
@@ -823,12 +851,15 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         private void MergeNodeIntoGraph(IExpressionGraph destinationGraph, LevelKey levelKey, IExpressionNode aNode, IExpressionGraph sourceGraph)
         {
-            if (destinationGraph.Levels[levelKey.Level].ExpressionLevels[levelKey].Nodes.ContainsKey(aNode.GetIVertex().VertexID))
+            //took the vertextype id of the levelkey, because it is possible that the vertextypeid of the vertex is something inheritated
+            VertexInformation node = aNode.VertexInformation;
+
+            if (destinationGraph.Levels[levelKey.Level].ExpressionLevels[levelKey].Nodes.ContainsKey(node))
             {
                 if (levelKey.Level != 0)
                 {
                     //check if the node has backward edes
-                    if ((aNode.BackwardEdges.Count != 0) || (destinationGraph.Levels[levelKey.Level].ExpressionLevels[levelKey].Nodes[aNode.GetIVertex().VertexID].BackwardEdges.Count != 0))
+                    if ((aNode.BackwardEdges.Count != 0) || (destinationGraph.Levels[levelKey.Level].ExpressionLevels[levelKey].Nodes[node].BackwardEdges.Count != 0))
                     {
                         //check if the node has backward edes
                         destinationGraph.Levels[levelKey.Level].AddNode(levelKey, aNode);
@@ -884,7 +915,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         {
             foreach (var aLevelKeyPayload in aLevel.Value.ExpressionLevels)
             {
-                List<Int64> toBeDeletedNodes = new List<Int64>();
+                List<VertexInformation> toBeDeletedNodes = new List<VertexInformation>();
 
                 //check if the level exists in the other graph
                 if (referenceGraph.Levels.ContainsKey(aLevel.Key) && referenceGraph.Levels[aLevel.Key].ExpressionLevels.ContainsKey(aLevelKeyPayload.Key))
@@ -923,7 +954,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                 {
                     if (expressionLevelEntry.Nodes.ContainsKey(aReference))
                     {
-                        expressionLevelEntry.Nodes[aReference].RemoveComplexConnection(mylevelKey, myExpressionNode.GetIVertex().VertexID);
+                        expressionLevelEntry.Nodes[aReference].RemoveComplexConnection(mylevelKey, myExpressionNode.VertexInformation);
                         RemoveNodeReferncesFromGraph(expressionLevelEntry.Nodes[aReference], aComplexConnection.Key, myGraph, integratedByAnOtherGraph);
                     }
 
@@ -975,7 +1006,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                             {
                                 if (myGraph.Levels[backwardLevelKey.Level].ExpressionLevels[backwardLevelKey].Nodes.ContainsKey(aBackwardEdge.Destination))
                                 {
-                                    myGraph.Levels[backwardLevelKey.Level].ExpressionLevels[backwardLevelKey].Nodes[aBackwardEdge.Destination].RemoveForwardEdge(mylevelKey.LastEdge, myExpressionNode.GetIVertex().VertexID);
+                                    myGraph.Levels[backwardLevelKey.Level].ExpressionLevels[backwardLevelKey].Nodes[aBackwardEdge.Destination].RemoveForwardEdge(mylevelKey.LastEdge, myExpressionNode.VertexInformation);
                                 }
                             }
                         }
@@ -1005,7 +1036,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                         {
                             if (myGraph.Levels[forwardLevelKey.Level].ExpressionLevels[forwardLevelKey].Nodes.ContainsKey(aForwardEdge.Destination))
                             {
-                                myGraph.Levels[forwardLevelKey.Level].ExpressionLevels[forwardLevelKey].Nodes[aForwardEdge.Destination].RemoveBackwardEdge(mylevelKey.LastEdge, myExpressionNode.GetIVertex().VertexID);
+                                myGraph.Levels[forwardLevelKey.Level].ExpressionLevels[forwardLevelKey].Nodes[aForwardEdge.Destination].RemoveBackwardEdge(mylevelKey.LastEdge, myExpressionNode.VertexInformation);
 
                                 if (!(myGraph.Levels[forwardLevelKey.Level].ExpressionLevels[forwardLevelKey].Nodes[aForwardEdge.Destination].BackwardEdges
                                     .Where(item => item.Value.Count > 0).Count() > 0))
@@ -1247,12 +1278,17 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                             if (myNode.BackwardEdges.ContainsKey(aLowerLevelKey.LastEdge))
                             {
                                 //take the edges that are already available
-
-                                referencedUUIDs = _iGraphDB.GetVertices<IEnumerable<IVertex>>(
+                                List<IVertex> tempVertices = new List<IVertex>();
+                                foreach (var aVertexInformation in myNode.BackwardEdges[aLowerLevelKey.LastEdge].Select(item => item.Destination))
+                                {
+                                    tempVertices.Add(_iGraphDB.GetVertex<IVertex>(
                                     _securityToken,
                                     _transactionToken,
-                                    new RequestGetVertices(outgoingAttribute.SourceVertexType.ID, myNode.BackwardEdges[aLowerLevelKey.LastEdge].Select(item => item.Destination)),
-                                    (stats, vertices) => vertices);
+                                    new RequestGetVertex(aVertexInformation.VertexTypeID, aVertexInformation.VertexID),
+                                    (stats, vertices) => vertices));
+                                }
+
+                                referencedUUIDs = tempVertices;
                             }
                             else
                             {
@@ -1283,8 +1319,8 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                             foreach (var aVertex in referencedUUIDs)
                             {
-                                AddNodeRecursiveBackward(aVertex, myNode.GetIVertex().VertexID, myCurrentLevelKey, aLowerLevelKey, lowerLevelKeys, myGraph);
-                                myNode.AddBackwardEdge(edgeKeyForBackwardEdge, aVertex.VertexID, null);
+                                AddNodeRecursiveBackward(aVertex, myNode.VertexInformation, myCurrentLevelKey, aLowerLevelKey, lowerLevelKeys, myGraph);
+                                myNode.AddBackwardEdge(edgeKeyForBackwardEdge, GenerateVertexInfoFromLevelKeyAndVertexID(aVertex.VertexTypeID, aVertex.VertexID), null);
                             }
                         }
                     }
@@ -1292,10 +1328,12 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             }
         }
 
-        private void AddNodeRecursiveBackward(IVertex myNewVertex, Int64 mySourceUUID, LevelKey mySourceLevelKey, LevelKey myNewNodeLevelKey, List<LevelKey> lowerLevelKeys, IExpressionGraph myGraph)
+        private void AddNodeRecursiveBackward(IVertex myNewVertex, VertexInformation mySourceUUID, LevelKey mySourceLevelKey, LevelKey myNewNodeLevelKey, List<LevelKey> lowerLevelKeys, IExpressionGraph myGraph)
         {
             lock (myGraph)
             {
+                //took the vertextype id of the levelkey, because it is possible that the vertextypeid of the vertex is something inheritated
+                VertexInformation node = GenerateVertexInfoFromLevelKeyAndVertexID(myNewVertex.VertexTypeID, myNewVertex.VertexID);
 
                 #region add node
                 //add node and the node's backwardEdge
@@ -1303,12 +1341,12 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                 //in this point we are shure that the level reall exists
 
-                if (!myGraph.Levels[myNewNodeLevelKey.Level].ExpressionLevels[myNewNodeLevelKey].Nodes.ContainsKey(myNewVertex.VertexID))
+                if (!myGraph.Levels[myNewNodeLevelKey.Level].ExpressionLevels[myNewNodeLevelKey].Nodes.ContainsKey(node))
                 {
-                    myGraph.Levels[myNewNodeLevelKey.Level].ExpressionLevels[myNewNodeLevelKey].Nodes.Add(myNewVertex.VertexID, new ExpressionNode(myNewVertex, null));
+                    myGraph.Levels[myNewNodeLevelKey.Level].ExpressionLevels[myNewNodeLevelKey].Nodes.Add(node, new ExpressionNode(myNewVertex, null, node));
                 }
 
-                myGraph.Levels[myNewNodeLevelKey.Level].AddForwardEdgeToNode(myNewNodeLevelKey, myNewVertex.VertexID, mySourceLevelKey.LastEdge, mySourceUUID, null);
+                myGraph.Levels[myNewNodeLevelKey.Level].AddForwardEdgeToNode(myNewNodeLevelKey, node, mySourceLevelKey.LastEdge, mySourceUUID, null);
 
                 #endregion
 
@@ -1316,7 +1354,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                 if (lowerLevelKeys != null)
                 {
-                    UpdateLowerLevels(myGraph.Levels[myNewNodeLevelKey.Level].ExpressionLevels[myNewNodeLevelKey].Nodes[myNewVertex.VertexID], myNewNodeLevelKey, lowerLevelKeys, myGraph);
+                    UpdateLowerLevels(myGraph.Levels[myNewNodeLevelKey.Level].ExpressionLevels[myNewNodeLevelKey].Nodes[node], myNewNodeLevelKey, lowerLevelKeys, myGraph);
                 }
 
                 #endregion
@@ -1464,11 +1502,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                                     foreach (var aIncomingVertex in currentDBObject.GetIncomingVertices(incomingAttribute.RelatedEdgeDefinition.SourceVertexType.ID, incomingAttribute.RelatedEdgeDefinition.ID))
                                     {
                                         //add backwardEdge to node (and itself)
-                                        aGraph.Levels[nextHigherLevelKey.Level].AddNodeAndBackwardEdge(nextHigherLevelKey, aIncomingVertex, startLevelKey.LastEdge, currentDBObject.VertexID, null, null);
+                                        aGraph.Levels[nextHigherLevelKey.Level].AddNodeAndBackwardEdge(nextHigherLevelKey, aIncomingVertex, startLevelKey.LastEdge, aNode.Key, null, null);
 
                                         //recursion
                                         ExtendGraphUp(nextHigherLevelKey, endLevelKey, aGraph);
-                                        aNode.Value.AddForwardEdge(myCurrentForwardEdgekey, aIncomingVertex.VertexID, null);
+                                        aNode.Value.AddForwardEdge(myCurrentForwardEdgekey, GenerateVertexInfoFromLevelKeyAndVertexID(aIncomingVertex.VertexTypeID, aIncomingVertex.VertexID), null);
                                     }
                                 }
 
@@ -1482,11 +1520,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                                     foreach (var aOutgoingVertex in currentDBObject.GetOutgoingEdge(outgoingEdgeAttribute.ID).GetTargetVertices())
                                     {
                                         //add backwardEdge to node (and itself)
-                                        aGraph.Levels[nextHigherLevelKey.Level].AddNodeAndBackwardEdge(nextHigherLevelKey, aOutgoingVertex, startLevelKey.LastEdge, currentDBObject.VertexID, null, null);
+                                        aGraph.Levels[nextHigherLevelKey.Level].AddNodeAndBackwardEdge(nextHigherLevelKey, aOutgoingVertex, startLevelKey.LastEdge, aNode.Key, null, null);
 
                                         //recursion
                                         ExtendGraphUp(nextHigherLevelKey, endLevelKey, aGraph);
-                                        aNode.Value.AddForwardEdge(myCurrentForwardEdgekey, aOutgoingVertex.VertexID, null);
+                                        aNode.Value.AddForwardEdge(myCurrentForwardEdgekey, GenerateVertexInfoFromLevelKeyAndVertexID(aOutgoingVertex.VertexTypeID, aOutgoingVertex.VertexID), null);
                                     }
                                 }
 

@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph.Helper;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 {
@@ -46,7 +47,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// <summary>
         /// The vertexID where the edge points to.
         /// </summary>
-        private readonly Int64 _destination;
+        private readonly VertexInformation _destination;
 
         #endregion
 
@@ -58,7 +59,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// <param name="myDestination">The ExpressionNode that this edge is pointing to.</param>
         /// <param name="myWeight">The Weight of this edge.</param>
         /// <param name="myDirection">The direction (Type/Attribute) that this edge is pointing to.</param>
-        public ExpressionEdge(Int64 myDestination, IComparable myWeight, EdgeKey myDirection)
+        public ExpressionEdge(VertexInformation myDestination, IComparable myWeight, EdgeKey myDirection)
         {
             _destination = myDestination;
             Weight = myWeight;
@@ -74,7 +75,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             get { return _direction; }
         }
 
-        public long Destination
+        public VertexInformation Destination
         {
             get { return _destination; }
         }

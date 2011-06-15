@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 {
@@ -29,8 +30,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
     {
         /// <summary>
         /// All Objects with their ExpressionNode
+        /// VertexTypeID/VertexID --> node
         /// </summary>
-        Dictionary<Int64, IExpressionNode> Nodes { get; }
+        Dictionary<VertexInformation, IExpressionNode> Nodes { get; }
 
         /// <summary>
         /// The corresponding Level

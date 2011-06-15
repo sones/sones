@@ -29,6 +29,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 {
@@ -67,7 +68,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         public abstract IEnumerable<IVertex> Select(LevelKey myLevelKey, IVertex mySourceVertex = null, Boolean generateLevel = true);
 
-        public abstract IEnumerable<Int64> SelectVertexIDs(LevelKey myLevelKey, IVertex mySourceVertex = null, Boolean generateLevel = true);
+        public abstract IEnumerable<VertexInformation> SelectVertexIDs(LevelKey myLevelKey, IVertex mySourceVertex = null, Boolean generateLevel = true);
 
         public abstract Boolean IsGraphRelevant(LevelKey myLevelKey, IVertex mySourceVertex);
 

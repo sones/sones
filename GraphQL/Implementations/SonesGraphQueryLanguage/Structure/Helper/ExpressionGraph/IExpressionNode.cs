@@ -27,6 +27,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 {
@@ -47,7 +48,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// <summary>
         /// The complex connections
         /// </summary>
-        Dictionary<LevelKey, HashSet<Int64>> ComplexConnection { get; }
+        Dictionary<LevelKey, HashSet<VertexInformation>> ComplexConnection { get; }
 
         #endregion
 
@@ -58,6 +59,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// </summary>
         /// <returns>A IVertex</returns>
         IVertex GetIVertex();
+
+        /// <summary>
+        /// Some information concerning the vertex
+        /// </summary>
+        VertexInformation VertexInformation { get; }
 
         #endregion
 
@@ -71,7 +77,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// <param name="myForwardEdgeDirection">The direction for the forward edge</param>
         /// <param name="myForwardEdgeDestination">The destination for the forward edge</param>
         /// <param name="myEdgeWeight">The weight of the new edge</param>
-        void AddForwardEdge(EdgeKey myForwardEdgeDirection, Int64 myForwardEdgeDestination, IComparable myEdgeWeight);
+        void AddForwardEdge(EdgeKey myForwardEdgeDirection, VertexInformation myForwardEdgeDestination, IComparable myEdgeWeight);
 
         /// <summary>
         /// Adds a couple of forward edges
@@ -84,14 +90,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// </summary>
         /// <param name="myForwardEdgeDirection">The direction for the forward edges</param>
         /// <param name="myRawForwardEdges">A dictionary of destination/weight</param>
-        void AddForwardEdges(EdgeKey myForwardEdgeDirection, Dictionary<Int64, IComparable> myRawForwardEdges);
+        void AddForwardEdges(EdgeKey myForwardEdgeDirection, Dictionary<VertexInformation, IComparable> myRawForwardEdges);
 
         /// <summary>
         /// Adds a couple of backward edges
         /// </summary>
         /// <param name="myBackwardEdgeDirection">The direction for the backward edges</param>
         /// <param name="validUUIDs">A dictionary of destination/weight</param>
-        void AddBackwardEdges(EdgeKey myBackwardEdgeDirection, Dictionary<Int64, IComparable> myRawBackwardEdges);
+        void AddBackwardEdges(EdgeKey myBackwardEdgeDirection, Dictionary<VertexInformation, IComparable> myRawBackwardEdges);
 
         /// <summary>
         /// Adds a couple of backward edges
@@ -105,14 +111,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// <param name="myBackwardEdgeDirection">The direction for the backward edge</param>
         /// <param name="myBackwardEdgeDestination">The destination for the backward edge</param>
         /// <param name="myEdgeWeight">The weight of the new edge</param>
-        void AddBackwardEdge(EdgeKey myBackwardEdgeDirection, Int64 myBackwardEdgeDestination, IComparable myEdgeWeight);
+        void AddBackwardEdge(EdgeKey myBackwardEdgeDirection, VertexInformation myBackwardEdgeDestination, IComparable myEdgeWeight);
 
         /// <summary>
         /// Adds a complex connection between two nodes that are distributed across different types
         /// </summary>
         /// <param name="myLevelKey">The connected level</param>
         /// <param name="myUUID">The ObjectUUID of the connected ExpressionNode</param>
-        void AddComplexConnection(LevelKey myLevelKey, Int64 myUUID);
+        void AddComplexConnection(LevelKey myLevelKey, VertexInformation myUUID);
 
         #endregion
 
@@ -135,21 +141,21 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// </summary>
         /// <param name="myEdgeKey">A EdgeKey</param>
         /// <param name="myObjectUUID">The destination of the edge</param>
-        void RemoveForwardEdge(EdgeKey myEdgeKey, Int64 myObjectUUID);
+        void RemoveForwardEdge(EdgeKey myEdgeKey, VertexInformation myObjectUUID);
 
         /// <summary>
         /// Remove a single backward Edge
         /// </summary>
         /// <param name="myEdgeKey">A EdgeKey</param>
         /// <param name="myObjectUUID">The destination of the edge</param>
-        void RemoveBackwardEdge(EdgeKey myEdgeKey, Int64 myObjectUUID);
+        void RemoveBackwardEdge(EdgeKey myEdgeKey, VertexInformation myObjectUUID);
 
         /// <summary>
         /// Removes a single complex connection
         /// </summary>
         /// <param name="myLevelKey">A LevelKey</param>
         /// <param name="myUUID">The destination of the complex connection</param>
-        void RemoveComplexConnection(LevelKey myLevelKey, Int64 myUUID);
+        void RemoveComplexConnection(LevelKey myLevelKey, VertexInformation myUUID);
 
         #endregion
 
