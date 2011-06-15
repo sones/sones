@@ -193,29 +193,30 @@ namespace sones.GraphDB.Expression.QueryPlan
         {
             #region current type
 
-            var idx = GetBestMatchingIdx(_indexManager.GetIndices(myVertexType, _property.Property, _securityToken, _transactionToken));
+            List<IVertex> vertices = new List<IVertex>();
 
-            foreach (var aVertex in GetValues(idx, _constant.Value)
-                .Select(aId => _vertexStore.GetVertex(_securityToken, _transactionToken, aId, myVertexType.ID, VertexEditionFilter, VertexRevisionFilter)))
+            if (!myVertexType.IsAbstract)
             {
-                yield return aVertex;
+                var idx = GetBestMatchingIdx(_indexManager.GetIndices(myVertexType, _property.Property, _securityToken, _transactionToken));
+
+                foreach (var aVertexID in GetValues(idx, _constant.Value))
+                {
+                    vertices.Add(_vertexStore.GetVertex(_securityToken, _transactionToken, aVertexID, myVertexType.ID, VertexEditionFilter, VertexRevisionFilter));
+                }    
             }
 
             #endregion
 
             #region child types
 
-            foreach (var aChildVertexType in myVertexType.GetDescendantVertexTypes())
+            foreach (var aChildVertexType in myVertexType.ChildrenVertexTypes)
             {
-                foreach (var aVertex in Execute_protected(aChildVertexType))
-                {
-                    yield return aVertex;
-                }
+                vertices.AddRange(Execute_protected(aChildVertexType));
             }
 
             #endregion
 
-            yield break;
+            return vertices;
         }
 
         #endregion

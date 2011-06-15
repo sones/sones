@@ -378,7 +378,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                 return false;
             }
 
-            return (this._Object.VertexID == p._Object.VertexID);
+            return (this._Object.VertexID == p._Object.VertexID) && (this._Object.VertexTypeID == p._Object.VertexTypeID);
         }
 
         public static Boolean operator ==(ExpressionNode a, ExpressionNode b)
@@ -406,7 +406,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         public override int GetHashCode()
         {
-            return _Object.VertexID.GetHashCode();
+            return _Object.VertexID.GetHashCode() ^ _Object.VertexTypeID.GetHashCode();
         }
 
         #endregion
