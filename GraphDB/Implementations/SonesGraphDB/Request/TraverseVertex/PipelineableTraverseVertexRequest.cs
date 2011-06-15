@@ -226,23 +226,14 @@ namespace sones.GraphDB.Request
             #region currentVertex match?
             //does the current node match the requirements?
 
-            var match = false;
-
             #region match evaluation
 
+            //if there is no match function, every vertex matches
+            var match = true;
+
             if (myMatchEvaluator != null)
-            {
                 //there is a match evaluator... use it
-                if (myMatchEvaluator(myCurrentVertex, myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken)))
-                {
-                    match = true;
-                }
-            }
-            else
-            {
-                //there is no special function that evaluates if the current vertex matches... so EVERY Vertex matches
-                match = true;
-            }
+                match = myMatchEvaluator(myCurrentVertex, myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken));
 
             #endregion
 
@@ -273,10 +264,15 @@ namespace sones.GraphDB.Request
 
             if (match)
             {
-                //return the current vertex if it matched
-                yield return myCurrentVertex;
+                if(myAvoid == Avoidance.avoidMultiVertexVisit)
+                    if (!_traversalState.AlreadyVisited(myCurrentVertex.VertexID))
+                        //return the current vertex if it matched
+                        yield return myCurrentVertex;
             }
 
+            //add vertex to visited
+            _traversalState.AddVisited(myCurrentVertex.VertexID);
+                    
             #region traverse by using outgoing edges
             //first do recursive search by using the outgoing edges
 
@@ -334,14 +330,11 @@ namespace sones.GraphDB.Request
                     //check if vertex could be visited multiple times
                     if (myAvoid == Avoidance.avoidMultiVertexVisit)
                     {
-                        if (_traversalState.AlreadyVisited(myCurrentVertex.VertexID))
+                        if (_traversalState.AlreadyVisited(nextVertex.VertexID))
                         {
                             continue;
                         }
                     }
-
-                    //add vertex to visited
-                    _traversalState.AddVisited(myCurrentVertex.VertexID);
 
                     #endregion
 

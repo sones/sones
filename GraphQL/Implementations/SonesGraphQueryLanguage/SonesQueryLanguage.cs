@@ -228,15 +228,9 @@ namespace sones.GraphQL
             get { return "sones.gql"; }
         }
 
-        public Dictionary<string, Type> SetableParameters
+        public PluginParameters<Type> SetableParameters
         {
-            get
-            {
-                return new Dictionary<string, Type> 
-                { 
-                    { "GraphDB", typeof(IGraphDB) }
-                };
-            }
+            get { return new PluginParameters<Type> { { "GraphDB", typeof(IGraphDB) } }; }
         }
 
         public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)

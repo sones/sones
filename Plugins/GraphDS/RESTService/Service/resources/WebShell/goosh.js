@@ -557,7 +557,7 @@ InitGoosh = function (goosh) {
                     goosh.config.webservice_default_format = args[0];
                     goosh.gui.out("current output format is set to: " + goosh.config.webservice_default_format);
                 } else {
-                    goosh.gui.error("no valid paramater. try one of these: " + this.parameters + "\"");
+                    goosh.gui.error("no valid parameter found. try one of these: " + this.parameters + "\"");
                 }
             }
         }

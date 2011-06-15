@@ -31,17 +31,26 @@ using sones.Library.CollectionWrapper;
 
 namespace sones.Plugins.GraphDS.IO
 {
+    /// <summary>
+    /// This class realize an text output.
+    /// </summary>
     public sealed class TEXT_IO : IOInterface
     {
 
         #region Data
 
+        /// <summary>
+        /// The io content type.
+        /// </summary>
         private readonly ContentType _contentType;
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// Constructor for a text io instance.
+        /// </summary>
         public TEXT_IO()
         {
             _contentType = new ContentType("text/plain") { CharSet = "UTF-8" };
@@ -56,17 +65,11 @@ namespace sones.Plugins.GraphDS.IO
             get { return "sones.text_io"; }
         }
 
-        public Dictionary<string, Type> SetableParameters
+        public PluginParameters<Type> SetableParameters
         {
-            get { return new Dictionary<string, Type>(); }
+            get { return new PluginParameters<Type>(); }
         }
-/*
- * ASK: whats this?
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters, GraphApplicationSettings myApplicationSetting)
-        {
-            return InitializePlugin();
-        }
-*/
+
         public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
             var result = new TEXT_IO();
@@ -79,7 +82,7 @@ namespace sones.Plugins.GraphDS.IO
         #region IOInterface
 
         #region Generate Output from Query Result
-
+        
         public string GenerateOutputResult(QueryResult myQueryResult)
         {
             StringBuilder Output = new StringBuilder();
@@ -105,6 +108,11 @@ namespace sones.Plugins.GraphDS.IO
             return Output.ToString();
         }
 
+        /// <summary>
+        /// Handles query exceptions.
+        /// </summary>
+        /// <param name="queryresult">The query result.</param>
+        /// <returns>The exception string.</returns>
         private String HandleQueryExceptions(QueryResult queryresult)
         {
             StringBuilder SB = new StringBuilder();
@@ -116,13 +124,23 @@ namespace sones.Plugins.GraphDS.IO
             return SB.ToString();
         }
 
-        #region private toHTML
+        #region private to text
+
+        /// <summary>
+        /// Generates an text vertex view.
+        /// </summary>
+        /// <param name="aVertex">The vertex.</param>
+        /// <param name="Header">The header.</param>
+        /// <returns>An string, that contains the text vertex view.</returns>
         private String GenerateVertexViewText(String Header, IVertexView aVertex)
         {
             StringBuilder Output = new StringBuilder();
+
             // take one IVertexView and traverse through it
             #region Vertex Properties
+
             Output.AppendLine();
+
             if (aVertex.GetCountOfProperties() > 0)
             {
                 foreach (var _property in aVertex.GetAllProperties())
@@ -142,11 +160,7 @@ namespace sones.Plugins.GraphDS.IO
                             if (_property.Item2 is ICollectionWrapper)
                             {
                                 Output.AppendLine(Header + _property.Item1);
-
-                                foreach (var item in ((ICollectionWrapper)_property.Item2))
-                                {
-                                    Output.AppendLine(Header + "\t " + item.ToString());
-                                }
+                                HandleListProperties((ICollectionWrapper)_property.Item2, Header, ref Output);
                             }
                             else
                             {
@@ -156,10 +170,13 @@ namespace sones.Plugins.GraphDS.IO
                     }
                 }
             }
+
             #endregion
 
             #region Edges
+
             Output.AppendLine(Header + "\t Edges:");
+
             foreach (var _edge in aVertex.GetAllEdges())
             {
                 if (_edge.Item2 == null)
@@ -172,34 +189,74 @@ namespace sones.Plugins.GraphDS.IO
                     Output.AppendLine(Header+"\t\t"+_edge.Item1).Append(GenerateEdgeViewText(Header+"\t\t\t",_edge.Item2));
                 }
             }
+
             #endregion
 
             return Output.ToString();
         }
 
+        /// <summary>
+        /// Handles list properties.
+        /// </summary>
+        /// <param name="myItemProperty">The list property.</param>
+        /// <param name="myHeader">The header.</param>
+        /// <param name="myStringBuilder">The string builder.</param>
+        private void HandleListProperties(ICollectionWrapper myItemProperty, String myHeader, ref StringBuilder myStringBuilder)
+        {
+            foreach (var item in myItemProperty)
+            {
+                myStringBuilder.AppendLine(myHeader + "\t " + item.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Generates an text edge view.
+        /// </summary>
+        /// <param name="aEdge">The edge.</param>
+        /// <param name="Header">The header.</param>
+        /// <returns>An string that contains the text edge view.</returns>       
         private String GenerateEdgeViewText(String Header, IEdgeView aEdge)
         {
             StringBuilder Output = new StringBuilder();
 
             #region Edge Properties
+
             Output.AppendLine(Header + "\t Edge");
 
             Output.AppendLine(Header + "\t Properties");
+
             if (aEdge.GetCountOfProperties() > 0)
             {
                 foreach (var _property in aEdge.GetAllProperties())
                 {
                     if (_property.Item2 == null)
-                        Output.AppendLine(Header+"\t\t"+_property.Item1);
+                    {
+                        Output.AppendLine(Header + "\t\t" + _property.Item1);
+                    }
                     else
+                    {
                         if (_property.Item2 is Stream)
                         {
-                            Output.AppendLine(Header + "\t\t"+_property.Item1+"\t BinaryProperty");
+                            Output.AppendLine(Header + "\t\t" + _property.Item1 + "\t BinaryProperty");
                         }
                         else
-                            Output.AppendLine(Header + "\t\t"+_property.Item1 + "\t " + _property.Item2.ToString());
+                        {
+                            if (_property.Item2 is ICollectionWrapper)
+                            {
+                                var prefix = Header + "\t\t";
+                                Output.AppendLine(prefix + _property.Item1 + "\t");
+                                
+                                HandleListProperties((ICollectionWrapper)_property.Item2, prefix, ref Output);
+                            }
+                            else
+                            {
+                                Output.AppendLine(Header + "\t\t" + _property.Item1 + "\t " + _property.Item2.ToString());
+                            }
+                        }
+                    }
                 }
             }
+
             #endregion
 
             if (aEdge is IHyperEdgeView)
@@ -222,7 +279,18 @@ namespace sones.Plugins.GraphDS.IO
                             }
                             else
                             {
-                                Output.AppendLine(Header + "\t\t\t\t " + _property.Item1 + "\t\t " + _property.Item2.ToString());
+                                if (_property.Item2 is ICollectionWrapper)
+                                {
+                                    var prefix = Header + "\t\t";
+
+                                    Output.AppendLine(Header + "\t\t\t\t " + _property.Item1);
+
+                                    HandleListProperties((ICollectionWrapper)_property.Item2, prefix + "\t\t\t\t", ref Output);
+                                }
+                                else
+                                {
+                                    Output.AppendLine(Header + "\t\t\t\t " + _property.Item1 + "\t\t " + _property.Item2.ToString());
+                                }
                             }
                         }
                     }
@@ -251,6 +319,7 @@ namespace sones.Plugins.GraphDS.IO
         #endregion
 
         #region Generate a QueryResult from Text - not really needed right now
+
         public QueryResult GenerateQueryResult(string myResult)
         {
             throw new NotImplementedException();
@@ -260,11 +329,7 @@ namespace sones.Plugins.GraphDS.IO
         {
             get { return _contentType; }
         }
-        #endregion
-
-        #region HTMLBuilder(myGraphDBName, myFunc)
-
-        #endregion
+        #endregion        
 
         #endregion
 

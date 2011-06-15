@@ -73,42 +73,45 @@ namespace sones.Plugins.Index
         /// <param name="myIndexAddStrategy">The add strategy.</param>
         private void AddValues(TKey myKey, ISet<TValue> myValues, IndexAddStrategy myIndexAddStrategy)
         {
-            switch (myIndexAddStrategy)
+            if (myKey != null)
             {
-                case IndexAddStrategy.MERGE:
-                    
-                    _Indexer.AddOrUpdate(myKey,
-                        new HashSet<TValue>(myValues),
-                        (key, oldValue) =>
-                        {
-                            lock (oldValue)
+                switch (myIndexAddStrategy)
+                {
+                    case IndexAddStrategy.MERGE:
+
+                        _Indexer.AddOrUpdate(myKey,
+                            new HashSet<TValue>(myValues),
+                            (key, oldValue) =>
                             {
-                                oldValue.UnionWith(myValues);
+                                lock (oldValue)
+                                {
+                                    oldValue.UnionWith(myValues);
 
-                                return oldValue;
-                            }
-                        });
+                                    return oldValue;
+                                }
+                            });
 
-                    break;
+                        break;
 
-                case IndexAddStrategy.UNIQUE:
+                    case IndexAddStrategy.UNIQUE:
 
-                    if (_Indexer.ContainsKey(myKey))
-                    {
-                        throw new UniqueIndexConstraintException(String.Format("Index key {0} already exist.", myKey.ToString()));
-                    }
-                    else
-                    {
+                        if (_Indexer.ContainsKey(myKey))
+                        {
+                            throw new UniqueIndexConstraintException(String.Format("Index key {0} already exist.", myKey.ToString()));
+                        }
+                        else
+                        {
+                            _Indexer.TryAdd(myKey, new HashSet<TValue>(myValues));
+                        }
+
+                        break;
+
+                    case IndexAddStrategy.REPLACE:
+
                         _Indexer.TryAdd(myKey, new HashSet<TValue>(myValues));
-                    }
 
-                    break;
-
-                case IndexAddStrategy.REPLACE:
-
-                    _Indexer.TryAdd(myKey, new HashSet<TValue>(myValues));
-
-                    break;
+                        break;
+                }
             }
         }
 
@@ -287,11 +290,11 @@ namespace sones.Plugins.Index
             get { return "sones.multiplevalueindex"; }
         }
 
-        public Dictionary<String, Type> SetableParameters
+        public PluginParameters<Type> SetableParameters
         {
             get
             {
-                return new Dictionary<string, Type> 
+                return new PluginParameters<Type> 
                 { 
                 };
             }

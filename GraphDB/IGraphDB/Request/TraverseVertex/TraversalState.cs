@@ -137,7 +137,7 @@ namespace sones.GraphDB.Request
 
         public bool AlreadyVisited(long myVisitID)
         {
-            return Visited.Contains(myVisitID);
+            return Visited.Contains(myVisitID) || VisitedVertices.ContainsKey(myVisitID);
         }
 
         /// <summary>

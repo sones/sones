@@ -58,16 +58,11 @@ namespace sones.Plugins.GraphDS.IO
             get { return "sones.html_io"; }
         }
 
-        public Dictionary<string, Type> SetableParameters
+        public PluginParameters<Type> SetableParameters
         {
-            get { return new Dictionary<string, Type>(); }
+            get { return new PluginParameters<Type>(); }
         }
-        /* ASK what's this?
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters, GraphApplicationSettings myApplicationSetting)
-        {
-            return InitializePlugin();
-        }
-        */
+
         public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
             var result = new HTML_IO();

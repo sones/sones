@@ -36,7 +36,7 @@ namespace sones.Library.VersionedPluginManager
         /// <summary>
         /// The parameters that are settable for this plugin
         /// </summary>
-        Dictionary<String, Type> SetableParameters { get; }
+        PluginParameters<Type> SetableParameters { get; }
 
         /// <summary>
         /// A method to initialize a plugin

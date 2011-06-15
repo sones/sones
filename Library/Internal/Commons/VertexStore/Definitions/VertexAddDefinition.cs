@@ -81,9 +81,14 @@ namespace sones.Library.Commons.VertexStore.Definitions
         public readonly IEnumerable<HyperEdgeAddDefinition> OutgoingHyperEdges;
 
         /// <summary>
-        /// The definition of the outgoing hyper edges
+        /// The definition of the outgoing single edges
         /// </summary>
         public readonly IEnumerable<SingleEdgeAddDefinition> OutgoingSingleEdges;
+
+        /// <summary>
+        /// The enumerable of incoming edges
+        /// </summary>
+        public readonly IEnumerable<IncomingEdgeAddDefinition> IncomingEdges;
 
         #endregion
 
@@ -97,6 +102,7 @@ namespace sones.Library.Commons.VertexStore.Definitions
         /// <param name="myEdition">The edition of the new vertex</param>
         /// <param name="myOutgoingHyperEdges">The outgoing hyper edge definitions</param>
         /// <param name="myOutgoingSingleEdges">The outgoing single edge definitions</param>
+        /// <param name="myIncomingEdges">The enumerable of incoming edges</param>
         /// <param name="myBinaryProperties">The binary properties of the new vertex</param>
         /// <param name="myComment">The comment on this graph element</param>
         /// <param name="myCreationDate">The creation date of this element</param>
@@ -109,6 +115,7 @@ namespace sones.Library.Commons.VertexStore.Definitions
             String myEdition,
             IEnumerable<HyperEdgeAddDefinition> myOutgoingHyperEdges,
             IEnumerable<SingleEdgeAddDefinition> myOutgoingSingleEdges,
+            IEnumerable<IncomingEdgeAddDefinition> myIncomingEdges,
             IEnumerable<StreamAddDefinition> myBinaryProperties,
             String myComment,
             long myCreationDate,
@@ -125,6 +132,8 @@ namespace sones.Library.Commons.VertexStore.Definitions
             OutgoingHyperEdges = myOutgoingHyperEdges;
 
             OutgoingSingleEdges = myOutgoingSingleEdges;
+
+            IncomingEdges = myIncomingEdges;
 
             BinaryProperties = myBinaryProperties;
 

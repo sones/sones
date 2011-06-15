@@ -58,6 +58,7 @@
     <Compile Include="Transaction\TransactionState.cs" />
     <Compile Include="Transaction\TransactionToken.cs" />
     <Compile Include="VertexStore\ConstantsVertexStore.cs" />
+    <Compile Include="VertexStore\Definitions\IncomingEdgeAddDefinition.cs" />
     <Compile Include="VertexStore\Definitions\HyperEdgeAddDefinition.cs" />
     <Compile Include="VertexStore\Definitions\SingleEdgeAddDefinition.cs" />
     <Compile Include="VertexStore\Definitions\StreamAddDefinition.cs" />
@@ -88,7 +89,7 @@
     </ProjectReference>
     <ProjectReference Include="..\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
+      <Name>PluginManager</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

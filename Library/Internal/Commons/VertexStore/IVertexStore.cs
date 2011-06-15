@@ -315,6 +315,7 @@ namespace sones.Library.Commons.VertexStore
         /// <param name="myToBeUpdatedVertexID">The vertex id that is going to be updated</param>
         /// <param name="myCorrespondingVertexTypeID">The vertex type id that is going to be updated</param>
         /// <param name="myVertexUpdate">The update definition for the vertex</param>
+        /// <param name="myCreateIncomingEdges">Create the incoming edges</param>
         /// <param name="myToBeUpdatedEditions">The editions that should be updated</param>
         /// <param name="myToBeUpdatedRevisionIDs">The revisions that should be updated</param>
         /// <param name="myCreateNewRevision">Determines if it is necessary to create a new revision of the vertex</param>
@@ -325,6 +326,7 @@ namespace sones.Library.Commons.VertexStore
             Int64 myToBeUpdatedVertexID,
             Int64 myCorrespondingVertexTypeID,
             VertexUpdateDefinition myVertexUpdate,
+            Boolean myCreateIncomingEdges = true,
             String myToBeUpdatedEditions = null,
             Int64 myToBeUpdatedRevisionIDs = 0L,
             Boolean myCreateNewRevision = false);

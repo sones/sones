@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -145,13 +145,13 @@
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Internal\Networking\Networking.csproj">
-      <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
-      <Name>Networking %28Library\Internal\Networking\Networking%29</Name>
+    <ProjectReference Include="..\..\..\..\Library\Internal\Network\HttpServer\HttpServer.csproj">
+      <Project>{85072DC6-7356-449F-9081-939F87AC0CC5}</Project>
+      <Name>HttpServer</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
+      <Name>PluginManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\IO\Implementation\XML_IO\XML_IO.csproj">
       <Project>{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}</Project>

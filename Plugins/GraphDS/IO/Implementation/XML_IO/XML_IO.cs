@@ -37,17 +37,26 @@ using sones.Library.CollectionWrapper;
 
 namespace sones.Plugins.GraphDS.IO.XML_IO
 {
+    /// <summary>
+    /// This class realize an XML output.
+    /// </summary>
     public sealed class XML_IO : IOInterface
     {
 
         #region Data
 
+        /// <summary>
+        /// The io content type.
+        /// </summary>
         private readonly ContentType _contentType;
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// Constructor for a xml io instance.
+        /// </summary>
         public XML_IO()
         {
             _contentType = new ContentType("application/xml") { CharSet = "UTF-8" };
@@ -82,9 +91,45 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             return System.Text.Encoding.UTF8.GetString(stream.ToArray());
         }
 
+        #region private output result helpers
+        
+        /// <summary>
+        /// Handles list properties.
+        /// </summary>
+        /// <param name="myItemProperty">The property of the item(edge, hyperedge, vertex).</param>
+        /// <param name="myPropertyToFill">The schema property which is to fill.</param>
+        private void HandleListProperties(ICollectionWrapper myItemProperty, ref Property myPropertyToFill)
+        {
+            Type propertyElementType = typeof(Object);
+            
+            foreach (var value in myItemProperty)
+            {
+                myPropertyToFill.Value += "[" + value.ToString() + "],";
+                propertyElementType = value.GetType();
+            }
+
+            var index = -1;
+
+            if (myPropertyToFill.Value != null)
+            {
+                index = myPropertyToFill.Value.LastIndexOf(',');
+            }
+
+            if (index > -1)
+            {
+                myPropertyToFill.Value = myPropertyToFill.Value.Remove(index, 1);
+            }
+
+            myPropertyToFill.Type = myItemProperty.GetType().Name + "(" + propertyElementType.Name + ")";            
+        }
+
+        /// <summary>
+        /// Generates a xml vertex view class.
+        /// </summary>
+        /// <param name="aVertex">The vertex view of the query result.</param>
+        /// <returns>An generated xml class.</returns>
         private SchemaToClassesGenerator.VertexView GenerateVertexView(IVertexView aVertex)
         {
-
             var resultVertex = new SchemaToClassesGenerator.VertexView();
 
             if (aVertex != null)
@@ -101,29 +146,9 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                     if (aProperty.Item2 != null)
                     {
-                        Type propertyElementType = typeof(Object);
-
                         if (aProperty.Item2 is ICollectionWrapper)
                         {
-                            foreach (var value in ((ICollectionWrapper)aProperty.Item2))
-                            {
-                                property.Value += "[" + value.ToString() + "],";
-                                propertyElementType = value.GetType();
-                            }
-
-                            var index = -1;
-
-                            if (property.Value != null)
-                            {
-                                index = property.Value.LastIndexOf(',');
-                            }
-
-                            if (index > -1)
-                            {
-                                property.Value = property.Value.Remove(index, 1);
-                            }
-
-                            property.Type = aProperty.Item2.GetType().Name + "(" + propertyElementType.Name + ")";
+                            HandleListProperties((ICollectionWrapper)aProperty.Item2, ref property);
                         }
                         else
                         {
@@ -172,10 +197,8 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                 foreach (var aEdge in aVertex.GetAllEdges())
                 {
-
                     if (aEdge.Item2 is IHyperEdgeView)
                     {
-
                         List<Tuple<SchemaToClassesGenerator.VertexView, IEnumerable<Tuple<String, Object>>>> innerVertices = new List<Tuple<SchemaToClassesGenerator.VertexView, IEnumerable<Tuple<String, Object>>>>();
 
                         #region single edges
@@ -200,8 +223,16 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                         {
                             hyperEdge.Properties[i] = new Property();
                             hyperEdge.Properties[i].ID = edgeProperties[i].Item1;
-                            hyperEdge.Properties[i].Type = edgeProperties[i].Item2.GetType().Name;
-                            hyperEdge.Properties[i].Value = edgeProperties[i].Item2.ToString();
+
+                            if (edgeProperties[i].Item2 is ICollectionWrapper)
+                            {
+                                HandleListProperties((ICollectionWrapper)edgeProperties[i].Item2, ref hyperEdge.Properties[i]);
+                            }
+                            else
+                            {
+                                hyperEdge.Properties[i].Type = edgeProperties[i].Item2.GetType().Name;
+                                hyperEdge.Properties[i].Value = edgeProperties[i].Item2.ToString();
+                            }
                         }
 
                         #endregion
@@ -221,8 +252,16 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                             {
                                 hyperEdge.SingleEdge[i].Properties[j] = new Property();
                                 hyperEdge.SingleEdge[i].Properties[j].ID = SingleEdgesProperties[j].Item1;
-                                hyperEdge.SingleEdge[i].Properties[j].Type = SingleEdgesProperties[j].Item2.GetType().Name;
-                                hyperEdge.SingleEdge[i].Properties[j].Value = SingleEdgesProperties[j].Item2.ToString();
+
+                                if (SingleEdgesProperties[j].Item2 is ICollectionWrapper)
+                                {
+                                    HandleListProperties((ICollectionWrapper)SingleEdgesProperties[j].Item2, ref hyperEdge.SingleEdge[i].Properties[j]);
+                                }
+                                else
+                                {
+                                    hyperEdge.SingleEdge[i].Properties[j].Type = SingleEdgesProperties[j].Item2.GetType().Name;
+                                    hyperEdge.SingleEdge[i].Properties[j].Value = SingleEdgesProperties[j].Item2.ToString();
+                                }
                             }
 
                             #endregion
@@ -268,8 +307,16 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                         {
                             SingleEdges.Properties[i] = new Property();
                             SingleEdges.Properties[i].ID = edgeProperties[i].Item1;
-                            SingleEdges.Properties[i].Type = edgeProperties[i].Item2.GetType().Name;
-                            SingleEdges.Properties[i].Value = edgeProperties[i].Item2.ToString();
+
+                            if (edgeProperties[i].Item2 is ICollectionWrapper)
+                            {
+                                HandleListProperties((ICollectionWrapper)edgeProperties[i].Item2, ref SingleEdges.Properties[i]);
+                            }
+                            else
+                            {
+                                SingleEdges.Properties[i].Type = edgeProperties[i].Item2.GetType().Name;
+                                SingleEdges.Properties[i].Value = edgeProperties[i].Item2.ToString();
+                            }
                         }
 
                         #endregion
@@ -305,6 +352,8 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             }
             return resultVertex;
         }
+
+        #endregion
 
         public QueryResult GenerateQueryResult(string myResult)
         {
@@ -402,19 +451,32 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             get { return _contentType; }
         }
 
-        #region private helpers
+        #region private query result helpers
 
+        /// <summary>
+        /// Handles query exceptions.
+        /// </summary>
+        /// <param name="queryresult">The query result.</param>
+        /// <returns>The exception string.</returns>
         private String HandleQueryExceptions(QueryResult queryresult)
         {
             StringBuilder SB = new StringBuilder();
 
             SB.Append(queryresult.Error.ToString());
+
             if (queryresult.Error.InnerException != null)
+            {
                 SB.Append(" InnerException: " + queryresult.Error.InnerException.Message);
+            }
 
             return SB.ToString();
         }
 
+        /// <summary>
+        /// Handles validation exceptions.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="eventArgs">Validation event arguments.</param>
         private void ValidationEventHandler(object sender, ValidationEventArgs eventArgs)
         {
             if (eventArgs.Severity == XmlSeverityType.Error)
@@ -423,6 +485,12 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             }
         }
 
+        /// <summary>
+        /// Maps base types.
+        /// </summary>
+        /// <param name="myType">The type as string.</param>
+        /// <param name="myValue">The value as string.</param>
+        /// <returns>An object of the type.</returns>
         private Object TypeMapper(String myType, String myValue)
         {
             switch (myType)
@@ -448,6 +516,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             }
         }
 
+        /// <summary>
+        /// Parsing properties.
+        /// </summary>
+        /// <param name="myVertexNode">The vertex node.</param>
+        /// <returns>A tuple with the property name and the value.</returns>
         private Tuple<String, Object> ParseProperties(XmlNode myVertexNode)
         {
             var property = myVertexNode.FirstChild;
@@ -544,6 +617,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             return new Tuple<string, object>(key, value);
         }
 
+        /// <summary>
+        /// Parsing binary properties.
+        /// </summary>
+        /// <param name="myVertexNode">The vertex node.</param>
+        /// <returns>An tuple with property name and the property stream.</returns>
         private Tuple<String, Stream> ParseBinaryVertex(XmlNode myVertexNode)
         {
             var binProp = myVertexNode.FirstChild;
@@ -583,6 +661,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             return new Tuple<string,Stream>(name, contentStream);
         }
 
+        /// <summary>
+        /// Parsing an single edge.
+        /// </summary>
+        /// <param name="mySingleEdges">The single edge.</param>
+        /// <returns>An single edge view.</returns>
         private ISingleEdgeView ParseSingleEdge(XmlNode mySingleEdges)
         {            
             var edgeProperties = new Dictionary<String, Object>();
@@ -620,6 +703,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             return new sones.GraphQL.Result.SingleEdgeView(new Dictionary<String, Object>(edgeProperties), target);            
         }
 
+        /// <summary>
+        /// Parsing edge properties.
+        /// </summary>
+        /// <param name="myEdgeProp">The edge property.</param>
+        /// <param name="myEdgeProperties">An dictionary with the edge properties.</param>
         private void ParseEdgeProperties(XmlNode myEdgeProp, ref Dictionary<String, Object> myEdgeProperties)
         { 
             while(myEdgeProp != null)
@@ -639,6 +727,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             }            
         }
 
+        /// <summary>
+        /// Parsing an edge.
+        /// </summary>
+        /// <param name="myEdge">The current XML node.</param>
+        /// <returns>An tuple with the edge name and the edge view.</returns>
         private Tuple<String, IEdgeView> ParseEdge(XmlNode myEdge)
         {                      
             IEdgeView edgeView = null;
@@ -665,14 +758,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                                 break;
                             
                             case "Properties":
-                                var edgeProperty = edge.FirstChild;
-
-                                while (edgeProperty != null)
-                                {
-                                    ParseEdgeProperties(edgeProperty, ref edgeProps);
-                                    edgeProperty = edgeProperty.NextSibling;
-                                }
-
+                                ParseEdgeProperties(edge.FirstChild, ref edgeProps);
                                 break;
 
                             case "SingleEdge" :
@@ -702,6 +788,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             return new Tuple<string, IEdgeView>(name, edgeView);
         }
 
+        /// <summary>
+        /// Parsing a vertex.
+        /// </summary>
+        /// <param name="myVertex">The current xml node.</param>
+        /// <returns>An vertex view.</returns>
         private sones.GraphQL.Result.VertexView ParseVertex(XmlNode myVertex)
         {                        
             Dictionary<String, Object> propList = new Dictionary<string,object>();
@@ -788,9 +879,9 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             get { return "sones.xml_io"; }
         }
 
-        public Dictionary<string, Type> SetableParameters
+        public PluginParameters<Type> SetableParameters
         {
-            get { return new Dictionary<string, Type>(); }
+            get { return new PluginParameters<Type>(); }
         }
 
         public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)

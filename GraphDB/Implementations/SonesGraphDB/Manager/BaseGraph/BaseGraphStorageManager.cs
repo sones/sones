@@ -676,6 +676,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 CreateHyperEdgeDefinitions(myHyperEdges, mySource, myCreationDate),
                 CreateSingleEdgeDefinitions(mySingleEdges, mySource, myCreationDate),
                 null,
+                null,
                 myComment,
                 myCreationDate,
                 myCreationDate,

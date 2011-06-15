@@ -27,6 +27,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.VertexStore.Definitions.Update;
 using sones.Library.BinaryStreamStructure;
+using sones.Library.PropertyHyperGraph.ErrorHandling;
 
 namespace sones.GraphFS.Element.Vertex
 {
@@ -732,9 +733,16 @@ namespace sones.GraphFS.Element.Vertex
             return !(a == b);
         }
 
+		/// <summary>
+		/// Returns the hash code for the current instance.
+		/// </summary>
+		/// 
+		/// <returns>
+		/// A hash code for the current object.
+		/// </returns>
         public override int GetHashCode()
         {
-            return _vertexID.GetHashCode() ^ _vertexTypeID.GetHashCode();
+            return (_vertexID + ":" + _vertexTypeID).GetHashCode();
         }
 
         #endregion

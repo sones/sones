@@ -96,8 +96,11 @@ namespace sones.sonesGraphDBStarter
                     //Make a new GraphDB instance
                     GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location } })));
                 }
-                catch
+                catch (Exception a)
                 {
+                    Console.WriteLine(a.Message);
+                    Console.WriteLine(a.StackTrace);
+
                     Console.Error.WriteLine("Could not access the data directory " + location.AbsoluteUri + ". Please make sure you that you have the right file access permissions!");
                     Console.Error.WriteLine("Using in memory storage instead.");
 

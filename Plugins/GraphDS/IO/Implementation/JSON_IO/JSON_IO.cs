@@ -29,17 +29,26 @@ using System.Text;
 using sones.Library.CollectionWrapper;
 
 namespace sones.Plugins.GraphDS.IO.JSON_IO
-{
+{    
+    /// <summary>
+    /// This class realize an json output.
+    /// </summary>
     public sealed class JSON_IO : IOInterface
     {
         #region Data
 
+        /// <summary>
+        /// The io content type.
+        /// </summary>
         private readonly ContentType _contentType;
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// Constructor for a json io instance.
+        /// </summary>
         public JSON_IO()
         {
             _contentType = new ContentType("application/json") { CharSet = "UTF-8" };
@@ -54,17 +63,11 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             get { return "sones.json_io"; }
         }
 
-        public Dictionary<string, Type> SetableParameters
+        public PluginParameters<Type> SetableParameters
         {
-            get { return new Dictionary<string, Type>(); }
+            get { return new PluginParameters<Type>(); }
         }
-
-        /* ASK: whats this?
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters, GraphApplicationSettings myApplicationSetting)
-        {
-            return InitializePlugin();
-        }
-        */
+               
         public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
             var result = new JSON_IO();
@@ -77,6 +80,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
         #region IOInterface
 
         #region Generate Output from Query Result
+
         public string GenerateOutputResult(QueryResult myQueryResult)
         {
             // root element...
@@ -120,18 +124,32 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             return _Query.ToString();
         }
 
+        /// <summary>
+        /// Handles query exceptions.
+        /// </summary>
+        /// <param name="queryresult">The query result.</param>
+        /// <returns>The exception string.</returns>
         private String HandleQueryExceptions(QueryResult queryresult)
         {
             StringBuilder SB = new StringBuilder();
 
             SB.Append(queryresult.Error.ToString());
+
             if (queryresult.Error.InnerException != null)
-                SB.Append(" InnerException: "+queryresult.Error.InnerException.Message);
+            {
+                SB.Append(" InnerException: " + queryresult.Error.InnerException.Message);
+            }
 
             return SB.ToString();
         }
 
         #region private toJSON Extensions
+
+        /// <summary>
+        /// Generates an json vertex view.
+        /// </summary>
+        /// <param name="aVertex">The vertex.</param>
+        /// <returns>An jarray contains the json vertex view.</returns>
         private JArray GenerateVertexViewJSON(IVertexView aVertex)
         {
             JArray _results = new JArray();
@@ -140,6 +158,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             {
                 // take one IVertexView and traverse through it
                 #region Vertex Properties
+
                 JObject _properties = new JObject();
 
                 foreach (var _property in aVertex.GetAllProperties())
@@ -155,14 +174,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                         {                            
                             if (_property.Item2 is ICollectionWrapper)
                             {
-                                var values = new JArray();
-
-                                foreach (var value in ((ICollectionWrapper)_property.Item2))
-                                {
-                                    values.Add(new JArray(value.ToString()));
-                                }
-
-                                _properties.Add(new JProperty(_property.Item1, values));
+                                _properties.Add(new JProperty(_property.Item1, HandleListProperties((ICollectionWrapper)_property.Item2)));
                             }
                             else
                             {
@@ -172,10 +184,13 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                 }
                 // add to the results...
                 _results.Add(new JObject(new JProperty("Properties", new JObject(_properties))));
+
                 #endregion
 
                 #region Edges
+
                 JArray _edges = new JArray();
+
                 foreach (var _edge in aVertex.GetAllEdges())
                 {
                     if (_edge.Item2 == null)
@@ -190,27 +205,50 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                 }
                 // add to the results...
                 _results.Add(new JObject(new JProperty("Edges", _edges)));
+
                 #endregion
             }
             return _results;
         }
 
+                
+        /// <summary>
+        /// Generates an json edge view.
+        /// </summary>
+        /// <param name="aEdge">The edge.</param>
+        /// <returns>An jarray contains the json edge view.</returns>
         private JArray GenerateEdgeViewJSON(IEdgeView aEdge)
         {
             JArray Output = new JArray();
+
             #region Edge Properties
+
             foreach (var _property in aEdge.GetAllProperties())
             {
                 JProperty _newEdge = null;
+
                 if (_property.Item2 == null)
+                {
                     _newEdge = new JProperty(_property.Item1, "");
+                }
                 else
+                {
                     if (_property.Item2 is Stream)
                     {
                         _newEdge = new JProperty(_property.Item1, "BinaryProperty");
                     }
                     else
-                        _newEdge = new JProperty(_property.Item1, _property.Item2.ToString());
+                    {
+                        if (_property.Item2 is ICollectionWrapper)
+                        {
+                            _newEdge = new JProperty(_property.Item1, HandleListProperties((ICollectionWrapper)_property.Item2));
+                        }
+                        else
+                        {
+                            _newEdge = new JProperty(_property.Item1, _property.Item2.ToString());
+                        }                        
+                    }
+                }
 
                 Output.Add(new JObject(new JProperty("Properties", new JObject(_newEdge))));
             }
@@ -224,7 +262,14 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
                 {
                     foreach (var singleEdgeProp in singleEdge.GetAllProperties())
                     {
-                        edgeProperties.Add(new JObject(new JProperty(singleEdgeProp.Item1, singleEdgeProp.Item2.ToString())));
+                        if (singleEdgeProp.Item2 is ICollectionWrapper)
+                        {
+                            edgeProperties.Add(new JObject(new JProperty(singleEdgeProp.Item1, HandleListProperties((ICollectionWrapper)singleEdgeProp.Item2))));
+                        }
+                        else
+                        {
+                            edgeProperties.Add(new JObject(new JProperty(singleEdgeProp.Item1, singleEdgeProp.Item2.ToString())));
+                        }
                     }
 
                     Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Properties", new JArray(edgeProperties))), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(singleEdge.GetTargetVertex()))))));
@@ -241,11 +286,33 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             return Output;
         }
 
+        #region handle list properties
+
+        /// <summary>
+        /// Handles list properties.
+        /// </summary>
+        /// <param name="myItemProperty">The list property.</param>
+        /// <returns>An jarray contains the list items.</returns>
+        private JArray HandleListProperties(ICollectionWrapper myItemProperty)
+        {
+            var values = new JArray();
+
+            foreach (var value in myItemProperty)
+            {
+                values.Add(new JArray(value.ToString()));
+            }
+
+            return values;
+        }
+
+        #endregion
+
         #endregion
 
         #endregion
 
         #region Generate a QueryResult from JSON - not really needed right now
+
         public QueryResult GenerateQueryResult(string myResult)
         {
             throw new NotImplementedException();
@@ -255,6 +322,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
         {
             get { return _contentType; }
         }
+
         #endregion
 
         #endregion
