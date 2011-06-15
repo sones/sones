@@ -75,7 +75,7 @@ namespace sones.Library.Commons.VertexStore.Definitions
             Int64 myPropertyID,
             IEnumerable<Int64> myVertexIDs,
             Int64 myVertexRevisionID = 0L,
-            String myVertexEditionName = null)
+            String myVertexEditionName = ConstantsVertexStore.DefaultVertexEdition)
         {
             PropertyID = myPropertyID;
             VertexIDs = myVertexIDs;

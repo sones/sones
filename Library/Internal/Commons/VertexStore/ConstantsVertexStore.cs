@@ -30,9 +30,7 @@ namespace sones.Library.Commons.VertexStore
         /// <summary>
         /// The default vertex edition
         /// </summary>
-        public static String DefaultVertexEdition = "Default";
-        
-        
-        public static Int64 DefaultVertexRevision = 0L;
+        public const string DefaultVertexEdition = "Default";
+        public const long DefaultVertexRevision = 0L;
     }
 }
