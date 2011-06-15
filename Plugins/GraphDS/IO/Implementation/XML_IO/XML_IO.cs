@@ -852,10 +852,10 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
                                 var edgeItem = items.FirstChild;
                                 
-
                                 while (edgeItem != null)
                                 {
                                     var edge = ParseEdge(edgeItem);
+                                    
                                     edges.Add(edge.Item1, edge.Item2);
                                     edgeItem = edgeItem.NextSibling;
                                 }
@@ -867,7 +867,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 }               
             }            
 
-            return new sones.GraphQL.Result.VertexView(propList, edges);
+            return new sones.GraphQL.Result.VertexView(propList, edges.Count == 0 ? null : edges);
         }
 
         #endregion

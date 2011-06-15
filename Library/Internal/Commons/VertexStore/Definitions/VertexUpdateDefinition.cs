@@ -46,6 +46,12 @@ namespace sones.Library.Commons.VertexStore.Definitions
         /// </summary>
         public readonly HyperEdgeUpdate UpdateHyperEdges;
 
+        //TODO: do something similar like UpdateHyperEdges or UpdateSingleEdges
+        /// <summary>
+        /// The incoming edges that have to be added to the vertex
+        /// </summary>
+        public readonly IEnumerable<IncomingEdgeAddDefinition> ToBeAddedIncomingEdges;
+
         #endregion
 
         #region constructor
@@ -59,18 +65,21 @@ namespace sones.Library.Commons.VertexStore.Definitions
         /// <param name="myUpdatedBinaryProperties">The update for the binary properties</param>
         /// <param name="mySingleEdgeUpdate">The update for the single edges</param>
         /// <param name="myHyperEdgeUpdate">The update for the hyper edges</param>
+        /// <param name="myToBeAddedIncomingEdges">The incoming edges that should be added to the vertex</param>
         public VertexUpdateDefinition(
             String myCommentUpdate = null, 
             StructuredPropertiesUpdate myUpdatedStructuredProperties = null, 
             UnstructuredPropertiesUpdate myUpdatedUnstructuredProperties = null,
             BinaryPropertiesUpdate myUpdatedBinaryProperties = null,
             SingleEdgeUpdate mySingleEdgeUpdate = null,
-            HyperEdgeUpdate myHyperEdgeUpdate = null)
+            HyperEdgeUpdate myHyperEdgeUpdate = null,
+            IEnumerable<IncomingEdgeAddDefinition> myToBeAddedIncomingEdges = null)
             : base(myCommentUpdate, myUpdatedStructuredProperties, myUpdatedUnstructuredProperties)
         {
             UpdatedBinaryProperties = myUpdatedBinaryProperties;
             UpdatedSingleEdges = mySingleEdgeUpdate;
             UpdateHyperEdges = myHyperEdgeUpdate;
+            ToBeAddedIncomingEdges = myToBeAddedIncomingEdges;
         } 
         
         #endregion

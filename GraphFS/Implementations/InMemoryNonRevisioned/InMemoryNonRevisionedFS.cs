@@ -569,8 +569,8 @@ namespace sones.GraphFS
         public IVertex UpdateVertex(
             SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
             long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID,
-            VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null,
-            Int64 myToBeUpdatedRevisionIDs = 0L, bool myCreateNewRevision = false)
+            VertexUpdateDefinition myVertexUpdate, Boolean myCreateIncomingEdges = true,
+            string myToBeUpdatedEditions = null, Int64 myToBeUpdatedRevisionIDs = 0L, bool myCreateNewRevision = false)
         {
             var toBeUpdatedVertex = GetVertexPrivate(myToBeUpdatedVertexID, myCorrespondingVertexTypeID);
 
