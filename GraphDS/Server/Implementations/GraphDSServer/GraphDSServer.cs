@@ -290,13 +290,21 @@ namespace sones.GraphDSServer
 
             if (_QueryLanguages.TryGetValue(myQueryLanguageName, out queryLanguage))
             {
-                // drain every query
+                // drain every query (before the query)
                 foreach (KeyValuePair<String,IDrainPipe> _drainpipe in _DrainPipes)
                 {
                     _drainpipe.Value.Query(mySecurityToken, myTransactionToken, myQueryString, myQueryLanguageName);
                 }
 
-                return queryLanguage.Query(mySecurityToken, myTransactionToken, myQueryString);
+                QueryResult result = queryLanguage.Query(mySecurityToken, myTransactionToken, myQueryString);
+
+                // drain every query result (after the query)
+                foreach (KeyValuePair<String, IDrainPipe> _drainpipe in _DrainPipes)
+                {
+                    _drainpipe.Value.DrainQueryResult(result);
+                }
+
+                return result;
             }
             else
             {
