@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 
 #endregion
 
@@ -54,7 +55,7 @@ namespace sones.Library.LanguageExtensions
 
             #endregion
 
-            return (IComparable) Convert.ChangeType(myObject, myConvertType);
+            return (IComparable) Convert.ChangeType(myObject, myConvertType, CultureInfo.GetCultureInfo("en-us"));
         }
 
     }
