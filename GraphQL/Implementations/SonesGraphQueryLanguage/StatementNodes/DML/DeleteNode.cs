@@ -19,6 +19,7 @@
 */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Irony.Ast;
 using Irony.Parsing;
@@ -106,14 +107,15 @@ namespace sones.GraphQL.StatementNodes.DML
                                                                                  myTransactionToken));
 
             var toBeDeletedVertices =
-                expressionGraph.SelectVertexIDs(
+                expressionGraph.Select(
                     new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken),
                     null, true);
 
+            //TODO: do sth that is better than that: ew RequestDelete(new RequestGetVertices(_typeName, toBeDeletedVertices.Select(_ => _.VertexID))).
             return myGraphDB.Delete<QueryResult>(
                 mySecurityToken,
                 myTransactionToken,
-                new RequestDelete(new RequestGetVertices(_typeName, toBeDeletedVertices)).AddAttributes(_toBeDeletedAttributes),
+                new RequestDelete(new RequestGetVertices(_typeName, toBeDeletedVertices.Select(_ => _.VertexID))).AddAttributes(_toBeDeletedAttributes),
                 CreateQueryResult);
         }
 

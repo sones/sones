@@ -27,6 +27,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.TypeSystem;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 {
@@ -122,8 +123,8 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// </summary>
         /// <param name="myLevelKey">The interesting LevelKey</param>
         /// <param name="generateLevel">Generate the level if its not existing</param>
-        /// <returns>An Enumerable of ObjectUUIDs</returns>
-        IEnumerable<Int64> SelectVertexIDs(LevelKey myLevelKey, IVertex mySourceVertex = null, Boolean generateLevel = true);
+        /// <returns>An Enumerable of vertex informations</returns>
+        IEnumerable<VertexInformation> SelectVertexIDs(LevelKey myLevelKey, IVertex mySourceVertex = null, Boolean generateLevel = true);
 
         /// <summary>
         /// Check the Graph whether or not the it is relevant for <paramref name="myLevelKey"/> and the optional <paramref name="mySourceVertex"/>

@@ -37,6 +37,7 @@ using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
 using sones.GraphQL.ErrorHandling;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -102,7 +103,7 @@ namespace sones.GraphQL.StatementNodes.DML
             var expressionGraph = _whereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
 
             //extract
-            var myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
+            var myToBeUpdatedVertices = expressionGraph.Select(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
 
             switch (myToBeUpdatedVertices.Count)
             {
@@ -130,12 +131,12 @@ namespace sones.GraphQL.StatementNodes.DML
             return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
-        private void ProcessDelete(long toBeDeletedVertexID, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void ProcessDelete(IVertex toBeDeletedVertexID, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             myGraphDB.Delete<bool>(
                 mySecurityToken,
                 myTransactionToken,
-                new RequestDelete(new RequestGetVertices(_TypeName, new List<long> { toBeDeletedVertexID })),
+                new RequestDelete(new RequestGetVertices(toBeDeletedVertexID.VertexTypeID, new List<long> { toBeDeletedVertexID.VertexID })),
                 (stats) => true);
         }
 

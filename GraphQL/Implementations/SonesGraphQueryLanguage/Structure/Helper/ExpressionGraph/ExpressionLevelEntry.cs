@@ -22,28 +22,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 {
     public sealed class ExpressionLevelEntry : IExpressionLevelEntry
     {
 
-        Dictionary<Int64, IExpressionNode> _Objects;
+        Dictionary<VertexInformation, IExpressionNode> _Objects;
         LevelKey _CorrespondingLevelKey;
 
-        public ExpressionLevelEntry(LevelKey myCorrespondingLevelKey, Dictionary<Int64, IExpressionNode> myObjects)
+        public ExpressionLevelEntry(LevelKey myCorrespondingLevelKey, Dictionary<VertexInformation, IExpressionNode> myObjects)
         {
             _Objects = myObjects;
             _CorrespondingLevelKey = myCorrespondingLevelKey;
         }
 
         public ExpressionLevelEntry(LevelKey myCorrespondingLevelKey)
-            : this(myCorrespondingLevelKey, new Dictionary<Int64, IExpressionNode>())
+            : this(myCorrespondingLevelKey, new Dictionary<VertexInformation, IExpressionNode>())
         { }
 
         #region IExpressionLevelEntry Members
 
-        public Dictionary<Int64, IExpressionNode> Nodes
+        public Dictionary<VertexInformation, IExpressionNode> Nodes
         {
             get { return _Objects; }
         }

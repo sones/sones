@@ -37,6 +37,7 @@ using sones.GraphDB.TypeSystem;
 using System.Diagnostics;
 using sones.GraphDB.Request;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -169,7 +170,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
             //extract
 
-            var myToBeUpdatedVertices = expressionGraph.SelectVertexIDs(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
+            var myToBeUpdatedVertices = expressionGraph.Select(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
 
             if (myToBeUpdatedVertices.Count > 0)
             {
@@ -193,7 +194,7 @@ namespace sones.GraphQL.StatementNodes.DML
             return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myElapsedTotalMilliseconds), ResultType.Successful, new List<IVertexView>());
         }
 
-        private void ProcessUpdate(IEnumerable<long> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void ProcessUpdate(IEnumerable<IVertex> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             UpdateNode update = new UpdateNode();
             update.Init(_SourceType, _Sources, myVertexIDs);

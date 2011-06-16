@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph.Helper;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 {
@@ -32,6 +33,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
     public interface IExpressionEdge
     {
         EdgeKey Direction { get; }
-        Int64 Destination { get; }
+        VertexInformation Destination { get; }
     }
 }
