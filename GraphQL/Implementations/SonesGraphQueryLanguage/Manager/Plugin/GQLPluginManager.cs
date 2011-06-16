@@ -103,7 +103,7 @@ namespace sones.GraphQL.GQL.Manager.Plugin
             FillLookup<IMultipleValueIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
             FillLookup<IGQLAggregate>(componentName, _ => _.AggregateName);
             FillLookup<IGQLFunction>(componentName, _ => _.FunctionName);
-            FillLookup<IGraphDBImport>(componentName, _ => _.ImporterName);
+            FillLookup<IGraphDBImport>(componentName, _ => _.ImportFormat);
             FillLookup<IGraphDBExport>(componentName, _ => _.ExporterName);
             FillLookup<IGQLStatementPlugin>(componentName, _ => _.StatementName);
 
