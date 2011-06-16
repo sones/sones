@@ -85,14 +85,11 @@ namespace sones.GraphQL.StatementNodes.DML
 
             QueryResult result = null;
 
-            if(ImportFormat.ToUpper().Equals("GQL"))
-            {
-                var plugin = myPluginManager.GetAndInitializePlugin<IGraphDBImport>("GQLIMPORT");
+            var plugin = myPluginManager.GetAndInitializePlugin<IGraphDBImport>(ImportFormat.ToUpper());
 
-                if (plugin != null)
-                {
-                    result = plugin.Import(SourceLocation, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, ParallelTasks, Comments, Offset, Limit, VerbosityType);
-                }
+            if (plugin != null)
+            {
+                result = plugin.Import(SourceLocation, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, ParallelTasks, Comments, Offset, Limit, VerbosityType);
             }
 
             sw.Stop();
