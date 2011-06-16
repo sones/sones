@@ -62,6 +62,8 @@ namespace sones.sonesGraphDBStarter
 
         public sonesGraphDBStartup(String[] myArgs)
         {
+            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en-us");
+
             if (myArgs.Count() > 0)
             {
                 foreach (String parameter in myArgs)
