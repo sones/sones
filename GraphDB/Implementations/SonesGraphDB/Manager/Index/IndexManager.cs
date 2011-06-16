@@ -215,7 +215,7 @@ namespace sones.GraphDB.Manager.Index
 
         public bool HasIndex(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            return myPropertyDefinition.InIndices.CountIsGreater(0);
+            return myPropertyDefinition.InIndices.Where(x => x.VertexType.Equals(myPropertyDefinition.RelatedType)).CountIsGreater(0);
         }
 
         public IEnumerable<IIndex<IComparable, long>> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
@@ -510,6 +510,11 @@ namespace sones.GraphDB.Manager.Index
             }
 
             return null;
+        }
+
+        public void Shutdown()
+        {
+            //TODO
         }
     }
 }
