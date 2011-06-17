@@ -17,5 +17,8 @@
     <Setting Name="PersistenceLocation" Type="System.String" Scope="User">
       <Value Profile="(Default)">data</Value>
     </Setting>
+    <Setting Name="DatabaseCulture" Type="System.String" Scope="User">
+      <Value Profile="(Default)">en-us</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
