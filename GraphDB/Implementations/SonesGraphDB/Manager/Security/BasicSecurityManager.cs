@@ -193,6 +193,11 @@ namespace sones.GraphDB.Manager.Security
             return _vertexStore.GetVertexCount(mySecurityToken, myTransactionToken, myVertexTypeID);
         }
 
+        public long GetHighestVertexID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID)
+        {
+            return _vertexStore.GetHighestVertexID(mySecurityToken, myTransactionToken, myVertexTypeID);
+        }
+
         #endregion
 
         #region IPluginable Members

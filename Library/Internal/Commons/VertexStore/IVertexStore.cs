@@ -35,13 +35,25 @@ namespace sones.Library.Commons.VertexStore
         /// <summary>
         /// Returns the count of vertices corresponding to a vertex type
         /// </summary>
-        /// <param name="mySecurityToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexTypeID">The interesting vertex type id</param>
         /// <returns>The count of vertices corresponding to a vertex type</returns>
         UInt64 GetVertexCount(
             SecurityToken mySecurityToken,
             TransactionToken myTransactionToken, 
+            Int64 myVertexTypeID);
+
+        /// <summary>
+        /// Returns the highest vertex id corresponding to a vertex type
+        /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="myVertexTypeID">The interesting vertex type id<</param>
+        /// <returns>The highest vertex id</returns>
+        Int64 GetHighestVertexID(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myVertexTypeID);
 
         /// <summary>
