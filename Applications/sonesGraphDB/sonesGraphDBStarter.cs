@@ -135,6 +135,15 @@ namespace sones.sonesGraphDBStarter
                 #endregion
 
                 #region Drain Pipes            
+                
+                //// QueryLog DrainPipe
+                //Dictionary<string, object> QueryLog_Parameters = new Dictionary<string, object>();
+                //QueryLog_Parameters.Add("AsynchronousMode", true);  // do the work in a separate thread to not slow down queries
+                //QueryLog_Parameters.Add("MaximumAsyncBufferSize", (Int32)1024 * 1024 * 10); // 10 Mbytes of maximum async queue size
+                //QueryLog_Parameters.Add("AppendLogPathAndName", "sones.drainpipelog");
+                //QueryLog_Parameters.Add("CreateNew", false); // always create a new file on start-up
+                //QueryLog_Parameters.Add("FlushOnWrite", true);  // always flush on each write
+            
                 //// the DrainPipe Log expects several parameters
                 //Dictionary<string, object> DrainPipeLog_Parameters = new Dictionary<string, object>();
                 //DrainPipeLog_Parameters.Add("AsynchronousMode", true);  // do the work in a separate thread to not slow down queries
@@ -152,6 +161,7 @@ namespace sones.sonesGraphDBStarter
 
 
                 List<PluginDefinition> DrainPipes = new List<PluginDefinition>();
+                //DrainPipes.Add(new PluginDefinition("sones.querylog", QueryLog_Parameters));
                 //DrainPipes.Add(new PluginDefinition("sones.drainpipelog", DrainPipeLog_Parameters));
                 //DrainPipes.Add(new PluginDefinition("sones.drainpipelog", DrainPipeLog2_Parameters));
                 #endregion
