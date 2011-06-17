@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -137,6 +137,10 @@
     <ProjectReference Include="..\..\Library\Internal\PluginDefinition\PluginDefinition.csproj">
       <Project>{CE9BF2C2-C785-4661-8F4F-64266C697343}</Project>
       <Name>PluginDefinition</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\SlimLogFramework\SlimLogFramework.csproj">
+      <Project>{4B3CB9D7-790C-46A3-B9E2-8E68D097D70D}</Project>
+      <Name>SlimLogFramework</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\TypeCodes\TypeCodeDefinition.csproj">
       <Project>{90D26D64-57EA-4796-A195-15D044FCAF1A}</Project>
