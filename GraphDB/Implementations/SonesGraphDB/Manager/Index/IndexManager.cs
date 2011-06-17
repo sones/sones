@@ -100,7 +100,6 @@ namespace sones.GraphDB.Manager.Index
                 throw new Exception("It is not allowed to add an index with a name, that starts with 'sones'.");
 
             var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myIndexDefinition.VertexTypeName, myTransaction, mySecurity);
-
             
             var indexName = myIndexDefinition.Name ?? CreateIndexName(myIndexDefinition, vertexType);
 
@@ -110,14 +109,13 @@ namespace sones.GraphDB.Manager.Index
 
             if (myIndexDefinition.Properties == null)
                 throw new Exception("Index without properties is not allowed.");
-            
-
 
             foreach (var prop in myIndexDefinition.Properties)
             {
-                if (!vertexType.HasProperty(prop))
+                var propDef = vertexType.GetPropertyDefinition(prop);
+                if (!vertexType.HasProperty(prop) || (propDef.RelatedType.ID != vertexType.ID && !HasIndex(propDef, mySecurity, myTransaction)))
                     //TODO a better exception here.
-                    throw new Exception("The property is not defined on vertex type.");
+                    throw new Exception("The property is not defined on the vertex type " + vertexType.Name + ", it is defined on a parent type.");
             }
 
             var indexID = _idManager[(long)BaseTypes.Index].GetNextID();
@@ -129,8 +127,9 @@ namespace sones.GraphDB.Manager.Index
                     : null;
 
             var index = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(typeClass, parameter, indexID);
-
+            
             var props = myIndexDefinition.Properties.Select(prop => new VertexInformation((long)BaseTypes.Property, vertexType.GetPropertyDefinition(prop).ID)).ToList();
+            
             var date = DateTime.UtcNow.ToBinary();
 
             var indexVertex = BaseGraphStorageManager.StoreIndex(
@@ -215,7 +214,7 @@ namespace sones.GraphDB.Manager.Index
 
         public bool HasIndex(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            return myPropertyDefinition.InIndices.Where(x => x.VertexType.Equals(myPropertyDefinition.RelatedType)).CountIsGreater(0);
+            return myPropertyDefinition.InIndices.CountIsGreater(0);
         }
 
         public IEnumerable<IIndex<IComparable, long>> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
