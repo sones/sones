@@ -161,7 +161,7 @@ namespace sones.GraphDB
 
             #endregion
         }
-
+        
         #endregion
 
         #region IGraphDB Members
@@ -507,7 +507,12 @@ namespace sones.GraphDB
 
         public void Shutdown(SecurityToken mySecurityToken)
         {
+
             _iGraphFS.Shutdown(mySecurityToken);
+
+            //TODO: shutdown plugins
+            _graphDBPluginManager.ShutdownPlugins();
+
         }
 
         #endregion
