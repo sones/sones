@@ -104,6 +104,8 @@ namespace sones.GraphQL
         public readonly NonTerminal NT_IndexTypeOpt;
 
         public readonly NonTerminal NT_AType;
+        public readonly NonTerminal NT_VertexType;
+
         public readonly NonTerminal NT_whereClauseOpt;
         public readonly NonTerminal NT_Id;
         public readonly NonTerminal NT_Expression;
@@ -601,6 +603,7 @@ namespace sones.GraphQL
             var ParameterList = new NonTerminal("ParameterList");
             var VertexTypeList = new NonTerminal("TypeList", CreateVertexTypeListNode);
             NT_AType = new NonTerminal("AType", CreateATypeNode);
+            NT_VertexType = new NonTerminal("AType", CreateATypeNode);
             var VertexTypeWrapper = new NonTerminal("TypeWrapper");
 
             #region Attribute changes
@@ -828,6 +831,8 @@ namespace sones.GraphQL
 
             NT_AType.Rule = Id_simple + Id_simple
                         | Id_simple;
+
+            NT_VertexType.Rule = Id_simple;
 
             //AType.Rule = Id + Id_simple
             //                | Id;
