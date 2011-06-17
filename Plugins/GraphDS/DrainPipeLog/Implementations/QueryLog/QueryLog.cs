@@ -273,7 +273,7 @@ namespace QueryLog
                  String ErrorMessage = "";
 
                  if (result.Error != null)
-                     ErrorMessage = result.Error.Message + "(" + result.Error.StackTrace + ")";
+                     ErrorMessage = (result.Error.Message + "(" + result.Error.StackTrace + ")").Replace("\n", "").Replace("\r", "");   // without any carriage returns or line feeds
 
                 _logFile.WriteLine(now.ToShortDateString() + " " + now.ToShortTimeString() + " " + resultType + " " + result.Duration + " " + result.NumberOfAffectedVertices + " " + result.NameOfQuerylanguage + " '" + result.Query+ "' " + ErrorMessage);
             }
