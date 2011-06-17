@@ -19,6 +19,7 @@
 */
 
 using System;
+using System.Linq;
 using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Manager.Plugin;
 using sones.GraphDB.Manager.QueryPlan;
@@ -114,11 +115,20 @@ namespace sones.GraphDB.Manager
                 creationManager.CreateBaseGraph(myVertexStore);
             }
 
-
             result.Initialize();
             result.Load();
 
+            SetMaxID(myVertexStore, myIDManager, myTransaction, mySecurity, result);
+
             return result;
+        }
+
+        private static void SetMaxID(IVertexStore myVertexStore, IDManager myIDManager, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager result)
+        {
+            foreach (var aUserDefinedVertexType in result._vertexTypeManager.ExecuteManager.GetAllVertexTypes(myTransaction, mySecurity).Where(_ => _.IsUserDefined))
+            {
+                myIDManager[aUserDefinedVertexType.ID].SetToMaxID(myVertexStore.GetHighestVertexID(mySecurity, myTransaction, aUserDefinedVertexType.ID) + 1);
+            }
         }
 
         private void Initialize()
