@@ -341,26 +341,30 @@ namespace sones.GraphDB.Manager.Index
                 foreach (var vertex in vertices)
                 {
                     foreach (var indexGroup in toRebuild)
+                    {
                         foreach (var index in indexGroup.Value)
                         {
                             var key = CreateIndexKey(indexGroup.Key, vertex);
-                            if (index is ISingleValueIndex<IComparable, Int64>)
+                            if (key != null)
                             {
-                                (index as ISingleValueIndex<IComparable, Int64>).Add(key, vertex.VertexID);
-                            }
-                            else if (index is IMultipleValueIndex<IComparable, Int64>)
-                            {
-                                //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
-                                //TODO: Refactor IIndex structure
-                                (index as IMultipleValueIndex<IComparable, Int64>).Add(key,new HashSet<Int64>{vertex.VertexID});
-                            }
-                            else
-                            {
-                                throw new NotImplementedException(
-                                    "Indices other than single or multiple value indices are not supported yet.");
+                                if (index is ISingleValueIndex<IComparable, Int64>)
+                                {
+                                    (index as ISingleValueIndex<IComparable, Int64>).Add(key, vertex.VertexID);
+                                }
+                                else if (index is IMultipleValueIndex<IComparable, Int64>)
+                                {
+                                    //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
+                                    //TODO: Refactor IIndex structure
+                                    (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> { vertex.VertexID });
+                                }
+                                else
+                                {
+                                    throw new NotImplementedException(
+                                        "Indices other than single or multiple value indices are not supported yet.");
+                                }
                             }
                         }
-
+                    }
                 }
             }
 
