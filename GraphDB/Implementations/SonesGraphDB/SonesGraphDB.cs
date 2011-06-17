@@ -42,6 +42,7 @@ using sones.GraphDB.Request.CreateIndex;
 using sones.GraphDB.Request.RebuildIndices;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Request.AlterType;
+using System.Globalization;
 
 namespace sones.GraphDB
 {
@@ -51,6 +52,11 @@ namespace sones.GraphDB
     public sealed class SonesGraphDB : IGraphDB
     {
         #region data
+
+        /// <summary>
+        /// The Culture information of this GraphDB instance.
+        /// </summary>
+        private readonly CultureInfo _graphDBCulture;
 
         /// <summary>
         /// A manager for handling incoming requests
@@ -106,9 +112,10 @@ namespace sones.GraphDB
         /// </summary>
         /// <param name="myPlugins">The plugins that are valid for the sones GraphDB component</param>
         /// <param name="myCreate">Should the sones graphdb created?</param>
+        /// <param name="myCulture">the culture of this instance, defaults to en-us</param>
         public SonesGraphDB(
             GraphDBPlugins myPlugins = null,
-            Boolean myCreate = true)
+            Boolean myCreate = true, CultureInfo myCulture = null)
         {
             _id = Guid.NewGuid();
 
@@ -118,6 +125,14 @@ namespace sones.GraphDB
             {
                 myPlugins = new GraphDBPlugins();
             }
+
+            if (myCulture == null)
+            {
+                // defaults to en-us
+                myCulture = new CultureInfo("en-us");
+            }
+
+            _graphDBCulture = myCulture;
 
             #region settings
 
@@ -161,7 +176,7 @@ namespace sones.GraphDB
 
             #endregion
         }
-
+        
         #endregion
 
         #region IGraphDB Members
@@ -507,7 +522,12 @@ namespace sones.GraphDB
 
         public void Shutdown(SecurityToken mySecurityToken)
         {
+
             _iGraphFS.Shutdown(mySecurityToken);
+
+            //TODO: shutdown plugins
+            _graphDBPluginManager.ShutdownPlugins();
+
         }
 
         #endregion

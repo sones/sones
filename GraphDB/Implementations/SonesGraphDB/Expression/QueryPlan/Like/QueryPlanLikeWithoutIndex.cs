@@ -28,6 +28,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.Expression.Tree.Literals;
 using System.Text.RegularExpressions;
+using sones.GraphDB.ErrorHandling.Expression;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -67,7 +68,16 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         public override IEnumerable<IVertex> GetMatchingVertices(IVertexType myInterestingVertexType)
         {
-            var regexpression = new Regex((String)_constant.Value);
+            Regex regexpression;
+
+            try
+            {
+                regexpression = new Regex((String)_constant.Value);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidLikeOperationException(String.Format("Invalid regular expression given:{0}{1}", Environment.NewLine, e.Message));
+            }
 
             foreach (var aVertex in _vertexStore.GetVerticesByTypeID(_securityToken, _transactionToken, myInterestingVertexType.ID, _property.Edition, VertexRevisionFilter))
             {

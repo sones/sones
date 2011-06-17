@@ -34,6 +34,7 @@ using System.Net;
 using System.Threading;
 using sones.GraphDB.Manager.Plugin;
 using System.IO;
+using System.Globalization;
 
 namespace sones.sonesGraphDBStarter
 {
@@ -62,6 +63,8 @@ namespace sones.sonesGraphDBStarter
 
         public sonesGraphDBStartup(String[] myArgs)
         {
+            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo(Properties.Settings.Default.DatabaseCulture);
+
             if (myArgs.Count() > 0)
             {
                 foreach (String parameter in myArgs)
@@ -76,7 +79,7 @@ namespace sones.sonesGraphDBStarter
 
             if (Properties.Settings.Default.UsePersistence)
             {
-
+                Console.WriteLine("Initializing persistence layer...");
                 string configuredLocation = Properties.Settings.Default.PersistenceLocation;
                 Uri location = null;
 
@@ -95,6 +98,7 @@ namespace sones.sonesGraphDBStarter
                 {
                     //Make a new GraphDB instance
                     GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location } })));
+                    Console.WriteLine("Persistence layer initialized...");
                 }
                 catch (Exception a)
                 {
@@ -104,12 +108,12 @@ namespace sones.sonesGraphDBStarter
                     Console.Error.WriteLine("Could not access the data directory " + location.AbsoluteUri + ". Please make sure you that you have the right file access permissions!");
                     Console.Error.WriteLine("Using in memory storage instead.");
 
-                    GraphDB = new SonesGraphDB();
+                    GraphDB = new SonesGraphDB(null,true,new CultureInfo(Properties.Settings.Default.DatabaseCulture));
                 }
             }
             else
             {
-                GraphDB = new SonesGraphDB();
+                GraphDB = new SonesGraphDB(null, true, new CultureInfo(Properties.Settings.Default.DatabaseCulture));
             }
 
             #region Configure PlugIns

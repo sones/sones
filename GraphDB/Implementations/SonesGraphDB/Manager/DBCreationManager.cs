@@ -313,9 +313,9 @@ namespace sones.GraphDB.Manager
 
         private void AddOrderableEdge(IVertexStore myStore, long myCreationDate)
         {
-            #region WeightedEdge vertex
+            #region OrderableEdge vertex
 
-            BaseGraphStorageManager.StoreEdgeType(myStore, _OrderableEdge, "Orderable", "OrderableEdgeEdgeComment", false, myCreationDate, false, true, _OrderableEdge, _security, _transaction);
+            BaseGraphStorageManager.StoreEdgeType(myStore, _OrderableEdge, "Orderable", "OrderableEdgeEdgeComment", false, myCreationDate, false, true, _Edge, _security, _transaction);
 
             #endregion
 

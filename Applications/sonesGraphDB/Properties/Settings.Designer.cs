@@ -82,5 +82,17 @@ namespace sones.sonesGraphDBStarter.Properties {
                 this["PersistenceLocation"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("en-us")]
+        public string DatabaseCulture {
+            get {
+                return ((string)(this["DatabaseCulture"]));
+            }
+            set {
+                this["DatabaseCulture"] = value;
+            }
+        }
     }
 }
