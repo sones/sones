@@ -59,6 +59,10 @@
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\GraphFS\Implementations\InMemoryNonRevisioned\InMemoryNonRevisioned.csproj">
+      <Project>{AB7C27CC-534F-472E-BA56-A1287973B7E2}</Project>
+      <Name>InMemoryNonRevisioned</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\GraphQL\Implementations\SonesGraphQueryLanguage\SonesGraphQueryLanguage.csproj">
       <Project>{26BFEE62-82B9-4EFA-9F91-08FD947551A8}</Project>
       <Name>SonesGraphQueryLanguage</Name>
