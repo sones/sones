@@ -325,7 +325,7 @@ namespace sones.GraphDB.Manager.Index
             RebuildIndices(myVertexType, myTransactionToken, mySecurityToken, false);
         }
 
-        private void RebuildIndices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, bool myOnlyNonPersistent)
+        private void RebuildIndices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, bool myOnlyNonPersistent )
         {
             Dictionary<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, Int64>>> toRebuild = new Dictionary<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, long>>>();
             foreach (var indexDef in myVertexType.GetIndexDefinitions(false))
@@ -336,6 +336,14 @@ namespace sones.GraphDB.Manager.Index
 
             if (toRebuild.Count > 0)
             {
+                foreach (var aIdxCollection in toRebuild.Values)
+                {
+                    foreach (var aIdx in aIdxCollection)
+                    {
+                        aIdx.ClearIndex();
+                    }
+                }
+
                 var vertices = _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, myVertexType.ID);
 
                 foreach (var vertex in vertices)
