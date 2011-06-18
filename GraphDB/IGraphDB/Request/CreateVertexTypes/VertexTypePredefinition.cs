@@ -169,6 +169,7 @@ namespace sones.GraphDB.Request
             SuperVertexTypeName = "Vertex";
             IsSealed = false;
             IsAbstract = false;
+            Comment = String.Empty;
 
         }
 
