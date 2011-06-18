@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.Library.LanguageExtensions;
 using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 using sones.GraphQL.GQL.Structure.Nodes.Misc;
 using sones.GraphQL.Structure.Helper.Enums;
@@ -476,7 +477,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         {
             if (aExpressionDefinition is ValueDefinition)
             {
-                return new SingleLiteralExpression((IComparable)Convert.ChangeType(((ValueDefinition)aExpressionDefinition).Value, myTypeOfLiteral));
+                return new SingleLiteralExpression( ((ValueDefinition)aExpressionDefinition).Value.ConvertToIComparable(myTypeOfLiteral));
 
             }
             else

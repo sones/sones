@@ -42,11 +42,26 @@ namespace BplusDotNet
 		}
 		public static BplusTreeBytes Initialize(string treefileName, string blockfileName, int KeyLength) 
 		{
-			System.IO.Stream treefile = new System.IO.FileStream(treefileName, System.IO.FileMode.CreateNew, 
-				System.IO.FileAccess.ReadWrite);
-			System.IO.Stream blockfile = new System.IO.FileStream(blockfileName, System.IO.FileMode.CreateNew, 
-				System.IO.FileAccess.ReadWrite);
-			return Initialize(treefile, blockfile, KeyLength);
+			System.IO.Stream treefile = null;
+			System.IO.Stream blockfile = null;
+
+			try
+			{
+				treefile = new System.IO.FileStream(treefileName, System.IO.FileMode.CreateNew, System.IO.FileAccess.ReadWrite);
+				blockfile = new System.IO.FileStream(blockfileName, System.IO.FileMode.CreateNew, System.IO.FileAccess.ReadWrite);
+
+				return Initialize(treefile, blockfile, KeyLength);
+			}
+			catch(Exception ex)
+			{
+				if(treefile != null)
+					treefile.Dispose();
+
+				if(blockfile != null)
+					blockfile.Dispose();
+
+				throw ex;
+			}
 		}
 		public static BplusTreeBytes Initialize(System.IO.Stream treefile, System.IO.Stream blockfile, int KeyLength, int CultureId,
 			int nodesize, int buffersize) 
@@ -72,11 +87,26 @@ namespace BplusDotNet
 		}
 		public static BplusTreeBytes ReOpen(string treefileName, string blockfileName, System.IO.FileAccess access) 
 		{
-			System.IO.Stream treefile = new System.IO.FileStream(treefileName, System.IO.FileMode.Open, 
-				access);
-			System.IO.Stream blockfile = new System.IO.FileStream(blockfileName, System.IO.FileMode.Open, 
-				access);
-			return ReOpen(treefile, blockfile);
+			System.IO.Stream treefile = null;
+			System.IO.Stream blockfile = null;
+
+			try
+			{
+				treefile = new System.IO.FileStream(treefileName, System.IO.FileMode.Open, access);
+				blockfile = new System.IO.FileStream(blockfileName, System.IO.FileMode.Open, access);
+
+				return ReOpen(treefile, blockfile);
+			}
+			catch (System.Exception ex)
+			{
+				if(treefile != null)
+					treefile.Dispose();
+
+				if(blockfile != null)
+					blockfile.Dispose();
+
+				throw ex;
+			}
 		}
 		public static BplusTreeBytes ReOpen(string treefileName, string blockfileName) 
 		{

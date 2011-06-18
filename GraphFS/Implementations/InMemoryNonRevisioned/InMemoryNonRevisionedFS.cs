@@ -163,6 +163,18 @@ namespace sones.GraphFS
             return false;
         }
 
+        public long GetHighestVertexID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID)
+        {
+            ConcurrentDictionary<Int64, InMemoryVertex> vertices;
+
+            if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
+            {
+                return vertices.Max(_ => _.Key);
+            }
+
+            return Int64.MinValue;
+        }
+
         public ulong GetVertexCount(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID)
         {
             ConcurrentDictionary<Int64, InMemoryVertex> vertices;
