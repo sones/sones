@@ -167,7 +167,11 @@ namespace sones.Plugins.SonesGQL
             };
 
             #endregion
+
+            #region check lines and execute query
+
             StopWatchLines.Start();
+
             Parallel.ForEach(myLines, parallelOptions, (line, state) =>
             {
 
@@ -197,10 +201,8 @@ namespace sones.Plugins.SonesGQL
 
                         if (qresult.TypeOfResult != ResultType.Successful && myVerbosityType != VerbosityTypes.Silent)
                         {
-                            lock (queryResult)
-                            {
-                                queryResult = new QueryResult(line, ImportFormat, Convert.ToUInt64(StopWatchLine.ElapsedMilliseconds), ResultType.Failed, qresult.Vertices, qresult.Error);
-                            }
+                            queryResult = new QueryResult(line, ImportFormat, Convert.ToUInt64(StopWatchLine.ElapsedMilliseconds), ResultType.Failed, qresult.Vertices, qresult.Error);
+                            
                             state.Break();
                         }
 
@@ -211,7 +213,10 @@ namespace sones.Plugins.SonesGQL
                 }
 
             });
+
             StopWatchLines.Stop();
+            
+            #endregion
 
             //add the results of each query into the queryResult
             if (queryResult != null)
@@ -390,6 +395,9 @@ namespace sones.Plugins.SonesGQL
         {
             return new GraphDBImport_GQL();
         }
+
+        public void Dispose()
+        { }
 
         #endregion
     }

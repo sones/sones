@@ -308,6 +308,9 @@ namespace sones.Plugins.Index
             return (IPluginable)result;
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         #region ISonesIndex Members

@@ -92,10 +92,13 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return new PluginParameters<Type>(); }
         }
 
-        public override Library.VersionedPluginManager.IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
+        public override IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
             return new ToLowerFunc();
         }
+
+        public void Dispose()
+        { }
 
         public override string FunctionName
         {

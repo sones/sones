@@ -77,6 +77,9 @@ namespace sones.Plugins.GraphDS.IO
             return (IPluginable)result;
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         #region IOInterface

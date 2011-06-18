@@ -111,6 +111,9 @@ namespace sones.Plugins.SonesGQL.Aggregates
             return new SumAggregate();
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         #region IGQLAggregate Members

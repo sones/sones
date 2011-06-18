@@ -113,6 +113,9 @@ namespace sones.Plugins.SonesGQL.Functions
             return new MaxWeightFunc();
         }
 
+        public void Dispose()
+        { }
+
         public override string FunctionName
         {
             get { return "maxweight"; }

@@ -87,6 +87,9 @@ namespace sones.Plugins.SonesGQL.Functions
             return new ToUpperFunc();
         }
 
+        public void Dispose()
+        { }
+
         public override string FunctionName
         {
             get { return "toupper"; }

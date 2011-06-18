@@ -85,6 +85,9 @@ namespace sones.Plugins.SonesGQL.Functions
             return new Exists();
         }
 
+        public void Dispose()
+        { }
+
         public override string FunctionName
         {
             get { return "exists"; }

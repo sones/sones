@@ -115,6 +115,9 @@ namespace sones.Plugins.SonesGQL.Functions
             return new TopFunc();
         }
 
+        public void Dispose()
+        { }
+
         public override string FunctionName
         {
             get { return "top"; }

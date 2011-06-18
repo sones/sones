@@ -84,6 +84,9 @@ namespace sones.Plugins.SonesGQL.Aggregates
             return new CountAggregate();
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         #region IGQLAggregate Members

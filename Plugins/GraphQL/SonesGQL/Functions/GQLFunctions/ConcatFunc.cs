@@ -81,6 +81,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new FuncParameter(resString.ToString());
         }
 
+        #region IPluginable
+
         public override string PluginName
         {
             get
@@ -104,5 +106,9 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "concat"; }
         }
 
+        public void Dispose()
+        { }
+
+        #endregion
     }
 }

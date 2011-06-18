@@ -44,6 +44,10 @@ namespace sones.Library.VersionedPluginManager
         /// </summary>
         protected readonly Dictionary<Type, Dictionary<String, IPluginable>> _plugins;
 
+        //Event to Shutdown Plugins
+        public delegate void Shutdown();
+        public event Shutdown ShutdownEventHandler;
+
         #endregion
 
         #region constructor
@@ -148,13 +152,26 @@ namespace sones.Library.VersionedPluginManager
                 {
                     throw new UnknownPluginException(myPluginName, type);
                 }
+                
                 var uniqueString = String.Join("-", 
                     typeof(T).Name, 
                     myPluginName, 
                     (UniqueID == null) ? Guid.NewGuid().ToString() : UniqueID.ToString());
 
-                return (T)interestingLookup[myPluginName.ToUpper()].InitializePlugin(uniqueString, myParameter);
+                var plugin = interestingLookup[myPluginName.ToUpper()].InitializePlugin(uniqueString, myParameter);
+
+                ShutdownEventHandler += new Shutdown(plugin.Dispose);
+
+                return (T)plugin;
             }
+        }
+
+        public void ShutdownPlugins()
+        {
+
+            if (ShutdownEventHandler != null)
+                ShutdownEventHandler();
+
         }
 
         #endregion

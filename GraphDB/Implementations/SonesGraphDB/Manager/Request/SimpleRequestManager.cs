@@ -112,6 +112,9 @@ namespace sones.GraphDB.Manager
             return result;
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         #region private helper

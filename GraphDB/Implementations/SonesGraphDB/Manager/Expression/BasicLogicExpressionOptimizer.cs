@@ -31,7 +31,7 @@ namespace sones.GraphDB.Manager
     /// </summary>
     public sealed class BasicLogicExpressionOptimizer : ILogicExpressionOptimizer
     {
-         #region constructor
+        #region constructor
 
         /// <summary>
         /// Creates a new BasicLogicExpressionOptimizer 
@@ -71,6 +71,9 @@ namespace sones.GraphDB.Manager
         {
             return new BasicLogicExpressionOptimizer();
         }
+
+        public void Dispose()
+        { }
 
         #endregion
     }

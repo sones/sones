@@ -892,6 +892,9 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             return (IPluginable)result;
         }
 
+        public void Dispose()
+        { }
+
         #endregion
         
     }

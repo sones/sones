@@ -126,6 +126,9 @@ namespace sones.Plugins.SonesGQL.Functions
             return new InsertFunc();
         }
 
+        public void Dispose()
+        { }
+
         public override string FunctionName
         {
             get { return "insert"; }

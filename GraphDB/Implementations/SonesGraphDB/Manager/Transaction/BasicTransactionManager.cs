@@ -208,6 +208,9 @@ namespace sones.GraphDB.Manager.Transaction
             return new BasicTransactionManager((IVertexStore)myParameters["vertexStore"]);
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         #region private helper

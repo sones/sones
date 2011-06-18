@@ -103,6 +103,9 @@ namespace sones.Plugins.SonesGQL.Aggregates
             return new MinAggregate();
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         #region IGQLAggregate Members

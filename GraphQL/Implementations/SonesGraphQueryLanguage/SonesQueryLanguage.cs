@@ -250,6 +250,9 @@ namespace sones.GraphQL
             return (IPluginable)result;
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         #region private helper

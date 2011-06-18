@@ -65,8 +65,11 @@ namespace QueryLog
             var result = new QueryLog(myUniqueString, myParameters);
             return (IPluginable)result;
         }
-        #endregion
 
+        public void Dispose()
+        { }
+
+        #endregion
 
         #region IGraphDS Members
 

@@ -110,6 +110,9 @@ namespace sones.Plugins.SonesGQL.Aggregates
             return new AvgAggregate();
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         #region IGQLAggregate Members

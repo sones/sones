@@ -168,6 +168,8 @@ namespace ShortestPathAlgorithms
             #endregion
         }
 
+        #region IPluginable member
+        
         public override string PluginName
         {
             get { return "sones.path"; }
@@ -187,5 +189,10 @@ namespace ShortestPathAlgorithms
         {
             get { return "path"; }
         }
+
+        public void Dispose()
+        {}
+
+        #endregion
     }
 }

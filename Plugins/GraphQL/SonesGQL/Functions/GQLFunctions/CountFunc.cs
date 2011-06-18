@@ -120,6 +120,9 @@ namespace sones.Plugins.SonesGQL.Functions
             return new CountFunc();
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         public override string FunctionName

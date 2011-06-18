@@ -622,6 +622,9 @@ namespace sones.GraphFS
             return new InMemoryNonRevisionedFS();
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         #region private helper

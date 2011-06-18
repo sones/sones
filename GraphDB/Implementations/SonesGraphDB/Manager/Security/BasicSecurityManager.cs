@@ -213,6 +213,9 @@ namespace sones.GraphDB.Manager.Security
             return new BasicSecurityManager((IVertexStore)myParameters["vertexStore"]);
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         #region private helper

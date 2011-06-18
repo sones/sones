@@ -102,6 +102,9 @@ namespace sones.Plugins.SonesGQL.Aggregates
             return new MaxAggregate();
         }
 
+        public void Dispose()
+        { }
+
         #endregion
 
         #region IGQLAggregate Members

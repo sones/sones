@@ -71,6 +71,9 @@ namespace sones.Plugins.SonesGQL.Functions
             return new CurrentDateFunc();
         }
 
+        public void Dispose()
+        { }
+
         public override string FunctionName
         {
             get { return "currentdate"; }

@@ -34,13 +34,6 @@ namespace sones.GraphDB.Manager.Plugin
     /// </summary>
     public sealed class GraphDBPluginManager : AComponentPluginManager
     {
-        #region data
-
-        //Event to Shutdown Plugins
-        public event EventHandler ShutdownEventHandler;
-
-        #endregion
-
         #region constructor
 
         /// <summary>
@@ -80,14 +73,6 @@ namespace sones.GraphDB.Manager.Plugin
             FillLookup<IMultipleValueIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
             FillLookup<IIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
             #endregion   
-        }
-
-        public void ShutdownPlugins()
-        {
-
-            if (ShutdownEventHandler != null)
-                ShutdownEventHandler(this, new EventArgs());
-
         }
 
         #endregion

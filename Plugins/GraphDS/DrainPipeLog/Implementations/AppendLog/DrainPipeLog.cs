@@ -163,6 +163,10 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             var result = new DrainPipeLog(myUniqueString, myParameters);
             return (IPluginable)result;
         }
+
+        public void Dispose()
+        { }
+
         #endregion
         
         #region IGraphDS

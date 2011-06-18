@@ -127,7 +127,7 @@ namespace sones.GraphDB.Manager.Index
                     : null;
 
             var index = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(typeClass, parameter, indexID);
-            
+
             var props = myIndexDefinition.Properties.Select(prop => new VertexInformation((long)BaseTypes.Property, vertexType.GetPropertyDefinition(prop).ID)).ToList();
             
             var date = DateTime.UtcNow.ToBinary();

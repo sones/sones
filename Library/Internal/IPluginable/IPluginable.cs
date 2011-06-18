@@ -26,7 +26,7 @@ namespace sones.Library.VersionedPluginManager
     /// <summary>
     /// The interface for all pluginable components
     /// </summary>
-    public interface IPluginable
+    public interface IPluginable : IDisposable
     {
         /// <summary>
         /// The unique name of the plugin
