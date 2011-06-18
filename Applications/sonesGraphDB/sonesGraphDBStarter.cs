@@ -35,6 +35,7 @@ using System.Threading;
 using sones.GraphDB.Manager.Plugin;
 using System.IO;
 using System.Globalization;
+using sones.Library.DiscordianDate;
 
 namespace sones.sonesGraphDBStarter
 {
@@ -179,7 +180,9 @@ namespace sones.sonesGraphDBStarter
             #region Some helping lines...
             if (!quiet)
             {
-                Console.WriteLine("sones GraphDB version 2.0 - ");
+                DiscordianDate ddate = new DiscordianDate();
+
+                Console.WriteLine("sones GraphDB version 2.0 - "+ddate.ToString());
                 Console.WriteLine("(C) sones GmbH 2007-2011 - http://www.sones.com");
                 Console.WriteLine("-----------------------------------------------");
                 Console.WriteLine();

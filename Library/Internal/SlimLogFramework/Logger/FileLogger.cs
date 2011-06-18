@@ -53,7 +53,7 @@ namespace sones.Library.SlimLogFramework.Logger
                 : String.Format(myMessage, myParams);
 
             
-            _stream.WriteLine(myLevel.ToString() + ": " + myMessage);
+            _stream.WriteLine(DateTime.Now + " " + myLevel.ToString() + ": " + myMessage);
         }
 
         #region IDisposable Members
