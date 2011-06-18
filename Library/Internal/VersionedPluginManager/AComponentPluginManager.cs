@@ -45,8 +45,8 @@ namespace sones.Library.VersionedPluginManager
         protected readonly Dictionary<Type, Dictionary<String, IPluginable>> _plugins;
 
         //Event to Shutdown Plugins
-        public delegate void Shutdown();
-        public event Shutdown ShutdownEventHandler;
+        public delegate void PluginShutdownEventHandler();
+        public event PluginShutdownEventHandler ShutdownEventHandler;
 
         #endregion
 
@@ -160,7 +160,7 @@ namespace sones.Library.VersionedPluginManager
 
                 var plugin = interestingLookup[myPluginName.ToUpper()].InitializePlugin(uniqueString, myParameter);
 
-                ShutdownEventHandler += new Shutdown(plugin.Dispose);
+                ShutdownEventHandler += new PluginShutdownEventHandler(plugin.Dispose);
 
                 return (T)plugin;
             }
