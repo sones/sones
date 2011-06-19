@@ -29,6 +29,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.VersionedPluginManager;
+using sones.GraphFS.Element.Edge;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
@@ -87,6 +88,10 @@ namespace sones.Plugins.SonesGQL.Functions
             {
                 UInt64 count = 1;
                 return new FuncParameter(count);
+            }
+            else if (myCallingObject is IncomingEdgeCollection)
+            {
+                return new FuncParameter((UInt64)(myCallingObject as IncomingEdgeCollection).LongCount());
             }
             else if (myCallingObject is IEnumerable<long>)
             {
