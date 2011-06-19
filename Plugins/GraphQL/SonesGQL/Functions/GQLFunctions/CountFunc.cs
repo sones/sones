@@ -97,6 +97,10 @@ namespace sones.Plugins.SonesGQL.Functions
             {
                 return new FuncParameter((UInt64)(myCallingObject as IEnumerable<long>).LongCount());
             }
+            else if (myCallingObject is IEnumerable<IVertex>)
+            {
+                return new FuncParameter((UInt64)(myCallingObject as IEnumerable<IVertex>).LongCount());
+            }
             else
             {
                 throw new UnknownDBException("Unexpected input for COUNT aggregate.");

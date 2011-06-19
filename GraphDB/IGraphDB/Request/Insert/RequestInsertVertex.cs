@@ -220,6 +220,8 @@ namespace sones.GraphDB.Request
         public RequestInsertVertex(String myVertexTypeName)
         {
             VertexTypeName = myVertexTypeName;
+
+            Comment = String.Empty;
         }
 
         #endregion
