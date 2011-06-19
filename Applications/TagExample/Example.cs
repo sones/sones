@@ -17,7 +17,8 @@ namespace TagExample
     /// This is a Example wich describes and shows the simplicity of setting up a GraphDB by using the sones GraphDB CommunityEdition.
     /// It shows you how to create our own Database by using different sones GraphDB API's (using GraphDB Requests and the SonesQueryLanguage).
     /// 
-    /// If you are using the SonesQueryLanguage please read our GQL CheatSheet --> http://developers.sones.de/category/gql/
+    /// If you are using the SonesQueryLanguage please read our GQL CheatSheet 
+    ///     --> https://github.com/downloads/sones/sones/GQL_cheatsheet_latest.pdf
     /// there you can find the description of all available statements and some additional examples.
     /// 
     /// In this Example we show how to:
@@ -66,6 +67,13 @@ namespace TagExample
 
         #endregion
 
+        /// <summary>
+        /// Starts the example, including creation of types "Tag" and "Website", insert some data and make some selects
+        /// </summary>
+        /// <param name="GraphDB"></param>
+        /// <param name="GraphQL"></param>
+        /// <param name="SecToken"></param>
+        /// <param name="TransToken"></param>
         public void Run(IGraphDB GraphDB, IGraphQL GraphQL, SecurityToken SecToken, TransactionToken TransToken)
         {
             #region create some types using the API
@@ -317,8 +325,38 @@ namespace TagExample
             #endregion
 
             Console.WriteLine();
-            Console.WriteLine("Finished Example. Please type a key to exit!");
-            Console.Read();
+
+            Console.WriteLine("Finished Example. Type in a query OR \"exit\" for finish!");
+
+            Console.WriteLine();
+
+            #region read in queries
+            
+            var line = Console.ReadLine();
+
+            while (line.ToUpper() != "EXIT")
+            { 
+                var temp = GraphQL.Query(SecToken, TransToken, line);
+
+                if (CheckResult(temp))
+                {
+                    foreach (var item in temp.Vertices)
+                    {
+                        Console.WriteLine("Edges:");
+                        foreach (var edge in item.GetAllEdges())
+                            Console.WriteLine(edge.Item1 + " " + edge.Item2);
+                        Console.WriteLine();
+                        Console.WriteLine("Attributes:");
+                        foreach (var attr in item.GetAllProperties())
+                            Console.WriteLine(attr.Item1 + " " + attr.Item2);
+                        Console.WriteLine();
+                    }
+                }
+
+                line = Console.ReadLine();
+            }
+
+            #endregion
         }
 
         #region private helper
@@ -327,7 +365,7 @@ namespace TagExample
         /// This private method analyses the QueryResult, shows the ResultType and Errors if existing.
         /// </summary>
         /// <param name="myQueryResult">The result of a query.</param>
-        private void CheckResult(QueryResult myQueryResult)
+        private bool CheckResult(QueryResult myQueryResult)
         {
             if (myQueryResult.Error != null)
             {
@@ -335,10 +373,14 @@ namespace TagExample
                     Console.WriteLine(myQueryResult.Error.InnerException.Message);
                 else
                     Console.WriteLine(myQueryResult.Error.Message);
+
+                return false;
             }
             else
             {
                 Console.WriteLine("Query " + myQueryResult.TypeOfResult);
+
+                return true;
             }
         }
 
