@@ -66,6 +66,16 @@ namespace sones.GraphFS
 
         #endregion
 
+        #region InMemoryNonRevisionedFS Members
+
+        public IEnumerable<IVertex> GetAllVertices()
+        {
+            var result = _vertexStore.Select(_ => _.Value).SelectMany(_ => _.Values);
+            return result;
+        }
+
+        #endregion
+
         #region IGraphFS Members
 
         public bool IsTransactional
