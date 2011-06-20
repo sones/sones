@@ -70,10 +70,10 @@ namespace TagExample
         /// <summary>
         /// Starts the example, including creation of types "Tag" and "Website", insert some data and make some selects
         /// </summary>
-        /// <param name="GraphDB"></param>
-        /// <param name="GraphQL"></param>
-        /// <param name="SecToken"></param>
-        /// <param name="TransToken"></param>
+        /// <param name="GraphDB">The GraphDB instance.</param>
+        /// <param name="GraphQL">The QueryLanguage instance.</param>
+        /// <param name="SecToken">The SecurityToken.</param>
+        /// <param name="TransToken">The Transaction Token.</param>
         public void Run(IGraphDB GraphDB, IGraphQL GraphQL, SecurityToken SecToken, TransactionToken TransToken)
         {
             #region create some types using the API
