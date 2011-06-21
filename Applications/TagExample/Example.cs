@@ -12,7 +12,7 @@ using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 
 /// <summary>
-/// This is a Example wich describes and shows the simplicity of setting up a GraphDB by using the sones GraphDB CommunityEdition.
+/// This is an Example wich describes and shows the simplicity of setting up a GraphDB by using the sones GraphDB CommunityEdition.
 /// It shows you how to create our own Database by using different sones GraphDB API's (using GraphDB Requests and the SonesQueryLanguage).
 /// 
 /// If you are using the SonesQueryLanguage please read our GQL CheatSheet 
@@ -63,34 +63,17 @@ namespace TagExample
 
         static void Main(string[] args)
         {
-            #region initialize the DB
-
-            //Make a new GraphDB instance
-            IGraphDB GraphDB = new SonesGraphDB();
-            //Make a new SonesQueryLanguage instance (GQL)
-            IGraphQL GraphQL = new SonesQueryLanguage(GraphDB);
-
-            //get a Security- and TransactionToken
-            SecurityToken SecToken = GraphDB.LogOn(new UserPasswordCredentials("root", "1111"));
-            TransactionToken TransToken = GraphDB.BeginTransaction(SecToken);
-
-            #endregion
-
             var MyTagExample = new TagExample();
 
             MyTagExample.Run();
 
             //shutdown GraphDB
-            GraphDB.Shutdown(SecToken);
+            MyTagExample.GraphDB.Shutdown(MyTagExample.SecToken);
         }
 
         /// <summary>
         /// Starts the example, including creation of types "Tag" and "Website", insert some data and make some selects
         /// </summary>
-        /// <param name="GraphDB">The GraphDB instance.</param>
-        /// <param name="GraphQL">The QueryLanguage instance.</param>
-        /// <param name="SecToken">The SecurityToken.</param>
-        /// <param name="TransToken">The Transaction Token.</param>
         public void Run()
         {
             #region create types, create instances and additional work using the GraphDB API
@@ -189,8 +172,9 @@ namespace TagExample
             //                    .SetAsIndexed();
 
             //3. make a create index request, like creating a type
-            //var MyIndex = GraphDB.CreateIndex<IIndexDefinition>(SecToken, 
-            //                                                    TransToken, 
+            //BEWARE: This statement must be execute AFTER the type "Website" is created.
+            //var MyIndex = GraphDB.CreateIndex<IIndexDefinition>(SecToken,
+            //                                                    TransToken,
             //                                                    new RequestCreateIndex(
             //                                                        new IndexPredefinition("MyIndex")
             //                                                            .SetIndexType("MultipleValueIndex")
@@ -311,11 +295,26 @@ namespace TagExample
             #endregion
         }
 
+        /// <summary>
+        /// Describes how to send queries using the GraphQL.
+        /// </summary>
         private void GraphQLQueries()
         {
             //create types at the same time, because of the circular dependencies (Tag has OutgoingEdge to Website, Website has IncomingEdge from Tag)
-            var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites) INDICES (Name), 
-                                                                                Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags)");
+            //like shown before, using the GraphQL there are also three different ways to create create an index on property "Name" of type "Website"
+            //1. create an index definition and specifie the property name and index type
+            var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+                                                                                Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags) 
+                                                                                    INDICES (MyIndex INDEXTYPE MultipleValueIndex ON ATTRIBUTES Name)");
+
+            //2. on creating the type with the property "Name", just define the property "Name" under INDICES
+            //var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+            //                                                                    Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags) INDICES (Name)");
+
+            //3. make a create index query
+            //var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+            //                                                                    Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags)");
+            //var MyIndex = GraphQL.Query(SecToken, TransToken, "CREATE INDEX MyIndex ON VERTEX TYPE Website (Name) INDEXTYPE MultipleValueIndex");            
             CheckResult(Types);
 
             #region create instances of type "Website"
