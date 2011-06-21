@@ -1434,7 +1434,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 foreach (var aIndex in myToBeRemovedIndices)
                 {
                     //find the source
-                    IIndexDefinition sourceIndexDefinition = vertexType.GetIndexDefinitions(false).Where(_ => _.Name == aIndex.Key && _.Edition == aIndex.Value).FirstOrDefault();
+                    IIndexDefinition sourceIndexDefinition = vertexType.GetIndexDefinitions(false).Where(_ => _.Name == aIndex.Key && (aIndex.Value == null || _.Edition == aIndex.Value)).FirstOrDefault();
 
                     foreach (var aVertexType in vertexType.GetDescendantVertexTypes())
                     {
@@ -1443,8 +1443,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                             _indexManager.RemoveIndexInstance(aInnerIndex.ID, myTransactionToken, mySecurityToken);                                                             
                         }
                     }
-
-                    _indexManager.RemoveIndexInstance(sourceIndexDefinition.ID, myTransactionToken, mySecurityToken);                                                             
+                    
+                    if (sourceIndexDefinition != null)
+                        _indexManager.RemoveIndexInstance(sourceIndexDefinition.ID, myTransactionToken, mySecurityToken);                                                             
                 }
             }
         }

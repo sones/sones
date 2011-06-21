@@ -214,7 +214,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             foreach (var aKV in myToBeRemovedIndices)
             {
-                if (!indexDefinitions.Any(_ => _.Name == aKV.Key && _.Edition == aKV.Value))
+                if (!indexDefinitions.Any(_ => _.Name == aKV.Key && (aKV.Value == null || _.Edition == aKV.Value)))
                 {
                     throw new IndexRemoveException(aKV.Key, aKV.Value, "The desired index does not exist.");
                 }
