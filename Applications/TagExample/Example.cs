@@ -11,73 +11,110 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 
+/// <summary>
+/// This is an Example wich describes and shows the simplicity of setting up a GraphDB by using the sones GraphDB CommunityEdition.
+/// It shows you how to create our own Database by using different sones GraphDB API's (using GraphDB Requests and the SonesQueryLanguage).
+/// 
+/// If you are using the SonesQueryLanguage please read our GQL CheatSheet 
+///     --> https://github.com/downloads/sones/sones/GQL_cheatsheet_latest.pdf
+/// there you can find the description of all available statements and some additional examples.
+/// 
+/// In this Example we show how to:
+///     - create user defined types, add structured properties, add unknown properties
+///     - create outgoing and incoming edges on a type
+///     - create an index on a specified property in 3 different ways
+///     - set constraints on properties (like "unique" and "mandatory")
+///     
+///     - set up queries and analyse them
+///     - use Function and Aggregates in a query
+/// </summary>
 namespace TagExample
 {
-    /// <summary>
-    /// This is a Example wich describes and shows the simplicity of setting up a GraphDB by using the sones GraphDB CommunityEdition.
-    /// It shows you how to create our own Database by using different sones GraphDB API's (using GraphDB Requests and the SonesQueryLanguage).
-    /// 
-    /// If you are using the SonesQueryLanguage please read our GQL CheatSheet 
-    ///     --> https://github.com/downloads/sones/sones/GQL_cheatsheet_latest.pdf
-    /// there you can find the description of all available statements and some additional examples.
-    /// 
-    /// In this Example we show how to:
-    ///     - create user defined types, add structured properties, add unknown properties
-    ///     - create outgoing and incoming edges on a type
-    ///     - create an index on a specified property in 3 different ways
-    ///     - set constraints on properties (like "unique" and "mandatory")
-    ///     
-    ///     - set up queries and analyse them
-    ///     - use Function and Aggregates in a query
-    /// </summary>
-    public class Example
-    {
-
-        static void Main(string[] args)
-        {
-            #region initialize the DB
-
-            //Make a new GraphDB instance
-            IGraphDB GraphDB = new SonesGraphDB();
-            //Make a new SonesQueryLanguage instance (GQL)
-            IGraphQL GraphQL = new SonesQueryLanguage(GraphDB);
-
-            //get a Security- and TransactionToken
-            SecurityToken SecToken = GraphDB.LogOn(new UserPasswordCredentials("root", "1111"));
-            TransactionToken TransToken = GraphDB.BeginTransaction(SecToken);
-            
-            #endregion
-
-            var MyTagExample = new TagExample();
-
-            MyTagExample.Run(GraphDB, GraphQL, SecToken, TransToken);
-
-            //shutdown GraphDB
-            GraphDB.Shutdown(SecToken);
-        }
-        
-    }
-
     public class TagExample
     {
+        #region public DATA
+
+        //GraphDB instance
+        IGraphDB GraphDB;
+        //SonesQueryLanguage instance (GQL)
+        IGraphQL GraphQL;
+
+        //Security- and TransactionToken
+        SecurityToken SecToken;
+        TransactionToken TransToken;
+
+        #endregion
+
         #region constructor
 
         public TagExample()
-        { }
+        {
+            //Make a new GraphDB instance
+            GraphDB = new SonesGraphDB();
+            //Make a new SonesQueryLanguage instance (GQL)
+            GraphQL = new SonesQueryLanguage(GraphDB);
+
+            //get a Security- and TransactionToken
+            SecToken = GraphDB.LogOn(new UserPasswordCredentials("root", "1111"));
+            TransToken = GraphDB.BeginTransaction(SecToken);
+        }
 
         #endregion
+
+        static void Main(string[] args)
+        {
+            var MyTagExample = new TagExample();
+
+            MyTagExample.Run();
+
+            //shutdown GraphDB
+            MyTagExample.GraphDB.Shutdown(MyTagExample.SecToken);
+        }
 
         /// <summary>
         /// Starts the example, including creation of types "Tag" and "Website", insert some data and make some selects
         /// </summary>
-        /// <param name="GraphDB">The GraphDB instance.</param>
-        /// <param name="GraphQL">The QueryLanguage instance.</param>
-        /// <param name="SecToken">The SecurityToken.</param>
-        /// <param name="TransToken">The Transaction Token.</param>
-        public void Run(IGraphDB GraphDB, IGraphQL GraphQL, SecurityToken SecToken, TransactionToken TransToken)
+        public void Run()
         {
-            #region create some types using the GraphDB API
+            #region create types, create instances and additional work using the GraphDB API
 
+            GraphDBRequests();
+
+            #endregion
+            
+            #region make some SELECTS
+
+            SELECTS();
+
+            #endregion
+
+            //clear the DB (delete all created types) to create them again using the QueryLanguage
+            GraphDB.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
+
+            #region create some types and insert values using the SonesQueryLanguage
+
+            GraphQLQueries();
+
+            #endregion
+
+            #region make some SELECTS
+
+            SELECTS();
+
+            #endregion
+
+            Console.WriteLine();
+            Console.WriteLine("Finished Example. Type a key to finish!");
+            Console.ReadKey();
+        }
+
+        #region private helper
+
+        /// <summary>
+        /// Describes how to define a type with user defined properties and indices and create some instances by using GraphDB requests.
+        /// </summary>
+        private void GraphDBRequests()
+        {
             #region define type "Tag"
 
             //create a VertexTypePredefinition
@@ -135,8 +172,9 @@ namespace TagExample
             //                    .SetAsIndexed();
 
             //3. make a create index request, like creating a type
-            //var MyIndex = GraphDB.CreateIndex<IIndexDefinition>(SecToken, 
-            //                                                    TransToken, 
+            //BEWARE: This statement must be execute AFTER the type "Website" is created.
+            //var MyIndex = GraphDB.CreateIndex<IIndexDefinition>(SecToken,
+            //                                                    TransToken,
             //                                                    new RequestCreateIndex(
             //                                                        new IndexPredefinition("MyIndex")
             //                                                            .SetIndexType("MultipleValueIndex")
@@ -154,11 +192,11 @@ namespace TagExample
             #region create types by sending requests
 
             //create the types "Tag" and "Website"
-            var DBTypes = GraphDB.CreateVertexTypes<IEnumerable<IVertexType>>(SecToken, 
-                                                                                TransToken, 
+            var DBTypes = GraphDB.CreateVertexTypes<IEnumerable<IVertexType>>(SecToken,
+                                                                                TransToken,
                                                                                 new RequestCreateVertexTypes(
                                                                                     new List<VertexTypePredefinition> { Tag_VertexTypePredefinition, 
-                                                                                                                        Website_VertexTypePredefinition }), 
+                                                                                                                        Website_VertexTypePredefinition }),
                                                                                 (Statistics, VertexTypes) => VertexTypes);
 
             /* 
@@ -190,7 +228,7 @@ namespace TagExample
 
             var cnn = GraphDB.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
                                                                         .AddStructuredProperty("Name", "CNN")
-                                                                        .AddStructuredProperty("URL", "http://cnn.com/"), 
+                                                                        .AddStructuredProperty("URL", "http://cnn.com/"),
                                                                         (Statistics, Result) => Result);
 
             var xkcd = GraphDB.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
@@ -200,13 +238,13 @@ namespace TagExample
 
             var onion = GraphDB.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
                                                                         .AddStructuredProperty("Name", "onion")
-                                                                        .AddStructuredProperty("URL", "http://theonion.com/"), 
+                                                                        .AddStructuredProperty("URL", "http://theonion.com/"),
                                                                         (Statistics, Result) => Result);
 
             //adding an unknown property means the property isn't defined before
             var test = GraphDB.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
                                                                         .AddStructuredProperty("Name", "Test")
-                                                                        .AddStructuredProperty("URL", "") 
+                                                                        .AddStructuredProperty("URL", "")
                                                                         .AddUnknownProperty("Unknown", "unknown property"),
                                                                         (Statistics, Result) => Result);
 
@@ -220,30 +258,105 @@ namespace TagExample
                                                                                 .AddStructuredProperty("Name", "good")
                                                                                 .AddEdge(new EdgePredefinition("TaggedWebsites")
                                                                                     .AddVertexID(Website.ID, cnn.VertexID)
-                                                                                    .AddVertexID(Website.ID, xkcd.VertexID)), 
+                                                                                    .AddVertexID(Website.ID, xkcd.VertexID)),
                                                                                 (Statistics, Result) => Result);
 
             var funny = GraphDB.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Tag")
                                                                                 .AddStructuredProperty("Name", "funny")
                                                                                 .AddEdge(new EdgePredefinition("TaggedWebsites")
                                                                                     .AddVertexID(Website.ID, xkcd.VertexID)
-                                                                                    .AddVertexID(Website.ID, onion.VertexID)), 
+                                                                                    .AddVertexID(Website.ID, onion.VertexID)),
                                                                                 (Statistics, Result) => Result);
 
             #endregion
 
-            #region make some SELECTS
+            #region how to get a type from the DB, properties of the type, instances of a specific type and read out property values
 
-            // Find out which tags xkcd is tagged with
-            QueryResult _xkcdtags = GraphQL.Query(SecToken, TransToken, "FROM Website w SELECT w.Tags WHERE w.Name = 'xkcd' DEPTH 1");
+            //how to get a type from the DB
+            var TagDBType = GraphDB.GetVertexType<IVertexType>(SecToken, TransToken, new RequestGetVertexType(Tag.ID), (Statistics, Type) => Type);
+
+            //read informations from type
+            var typeName = TagDBType.Name;
+            //are there other types wich extend the type "Tag"
+            var hasChildTypes = TagDBType.HasChildTypes;
+            //get the definition of the property "Name"
+            var propName = TagDBType.GetPropertyDefinition("Name");
+
+            //how to get all instances of a type from the DB
+            var TagInstances = GraphDB.GetVertices(SecToken, TransToken, new RequestGetVertices(TagDBType.ID), (Statistics, Vertices) => Vertices);
+
+            foreach (var item in TagInstances)
+            {
+                //to get the value of a property of an instance, you need the property ID 
+                //(that's why we fetched the type from DB an read out the property definition of property "Name")
+                var name = item.GetPropertyAsString(propName.ID);
+            }
+
+            #endregion
+        }
+
+        /// <summary>
+        /// Describes how to send queries using the GraphQL.
+        /// </summary>
+        private void GraphQLQueries()
+        {
+            //create types at the same time, because of the circular dependencies (Tag has OutgoingEdge to Website, Website has IncomingEdge from Tag)
+            //like shown before, using the GraphQL there are also three different ways to create create an index on property "Name" of type "Website"
+            //1. create an index definition and specifie the property name and index type
+            var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+                                                                                Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags) 
+                                                                                    INDICES (MyIndex INDEXTYPE MultipleValueIndex ON ATTRIBUTES Name)");
+
+            //2. on creating the type with the property "Name", just define the property "Name" under INDICES
+            //var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+            //                                                                    Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags) INDICES (Name)");
+
+            //3. make a create index query
+            //var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+            //                                                                    Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags)");
+            //var MyIndex = GraphQL.Query(SecToken, TransToken, "CREATE INDEX MyIndex ON VERTEX TYPE Website (Name) INDEXTYPE MultipleValueIndex");            
+            CheckResult(Types);
+
+            #region create instances of type "Website"
+
+            var cnnResult = GraphQL.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'CNN', URL = 'http://cnn.com/')");
+            CheckResult(cnnResult);
+
+            var xkcdResult = GraphQL.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'xkcd', URL = 'http://xkcd.com/')");
+            CheckResult(xkcdResult);
+
+            var onionResult = GraphQL.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'onion', URL = 'http://theonion.com/')");
+            CheckResult(onionResult);
+
+            //adding an unknown property ("Unknown") means the property isn't defined before
+            var unknown = GraphQL.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'Test', URL = '', Unknown = 'unknown property')");
+            CheckResult(onionResult);
+
+            #endregion
+
+            #region create instances of type "Tag"
+
+            var goodResult = GraphQL.Query(SecToken, TransToken, "INSERT INTO Tag VALUES (Name = 'good', TaggedWebsites = SETOF(Name = 'CNN', Name = 'xkcd'))");
+            CheckResult(goodResult);
+
+            var funnyResult = GraphQL.Query(SecToken, TransToken, "INSERT INTO Tag VALUES (Name = 'funny', TaggedWebsites = SETOF(Name = 'xkcd', Name = 'onion'))");
+            CheckResult(funnyResult);
+
+            #endregion
+        }
+
+        private void SELECTS()
+        {
+            // find out which tags xkcd is tagged with
+            var _xkcdtags = GraphQL.Query(SecToken, TransToken, "FROM Website w SELECT w.Tags WHERE w.Name = 'xkcd' DEPTH 1");
 
             CheckResult(_xkcdtags);
-            
+
             foreach (var _tag in _xkcdtags.Vertices)
                 foreach (var edge in _tag.GetHyperEdge("Tags").GetAllEdges())
                     Console.WriteLine(edge.GetTargetVertex().GetPropertyAsString("Name"));
 
-            // List tagged sites
+            // List tagged sites names and the count of there tags
             var _taggedsites = GraphQL.Query(SecToken, TransToken, "FROM Website w SELECT w.Name, w.Tags.Count() AS Counter");
 
             CheckResult(_taggedsites);
@@ -259,109 +372,7 @@ namespace TagExample
             foreach (var _tag in _urls.Vertices)
                 foreach (var edge in _tag.GetHyperEdge("TaggedWebsites").GetAllEdges())
                     Console.WriteLine(_tag.GetPropertyAsString("Name") + " - " + edge.GetTargetVertex().GetPropertyAsString("URL"));
-
-            #endregion
-
-            #endregion
-
-            //clear the DB (delete all created types) to create them again using the QueryLanguage
-            GraphDB.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
-
-            #region create some types and insert values using the SonesQueryLanguage
-
-            //create types at the same time, because of the circular dependencies
-            var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites) INDICES (Name), 
-                                                                                Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags)");
-            CheckResult(Types);
-
-            //create instances of type "Website"
-            var cnnResult = GraphQL.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'CNN', URL = 'http://cnn.com/')");
-            CheckResult(cnnResult);
-
-            var xkcdResult = GraphQL.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'xkcd', URL = 'http://xkcd.com/')");
-            CheckResult(xkcdResult);
-
-            var onionResult = GraphQL.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'onion', URL = 'http://theonion.com/')");
-            CheckResult(onionResult);
-
-            //adding an unknown property means the property isn't defined before
-            var unknown = GraphQL.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'Test', URL = '', Unknown = 'unknown property')");
-            CheckResult(onionResult);
-
-            var goodResult = GraphQL.Query(SecToken, TransToken, "INSERT INTO Tag VALUES (Name = 'good', TaggedWebsites = SETOF(Name = 'CNN', Name = 'xkcd'))");
-            CheckResult(goodResult);
-
-            var funnyResult = GraphQL.Query(SecToken, TransToken, "INSERT INTO Tag VALUES (Name = 'funny', TaggedWebsites = SETOF(Name = 'xkcd', Name = 'onion'))");
-            CheckResult(funnyResult);
-
-            #endregion
-
-            #region make some SELECTS
-
-            // Find out which tags xkcd is tagged with
-            _xkcdtags = GraphQL.Query(SecToken, TransToken, "FROM Website w SELECT w.Tags WHERE w.Name = 'xkcd' DEPTH 1");
-
-            CheckResult(_xkcdtags);
-
-            foreach (var _tag in _xkcdtags.Vertices)
-                foreach (var edge in _tag.GetHyperEdge("Tags").GetAllEdges())
-                    Console.WriteLine(edge.GetTargetVertex().GetPropertyAsString("Name"));
-
-            // List tagged sites
-            _taggedsites = GraphQL.Query(SecToken, TransToken, "FROM Website w SELECT w.Name, w.Tags.Count() AS Counter");
-
-            CheckResult(_taggedsites);
-
-            foreach (var _sites in _taggedsites.Vertices)
-                Console.WriteLine("{0} => {1}", _sites.GetPropertyAsString("Name"), _sites.GetPropertyAsString("Counter"));
-
-            // find out the URL's of the website of each Tag
-            _urls = GraphQL.Query(SecToken, TransToken, "FROM Tag t SELECT t.Name, t.TaggedWebsites.URL");
-
-            CheckResult(_urls);
-
-            foreach (var _tag in _urls.Vertices)
-                foreach (var edge in _tag.GetHyperEdge("TaggedWebsites").GetAllEdges())
-                    Console.WriteLine(_tag.GetPropertyAsString("Name") + " - " + edge.GetTargetVertex().GetPropertyAsString("URL"));
-
-            #endregion
-
-            Console.WriteLine();
-
-            Console.WriteLine("Finished Example. Type in a query OR \"exit\" for finish!");
-
-            Console.WriteLine();
-
-            #region read in queries
-            
-            var line = Console.ReadLine();
-
-            while (line.ToUpper() != "EXIT")
-            { 
-                var temp = GraphQL.Query(SecToken, TransToken, line);
-
-                if (CheckResult(temp))
-                {
-                    foreach (var item in temp.Vertices)
-                    {
-                        Console.WriteLine("Edges:");
-                        foreach (var edge in item.GetAllEdges())
-                            Console.WriteLine(edge.Item1 + " " + edge.Item2);
-                        Console.WriteLine();
-                        Console.WriteLine("Attributes:");
-                        foreach (var attr in item.GetAllProperties())
-                            Console.WriteLine(attr.Item1 + " " + attr.Item2);
-                        Console.WriteLine();
-                    }
-                }
-
-                line = Console.ReadLine();
-            }
-
-            #endregion
         }
-
-        #region private helper
 
         /// <summary>
         /// This private method analyses the QueryResult, shows the ResultType and Errors if existing.
