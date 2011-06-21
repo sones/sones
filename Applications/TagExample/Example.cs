@@ -76,7 +76,7 @@ namespace TagExample
         /// <param name="TransToken">The Transaction Token.</param>
         public void Run(IGraphDB GraphDB, IGraphQL GraphQL, SecurityToken SecToken, TransactionToken TransToken)
         {
-            #region create some types using the API
+            #region create some types using the GraphDB API
 
             #region define type "Tag"
 
@@ -269,10 +269,12 @@ namespace TagExample
 
             #region create some types and insert values using the SonesQueryLanguage
 
+            //create types at the same time, because of the circular dependencies
             var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites) INDICES (Name), 
                                                                                 Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags)");
             CheckResult(Types);
 
+            //create instances of type "Website"
             var cnnResult = GraphQL.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'CNN', URL = 'http://cnn.com/')");
             CheckResult(cnnResult);
 
