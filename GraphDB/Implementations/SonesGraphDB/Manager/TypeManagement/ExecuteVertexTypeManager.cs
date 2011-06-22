@@ -1003,28 +1003,33 @@ namespace sones.GraphDB.Manager.TypeManagement
             #region add stuff
 
             //done
-            AddMandatoryConstraint(myAlterVertexTypeRequest.ToBeAddedMandatories, vertexType, myTransactionToken,
-                                   mySecurityToken);
-
-            //done
-            AddUniqueConstraint(myAlterVertexTypeRequest.ToBeAddedUniques, myTransactionToken,
-                                mySecurityToken);
-
-            //done
-            AddIndices(myAlterVertexTypeRequest.ToBeAddedIndices, vertexType, myTransactionToken, mySecurityToken);
-
-            //done
             AddAttributes(myAlterVertexTypeRequest.ToBeAddedBinaryProperties,
                           myAlterVertexTypeRequest.ToBeAddedIncomingEdges,
                           myAlterVertexTypeRequest.ToBeAddedOutgoingEdges,
                           myAlterVertexTypeRequest.ToBeAddedProperties,
                           vertexType, myTransactionToken, mySecurityToken);
 
+            //get altered type 
+            vertexType = GetVertexType(myAlterVertexTypeRequest.VertexTypeName, myTransactionToken, mySecurityToken);
+            
             //done
-            RenameAttributes(myAlterVertexTypeRequest.ToBeRenamedProperties, vertexType, myTransactionToken,
-                             mySecurityToken);
+            AddMandatoryConstraint(myAlterVertexTypeRequest.ToBeAddedMandatories, vertexType, myTransactionToken,
+                                   mySecurityToken);
+
+            //done
+            var indexDefinitions = AddUniqueConstraint(myAlterVertexTypeRequest, myTransactionToken, mySecurityToken);
+
+            //done
+            AddIndices(myAlterVertexTypeRequest.ToBeAddedIndices, vertexType, myTransactionToken, mySecurityToken);
+
+            //done
+            RenameAttributes(myAlterVertexTypeRequest.ToBeRenamedProperties, vertexType, myTransactionToken, mySecurityToken);
 
             #endregion
+
+            var info = new TypeInfo();
+            info.VertexInfo = new VertexInformation((long)BaseTypes.VertexType, vertexType.ID);
+            ConnectVertexToUniqueIndex(info, indexDefinitions, mySecurityToken, myTransactionToken);
 
             #region misc
 
@@ -1037,6 +1042,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             #endregion
 
             CleanUpTypes();
+
+            _indexManager.RebuildIndices((long)BaseTypes.VertexType, myTransactionToken, mySecurityToken);
 
             return GetVertexType(vertexType.ID, myTransactionToken, mySecurityToken);
         }
@@ -1291,18 +1298,24 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myToBeAddedUniques"></param>
         /// <param name="myTransactionToken"></param>
         /// <param name="mySecurityToken"></param>
-        private void AddUniqueConstraint(IEnumerable<UniquePredefinition> myToBeAddedUniques, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        private IEnumerable<IIndexDefinition> AddUniqueConstraint(RequestAlterVertexType myAlterVertexTypeRequest, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            if (!myToBeAddedUniques.IsNotNullOrEmpty()) 
-                return;
+            var indexDefs = new List<IIndexDefinition>();
+            var uniques = myAlterVertexTypeRequest.ToBeAddedUniques;
 
-            foreach (var aUniqueConstraint in myToBeAddedUniques)
+            if (!uniques.IsNotNullOrEmpty()) 
+                return indexDefs;
+
+            foreach (var aUniqueConstraint in uniques)
             {
                 var predef = new IndexPredefinition();
                 predef.AddProperty(aUniqueConstraint.Properties);
+                predef.SetVertexType(myAlterVertexTypeRequest.VertexTypeName);
 
-                _indexManager.CreateIndex(predef, mySecurityToken, myTransactionToken);
+                indexDefs.Add(_indexManager.CreateIndex(predef, mySecurityToken, myTransactionToken));
             }
+
+            return indexDefs;
         }
 
         /// <summary>
@@ -1530,7 +1543,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 var update = new VertexUpdateDefinition(null, new StructuredPropertiesUpdate(new Dictionary<long, IComparable> { { (long)AttributeDefinitions.BaseTypeDotName, myNewVertexTypeName } }));
 
-                _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertexType.ID, (long)BaseTypes.VertexType, update);
+                _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertexType.ID, (long)BaseTypes.VertexType, update);               
             }
         }
 

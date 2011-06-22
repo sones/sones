@@ -185,8 +185,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             CheckToBeRemovedAttributes(myAlterVertexTypeRequest, vertexType);
             CheckToBeRenamedAttributes(myAlterVertexTypeRequest, vertexType);
             CheckNewVertexTypeName(myAlterVertexTypeRequest.AlteredVertexTypeName, mySecurityToken, myTransactionToken);
-            CheckToBeAddedMandatory(myAlterVertexTypeRequest.ToBeAddedMandatories, vertexType);
-            CheckToBeAddedUniques(myAlterVertexTypeRequest.ToBeAddedUniques, vertexType);
+            CheckToBeAddedMandatory(myAlterVertexTypeRequest, vertexType);
+            CheckToBeAddedUniques(myAlterVertexTypeRequest, vertexType);
             CheckToBeRemovedMandatoryAndUnique(myAlterVertexTypeRequest.ToBeRemovedMandatories, myAlterVertexTypeRequest.ToBeRemovedUniques, vertexType);
             CheckToBeAddedIndices(myAlterVertexTypeRequest.ToBeAddedIndices, vertexType);
             CheckToBeRemovedIndices(myAlterVertexTypeRequest.ToBeRemovedIndices, vertexType);
@@ -273,6 +273,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private static void CheckToBeRemovedUniques(IEnumerable<string> myUniques, IVertexType vertexType)
         {
+            var uniqueDefs = vertexType.GetUniqueDefinitions(true);
+
             if (myUniques == null)
                 return;
 
@@ -280,7 +282,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             foreach (var aUnique in myUniques)
             {
-                if (!attributes.Any(_ => _.Name == aUnique))
+                if (!attributes.Any(_ => _.Name == aUnique && uniqueDefs.Any(x => x.UniquePropertyDefinitions.Any(y => y.Name == aUnique))))
                 {
                     throw new AttributeDoesNotExistException(aUnique, vertexType.Name);
                 }
@@ -296,25 +298,28 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             foreach (var aMandatory in myMandatories)
             {
-                if (!attributes.Any(_ => _.Name == aMandatory))
+                if (!attributes.Any(_ => _.Name == aMandatory && (_ as IPropertyDefinition).IsMandatory))
                 {
                     throw new AttributeDoesNotExistException(aMandatory, vertexType.Name);
                 }
             }
         }
 
-        private static void CheckToBeAddedUniques(IEnumerable<UniquePredefinition> myUniques, IVertexType vertexType)
+        private static void CheckToBeAddedUniques(RequestAlterVertexType myAlterVertexTypeRequest, IVertexType vertexType)
         {
-            if (myUniques == null)
+            var uniques = myAlterVertexTypeRequest.ToBeAddedUniques;
+            var addProperties = myAlterVertexTypeRequest.ToBeAddedProperties;
+
+            if (uniques == null)
                 return;
 
             var attributes = vertexType.GetAttributeDefinitions(false).ToList();
 
-            foreach (var aUnique in myUniques)
+            foreach (var aUnique in uniques)
             {
                 foreach (var aAttribute in aUnique.Properties)
                 {
-                    if (!attributes.Any(_ => _.Name == aAttribute))
+                    if (!attributes.Any(_ => _.Name == aAttribute) && !addProperties.Any(x => x.AttributeName == aAttribute))
                     {
                         throw new AttributeDoesNotExistException(aAttribute, vertexType.Name);
                     }
@@ -322,16 +327,19 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
-        private static void CheckToBeAddedMandatory(IEnumerable<MandatoryPredefinition> myMandatories, IVertexType vertexType)
+        private static void CheckToBeAddedMandatory(RequestAlterVertexType myAlterVertexTypeRequest, IVertexType vertexType)
         {
-            if (myMandatories == null)
+            var mandatories = myAlterVertexTypeRequest.ToBeAddedMandatories;
+            var addProperties = myAlterVertexTypeRequest.ToBeAddedProperties;
+
+            if (mandatories == null)
                 return;
 
             var attributes = vertexType.GetAttributeDefinitions(false).ToList();
 
-            foreach (var aMandatory in myMandatories)
+            foreach (var aMandatory in mandatories)
             {
-                if (!attributes.Any(_ => _.Name == aMandatory.MandatoryAttribute))
+                if (!attributes.Any(_ => _.Name == aMandatory.MandatoryAttribute) && !addProperties.Any(x => x.AttributeName == aMandatory.MandatoryAttribute))
                 {
                     throw new AttributeDoesNotExistException(aMandatory.MandatoryAttribute, vertexType.Name);
                 }
