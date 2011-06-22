@@ -29,6 +29,8 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.LanguageExtensions;
+using sones.GraphDB.Manager.BaseGraph;
+using sones.GraphDB.ErrorHandling.Type;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -682,8 +684,33 @@ namespace sones.GraphDB.Manager.TypeManagement
                 CheckVertexTypeName(vertexTypeDefinition);
                 CheckParentTypeAreNoBaseTypes(vertexTypeDefinition);
                 CheckAttributes(vertexTypeDefinition);
+                CheckDefaultValue(vertexTypeDefinition);
                 CheckUniques(vertexTypeDefinition);
                 CheckIndices(vertexTypeDefinition);
+            }
+        }
+
+
+        /// <summary>
+        /// Check for the correct default value.
+        /// </summary>
+        /// <param name="vertexTypeDefinition">The vertex type predefinition to be checked.</param>
+        private static void CheckDefaultValue(VertexTypePredefinition vertexTypeDefinition)
+        {
+            if (vertexTypeDefinition.Properties != null)
+            {
+                foreach (var item in vertexTypeDefinition.Properties.Where(_ => _.DefaultValue != null))
+                {
+                    try
+                    {
+                        var baseType = BaseGraphStorageManager.GetBaseType(item.AttributeType);
+                        item.DefaultValue.ConvertToIComparable(baseType);
+                    }
+                    catch (Exception e)
+                    {                        
+                        throw new InvalidTypeException(item.DefaultValue.GetType().Name, item.AttributeType);
+                    }
+                }                
             }
         }
 

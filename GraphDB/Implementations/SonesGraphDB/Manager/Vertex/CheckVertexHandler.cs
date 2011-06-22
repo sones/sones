@@ -123,6 +123,7 @@ namespace sones.GraphDB.Manager.Vertex
                 throw new AbstractConstraintViolationException(myInsertDefinition.VertexTypeName);
 
             ConvertUnknownProperties(myInsertDefinition, vertexType);
+            ConvertDefaultValues(myInsertDefinition, vertexType);
 
             if (myInsertDefinition.OutgoingEdges != null)
                 CheckOutgoingEdges(myInsertDefinition.OutgoingEdges, vertexType);
@@ -194,6 +195,25 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         #endregion
+
+        /// <summary>
+        /// Check for default values.
+        /// If a default value is set for the property, than we add this to the insert definition.
+        /// </summary>
+        /// <param name="myPropertyProvider">The insert definition.</param>
+        /// <param name="myBaseType">The vertex type, which is to be updated.</param>
+        private static void ConvertDefaultValues(IPropertyProvider myPropertyProvider, IBaseType myBaseType)
+        {
+            if (myPropertyProvider.StructuredProperties != null)
+            {
+                var checkForDefaultValues = myBaseType.GetPropertyDefinitions(true).Where(item => !myPropertyProvider.StructuredProperties.ContainsKey(item.Name)).Where(_ => _.DefaultValue != null);
+
+                foreach (var item in checkForDefaultValues)
+                {
+                    myPropertyProvider.AddStructuredProperty(item.Name, item.DefaultValue);
+                }
+            }
+        }
 
         private static void ConvertUnknownProperties(IPropertyProvider myPropertyProvider, IBaseType myBaseType)
         {

@@ -655,6 +655,7 @@ namespace sones.GraphQL
             var KeyValuePair = new NonTerminal("KeyValuePair");
             var ValueList = new NonTerminal("ValueList");
             var BooleanVal = new NonTerminal("BooleanVal");
+            var Values = new NonTerminal("Values");
 
             var ListType = new NonTerminal("ListType");
             var ListParametersForExpression = new NonTerminal("ListParametersForExpression", typeof(ParametersNode));
@@ -1129,8 +1130,10 @@ namespace sones.GraphQL
                                             | S_BRACKET_LEFT + indexNameOpt + editionOpt + NT_IndexTypeOpt + S_ON + IndexAttributeList + S_BRACKET_RIGHT // due to compatibility the  + S_ATTRIBUTES is optional
                                             | S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT;
 
+            Values.Rule = BooleanVal | number | string_literal;
+            
             AttrDefaultOpValue.Rule = Empty
-                                    | "=" + KeyValuePair;
+                                    | "=" + Values;
 
             #endregion
 

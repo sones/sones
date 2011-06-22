@@ -50,7 +50,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
         {
             if (HasChildNodes(parseNode))
             {
-                Value = parseNode.ChildNodes[1].Token.ValueString;
+                Value = System.Convert.ToString(((LiteralValueNode)parseNode.ChildNodes[1].ChildNodes[0].AstNode).Value);
             }
             else
             {
