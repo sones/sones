@@ -12,7 +12,7 @@ namespace SystemInformation
             get
             {
 #if __MonoCS__
-                return new MonoSystemInformation()
+                return new MonoSystemInformation();
 #else
                 return new WindowsSystemInformation();
 #endif
