@@ -121,25 +121,16 @@ namespace sones.GraphQL.StatementNodes.DDL
             QueryResult qresult = null;
             Query = myQuery;
 
-            try
+            var indexDef = new IndexPredefinition(_IndexName);
+            indexDef.SetIndexType(_IndexType);
+            indexDef.SetVertexType(_DBType);
+            indexDef.SetEdition(_IndexEdition);
+            foreach (var aIndexedProperty in _AttributeList)
             {
-                var indexDef = new IndexPredefinition(_IndexName);
-                indexDef.SetIndexType(_IndexType);
-                indexDef.SetVertexType(_DBType);
-                indexDef.SetEdition(_IndexEdition);
-                foreach (var aIndexedProperty in _AttributeList)
-                {
-                    indexDef.AddProperty(aIndexedProperty.IndexAttribute.ContentString);
-                }
-
-                qresult = myGraphDB.CreateIndex<QueryResult>(mySecurityToken, myTransactionToken, new RequestCreateIndex(indexDef), GenerateResult);
-            }
-            catch (ASonesException e)
-            {
-                qresult.Error = e;
+                indexDef.AddProperty(aIndexedProperty.IndexAttribute.ContentString);
             }
 
-            return qresult;
+            return myGraphDB.CreateIndex<QueryResult>(mySecurityToken, myTransactionToken, new RequestCreateIndex(indexDef), GenerateResult);
         }
 
         #endregion
