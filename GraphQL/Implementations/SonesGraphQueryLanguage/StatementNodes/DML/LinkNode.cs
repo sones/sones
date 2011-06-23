@@ -118,7 +118,7 @@ namespace sones.GraphQL.StatementNodes.DML
             // Semantic Web Yoda-style...
             if (myParseTreeNode.ChildNodes[5].Token.KeyTerm == _GraphQLGrammar.S_TO)
             {
-                typeNode = ((AstNode)(myParseTreeNode.ChildNodes[6].ChildNodes[0].AstNode)).AsString;
+                typeNode = ((ATypeNode)myParseTreeNode.ChildNodes[6].ChildNodes[0].AstNode).ReferenceAndType.TypeName;
                 tupleDef = (myParseTreeNode.ChildNodes[6].ChildNodes[1].AstNode as TupleNode).TupleDefinition;
             }
 
@@ -126,7 +126,7 @@ namespace sones.GraphQL.StatementNodes.DML
             {
                 if (myParseTreeNode.ChildNodes[3].Token.KeyTerm == _GraphQLGrammar.S_TO)
                 {
-                    typeNode = myParseTreeNode.ChildNodes[4].ChildNodes[0].AstNode.ToString();
+                    typeNode = ((ATypeNode)myParseTreeNode.ChildNodes[4].ChildNodes[0].AstNode).ReferenceAndType.TypeName;
                     tupleDef = (myParseTreeNode.ChildNodes[4].ChildNodes[1].AstNode as TupleNode).TupleDefinition;
                 }
             }

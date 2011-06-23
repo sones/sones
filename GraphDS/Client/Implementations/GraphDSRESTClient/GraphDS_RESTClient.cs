@@ -126,7 +126,8 @@ namespace sones.GraphDS.GraphDSRESTClient
 
         public void Shutdown(SecurityToken mySecurityToken)
         {
-            throw new NotImplementedException();
+            //TODO
+            //throw new NotImplementedException();
         }
 
         public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)

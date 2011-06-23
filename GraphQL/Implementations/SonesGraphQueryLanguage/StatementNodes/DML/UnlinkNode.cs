@@ -101,7 +101,7 @@ namespace sones.GraphQL.StatementNodes.DML
                 tupleDefSourceType.AddElement(new TupleElement(binExpression));
             }
 
-            _Sources.Add(new AttributeRemoveList(_EdgeAttr.IDChainDefinition, _EdgeAttr.IDChainDefinition.TypeName, tupleDefSourceType));
+            _Sources.Add(new AttributeRemoveList(_EdgeAttr.IDChainDefinition, _EdgeAttr.IDChainDefinition.ContentString, tupleDefSourceType));
 
             #endregion
 
@@ -109,12 +109,12 @@ namespace sones.GraphQL.StatementNodes.DML
 
             if (parseNode.ChildNodes[6].ChildNodes[0].AstNode is ATypeNode)  //Semantic Web Yoda style
             {
-                typeNode = ((AstNode)parseNode.ChildNodes[6].ChildNodes[0].AstNode).AsString;
+                typeNode = ((ATypeNode)parseNode.ChildNodes[6].ChildNodes[0].AstNode).ReferenceAndType.TypeName;
                 _Targets = (parseNode.ChildNodes[6].ChildNodes[1].AstNode as TupleNode).TupleDefinition;
             }
             else  //Human language style
             {
-                typeNode = ((AstNode)parseNode.ChildNodes[4].ChildNodes[0].AstNode).AsString;
+                typeNode = ((ATypeNode)parseNode.ChildNodes[4].ChildNodes[0].AstNode).ReferenceAndType.TypeName;
                 _Targets = (parseNode.ChildNodes[4].ChildNodes[1].AstNode as TupleNode).TupleDefinition;
             }
 
