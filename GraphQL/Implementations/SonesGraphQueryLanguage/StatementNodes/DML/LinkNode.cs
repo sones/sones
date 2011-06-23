@@ -126,7 +126,7 @@ namespace sones.GraphQL.StatementNodes.DML
             {
                 if (myParseTreeNode.ChildNodes[3].Token.KeyTerm == _GraphQLGrammar.S_TO)
                 {
-                    typeNode = ((AstNode)myParseTreeNode.ChildNodes[4].ChildNodes[0].AstNode).AsString;
+                    typeNode = myParseTreeNode.ChildNodes[4].ChildNodes[0].AstNode.ToString();
                     tupleDef = (myParseTreeNode.ChildNodes[4].ChildNodes[1].AstNode as TupleNode).TupleDefinition;
                 }
             }
