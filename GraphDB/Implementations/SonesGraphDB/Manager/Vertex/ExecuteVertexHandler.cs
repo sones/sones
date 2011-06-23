@@ -1443,30 +1443,30 @@ namespace sones.GraphDB.Manager.Vertex
                         toBeUpdatedHyper = toBeUpdatedHyper ?? new Dictionary<long, HyperEdgeUpdateDefinition>();
                         toBeUpdatedHyper.Add(edgeTypeID, new HyperEdgeUpdateDefinition(edgeTypeID, null, structuredUpdate, unstructuredUpdate, null, singleUpdate));
 
-                    }
+                    }                    
+                }
 
-                    if (myUpdate.RemovedElementsFromCollectionEdges != null)
+                if (myUpdate.RemovedElementsFromCollectionEdges != null)
+                {
+                    foreach (var hyperEdge in myUpdate.RemovedElementsFromCollectionEdges)
                     {
-                        foreach (var hyperEdge in myUpdate.RemovedElementsFromCollectionEdges)
-                        {
-                            var edgeDef = myVertexType.GetOutgoingEdgeDefinition(hyperEdge.Key);
+                        var edgeDef = myVertexType.GetOutgoingEdgeDefinition(hyperEdge.Key);
 
-                            if (edgeDef == null)
-                                //TODO a better exception here
-                                throw new Exception("Edge attribute not defined.");
+                        if (edgeDef == null)
+                            //TODO a better exception here
+                            throw new Exception("Edge attribute not defined.");
 
-                            if (edgeDef.Multiplicity == EdgeMultiplicity.SingleEdge)
-                                //TODO a better exception here
-                                throw new Exception("Removing edges is only defined on hyper/multi edges.");
+                        if (edgeDef.Multiplicity == EdgeMultiplicity.SingleEdge)
+                            //TODO a better exception here
+                            throw new Exception("Removing edges is only defined on hyper/multi edges.");
 
-                            var edgeTypeID = edgeDef.ID;
+                        var edgeTypeID = edgeDef.ID;
 
-                            var del = CreateSingleEdgeDeleteDefinitions(source, myTransaction, mySecurity, hyperEdge.Value, edgeDef);
-    
-                            toBeUpdatedHyper = toBeUpdatedHyper ?? new Dictionary<long, HyperEdgeUpdateDefinition>();
-                            toBeUpdatedHyper.Add(edgeTypeID, new HyperEdgeUpdateDefinition(edgeTypeID, null, null, null, del, null));
+                        var del = CreateSingleEdgeDeleteDefinitions(source, myTransaction, mySecurity, hyperEdge.Value, edgeDef);
 
-                        }
+                        toBeUpdatedHyper = toBeUpdatedHyper ?? new Dictionary<long, HyperEdgeUpdateDefinition>();
+                        toBeUpdatedHyper.Add(edgeTypeID, new HyperEdgeUpdateDefinition(edgeTypeID, null, null, null, del, null));
+
                     }
                 }
             }
