@@ -30,6 +30,7 @@ using System.IO;
 using System.Net.Mime;
 using System.Collections.Generic;
 using sones.Library.LanguageExtensions;
+using sones.Library.Commons;
 
 namespace sones.Library.Network.HttpServer
 {
@@ -165,6 +166,11 @@ namespace sones.Library.Network.HttpServer
 
             CreateListener(); //create listener as late as possible
 
+            _disposalService = new DisposalService(GetType().Name);
+            //add close method to desposal service, 
+            //this service will provide that the dispose method won't be called multiple times
+            _disposalService.AddManagedResourceDisposal(Close);
+
             if (myAutoStart)
                 Start();
         }
@@ -193,6 +199,11 @@ namespace sones.Library.Network.HttpServer
         /// </summary>
         public bool IsRunning { get; private set; }
 
+        #endregion
+
+        #region private members
+
+        private DisposalService _disposalService;
 
         #endregion
 
@@ -508,13 +519,11 @@ namespace sones.Library.Network.HttpServer
 
         #endregion
 
-
-
         #region IDisposable Members
 
         void IDisposable.Dispose()
         {
-            Close();
+            _disposalService.Dispose();
         }
 
         #endregion

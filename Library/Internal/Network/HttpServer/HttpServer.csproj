@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -96,6 +96,10 @@
     <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Commons\Commons.csproj">
+      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
+      <Name>Commons</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Extensions\LanguageExtensions\LanguageExtensions.csproj">
       <Project>{E4A4B5FF-2203-48AA-99A9-41A52407452E}</Project>
       <Name>LanguageExtensions</Name>
