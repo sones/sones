@@ -7,17 +7,37 @@ namespace SystemInformation
 {
     public abstract class SystemInformation
     {
+        #region Singleton
+
+        private static SystemInformation instance = CreateInstance();
+
+        /// <summary>
+        /// Gets the system dependent instance of SystemInformation.
+        /// </summary>
         public static SystemInformation Instance
         {
             get
             {
+                return instance;
+            }
+        }
+
+        /// <summary>
+        /// This method returns a new instance of SystemInformation, dependend on the current platform or compile flags.
+        /// </summary>
+        /// <returns></returns>
+        private static SystemInformation CreateInstance()
+        {
 #if __MonoCS__
                 return new MonoSystemInformation();
 #else
-                return new WindowsSystemInformation();
+            return new WindowsSystemInformation();
 #endif
-            }
         }
+
+        #endregion
+
+        #region SystemInformation methods
 
         /// <summary>
         /// Returns the available free space in the given directory.
@@ -49,5 +69,7 @@ namespace SystemInformation
         {
             return GetTotalMainMemory() - GetAvailableMainMemory();
         }
+
+        #endregion
     }
 }
