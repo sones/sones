@@ -36,6 +36,7 @@ using sones.GraphDB.Manager.Plugin;
 using System.IO;
 using System.Globalization;
 using sones.Library.DiscordianDate;
+using System.Security.AccessControl;
 
 namespace sones.sonesGraphDBStarter
 {
@@ -93,6 +94,12 @@ namespace sones.sonesGraphDBStarter
                     string rootPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location);
                     string dataPath = rootPath + Path.DirectorySeparatorChar + configuredLocation;
                     location = new Uri(@dataPath);
+
+                    if (!Directory.Exists(location.AbsolutePath))
+                    {
+                        Directory.CreateDirectory(location.AbsolutePath);
+                        Directory.SetAccessControl(location.AbsolutePath, new DirectorySecurity(location.AbsolutePath, AccessControlSections.All));
+                    }
                 }
 
                 try
