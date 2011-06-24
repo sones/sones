@@ -115,6 +115,8 @@ namespace sones.Plugins.GraphDS.RESTService
                 return String.Empty;
             }
 
+            String _QueryString = String.Empty;
+
 // Mono 2.10.2 has a bug regarding Request.QueryString.
 // Leave this ifdef until this bug is fixed.
 #if __MonoCS__
@@ -128,10 +130,11 @@ namespace sones.Plugins.GraphDS.RESTService
             if (index >= 0)
                 raw = raw.Substring(0, index);
 
-            var _QueryString = raw;
+            var _queryString = raw;
 
+            _QueryString = HttpUtility.UrlDecode(_queryString);
 #else
-            var _QueryString = HttpServer.HttpContext.Request.QueryString[null];
+            _QueryString = HttpServer.HttpContext.Request.QueryString[null];
 
 #endif
             if (_QueryString == null)
@@ -140,9 +143,8 @@ namespace sones.Plugins.GraphDS.RESTService
                 return String.Empty;
             }
 
-            var _GQLQuery = HttpUtility.UrlDecode(_QueryString);
 
-            return _GQLQuery;
+            return _QueryString;
         }
 
         #endregion
