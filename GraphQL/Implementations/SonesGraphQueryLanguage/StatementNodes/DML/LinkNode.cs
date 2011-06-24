@@ -72,7 +72,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
             #region FROM Sources            
 
-            _SourceType = ((AstNode)myParseTreeNode.ChildNodes[1].AstNode).AsString;
+            _SourceType = ((ATypeNode)myParseTreeNode.ChildNodes[1].AstNode).ReferenceAndType.TypeName;
             var typeNode = _SourceType;
 
             _Sources = (myParseTreeNode.ChildNodes[2].AstNode as TupleNode).TupleDefinition;

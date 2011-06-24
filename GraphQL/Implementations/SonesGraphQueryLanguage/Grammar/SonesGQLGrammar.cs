@@ -1460,8 +1460,8 @@ namespace sones.GraphQL
             #region LINK
 
             // Semantic Web Yoda-Style and human language style
-            linkStmt.Rule = S_LINK + Id_simple + CollectionTuple + S_VIA + NT_Id + S_TO + LinkCondition |
-                            S_LINK + Id_simple + CollectionTuple + S_TO + LinkCondition + S_VIA + NT_Id;
+            linkStmt.Rule = S_LINK + VertexTypeWrapper + CollectionTuple + S_VIA + NT_Id + S_TO + LinkCondition |
+                            S_LINK + VertexTypeWrapper + CollectionTuple + S_TO + LinkCondition + S_VIA + NT_Id;
 
             LinkCondition.Rule = VertexTypeWrapper + CollectionTuple;
 
@@ -1469,8 +1469,8 @@ namespace sones.GraphQL
 
             #region UNLINK
 
-            unlinkStmt.Rule = S_UNLINK + Id_simple + CollectionTuple + S_VIA + NT_Id + S_FROM + LinkCondition |
-                              S_UNLINK + Id_simple + CollectionTuple + S_FROM + LinkCondition + S_VIA + NT_Id;
+            unlinkStmt.Rule = S_UNLINK + VertexTypeWrapper + CollectionTuple + S_VIA + NT_Id + S_FROM + LinkCondition |
+                              S_UNLINK + VertexTypeWrapper + CollectionTuple + S_FROM + LinkCondition + S_VIA + NT_Id;
 
             #endregion
 

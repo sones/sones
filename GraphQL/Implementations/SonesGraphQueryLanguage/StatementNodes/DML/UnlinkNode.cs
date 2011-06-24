@@ -46,6 +46,7 @@ namespace sones.GraphQL.StatementNodes.DML
         #region data
 
         private String                                      _SourceType;
+        private String                                      _TargetType;
         private TupleDefinition                             _Targets;
         private HashSet<AAttributeAssignOrUpdateOrRemove>   _Sources;
         private BinaryExpressionDefinition                  _Condition;
@@ -83,11 +84,13 @@ namespace sones.GraphQL.StatementNodes.DML
 
             #region sources
 
-            var typeNode = ((AstNode)parseNode.ChildNodes[1].AstNode).AsString;
+            var typeNode = ((ATypeNode)parseNode.ChildNodes[1].AstNode).ReferenceAndType.TypeName;
 
             var tupleDef = (parseNode.ChildNodes[2].AstNode as TupleNode).TupleDefinition;
 
             var tupleDefSourceType = new TupleDefinition(tupleDef.KindOfTuple);
+
+            _TargetType = typeNode;
 
             foreach (var item in tupleDef.TupleElements)
             {
@@ -156,21 +159,26 @@ namespace sones.GraphQL.StatementNodes.DML
             _query = myQuery;
 
             //prepare
-            var vertexType = myGraphDB.GetVertexType<IVertexType>(
+            var vertexTypeSource = myGraphDB.GetVertexType<IVertexType>(
                 mySecurityToken,
                 myTransactionToken,
                 new RequestGetVertexType(_SourceType),
                 (stats, vtype) => vtype);
 
+            var vertexTypeTarget = myGraphDB.GetVertexType<IVertexType>(
+                mySecurityToken,
+                myTransactionToken,
+                new RequestGetVertexType(_TargetType),
+                (stats, vtype) => vtype);
+
             //validate
-            _Condition.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+            _Condition.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexTypeSource);
 
             //calculate
             var expressionGraph = _Condition.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
 
             //extract
-
-            var myToBeUpdatedVertices = expressionGraph.Select(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
+            var myToBeUpdatedVertices = expressionGraph.Select(new LevelKey(vertexTypeSource.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true).ToList();
 
             if (myToBeUpdatedVertices.Count > 0)
             {
