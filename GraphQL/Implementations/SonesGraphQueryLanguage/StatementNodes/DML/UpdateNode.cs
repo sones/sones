@@ -302,6 +302,8 @@ namespace sones.GraphQL.StatementNodes.DML
                 {
                     #region binaryExpression
 
+                    Dictionary<String, EdgePredefinition> toBeRemovedEdges = new Dictionary<String, EdgePredefinition>();
+
                     foreach (var aTupleElement in ((TupleDefinition)attributeRemoveList.TupleDefinition))
                     {
                         if (aTupleElement.Value is BinaryExpressionDefinition)
@@ -312,8 +314,8 @@ namespace sones.GraphQL.StatementNodes.DML
                             {
                                 throw new InvalidVertexAttributeException(String.Format("The vertex type {0} has no attribute named {1}.", vertexType.Name, attributeRemoveList.AttributeName));
                             }
-                            IAttributeDefinition attribute = vertexType.GetAttributeDefinition(attributeRemoveList.AttributeName);
-                            List<EdgePredefinition> toBeRemovedEdges = new List<EdgePredefinition>();
+
+                            IAttributeDefinition attribute = vertexType.GetAttributeDefinition(attributeRemoveList.AttributeName);                            
 
                             var targetVertexType = ((IOutgoingEdgeDefinition)attribute).TargetVertexType;
 
@@ -324,16 +326,28 @@ namespace sones.GraphQL.StatementNodes.DML
                             if (vertexIDs.Count > 1)
                             {
                                 throw new ReferenceAssignmentExpectedException(String.Format("It is not possible to create a single edge pointing to {0} vertices", vertexIDs.Count));
-                            }
+                            }                            
 
-                            EdgePredefinition edge = new EdgePredefinition(attributeRemoveList.AttributeName);
+                            EdgePredefinition outValue = null;
 
-                            foreach (var aVertex in vertexIDs)
+                            if (toBeRemovedEdges.TryGetValue(attributeRemoveList.AttributeName, out outValue))
                             {
-                                edge.AddEdge(new EdgePredefinition().AddVertexID(aVertex.VertexTypeID, aVertex.VertexID));
+                                foreach (var aVertex in vertexIDs)
+                                {
+                                    outValue.AddEdge(new EdgePredefinition().AddVertexID(aVertex.VertexTypeID, aVertex.VertexID));
+                                }                                
                             }
+                            else
+                            {
+                                EdgePredefinition edge = new EdgePredefinition(attributeRemoveList.AttributeName);
 
-                            result.RemoveElementsFromCollection(attributeRemoveList.AttributeName, edge);
+                                foreach (var aVertex in vertexIDs)
+                                {
+                                    edge.AddEdge(new EdgePredefinition().AddVertexID(aVertex.VertexTypeID, aVertex.VertexID));
+                                }
+                                
+                                toBeRemovedEdges.Add(attributeRemoveList.AttributeName, edge);
+                            }
 
                             #endregion
                         }
@@ -341,6 +355,11 @@ namespace sones.GraphQL.StatementNodes.DML
                         {
                             throw new NotImplementedQLException("");
                         }
+                    }
+
+                    foreach (var item in toBeRemovedEdges)
+                    {                        
+                        result.RemoveElementsFromCollection(item.Key, item.Value);
                     }
 
                     #endregion
