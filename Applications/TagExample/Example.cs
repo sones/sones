@@ -13,7 +13,7 @@ using sones.Library.PropertyHyperGraph;
 
 /// <summary>
 /// This is an Example wich describes and shows the simplicity of setting up a GraphDB by using the sones GraphDB CommunityEdition.
-/// It shows you how to create our own Database by using different sones GraphDB API's (using GraphDB Requests and the SonesQueryLanguage).
+/// It shows you how to create your own Database by using the sones GraphDB C# API (using GraphDB Requests and the SonesQueryLanguage).
 /// 
 /// If you are using the SonesQueryLanguage please read our GQL CheatSheet 
 ///     --> https://github.com/downloads/sones/sones/GQL_cheatsheet_latest.pdf
@@ -128,10 +128,12 @@ namespace TagExample
             //add property
             Tag_VertexTypePredefinition.AddProperty(PropertyName);
 
-            //create outgoing edge to "Tag"
+            //create outgoing edge to "Website"
             var OutgoingEdgesTaggedWebsites = new OutgoingEdgePredefinition("TaggedWebsites")
                                                     .SetAttributeType("Website")
-                                                    .SetMultiplicityAsMultiEdge();
+                                                    .SetMultiplicityAsMultiEdge()
+                                                    .SetComment(@"This is an outgoing edge on type 'Tag' wich points to the type 'Website' (the AttributeType) 
+                                                                    and is defined as 'MultiEdge', which means that this edge can contain multiple single edges");
 
             //add outgoing edge
             Tag_VertexTypePredefinition.AddOutgoingEdge(OutgoingEdgesTaggedWebsites);
@@ -345,6 +347,9 @@ namespace TagExample
             #endregion
         }
 
+        /// <summary>
+        /// Executes some select statements.
+        /// </summary>
         private void SELECTS()
         {
             // find out which tags xkcd is tagged with
