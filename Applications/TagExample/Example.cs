@@ -63,11 +63,13 @@ namespace TagExample
 
         static void Main(string[] args)
         {
+            //creating a new example instance
             var MyTagExample = new TagExample();
 
+            //call the Run() method
             MyTagExample.Run();
 
-            //shutdown GraphDB
+            //shutdown the GraphDB
             MyTagExample.GraphDB.Shutdown(MyTagExample.SecToken);
         }
 
@@ -82,12 +84,6 @@ namespace TagExample
 
             #endregion
             
-            #region make some SELECTS
-
-            SELECTS();
-
-            #endregion
-
             //clear the DB (delete all created types) to create them again using the QueryLanguage
             GraphDB.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
 
@@ -123,7 +119,7 @@ namespace TagExample
             //create property
             var PropertyName = new PropertyPredefinition("Name")
                                     .SetAttributeType("String")
-                                    .SetComment("This is a property on type 'Tag' with name 'Name' and is of type 'String'");
+                                    .SetComment("This is a property on type 'Tag' named 'Name' and is of type 'String'");
 
             //add property
             Tag_VertexTypePredefinition.AddProperty(PropertyName);
@@ -148,7 +144,7 @@ namespace TagExample
             //create properties
             PropertyName = new PropertyPredefinition("Name")
                                 .SetAttributeType("String")
-                                .SetComment("This is a property on type 'Website' with name 'Name' and is of type 'String'");
+                                .SetComment("This is a property on type 'Website' named 'Name' and is of type 'String'");
 
             var PropertyUrl = new PropertyPredefinition("URL")
                                     .SetAttributeType("String")
