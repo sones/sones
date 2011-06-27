@@ -71,7 +71,8 @@ namespace sones.GraphDB.Request.Delete
 
         internal TResult GenerateRequestResult<TResult>(Converter.DeleteResultConverter<TResult> myOutputconverter)
         {
-            return myOutputconverter(Statistics);
+            return myOutputconverter(Statistics, _request.DeletedAttributes, _request.DeletedVertices);
         }
+
     }
 }

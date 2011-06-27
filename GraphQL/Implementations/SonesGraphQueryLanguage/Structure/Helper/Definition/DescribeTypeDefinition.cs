@@ -342,7 +342,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 Attributes.Add("ID", edge.ID);
                 Attributes.Add("Name", edge.Name);
 
-                _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, new Dictionary<String, IEdgeView>())));
+                _AttributeReadout.Add(new SingleEdgeView(null, new VertexView(Attributes, null)));
 
             }
 

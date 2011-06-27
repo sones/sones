@@ -182,7 +182,7 @@ namespace sones.GraphQL.StatementNodes.DML
             var stat = myGraphDB.Delete(mySecurityToken,
                                          myTransactionToken,
                                          new RequestDelete(new RequestGetVertices(toBeDeletedVertexID.VertexTypeID, new List<long> { toBeDeletedVertexID.VertexID })),
-                                         (stats) => stats);
+                                         (stats, attributes, vertices) => stats);
         }
 
         private QueryResult GenerateResult(double myElapsedTotalMilliseconds, QueryResult myResult, String myAction)

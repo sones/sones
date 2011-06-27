@@ -1126,7 +1126,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                 iEnumerable.Select(
                 aVertex => 
                 {
-                    return new SingleEdgeView(new Dictionary<String, Object> {{"VertexTypeID", aVertex.VertexTypeID}, {"VertexID", aVertex.VertexID}}, null); 
+                    return new SingleEdgeView(null, new VertexView(new Dictionary<String, object> {{"VertexTypeID", aVertex.VertexTypeID}, {"VertexID", aVertex.VertexID}}, null)); 
                 }));
         }
 

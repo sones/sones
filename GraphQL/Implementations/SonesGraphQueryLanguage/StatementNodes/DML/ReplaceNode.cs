@@ -137,7 +137,7 @@ namespace sones.GraphQL.StatementNodes.DML
                 mySecurityToken,
                 myTransactionToken,
                 new RequestDelete(new RequestGetVertices(toBeDeletedVertexID.VertexTypeID, new List<long> { toBeDeletedVertexID.VertexID })),
-                (stats) => true);
+                (stats, attributes, vertices) => true);
         }
 
         #endregion
