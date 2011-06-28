@@ -40,6 +40,16 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         public string Name { get; private set; }
 
         /// <summary>
+        /// The options that will be passed to the index instance
+        /// </summary>
+        public Dictionary<String, Object> IndexOptions { get; private set; }
+        
+        /// <summary>
+        /// The options that will be passed to the index instance
+        /// </summary>
+        private Dictionary<String, Object> _indexOptions;
+
+        /// <summary>
         /// Stores the names of the properties, that will be indexed.
         /// </summary>
         private List<String> _properties = new List<string>();
@@ -67,6 +77,51 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         public IndexPredefinition(String myName) 
         {
             Name = myName;
+        }
+
+        /// <summary>
+        /// Adds an option to the index predefinition
+        /// </summary>
+        /// <param name="myOptionKey">The name of the option</param>
+        /// <param name="myOptionValue">The value of the option</param>
+        /// <returns>The updated IndexPredefinition</returns>
+        public IndexPredefinition AddOption(String myOptionKey, Object myOptionValue)
+        {
+            if (_indexOptions == null)
+            {
+                _indexOptions = new Dictionary<string, object>();
+            }
+
+            if (_indexOptions.ContainsKey(myOptionKey))
+            {
+                _indexOptions[myOptionKey] = myOptionValue;
+            }
+            else
+            {
+                _indexOptions.Add(myOptionKey, myOptionValue);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Add options to the index predefinition
+        /// </summary>
+        /// <param name="myOptions">The options that should be set</param>
+        /// <returns>The updated IndexPredefinition</returns>
+        public IndexPredefinition AddOptions(Dictionary<String, Object> myOptions)
+        {
+            if (_indexOptions == null)
+            {
+                _indexOptions = new Dictionary<string, object>();
+            }
+
+            foreach (var aOption in myOptions)
+            {
+                AddOption(aOption.Key, aOption.Value);
+            }
+
+            return this;
         }
 
         /// <summary>
