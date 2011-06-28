@@ -19,6 +19,7 @@
 */
 
 using sones.Library.ErrorHandling;
+using System;
 
 namespace sones.GraphFS.ErrorHandling
 {
@@ -27,5 +28,22 @@ namespace sones.GraphFS.ErrorHandling
     /// </summary>
     public abstract class AGraphFSException : ASonesException
     {
+		/// <summary>
+		/// Initializes a new instance of the AGraphFSException.
+		/// </summary>
+		protected AGraphFSException() : this(null, null)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the AGraphFSException using a specified message and inner exception.
+		/// </summary>
+		/// 
+		/// <param name="message">The message of the Exception. If this value is NULL, the message will be empty.</param>
+		/// <param name="innerException">The inner exception. This vlaue can be NULL.</param>
+		protected AGraphFSException(string message, Exception innerException) : base(innerException)
+		{
+			_msg = message ?? "";
+		}
     }
 }
