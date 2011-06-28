@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -46,6 +46,22 @@
     <ProjectReference Include="..\..\GraphDB\Implementations\SonesGraphDB\SonesGraphDB.csproj">
       <Project>{1FC72801-4046-4CC7-BF83-8082FFD593BC}</Project>
       <Name>SonesGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDS\IGraphDS\IGraphDS.csproj">
+      <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
+      <Name>IGraphDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDS\PluginManager\GraphDSPluginManager\GraphDSPluginManager.csproj">
+      <Project>{6C8C30F7-1F75-4FA4-B5E9-6FB9AC8FA4FB}</Project>
+      <Name>GraphDSPluginManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDS\Server\IGraphDSServer\IGraphDSServer.csproj">
+      <Project>{1E30E203-20DE-4DA3-854A-18FEFADA6D7A}</Project>
+      <Name>IGraphDSServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDS\Server\Implementations\GraphDSServer\GraphDSServer.csproj">
+      <Project>{2FB38C4B-C29D-4F34-B42C-7A82E79A0C14}</Project>
+      <Name>GraphDSServer</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphFS\Implementations\InMemoryNonRevisioned\InMemoryNonRevisioned.csproj">
       <Project>{AB7C27CC-534F-472E-BA56-A1287973B7E2}</Project>
