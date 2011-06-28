@@ -736,6 +736,7 @@ namespace sones.GraphDB.Manager.Vertex
                         }
 
                         var attribute = vertexType.GetAttributeDefinition(aToBeDeleted);
+                        myDeleteRequest.AddDeletedAttribute(attribute.ID);
 
                         switch (attribute.Kind)
                         {
@@ -845,6 +846,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                     foreach (var aVertex in aVertexTypeGroup.ToList())
                     {
+                        myDeleteRequest.AddDeletedVertex(aVertex.VertexID);
                         RemoveVertex(aVertex, vertexType, mySecurityToken, myTransactionToken);
                     }
                 }

@@ -33,6 +33,9 @@ namespace sones.GraphDB.Request
         public readonly RequestGetVertices ToBeDeletedVertices;
         public readonly HashSet<String> ToBeDeletedAttributes;
 
+        public readonly List<IComparable> DeletedVertices;
+        public readonly List<IComparable> DeletedAttributes;
+
         #endregion
 
         #region Constructor
@@ -46,6 +49,9 @@ namespace sones.GraphDB.Request
         {
             ToBeDeletedAttributes = new HashSet<string>();
             ToBeDeletedVertices = myToBeDeletedVertices;
+
+            DeletedAttributes = new List<IComparable>();
+            DeletedVertices = new List<IComparable>();
         }
 
         #endregion
@@ -87,6 +93,20 @@ namespace sones.GraphDB.Request
             {
                 this.AddAttribute(aToBeDeletedAttribute);
             }
+
+            return this;
+        }
+
+        public RequestDelete AddDeletedAttribute(long myAttrID)
+        {
+            DeletedAttributes.Add(myAttrID);
+
+            return this;
+        }
+
+        public RequestDelete AddDeletedVertex(long myVertexID)
+        {
+            DeletedVertices.Add(myVertexID);
 
             return this;
         }

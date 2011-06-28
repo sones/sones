@@ -62,7 +62,7 @@ namespace sones.GraphDB.Request
         /// <typeparam name="TResult">The type of the result</typeparam>
         /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <returns>A TResult</returns>
-        public delegate TResult DeleteResultConverter<out TResult>(IRequestStatistics myRequestStatistics);
+        public delegate TResult DeleteResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IComparable> myDeletedAttributes, IEnumerable<IComparable> myDeletedVertices);
         
         /// <summary>
         /// A converter delegate that produces a generic result

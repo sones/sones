@@ -33,6 +33,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
 using sones.GraphDB.TypeSystem;
+using sones.Library.CollectionWrapper;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -93,6 +94,8 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
+            _query = myQuery;
+
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
                 mySecurityToken,
                 myTransactionToken,
@@ -123,9 +126,17 @@ namespace sones.GraphQL.StatementNodes.DML
 
         #region private helper
 
-        private QueryResult CreateQueryResult(IRequestStatistics myStats)
+        private QueryResult CreateQueryResult(IRequestStatistics myStats, IEnumerable<IComparable> myDeletedAttributes, IEnumerable<IComparable> myDeletedVertices)
         {
-            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds), ResultType.Successful, new List<IVertexView>());
+            var view = new List<VertexView>();
+
+            if(myDeletedVertices.Count() > 0)
+                view.Add(new VertexView(new Dictionary<String, Object> { { "deleted vertices", new ListCollectionWrapper(myDeletedVertices) } }, null));
+
+            if(myDeletedAttributes.Count() > 0)
+                view.Add(new VertexView(new Dictionary<String, Object> { { "deleted attributes", new ListCollectionWrapper(myDeletedAttributes) } }, null));
+
+            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds), ResultType.Successful, view);
         }
 
         #endregion

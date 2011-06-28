@@ -205,7 +205,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 count++;
             }
 
-            edges.Add("SetableParameters", new SingleEdgeView(temp, null));
+            edges.Add("SetableParameters", new SingleEdgeView(null, new VertexView(temp, null)));
 
             return new VertexView(_Aggregate, edges);
 
