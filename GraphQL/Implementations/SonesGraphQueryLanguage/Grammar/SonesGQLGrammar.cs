@@ -90,8 +90,6 @@ namespace sones.GraphQL
 
         #region NonTerminals
 
-        #region class scope NonTerminal - need for IExtendableGrammar
-
         public readonly NonTerminal NT_ImportStmt;     //If no import format is found from plugin the statement must be removed
         public readonly NonTerminal NT_ImportFormat;
 
@@ -110,7 +108,9 @@ namespace sones.GraphQL
         public readonly NonTerminal NT_Id;
         public readonly NonTerminal NT_Expression;
 
-        #endregion
+        public readonly NonTerminal NT_KeyValueList;
+
+        public readonly NonTerminal NT_Options;
 
         #endregion
 
@@ -292,6 +292,12 @@ namespace sones.GraphQL
 
         #endregion
 
+        #region Options
+
+        public KeyTerm S_OPTIONS { get; private set; }
+
+        #endregion
+
         #endregion
 
         #endregion
@@ -467,6 +473,12 @@ namespace sones.GraphQL
             S_PARALLELTASKS = ToTerm("PARALLELTASKS");
             S_VERBOSITY = ToTerm("VERBOSITY");
             S_FORMAT = ToTerm("FORMAT");
+
+            #endregion
+
+            #region options
+
+            S_OPTIONS = ToTerm("OPTIONS");
 
             #endregion
 
@@ -653,9 +665,10 @@ namespace sones.GraphQL
             #endregion
 
             var KeyValuePair = new NonTerminal("KeyValuePair");
-            var ValueList = new NonTerminal("ValueList");
+            NT_KeyValueList = new NonTerminal("ValueList");
             var BooleanVal = new NonTerminal("BooleanVal");
             var Values = new NonTerminal("Values");
+            NT_Options = new NonTerminal("Options");
 
             var ListType = new NonTerminal("ListType");
             var ListParametersForExpression = new NonTerminal("ListParametersForExpression", typeof(ParametersNode));
@@ -866,13 +879,13 @@ namespace sones.GraphQL
 
             #endregion
 
-            #region Value
+            #region KeyValue
 
             KeyValuePair.Rule = Id_simple + "=" + string_literal
                                 | Id_simple + "=" + number
                                 | Id_simple + "=" + BooleanVal;
 
-            ValueList.Rule = MakeStarRule(ValueList, S_comma, KeyValuePair);
+            NT_KeyValueList.Rule = MakePlusRule(NT_KeyValueList, S_comma, KeyValuePair);
 
             #endregion
 
@@ -881,7 +894,7 @@ namespace sones.GraphQL
             ListType.Rule = S_LIST;
 
             ListParametersForExpression.Rule = Empty
-                                         | S_colon + S_BRACKET_LEFT + ValueList + S_BRACKET_RIGHT;
+                                         | S_colon + S_BRACKET_LEFT + NT_KeyValueList + S_BRACKET_RIGHT;
 
             EdgeType_SortedMember.Rule = S_ASC | S_DESC;
             EdgeType_Sorted.Rule = S_SORTED + "=" + EdgeType_SortedMember;
@@ -1054,12 +1067,19 @@ namespace sones.GraphQL
 
             #endregion
 
+            #region options
+
+            NT_Options.Rule =       Empty
+                                |   S_OPTIONS + S_BRACKET_LEFT + NT_KeyValueList + S_BRACKET_RIGHT;
+
+            #endregion
+
             #endregion
 
             #region CREATE INDEX
 
-            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + S_VERTEX + S_TYPE + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + NT_IndexTypeOpt
-                                    | S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + NT_IndexTypeOpt; // due to compatibility the  + S_TYPE is optional
+            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + S_VERTEX + S_TYPE + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + NT_IndexTypeOpt + NT_Options
+                                    | S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + VertexTypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + NT_IndexTypeOpt + NT_Options; // due to compatibility the  + S_TYPE is optional
 
             uniqueOpt.Rule = Empty | S_UNIQUE;
 
@@ -1071,6 +1091,7 @@ namespace sones.GraphQL
 
             indexNameOpt.Rule = Empty
                                 | Id_simple;
+
 
             #endregion
 
@@ -1126,9 +1147,9 @@ namespace sones.GraphQL
 
             IndexOptOnCreateTypeMemberList.Rule = MakePlusRule(IndexOptOnCreateTypeMemberList, S_comma, IndexOptOnCreateTypeMember);
 
-            IndexOptOnCreateTypeMember.Rule = S_BRACKET_LEFT + indexNameOpt + editionOpt + NT_IndexTypeOpt + S_ON + S_ATTRIBUTES + IndexAttributeList + S_BRACKET_RIGHT
-                                            | S_BRACKET_LEFT + indexNameOpt + editionOpt + NT_IndexTypeOpt + S_ON + IndexAttributeList + S_BRACKET_RIGHT // due to compatibility the  + S_ATTRIBUTES is optional
-                                            | S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT;
+            IndexOptOnCreateTypeMember.Rule = S_BRACKET_LEFT + indexNameOpt + editionOpt + NT_IndexTypeOpt + S_ON + S_ATTRIBUTES + IndexAttributeList + NT_Options + S_BRACKET_RIGHT
+                                            | S_BRACKET_LEFT + indexNameOpt + editionOpt + NT_IndexTypeOpt + S_ON + IndexAttributeList + NT_Options + S_BRACKET_RIGHT // due to compatibility the  + S_ATTRIBUTES is optional
+                                            | S_BRACKET_LEFT + IndexAttributeList + NT_Options + S_BRACKET_RIGHT;
 
             Values.Rule = BooleanVal | number | string_literal;
             
