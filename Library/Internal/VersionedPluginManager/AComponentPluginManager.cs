@@ -122,18 +122,14 @@ namespace sones.Library.VersionedPluginManager
         }
 
         /// <summary>
-        /// Get and initalize a certain plugin and...
-        /// During initialization a new instance of the plugin is created
+        /// Returns the plugin as IPluginable instance.
         /// </summary>
-        /// <typeparam name="T">The interface of the Plugin</typeparam>
-        /// <param name="myPluginName">The name of the plugin</param>
-        /// <param name="myParameter">The parameters that are necessary to initialize an IPluginable</param>
-        /// <param name="myApplicationSetting">The application settings that are necessary to initialize an IPluginable</param>
-        /// <param name="UniqueID">An ID that is unique for the combination <paramref name="myPluginName"/> and <typeparamref name="T"/>.</param>
-        /// <returns>A T</returns>
-        public T GetAndInitializePlugin<T>(String myPluginName, Dictionary<String, Object> myParameter = null, long? UniqueID = null)
+        /// <param name="myInterfaceType">The type of the interface the plugin should implement.</param>
+        /// <param name="myPluginName">The name of the plugin, that is should be returned.</param>
+        /// <returns>An instance of IPluginable, that has the given plugin name.</returns>
+        private IPluginable GetPlugin(String myPluginName, Type myInterfaceType)
         {
-            var type = typeof(T);
+            var type = myInterfaceType;
             Dictionary<string, IPluginable> interestingLookup;
 
             lock (_plugins)
@@ -152,20 +148,52 @@ namespace sones.Library.VersionedPluginManager
                 {
                     throw new UnknownPluginException(myPluginName, type);
                 }
-                
-                var uniqueString = String.Join("-", 
-                    typeof(T).Name, 
-                    myPluginName, 
-                    (UniqueID == null) ? Guid.NewGuid().ToString() : UniqueID.ToString());
 
-                var plugin = interestingLookup[myPluginName.ToUpper()].InitializePlugin(uniqueString, myParameter);
 
-                ShutdownEventHandler += new PluginShutdownEventHandler(plugin.Dispose);
-
-                return (T)plugin;
+                return interestingLookup[myPluginName.ToUpper()];
             }
         }
 
+        /// <summary>
+        /// Gets the setable parameters for a plugin.
+        /// </summary>
+        /// <typeparam name="T">The interface of the Plugin.</typeparam>
+        /// <param name="myPluginName">The name of the plugin</param>
+        /// <returns>The parameters that can be set on the plugin.</returns>
+        public PluginParameters<Type> GetPluginParameter<T>(String myPluginName)
+        {
+            return GetPlugin(myPluginName, typeof(T)).SetableParameters;
+        }
+
+        /// <summary>
+        /// Get and initalize a certain plugin and...
+        /// During initialization a new instance of the plugin is created
+        /// </summary>
+        /// <typeparam name="T">The interface of the Plugin</typeparam>
+        /// <param name="myPluginName">The name of the plugin</param>
+        /// <param name="myParameter">The parameters that are necessary to initialize an IPluginable</param>
+        /// <param name="myApplicationSetting">The application settings that are necessary to initialize an IPluginable</param>
+        /// <param name="UniqueID">An ID that is unique for the combination <paramref name="myPluginName"/> and <typeparamref name="T"/>.</param>
+        /// <returns>A T</returns>
+        public T GetAndInitializePlugin<T>(String myPluginName, Dictionary<String, Object> myParameter = null, long? UniqueID = null)
+        {
+            var type = typeof(T);
+
+            var uniqueString = String.Join("-",
+                typeof(T).Name,
+                myPluginName,
+                (UniqueID == null) ? Guid.NewGuid().ToString() : UniqueID.ToString());
+
+            var plugin = GetPlugin(myPluginName, type).InitializePlugin(uniqueString, myParameter);
+
+            ShutdownEventHandler += new PluginShutdownEventHandler(plugin.Dispose);
+
+            return (T)plugin;
+        }
+
+        /// <summary>
+        /// Shuts down every previosly created plugin.
+        /// </summary>
         public void ShutdownPlugins()
         {
 

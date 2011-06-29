@@ -286,15 +286,15 @@ namespace sones.GraphDB.Manager
         {
             #region Index
 
-            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexIndexDotName, "IndexDotName", "IndexDotNameIndexComment", myCreationDate, null, true, false, false, false, _Index, null, _IndexDotName.SingleEnumerable().ToList(), _security, _transaction);
+            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexIndexDotName, "IndexDotName", "IndexDotNameIndexComment", myCreationDate, null, true, false, false, false, null, _Index, null, _IndexDotName.SingleEnumerable().ToList(), _security, _transaction);
 
             #endregion
 
             #region BaseType
 
-            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexBaseTypeDotName  , "BaseTypeDotName"  , "BaseTypeDotNameIndexComment"  , myCreationDate, null, true, false, false, false, _BaseType  , null, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
-            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexVertexTypeDotName, "VertexTypeDotName", "VertexTypeDotNameIndexComment", myCreationDate, null, true, false, false, false, _VertexType, _BaseUniqueIndexBaseTypeDotName, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
-            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexEdgeTypeDotName, "EdgeTypeDotName", "EdgeTypeDotNameIndexComment", myCreationDate, null, true, false, false, false, _EdgeType, _BaseUniqueIndexBaseTypeDotName, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
+            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexBaseTypeDotName  , "BaseTypeDotName"  , "BaseTypeDotNameIndexComment"  , myCreationDate, null, true, false, false, false, null, _BaseType  , null, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
+            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexVertexTypeDotName, "VertexTypeDotName", "VertexTypeDotNameIndexComment", myCreationDate, null, true, false, false, false, null, _VertexType, _BaseUniqueIndexBaseTypeDotName, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
+            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexEdgeTypeDotName, "EdgeTypeDotName", "EdgeTypeDotNameIndexComment", myCreationDate, null, true, false, false, false, null, _EdgeType, _BaseUniqueIndexBaseTypeDotName, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
 
             #endregion
 
