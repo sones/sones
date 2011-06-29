@@ -42,23 +42,25 @@
         //replace apostrophe
         query = query.replace(/´/g, "'");
         query = query.replace(/\"/g, "'");
-        //encode the query
-        var encodedQuery = $.URLEncode(query);
+        
+      
 
         //build the target URI
         var target = goosh.config.webservice_protocol + "://"
                + goosh.config.webservice_host
                + ((goosh.config.webservice_port != undefined) ? (":" + goosh.config.webservice_port) : "")
                + goosh.config.webservice_path + "/"
-               + goosh.config.mode + "?"
-               + encodedQuery;
+               + goosh.config.mode;
+               
 
         //do some ajax
         var RESTResponse = $.ajax({
+            type: "POST",
             url: target,
             cache: false,
             async: false,
             timeout: 0,
+            data: query,
             error: function (xhr, ajaxOptions, thrownError) {
                 return ("AJAX Error " + xhr.status + "\n" + data.responseText + "\n" + thrownError);
             },
