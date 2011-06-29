@@ -29,7 +29,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.VersionedPluginManager;
-using sones.GraphDB.ErrorHandling.Type;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Functions
 {

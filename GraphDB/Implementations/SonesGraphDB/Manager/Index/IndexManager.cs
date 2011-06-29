@@ -38,6 +38,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.Extensions;
 using sones.GraphDB.Request;
 using sones.Library.CollectionWrapper;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -125,12 +126,16 @@ namespace sones.GraphDB.Manager.Index
             var parameter = (_indexPluginParameter.ContainsKey(typeClass))
                     ? _indexPluginParameter[typeClass].PluginParameter
                     : null;
+            ValidateOptions(myIndexDefinition.IndexOptions, typeClass);
+
+            parameter = FillOptions(parameter, myIndexDefinition.IndexOptions);
 
             var index = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(typeClass, parameter, indexID);
 
             var props = myIndexDefinition.Properties.Select(prop => new VertexInformation((long)BaseTypes.Property, vertexType.GetPropertyDefinition(prop).ID)).ToList();
             
             var date = DateTime.UtcNow.ToBinary();
+
 
             var indexVertex = BaseGraphStorageManager.StoreIndex(
                                 _vertexStore,
@@ -143,6 +148,7 @@ namespace sones.GraphDB.Manager.Index
                                 GetIsRangeValue(index),
                                 GetIsVersionedValue(index),
                                 true,
+                                myIndexDefinition.IndexOptions,
                                 new VertexInformation((long)BaseTypes.VertexType, vertexType.ID),
                                 null,
                                 props,
@@ -171,6 +177,7 @@ namespace sones.GraphDB.Manager.Index
                                 GetIsRangeValue(index),
                                 GetIsVersionedValue(index),
                                 false,
+                                myIndexDefinition.IndexOptions,
                                 new VertexInformation((long)BaseTypes.VertexType, childType.ID),
                                 info,
                                 props,
@@ -196,6 +203,24 @@ namespace sones.GraphDB.Manager.Index
             }
 
             return indexDefinition;
+        }
+
+        private void ValidateOptions(IDictionary<String, object> myOptions, string myIndexType)
+        {
+            if (myOptions == null)
+                return;
+
+            var parameters = _pluginManager.GetPluginParameter<IIndex<IComparable, Int64>>(myIndexType);
+
+            foreach (var option in myOptions)
+            {
+                if (!parameters.ContainsKey(option.Key))
+                    throw new UnknownOptionException(option.Key, parameters);
+
+                if (option.Value != null && !parameters[option.Key].IsAssignableFrom(option.Value.GetType()))
+                    throw new IllegalOptionException(option.Key, parameters[option.Key]);
+            }
+
         }
 
         private string CreateIndexName(IndexPredefinition myIndexDefinition, IVertexType vertexType)
@@ -424,6 +449,12 @@ namespace sones.GraphDB.Manager.Index
                 var parameter = (_indexPluginParameter.ContainsKey(typeClass))
                         ? _indexPluginParameter[typeClass].PluginParameter
                         : null;
+                
+                var options = (indexVertex.GetAllUnstructuredProperties() == null)
+                                ? null
+                                : indexVertex.GetAllUnstructuredProperties().Select(_ => new KeyValuePair<String, object>(_.Item1, _.Item2));
+
+                parameter = FillOptions(parameter, options);
 
                 var index = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(typeClass, parameter, indexID);
 
@@ -438,6 +469,22 @@ namespace sones.GraphDB.Manager.Index
             RebuildIndices(_vertexTypeManager.ExecuteManager.GetVertexType((long)BaseTypes.VertexType, myTransaction, mySecurity), myTransaction, mySecurity, true);
             RebuildIndices(_vertexTypeManager.ExecuteManager.GetVertexType((long)BaseTypes.EdgeType, myTransaction, mySecurity), myTransaction, mySecurity, true);
             RebuildIndices(_vertexTypeManager.ExecuteManager.GetVertexType((long)BaseTypes.Index, myTransaction, mySecurity), myTransaction, mySecurity, true);
+        }
+
+        private Dictionary<string, object> FillOptions(IDictionary<string, object> myParameters, IEnumerable<KeyValuePair<string, object>> myOptions)
+        {
+            if (myParameters == null && myOptions == null)
+                return null;
+
+            var result = (myParameters != null)
+                            ? new Dictionary<String, object>(myParameters)
+                            : new Dictionary<String, object>();
+
+            if (myOptions != null)
+                foreach (var option in myOptions)
+                    result[option.Key] = option.Value;
+
+            return result;
         }
 
         #endregion

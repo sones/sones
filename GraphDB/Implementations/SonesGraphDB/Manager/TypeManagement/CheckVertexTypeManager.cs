@@ -30,7 +30,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.LanguageExtensions;
 using sones.GraphDB.Manager.BaseGraph;
-using sones.GraphDB.ErrorHandling.Type;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {

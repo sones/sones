@@ -600,6 +600,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             bool myIsRange,
             bool myIsVersioned,
             bool myIsUserDefined,
+            IDictionary<String, object> myOptions,
             VertexInformation myDefiningVertexType,
             VertexInformation? mySourceIndex, 
             IList<VertexInformation> myIndexedProperties,
@@ -637,7 +638,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                     { _EdgeIndexDotIndexedProperties, myIndexedProperties }
                 },
                 props,
-                null,
+                myOptions,
                 mySecurity,
                 myTransaction);
         }
@@ -662,10 +663,10 @@ namespace sones.GraphDB.Manager.BaseGraph
             VertexInformation mySource,
             String myComment,
             Int64 myCreationDate,
-            Dictionary<Tuple<Int64, Int64>, VertexInformation> mySingleEdges,
-            Dictionary<Tuple<Int64, Int64>, IEnumerable<VertexInformation>> myHyperEdges,
-            Dictionary<Int64, IComparable> myStructuredProperties,
-            Dictionary<String, Object> myUnstructuredProperties,
+            IDictionary<Tuple<Int64, Int64>, VertexInformation> mySingleEdges,
+            IDictionary<Tuple<Int64, Int64>, IEnumerable<VertexInformation>> myHyperEdges,
+            IDictionary<Int64, IComparable> myStructuredProperties,
+            IDictionary<String, Object> myUnstructuredProperties,
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
@@ -687,7 +688,7 @@ namespace sones.GraphDB.Manager.BaseGraph
         }
 
         private static IEnumerable<SingleEdgeAddDefinition> CreateSingleEdgeDefinitions(
-            Dictionary<Tuple<long, long>, VertexInformation> mySingleEdges,
+            IDictionary<Tuple<long, long>, VertexInformation> mySingleEdges,
             VertexInformation mySource,
             long myCreationDate)
         {
@@ -729,7 +730,7 @@ namespace sones.GraphDB.Manager.BaseGraph
         /// <param name="myCreationDate"></param>
         /// <returns></returns>
         private static IEnumerable<HyperEdgeAddDefinition> CreateHyperEdgeDefinitions(
-            Dictionary<Tuple<Int64, Int64>, IEnumerable<VertexInformation>> myEdges,
+            IDictionary<Tuple<Int64, Int64>, IEnumerable<VertexInformation>> myEdges,
             VertexInformation mySource,
             Int64 myCreationDate)
         {

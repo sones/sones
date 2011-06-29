@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -67,6 +67,8 @@
     <Compile Include="ErrorHandling\IndexErrors\RebuildIndicesFaildException.cs" />
     <Compile Include="ErrorHandling\Insert\AbstractConstraintViolationException.cs" />
     <Compile Include="ErrorHandling\Insert\AGraphDBInsertException.cs" />
+    <Compile Include="ErrorHandling\Options\IllegalOptionException.cs" />
+    <Compile Include="ErrorHandling\Options\UnknownOptionException.cs" />
     <Compile Include="ErrorHandling\QueryPlan\InvalidExpressionException.cs" />
     <Compile Include="ErrorHandling\Type\AGraphDBTypeException.cs" />
     <Compile Include="ErrorHandling\Type\InvalidTypeException.cs" />
