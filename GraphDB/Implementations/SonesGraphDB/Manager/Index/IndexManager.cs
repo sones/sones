@@ -126,9 +126,9 @@ namespace sones.GraphDB.Manager.Index
             var parameter = (_indexPluginParameter.ContainsKey(typeClass))
                     ? _indexPluginParameter[typeClass].PluginParameter
                     : null;
-            ValidateOptions(myIndexDefinition.IndexOptions, typeClass);
+            var options = ValidateOptions(myIndexDefinition.IndexOptions, typeClass);
 
-            parameter = FillOptions(parameter, myIndexDefinition.IndexOptions);
+            parameter = FillOptions(parameter, options);
 
             var index = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(typeClass, parameter, indexID);
 
@@ -205,22 +205,38 @@ namespace sones.GraphDB.Manager.Index
             return indexDefinition;
         }
 
-        private void ValidateOptions(IDictionary<String, object> myOptions, string myIndexType)
+        private Dictionary<String, object> ValidateOptions(IDictionary<String, object> myOptions, string myIndexType)
         {
             if (myOptions == null)
-                return;
+                return null;
 
             var parameters = _pluginManager.GetPluginParameter<IIndex<IComparable, Int64>>(myIndexType);
+
+            var result = new Dictionary<String, object>();
 
             foreach (var option in myOptions)
             {
                 if (!parameters.ContainsKey(option.Key))
                     throw new UnknownOptionException(option.Key, parameters);
 
-                if (option.Value != null && !parameters[option.Key].IsAssignableFrom(option.Value.GetType()))
-                    throw new IllegalOptionException(option.Key, parameters[option.Key]);
+                var value = option.Value;
+
+                if (value != null && !parameters[option.Key].IsAssignableFrom(value.GetType()))
+                {
+                    try
+                    {
+                        value = Convert.ChangeType(option.Value, parameters[option.Key]);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new IllegalOptionException(option.Key, parameters[option.Key], ex);
+                    }
+                }
+
+                result[option.Key] = value;
             }
 
+            return result;
         }
 
         private string CreateIndexName(IndexPredefinition myIndexDefinition, IVertexType vertexType)
