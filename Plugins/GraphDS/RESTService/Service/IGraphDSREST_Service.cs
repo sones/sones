@@ -56,7 +56,7 @@ namespace sones.Plugins.GraphDS.RESTService
         /// <example>/gql?FROM+Website+w+SELECT+*+WHERE+w.Name+%3d+%27xkcd%27"</example>
         /// <returns>The result of the GQL query</returns>
         [OperationContract]
-        [WebGet(UriTemplate = "/gql")]
+        [WebInvoke(UriTemplate = "/gql", Method = "POST")]
         void ExecuteGQLQuery();
 
         /// <summary>

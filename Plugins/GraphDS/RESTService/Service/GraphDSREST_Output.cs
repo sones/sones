@@ -109,42 +109,25 @@ namespace sones.Plugins.GraphDS.RESTService
 
         public String GetGQL()
         {
-            if (HttpServer.HttpContext.Request.QueryString.Count == 0)
+            if (HttpServer.HttpContext.Request == null || HttpServer.HttpContext.Request.InputStream == null)
+                return null;
+
+            using (var reader = new StreamReader(HttpServer.HttpContext.Request.InputStream, Encoding.UTF8))
             {
-                _ErrorMsg.Error400_BadRequest("[Syntax Error] Please use '...gql?query'!");
-                return String.Empty;
+                try
+                {
+                    return reader.ReadToEnd();
+                }
+                catch
+                {
+                    return null;
+                }
+                finally
+                {
+                    HttpServer.HttpContext.Request.InputStream.Close();
+                }
             }
 
-            String _QueryString = String.Empty;
-
-// Mono 2.10.2 has a bug regarding Request.QueryString.
-// Leave this ifdef until this bug is fixed.
-#if __MonoCS__
-
-            //we know we have a '?', so we can access position 1
-            var raw = HttpServer.HttpContext.Request.RawUrl;
-            var index = raw.IndexOf('?') + 1;
-            raw = raw.Substring(index, raw.Length - index);
-
-            index = raw.IndexOf('&');
-            if (index >= 0)
-                raw = raw.Substring(0, index);
-
-            var _queryString = raw;
-
-            _QueryString = HttpUtility.UrlDecode(_queryString);
-#else
-            _QueryString = HttpServer.HttpContext.Request.QueryString[null];
-
-#endif
-            if (_QueryString == null)
-            {
-                _ErrorMsg.Error400_BadRequest("[Syntax Error] Please use '...gql?query'!");
-                return String.Empty;
-            }
-
-
-            return _QueryString;
         }
 
         #endregion
