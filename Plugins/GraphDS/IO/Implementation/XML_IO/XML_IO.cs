@@ -497,19 +497,30 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             {
                 case "String":
                     return myValue;
-                    break;
+                case "Int16":
+                    return System.Convert.ToInt16(myValue);
                 case "Int32":
                     return System.Convert.ToInt32(myValue);
-                    break;
                 case "Int64":
                     return System.Convert.ToInt64(myValue);
-                    break;
+                case "UInt16":
+                    return System.Convert.ToUInt16(myValue);
                 case "UInt32":
-                    return System.Convert.ToUInt32(myValue);
-                    break;
+                    return System.Convert.ToUInt32(myValue);                    
                 case "UInt64":
                     return System.Convert.ToUInt64(myValue);
-                    break;
+                case "Boolean":
+                    return System.Convert.ToBoolean(myValue);                    
+                case "DateTime":
+                    return System.Convert.ToDateTime(myValue);                    
+                case "Double":
+                    return System.Convert.ToDouble(myValue);
+                case "Decimal":
+                    return System.Convert.ToDecimal(myValue);
+                case "Single":
+                    return System.Convert.ToSingle(myValue);
+                case "SByte":
+                    return System.Convert.ToSByte(myValue);
                 
                 default:
                     return myValue;
