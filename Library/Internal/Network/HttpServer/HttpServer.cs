@@ -420,13 +420,16 @@ namespace sones.Library.Network.HttpServer
         /// <param name="myResult">The IAsyncResult object that was created be HttpListener.BeginGetContext.</param>
         private void AsyncGetContext(IAsyncResult myResult)
         {
-            if (!_listener.IsListening)
-                return;
+            HttpListenerContext context = null;
+            lock (_lock)
+            {
+                if (!_listener.IsListening)
+                    return;
 
-            var context = _listener.EndGetContext(myResult);
+                context = _listener.EndGetContext(myResult);
 
-            HttpContext = context;
-
+                HttpContext = context;
+            }
             //gets the method that will be invoked
             var callback = _parser.GetCallback(context.Request.RawUrl, context.Request.HttpMethod);
 
@@ -450,7 +453,7 @@ namespace sones.Library.Network.HttpServer
                     }
                     catch (Exception)
                     {
-                        context.Response.StatusCode = (int) HttpStatusCode.Forbidden;
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                         return;
                     }
 
@@ -477,7 +480,7 @@ namespace sones.Library.Network.HttpServer
                             }
                             else if (targetInvocationResult is String)
                             {
-                                var toWrite = Encoding.UTF8.GetBytes((string) (targetInvocationResult));
+                                var toWrite = Encoding.UTF8.GetBytes((string)(targetInvocationResult));
                                 context.Response.OutputStream.Write(toWrite, 0, toWrite.Length);
                             }
 
@@ -486,7 +489,7 @@ namespace sones.Library.Network.HttpServer
                     }
                     catch (Exception ex)
                     {
-                        context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
                         var msg = Encoding.UTF8.GetBytes(ex.ToString());
                         context.Response.OutputStream.Write(msg, 0, msg.Length);
@@ -500,7 +503,6 @@ namespace sones.Library.Network.HttpServer
             {
                 context.Response.Close();
             }
-
         }
 
         /// <summary>
