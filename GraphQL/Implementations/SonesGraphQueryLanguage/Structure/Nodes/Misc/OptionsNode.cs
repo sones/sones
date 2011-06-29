@@ -52,7 +52,14 @@ namespace sones.GraphQL.Structure.Nodes.Misc
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            Options = ((KeyValueListNode)parseNode.ChildNodes[1].AstNode).KeyValues;
+            if (HasChildNodes(parseNode))
+            {
+                Options = ((KeyValueListNode)parseNode.ChildNodes[1].AstNode).KeyValues;
+            }
+            else
+            {
+                Options = null;
+            }
         }
 
         #endregion
