@@ -36,6 +36,7 @@ using sones.Library.ErrorHandling;
 using sones.Library.VersionedPluginManager;
 using sones.Library.LanguageExtensions;
 using System.Text;
+using sones.Library.CollectionWrapper;
 
 namespace sones.Plugins.SonesGQL.DBExport
 {
@@ -139,7 +140,7 @@ namespace sones.Plugins.SonesGQL.DBExport
 
                 }
 
-                dumpReadout.Add("GDDL", graphDDL);
+                dumpReadout.Add("GDDL", new ListCollectionWrapper(graphDDL));
 
                 try
                 {
@@ -164,7 +165,7 @@ namespace sones.Plugins.SonesGQL.DBExport
                     throw new ExportFailedException(myDumpType.ToString(), "");
                 }
 
-                dumpReadout.Add("GDML", graphDML);
+                dumpReadout.Add("GDML", new ListCollectionWrapper(graphDML));
 
                 try
                 {
