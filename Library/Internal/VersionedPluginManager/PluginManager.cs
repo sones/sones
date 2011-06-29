@@ -284,43 +284,50 @@ namespace sones.Library.VersionedPluginManager
 
             #region Get all types of the assembly
 
-            foreach (Type type in loadedPluginAssembly.GetTypes())
+            try
             {
-                #region Type validation
-
-                if (!type.IsClass || type.IsAbstract)
+                foreach (Type type in loadedPluginAssembly.GetTypes())
                 {
-                    continue;
+                    #region Type validation
+
+                    if (!type.IsClass || type.IsAbstract)
+                    {
+                        continue;
+                    }
+
+                    if (!type.IsPublic && myPublicOnly)
+                    {
+                        continue;
+                    }
+
+                    #region Skip _Accessor classes
+
+                    if (type.HasBaseType("Microsoft.VisualStudio.TestTools.UnitTesting.BaseShadow"))
+                    {
+                        continue;
+                    }
+
+                    #endregion
+
+                    //The plugin has to implement IPluginable so that we are able to initialize/distinguish them
+                    if (!typeof(IPluginable).IsInterfaceOf(type))
+                    {
+                        continue;
+                    }
+
+                    //The plugin has to have an empty constructor
+                    if (type.GetConstructor(Type.EmptyTypes) == null)
+                    {
+                        continue;
+                    }
+                    #endregion
+
+                    FindAndActivateTypes(myThrowExceptionOnIncompatibleVersion, loadedPluginAssembly, type);
                 }
-
-                if (!type.IsPublic && myPublicOnly)
-                {
-                    continue;
-                }
-
-                #region Skip _Accessor classes
-
-                if (type.HasBaseType("Microsoft.VisualStudio.TestTools.UnitTesting.BaseShadow"))
-                {
-                    continue;
-                }
-
-                #endregion
-
-                //The plugin has to implement IPluginable so that we are able to initialize/distinguish them
-                if (!typeof(IPluginable).IsInterfaceOf(type))
-                {
-                    continue;
-                }
-
-                //The plugin has to have an empty constructor
-                if (type.GetConstructor(Type.EmptyTypes) == null)
-                {
-                    continue;
-                }
-                #endregion
-
-                FindAndActivateTypes(myThrowExceptionOnIncompatibleVersion, loadedPluginAssembly, type);                
+            }
+            catch 
+            {
+                //if we can't load a dll, so we drop this
             }
 
             #endregion

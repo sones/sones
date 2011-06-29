@@ -303,18 +303,34 @@ namespace sones.GraphDS.GraphDSRESTClient
 
         private String FetchGraphDBOutput(String myQueryString)
         {
-            String fullRESTUri = String.Format("{0}?{1}",_GQLUri, HttpUtility.UrlEncode(myQueryString));
+            
             try
             {
 
-                HttpWebRequest request = WebRequest.Create(fullRESTUri) as HttpWebRequest;
+                HttpWebRequest request = WebRequest.Create(_GQLUri) as HttpWebRequest;
                 
                 request.Credentials = _Credentials;
+                request.Method = "POST";
                 request.Accept = "application/xml";
                 request.UserAgent = "GraphDSRESTClient";
                 request.KeepAlive = false;
                 request.Timeout = Timeout.Infinite;
-                
+                var myStream = request.GetRequestStream();
+
+                using (var writer = new StreamWriter(myStream,Encoding.UTF8))
+                {
+                    try
+                    {
+                        writer.Write(myQueryString);
+                        writer.Flush();
+                    }
+                    finally
+                    {
+                        myStream.Close();
+                    }
+                   
+                }
+
                 StreamReader reader;
                 StringBuilder resonseXML = null;
 

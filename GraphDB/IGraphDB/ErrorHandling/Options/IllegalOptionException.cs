@@ -10,7 +10,7 @@ namespace sones.GraphDB.ErrorHandling
         public String WrongParameter { get; private set; }
         public Type NeededType { get; private set; }
 
-        public IllegalOptionException(string myOption, Type myNeededType)
+        public IllegalOptionException(string myOption, Type myNeededType, Exception myInnerException = null): base(myInnerException)
         {
             WrongParameter = myOption;
             NeededType = myNeededType;
