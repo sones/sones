@@ -39,6 +39,8 @@ using sones.GraphDB.Extensions;
 using sones.GraphDB.Request;
 using sones.Library.CollectionWrapper;
 using sones.GraphDB.ErrorHandling;
+using sones.GraphDB.Settings;
+using sones.Library.Settings;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -69,6 +71,8 @@ namespace sones.GraphDB.Manager.Index
         private IDManager _idManager;
         private ISingleValueIndex<IComparable, long> _ownIndex;
 
+        private GraphApplicationSettings _applicationSettings;
+
         #endregion
 
         #region constructor
@@ -79,10 +83,11 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myVertexStore">The vertex store of the graphDB</param>
         /// <param name="myPluginManager">The sones graphDB plugin manager</param>
         /// <param name="myPluginDefinitions">The parameters for plugin-indices</param>
-        public IndexManager(IDManager myIDManager, GraphDBPluginManager myPluginManager, List<PluginDefinition> myPluginDefinitions = null)
+        public IndexManager(IDManager myIDManager, GraphDBPluginManager myPluginManager, GraphApplicationSettings myApplicationSettings, List<PluginDefinition> myPluginDefinitions = null)
         {
             _idManager = myIDManager;
             _pluginManager = myPluginManager;
+            _applicationSettings = myApplicationSettings;
 
             _indexPluginParameter = myPluginDefinitions != null 
                 ? myPluginDefinitions.ToDictionary(key => key.NameOfPlugin, value => value) 
@@ -291,36 +296,20 @@ namespace sones.GraphDB.Manager.Index
 
         public string GetBestMatchingIndexName(bool myIsSingleValue, bool myIsRange, bool myIsVersioned)
         {
+            if (myIsRange || myIsVersioned)
+            {
+                throw new NotImplementedException("It's currently not supported to use ranged or versioned indices");
+            }
+
             IEnumerable<String> result;
             if (myIsSingleValue)
             {
-                result = _pluginManager.GetPluginsForType<ISingleValueIndex<IComparable, Int64>>();
+                return _applicationSettings.Get<DefaultSingleValueIndexImplementation>();
             }
             else 
             {
-                result = _pluginManager.GetPluginsForType<IMultipleValueIndex<IComparable, Int64>>();
+                return _applicationSettings.Get<DefaultMultipleValueIndexImplementation>();
             }
-
-            if (myIsRange)
-            {
-                result = result.Where(_ => _ is IRangeIndex<IComparable, Int64>);
-            }
-            else
-            {
-                result = result.Where(_ => !(_ is IRangeIndex<IComparable, Int64>));
-            }
-
-            if (myIsVersioned)
-            {
-                result = result.Where(_ => _ is IVersionedIndex<IComparable, Int64, Int64>);
-            }
-            else
-            {
-                result = result.Where(_ => !(_ is IVersionedIndex<IComparable, Int64, Int64>));
-            }
-
-            //ASK: Should this throw an exception, if no index is available?
-            return result.First();
         }
 
 
