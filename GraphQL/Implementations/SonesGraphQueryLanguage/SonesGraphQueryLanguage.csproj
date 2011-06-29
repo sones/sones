@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -259,6 +259,9 @@
     <Compile Include="Structure\Nodes\Expressions\UnaryExpressionNode.cs" />
     <Compile Include="Structure\Nodes\Misc\AliasNode.cs" />
     <Compile Include="Structure\Nodes\Misc\ATypeNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\OptionsNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\KeyValuePairNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\KeyValueListNode.cs" />
     <Compile Include="Structure\Nodes\Misc\GraphDBTypeNode.cs" />
     <Compile Include="Structure\Helper\Definition\IDChainDefinition.cs" />
     <Compile Include="Structure\Nodes\Misc\IDNode.cs" />

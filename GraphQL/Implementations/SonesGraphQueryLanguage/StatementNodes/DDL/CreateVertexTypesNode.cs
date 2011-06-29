@@ -312,6 +312,11 @@ namespace sones.GraphQL.StatementNodes.DDL
             {
                 result.AddProperty(aIndexProperty.IndexAttribute.ContentString);
             }
+            
+            foreach (var aIndexOption in aIndex.Options)
+            {
+                result.AddOption(aIndexOption.Key, aIndexOption.Value);
+            }
 
             return result;
         }

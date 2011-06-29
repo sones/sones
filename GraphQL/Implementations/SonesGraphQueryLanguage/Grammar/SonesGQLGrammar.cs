@@ -664,11 +664,11 @@ namespace sones.GraphQL
 
             #endregion
 
-            var KeyValuePair = new NonTerminal("KeyValuePair");
-            NT_KeyValueList = new NonTerminal("ValueList");
+            var KeyValuePair = new NonTerminal("KeyValuePair", CreateKeyValuePairNode);
+            NT_KeyValueList = new NonTerminal("ValueList", CreateKeyValueListNode);
             var BooleanVal = new NonTerminal("BooleanVal");
             var Values = new NonTerminal("Values");
-            NT_Options = new NonTerminal("Options");
+            NT_Options = new NonTerminal("Options", CreateOptionsNode);
 
             var ListType = new NonTerminal("ListType");
             var ListParametersForExpression = new NonTerminal("ListParametersForExpression", typeof(ParametersNode));
@@ -1602,6 +1602,33 @@ namespace sones.GraphQL
             aBulkTypeListMemberNode.Init(context, parseNode);
 
             parseNode.AstNode = aBulkTypeListMemberNode;
+        }
+
+        private void CreateKeyValueListNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            KeyValueListNode aKeyValueListNode = new KeyValueListNode();
+
+            aKeyValueListNode.Init(context, parseNode);
+
+            parseNode.AstNode = aKeyValueListNode;
+        }
+
+        private void CreateOptionsNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            OptionsNode aOptionsNode = new OptionsNode();
+
+            aOptionsNode.Init(context, parseNode);
+
+            parseNode.AstNode = aOptionsNode;
+        }
+        
+        private void CreateKeyValuePairNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            KeyValuePairNode aKeyValuePairNode = new KeyValuePairNode();
+
+            aKeyValuePairNode.Init(context, parseNode);
+
+            parseNode.AstNode = aKeyValuePairNode;
         }
 
         private void CreateBulkTypeNode(ParsingContext context, ParseTreeNode parseNode)
