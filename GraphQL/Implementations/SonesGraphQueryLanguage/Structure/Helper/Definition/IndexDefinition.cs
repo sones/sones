@@ -54,14 +54,21 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             private set;
         }
 
+        public Dictionary<String, String> Options
+        {
+            get;
+            private set;
+        }
+
         #endregion
 
-        public IndexDefinition(string myIndexName, string myEdition, string myIndexType, List<IndexAttributeDefinition> myIndexAttributeDefinitions)
+        public IndexDefinition(string myIndexName, string myEdition, string myIndexType, List<IndexAttributeDefinition> myIndexAttributeDefinitions, Dictionary<String, String> myOptions)
         {
             IndexName = myIndexName;
             Edition = myEdition;
             IndexType = myIndexType;
             IndexAttributeDefinitions = myIndexAttributeDefinitions;
+            Options = myOptions;
         }
 
 

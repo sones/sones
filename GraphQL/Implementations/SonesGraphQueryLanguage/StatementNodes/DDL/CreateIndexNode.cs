@@ -46,6 +46,7 @@ namespace sones.GraphQL.StatementNodes.DDL
         String _DBType = null;
         List<IndexAttributeDefinition> _AttributeList = null;
         String _IndexType;
+        Dictionary<String, String> _options = null;
 
         public String Query;
 
@@ -96,6 +97,10 @@ namespace sones.GraphQL.StatementNodes.DDL
                     {
                         _IndexType = (child.AstNode as IndexTypeOptNode).IndexType;
                     }
+                    else if (child.AstNode is OptionsNode)
+                    {
+                        _options = (child.AstNode as OptionsNode).Options;
+                    }
 
                 }
                 childNum++;
@@ -118,16 +123,26 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            QueryResult qresult = null;
             Query = myQuery;
 
             var indexDef = new IndexPredefinition(_IndexName);
             indexDef.SetIndexType(_IndexType);
             indexDef.SetVertexType(_DBType);
             indexDef.SetEdition(_IndexEdition);
+            
+            //to be indices attributes
             foreach (var aIndexedProperty in _AttributeList)
             {
                 indexDef.AddProperty(aIndexedProperty.IndexAttribute.ContentString);
+            }
+
+            //options for the index
+            if (_options != null)
+            {
+                foreach (var aKV in _options)
+                {
+                    indexDef.AddOption(aKV.Key, aKV.Value);
+                }
             }
 
             return myGraphDB.CreateIndex<QueryResult>(mySecurityToken, myTransactionToken, new RequestCreateIndex(indexDef), GenerateResult);

@@ -313,6 +313,14 @@ namespace sones.GraphQL.StatementNodes.DDL
                 result.AddProperty(aIndexProperty.IndexAttribute.ContentString);
             }
 
+            if (aIndex.Options != null)
+            {
+                foreach (var aIndexOption in aIndex.Options)
+                {
+                    result.AddOption(aIndexOption.Key, aIndexOption.Value);
+                }
+            }
+
             return result;
         }
 

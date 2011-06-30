@@ -24,6 +24,7 @@ using Irony.Parsing;
 using sones.GraphQL.GQL.Structure.Helper.Definition;
 using System.Collections.Generic;
 using sones.Library.LanguageExtensions;
+using sones.GraphQL.Structure.Nodes.Misc;
 
 namespace sones.GraphQL.Structure.Nodes.DDL
 {
@@ -35,6 +36,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
         private String _Edition;
         private String _IndexType;
         private List<IndexAttributeDefinition> _IndexAttributeDefinitions { get; set; }
+        private Dictionary<String, String> _options;
 
         #endregion
 
@@ -79,6 +81,10 @@ namespace sones.GraphQL.Structure.Nodes.DDL
                         _IndexAttributeDefinitions = (child.AstNode as IndexAttributeListNode).IndexAttributes;
                     }
 
+                    else if (child.AstNode is OptionsNode)
+                    {
+                        _options = (child.AstNode as OptionsNode).Options;
+                    }
                 }
 
             }
@@ -93,7 +99,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 
             #endregion
 
-            IndexDefinition = new IndexDefinition(_IndexName, _Edition, _IndexType, _IndexAttributeDefinitions);
+            IndexDefinition = new IndexDefinition(_IndexName, _Edition, _IndexType, _IndexAttributeDefinitions, _options);
         }
 
         #endregion

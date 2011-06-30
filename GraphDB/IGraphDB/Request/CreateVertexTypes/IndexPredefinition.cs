@@ -43,11 +43,6 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         /// The options that will be passed to the index instance
         /// </summary>
         public Dictionary<String, Object> IndexOptions { get; private set; }
-        
-        /// <summary>
-        /// The options that will be passed to the index instance
-        /// </summary>
-        private Dictionary<String, Object> _indexOptions;
 
         /// <summary>
         /// Stores the names of the properties, that will be indexed.
@@ -87,18 +82,18 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         /// <returns>The updated IndexPredefinition</returns>
         public IndexPredefinition AddOption(String myOptionKey, Object myOptionValue)
         {
-            if (_indexOptions == null)
+            if (IndexOptions == null)
             {
-                _indexOptions = new Dictionary<string, object>();
+                IndexOptions = new Dictionary<string, object>();
             }
 
-            if (_indexOptions.ContainsKey(myOptionKey))
+            if (IndexOptions.ContainsKey(myOptionKey))
             {
-                _indexOptions[myOptionKey] = myOptionValue;
+                IndexOptions[myOptionKey] = myOptionValue;
             }
             else
             {
-                _indexOptions.Add(myOptionKey, myOptionValue);
+                IndexOptions.Add(myOptionKey, myOptionValue);
             }
 
             return this;
@@ -111,9 +106,9 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         /// <returns>The updated IndexPredefinition</returns>
         public IndexPredefinition AddOptions(Dictionary<String, Object> myOptions)
         {
-            if (_indexOptions == null)
+            if (IndexOptions == null)
             {
-                _indexOptions = new Dictionary<string, object>();
+                IndexOptions = new Dictionary<string, object>();
             }
 
             foreach (var aOption in myOptions)
