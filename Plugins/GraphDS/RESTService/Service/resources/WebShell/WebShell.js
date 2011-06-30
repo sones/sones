@@ -42,9 +42,7 @@
         //replace apostrophe
         query = query.replace(/´/g, "'");
         query = query.replace(/\"/g, "'");
-        
-      
-
+    
         //build the target URI
         var target = goosh.config.webservice_protocol + "://"
                + goosh.config.webservice_host
