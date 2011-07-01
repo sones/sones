@@ -20,6 +20,9 @@ using System.Net;
 /// This is an Example wich describes and shows the simplicity of setting up a GraphDB by using the sones GraphDB CommunityEdition.
 /// It shows you how to create your own Database by using the sones GraphDB C# API (using GraphDB Requests and the SonesQueryLanguage).
 /// 
+/// Please note the wiki Tutorial for further infomrations and descriptions under 
+///     --> http://developers.sones.de/wiki/doku.php?id=tutorials:tagexample
+/// 
 /// If you are using the SonesQueryLanguage please read our GQL CheatSheet 
 ///     --> https://github.com/downloads/sones/sones/GQL_cheatsheet_latest.pdf
 /// there you can find the description of all available statements and some additional examples.
