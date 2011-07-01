@@ -25,11 +25,11 @@ namespace SystemInformation
         /// <summary>
         /// This method returns a new instance of SystemInformation, dependend on the current platform or compile flags.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A SystemInformation object.</returns>
         private static SystemInformation CreateInstance()
         {
 #if __MonoCS__
-                return new MonoSystemInformation();
+            return new MonoSystemInformation();
 #else
             return new WindowsSystemInformation();
 #endif
