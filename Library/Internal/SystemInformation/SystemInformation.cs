@@ -23,7 +23,8 @@ namespace SystemInformation
         }
 
         /// <summary>
-        /// This method returns a new instance of SystemInformation, dependend on the current platform or compile flags.
+        /// This method returns a new instance of SystemInformation, 
+        /// depending on the current platform or compile flags.
         /// </summary>
         /// <returns>A SystemInformation object.</returns>
         private static SystemInformation CreateInstance()
