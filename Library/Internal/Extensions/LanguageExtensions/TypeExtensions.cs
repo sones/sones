@@ -36,7 +36,11 @@ namespace sones.LanguageExtensions
         /// <returns></returns>
         public static bool HasInterface(this Type myType, Type myInterfaceType)
         {
-
+            if (myType == myInterfaceType)
+            {
+                return true;
+            }
+            
             Type[] array = myType.FindInterfaces(
                 delegate(Type typeObj, Object criteriaObj)
                 {
