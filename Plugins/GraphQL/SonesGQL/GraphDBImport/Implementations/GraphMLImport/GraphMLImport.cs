@@ -558,7 +558,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
             var sourceID = ReadVertexID(myReader, GraphMLTokens.SOURCE);
             var targetID = ReadVertexID(myReader, GraphMLTokens.TARGET);
 			
-			if(sourceID ==100576000000)
+			if(100576000000 == sourceID)
 				Console.WriteLine ();
 			
 			if(!_Vertices.Contains(sourceID) || !_Vertices.Contains(targetID))
@@ -575,17 +575,12 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			
 			#region create edge (update vertex)
 			
-			var edgePreDefMulti = new EdgePredefinition(_EdgeTypeName);
-			
-			var edgePreDef = new EdgePredefinition();
+			var edgePreDef = new EdgePredefinition(_EdgeTypeName);
 			edgePreDef.AddVertexID(_VertexTypeName, targetID);
 			edgePreDef.AddStructuredProperty(GraphMLTokens.EDGE_WEIGHT, edgeWeight);
 			
-			edgePreDefMulti.AddEdge(edgePreDef);
-			
 			var requestUpdate = new RequestUpdate(new RequestGetVertices(_VertexTypeName, new List<long>() { sourceID }));
-			requestUpdate.UpdateEdge(edgePreDefMulti);
-				//AddElementsToCollection(_EdgeTypeName, edgePreDefMulti);
+			requestUpdate.AddElementsToCollection(_EdgeTypeName, edgePreDef);
 			
 			_GraphDB.Update<IEnumerable<IVertex>>(
 				_SecurityToken,
