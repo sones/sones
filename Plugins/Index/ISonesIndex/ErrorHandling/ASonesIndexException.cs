@@ -21,6 +21,7 @@
 #region Usings
 
 using sones.Library.ErrorHandling;
+using System;
 
 #endregion
 
@@ -28,5 +29,6 @@ namespace sones.Plugins.Index.ErrorHandling
 {
     public class ASonesIndexException : ASonesException
     {        
+        protected ASonesIndexException(Exception innerException = null) : base(innerException) { }
     }
 }
