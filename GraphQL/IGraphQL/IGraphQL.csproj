@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -135,10 +135,6 @@
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Library\Internal\DataStructures\DataStructures.csproj">
-      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
-      <Name>DataStructures</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
@@ -155,6 +151,14 @@
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
+      <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
+      <Name>ISonesIndex</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\DataStructures\DataStructures.csproj">
+      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
+      <Name>DataStructures</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\ISonesGQLAggregate\ISonesGQLAggregate.csproj">
       <Project>{B70DCE72-B636-442A-8825-F3BE78D86D34}</Project>
       <Name>ISonesGQLAggregate</Name>
@@ -162,10 +166,6 @@
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\ISonesGQLFunction\ISonesGQLFunction.csproj">
       <Project>{CDAE254B-77D9-4E59-9C07-C18F0085F570}</Project>
       <Name>ISonesGQLFunction</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
-      <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
-      <Name>ISonesIndex</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

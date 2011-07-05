@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DFC1BC4B-F865-48C6-B8E1-64644D410748}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>GraphMLImport</RootNamespace>
+    <AssemblyName>GraphMLImport</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="GraphMLImport.cs" />
+    <Compile Include="GraphMLTokens.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\Library\Internal\Commons\Commons.csproj">
+      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
+      <Name>Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\Library\Internal\DataStructures\DataStructures.csproj">
+      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
+      <Name>DataStructures</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
+      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
+      <Name>IGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
+      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
+      <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\GraphFS\Implementations\InMemoryNonRevisioned\InMemoryNonRevisioned.csproj">
+      <Project>{AB7C27CC-534F-472E-BA56-A1287973B7E2}</Project>
+      <Name>InMemoryNonRevisioned</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
+      <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
+      <Name>IPluginable</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IGraphDBImport\ISonesGraphDBImport.csproj">
+      <Project>{3B43C10E-28AE-42E5-9B9B-08F2B4153951}</Project>
+      <Name>ISonesGraphDBImport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

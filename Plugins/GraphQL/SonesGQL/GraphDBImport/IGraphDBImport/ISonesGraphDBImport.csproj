@@ -51,17 +51,9 @@
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
-      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
-      <Name>IGraphQL</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Library\Internal\DataStructures\DataStructures.csproj">
-      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
-      <Name>DataStructures</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
@@ -70,6 +62,14 @@
     <ProjectReference Include="..\..\..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
+      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
+      <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\DataStructures\DataStructures.csproj">
+      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
+      <Name>DataStructures</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
