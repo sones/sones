@@ -98,17 +98,19 @@ namespace sones.sonesGraphDBStarter
                     string dataPath = rootPath + Path.DirectorySeparatorChar + configuredLocation;
                     location = new Uri(@dataPath);
 
-                    if (!Directory.Exists(location.AbsolutePath))
-                    {
+                    //commented because if there is any folder inside the path wich contains a whitespace, 
+                    //it is misinterpreted by the system and leads to failures
+//                    if (!Directory.Exists(location.AbsolutePath))
+//                    {
                         
-#if __MonoCS__
-                        Syscall.mkdir(location.AbsolutePath, FilePermissions.ACCESSPERMS);
-#else
-                        Directory.CreateDirectory(location.AbsolutePath);
-                        Directory.SetAccessControl(location.AbsolutePath, new DirectorySecurity(location.AbsolutePath, AccessControlSections.All));
-#endif
+//#if __MonoCS__
+//                        Syscall.mkdir(location.AbsolutePath, FilePermissions.ACCESSPERMS);
+//#else
+//                        Directory.CreateDirectory(location.AbsolutePath);
+//                        Directory.SetAccessControl(location.AbsolutePath, new DirectorySecurity(location.AbsolutePath, AccessControlSections.All));
+//#endif
                         
-                    }
+//                    }
                 }
 
                 try
