@@ -76,7 +76,7 @@ namespace sones.Plugins.Index.Interfaces
         /// </summary>
         /// <param name="myKey">the key</param>
         /// <param name="myValues">the associated values</param>
-        /// <returns>true if the key and the associated balue exist, else false</returns>
+        /// <returns>true if the key and the associated set of values exist, else false</returns>
         bool Contains(TKey myKey, ISet<TValue> myValues);
 
         #endregion

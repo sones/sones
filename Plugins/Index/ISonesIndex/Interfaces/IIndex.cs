@@ -90,7 +90,7 @@ namespace sones.Plugins.Index.Interfaces
         /// </summary>
         /// <param name="myKey">the key</param>
         /// <param name="myValue">the associated value</param>
-        /// <returns>true if the key and the associated balue exist, else false</returns>
+        /// <returns>true if the key and the associated value exist, else false</returns>
         bool Contains(TKey myKey, TValue myValue);
 
         #endregion
