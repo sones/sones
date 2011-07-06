@@ -18,7 +18,7 @@ namespace SystemInformation
 
         public override ulong GetFreeSpaceForPath(string myPath)
         {
-            throw new NotImplementedException();
+            return ulong.MaxValue;
         }
 
         public override ulong GetAvailableMainMemory()

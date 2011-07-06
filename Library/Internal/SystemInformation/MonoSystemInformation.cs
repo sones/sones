@@ -10,26 +10,22 @@ namespace SystemInformation
     internal class MonoSystemInformation: SystemInformation
     {
 
-        private ComputerInfo _info;
-
-        internal protected MonoSystemInformation()
-        {
-            _info = new ComputerInfo();
-        }
 
         public override ulong GetFreeSpaceForPath(string myPath)
         {
-            throw new NotImplementedException();
+            return ulong.MaxValue;
         }
 
         public override ulong GetAvailableMainMemory()
         {
-            return _info.AvailablePhysicalMemory;
+            //an estimation
+            return GetTotalMainMemory() - GetMainMemoryConsumption();
         }
 
         public override ulong GetTotalMainMemory()
         {
-            return _info.TotalPhysicalMemory;
+            var pc = new PerformanceCounter("Mono Memory", "Total Physical Memory");
+            return (ulong)pc.RawValue;
         }
 
         public override ulong GetMainMemoryConsumption()
