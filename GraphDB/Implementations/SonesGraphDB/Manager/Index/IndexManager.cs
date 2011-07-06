@@ -540,8 +540,10 @@ namespace sones.GraphDB.Manager.Index
                     else
                     {
                         //no edition
-                        ProcessDropIndex(indexDefinitions.Where(_ => _.SourceIndex == null && _.IndexTypeName == myDropIndexRequest.IndexName), vertexType, mySecurityToken, myTransactionToken);
+                        ProcessDropIndex(indexDefinitions.Where(_ => _.SourceIndex == null && _.Name == myDropIndexRequest.IndexName), vertexType, mySecurityToken, myTransactionToken);
                     }
+
+                    _vertexTypeManager.ExecuteManager.CleanUpTypes();
                 }
             }
         }
