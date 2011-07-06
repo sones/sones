@@ -253,6 +253,15 @@ namespace sones.GraphQL.StatementNodes.DDL
 
             result.SetEdition(aIndex.Edition);
 
+            //options for the index
+            if (aIndex.Options != null)
+            {
+                foreach (var aKV in aIndex.Options)
+                {
+                    result.AddOption(aKV.Key, aKV.Value);
+                }
+            }
+
             foreach (var aIndexProperty in aIndex.IndexAttributeDefinitions)
             {
                 result.AddProperty(aIndexProperty.IndexAttribute.ContentString);
