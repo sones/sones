@@ -1,21 +1,21 @@
 using System;
-using sones.Plugins.SonesGQL.DBImport;
-using sones.GraphQL.Result;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Xml;
 using sones.GraphDB;
+using sones.GraphDB.Request;
 using sones.GraphQL;
+using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.DataStructures;
-using sones.Library.VersionedPluginManager;
-using System.Collections.Generic;
-using System.Xml;
-using sones.GraphDB.Request;
-using sones.Library.PropertyHyperGraph;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Globalization;
-using System.Diagnostics;
 using sones.Library.ErrorHandling;
+using sones.Library.PropertyHyperGraph;
+using sones.Library.VersionedPluginManager;
+using sones.Plugins.SonesGQL.DBImport;
 
 namespace sones.Plugins.SonesGQL.GraphMLImport
 {
@@ -25,10 +25,10 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
     /// GraphML description can be found here: http://graphml.graphdrawing.org/primer/graphml-primer.html
     /// 
     /// implemented:
-    /// + attribute definition
+    /// + attribute definition parsing
     /// + vertex parsing
     /// + edge parsing
-    /// + attribute parsing
+    /// + (vertex/edge)attribute parsing
     /// 
     /// not implemented:
     /// - hyperedges
@@ -37,6 +37,27 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
     /// - xml header stuff
     /// - ports
     /// - extends
+    /// 
+    /// supported attribute types:
+    /// - String
+    /// - Int
+    /// - Float
+    /// - Double
+    /// - Boolean
+    /// - Long
+    /// 
+    /// Notes:
+    /// 
+    /// 1) The GraphDB only accepts ID values in long format. If the given IDs contain any
+    /// non-numerical characters they will be removed and only the contained numbers
+    /// will be used as an ID. If there are no numerical chars included in the id string 
+    /// an exception will be thrown.
+    /// 
+    /// 2) Currently the parser only supports one attribute at edges: "weight". If you
+    /// want to use weighted edges, the attr.name has to be "weight" or the parser will
+    /// ignore it.
+    /// 
+    /// 3) fell free to add more functionality :)
     /// 
     /// author:         Martin Junghanns (martin@sones.com)
     /// copyright (C):  2007-2011 sones GmbH (www.sones.com)
@@ -139,6 +160,15 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		
 		#region constructors
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="sones.Plugins.SonesGQL.GraphMLImport.GraphMLImport"/> class.
+		/// </summary>
+		/// <param name='myVertexTypeName'>
+		/// Name of the VertexType to be used for storing imported vertices.
+		/// </param>
+		/// <param name='myEdgeTypeName'>
+		/// Name of the edge to declare imported edges.
+		/// </param>
 		public GraphMLImport (String myVertexTypeName, String myEdgeTypeName)
 		{
 			_VertexTypeName 		= myVertexTypeName;
@@ -268,7 +298,13 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			
 			return new QueryResult("", ImportFormat, (ulong)sw.ElapsedMilliseconds, ResultType.Successful, null, null);
 		}
-
+		
+		/// <summary>
+		/// Returns the import format.
+		/// </summary>
+		/// <value>
+		/// The import format.
+		/// </value>
 		public string ImportFormat 
 		{
 			get { return "GRAPHML"; }
@@ -336,7 +372,13 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		{
 			get { return "sones.graphmlimport"; }
 		}
-
+		
+		/// <summary>
+		/// Returns the setable parameters for this plugin.
+		/// </summary>
+		/// <value>
+		/// The setable parameters.
+		/// </value>
 		public PluginParameters<Type> SetableParameters 
 		{
 			get 
@@ -373,8 +415,9 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			var vertexTypePreDef 	= new VertexTypePredefinition(_VertexTypeName);
 			var outEdgePreDef 		= new OutgoingEdgePredefinition(_EdgeTypeName);
 			
-			// weighted edge
+			// weighted multi-edge
 			outEdgePreDef.SetEdgeTypeAsWeighted();
+			// set inner edge type to weighted
 			outEdgePreDef.SetMultiplicityAsMultiEdge("Weighted");
 			// set type of vertices at edges
 			outEdgePreDef.SetAttributeType(vertexTypePreDef);
@@ -401,13 +444,13 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		/// </param>
 		private void ReadVertex(XmlReader myReader)
 		{
-			#region vertex info
+			#region VertexID
 			
             var vertexID = ReadVertexID(myReader, GraphMLTokens.ID);
 			
             #endregion
 
-            #region vertex attributes
+            #region Read Attributes and insert vertex into GraphDB
 			
 			InsertVertex(myReader, vertexID);
 
@@ -415,16 +458,16 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		}
 		
 		/// <summary>
-		/// Reads the vertexID from the GraphML File
+		/// Reads the vertexID from the GraphML File.
 		/// 
-		/// GraphDB only acceps long values as ID.
+		/// GraphDB only accepts IDs of type 'long' as ID
 		/// 
 		/// If the id contains any non-numeric characters,
 		/// the method will try to extract all numbers and
 		/// use this as value.
 		/// 
-		/// If the ID doesn't contain any numbers, an
-		/// exception will be thrown.
+		/// If the ID doesn't contain any numbers or there is
+		/// a duplicate id, exceptions will be thrown.
 		/// </summary>
 		/// <returns>
 		/// The vertex ID.
@@ -457,7 +500,9 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 				return res;	
 			} else
 			{
-				throw new ArgumentException("ID format in graphml file was invalid: {0}", vertexIDString);
+				throw new ArgumentException(String.Format(
+					"ID format in graphml file was invalid: {0}", 
+					vertexIDString));
 			}
 		}
 		
@@ -550,16 +595,22 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		
 		#region edge stuff
 		
+		/// <summary>
+		/// Reads an edge information from the GraphML File and inserts
+		/// the edge in the GraphDB by altering the existing source vertex.
+		/// 
+		/// Currently only the "weight" attribute will be considered and
+		/// has to be annotated correctly (see class documentation).
+		/// </summary>
+		/// <param name='myReader'>
+		/// XmlReader
+		/// </param>
 		private void ReadEdge(XmlReader myReader)
 		{
 			#region read edge data
 			
-			
             var sourceID = ReadVertexID(myReader, GraphMLTokens.SOURCE);
             var targetID = ReadVertexID(myReader, GraphMLTokens.TARGET);
-			
-			if(100576000000 == sourceID)
-				Console.WriteLine ();
 			
 			if(!_Vertices.Contains(sourceID) || !_Vertices.Contains(targetID))
 			{
@@ -569,6 +620,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 					targetID));
 			}
 			
+			// get the weight
 			var edgeWeight = ReadEdgeWeight(myReader);
 			
 			#endregion
@@ -582,6 +634,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			var requestUpdate = new RequestUpdate(new RequestGetVertices(_VertexTypeName, new List<long>() { sourceID }));
 			requestUpdate.AddElementsToCollection(_EdgeTypeName, edgePreDef);
 			
+			// process the update
 			_GraphDB.Update<IEnumerable<IVertex>>(
 				_SecurityToken,
 				_TransactionToken,
@@ -595,13 +648,16 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		}
 		
 		/// <summary>
-		/// Reads the edge weight from the data field of an edge definition
+		/// Reads the edge weight from the data field of an edge definition.
+		/// 
+		/// The attribute name must be equal to the value in 
+		/// GraphMLTokens.EDGE_WEIGHT or it won't be considered by the parsing.
 		/// </summary>
 		/// <returns>
 		/// The edge weight or the default edge weight if no weight is defined.
 		/// </returns>
 		/// <param name='myReader'>
-		/// My reader.
+		/// XmlReader
 		/// </param>
 		private double ReadEdgeWeight(XmlReader myReader)
 		{
@@ -649,7 +705,8 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		#region attribute [definitions]
 		
 		/// <summary>
-		/// Reads the attribute definitions.
+		/// Reads an attribute definition from the GraphML File and stores
+		/// it internal for later usage on vertex / edge reading.
 		/// </summary>
 		/// <param name='myReader'>
 		/// XmlReader
@@ -660,7 +717,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			
             var attrId 		= myReader.GetAttribute(GraphMLTokens.ID);
             var attrFor 	= myReader.GetAttribute(GraphMLTokens.FOR);
-            var attrName 	= myReader.GetAttribute(GraphMLTokens.ATTRIBUTE_NAME);
+            var attrName 	= myReader.GetAttribute(GraphMLTokens.ATTRIBUTE_NAME).ToLower();
             var attrType 	= myReader.GetAttribute(GraphMLTokens.ATTRIBUTE_TYPE).ToLower();
 
             string attrDefault = null;
@@ -678,12 +735,12 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			
 			// make attribute type DB conform (capitalize first letter)
 			attrType = char.ToUpper(attrType[0]) + attrType.Substring(1).ToLower();
-
+			// and store the whole definition
             _AttributeDefinitions.Add(attrId, new Tuple<string, string, string, string>(attrFor, attrName, attrType, attrDefault));
 			
 			#endregion
 			
-			#region alter vertexType
+			#region alter vertex type with new attribute
 			
 			if(attrFor.Equals(GraphMLTokens.VERTEX))
 			{
@@ -710,18 +767,18 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		#region helper
 		
 		/// <summary>
-		/// Casts the given value to the given type.
+		/// Parses the given string value to the given type.
 		/// 
-		/// The Type must implement IComparable
+		/// The type must implement IComparable!
 		/// </summary>
 		/// <returns>
-		/// The parsed value value.
+		/// The parsed value.
 		/// </returns>
 		/// <param name='myType'>
-		/// My type.
+		/// The type whose Parse() method will be used.
 		/// </param>
 		/// <param name='myValue'>
-		/// My value.
+		/// The value as string.
 		/// </param>
 		private IComparable ParseValue(String myType, String myValue)
         {
