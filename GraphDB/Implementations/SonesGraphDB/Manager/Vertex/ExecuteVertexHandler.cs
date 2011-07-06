@@ -960,10 +960,9 @@ namespace sones.GraphDB.Manager.Vertex
                     }
                 }
 
-                IEnumerable<String> updatedNames = myUpdate.UpdatedStructuredProperties != null ? myUpdate.UpdatedStructuredProperties.Select(kv => kv.Key) : Enumerable.Empty<String>();
-
+           
                 //force execution
-                return ExecuteUpdates(updatedNames, groupedByTypeID, updates, myTransaction, mySecurity);
+                return ExecuteUpdates(groupedByTypeID, updates, myTransaction, mySecurity);
 
             }
 
@@ -971,22 +970,27 @@ namespace sones.GraphDB.Manager.Vertex
 
         }
 
-        private IEnumerable<IVertex> ExecuteUpdates(IEnumerable<String> myChangedProperties, IEnumerable<IGrouping<long, IVertex>> groups, Dictionary<IVertex, Tuple<long?, string, VertexUpdateDefinition>> updates, TransactionToken myTransaction, SecurityToken mySecurity)
+        private IEnumerable<IVertex> ExecuteUpdates(IEnumerable<IGrouping<long, IVertex>> groups, Dictionary<IVertex, Tuple<long?, string, VertexUpdateDefinition>> updates, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             List<IVertex> result = new List<IVertex>();
             foreach (var group in groups)
-            {
+            {                
                 var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(group.Key, myTransaction, mySecurity);
 
                 var indexedProps = vertexType.GetIndexDefinitions(false).Select(_ => _.IndexedProperties);
                 var indices = indexedProps.ToDictionary(_ => _, _ => _indexManager.GetIndices(vertexType, _, mySecurity, myTransaction));
-                                                                            //_ => ));
-                var neededPropNames = indexedProps.SelectMany(_=>_).Select(_=>_.Name).Distinct().Intersect(myChangedProperties);
+
+                var updateVertex = updates[group.First()];
+                
+                var myChangedProperties = (updateVertex.Item3.UpdatedStructuredProperties != null && updateVertex.Item3.UpdatedStructuredProperties.Updated != null) 
+                    ? updateVertex.Item3.UpdatedStructuredProperties.Updated.Select(_ => vertexType.GetPropertyDefinition(_.Key).Name) : Enumerable.Empty<String>();
+
+                var neededPropNames = indexedProps.SelectMany(_ => _).Select(_ => _.Name).Distinct().Intersect(myChangedProperties);
 
                 foreach (var vertex in group)
                 {
                     var update = updates[vertex];
-
+                    
                     if (neededPropNames.CountIsGreater(0))
                     {
                         var structured = GetStructuredFromVertex(vertex, vertexType, neededPropNames);
