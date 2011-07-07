@@ -23,6 +23,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphQL.GQL.Structure.Helper.Definition;
 using sones.GraphQL.GQL.Structure.Nodes.DML;
+using sones.GraphQL.Structure.Nodes.Misc;
 
 namespace sones.GraphQL.Structure.Nodes.DML
 {
@@ -45,15 +46,16 @@ namespace sones.GraphQL.Structure.Nodes.DML
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            string type = parseNode.ChildNodes[1].ChildNodes[0].Token.ValueString;
-            string indexName = parseNode.ChildNodes[1].ChildNodes[1].Token.ValueString;
-            string edition = null;
-            if (parseNode.ChildNodes[2].ChildNodes != null && parseNode.ChildNodes[2].ChildNodes.Count != 0)
+            String vertexType = ((ATypeNode)parseNode.ChildNodes[1].AstNode).ReferenceAndType.TypeName;
+            String indexName = parseNode.ChildNodes[2].ChildNodes.Count > 0 ? parseNode.ChildNodes[2].ChildNodes[0].Token.ValueString : String.Empty;
+            String edition = String.Empty;
+
+            if (parseNode.ChildNodes[3].ChildNodes.Count > 0)
             {
-                edition = parseNode.ChildNodes[2].ChildNodes[0].Token.ValueString;
+                edition = parseNode.ChildNodes[3].ChildNodes[1].Token.ValueString;
             }
 
-            _DescribeIndexDefinition = new DescribeIndexDefinition(type, indexName, edition);
+            _DescribeIndexDefinition = new DescribeIndexDefinition(vertexType, indexName, edition);
         }
 
         #endregion

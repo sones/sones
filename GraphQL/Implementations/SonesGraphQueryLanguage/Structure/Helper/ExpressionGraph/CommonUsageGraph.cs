@@ -415,7 +415,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         public override void AddNode(IVertex myIVertex, LevelKey myLevelKey, int backwardResolution)
         {
-            AddNodeIfValid(myIVertex, myLevelKey, 0, GenerateVertexInfoFromLevelKeyAndVertexID(myIVertex.VertexTypeID, myIVertex.VertexID), backwardResolution);
+			if(myIVertex == null)
+			{
+				// TODO: This method expects myIVertex to be not NULL, hence an ArgumentNullException should be thrown and the callers of this method
+				//       should take care for not calling this method and passing NULL
+				return;
+			}
+
+			AddNodeIfValid(myIVertex, myLevelKey, 0, GenerateVertexInfoFromLevelKeyAndVertexID(myIVertex.VertexTypeID, myIVertex.VertexID), backwardResolution);
         }
 
         public override void AddNode(IVertex myIVertex, LevelKey myLevelKey)
