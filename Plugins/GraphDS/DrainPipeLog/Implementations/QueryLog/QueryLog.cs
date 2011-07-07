@@ -246,6 +246,11 @@ namespace QueryLog
             throw new NotImplementedException();
         }
 
+        public TResult DescribeIndices<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndicesResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
         public TResult GetVertexCount<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexCount myRequestGetVertexCount, Converter.GetVertexCountResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();

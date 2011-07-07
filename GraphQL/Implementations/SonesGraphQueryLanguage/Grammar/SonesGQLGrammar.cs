@@ -1380,7 +1380,7 @@ namespace sones.GraphQL
             DescrFunctionsStmt.Rule = S_FUNCTIONS;
 
             //                            User        [IndexName]             [EDITION default]
-            DescrIdxStmt.Rule = S_INDEX + Id_simple + DescrDedicatedIdxStmt + DescrIdxEdtStmt;
+            DescrIdxStmt.Rule = S_INDEX + NT_VertexType + DescrDedicatedIdxStmt + DescrIdxEdtStmt;
 
             DescrDedicatedIdxStmt.Rule = Empty | Id_simple;
 

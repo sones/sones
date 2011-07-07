@@ -46,7 +46,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
         #region Ctor
 
-        public DescribeIndexDefinition(String myTypeName, string myIndexName, String myIndexEdition)
+        public DescribeIndexDefinition(String myTypeName, String myIndexName, String myIndexEdition)
         {
             _TypeName = myTypeName;
             _IndexName = myIndexName;
@@ -63,14 +63,23 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                                                 SecurityToken mySecurityToken,
                                                 TransactionToken myTransactionToken)
         {
-            var resultingVertices = new List<IVertexView>();
+            IEnumerable<IVertexView> resultingVertices = new List<IVertexView>();
             ASonesException error = null;
 
             #region Specific index
 
             var request = new RequestDescribeIndex(_TypeName, _IndexName, _IndexEdition);
-            
-            var indices = myGraphDB.DescribeIndex<IEnumerable<IIndexDefinition>>(mySecurityToken, myTransactionToken, request, (stats, definitions) => definitions);
+
+            IEnumerable<IIndexDefinition> indices = null;
+
+            if (request.IndexName == String.Empty && request.TypeName == String.Empty && request.Edition == String.Empty)
+            {
+                indices = myGraphDB.DescribeIndices<IEnumerable<IIndexDefinition>>(mySecurityToken, myTransactionToken, request, (stats, definitions) => definitions);                
+            }
+            else
+            {
+                indices = myGraphDB.DescribeIndex<IEnumerable<IIndexDefinition>>(mySecurityToken, myTransactionToken, request, (stats, definitions) => definitions);
+            }
 
             if (indices == null)
             {
@@ -82,7 +91,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 //_IndexEdition = DBConstants.DEFAULTINDEX;
             }
 
-            resultingVertices = new List<IVertexView>() { GenerateOutput(indices, _IndexName) };
+            resultingVertices = GenerateOutput(indices, _IndexName);
 
             #endregion
 
@@ -100,30 +109,35 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <param name="myIndex">The index</param>
         /// <param name="myName">The index name</param>
         /// <returns>List of readouts which contain the index information</returns>
-        private IVertexView GenerateOutput(IEnumerable<IIndexDefinition> myIndices, String myName)
+        private IEnumerable<IVertexView> GenerateOutput(IEnumerable<IIndexDefinition> myIndices, String myName)
         {
 
             var _Index = new Dictionary<String, Object>();
-            var _Prop = new Dictionary<String, Object>();
+            var result = new List<IVertexView>();
 
             foreach (var index in myIndices)
             {
 
-                _Index.Add("Name", myName);
+                _Index.Add("Name", index.Name);
                 _Index.Add("ID", index.ID);
                 _Index.Add("Edition", index.Edition);
                 _Index.Add("IndexTypeName", index.IndexTypeName);
                 _Index.Add("IsUserDefinied", index.IsUserdefined);
 
                 ListCollectionWrapper list = new ListCollectionWrapper();
+
                 foreach (var prop in index.IndexedProperties)
+                {
                     list.Add(prop.Name);
+                }
 
                 _Index.Add("IndexedProperties", list);
-
+                
+                result.Add(new VertexView(new Dictionary<String, Object>(_Index), new Dictionary<String, IEdgeView>()));
+                _Index.Clear();
             }
 
-            return new VertexView(_Index, new Dictionary<String, IEdgeView>());
+            return result;
         }
 
         #endregion

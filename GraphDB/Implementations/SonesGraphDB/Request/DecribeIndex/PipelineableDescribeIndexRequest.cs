@@ -49,7 +49,7 @@ namespace sones.GraphDB.Request.DecribeIndex
         #region Constructor
 
         /// <summary>
-        /// Creates a new pipelineable get edge type request
+        /// Creates a new pipelineable get index request
         /// </summary>
         /// <param name="myGetEdgeTypeRequest">The get edge type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
@@ -69,7 +69,7 @@ namespace sones.GraphDB.Request.DecribeIndex
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            //TODO
+            myMetaManager.VertexTypeManager.CheckManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)

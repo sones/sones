@@ -209,6 +209,11 @@ namespace sones.GraphDS.GraphDSRESTClient
             throw new NotImplementedException();
         }
 
+        public TResult DescribeIndices<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndicesResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
         public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexType myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();

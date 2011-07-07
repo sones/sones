@@ -112,6 +112,14 @@ namespace sones.GraphDB.Manager.Index
         IEnumerable<IIndexDefinition> DescribeIndex(String myTypeName, String myIndexName, String myEdition, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
 
         /// <summary>
+        /// Return all indices.
+        /// </summary>
+        /// <param name="myTransactionToken">The transaction token.</param>
+        /// <param name="mySecurityToken">The security token.</param>
+        /// <returns></returns>
+        IEnumerable<IIndexDefinition> DescribeIndices(TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+
+        /// <summary>
         /// Rebuild the indices
         /// </summary>
         /// <param name="myVertexTypeID">The corresponding vertex type id</param>
