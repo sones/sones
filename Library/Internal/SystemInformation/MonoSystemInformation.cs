@@ -2,24 +2,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.VisualBasic.Devices;
+using System.Diagnostics;
 
 namespace SystemInformation
 {
     internal class MonoSystemInformation: SystemInformation
     {
-        public override long GetFreeSpaceForPath(string myPath)
+
+
+        public override ulong GetFreeSpaceForPath(string myPath)
         {
-            throw new NotImplementedException();
+            return ulong.MaxValue;
         }
 
-        public override long GetAvailableMainMemory()
+        public override ulong GetAvailableMainMemory()
         {
-            throw new NotImplementedException();
+            //an estimation
+            return GetTotalMainMemory() - GetMainMemoryConsumption();
         }
 
-        public override long GetTotalMainMemory()
+        public override ulong GetTotalMainMemory()
         {
-            throw new NotImplementedException();
+            var pc = new PerformanceCounter("Mono Memory", "Total Physical Memory");
+            return (ulong)pc.RawValue;
+        }
+
+        public override ulong GetMainMemoryConsumption()
+        {
+            Process.GetCurrentProcess().Refresh();
+            return (ulong)Process.GetCurrentProcess().WorkingSet64;
         }
     }
 }

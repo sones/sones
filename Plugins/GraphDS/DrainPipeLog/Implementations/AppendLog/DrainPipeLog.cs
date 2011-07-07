@@ -349,6 +349,11 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             throw new NotImplementedException();
         }
 
+        public TResult DescribeIndices<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndicesResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
         public TResult Update<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestUpdate myRequestUpdate, Converter.UpdateResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();

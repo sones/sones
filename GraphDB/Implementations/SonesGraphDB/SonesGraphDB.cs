@@ -446,6 +446,20 @@ namespace sones.GraphDB
 
         #endregion
 
+        #region Describe Indices
+
+        public TResult DescribeIndices<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndicesResultConverter<TResult> myOutputconverter)
+        {
+            var executedRequest = _requestManager.SynchronExecution(new PipelineableDescribeIndicesRequest(myRequestDescribeIndex,
+                                                                                        mySecurityToken,
+                                                                                        myTransactionToken));
+
+            return ((PipelineableDescribeIndicesRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+        }
+
+
+        #endregion
+
         #region Update
 
         public TResult Update<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestUpdate myRequestUpdate, Converter.UpdateResultConverter<TResult> myOutputconverter)

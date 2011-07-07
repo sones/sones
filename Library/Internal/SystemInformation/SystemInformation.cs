@@ -48,28 +48,25 @@ namespace SystemInformation
         /// <exception cref="ArgumentException">
         /// If the directory is not valid or can not be read because of missing rights.
         /// </exception>
-        public abstract long GetFreeSpaceForPath(String myPath);
+        public abstract ulong GetFreeSpaceForPath(String myPath);
 
         /// <summary>
         /// Returns the available free space for the main memory.
         /// </summary>
         /// <returns>The available free Bytes in main memory.</returns>
-        public abstract long GetAvailableMainMemory();
+        public abstract ulong GetAvailableMainMemory();
 
         /// <summary>
         /// Returns the total space for the main memory.
         /// </summary>
         /// <returns>The total space in Bytes for main memory.</returns>
-        public abstract long GetTotalMainMemory();
+        public abstract ulong GetTotalMainMemory();
 
         /// <summary>
         /// Returns the size of memory consumption for the current program.
         /// </summary>
         /// <returns>The size in Bytes this program comsumes.</returns>
-        public long GetMainMemoryConsumption()
-        {
-            return GetTotalMainMemory() - GetAvailableMainMemory();
-        }
+        public abstract ulong GetMainMemoryConsumption();
 
         #endregion
     }

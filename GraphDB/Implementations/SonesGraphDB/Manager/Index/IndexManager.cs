@@ -42,6 +42,7 @@ using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Settings;
 using sones.Library.Settings;
 
+
 namespace sones.GraphDB.Manager.Index
 {
     /// <summary>
@@ -312,6 +313,20 @@ namespace sones.GraphDB.Manager.Index
             }
         }
 
+        public IEnumerable<IIndexDefinition> DescribeIndices(TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {   
+            var vertexTypes = _vertexTypeManager.ExecuteManager.GetAllVertexTypes(myTransactionToken, mySecurityToken);
+
+            foreach (var type in vertexTypes)
+            {
+                foreach (var idx in type.GetIndexDefinitions(false))
+                {
+                    yield return idx;
+                }
+            }
+
+            yield break;
+        }
 
         public IEnumerable<IIndexDefinition> DescribeIndex(String myTypeName, String myIndexName, String myEdition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
@@ -540,8 +555,10 @@ namespace sones.GraphDB.Manager.Index
                     else
                     {
                         //no edition
-                        ProcessDropIndex(indexDefinitions.Where(_ => _.SourceIndex == null && _.IndexTypeName == myDropIndexRequest.IndexName), vertexType, mySecurityToken, myTransactionToken);
+                        ProcessDropIndex(indexDefinitions.Where(_ => _.SourceIndex == null && _.Name == myDropIndexRequest.IndexName), vertexType, mySecurityToken, myTransactionToken);
                     }
+
+                    _vertexTypeManager.ExecuteManager.CleanUpTypes();
                 }
             }
         }

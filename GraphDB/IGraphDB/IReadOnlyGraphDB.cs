@@ -167,6 +167,21 @@ namespace sones.GraphDB
                                             TransactionToken myTransactionToken,
                                             RequestDescribeIndex myRequestDescribeIndex,
                                             Converter.DescribeIndexResultConverter<TResult> myOutputconverter);
+
+        
+        /// <summary>
+        /// Gets the index definitions of all types.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myRequestDescribeIndex">The request to get the index definitions</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>        
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>        
+        TResult DescribeIndices<TResult>(   SecurityToken mySecurityToken,
+                                            TransactionToken myTransactionToken,
+                                            RequestDescribeIndex myRequestDescribeIndex,
+                                            Converter.DescribeIndicesResultConverter<TResult> myOutputconverter);
         
         #endregion
 
