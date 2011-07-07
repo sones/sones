@@ -884,6 +884,9 @@ namespace sones.GraphDB.Manager.Vertex
         {
             var entry = CreateIndexEntry(aIndexDefinition.IndexedProperties, aVertex.GetAllProperties().ToDictionary(key => key.Item1, value => value.Item2));
 
+			if(entry == null)
+				return;
+
             foreach (var iIndex in myIndices)
             {
                 if (iIndex is IMultipleValueIndex<IComparable, long>)
@@ -1023,14 +1026,17 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     var entry = CreateIndexEntry(indexGroup.Key, structured);
 
-                    if (index is ISingleValueIndex<IComparable, long>)
+					if(entry == null)
+						continue;
+
+					if (index is ISingleValueIndex<IComparable, long>)
                     {
-                        (index as ISingleValueIndex<IComparable, long>).Add(entry, id);
+						(index as ISingleValueIndex<IComparable, long>).Add(entry, id);
                     }
                     else if (index is IMultipleValueIndex<IComparable, long>)
                     {
-                        //Ask: Why do I need to create a hashset for a single value??? *aaarghhh*
-                        (index as IMultipleValueIndex<IComparable, long>).Add(entry, new HashSet<long>(new[] {id}));
+						//Ask: Why do I need to create a hashset for a single value??? *aaarghhh*
+						(index as IMultipleValueIndex<IComparable, long>).Add(entry, new HashSet<long>(new[] { id }));
                     }
                     else
                         throw new NotImplementedException("Other index types are not known.");
