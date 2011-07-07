@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualBasic.Devices;
 using System.Diagnostics;
+using Microsoft.VisualBasic.Devices;
 
-namespace SystemInformation
+namespace sones.Library.SystemInformation
 {
-    internal class MonoSystemInformation: SystemInformation
+    internal sealed class WindowsSystemInformation: SystemInformation
     {
+        private ComputerInfo _info;
 
+        internal protected WindowsSystemInformation()
+        {
+            _info = new ComputerInfo();
+        }
 
         public override ulong GetFreeSpaceForPath(string myPath)
         {
@@ -18,14 +23,12 @@ namespace SystemInformation
 
         public override ulong GetAvailableMainMemory()
         {
-            //an estimation
-            return GetTotalMainMemory() - GetMainMemoryConsumption();
+            return _info.AvailablePhysicalMemory;
         }
 
         public override ulong GetTotalMainMemory()
         {
-            var pc = new PerformanceCounter("Mono Memory", "Total Physical Memory");
-            return (ulong)pc.RawValue;
+            return _info.TotalPhysicalMemory;
         }
 
         public override ulong GetMainMemoryConsumption()

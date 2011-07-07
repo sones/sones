@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SystemInformation
+namespace sones.Library.SystemInformation
 {
     public abstract class SystemInformation
     {
