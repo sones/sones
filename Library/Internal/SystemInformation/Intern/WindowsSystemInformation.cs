@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using Microsoft.VisualBasic.Devices;
 
-namespace sones.Library.SystemInformation
+namespace sones.Library.SystemInformation.Intern
 {
     internal sealed class WindowsSystemInformation: SystemInformation
     {
