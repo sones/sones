@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using sones.GraphDB;
 using sones.GraphDB.Request;
 using sones.GraphDB.Request.CreateVertexTypes;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDS;
+using sones.GraphDSServer;
 using sones.GraphQL;
-using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
-using sones.GraphDS;
-using sones.Library.VersionedPluginManager;
-using sones.GraphDSServer;
-using sones.GraphDS.PluginManager;
-using System.Net;
+using sones.GraphQL.Result;
 
 /// <summary>
 /// This is an Example wich describes and shows the simplicity of setting up a GraphDB by using the sones GraphDB CommunityEdition.
@@ -59,26 +57,10 @@ namespace TagExample
             //Make a new GraphDB instance
             GraphDB = new SonesGraphDB();
             
-            #region Configure PlugIns
-            // Plugins are loaded by the GraphDS with their according PluginDefinition and only if they are listed
-            // below - there is no auto-discovery for plugin types in GraphDS (!)
-
-            #region Query Languages
-            // the GQL Query Language Plugin needs the GraphDB instance as a parameter
-            List<PluginDefinition> QueryLanguages = new List<PluginDefinition>();
-            Dictionary<string, object> GQL_Parameters = new Dictionary<string, object>();
-            GQL_Parameters.Add("GraphDB", GraphDB);
-
-            QueryLanguages.Add(new PluginDefinition("sones.gql", GQL_Parameters));
-            #endregion
-
-            #endregion
-
-            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(null, QueryLanguages);
-
             var credentials = new UserPasswordCredentials("User", "test");
 
-            GraphDSServer = new GraphDS_Server(GraphDB, (ushort)9975, "User", "test", IPAddress.Any, PluginsAndParameters);
+            //GraphDSServer = new GraphDS_Server(GraphDB, (ushort)9975, "User", "test", IPAddress.Any, PluginsAndParameters);
+            GraphDSServer = new GraphDS_Server(GraphDB, (ushort)9975, "User", "test", IPAddress.Any);
             GraphDSServer.LogOn(credentials);
             //GraphDSServer.StartRESTService("", Properties.Settings.Default.ListeningPort, IPAddress.Any);
 
@@ -326,6 +308,7 @@ namespace TagExample
         /// </summary>
         private void GraphQLQueries()
         {
+            #region create types
             //create types at the same time, because of the circular dependencies (Tag has OutgoingEdge to Website, Website has IncomingEdge from Tag)
             //like shown before, using the GraphQL there are also three different ways to create create an index on property "Name" of type "Website"
             //1. create an index definition and specifie the property name and index type
@@ -342,6 +325,7 @@ namespace TagExample
             //                                                                    Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags)");
             //var MyIndex = GraphQL.Query(SecToken, TransToken, "CREATE INDEX MyIndex ON VERTEX TYPE Website (Name) INDEXTYPE MultipleValueIndex");            
             CheckResult(Types);
+            #endregion
 
             #region create instances of type "Website"
 

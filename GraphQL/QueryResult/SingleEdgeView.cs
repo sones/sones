@@ -83,7 +83,7 @@ namespace sones.GraphQL.Result
                 Object outValue;
                 if (_propertyList.TryGetValue(myPropertyName, out outValue))
                 {
-                    return (T)outValue;
+                    return (T)Convert.ChangeType(outValue, typeof(T));
                 }
                 else
                 {

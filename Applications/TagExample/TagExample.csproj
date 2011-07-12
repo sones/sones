@@ -122,7 +122,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\GraphDBExport\GraphDBExport.csproj">
       <Project>{95295FE7-C0EB-45ED-88B0-2B66902BEE0C}</Project>
-      <Name>GraphDBExport</Name>
+      <Name>GraphDBExport %28Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\GraphDBExport%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\GraphDBImport\SonesGraphDBImport.csproj">
       <Project>{51C8E5F7-F888-4500-B1EE-D20337FA451F}</Project>
