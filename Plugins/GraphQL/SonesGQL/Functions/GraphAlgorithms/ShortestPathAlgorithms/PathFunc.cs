@@ -20,22 +20,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Plugins.SonesGQL.Functions;
 using ISonesGQLFunction.Structure;
-using sones.Library.PropertyHyperGraph;
-using sones.Library.VersionedPluginManager;
 using sones.GraphDB;
+using sones.GraphDB.TypeSystem;
+using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphDB.TypeSystem;
+using sones.Library.PropertyHyperGraph;
+using sones.Library.VersionedPluginManager;
 using sones.Plugins.SonesGQL.Function.ErrorHandling;
-using ShortestPathAlgorithms.BreathFirstSearch;
-using sones.GraphQL.Result;
-using sones.GraphDB.Request;
+using sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSearch;
 
-namespace ShortestPathAlgorithms
+namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 {
     public sealed class PathFunc : ABaseFunction, IPluginable
     {
@@ -91,9 +87,15 @@ namespace ShortestPathAlgorithms
             // The edge we starting of (e.g. Friends)
             var typeAttribute = myAttributeDefinition;
 
+            if(myDBObject == null)
+                throw new InvalidFunctionParameterException("StartNode", "IVertex that represents the start node", "null");
+
             var startNode = myDBObject;
 
             var targetNode = (myParams[0].Value as IVertex);
+
+            if (targetNode == null)
+                throw new InvalidFunctionParameterException("TargetNode", "IVertex that represents the target node", "null");
 
             byte maxDepth = Convert.ToByte((Int64)myParams[1].Value);
 
@@ -130,7 +132,7 @@ namespace ShortestPathAlgorithms
             HashSet<List<long>> paths;
 
             //BFS
-            paths = new BFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
+            //paths = new BFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
 
             //bidirectional BFS
             paths = new BidirectionalBFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);

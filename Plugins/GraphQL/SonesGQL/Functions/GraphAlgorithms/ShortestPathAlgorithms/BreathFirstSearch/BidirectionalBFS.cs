@@ -24,7 +24,7 @@ using System.Linq;
 using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
 
-namespace ShortestPathAlgorithms.BreathFirstSearch
+namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSearch
 {
     public sealed class BidirectionalBFS
     {
@@ -117,8 +117,8 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
             //enqueue dummyRight to analyze the depth of the right side
             queueRight.Enqueue(dummyRight);
 
-            visitedNodesLeft.Add(root.Key, root);
             //add root and target to visitedNodes
+            visitedNodesLeft.Add(root.Key, root);
             visitedNodesRight.Add(target.Key, target);
             
             #endregion
@@ -354,7 +354,8 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
 
                                 //never seen before
                                 //mark the node as visited
-                                visitedNodesLeft.Add(currentNodeLeft.Key, currentNodeLeft);
+                                //visitedNodesLeft.Add(currentNodeLeft.Key, currentNodeLeft);
+                                visitedNodesLeft.Add(nextLeftNode.Key, nextLeftNode);
 
                                 //and put node into the queue
                                 queueLeft.Enqueue(nextLeftVertex);
@@ -472,7 +473,7 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
 
                         foreach (var node in visitedNodesLeft)
                         {
-                            if (visitedNodesRight[node.Key] != null)
+                            if (visitedNodesRight.ContainsKey(node.Key))
                             {
                                 //set nodes children and parents
                                 node.Value.addChildren(visitedNodesRight[node.Key].Children);

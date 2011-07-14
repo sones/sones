@@ -22,7 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ShortestPathAlgorithms.BreathFirstSearch
+namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSearch
 {
     public sealed class TargetAnalyzer
     {

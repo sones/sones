@@ -24,7 +24,7 @@ using System.Linq;
 using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
 
-namespace ShortestPathAlgorithms.BreathFirstSearch
+namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSearch
 {
     public sealed class BFS
     {

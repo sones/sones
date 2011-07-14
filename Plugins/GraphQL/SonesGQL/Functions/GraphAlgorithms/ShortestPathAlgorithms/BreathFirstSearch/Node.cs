@@ -20,7 +20,7 @@
 
 using System.Collections.Generic;
 
-namespace ShortestPathAlgorithms.BreathFirstSearch
+namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSearch
 {
     public sealed class Node
     {
