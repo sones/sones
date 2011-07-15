@@ -1022,7 +1022,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                         }
                         else if (res.Value is IVertexView)
                         {
-                            Attributes.Item2.Add(alias, GetNotResolvedReferenceEdgeAttributeValue(res.Value));
+                            //Attributes.Item2.Add(alias, GetNotResolvedReferenceEdgeAttributeValue(res.Value));
                         }
                         else
                         {
