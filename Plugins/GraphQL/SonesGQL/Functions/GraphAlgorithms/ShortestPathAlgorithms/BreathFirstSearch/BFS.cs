@@ -434,9 +434,9 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
             //if the maxDepth is greater then maxPathLength, then set maxDepth to maxPathLength
             if (myMaxDepth > myMaxPathLength)
-            {
                 myMaxDepth = myMaxPathLength;
-            }
+            else if (myMaxPathLength > myMaxDepth)
+                myMaxPathLength = myMaxDepth;
 
             //enqueue first node to start the BFS
             queue.Enqueue(myStart);
@@ -527,10 +527,13 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                                 //node has more then one parent
                                 visitedNodes[nextNode.Key].Parents.Add(currentNode);
                             }
-
                             //never seen before
-                            //mark the node as visited
-                            visitedNodes.Add(nextNode.Key, nextNode);
+                            else
+                            {
+                                //mark the node as visited
+                                visitedNodes.Add(nextNode.Key, nextNode);
+                            }
+
                             //and look what comes on the next level of depth
                             queue.Enqueue(vertex);
                         }

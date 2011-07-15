@@ -162,7 +162,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                     if (!parent.AlreadyInPath)
                     {
                         //and MaxPathLength is not reached
-                        if (_TempList.Count < _MaxPathLength)
+                        if (_TempList.Count <= _MaxPathLength)
                         {
                             getPath(parent);
                         }

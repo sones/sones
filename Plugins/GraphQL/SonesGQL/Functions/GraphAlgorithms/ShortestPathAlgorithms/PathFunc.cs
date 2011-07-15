@@ -46,13 +46,15 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             Parameters.Add(new ParameterValue("MaxPathLength", new Int64()));
             Parameters.Add(new ParameterValue("OnlyShortestPath", new Boolean()));
             Parameters.Add(new ParameterValue("AllPaths", new Boolean()));
+            Parameters.Add(new ParameterValue("UseBidirectionalBFS", new Boolean()));
         }
 
         #endregion
 
         public override string GetDescribeOutput()
         {
-            return "A path algorithm.";
+            return @"A path algorithm. This algorithm searches the shortest, all shortest or all paths up to a given depth an path length.
+                    Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used.";
         }
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
@@ -62,10 +64,6 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                 var workingTypeAttribute = myWorkingBase as IAttributeDefinition;
 
                 if (workingTypeAttribute.Kind == AttributeType.OutgoingEdge)
-                {
-                    return true;
-                }
-                else if (workingTypeAttribute.Kind == AttributeType.Property && (workingTypeAttribute as IPropertyDefinition).IsUserDefinedType)
                 {
                     return true;
                 }
@@ -90,19 +88,25 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             if(myDBObject == null)
                 throw new InvalidFunctionParameterException("StartNode", "IVertex that represents the start node", "null");
 
+            //set the start node
             var startNode = myDBObject;
 
+            //set the target node
             var targetNode = (myParams[0].Value as IVertex);
 
             if (targetNode == null)
                 throw new InvalidFunctionParameterException("TargetNode", "IVertex that represents the target node", "null");
 
+            //set the maximum depth 
             byte maxDepth = Convert.ToByte((Int64)myParams[1].Value);
 
+            //set the maximum path length
             byte maxPathLength = Convert.ToByte((Int64)myParams[2].Value);
 
+            //mark if only the shortest path should be searched
             bool onlyShortestPath = (Boolean)myParams[3].Value;
 
+            //mark if all paths should be searched
             bool allPaths = (Boolean)myParams[4].Value;
 
             if (!onlyShortestPath && !allPaths)
@@ -110,33 +114,32 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                 allPaths = true;
             }
 
+            //mark if the BidirectionalBFS should be used
+            bool useBidirectionalBFS = (Boolean)myParams[5].Value;
+
             #endregion
 
             #region check correctness of parameters
 
             //check if values are correct
             if (maxDepth < 1)
-            {
                 throw new InvalidFunctionParameterException("maxDepth", ">= 1", maxDepth.ToString());
-            }
 
             if (maxPathLength < 2)
-            {
                 throw new InvalidFunctionParameterException("maxPathLength", ">= 2", maxPathLength.ToString());
-            }
 
             #endregion
             
             #region call graph function
 
-            HashSet<List<long>> paths;
+            HashSet<List<long>> paths = null;
 
             //BFS
-            //paths = new BFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
-
-            //bidirectional BFS
-            paths = new BidirectionalBFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
-                                
+            if(useBidirectionalBFS)
+                //bidirectional BFS
+                paths = new BidirectionalBFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
+            else
+                paths = new BFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
 
             if (paths != null)
             {
@@ -154,8 +157,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                 var vertexView = new VertexView(props, edges);
 
                 #endregion
-
-                
+                                
                 //ALT
                 //return new FuncParameter(new EdgeTypePath(paths, typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
                 return new FuncParameter(paths);

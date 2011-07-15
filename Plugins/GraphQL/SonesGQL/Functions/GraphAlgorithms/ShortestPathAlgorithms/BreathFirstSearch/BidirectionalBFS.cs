@@ -55,7 +55,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             var visitedVerticesRight = new HashSet<long>();
 
             //set current depth left
-            byte depthLeft = 2;
+            byte depthLeft = 1;
             //set current depth right
             byte depthRight = 1;
 
@@ -66,9 +66,9 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             #region initialize maxDepths
             //if the maxDepth is greater then maxPathLength, then set maxDepth to maxPathLength
             if (myMaxDepth > myMaxPathLength)
-            {
                 myMaxDepth = myMaxPathLength;
-            }
+            else if (myMaxPathLength > myMaxDepth)
+                myMaxPathLength = myMaxDepth;
 
             //set depth for left side
             maxDepthLeft = Convert.ToByte(myMaxDepth / 2 + 1);
@@ -667,7 +667,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
                                 //never seen before
                                 //mark the node as visited
-                                visitedNodesLeft.Add(currentNodeLeft.Key, currentNodeLeft);
+                                visitedNodesLeft.Add(nextLeftNode.Key, nextLeftNode);
 
                                 //and put node into the queue
                                 queueLeft.Enqueue(nextLeftVertex);
@@ -1009,7 +1009,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
                                 //never seen before
                                 //mark the node as visited
-                                visitedNodesLeft.Add(currentNodeLeft.Key, currentNodeLeft);
+                                visitedNodesLeft.Add(nextLeftNode.Key, nextLeftNode);
 
                                 //and put node into the queue
                                 queueLeft.Enqueue(nextLeftVertex);
@@ -1033,6 +1033,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                         depthRight++;
 
                         if (queueRight.Count == 0)
+                        {
+                            continue;
+                        }
+                        else if (depthRight > maxDepthRight)
                         {
                             continue;
                         }
