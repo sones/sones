@@ -36,7 +36,7 @@ namespace sones.Plugins.SonesGQL.Functions
     {
         public ConcatFunc()
         {
-            Parameters.Add(new ParameterValue("StringPart", "", true));
+            Parameters.Add(new ParameterValue("StringPart", typeof(String), true));
         }
 
         public override string GetDescribeOutput()

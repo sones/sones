@@ -40,7 +40,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public TopFunc()
         {
-            Parameters.Add(new ParameterValue("NumOfEntries", new UInt64()));
+            Parameters.Add(new ParameterValue("NumOfEntries", typeof(UInt64)));
         }
 
         #endregion

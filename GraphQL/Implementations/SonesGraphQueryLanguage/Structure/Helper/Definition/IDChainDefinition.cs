@@ -338,11 +338,16 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
       
         private FuncParameter ValidateAndAddParameter(ParameterValue myParameter, Object myValue, IAttributeDefinition myTypeAttribute)
         {
-            if (myParameter.Value.GetType() != myValue.GetType())
+            if (myParameter.Value != null)
             {
-                throw new FunctionParameterTypeMismatchException(myParameter.Value.GetType(), myValue.GetType());
+                if (myParameter.Value != myValue.GetType())
+                {
+                    throw new FunctionParameterTypeMismatchException(myParameter.Value as Type, myValue.GetType());
+                }
             }
-
+            else
+                throw new InvalidFunctionParameterException(myParameter.Name, myValue.GetType(), null);
+                                    
             return new FuncParameter(myValue, myTypeAttribute);
         }
 

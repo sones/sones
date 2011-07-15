@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -57,7 +57,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-	<Reference Include="Mono.Posix" />
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\Settings.Designer.cs">
@@ -171,6 +171,10 @@
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Functions\GQLFunctions\GQLFunctions.csproj">
       <Project>{7E58D30B-4108-4941-BF85-A5C309F87536}</Project>
       <Name>GQLFunctions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Functions\GraphAlgorithms\ShortestPathAlgorithms\ShortestPathAlgorithms.csproj">
+      <Project>{9E2BBF58-75A7-4C03-959C-A557F04927BA}</Project>
+      <Name>ShortestPathAlgorithms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\GraphDBExport\GraphDBExport.csproj">
       <Project>{95295FE7-C0EB-45ED-88B0-2B66902BEE0C}</Project>

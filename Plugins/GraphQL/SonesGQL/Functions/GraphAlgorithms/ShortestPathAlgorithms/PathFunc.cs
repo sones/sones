@@ -19,6 +19,7 @@
 */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using ISonesGQLFunction.Structure;
 using sones.GraphDB;
@@ -30,6 +31,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.SonesGQL.Function.ErrorHandling;
 using sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSearch;
+using sones.Library.CollectionWrapper;
 
 namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 {
@@ -41,12 +43,12 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
         {
             /// these are the starting edges and TypeAttribute.
             /// This is not the starting DBObject but just the content of the attribute defined by TypeAttribute!!!
-            Parameters.Add(new ParameterValue("TargetDBO", null));
-            Parameters.Add(new ParameterValue("MaxDepth", new Int64()));
-            Parameters.Add(new ParameterValue("MaxPathLength", new Int64()));
-            Parameters.Add(new ParameterValue("OnlyShortestPath", new Boolean()));
-            Parameters.Add(new ParameterValue("AllPaths", new Boolean()));
-            Parameters.Add(new ParameterValue("UseBidirectionalBFS", new Boolean()));
+            Parameters.Add(new ParameterValue("TargetVertex", typeof(IEnumerable<IVertex>)));
+            Parameters.Add(new ParameterValue("MaxDepth", typeof(UInt64)));
+            Parameters.Add(new ParameterValue("MaxPathLength", typeof(Int64)));
+            Parameters.Add(new ParameterValue("OnlyShortestPath", typeof(Boolean)));
+            Parameters.Add(new ParameterValue("AllPaths", typeof(Boolean)));
+            Parameters.Add(new ParameterValue("UseBidirectionalBFS", typeof(Boolean)));
         }
 
         #endregion
@@ -78,36 +80,36 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             }
         }
 
-        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myStartVertex, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
             #region initialize data
 
             // The edge we starting of (e.g. Friends)
             var typeAttribute = myAttributeDefinition;
 
-            if(myDBObject == null)
+            if (myStartVertex == null)
                 throw new InvalidFunctionParameterException("StartNode", "IVertex that represents the start node", "null");
 
             //set the start node
-            var startNode = myDBObject;
+            var startNode = myStartVertex;
 
             //set the target node
-            var targetNode = (myParams[0].Value as IVertex);
+            var targetNode = (myParams[0].Value as IEnumerable<IVertex>).First();
 
             if (targetNode == null)
                 throw new InvalidFunctionParameterException("TargetNode", "IVertex that represents the target node", "null");
 
             //set the maximum depth 
-            byte maxDepth = Convert.ToByte((Int64)myParams[1].Value);
+            byte maxDepth = Convert.ToByte(myParams[1].Value);
 
             //set the maximum path length
-            byte maxPathLength = Convert.ToByte((Int64)myParams[2].Value);
+            byte maxPathLength = Convert.ToByte(myParams[2].Value);
 
             //mark if only the shortest path should be searched
-            bool onlyShortestPath = (Boolean)myParams[3].Value;
+            bool onlyShortestPath = Convert.ToBoolean(myParams[3].Value);
 
             //mark if all paths should be searched
-            bool allPaths = (Boolean)myParams[4].Value;
+            bool allPaths = Convert.ToBoolean(myParams[4].Value);
 
             if (!onlyShortestPath && !allPaths)
             {
@@ -115,7 +117,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             }
 
             //mark if the BidirectionalBFS should be used
-            bool useBidirectionalBFS = (Boolean)myParams[5].Value;
+            bool useBidirectionalBFS = Convert.ToBoolean(myParams[5].Value);
 
             #endregion
 
@@ -132,7 +134,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             
             #region call graph function
 
-            HashSet<List<long>> paths = null;
+            HashSet<List<Tuple<long, long>>> paths = null;
 
             //BFS
             if(useBidirectionalBFS)
@@ -141,32 +143,42 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             else
                 paths = new BFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
 
+            #endregion
+
+            #region create output
+
             if (paths != null)
             {
-                #region create outputted vertexviews
+                #region create outputted views
 
+                var viewList = new List<IVertexView>();
                 var props = new Dictionary<String, object>();                
-                var edges = new Dictionary<String, IEdgeView>();
+                int i = 1;
 
-                foreach (var vertex in paths)
+                foreach (var path in paths)
                 {
-                    #region get properties
+                    #region create VertexViews
+
+                    //props.Add("Path" + i.ToString(), new ListCollectionWrapper(path.ConvertAll<Tuple<IComparable, IComparable>>(x => (IComparable)x.Item1, )));
+
                     #endregion
+
+                    i++;
                 }
 
-                var vertexView = new VertexView(props, edges);
-
+                var vertexView = new VertexView(props, null);
+                viewList.Add(vertexView);
                 #endregion
                                 
                 //ALT
                 //return new FuncParameter(new EdgeTypePath(paths, typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
-                return new FuncParameter(paths);
+                return new FuncParameter(viewList);
             }
             else
             {
                 //ALT
                 //return new FuncParameter(new EdgeTypePath(new HashSet<List<long>>(), typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
-                return new FuncParameter(new HashSet<List<long>>());
+                return new FuncParameter(new List<IVertexView>());
             }
 
             #endregion

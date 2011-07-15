@@ -40,8 +40,8 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public InsertFunc()
         {
-            Parameters.Add(new ParameterValue("Position", new Int32()));
-            Parameters.Add(new ParameterValue("StringPart", "", true));
+            Parameters.Add(new ParameterValue("Position", typeof(Int32)));
+            Parameters.Add(new ParameterValue("StringPart", typeof(String), true));
         }
 
         #endregion

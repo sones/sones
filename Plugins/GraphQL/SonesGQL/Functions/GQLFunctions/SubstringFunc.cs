@@ -39,8 +39,8 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public SubstringFunc()
         {
-            Parameters.Add(new ParameterValue("StartPosition", new Int32()));
-            Parameters.Add(new ParameterValue("Length", new Int32()));
+            Parameters.Add(new ParameterValue("StartPosition", typeof(Int32)));
+            Parameters.Add(new ParameterValue("Length", typeof(Int32)));
         }
 
         #endregion

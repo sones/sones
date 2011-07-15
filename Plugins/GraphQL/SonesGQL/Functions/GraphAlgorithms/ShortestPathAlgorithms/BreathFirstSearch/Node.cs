@@ -19,6 +19,7 @@
 */
 
 using System.Collections.Generic;
+using System;
 
 namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSearch
 {
@@ -27,7 +28,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         #region private members
 
         //unique identifier
-        private long _Key;
+        private Tuple<long, long> _Key;
 
         //are used to create the paths recursive
         private HashSet<Node> _Parents;
@@ -42,9 +43,9 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
         #region constructors
 
-        public Node(long myObjectID)
+        public Node(long myTypeID, long myVertexID)
         {
-            _Key = myObjectID;
+            _Key = new Tuple<long,long>(myTypeID, myVertexID);
             
             _Parents = new HashSet<Node>();
 
@@ -53,14 +54,24 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             _AlreadyInPath = false;
         }
 
-        public Node(long myObjectID, bool AlreadyInPath)
-            : this(myObjectID)
+        public Node(Tuple<long, long> myKey)
+            :this(myKey.Item1, myKey.Item2)
+        {}
+
+        public Node(long myTypeID, long myVertexID, bool AlreadyInPath)
+            : this(myTypeID, myVertexID)
         {
             _AlreadyInPath = AlreadyInPath;
         }
 
-        public Node(long myObjectID, Node myParent)
-            : this(myObjectID)
+        public Node(long myTypeID, long myVertexID, Node myParent)
+            : this(myTypeID, myVertexID)
+        {
+            _Parents.Add(myParent);
+        }
+
+        public Node(Tuple<long, long> myKey, Node myParent)
+            : this(myKey.Item1, myKey.Item2)
         {
             _Parents.Add(myParent);
         }
@@ -69,7 +80,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
         #region getter/setter
 
-        public long Key
+        public Tuple<long, long> Key
         {
             get { return this._Key; }
             set { this._Key = value; }
@@ -184,7 +195,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         /// </summary>
         /// <param name="key">Key nach dem gesucht werden soll.</param>
         /// <returns></returns>
-        public bool ChildrenContainsKey(long key)
+        public bool ChildrenContainsKey(Tuple<long, long> key)
         {
             foreach (var node in _Children)
             {
@@ -200,7 +211,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         /// </summary>
         /// <param name="key">Key nach dem gesucht werden soll.</param>
         /// <returns></returns>
-        public bool ParentsContainsKey(long key)
+        public bool ParentsContainsKey(Tuple<long, long> key)
         {
             foreach (var node in _Parents)
             {

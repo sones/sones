@@ -39,7 +39,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         /// <param name="myMaxDepth">The maximum depth to search</param>
         /// <param name="myMaxPathLength">The maximum path length which shall be analyzed</param>
         /// <returns>A HashSet which contains all found paths. Every path is represented by a List of ObjectUUIDs</returns>m>
-        public HashSet<List<long>> Find(IAttributeDefinition myTypeAttribute, IVertex myStart, IVertex myEnd, bool shortestOnly, bool findAll, byte myMaxDepth, byte myMaxPathLength)
+        public HashSet<List<Tuple<long, long>>> Find(IAttributeDefinition myTypeAttribute, IVertex myStart, IVertex myEnd, bool shortestOnly, bool findAll, byte myMaxDepth, byte myMaxPathLength)
         {
             #region declarations
 
@@ -48,11 +48,11 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             var queueRight = new Queue<IVertex>();
 
             //Dictionary to store visited TreeNodes
-            var visitedNodesLeft = new Dictionary<long, Node>();
-            var visitedNodesRight = new Dictionary<long, Node>();
+            var visitedNodesLeft = new Dictionary<Tuple<long, long>, Node>();
+            var visitedNodesRight = new Dictionary<Tuple<long, long>, Node>();
 
-            var visitedVerticesLeft = new HashSet<long>();
-            var visitedVerticesRight = new HashSet<long>();
+            var visitedVerticesLeft = new HashSet<Tuple<long, long>>();
+            var visitedVerticesRight = new HashSet<Tuple<long, long>>();
 
             //set current depth left
             byte depthLeft = 1;
@@ -92,8 +92,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             byte shortestPathLength = 0;
 
             //target node, the target of the select
-            var target = new Node(myEnd.VertexID);
-            var root = new Node(myStart.VertexID);
+            var target = new Node(myEnd.VertexTypeID, myEnd.VertexID);
+            var root = new Node(myStart.VertexTypeID, myStart.VertexID);
             HashSet<long> rootFriends = new HashSet<long>();
 
             //dummy node to check in which level the BFS is
@@ -210,18 +210,23 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                     IVertex currentVertexLeft;
                     IVertex currentVertexRight;
 
+                    Tuple<long, long> currentLeft;
+                    Tuple<long, long> currentRight;
+
                     //get the first Object of the queue
                     currentVertexLeft = queueLeft.Dequeue();
+                    currentLeft = new Tuple<long, long>(currentVertexLeft.VertexTypeID, currentVertexLeft.VertexID);
 
-                    if (visitedVerticesLeft.Contains(currentVertexLeft.VertexID))
+                    if (visitedVerticesLeft.Contains(new Tuple<long, long>(currentVertexLeft.VertexTypeID, currentVertexLeft.VertexID)))
                     {
                         continue;
                     }
 
                     //get the first Object of the queue
                     currentVertexRight = queueRight.Dequeue();
+                    currentRight = new Tuple<long, long>(currentVertexRight.VertexTypeID, currentVertexRight.VertexID);
 
-                    if (visitedVerticesRight.Contains(currentVertexRight.VertexID))
+                    if (visitedVerticesRight.Contains(currentLeft))
                     {
                         //enqueue already dequeued vertex
                         queueLeft.Enqueue(currentVertexLeft);
@@ -229,25 +234,25 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                         continue;
                     }
 
-                    visitedVerticesLeft.Add(currentVertexLeft.VertexID);
-                    visitedVerticesRight.Add(currentVertexRight.VertexID);
+                    visitedVerticesLeft.Add(currentLeft);
+                    visitedVerticesRight.Add(currentRight);
 
-                    if (visitedNodesLeft.ContainsKey(currentVertexLeft.VertexID))
+                    if (visitedNodesLeft.ContainsKey(currentLeft))
                     {
-                        currentNodeLeft = visitedNodesLeft[currentVertexLeft.VertexID];
+                        currentNodeLeft = visitedNodesLeft[currentLeft];
                     }
                     else
                     {
-                        currentNodeLeft = new Node(currentVertexLeft.VertexID);
+                        currentNodeLeft = new Node(currentLeft);
                     }
 
-                    if (visitedNodesRight.ContainsKey(currentVertexRight.VertexID))
+                    if (visitedNodesRight.ContainsKey(currentRight))
                     {
-                        currentNodeRight = visitedNodesRight[currentVertexRight.VertexID];
+                        currentNodeRight = visitedNodesRight[currentRight];
                     }
                     else
                     {
-                        currentNodeRight = new Node(currentVertexRight.VertexID);
+                        currentNodeRight = new Node(currentRight);
                     }
                     #endregion 
                     
@@ -262,6 +267,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                         foreach (var nextLeftVertex in leftVertices)
                         {
                             Node nextLeftNode;
+                            Tuple<long, long> nextLeft = new Tuple<long,long>(nextLeftVertex.VertexTypeID, nextLeftVertex.VertexID);
 
                             #region if the child is the target
 
@@ -271,18 +277,18 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                                 target.addParent(currentNodeLeft);
                                 
                                 #region check if already visited
-                                if (visitedNodesLeft.ContainsKey(nextLeftVertex.VertexID))
+                                if (visitedNodesLeft.ContainsKey(nextLeft))
                                 {
                                     //set currentLeft as parent
-                                    visitedNodesLeft[nextLeftVertex.VertexID].addParent(currentNodeLeft);
+                                    visitedNodesLeft[nextLeft].addParent(currentNodeLeft);
 
                                     //set currentNodeLeft as child
-                                    currentNodeLeft.addChild(visitedNodesLeft[nextLeftVertex.VertexID]);
+                                    currentNodeLeft.addChild(visitedNodesLeft[nextLeft]);
                                 }
                                 else
                                 {
                                     //create a new node and set currentLeft = parent
-                                    nextLeftNode = new Node(nextLeftVertex.VertexID, currentNodeLeft);
+                                    nextLeftNode = new Node(nextLeft, currentNodeLeft);
 
                                     //set currentNodeLeft as child of currentLeft
                                     currentNodeLeft.addChild(nextLeftNode);
@@ -334,20 +340,20 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
                             #endregion 
                             #region already visited 
-                            else if (visitedNodesLeft.ContainsKey(nextLeftVertex.VertexID))
+                            else if (visitedNodesLeft.ContainsKey(nextLeft))
                             {
                                 //set currentLeft as parent
-                                visitedNodesLeft[nextLeftVertex.VertexID].addParent(currentNodeLeft);
+                                visitedNodesLeft[nextLeft].addParent(currentNodeLeft);
 
                                 //set currentNodeLeft as child
-                                currentNodeLeft.addChild(visitedNodesLeft[nextLeftVertex.VertexID]);
+                                currentNodeLeft.addChild(visitedNodesLeft[nextLeft]);
                             }
                             #endregion already visited
                             #region set as visited
                             else
                             {
                                 //create a new node and set currentLeft = parent
-                                nextLeftNode = new Node(nextLeftVertex.VertexID, currentNodeLeft);
+                                nextLeftNode = new Node(nextLeft, currentNodeLeft);
 
                                 //set currentNodeLeft as child of currentLeft
                                 currentNodeLeft.addChild(nextLeftNode);
@@ -371,23 +377,24 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                         foreach (var nextRightVertex in rightVertices)
                         {
                             Node nextRightNode;
+                            Tuple<long, long> nextRight = new Tuple<long, long>(nextRightVertex.VertexTypeID, nextRightVertex.VertexID);
 
                             #region if the child is the target
                             if (root.Key.Equals(nextRightVertex.VertexID))
                             {
                                 #region check if already visited
                                 //mark node as visited
-                                if (visitedNodesRight.ContainsKey(nextRightVertex.VertexID))
+                                if (visitedNodesRight.ContainsKey(nextRight))
                                 {
                                     //set found children
-                                    visitedNodesRight[nextRightVertex.VertexID].addChild(currentNodeRight);
+                                    visitedNodesRight[nextRight].addChild(currentNodeRight);
 
-                                    currentNodeRight.addParent(visitedNodesRight[nextRightVertex.VertexID]);
+                                    currentNodeRight.addParent(visitedNodesRight[nextRight]);
                                 }
                                 else
                                 {
                                     //create a new node and set currentRight = child                            
-                                    nextRightNode = new Node(nextRightVertex.VertexID);
+                                    nextRightNode = new Node(nextRight);
                                     nextRightNode.addChild(currentNodeRight);
 
                                     //set currentNodeRight as parent of current Right
@@ -438,19 +445,19 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             }
                             #endregion if the child is the target
                             #region already visited
-                            else if (visitedNodesRight.ContainsKey(nextRightVertex.VertexID))
+                            else if (visitedNodesRight.ContainsKey(nextRight))
                             {
                                 //set found children
-                                visitedNodesRight[nextRightVertex.VertexID].addChild(currentNodeRight);
+                                visitedNodesRight[nextRight].addChild(currentNodeRight);
 
-                                currentNodeRight.addParent(visitedNodesRight[nextRightVertex.VertexID]);
+                                currentNodeRight.addParent(visitedNodesRight[nextRight]);
                             }
                             #endregion already visited
                             #region set as visited
                             else
                             {
                                 //create a new node and set currentRight = child                            
-                                nextRightNode = new Node(nextRightVertex.VertexID);
+                                nextRightNode = new Node(nextRight);
                                 nextRightNode.addChild(currentNodeRight);
 
                                 //set currentNodeRight as parent of current Right
@@ -539,6 +546,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                         foreach (var nextLeftVertex in leftVertices)
                         {
                             Node nextLeftNode;
+                            Tuple<long, long> nextLeft = new Tuple<long, long>(nextLeftVertex.VertexTypeID, nextLeftVertex.VertexID);
 
                             #region if the child is the target
                             if (nextLeftVertex.VertexID.Equals(target.Key))
@@ -547,18 +555,18 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                                 target.addParent(currentNodeLeft);
 
                                 #region check if already visited
-                                if (visitedNodesLeft.ContainsKey(nextLeftVertex.VertexID))
+                                if (visitedNodesLeft.ContainsKey(nextLeft))
                                 {
                                     //set currentLeft as parent
-                                    visitedNodesLeft[nextLeftVertex.VertexID].addParent(currentNodeLeft);
+                                    visitedNodesLeft[nextLeft].addParent(currentNodeLeft);
 
                                     //set currentNodeLeft as child
-                                    currentNodeLeft.addChild(visitedNodesLeft[nextLeftVertex.VertexID]);
+                                    currentNodeLeft.addChild(visitedNodesLeft[nextLeft]);
                                 }
                                 else
                                 {
                                     //create a new node and set currentLeft = parent
-                                    nextLeftNode = new Node(nextLeftVertex.VertexID, currentNodeLeft);
+                                    nextLeftNode = new Node(nextLeft, currentNodeLeft);
 
                                     //set currentNodeLeft as child of currentLeft
                                     currentNodeLeft.addChild(nextLeftNode);
@@ -608,10 +616,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             }
                             #endregion 
                             #region already visited from right side
-                            else if (visitedNodesRight.ContainsKey(nextLeftVertex.VertexID))
+                            else if (visitedNodesRight.ContainsKey(nextLeft))
                             {
                                 //get node
-                                Node temp = visitedNodesRight[nextLeftVertex.VertexID];
+                                Node temp = visitedNodesRight[nextLeft];
                                 //add parent new
                                 temp.addParent(currentNodeLeft);
                                 //add as child
@@ -647,20 +655,20 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             }
                             #endregion already visited from right side
                             #region already visited
-                            else if (visitedNodesLeft.ContainsKey(nextLeftVertex.VertexID))
+                            else if (visitedNodesLeft.ContainsKey(nextLeft))
                             {
                                 //set currentLeft as parent
-                                visitedNodesLeft[nextLeftVertex.VertexID].addParent(currentNodeLeft);
+                                visitedNodesLeft[nextLeft].addParent(currentNodeLeft);
 
                                 //set currentNodeLeft as child
-                                currentNodeLeft.addChild(visitedNodesLeft[nextLeftVertex.VertexID]);
+                                currentNodeLeft.addChild(visitedNodesLeft[nextLeft]);
                             }
                             #endregion already visited
                             #region set as visited
                             else
                             {
                                 //create a new node and set currentLeft = parent
-                                nextLeftNode = new Node(nextLeftVertex.VertexID, currentNodeLeft);
+                                nextLeftNode = new Node(nextLeft, currentNodeLeft);
 
                                 //set currentNodeLeft as child of currentLeft
                                 currentNodeLeft.addChild(nextLeftNode);
@@ -687,23 +695,24 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                         foreach (var nextRightVertex in rightVertices)
                         {
                             Node nextRightNode;
+                            Tuple<long, long> nextRight = new Tuple<long, long>(nextRightVertex.VertexTypeID, nextRightVertex.VertexID);
 
                             #region if the child is the target
                             if (root.Key.Equals(nextRightVertex.VertexID))
                             {
                                 #region check if already visited
                                 //mark node as visited
-                                if (visitedNodesRight.ContainsKey(nextRightVertex.VertexID))
+                                if (visitedNodesRight.ContainsKey(nextRight))
                                 {
                                     //set found children
-                                    visitedNodesRight[nextRightVertex.VertexID].addChild(currentNodeRight);
+                                    visitedNodesRight[nextRight].addChild(currentNodeRight);
 
-                                    currentNodeRight.addParent(visitedNodesRight[nextRightVertex.VertexID]);
+                                    currentNodeRight.addParent(visitedNodesRight[nextRight]);
                                 }
                                 else
                                 {
                                     //create a new node and set currentRight = child                            
-                                    nextRightNode = new Node(nextRightVertex.VertexID);
+                                    nextRightNode = new Node(nextRight);
                                     nextRightNode.addChild(currentNodeRight);
 
                                     //set currentNodeRight as parent of current Right
@@ -754,10 +763,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             }
                             #endregion if the child is the target
                             #region already visited from left side
-                            else if (visitedNodesLeft.ContainsKey(nextRightVertex.VertexID))
+                            else if (visitedNodesLeft.ContainsKey(nextRight))
                             {
                                 //get node
-                                Node temp = visitedNodesLeft[nextRightVertex.VertexID];
+                                Node temp = visitedNodesLeft[nextRight];
                                 temp.addChild(currentNodeRight);
                                 currentNodeRight.addParent(temp);
 
@@ -791,19 +800,19 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             }
                             #endregion already visited from left side
                             #region already visited
-                            else if (visitedNodesRight.ContainsKey(nextRightVertex.VertexID))
+                            else if (visitedNodesRight.ContainsKey(nextRight))
                             {
                                 //set found children
-                                visitedNodesRight[nextRightVertex.VertexID].addChild(currentNodeRight);
+                                visitedNodesRight[nextRight].addChild(currentNodeRight);
 
-                                currentNodeRight.addParent(visitedNodesRight[nextRightVertex.VertexID]);
+                                currentNodeRight.addParent(visitedNodesRight[nextRight]);
                             }
                             #endregion already visited
                             #region set as visited
                             else
                             {
                                 //create a new node and set currentRight = child                            
-                                nextRightNode = new Node(nextRightVertex.VertexID);
+                                nextRightNode = new Node(nextRight);
                                 nextRightNode.addChild(currentNodeRight);
 
                                 //set currentNodeRight as parent of current Right
@@ -849,26 +858,26 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                     #region get first nodes of the queues
                     //hold the actual element of the queues
                     Node currentNodeLeft;
-
                     IVertex currentVertexLeft;
 
                     //get the first Object of the queue
                     currentVertexLeft = queueLeft.Dequeue();
+                    Tuple<long, long> currentLeft = new Tuple<long, long>(currentVertexLeft.VertexTypeID, currentVertexLeft.VertexID);
 
-                    if (visitedVerticesLeft.Contains(currentVertexLeft.VertexID))
+                    if (visitedVerticesLeft.Contains(currentLeft))
                     {
                         continue;
                     }
 
-                    visitedVerticesLeft.Add(currentVertexLeft.VertexID);
+                    visitedVerticesLeft.Add(currentLeft);
 
-                    if (visitedNodesLeft.ContainsKey(currentVertexLeft.VertexID))
+                    if (visitedNodesLeft.ContainsKey(currentLeft))
                     {
-                        currentNodeLeft = visitedNodesLeft[currentVertexLeft.VertexID];
+                        currentNodeLeft = visitedNodesLeft[currentLeft];
                     }
                     else
                     {
-                        currentNodeLeft = new Node(currentVertexLeft.VertexID);
+                        currentNodeLeft = new Node(currentLeft);
                     }
                     #endregion 
 
@@ -881,6 +890,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                         foreach (var nextLeftVertex in leftVertices)
                         {
                             Node nextLeftNode;
+                            Tuple<long, long> nextLeft = new Tuple<long, long>(nextLeftVertex.VertexTypeID, nextLeftVertex.VertexID);
 
                             #region if the child is the target
                             if (nextLeftVertex.VertexID.Equals(target.Key))
@@ -889,18 +899,18 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                                 target.addParent(currentNodeLeft);
 
                                 #region check if already visited
-                                if (visitedNodesLeft.ContainsKey(nextLeftVertex.VertexID))
+                                if (visitedNodesLeft.ContainsKey(nextLeft))
                                 {
                                     //set currentLeft as parent
-                                    visitedNodesLeft[nextLeftVertex.VertexID].addParent(currentNodeLeft);
+                                    visitedNodesLeft[nextLeft].addParent(currentNodeLeft);
 
                                     //set currentNodeLeft as child
-                                    currentNodeLeft.addChild(visitedNodesLeft[nextLeftVertex.VertexID]);
+                                    currentNodeLeft.addChild(visitedNodesLeft[nextLeft]);
                                 }
                                 else
                                 {
                                     //create a new node and set currentLeft = parent
-                                    nextLeftNode = new Node(nextLeftVertex.VertexID, currentNodeLeft);
+                                    nextLeftNode = new Node(nextLeft, currentNodeLeft);
 
                                     //set currentNodeLeft as child of currentLeft
                                     currentNodeLeft.addChild(nextLeftNode);
@@ -950,10 +960,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             }
                             #endregion
                             #region already visited from right side
-                            else if (visitedNodesRight.ContainsKey(nextLeftVertex.VertexID))
+                            else if (visitedNodesRight.ContainsKey(nextLeft))
                             {
                                 //get node
-                                Node temp = visitedNodesRight[nextLeftVertex.VertexID];
+                                Node temp = visitedNodesRight[nextLeft];
                                 //add parent new
                                 temp.addParent(currentNodeLeft);
                                 //add as child
@@ -989,20 +999,20 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             }
                             #endregion already visited from right side
                             #region already visited
-                            else if (visitedNodesLeft.ContainsKey(nextLeftVertex.VertexID))
+                            else if (visitedNodesLeft.ContainsKey(nextLeft))
                             {
                                 //set currentLeft as parent
-                                visitedNodesLeft[nextLeftVertex.VertexID].addParent(currentNodeLeft);
+                                visitedNodesLeft[nextLeft].addParent(currentNodeLeft);
 
                                 //set currentNodeLeft as child
-                                currentNodeLeft.addChild(visitedNodesLeft[nextLeftVertex.VertexID]);
+                                currentNodeLeft.addChild(visitedNodesLeft[nextLeft]);
                             }
                             #endregion already visited
                             #region set as visited
                             else
                             {
                                 //create a new node and set currentLeft = parent
-                                nextLeftNode = new Node(nextLeftVertex.VertexID, currentNodeLeft);
+                                nextLeftNode = new Node(nextLeft, currentNodeLeft);
 
                                 //set currentNodeLeft as child of currentLeft
                                 currentNodeLeft.addChild(nextLeftNode);
@@ -1046,26 +1056,26 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                     #region get first nodes of the queues
                     //hold the actual element of the queues
                     Node currentNodeRight;
-
                     IVertex currentVertexRight;
 
                     //get the first Object of the queue
                     currentVertexRight = queueRight.Dequeue();
+                    Tuple<long, long> currentRight = new Tuple<long, long>(currentVertexRight.VertexTypeID, currentVertexRight.VertexID);
 
-                    if (visitedVerticesRight.Contains(currentVertexRight.VertexID))
+                    if (visitedVerticesRight.Contains(currentRight))
                     {
                         continue;
                     }
 
-                    visitedVerticesRight.Add(currentVertexRight.VertexID);
+                    visitedVerticesRight.Add(currentRight);
 
-                    if (visitedNodesRight.ContainsKey(currentVertexRight.VertexID))
+                    if (visitedNodesRight.ContainsKey(currentRight))
                     {
-                        currentNodeRight = visitedNodesRight[currentVertexRight.VertexID];
+                        currentNodeRight = visitedNodesRight[currentRight];
                     }
                     else
                     {
-                        currentNodeRight = new Node(currentVertexRight.VertexID);
+                        currentNodeRight = new Node(currentRight);
                     }
                     #endregion
 
@@ -1078,23 +1088,24 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                         foreach (var nextRightVertex in rightVertices)
                         {
                             Node nextRightNode;
+                            Tuple<long, long> nextRight = new Tuple<long, long>(nextRightVertex.VertexTypeID, nextRightVertex.VertexID);
 
                             #region if the child is the target
                             if (root.Key.Equals(nextRightVertex.VertexID))
                             {
                                 #region check if already visited
                                 //mark node as visited
-                                if (visitedNodesRight.ContainsKey(nextRightVertex.VertexID))
+                                if (visitedNodesRight.ContainsKey(nextRight))
                                 {
                                     //set found children
-                                    visitedNodesRight[nextRightVertex.VertexID].addChild(currentNodeRight);
+                                    visitedNodesRight[nextRight].addChild(currentNodeRight);
 
-                                    currentNodeRight.addParent(visitedNodesRight[nextRightVertex.VertexID]);
+                                    currentNodeRight.addParent(visitedNodesRight[nextRight]);
                                 }
                                 else
                                 {
                                     //create a new node and set currentRight = child                            
-                                    nextRightNode = new Node(nextRightVertex.VertexID);
+                                    nextRightNode = new Node(nextRight);
                                     nextRightNode.addChild(currentNodeRight);
 
                                     //set currentNodeRight as parent of current Right
@@ -1145,10 +1156,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             }
                             #endregion if the child is the target
                             #region already visited from left side
-                            else if (visitedNodesLeft.ContainsKey(nextRightVertex.VertexID))
+                            else if (visitedNodesLeft.ContainsKey(nextRight))
                             {
                                 //get node
-                                Node temp = visitedNodesLeft[nextRightVertex.VertexID];
+                                Node temp = visitedNodesLeft[nextRight];
                                 temp.addChild(currentNodeRight);
                                 currentNodeRight.addParent(temp);
 
@@ -1182,19 +1193,19 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             }
                             #endregion already visited from left side
                             #region already visited
-                            else if (visitedNodesRight.ContainsKey(nextRightVertex.VertexID))
+                            else if (visitedNodesRight.ContainsKey(nextRight))
                             {
                                 //set found children
-                                visitedNodesRight[nextRightVertex.VertexID].addChild(currentNodeRight);
+                                visitedNodesRight[nextRight].addChild(currentNodeRight);
 
-                                currentNodeRight.addParent(visitedNodesRight[nextRightVertex.VertexID]);
+                                currentNodeRight.addParent(visitedNodesRight[nextRight]);
                             }
                             #endregion already visited
                             #region set as visited
                             else
                             {
                                 //create a new node and set currentRight = child                            
-                                nextRightNode = new Node(nextRightVertex.VertexID);
+                                nextRightNode = new Node(nextRight);
                                 nextRightNode.addChild(currentNodeRight);
 
                                 //set currentNodeRight as parent of current Right

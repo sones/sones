@@ -408,7 +408,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         /// <param name="myMaxDepth">The maximum depth to search</param>
         /// <param name="myMaxPathLength">The maximum path length which shall be analyzed</param>
         /// <returns>A HashSet which contains all found paths. Every path is represented by a List of ObjectUUIDs</returns>
-        public HashSet<List<long>> Find(IAttributeDefinition myTypeAttribute, IVertex myStart, IVertex myEnd, bool shortestOnly, bool findAll, byte myMaxDepth, byte myMaxPathLength)
+        public HashSet<List<Tuple<long, long>>> Find(IAttributeDefinition myTypeAttribute, IVertex myStart, IVertex myEnd, bool shortestOnly, bool findAll, byte myMaxDepth, byte myMaxPathLength)
         {
             #region data
 
@@ -416,7 +416,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             Queue<IVertex> queue = new Queue<IVertex>();
 
             //Dictionary to store visited TreeNodes
-            Dictionary<long, Node> visitedNodes = new Dictionary<long, Node>();
+            Dictionary<Tuple<long, long>, Node> visitedNodes = new Dictionary<Tuple<long, long>, Node>();
 
             HashSet<long> visitedVertices = new HashSet<long>();
 
@@ -424,10 +424,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             byte depth = 0;
 
             //first node in path tree, the start of the select
-            Node root = new Node(myStart.VertexID);
+            Node root = new Node(myStart.VertexTypeID, myStart.VertexID);
 
             //target node, the target of the select
-            Node target = new Node(myEnd.VertexID);
+            Node target = new Node(myEnd.VertexTypeID, myEnd.VertexID);
 
             //dummy node to check in which level the BFS is
             IVertex dummy = null;
@@ -465,6 +465,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             {
                 //get the first Object of the queue
                 IVertex currentVertex = queue.Dequeue();
+                Tuple<long, long> current = new Tuple<long, long>(currentVertex.VertexTypeID, currentVertex.VertexID);
 
                 //dummy
                 if (currentVertex == null || visitedVertices.Contains(currentVertex.VertexID))
@@ -476,13 +477,13 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
                 Node currentNode;
 
-                if (visitedNodes.ContainsKey(currentVertex.VertexID))
+                if (visitedNodes.ContainsKey(current))
                 {
-                    currentNode = visitedNodes[currentVertex.VertexID];
+                    currentNode = visitedNodes[current];
                 }
                 else
                 {
-                    currentNode = new Node(currentVertex.VertexID);
+                    currentNode = new Node(current);
                 }
 
                 if (currentVertex.HasOutgoingEdge(myTypeAttribute.ID))
@@ -494,7 +495,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                     foreach (var vertex in vertices)
                     {
                         //create a new node and set currentNode = parent, nextNode = child                            
-                        nextNode = new Node(vertex.VertexID, currentNode);
+                        nextNode = new Node(current, currentNode);
                         currentNode.addChild(nextNode);
 
                         //if the child is the target

@@ -29,10 +29,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         #region private members
 
         //list of paths which will be returned
-        private HashSet<List<long>> _Paths;
+        private HashSet<List<Tuple<long, long>>> _Paths;
 
         //an actual path
-        private List<long> _TempList;
+        private List<Tuple<long, long>> _TempList;
 
         //end is the root or start of the select
         private Node _Start;
@@ -52,9 +52,9 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
         public TargetAnalyzer(Node myStart, Node myEnd, byte myMaxPathLength)
         {
-            _Paths = new HashSet<List<long>>();
+            _Paths = new HashSet<List<Tuple<long, long>>>();
 
-            _TempList = new List<long>();
+            _TempList = new List<Tuple<long, long>>();
 
             _Start = myStart;
 
@@ -85,7 +85,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         /// For a detailed documentation on how this evaluation works, have look at the class documentation.
         /// </summary>
         /// <returns>An HashSet which contains all paths between the Start- and the End-Node.</returns>
-        public HashSet<List<long>> getPaths()
+        public HashSet<List<Tuple<long, long>>> getPaths()
         {
             //MaxPathLength is not reached
             if (_TempList.Count < _MaxPathLength)
@@ -104,7 +104,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             //if only shortest path is searched, return first path
             else if (!_FindAll)
             {
-                HashSet<List<long>> temp = new HashSet<List<long>>();
+                HashSet<List<Tuple<long, long>>> temp = new HashSet<List<Tuple<long, long>>>();
 
                 var shortestPath = _Paths.First();
 
@@ -147,7 +147,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                 if (_Start.Key.Equals(myCurrent.Key))
                 {
                     //duplicate list
-                    var temp = new List<long>(_TempList);
+                    var temp = new List<Tuple<long, long>>(_TempList);
 
                     //reverse because the path is calculated beginning at the target
                     temp.Reverse();
@@ -172,7 +172,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                 if (_TempList.Count != 0)
                 {
                     //remove last node from actual path
-                    _TempList.Remove(_TempList.Last<long>());
+                    _TempList.Remove(_TempList.Last<Tuple<long, long>>());
                     //myCurrent isn't in actual path
                     myCurrent.AlreadyInPath = false;
                 }
