@@ -155,8 +155,12 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                 var props = new Dictionary<String, object>();                
                 int i = 1;
 
+                List<List<Tuple<long, long>>.Enumerator> enumerators = new List<List<Tuple<long,long>>.Enumerator>();
+
                 foreach (var path in paths)
                 {
+                    enumerators.Add(path.GetEnumerator());
+
                     #region create VertexViews
 
                     //props.Add("Path" + i.ToString(), new ListCollectionWrapper(path.ConvertAll<Tuple<IComparable, IComparable>>(x => (IComparable)x.Item1, )));
@@ -166,6 +170,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                     i++;
                 }
 
+                GenerateVertexView(enumerators);
+                
                 var vertexView = new VertexView(props, null);
                 viewList.Add(vertexView);
                 #endregion
@@ -182,6 +188,29 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             }
 
             #endregion
+        }
+
+        private VertexView GenerateVertexView(List<List<Tuple<long, long>>.Enumerator> myEnumerators)
+        {
+            var enumerators = MoveNext(myEnumerators);
+
+            return null;
+        }
+
+        private List<List<Tuple<long, long>>.Enumerator> MoveNext(List<List<Tuple<long, long>>.Enumerator> myEnumerator)
+        {
+            List<List<Tuple<long, long>>.Enumerator> current = new List<List<Tuple<long, long>>.Enumerator>();
+
+            foreach (var enumerator in myEnumerator)
+            {
+                if (enumerator.Current == null)
+                    continue;
+
+                enumerator.MoveNext();
+                current.Add(enumerator);
+            }
+
+            return current;
         }
 
         #region IPluginable member
