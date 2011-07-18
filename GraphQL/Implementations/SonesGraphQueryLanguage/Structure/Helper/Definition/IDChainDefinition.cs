@@ -175,7 +175,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
                     var extractedDBOs = calculatedGraphResult.Select(new LevelKey(myTypeOfDBObject.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
 
                     #region validation
-
+                    
                     validationOutput = ValidateAndAddParameter(currentParameter, extractedDBOs, null);
 
                     evaluatedParams.Add(validationOutput);
@@ -340,7 +340,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
         {
             if (myParameter.Value != null)
             {
-                if (myParameter.Value != myValue.GetType())
+                if (!(myParameter.Value as Type).IsAssignableFrom(myValue.GetType()))
                 {
                     throw new FunctionParameterTypeMismatchException(myParameter.Value as Type, myValue.GetType());
                 }
@@ -363,11 +363,11 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
             try
             {
-                Convert.ChangeType(val, myParameter.Value.GetType());
+                Convert.ChangeType(val, myParameter.Value as Type);
             }
             catch (Exception)
             {
-                throw new FunctionParameterTypeMismatchException(myParameter.Value.GetType(), val.GetType());
+                throw new FunctionParameterTypeMismatchException(myParameter.Value as Type, val.GetType());
             }
 
             return new FuncParameter(val, myTypeAttribute);

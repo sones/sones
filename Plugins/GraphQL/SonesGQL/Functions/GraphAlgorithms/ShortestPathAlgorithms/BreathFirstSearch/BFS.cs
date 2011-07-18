@@ -418,7 +418,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             //Dictionary to store visited TreeNodes
             Dictionary<Tuple<long, long>, Node> visitedNodes = new Dictionary<Tuple<long, long>, Node>();
 
-            HashSet<long> visitedVertices = new HashSet<long>();
+            HashSet<Tuple<long, long>> visitedVertices = new HashSet<Tuple<long, long>>();
 
             //current depth
             byte depth = 0;
@@ -465,17 +465,17 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             {
                 //get the first Object of the queue
                 IVertex currentVertex = queue.Dequeue();
-                Tuple<long, long> current = new Tuple<long, long>(currentVertex.VertexTypeID, currentVertex.VertexID);
 
                 //dummy
-                if (currentVertex == null || visitedVertices.Contains(currentVertex.VertexID))
+                if (currentVertex == null || visitedVertices.Contains(new Tuple<long, long>(currentVertex.VertexTypeID, currentVertex.VertexID)))
                 {
                     continue;
                 }
 
-                visitedVertices.Add(currentVertex.VertexID);
-
+                Tuple<long, long> current = new Tuple<long, long>(currentVertex.VertexTypeID, currentVertex.VertexID);
                 Node currentNode;
+                
+                visitedVertices.Add(current);
 
                 if (visitedNodes.ContainsKey(current))
                 {
@@ -491,11 +491,13 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                     var vertices = currentVertex.GetOutgoingEdge(myTypeAttribute.ID).GetTargetVertices();
 
                     Node nextNode;
+                    Tuple<long, long> next;
 
                     foreach (var vertex in vertices)
                     {
-                        //create a new node and set currentNode = parent, nextNode = child                            
-                        nextNode = new Node(current, currentNode);
+                        //create a new node and set currentNode = parent, nextNode = child
+                        next = new Tuple<long, long>(vertex.VertexTypeID, vertex.VertexID);
+                        nextNode = new Node(next, currentNode);
                         currentNode.addChild(nextNode);
 
                         //if the child is the target

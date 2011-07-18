@@ -1022,7 +1022,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                         }
                         else if (res.Value is IVertexView)
                         {
-                            //Attributes.Item2.Add(alias, GetNotResolvedReferenceEdgeAttributeValue(res.Value));
+                            Attributes.Item2.Add(alias, new HyperEdgeView(null, new List<ISingleEdgeView> { new SingleEdgeView(null, res.Value as IVertexView) }));
                         }
                         else
                         {
@@ -1133,18 +1133,6 @@ namespace sones.GraphQL.GQL.Manager.Select
                     return new SingleEdgeView(null, new VertexView(new Dictionary<String, object> {{"VertexTypeID", aVertex.VertexTypeID}, {"VertexID", aVertex.VertexID}}, null)); 
                 }));
         }
-
-        private IEdgeView GetNotResolvedReferenceEdgeAttributeValue(IEnumerable<IVertexView> vertexView)
-        {
-            var singleEdges = new List<SingleEdgeView>();
-            foreach (var view in vertexView)
-            {
-                singleEdges.Add(new SingleEdgeView(null, view));
-            }
-
-            return new HyperEdgeView(null, singleEdges);
-        }
-
 
         /// <summary>   Gets an attribute value - references will be resolved. </summary>
         ///

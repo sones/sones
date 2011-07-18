@@ -131,13 +131,13 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                 throw new InvalidFunctionParameterException("maxPathLength", ">= 2", maxPathLength.ToString());
 
             #endregion
-            
+
             #region call graph function
 
             HashSet<List<Tuple<long, long>>> paths = null;
 
             //BFS
-            if(useBidirectionalBFS)
+            if (useBidirectionalBFS)
                 //bidirectional BFS
                 paths = new BidirectionalBFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
             else
@@ -151,40 +151,26 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             {
                 #region create outputted views
 
-                var viewList = new List<IVertexView>();
-                var props = new Dictionary<String, object>();                
-                int i = 1;
-
-                List<List<Tuple<long, long>>.Enumerator> enumerators = new List<List<Tuple<long,long>>.Enumerator>();
+                List<List<Tuple<long, long>>.Enumerator> enumerators = new List<List<Tuple<long, long>>.Enumerator>();
 
                 foreach (var path in paths)
                 {
                     enumerators.Add(path.GetEnumerator());
-
-                    #region create VertexViews
-
-                    //props.Add("Path" + i.ToString(), new ListCollectionWrapper(path.ConvertAll<Tuple<IComparable, IComparable>>(x => (IComparable)x.Item1, )));
-
-                    #endregion
-
-                    i++;
                 }
 
-                GenerateVertexView(enumerators);
-                
-                var vertexView = new VertexView(props, null);
-                viewList.Add(vertexView);
+                //var view = GenerateVertexView(enumerators);
+
                 #endregion
-                                
+
                 //ALT
                 //return new FuncParameter(new EdgeTypePath(paths, typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
-                return new FuncParameter(viewList);
+                return new FuncParameter(new VertexView(null, null));
             }
             else
             {
                 //ALT
                 //return new FuncParameter(new EdgeTypePath(new HashSet<List<long>>(), typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
-                return new FuncParameter(new List<IVertexView>());
+                return new FuncParameter(new VertexView(null, null));
             }
 
             #endregion
@@ -193,8 +179,35 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
         private VertexView GenerateVertexView(List<List<Tuple<long, long>>.Enumerator> myEnumerators)
         {
             var enumerators = MoveNext(myEnumerators);
+            
+            Dictionary<String, Object> props = null;
+            List<ISingleEdgeView> singleEdges = new List<ISingleEdgeView>();
+            Dictionary<String, IEdgeView> edge = new Dictionary<string, IEdgeView>();
+            Tuple<long, long> current = null;
 
-            return null;
+            foreach (var enumerator in enumerators)
+            {
+                if (enumerator.Current != null)
+                    current = enumerator.Current;
+                else
+                    continue;
+
+                if (props == null)
+                {
+                    props = new Dictionary<String, Object>();
+
+                    props.Add("VertexID", current.Item2);
+                    props.Add("VertexTypeID", current.Item1);
+                }
+
+                //call next
+                singleEdges.Add(new SingleEdgeView(null, GenerateVertexView(myEnumerators)));
+            }
+
+            if(singleEdges.Count > 0)
+                edge.Add("path", new HyperEdgeView(null, singleEdges));
+
+            return new VertexView(props, edge);
         }
 
         private List<List<Tuple<long, long>>.Enumerator> MoveNext(List<List<Tuple<long, long>>.Enumerator> myEnumerator)
@@ -203,10 +216,12 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
             foreach (var enumerator in myEnumerator)
             {
+                if(enumerator.Current == null)
+                    enumerator.MoveNext();
+
                 if (enumerator.Current == null)
                     continue;
 
-                enumerator.MoveNext();
                 current.Add(enumerator);
             }
 
@@ -214,7 +229,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
         }
 
         #region IPluginable member
-        
+
         public override string PluginName
         {
             get { return "sones.path"; }
@@ -236,7 +251,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
         }
 
         public void Dispose()
-        {}
+        { }
 
         #endregion
     }
