@@ -40,6 +40,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private IVertexTypeHandler _vertexTypeManager;
 
+        private BaseGraphStorageManager _baseStorageManager;
+
         #endregion
 
         #region IVertexTypeManager Members
@@ -132,7 +134,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                         myAlterVertexTypeRequest.AddBinaryProperty(prop);
                     }
-                    else if (IsBaseType(unknown.AttributeType))
+                    else if (_baseTypeManager.IsBaseType(unknown.AttributeType))                        
                     {
                         var prop = ConvertUnknownToProperty(unknown);
 
@@ -619,7 +621,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Checks if the given vertex type predefinitions will succeed.
         /// </summary>
         /// <param name="myVertexTypeDefinitions">The list of vertex type predefinitions.<remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
-        private static void CheckAdd(
+        private void CheckAdd(
             IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
         {
             #region prolog
@@ -671,7 +673,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Checks for errors in a list of vertex type predefinitions without using the FS.
         /// </summary>
         /// <param name="myVertexTypeDefinitions">The list of vertex type predefinitions to be checked.</param>
-        private static void CanAddCheckBasics(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
+        private void CanAddCheckBasics(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
         {
             foreach (var vertexTypeDefinition in myVertexTypeDefinitions)
             {
@@ -695,7 +697,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Check for the correct default value.
         /// </summary>
         /// <param name="vertexTypeDefinition">The vertex type predefinition to be checked.</param>
-        private static void CheckDefaultValue(VertexTypePredefinition vertexTypeDefinition)
+        private void CheckDefaultValue(VertexTypePredefinition vertexTypeDefinition)
         {
             if (vertexTypeDefinition.Properties != null)
             {
@@ -703,7 +705,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 {
                     try
                     {
-                        var baseType = BaseGraphStorageManager.GetBaseType(item.AttributeType);
+                        var baseType = _baseStorageManager.GetBaseType(item.AttributeType);
                         item.DefaultValue.ConvertToIComparable(baseType);
                     }
                     catch (Exception e)
@@ -718,7 +720,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Checks the uniqueness of attribute names on a vertex type predefinition without asking the FS.
         /// </summary>
         /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
-        private static void CheckAttributes(VertexTypePredefinition vertexTypeDefinition)
+        private void CheckAttributes(VertexTypePredefinition vertexTypeDefinition)
         {
             var uniqueNameSet = new HashSet<string>();
 
@@ -808,7 +810,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
-        private static void ConvertUnknownAttributes(VertexTypePredefinition myVertexTypeDefinition)
+        private void ConvertUnknownAttributes(VertexTypePredefinition myVertexTypeDefinition)
         {
             if (myVertexTypeDefinition.UnknownAttributes == null)
                 return;
@@ -822,8 +824,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                     myVertexTypeDefinition.AddBinaryProperty(prop);
                 }
-                else if (IsBaseType(unknown.AttributeType))
-                {
+                else if (_baseTypeManager.IsBaseType(unknown.AttributeType))
+                {                    
                     var prop = ConvertUnknownToProperty(unknown);
 
                     myVertexTypeDefinition.AddProperty(prop);
@@ -931,6 +933,8 @@ namespace sones.GraphDB.Manager.TypeManagement
         public override void Initialize(IMetaManager myMetaManager)
         {
             _vertexTypeManager = myMetaManager.VertexTypeManager.ExecuteManager;
+            _baseTypeManager = myMetaManager.BaseTypeManager;
+            _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
 
         public override void Load(TransactionToken myTransaction, SecurityToken mySecurity)

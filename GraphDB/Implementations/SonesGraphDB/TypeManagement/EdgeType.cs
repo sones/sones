@@ -32,13 +32,14 @@ namespace sones.GraphDB.TypeManagement
         #region Data
 
         private IEnumerable<IEdgeType> _childs;
-        private readonly bool _hasChilds;
+        private readonly bool _hasChilds;        
 
         #endregion
 
         #region c'tor
 
-        public EdgeType(IVertex myVertex): base(myVertex)
+        public EdgeType(IVertex myVertex, BaseGraphStorageManager myBaseStorageManager)
+            : base(myVertex, myBaseStorageManager)
         {
             _hasChilds = HasIncomingVertices(BaseTypes.EdgeType, AttributeDefinitions.EdgeTypeDotParent);
         }
@@ -59,12 +60,12 @@ namespace sones.GraphDB.TypeManagement
 
         protected override BaseType RetrieveParentType()
         {
-            return HasParentType ? new EdgeType(GetOutgoingSingleEdge(AttributeDefinitions.EdgeTypeDotParent).GetTargetVertex()) : null;
+            return HasParentType ? new EdgeType(GetOutgoingSingleEdge(AttributeDefinitions.EdgeTypeDotParent).GetTargetVertex(), _baseStorageManager) : null;
         }
 
         protected override IDictionary<string, IAttributeDefinition> RetrieveAttributes()
         {
-            return BaseGraphStorageManager.GetPropertiesFromFS(Vertex, this).Cast<IAttributeDefinition>().ToDictionary(x => x.Name);
+            return _baseStorageManager.GetPropertiesFromFS(Vertex, this).Cast<IAttributeDefinition>().ToDictionary(x => x.Name);
         }
 
         protected override IEnumerable<BaseType> RetrieveChildrenTypes()
@@ -74,7 +75,7 @@ namespace sones.GraphDB.TypeManagement
 
             var vertices = GetIncomingVertices(BaseTypes.EdgeType, AttributeDefinitions.EdgeTypeDotParent);
 
-            return vertices.Select(vertex => new EdgeType(vertex)).ToArray();
+            return vertices.Select(vertex => new EdgeType(vertex, _baseStorageManager)).ToArray();
         }
 
         #endregion

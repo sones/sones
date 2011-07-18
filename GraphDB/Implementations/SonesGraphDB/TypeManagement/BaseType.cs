@@ -25,6 +25,7 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.TypeManagement.Base;
 using sones.Library.LanguageExtensions;
+using sones.GraphDB.Manager.BaseGraph;
 
 namespace sones.GraphDB.TypeManagement
 {
@@ -44,6 +45,8 @@ namespace sones.GraphDB.TypeManagement
         /// </summary>
         protected IDictionary<String, IAttributeDefinition> Attributes;
 
+        protected BaseGraphStorageManager _baseStorageManager;
+
         private BaseType _parent;
         private IEnumerable<BaseType> _children;
 
@@ -57,11 +60,12 @@ namespace sones.GraphDB.TypeManagement
 
         #region c'tor
 
-        protected BaseType(IVertex myBaseTypeVertex)
+        protected BaseType(IVertex myBaseTypeVertex, BaseGraphStorageManager myStorageManager)
         {
             #region checks
 
             myBaseTypeVertex.CheckNull("myVertex");
+            myStorageManager.CheckNull("myStorageManager");
 
             #endregion
 
@@ -73,6 +77,7 @@ namespace sones.GraphDB.TypeManagement
             _isSealed = GetProperty<bool>(AttributeDefinitions.BaseTypeDotIsSealed);
             _isAbstract = GetProperty<bool>(AttributeDefinitions.BaseTypeDotIsAbstract);
             _isUserDefined = GetProperty<bool>(AttributeDefinitions.BaseTypeDotIsUserDefined);
+            _baseStorageManager = myStorageManager;
 
             #endregion
         }

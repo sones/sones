@@ -32,6 +32,9 @@ using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Manager.BaseGraph;
 using sones.Constants;
+using sones.GraphDB.Manager.TypeManagement;
+using sones.Library.VersionedPluginManager;
+using sones.Library.UserdefinedDataType;
 
 namespace sones.GraphDB.Manager
 {
@@ -45,12 +48,12 @@ namespace sones.GraphDB.Manager
 
         private readonly SecurityToken _security;
         private readonly TransactionToken _transaction;
+        private readonly BaseGraphStorageManager _storageManager;
 
         #region Vertex information
 
         #region Attribute
-
-
+        
         private readonly VertexInformation _Attribute                 = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.Attribute);
         private readonly VertexInformation _AttributeDotIsUserDefined = new VertexInformation((long)BaseTypes.Property    , (long)AttributeDefinitions.AttributeDotIsUserDefined);
         private readonly VertexInformation _AttributeDotName          = new VertexInformation((long)BaseTypes.Property    , (long)AttributeDefinitions.AttributeDotName);
@@ -189,24 +192,6 @@ namespace sones.GraphDB.Manager
         private static readonly VertexInformation _BaseTypeUInt16   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt16);
         private static readonly VertexInformation _BaseTypeTimeSpan = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.TimeSpan);
 
-        public static readonly Dictionary<BasicTypes, VertexInformation> BasicTypesVertices = new Dictionary<BasicTypes, VertexInformation>
-        {
-            { BasicTypes.Boolean , _BaseTypeBoolean },
-            { BasicTypes.Byte    , _BaseTypeByte },
-            { BasicTypes.Char    , _BaseTypeChar },
-            { BasicTypes.DateTime, _BaseTypeDateTime },
-            { BasicTypes.Double  , _BaseTypeDouble },
-            { BasicTypes.Int16   , _BaseTypeInt16 },
-            { BasicTypes.Int32   , _BaseTypeInt32 },
-            { BasicTypes.Int64   , _BaseTypeInt64 },
-            { BasicTypes.SByte   , _BaseTypeSByte },
-            { BasicTypes.Single  , _BaseTypeSingle },
-            { BasicTypes.String  , _BaseTypeString },
-            { BasicTypes.TimeSpan, _BaseTypeTimeSpan },
-            { BasicTypes.UInt16  , _BaseTypeUInt16 },
-            { BasicTypes.UInt32  , _BaseTypeUInt32 },
-            { BasicTypes.UInt64  , _BaseTypeUInt64 },
-        };
 
         #endregion
 
@@ -229,13 +214,63 @@ namespace sones.GraphDB.Manager
         /// </summary>
         /// <param name="mySecurityToken">The root security token... can be left out</param>
         /// <param name="myTransactionToken">The root transaction token... can be left out</param>
-        public DBCreationManager(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public DBCreationManager(SecurityToken mySecurityToken, TransactionToken myTransactionToken, BaseGraphStorageManager myStorageManager)
         {
             _security = mySecurityToken;
             _transaction = myTransactionToken;
+            _storageManager = myStorageManager;
         }
  
 	    #endregion
+
+        #region UserDefined Data Types
+
+        public void AddUserDefinedDataTypes(IVertexStore myStore, AComponentPluginManager myPluginManager)
+        {
+            myStore.CheckNull("myStore");
+            
+            var creationDate = DateTime.UtcNow.ToBinary();
+
+            List<AUserdefinedDataType> userdefinedDataTypePlugins = new List<AUserdefinedDataType>();
+
+            foreach (var plugin in myPluginManager.GetPluginsForType<AUserdefinedDataType>())
+            {
+                userdefinedDataTypePlugins.Add((AUserdefinedDataType)plugin);
+            }
+
+            List<String> userdefinedTypes = new List<String>();
+            var maxValue = long.MinValue;
+            
+            foreach (var vertex in myStore.GetVerticesByTypeID(_security, _transaction, (long)BaseTypes.BaseType))
+            { 
+                if(vertex.GetProperty<Boolean>((long)AttributeDefinitions.BaseTypeDotIsUserDefined))
+                {
+                    if (!userdefinedDataTypePlugins.Any(item => item.TypeName == vertex.GetProperty<String>((long)AttributeDefinitions.BaseTypeDotName)))
+                    {
+                        throw new Exception();
+                    }
+                    else
+                    {
+                        userdefinedTypes.Add(vertex.GetProperty<String>((long)AttributeDefinitions.BaseTypeDotName));
+                    }
+                }
+
+                if (vertex.VertexID > maxValue)
+                {
+                    maxValue = vertex.VertexID;
+                }
+            }
+
+            maxValue++;
+
+            foreach (var type in userdefinedDataTypePlugins.Select(item => item.TypeName).Except(userdefinedTypes))
+            {
+                _storageManager.StoreBasicType(myStore, new VertexInformation((long)BaseTypes.BaseType, maxValue++), type, true, "UserdefinedType" + type, creationDate, _security, _transaction);
+            }
+
+        }
+
+        #endregion
 
         #region CreateBaseGraph(IVertexStore)
 
@@ -261,21 +296,21 @@ namespace sones.GraphDB.Manager
 
         private void AddBasicTypes(IVertexStore myStore, long myCreationDate)
         {
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeBoolean, "Boolean", false, "BaseTypeBooleanComment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeByte, "Byte", false, "BaseTypeByteComment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeChar, "Char", false, "BaseTypeCharComment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeDateTime, "DateTime", false, "BaseTypeDateTimeComment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeDouble, "Double", false, "BaseTypeDoubleComment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeInt16, "Int16", false, "BaseTypeInt16Comment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeInt32, "Int32", false, "BaseTypeInt32Comment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeInt64, "Int64", false, "BaseTypeInt64Comment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeSByte, "SByte", false, "BaseTypeSByteComment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeSingle, "Single", false, "BaseTypeSingleComment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeString, "String", false, "BaseTypeStringComment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeTimeSpan, "TimeSpan", false, "BaseTypeTimeSpanComment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeUInt16, "UInt16", false, "BaseTypeUInt16Comment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeUInt32, "UInt32", false, "BaseTypeUInt32Comment", myCreationDate, _security, _transaction);
-            BaseGraphStorageManager.StoreBasicType(myStore, _BaseTypeUInt64, "UInt64", false, "BaseTypeUInt64Comment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeBoolean, "Boolean", false, "BaseTypeBooleanComment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeByte, "Byte", false, "BaseTypeByteComment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeChar, "Char", false, "BaseTypeCharComment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeDateTime, "DateTime", false, "BaseTypeDateTimeComment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeDouble, "Double", false, "BaseTypeDoubleComment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeInt16, "Int16", false, "BaseTypeInt16Comment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeInt32, "Int32", false, "BaseTypeInt32Comment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeInt64, "Int64", false, "BaseTypeInt64Comment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeSByte, "SByte", false, "BaseTypeSByteComment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeSingle, "Single", false, "BaseTypeSingleComment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeString, "String", false, "BaseTypeStringComment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeTimeSpan, "TimeSpan", false, "BaseTypeTimeSpanComment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeUInt16, "UInt16", false, "BaseTypeUInt16Comment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeUInt32, "UInt32", false, "BaseTypeUInt32Comment", myCreationDate, _security, _transaction);
+            _storageManager.StoreBasicType(myStore, _BaseTypeUInt64, "UInt64", false, "BaseTypeUInt64Comment", myCreationDate, _security, _transaction);
         }
 
         #endregion
@@ -286,15 +321,15 @@ namespace sones.GraphDB.Manager
         {
             #region Index
 
-            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexIndexDotName, "IndexDotName", "IndexDotNameIndexComment", myCreationDate, null, true, false, false, false, null, _Index, null, _IndexDotName.SingleEnumerable().ToList(), _security, _transaction);
+            _storageManager.StoreIndex(myStore, _BaseUniqueIndexIndexDotName, "IndexDotName", "IndexDotNameIndexComment", myCreationDate, null, true, false, false, false, null, _Index, null, _IndexDotName.SingleEnumerable().ToList(), _security, _transaction);
 
             #endregion
 
             #region BaseType
 
-            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexBaseTypeDotName  , "BaseTypeDotName"  , "BaseTypeDotNameIndexComment"  , myCreationDate, null, true, false, false, false, null, _BaseType  , null, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
-            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexVertexTypeDotName, "VertexTypeDotName", "VertexTypeDotNameIndexComment", myCreationDate, null, true, false, false, false, null, _VertexType, _BaseUniqueIndexBaseTypeDotName, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
-            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexEdgeTypeDotName, "EdgeTypeDotName", "EdgeTypeDotNameIndexComment", myCreationDate, null, true, false, false, false, null, _EdgeType, _BaseUniqueIndexBaseTypeDotName, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
+            _storageManager.StoreIndex(myStore, _BaseUniqueIndexBaseTypeDotName  , "BaseTypeDotName"  , "BaseTypeDotNameIndexComment"  , myCreationDate, null, true, false, false, false, null, _BaseType  , null, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
+            _storageManager.StoreIndex(myStore, _BaseUniqueIndexVertexTypeDotName, "VertexTypeDotName", "VertexTypeDotNameIndexComment", myCreationDate, null, true, false, false, false, null, _VertexType, _BaseUniqueIndexBaseTypeDotName, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
+            _storageManager.StoreIndex(myStore, _BaseUniqueIndexEdgeTypeDotName, "EdgeTypeDotName", "EdgeTypeDotNameIndexComment", myCreationDate, null, true, false, false, false, null, _EdgeType, _BaseUniqueIndexBaseTypeDotName, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
 
             #endregion
 
@@ -315,13 +350,13 @@ namespace sones.GraphDB.Manager
         {
             #region OrderableEdge vertex
 
-            BaseGraphStorageManager.StoreEdgeType(myStore, _OrderableEdge, "Orderable", "OrderableEdgeEdgeComment", false, myCreationDate, false, true, _Edge, _security, _transaction);
+            _storageManager.StoreEdgeType(myStore, _OrderableEdge, "Orderable", "OrderableEdgeEdgeComment", false, myCreationDate, false, true, _Edge, _security, _transaction);
 
             #endregion
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreProperty(myStore, _OrderableEdgeDotOrder, "Order", "OrderComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _OrderableEdge, _BaseTypeUInt64, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _OrderableEdgeDotOrder, "Order", "OrderComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _OrderableEdge, _BaseTypeUInt64, _security, _transaction);
 
             #endregion
         }
@@ -330,13 +365,13 @@ namespace sones.GraphDB.Manager
         {
             #region WeightedEdge vertex
 
-            BaseGraphStorageManager.StoreEdgeType(myStore, _WeightedEdge, "Weighted", "WeightedEdgeComment", false, myCreationDate, false, true, _Edge, _security, _transaction);
+            _storageManager.StoreEdgeType(myStore, _WeightedEdge, "Weighted", "WeightedEdgeComment", false, myCreationDate, false, true, _Edge, _security, _transaction);
 
             #endregion
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreProperty(myStore, _WeightedEdgeDotWeight, "Weight", "WeightedComment", myCreationDate, true, PropertyMultiplicity.Single, "0.0", false, _WeightedEdge, _BaseTypeDouble, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _WeightedEdgeDotWeight, "Weight", "WeightedComment", myCreationDate, true, PropertyMultiplicity.Single, "0.0", false, _WeightedEdge, _BaseTypeDouble, _security, _transaction);
 
             #endregion
         }
@@ -345,7 +380,7 @@ namespace sones.GraphDB.Manager
         {
             #region WeightedEdge vertex
 
-            BaseGraphStorageManager.StoreEdgeType(myStore, _Edge, "Edge", "EdgeComment", false, myCreationDate, false, true, null, _security, _transaction);
+            _storageManager.StoreEdgeType(myStore, _Edge, "Edge", "EdgeComment", false, myCreationDate, false, true, null, _security, _transaction);
 
             #endregion
         }
@@ -372,21 +407,21 @@ namespace sones.GraphDB.Manager
         {
             #region Vertex vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _Vertex, GlobalConstants.Vertex, "VertexComment", myCreationDate, true, false, false, null, null, _security, _transaction);
+            _storageManager.StoreVertexType(myStore, _Vertex, GlobalConstants.Vertex, "VertexComment", myCreationDate, true, false, false, null, null, _security, _transaction);
                 
 
             #endregion
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreProperty(myStore, _VertexDotVertexID, GlobalConstants.VertexDotVertexID, "VertexIDComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _VertexDotCreationDate, GlobalConstants.VertexDotCreationDate, "CreationDateComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _VertexDotModificationDate, GlobalConstants.VertexDotModificationDate, "ModificationDateComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _VertexDotRevision, GlobalConstants.VertexDotRevision, "RevisionComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _VertexDotEdition, GlobalConstants.VertexDotEdition, "EditionComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeString, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _VertexDotTypeName, GlobalConstants.VertexDotVertexTypeName, "TypeNameComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeString, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _VertexDotTypeID, GlobalConstants.VertexDotVertexTypeID, "TypeIDComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _VertexDotComment, GlobalConstants.VertexDotComment, "CommentComment", myCreationDate, false, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeString, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _VertexDotVertexID, GlobalConstants.VertexDotVertexID, "VertexIDComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _VertexDotCreationDate, GlobalConstants.VertexDotCreationDate, "CreationDateComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _VertexDotModificationDate, GlobalConstants.VertexDotModificationDate, "ModificationDateComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _VertexDotRevision, GlobalConstants.VertexDotRevision, "RevisionComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _VertexDotEdition, GlobalConstants.VertexDotEdition, "EditionComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeString, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _VertexDotTypeName, GlobalConstants.VertexDotVertexTypeName, "TypeNameComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeString, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _VertexDotTypeID, GlobalConstants.VertexDotVertexTypeID, "TypeIDComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeInt64, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _VertexDotComment, GlobalConstants.VertexDotComment, "CommentComment", myCreationDate, false, PropertyMultiplicity.Single, null, false, _Vertex, _BaseTypeString, _security, _transaction);
 
             #endregion
         }
@@ -395,20 +430,20 @@ namespace sones.GraphDB.Manager
         {
             #region Index vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _Index, BaseTypes.Index, "IndexComment", myCreationDate, false, true, false, _Vertex, new[] {_BaseUniqueIndexIndexDotName}, _security, _transaction); 
+            _storageManager.StoreVertexType(myStore, _Index, BaseTypes.Index, "IndexComment", myCreationDate, false, true, false, _Vertex, new[] {_BaseUniqueIndexIndexDotName}, _security, _transaction); 
 
             #endregion
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _IndexDotIndexedProperties, "IndexedProperties", "IndexedPropertiesComment", false, myCreationDate, EdgeMultiplicity.MultiEdge, _Index, _Edge, _OrderableEdge, _Property, _security, _transaction);
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _IndexDotDefiningVertexType, "DefiningVertexType", "DefiningVertexTypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _Index, _Edge, null, _VertexType, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _IndexDotName, "Name", "NameComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Index, _BaseTypeString, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _IndexDotIsUserDefined, "IsUserDefined", "IsUserDefinedComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Index, _BaseTypeBoolean, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _IndexDotIndexClass, "IndexClass", "IndexClassComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Index, _BaseTypeString, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _IndexDotIsSingleValue, "IsSingleValue", "IsSingleValueComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Index, _BaseTypeBoolean, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _IndexDotIsRange, "IsRange", "IsRangeComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Index, _BaseTypeBoolean, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _IndexDotIsVersioned, "IsVersioned", "IsVersionedComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Index, _BaseTypeBoolean, _security, _transaction);
+            _storageManager.StoreOutgoingEdge(myStore, _IndexDotIndexedProperties, "IndexedProperties", "IndexedPropertiesComment", false, myCreationDate, EdgeMultiplicity.MultiEdge, _Index, _Edge, _OrderableEdge, _Property, _security, _transaction);
+            _storageManager.StoreOutgoingEdge(myStore, _IndexDotDefiningVertexType, "DefiningVertexType", "DefiningVertexTypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _Index, _Edge, null, _VertexType, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _IndexDotName, "Name", "NameComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Index, _BaseTypeString, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _IndexDotIsUserDefined, "IsUserDefined", "IsUserDefinedComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Index, _BaseTypeBoolean, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _IndexDotIndexClass, "IndexClass", "IndexClassComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Index, _BaseTypeString, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _IndexDotIsSingleValue, "IsSingleValue", "IsSingleValueComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Index, _BaseTypeBoolean, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _IndexDotIsRange, "IsRange", "IsRangeComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Index, _BaseTypeBoolean, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _IndexDotIsVersioned, "IsVersioned", "IsVersionedComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Index, _BaseTypeBoolean, _security, _transaction);
 
             #endregion
         }
@@ -417,7 +452,7 @@ namespace sones.GraphDB.Manager
         {
             #region Property vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _BinaryProperty, BaseTypes.BinaryProperty, "BinaryPropertyComment", myCreationDate, false, true, false, _Attribute, null, _security, _transaction); 
+            _storageManager.StoreVertexType(myStore, _BinaryProperty, BaseTypes.BinaryProperty, "BinaryPropertyComment", myCreationDate, false, true, false, _Attribute, null, _security, _transaction); 
 
             #endregion
 
@@ -427,16 +462,16 @@ namespace sones.GraphDB.Manager
         {
             #region Property vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _Property, BaseTypes.Property, "PropertyComment", myCreationDate, false, true, false, _Attribute, null, _security, _transaction);
+            _storageManager.StoreVertexType(myStore, _Property, BaseTypes.Property, "PropertyComment", myCreationDate, false, true, false, _Attribute, null, _security, _transaction);
 
             #endregion
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreProperty(myStore, _PropertyDotMultiplicity, "Multiplicity", "PropertyMultiplicityComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Property, _BaseTypeByte, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _PropertyDotIsMandatory, "IsMandatory", "IsMandatoryComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Property, _BaseTypeBoolean, _security, _transaction);
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _PropertyDotBaseType, "BaseType", "TypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _Property, _Edge, null, _BaseType, _security, _transaction);
-            BaseGraphStorageManager.StoreIncomingEdge(myStore, _PropertyDotInIndices, "InIndices", "InIndicesComment", false, myCreationDate, _Property, _IndexDotIndexedProperties, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _PropertyDotMultiplicity, "Multiplicity", "PropertyMultiplicityComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Property, _BaseTypeByte, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _PropertyDotIsMandatory, "IsMandatory", "IsMandatoryComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Property, _BaseTypeBoolean, _security, _transaction);
+            _storageManager.StoreOutgoingEdge(myStore, _PropertyDotBaseType, "BaseType", "TypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _Property, _Edge, null, _BaseType, _security, _transaction);
+            _storageManager.StoreIncomingEdge(myStore, _PropertyDotInIndices, "InIndices", "InIndicesComment", false, myCreationDate, _Property, _IndexDotIndexedProperties, _security, _transaction);
 
             #endregion
         }
@@ -445,13 +480,13 @@ namespace sones.GraphDB.Manager
         {
             #region IncomingEdge vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _IncomingEdge, BaseTypes.IncomingEdge, "IncomingEdgeComment", myCreationDate, false, true, false, _Attribute, null, _security, _transaction); 
+            _storageManager.StoreVertexType(myStore, _IncomingEdge, BaseTypes.IncomingEdge, "IncomingEdgeComment", myCreationDate, false, true, false, _Attribute, null, _security, _transaction); 
 
             #endregion
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _IncomingEdgeDotRelatedEdge, "RelatedEgde", "RelatedEdgeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _IncomingEdge, _Edge, null, _OutgoingEdge, _security, _transaction);
+            _storageManager.StoreOutgoingEdge(myStore, _IncomingEdgeDotRelatedEdge, "RelatedEgde", "RelatedEdgeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _IncomingEdge, _Edge, null, _OutgoingEdge, _security, _transaction);
 
             #endregion
         }
@@ -460,18 +495,18 @@ namespace sones.GraphDB.Manager
         {
             #region OutgoingEdge vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _OutgoingEdge, BaseTypes.OutgoingEdge, "OutgoingEdgeComment", myCreationDate, false, true, false, _Attribute, null, _security, _transaction); 
+            _storageManager.StoreVertexType(myStore, _OutgoingEdge, BaseTypes.OutgoingEdge, "OutgoingEdgeComment", myCreationDate, false, true, false, _Attribute, null, _security, _transaction); 
 
             #endregion
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreIncomingEdge(myStore, _OutgoingEdgeDotRelatedIncomingEdges, "RelatedIncomingEdges", "RelatedIncomingEdgesComment", false, myCreationDate, _OutgoingEdge, _IncomingEdgeDotRelatedEdge, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _OutgoingEdgeDotMultiplicity, "Multiplicity", "EdgeMultiplicityComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _OutgoingEdge, _BaseTypeByte, _security, _transaction);
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _OutgoingEdgeDotEdgeType, "EdgeType", "EdgeTypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _OutgoingEdge, _Edge, null, _EdgeType, _security, _transaction);
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _OutgoingEdgeDotInnerEdgeType, "InnerEdgeType", "InnerEdgeTypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _OutgoingEdge, _Edge, null, _EdgeType, _security, _transaction);
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _OutgoingEdgeDotSource, "Source", "SourceComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _OutgoingEdge, _Edge, null, _VertexType, _security, _transaction);
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _OutgoingEdgeDotTarget, "Target", "TargetComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _OutgoingEdge, _Edge, null, _VertexType, _security, _transaction);
+            _storageManager.StoreIncomingEdge(myStore, _OutgoingEdgeDotRelatedIncomingEdges, "RelatedIncomingEdges", "RelatedIncomingEdgesComment", false, myCreationDate, _OutgoingEdge, _IncomingEdgeDotRelatedEdge, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _OutgoingEdgeDotMultiplicity, "Multiplicity", "EdgeMultiplicityComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _OutgoingEdge, _BaseTypeByte, _security, _transaction);
+            _storageManager.StoreOutgoingEdge(myStore, _OutgoingEdgeDotEdgeType, "EdgeType", "EdgeTypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _OutgoingEdge, _Edge, null, _EdgeType, _security, _transaction);
+            _storageManager.StoreOutgoingEdge(myStore, _OutgoingEdgeDotInnerEdgeType, "InnerEdgeType", "InnerEdgeTypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _OutgoingEdge, _Edge, null, _EdgeType, _security, _transaction);
+            _storageManager.StoreOutgoingEdge(myStore, _OutgoingEdgeDotSource, "Source", "SourceComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _OutgoingEdge, _Edge, null, _VertexType, _security, _transaction);
+            _storageManager.StoreOutgoingEdge(myStore, _OutgoingEdgeDotTarget, "Target", "TargetComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _OutgoingEdge, _Edge, null, _VertexType, _security, _transaction);
 
             #endregion
         }
@@ -480,15 +515,15 @@ namespace sones.GraphDB.Manager
         {
             #region Attribute vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _Attribute, BaseTypes.Attribute, "AttributeComment", myCreationDate, true, false, false, _Vertex, null, _security, _transaction);
+            _storageManager.StoreVertexType(myStore, _Attribute, BaseTypes.Attribute, "AttributeComment", myCreationDate, true, false, false, _Vertex, null, _security, _transaction);
 
             #endregion
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreProperty(myStore, _AttributeDotIsUserDefined, "IsUserDefined", "IsUserDefinedComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Attribute, _BaseTypeBoolean, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _AttributeDotName, "Name", "NameComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Attribute, _BaseTypeString, _security, _transaction);
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _AttributeDotDefiningType, "DefiningType", "DefiningTypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _Attribute, _Edge, null, _BaseType, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _AttributeDotIsUserDefined, "IsUserDefined", "IsUserDefinedComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Attribute, _BaseTypeBoolean, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _AttributeDotName, "Name", "NameComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Attribute, _BaseTypeString, _security, _transaction);
+            _storageManager.StoreOutgoingEdge(myStore, _AttributeDotDefiningType, "DefiningType", "DefiningTypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _Attribute, _Edge, null, _BaseType, _security, _transaction);
 
             #endregion
         }
@@ -497,15 +532,15 @@ namespace sones.GraphDB.Manager
         {
             #region EdgeType vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _EdgeType, BaseTypes.EdgeType, "EdgeTypeComment", myCreationDate, false, true, false, _BaseType, new[] {_BaseUniqueIndexEdgeTypeDotName}, _security, _transaction); 
+            _storageManager.StoreVertexType(myStore, _EdgeType, BaseTypes.EdgeType, "EdgeTypeComment", myCreationDate, false, true, false, _BaseType, new[] {_BaseUniqueIndexEdgeTypeDotName}, _security, _transaction); 
 
 
             #endregion
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _EdgeTypeDotParent, "Parent", "ParentEdgeTypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _EdgeType, _Edge, null, _EdgeType, _security, _transaction);
-            BaseGraphStorageManager.StoreIncomingEdge(myStore, _EdgeTypeDotChildren, "Children", "ChildrenEdgeTypeComment", false, myCreationDate, _EdgeType, _EdgeTypeDotParent, _security, _transaction);
+            _storageManager.StoreOutgoingEdge(myStore, _EdgeTypeDotParent, "Parent", "ParentEdgeTypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _EdgeType, _Edge, null, _EdgeType, _security, _transaction);
+            _storageManager.StoreIncomingEdge(myStore, _EdgeTypeDotChildren, "Children", "ChildrenEdgeTypeComment", false, myCreationDate, _EdgeType, _EdgeTypeDotParent, _security, _transaction);
 
             #endregion            
         }
@@ -514,17 +549,17 @@ namespace sones.GraphDB.Manager
         {
             #region VertexType vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _VertexType, BaseTypes.VertexType, "VertexTypeComment", myCreationDate, false, true, false, _BaseType, new[] {_BaseUniqueIndexVertexTypeDotName}, _security, _transaction); 
+            _storageManager.StoreVertexType(myStore, _VertexType, BaseTypes.VertexType, "VertexTypeComment", myCreationDate, false, true, false, _BaseType, new[] {_BaseUniqueIndexVertexTypeDotName}, _security, _transaction); 
 
 
             #endregion
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _VertexTypeDotParent, "Parent", "ParentVertexTypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _VertexType, _Edge, null, _VertexType, _security, _transaction);
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _VertexTypeDotUniqueDefinitions, "UniquenessDefinitions", "UniqueDefinitionsComment", false, myCreationDate, EdgeMultiplicity.MultiEdge, _VertexType, _Edge, _Edge, _Index, _security, _transaction);
-            BaseGraphStorageManager.StoreIncomingEdge(myStore, _VertexTypeDotChildren, "Children", "ChildrenVertexTypeComment", false, myCreationDate, _VertexType, _VertexTypeDotParent, _security, _transaction);
-            BaseGraphStorageManager.StoreIncomingEdge(myStore, _VertexTypeDotIndices, "Indices", "IndicesComment", false, myCreationDate, _VertexType, _IndexDotDefiningVertexType, _security, _transaction);
+            _storageManager.StoreOutgoingEdge(myStore, _VertexTypeDotParent, "Parent", "ParentVertexTypeComment", false, myCreationDate, EdgeMultiplicity.SingleEdge, _VertexType, _Edge, null, _VertexType, _security, _transaction);
+            _storageManager.StoreOutgoingEdge(myStore, _VertexTypeDotUniqueDefinitions, "UniquenessDefinitions", "UniqueDefinitionsComment", false, myCreationDate, EdgeMultiplicity.MultiEdge, _VertexType, _Edge, _Edge, _Index, _security, _transaction);
+            _storageManager.StoreIncomingEdge(myStore, _VertexTypeDotChildren, "Children", "ChildrenVertexTypeComment", false, myCreationDate, _VertexType, _VertexTypeDotParent, _security, _transaction);
+            _storageManager.StoreIncomingEdge(myStore, _VertexTypeDotIndices, "Indices", "IndicesComment", false, myCreationDate, _VertexType, _IndexDotDefiningVertexType, _security, _transaction);
 
             #endregion
         }
@@ -533,27 +568,24 @@ namespace sones.GraphDB.Manager
         {
             #region BaseType vertex
 
-            BaseGraphStorageManager.StoreVertexType(myStore, _BaseType, BaseTypes.BaseType, "BaseTypeComment", myCreationDate, false, false, false, _Vertex, new[] {_BaseUniqueIndexBaseTypeDotName}, _security, _transaction); 
+            _storageManager.StoreVertexType(myStore, _BaseType, BaseTypes.BaseType, "BaseTypeComment", myCreationDate, false, false, false, _Vertex, new[] {_BaseUniqueIndexBaseTypeDotName}, _security, _transaction); 
 
 
             #endregion
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreProperty(myStore, _BaseTypeDotName, "Name", "NameComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _BaseType, _BaseTypeString, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _BaseTypeDotIsUserDefined, "IsUserDefined", "IsUserDefinedComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _BaseType, _BaseTypeBoolean, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _BaseTypeDotIsAbstract, "IsAbstract", "IsAbstractComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _BaseType, _BaseTypeBoolean, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _BaseTypeDotIsSealed, "IsSealed", "IsSealedComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _BaseType, _BaseTypeBoolean, _security, _transaction);
-            BaseGraphStorageManager.StoreProperty(myStore, _BaseTypeDotBehaviour, "Behaviour", "BehaviourComment", myCreationDate, false, PropertyMultiplicity.Single, null, false, _BaseType, _BaseTypeString, _security, _transaction);
-            BaseGraphStorageManager.StoreIncomingEdge(myStore, _BaseTypeDotAttributes, "Attributes", "AttributesComment", false, myCreationDate, _BaseType, _AttributeDotDefiningType, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _BaseTypeDotName, "Name", "NameComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _BaseType, _BaseTypeString, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _BaseTypeDotIsUserDefined, "IsUserDefined", "IsUserDefinedComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _BaseType, _BaseTypeBoolean, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _BaseTypeDotIsAbstract, "IsAbstract", "IsAbstractComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _BaseType, _BaseTypeBoolean, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _BaseTypeDotIsSealed, "IsSealed", "IsSealedComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _BaseType, _BaseTypeBoolean, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _BaseTypeDotBehaviour, "Behaviour", "BehaviourComment", myCreationDate, false, PropertyMultiplicity.Single, null, false, _BaseType, _BaseTypeString, _security, _transaction);
+            _storageManager.StoreIncomingEdge(myStore, _BaseTypeDotAttributes, "Attributes", "AttributesComment", false, myCreationDate, _BaseType, _AttributeDotDefiningType, _security, _transaction);
 
             #endregion
         }
 
         #endregion
-
-
-
 
         public bool CheckBaseGraph(IVertexStore myVertexStore)
         {

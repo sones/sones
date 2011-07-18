@@ -22,7 +22,7 @@ using System;
 
 namespace sones.GraphDB.TypeManagement.Base
 {
-    internal enum BaseTypes : long
+    public enum BaseTypes : long
     {
         BaseType       = Int64.MinValue,      //Vertextype
         VertexType     = Int64.MinValue + 1,  //Vertextype

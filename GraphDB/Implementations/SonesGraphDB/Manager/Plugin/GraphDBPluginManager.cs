@@ -26,6 +26,7 @@ using sones.Plugins.Index;
 using System;
 using sones.Plugins.Index.Interfaces;
 using System.Collections.Generic;
+using sones.Library.UserdefinedDataType;
 
 namespace sones.GraphDB.Manager.Plugin
 {
@@ -54,7 +55,8 @@ namespace sones.GraphDB.Manager.Plugin
                 .Register<ISingleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
                 .Register<IVersionedIndex<IComparable, Int64, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
                 .Register<IMultipleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
-                .Register<IIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion);
+                .Register<IIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
+                .Register<AUserdefinedDataType>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion);
 
             _pluginManager.Discover();
 
@@ -72,6 +74,8 @@ namespace sones.GraphDB.Manager.Plugin
             FillLookup<IVersionedIndex<IComparable, Int64, Int64>>(componentName, _ => _.IndexName);
             FillLookup<IMultipleValueIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
             FillLookup<IIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
+            FillLookup<AUserdefinedDataType>(componentName, _ => _.TypeName);
+
             #endregion   
         }
 

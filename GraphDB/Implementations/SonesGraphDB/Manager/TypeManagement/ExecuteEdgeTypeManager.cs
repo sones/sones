@@ -30,6 +30,7 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
+using sones.GraphDB.Manager.BaseGraph;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -38,6 +39,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         private readonly IDictionary<string, IEdgeType> _baseTypes = new Dictionary<String, IEdgeType>();
         private IDManager _idManager;
         private IManagerOf<IVertexHandler> _vertexManager;
+        private BaseGraphStorageManager _baseStorageManager;
         
         /// <summary>
         /// A property expression on EdgeType.Name
@@ -76,7 +78,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             if (vertex == null)
                 throw new KeyNotFoundException(string.Format("A edge type with name {0} was not found.", myTypeId));
 
-            return new EdgeType(vertex);
+            return new EdgeType(vertex, _baseStorageManager);
 
             #endregion
 
@@ -103,7 +105,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             if (vertex == null)
                 throw new KeyNotFoundException(string.Format("A edge type with name {0} was not found.", myTypeName));
 
-            return new EdgeType(vertex);
+            return new EdgeType(vertex, _baseStorageManager);
 
             #endregion
 
@@ -113,7 +115,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.EdgeType.ToString(), myTransaction, mySecurity, false);
 
-            return vertices == null ? Enumerable.Empty<IEdgeType>() : vertices.Select(x => new EdgeType(x));
+            return vertices == null ? Enumerable.Empty<IEdgeType>() : vertices.Select(x => new EdgeType(x, _baseStorageManager));
         }
 
         IEdgeType IEdgeTypeHandler.AddEdgeType(IEnumerable<EdgeTypePredefinition> myEdgeTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
@@ -136,6 +138,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         public void Initialize(IMetaManager myMetaManager)
         {
             _vertexManager = myMetaManager.VertexManager;
+            _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
 
         public void Load(TransactionToken myTransaction, SecurityToken mySecurity)
@@ -194,7 +197,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 if (vertex == null)
                     //TODO: better exception
                     throw new Exception("Could not load base edge type.");
-                _baseTypes.Add(baseType.ToString(), new EdgeType(vertex));
+                _baseTypes.Add(baseType.ToString(), new EdgeType(vertex, _baseStorageManager));
             }
         }
 

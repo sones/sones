@@ -37,9 +37,7 @@ using System.IO;
 using System.Globalization;
 using sones.Library.DiscordianDate;
 using System.Security.AccessControl;
-#if __MonoCS__
-using Mono.Unix.Native;
-#endif
+
 
 namespace sones.sonesGraphDBStarter
 {
@@ -97,20 +95,6 @@ namespace sones.sonesGraphDBStarter
                     string rootPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location);
                     string dataPath = rootPath + Path.DirectorySeparatorChar + configuredLocation;
                     location = new Uri(@dataPath);
-
-                    //commented because if there is any folder inside the path wich contains a whitespace, 
-                    //it is misinterpreted by the system and leads to failures
-//                    if (!Directory.Exists(location.AbsolutePath))
-//                    {
-                        
-//#if __MonoCS__
-//                        Syscall.mkdir(location.AbsolutePath, FilePermissions.ACCESSPERMS);
-//#else
-//                        Directory.CreateDirectory(location.AbsolutePath);
-//                        Directory.SetAccessControl(location.AbsolutePath, new DirectorySecurity(location.AbsolutePath, AccessControlSections.All));
-//#endif
-                        
-//                    }
                 }
 
                 try

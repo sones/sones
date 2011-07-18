@@ -29,6 +29,8 @@ using sones.Library.Commons.VertexStore;
 using sones.GraphDB.Manager.QueryPlan;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.GraphDB.Manager.BaseGraph;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphDB.Manager
 {
@@ -63,9 +65,24 @@ namespace sones.GraphDB.Manager
         IVertexStore VertexStore { get; }
 
         /// <summary>
+        /// The base graph storage manager.
+        /// </summary>
+        BaseGraphStorageManager BaseGraphStorageManager { get; }
+
+        /// <summary>
         /// The interface to the edge types
         /// </summary>
         IManagerOf<IEdgeTypeHandler> EdgeTypeManager { get; }
+
+        /// <summary>
+        /// The plugin manager.
+        /// </summary>
+        AComponentPluginManager PluginManager { get; }
+
+        /// <summary>
+        /// The base type manager.
+        /// </summary>
+        BaseTypeManager BaseTypeManager { get; }
 
         /// <summary>
         /// The security token for graph db intern usage.

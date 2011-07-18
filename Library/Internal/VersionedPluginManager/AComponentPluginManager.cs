@@ -70,7 +70,7 @@ namespace sones.Library.VersionedPluginManager
         /// </summary>
         /// <typeparam name="T">The plugin type.</typeparam>
         /// <returns>An ienumerable with the plugin names.</returns>
-        public IEnumerable<String> GetPluginsForType<T>()
+        public IEnumerable<String> GetPluginNameForType<T>()
         {
             var type = typeof(T);
             var result = new List<String>();
@@ -86,6 +86,26 @@ namespace sones.Library.VersionedPluginManager
                 }
 
                 return result;
+            }
+        }
+
+        /// <summary>
+        /// Returns the plugins of a special type.
+        /// </summary>
+        /// <typeparam name="T">The plugin type.</typeparam>
+        /// <returns>An enumeration of the plugins.</returns>
+        public IEnumerable<IPluginable> GetPluginsForType<T>()
+        {
+            var typePlugins = new List<IPluginable>();
+            
+            lock (_plugins)
+            {
+                foreach (var pluginName in GetPluginNameForType<T>())
+                {
+                    typePlugins.Add(GetPlugin(pluginName, typeof(T)));
+                }
+
+                return typePlugins;
             }
         }
 

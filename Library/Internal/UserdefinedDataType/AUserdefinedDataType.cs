@@ -24,40 +24,61 @@ using System.Linq;
 using System.Text;
 using sones.Library.Serializer;
 using sones.Library.NewFastSerializer;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.Library.UserdefinedDataType
 {
     /// <summary>
     /// Defines an abstract class for user defined data types.
     /// </summary>
-    public abstract class AUserdefinedDataType : IFastSerialize, IComparable
+    public abstract class AUserdefinedDataType : IFastSerialize, IComparable, IPluginable
     {
         #region property
 
         /// <summary>
         /// The full qualified class name of the user defined type.
         /// </summary>
-        public abstract String TypeName { get; set; }
-           
+        public abstract String TypeName { get; }
+   
         #endregion
 
         #region IFastSerialize Members
 
-        public void Serialize(ref SerializationWriter mySerializationWriter)
-        {            
-            mySerializationWriter.WriteString(TypeName);
-        }
+        public abstract void Serialize(ref SerializationWriter mySerializationWriter);
 
-        public void Deserialize(ref SerializationReader mySerializationReader)
-        {           
-            TypeName = mySerializationReader.ReadString();
-        }
+
+        public abstract void Deserialize(ref SerializationReader mySerializationReader);
+        
 
         #endregion
 
         #region IComparable Members
 
         public abstract int CompareTo(object obj);        
+
+        #endregion
+
+        #region IPluginable Members
+
+        public abstract string PluginName
+        {
+            get;
+        }
+
+        public abstract PluginParameters<Type> SetableParameters
+        {
+            get;
+        }
+
+        public abstract IPluginable InitializePlugin(string UniqueString, Dictionary<string, object> myParameters = null);
+        
+
+        #endregion
+
+        #region IDisposable Members
+
+        public abstract void Dispose();
+        
 
         #endregion
     }
