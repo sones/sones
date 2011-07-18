@@ -138,8 +138,8 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 #region All functions
 
-                myPluginManager.GetPluginsForType<IGQLFunction>();
-                foreach (var funcName in myPluginManager.GetPluginsForType<IGQLFunction>())
+                myPluginManager.GetPluginNameForType<IGQLFunction>();
+                foreach (var funcName in myPluginManager.GetPluginNameForType<IGQLFunction>())
                 {
                     try
                     {

@@ -262,7 +262,7 @@ namespace sones.GraphQL
             #region aggregate
 
             List<IGQLAggregate> aggregates = new List<IGQLAggregate>();
-            foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGQLAggregate>())
+            foreach (var plugin in _GQLPluginManager.GetPluginNameForType<IGQLAggregate>())
             {
                 aggregates.Add(_GQLPluginManager.GetAndInitializePlugin<IGQLAggregate>(plugin));
             }
@@ -278,7 +278,7 @@ namespace sones.GraphQL
             #region functions
 
             List<IGQLFunction> functions = new List<IGQLFunction>();
-            foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGQLFunction>())
+            foreach (var plugin in _GQLPluginManager.GetPluginNameForType<IGQLFunction>())
             {
                 functions.Add(_GQLPluginManager.GetAndInitializePlugin<IGQLFunction>(plugin) as IGQLFunction);
             }
@@ -295,9 +295,9 @@ namespace sones.GraphQL
 
             List<String> indices = new List<string>();
 
-            indices.AddRange(_GQLPluginManager.GetPluginsForType<IVersionedIndex<IComparable, Int64, Int64>>());
-            indices.AddRange(_GQLPluginManager.GetPluginsForType<ISingleValueIndex<IComparable, Int64>>());
-            indices.AddRange(_GQLPluginManager.GetPluginsForType<IMultipleValueIndex<IComparable, Int64>>());
+            indices.AddRange(_GQLPluginManager.GetPluginNameForType<IVersionedIndex<IComparable, Int64, Int64>>());
+            indices.AddRange(_GQLPluginManager.GetPluginNameForType<ISingleValueIndex<IComparable, Int64>>());
+            indices.AddRange(_GQLPluginManager.GetPluginNameForType<IMultipleValueIndex<IComparable, Int64>>());
 
             if (indices.Count < 1)
             {
@@ -311,7 +311,7 @@ namespace sones.GraphQL
             #region import
 
             List<IGraphDBImport> importer = new List<IGraphDBImport>();
-            foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGraphDBImport>())
+            foreach (var plugin in _GQLPluginManager.GetPluginNameForType<IGraphDBImport>())
             {
                 importer.Add(_GQLPluginManager.GetAndInitializePlugin<IGraphDBImport>(plugin));
             }
@@ -327,7 +327,7 @@ namespace sones.GraphQL
             #region export
 
             List<IGraphDBExport> exporter = new List<IGraphDBExport>();
-            foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGraphDBExport>())
+            foreach (var plugin in _GQLPluginManager.GetPluginNameForType<IGraphDBExport>())
             {
                 exporter.Add(_GQLPluginManager.GetAndInitializePlugin<IGraphDBExport>(plugin));
             }
@@ -343,7 +343,7 @@ namespace sones.GraphQL
             #region additional statements
 
             List<IGQLStatementPlugin> statements = new List<IGQLStatementPlugin>();
-            foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGQLStatementPlugin>())
+            foreach (var plugin in _GQLPluginManager.GetPluginNameForType<IGQLStatementPlugin>())
             {
                 statements.Add(_GQLPluginManager.GetAndInitializePlugin<IGQLStatementPlugin>(plugin,
                     new Dictionary<string, object>

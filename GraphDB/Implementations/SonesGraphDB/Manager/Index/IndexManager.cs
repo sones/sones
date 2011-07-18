@@ -68,6 +68,8 @@ namespace sones.GraphDB.Manager.Index
 
         private IManagerOf<IVertexTypeHandler> _vertexTypeManager;
 
+        private BaseGraphStorageManager _baseStorageManager;
+
         private Dictionary<long, IIndex<IComparable, Int64>> _indices = new Dictionary<long,IIndex<IComparable,long>>();
         private IDManager _idManager;
         private ISingleValueIndex<IComparable, long> _ownIndex;
@@ -143,7 +145,7 @@ namespace sones.GraphDB.Manager.Index
             var date = DateTime.UtcNow.ToBinary();
 
 
-            var indexVertex = BaseGraphStorageManager.StoreIndex(
+            var indexVertex = _baseStorageManager.StoreIndex(
                                 _vertexStore,
                                 info,
                                 indexName,
@@ -172,7 +174,7 @@ namespace sones.GraphDB.Manager.Index
     
                 var childIndex = _pluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(typeClass, parameter, childID);
 
-                BaseGraphStorageManager.StoreIndex(
+                _baseStorageManager.StoreIndex(
                                 _vertexStore,
                                 new VertexInformation((long)BaseTypes.Index, childID),
                                 childName,
@@ -197,7 +199,7 @@ namespace sones.GraphDB.Manager.Index
 
             
 
-            var indexDefinition = BaseGraphStorageManager.CreateIndexDefinition(indexVertex, vertexType);
+            var indexDefinition = _baseStorageManager.CreateIndexDefinition(indexVertex, vertexType);
 
             _vertexTypeManager.ExecuteManager.CleanUpTypes();
 
@@ -347,7 +349,7 @@ namespace sones.GraphDB.Manager.Index
             var vertex = _vertexStore.GetVertex(mySecurity, myTransaction, myIndexID, (long)BaseTypes.Index, String.Empty);
             if (_vertexStore.RemoveVertex(mySecurity, myTransaction, myIndexID, (long)BaseTypes.Index))
             {
-                var def = BaseGraphStorageManager.CreateIndexDefinition(vertex);
+                var def = _baseStorageManager.CreateIndexDefinition(vertex);
                 _ownIndex.Remove(def.Name);
                 _indices.Remove(myIndexID);
             }
@@ -452,6 +454,7 @@ namespace sones.GraphDB.Manager.Index
         {
             _vertexTypeManager = myMetaManager.VertexTypeManager;
             _vertexStore = myMetaManager.VertexStore;
+            _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
 
         public void Load(TransactionToken myTransaction, SecurityToken mySecurity)
@@ -461,7 +464,7 @@ namespace sones.GraphDB.Manager.Index
             var vertices = _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, (long)BaseTypes.Index);
             foreach (var indexVertex in vertices)
             {
-                var def = BaseGraphStorageManager.CreateIndexDefinition(indexVertex);
+                var def = _baseStorageManager.CreateIndexDefinition(indexVertex);
                 var vertexType = def.VertexType;
                 var indexID = def.ID;
                 maxID = Math.Max(maxID, def.ID);

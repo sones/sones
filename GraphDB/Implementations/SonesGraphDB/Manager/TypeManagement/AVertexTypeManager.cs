@@ -57,12 +57,18 @@ namespace sones.GraphDB.Manager.TypeManagement
         public abstract bool HasVertexType(string myVertexTypeName, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
         public abstract void CleanUpTypes();
+
         #endregion
 
         /// <summary>
         /// The expected count of vertex types to add.
         /// </summary>
         private const int ExpectedVertexTypes = 100;
+
+        /// <summary>
+        /// The base type manager
+        /// </summary>
+        protected BaseTypeManager _baseTypeManager;
 
         /// <summary>
         /// Checks a list of VertexTypePredefinitions for duplicate vertex names.
@@ -183,7 +189,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
         /// <param name="myUniqueNameSet">A set of attribute names defined on this vertex type predefinition.</param>
-        protected static void CheckPropertiesUniqueName(VertexTypePredefinition myVertexTypeDefinition, ISet<string> myUniqueNameSet)
+        protected void CheckPropertiesUniqueName(VertexTypePredefinition myVertexTypeDefinition, ISet<string> myUniqueNameSet)
         {
             if (myVertexTypeDefinition.Properties != null)
                 foreach (var prop in myVertexTypeDefinition.Properties)
@@ -201,17 +207,15 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinition">The vertex type predefinition that defines the property.</param>
         /// <param name="myProperty">The property to be checked.</param>
-        protected static void CheckPropertyType(VertexTypePredefinition myVertexTypeDefinition, PropertyPredefinition myProperty)
+        protected void CheckPropertyType(VertexTypePredefinition myVertexTypeDefinition, PropertyPredefinition myProperty)
         {
             if (String.IsNullOrWhiteSpace(myProperty.AttributeType))
             {
                 throw new EmptyPropertyTypeException(myVertexTypeDefinition, myProperty.AttributeName);
             }
-
-            if (!IsBaseType(myProperty.AttributeType))
+                        
+            if (!_baseTypeManager.IsBaseType(myProperty.AttributeType))
             {
-                //it is not one of the base types
-                //TODO: check if it is a user defined data type
                 throw new UnknownPropertyTypeException(myVertexTypeDefinition, myProperty.AttributeType);
             }
         }
@@ -226,17 +230,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             return myAttributeType.Split(IncomingEdgePredefinition.TypeSeparator)[0];
         }
 
-        /// <summary>
-        /// Gets whether a property predefinition has a basic c# type as type.
-        /// </summary>
-        /// <param name="myProperty">The property to be checked.</param>
-        /// <returns>True, if the property has a type that is in the list of supported c# types, otherwise false.</returns>
-        protected static bool IsBaseType(String myType)
-        {
-            BasicTypes result;
-            return Enum.TryParse(myType, false, out result);
-        }
-
+        
         /// <summary>
         /// TODO find better check method
         /// Checks if the given type is a base type

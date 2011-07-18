@@ -82,6 +82,7 @@
     <Compile Include="Manager\Security\BasicSecurityManager.cs" />
     <Compile Include="Manager\Transaction\BasicTransactionManager.cs" />
     <Compile Include="Manager\TypeManagement\AVertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\BaseTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\CheckEdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\CheckVertexTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\ExecuteEdgeTypeManager.cs" />
@@ -199,6 +200,10 @@
     <ProjectReference Include="..\..\..\Library\Internal\Settings\Settings.csproj">
       <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
       <Name>Settings</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\UserdefinedDataType\UserdefinedDataType.csproj">
+      <Project>{1A2B672E-DD8C-4948-8370-1483408E3B50}</Project>
+      <Name>UserdefinedDataType</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>

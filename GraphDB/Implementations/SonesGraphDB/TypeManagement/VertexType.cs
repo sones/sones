@@ -54,8 +54,8 @@ namespace sones.GraphDB.TypeManagement
         /// Creates a new instance of VertexType.
         /// </summary>
         /// <param name="myVertexTypeVertex">An IVertex that represents the vertex type.</param>
-        internal VertexType(IVertex myVertexTypeVertex)
-            : base(myVertexTypeVertex)
+        internal VertexType(IVertex myVertexTypeVertex, BaseGraphStorageManager myBaseStorageManager)
+            : base(myVertexTypeVertex, myBaseStorageManager)
         {
             _hasOwnUniques = HasOutgoingEdge(AttributeDefinitions.VertexTypeDotUniquenessDefinitions);
             _hasOwnIndices = HasIncomingVertices(BaseTypes.Index, AttributeDefinitions.IndexDotDefiningVertexType);
@@ -78,7 +78,7 @@ namespace sones.GraphDB.TypeManagement
 
         protected override BaseType RetrieveParentType()
         {
-            return HasParentType ? new VertexType(GetOutgoingSingleEdge(AttributeDefinitions.VertexTypeDotParent).GetTargetVertex()) : null;
+            return HasParentType ? new VertexType(GetOutgoingSingleEdge(AttributeDefinitions.VertexTypeDotParent).GetTargetVertex(), _baseStorageManager) : null;
         }
 
         protected override IEnumerable<BaseType> RetrieveChildrenTypes()
@@ -88,16 +88,16 @@ namespace sones.GraphDB.TypeManagement
 
             var vertices = GetIncomingVertices(BaseTypes.VertexType, AttributeDefinitions.VertexTypeDotParent);
 
-            return vertices.Select(vertex => new VertexType(vertex)).ToArray();
+            return vertices.Select(vertex => new VertexType(vertex, _baseStorageManager)).ToArray();
             
         }
 
         protected override IDictionary<string, IAttributeDefinition> RetrieveAttributes()
         {
-            return BaseGraphStorageManager.GetBinaryPropertiesFromFS(Vertex, this).Cast<IAttributeDefinition>()
-                .Union(BaseGraphStorageManager.GetPropertiesFromFS(Vertex, this))
-                .Union(BaseGraphStorageManager.GetOutgoingEdgesFromFS(Vertex, this))
-                .Union(BaseGraphStorageManager.GetIncomingEdgesFromFS(Vertex, this))
+            return _baseStorageManager.GetBinaryPropertiesFromFS(Vertex, this).Cast<IAttributeDefinition>()
+                .Union(_baseStorageManager.GetPropertiesFromFS(Vertex, this))
+                .Union(_baseStorageManager.GetOutgoingEdgesFromFS(Vertex, this))
+                .Union(_baseStorageManager.GetIncomingEdgesFromFS(Vertex, this))
                 .ToDictionary(x => x.Name);
         }
 
@@ -282,7 +282,7 @@ namespace sones.GraphDB.TypeManagement
             {
                 var edge = GetOutgoingHyperEdge(AttributeDefinitions.VertexTypeDotUniquenessDefinitions);
                 var vertices = edge.GetTargetVertices();
-                var indices = vertices.Select(x => BaseGraphStorageManager.CreateIndexDefinition(x, this));
+                var indices = vertices.Select(x => _baseStorageManager.CreateIndexDefinition(x, this));
                 return indices.Select(ConvertIIndexDefinitionToIUniqueDefinition).ToArray();
             }
             return Enumerable.Empty<IUniqueDefinition>();
@@ -315,7 +315,7 @@ namespace sones.GraphDB.TypeManagement
             if (_hasOwnIndices)
             {
                 var vertices = GetIncomingVertices(BaseTypes.Index, AttributeDefinitions.IndexDotDefiningVertexType);
-                return vertices.Select(x => BaseGraphStorageManager.CreateIndexDefinition(x, this)).ToArray();
+                return vertices.Select(x => _baseStorageManager.CreateIndexDefinition(x, this)).ToArray();
             }
             return Enumerable.Empty<IIndexDefinition>();
 

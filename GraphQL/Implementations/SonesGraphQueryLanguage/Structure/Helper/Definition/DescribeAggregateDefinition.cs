@@ -144,8 +144,8 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 #region All aggregates
 
-                myPluginManager.GetPluginsForType<IGQLAggregate>();
-                foreach (var aggregateName in myPluginManager.GetPluginsForType<IGQLAggregate>())
+                myPluginManager.GetPluginNameForType<IGQLAggregate>();
+                foreach (var aggregateName in myPluginManager.GetPluginNameForType<IGQLAggregate>())
                 {
                     try
                     {

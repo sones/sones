@@ -62,7 +62,7 @@ namespace sones.Plugins.GraphDS.RESTService
             _RestPluginManager = new RESTServicePluginManager();
             _IOPlugins = new Dictionary<String, IOInterface>();
 
-            foreach (var item in _RestPluginManager.GetPluginsForType<IOInterface>())
+            foreach (var item in _RestPluginManager.GetPluginNameForType<IOInterface>())
             {
                 var plugin = _RestPluginManager.GetAndInitializePlugin<IOInterface>(item);
                 _IOPlugins.Add(plugin.ContentType.MediaType,plugin);
