@@ -158,13 +158,13 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                     enumerators.Add(path.GetEnumerator());
                 }
 
-                //var view = GenerateVertexView(enumerators);
+                var view = GenerateVertexView(enumerators);
 
                 #endregion
 
                 //ALT
                 //return new FuncParameter(new EdgeTypePath(paths, typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
-                return new FuncParameter(new VertexView(null, null));
+                return new FuncParameter(view);
             }
             else
             {
@@ -201,13 +201,18 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                 }
 
                 //call next
-                singleEdges.Add(new SingleEdgeView(null, GenerateVertexView(myEnumerators)));
+                var nextLevel = GenerateVertexView(enumerators);
+
+                if(nextLevel != null)
+                    singleEdges.Add(new SingleEdgeView(null, nextLevel));
             }
 
             if(singleEdges.Count > 0)
                 edge.Add("path", new HyperEdgeView(null, singleEdges));
 
-            return new VertexView(props, edge);
+            if (props != null)
+                return new VertexView(props, edge);
+            else return null;
         }
 
         private List<List<Tuple<long, long>>.Enumerator> MoveNext(List<List<Tuple<long, long>>.Enumerator> myEnumerator)
@@ -216,8 +221,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
             foreach (var enumerator in myEnumerator)
             {
-                if(enumerator.Current == null)
-                    enumerator.MoveNext();
+                enumerator.MoveNext();
 
                 if (enumerator.Current == null)
                     continue;
