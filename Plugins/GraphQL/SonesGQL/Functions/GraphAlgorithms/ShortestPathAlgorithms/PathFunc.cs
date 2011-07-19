@@ -137,11 +137,11 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             HashSet<List<Tuple<long, long>>> paths = null;
 
             //BFS
-            if (useBidirectionalBFS)
-                //bidirectional BFS
-                paths = new BidirectionalBFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
-            else
-                paths = new BFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
+            //if (useBidirectionalBFS)
+            //    //bidirectional BFS
+            //    paths = new BidirectionalBFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
+            //else
+            //    paths = new BFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
 
             #endregion
 
