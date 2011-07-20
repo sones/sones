@@ -518,7 +518,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                                 else
                                 {
                                     //got the shortest, finished
-                                    return new TargetAnalyzer(root, target, myMaxPathLength, shortestOnly, findAll).getPaths();
+                                    return new TargetAnalyzer(root, target, myMaxPathLength, shortestOnly, findAll).GetPaths();
                                 }
                             }
                         }
@@ -556,7 +556,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             #endregion
 
             //analyze paths
-            return new TargetAnalyzer(root, target, myMaxPathLength, shortestOnly, findAll).getPaths();
+            return new TargetAnalyzer(root, target, myMaxPathLength, shortestOnly, findAll).GetPaths();
         }
     }
 }

@@ -88,7 +88,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             var typeAttribute = myAttributeDefinition;
 
             if (myStartVertex == null)
-                throw new InvalidFunctionParameterException("StartNode", "IVertex that represents the start node", "null");
+                throw new InvalidFunctionParameterException("StartVertex", "Vertex that represents the start vertex", "null");
 
             //set the start node
             var startNode = myStartVertex;
@@ -97,7 +97,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             var targetNode = (myParams[0].Value as IEnumerable<IVertex>).First();
 
             if (targetNode == null)
-                throw new InvalidFunctionParameterException("TargetNode", "IVertex that represents the target node", "null");
+                throw new InvalidFunctionParameterException("TargetVertex", "Vertex that represents the target vertex", "null");
 
             //set the maximum depth 
             byte maxDepth = Convert.ToByte(myParams[1].Value);
@@ -119,6 +119,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             //mark if the BidirectionalBFS should be used
             bool useBidirectionalBFS = Convert.ToBoolean(myParams[5].Value);
 
+            var vertexType = myGraphDB.GetVertexType<IVertexType>(mySecurityToken, myTransactionToken, new GraphDB.Request.RequestGetVertexType(startNode.VertexTypeID), (stats, type) => type);
+
+            if(vertexType == null)
+                throw new InvalidFunctionParameterException("StartVertexType", "VertexType that represents the start vertex type not found", startNode.VertexTypeID);
             #endregion
 
             #region check correctness of parameters
@@ -137,11 +141,11 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             HashSet<List<Tuple<long, long>>> paths = null;
 
             //BFS
-            //if (useBidirectionalBFS)
-            //    //bidirectional BFS
-            //    paths = new BidirectionalBFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
-            //else
-            //    paths = new BFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
+            if (useBidirectionalBFS)
+                //bidirectional BFS
+                paths = new BidirectionalBFS().Find(typeAttribute, vertexType, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
+            else
+                paths = new BFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
 
             #endregion
 
