@@ -77,8 +77,15 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
         #region Ctor
 
-        public SelectDefinition(List<TypeReferenceDefinition> myTypeList, List<Tuple<AExpressionDefinition, string, SelectValueAssignment>> mySelectedElements, BinaryExpressionDefinition myWhereExpressionDefinition,
-            List<IDChainDefinition> myGroupByIDs, BinaryExpressionDefinition myHaving, ulong? myLimit, ulong? myOffset, OrderByDefinition myOrderByDefinition, long myResolutionDepth)
+        public SelectDefinition(List<TypeReferenceDefinition> myTypeList, 
+                                List<Tuple<AExpressionDefinition, string, SelectValueAssignment>> mySelectedElements, 
+                                BinaryExpressionDefinition myWhereExpressionDefinition,
+                                List<IDChainDefinition> myGroupByIDs, 
+                                BinaryExpressionDefinition myHaving, 
+                                ulong? myLimit, 
+                                ulong? myOffset, 
+                                OrderByDefinition myOrderByDefinition, 
+                                long myResolutionDepth)
         {
             TypeList = myTypeList;
             SelectedElements = mySelectedElements;

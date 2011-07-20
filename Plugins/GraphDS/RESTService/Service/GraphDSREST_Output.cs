@@ -157,7 +157,10 @@ namespace sones.Plugins.GraphDS.RESTService
             }
             catch (Exception ex)
             {
-                _ErrorMsg.Error400_BadRequest(ex.Message + ex.StackTrace);
+                if (ex.Message != null)
+                    _ErrorMsg.Error400_BadRequest(ex.Message + ex.StackTrace);
+                else
+                    _ErrorMsg.Error400_BadRequest("Error from " + ex.Source + ex.StackTrace);
             }
            
 
