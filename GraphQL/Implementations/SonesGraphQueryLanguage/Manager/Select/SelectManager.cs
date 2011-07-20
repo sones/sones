@@ -242,7 +242,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                     else //if (!(aColumnItemNode.ColumnSourceValue is AggregateNode))
                     {
 
-                        IVertexType theType;
+                        IVertexType theType = null;
                         String reference = idChainSelection.Reference.Item1;
                         // this will happen, if the user selected FROM User u SELECT Name
                         if (!myTypeList.ContainsKey(reference))
@@ -261,6 +261,9 @@ namespace sones.GraphQL.GQL.Manager.Select
                         {
                             theType = myTypeList[reference];
                         }
+
+                        //if (theType != null && theType.GetAncestorVertexTypesAndSelf().Select(x => x.ID).Contains(idChainSelection.LastAttribute.RelatedType.ID))
+                        //    reference = theType.GetAncestorVertexTypesAndSelf().Where(x => x.ID == idChainSelection.LastAttribute.RelatedType.ID).First().Name;
 
                         if (idChainSelection.SelectType != TypesOfSelect.None)
                         {
