@@ -28,372 +28,20 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 {
     public sealed class BFS
     {
-        ///// <summary>
-        ///// Sucht im Graphen nach Knoten "myEnd" ausgehend vom Knoten "myStart", bis zur max. Tiefe "myMaxDepth".
-        ///// </summary>
-        ///// <param name="myTypeAttribute">Kante über die gesucht werden soll</param>
-        ///// <param name="myDBContext"></param>
-        ///// <param name="myStart">Startknoten</param>
-        ///// <param name="myEnd">gesuchter Knoten</param>
-        ///// <param name="myMaxDepth">max. Tiefe</param>
-        ///// <returns>true wenn gesuchter Knoten min. 1 mal gefunden, false sonst</returns>
-        //public bool Find(IAttributeDefinition myTypeAttribute, IVertex myStart, IVertex myEnd, byte myMaxDepth)
-        //{
-        //    #region data
-        //    //queue for BFS
-        //    Queue<long> queue = new Queue<ObjectUUID>();
+        #region data
 
-        //    //Dictionary to store visited TreeNodes
-        //    HashSet<ObjectUUID> visitedNodes = new HashSet<ObjectUUID>();
+        List<IVertexType> _Types;
 
-        //    //current depth
-        //    byte depth = 1;
+        #endregion
 
-        //    //first node in path tree, the start of the select
-        //    ObjectUUID root = myStart.ObjectUUID;
+        #region constructor
 
-        //    //target node, the target of the select
-        //    ObjectUUID target = myEnd.ObjectUUID;
+        public BFS()
+        {
+            _Types = new List<IVertexType>();
+        }
 
-        //    //dummy node to check in which level the BFS is
-        //    ObjectUUID dummy = null;
-
-        //    //enqueue first node to start the BFS
-        //    queue.Enqueue(root);
-        //    queue.Enqueue(dummy);
-
-        //    //add root to visitedNodes
-        //    visitedNodes.Add(root);
-
-        //    //holds the actual DBObject
-        //    Exceptional<DBObjectStream> currentDBObject;
-        //    #endregion data
-
-        //    #region BFS
-
-        //    #region validate root
-        //    //check if root has edge
-        //    var dbo = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), root);
-        //    if (dbo.Failed())
-        //    {
-        //        throw new NotImplementedException();
-        //    }
-
-        //    if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
-        //    {
-        //        return false;
-        //    }
-        //    #endregion validate root
-
-        //    //if there is more than one object in the queue and the actual depth is less than MaxDepth
-        //    while ((queue.Count > 1) && (depth <= myMaxDepth))
-        //    {
-        //        //get the first Object of the queue
-        //        ObjectUUID nodeOfQueue = queue.Dequeue();
-
-        //        #region check if nodeOfQueue is a dummy
-        //        //if nodeOfQueue is a dummy, this level is completely worked off
-        //        if (nodeOfQueue == null)
-        //        {
-        //            depth++;
-
-        //            queue.Enqueue(nodeOfQueue);
-
-        //            continue;
-        //        }
-        //        #endregion check if current is a dummy
-
-        //        //load DBObject
-        //        currentDBObject = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), nodeOfQueue);
-        //        if (currentDBObject.Failed())
-        //        {
-        //            throw new NotImplementedException();
-        //        }
-
-        //        if (currentDBObject.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
-        //        {
-        //            #region EdgeType is ASetOfReferencesEdgeType
-        //            if (myTypeAttribute.EdgeType is ASetOfReferencesEdgeType)
-        //            {
-        //                //get all referenced ObjectUUIDs using the given Edge                                                
-        //                var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASetOfReferencesEdgeType).GetAllReferenceIDs();
-        //                ObjectUUID currentNode;
-
-        //                foreach (ObjectUUID obj in objectUUIDs)
-        //                {
-        //                    #region obj is target
-        //                    //if the child is the target
-        //                    if (target.Equals(obj))
-        //                    {
-        //                        return true;
-        //                    }
-        //                    #endregion obj is target
-        //                    #region never seen before
-        //                    else if (!visitedNodes.Contains(obj))
-        //                    {
-        //                        //create new node and set nodeOfQueue as parent
-        //                        currentNode = new ObjectUUID(obj.ToString());
-
-        //                        //mark the node as visited
-        //                        visitedNodes.Add(currentNode);
-
-        //                        //put created node in queue
-        //                        queue.Enqueue(currentNode);
-        //                    }
-        //                    #endregion never seen before
-        //                }
-        //            }
-        //            #endregion EdgeType is ASetOfReferencesEdgeType
-        //            #region EdgeType is ASingleReferenceEdgeType
-        //            else if (myTypeAttribute.EdgeType is ASingleReferenceEdgeType)
-        //            {
-        //                //get all referenced ObjectUUIDs using the given Edge                                                
-        //                var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASingleReferenceEdgeType).GetAllReferenceIDs();
-        //                ObjectUUID objectUUID = objectUUIDs.First<ObjectUUID>();
-        //                ObjectUUID currentNode;
-
-        //                #region obj is target
-        //                //if the child is the target
-        //                if (target.Equals(objectUUID))
-        //                {
-        //                    return true;
-        //                }
-        //                #endregion obj is target
-        //                #region never seen before
-        //                else if (!visitedNodes.Contains(objectUUID))
-        //                {
-        //                    //create new node and set nodeOfQueue as parent
-        //                    currentNode = new ObjectUUID(objectUUID.ToString());
-
-        //                    //mark the node as visited
-        //                    visitedNodes.Add(currentNode);
-
-        //                    //put created node in queue
-        //                    queue.Enqueue(currentNode);
-        //                }
-        //                #endregion never seen before
-        //            }
-        //            #endregion EdgeType is ASingleReferenceEdgeType
-        //            else
-        //            {
-        //                throw new NotImplementedException();
-        //            }
-        //        }
-        //    }
-
-        //    #endregion BFS
-
-        //    return false;
-        //}
-
-        ///// <summary>
-        ///// Sucht im Graphen nach Knoten "myEnd" ausgehend von der Knotenmenge "myEdge", bis zur max. Tiefe "myMaxDepth".
-        ///// </summary>
-        ///// <param name="myTypeAttribute">Kante über die gesucht werden soll</param>
-        ///// <param name="myDBContext"></param>
-        ///// <param name="myStart">Startknoten</param>
-        ///// <param name="myEnd">gesuchter Knoten</param>
-        ///// <param name="myEdge">Menge an Knoten, ausgehend vom Startknoten welche mittels einer Funktion eingeschränkt wurde</param>
-        ///// <param name="myMaxDepth">max. Tiefe</param>
-        ///// <returns>true wenn gesuchter Knoten min. 1 mal gefunden, false sonst</returns>
-        //public bool Find(IAttributeDefinition myTypeAttribute, IVertex myStart, IVertex myEnd, IEdge myEdge, byte myMaxDepth)
-        //{
-        //    #region data
-        //    //queue for BFS
-        //    Queue<ObjectUUID> queue = new Queue<ObjectUUID>();
-
-        //    //Dictionary to store visited TreeNodes
-        //    BigHashSet<ObjectUUID> visitedNodes = new BigHashSet<ObjectUUID>();
-
-        //    //current depth
-        //    byte depth = 2;
-
-        //    //first node in path tree, the start of the select
-        //    ObjectUUID root = myStart.ObjectUUID;
-
-        //    //constrainted set of nodes, of start node
-        //    HashSet<ObjectUUID> rootFriends = new HashSet<ObjectUUID>();
-
-        //    //target node, the target of the select
-        //    ObjectUUID target = myEnd.ObjectUUID;
-
-        //    //dummy node to check in which level the BFS is
-        //    ObjectUUID dummy = null;
-
-        //    //add root to visitedNodes
-        //    visitedNodes.Add(root);
-
-        //    //holds the actual DBObject
-        //    Exceptional<DBObjectStream> currentDBObject;
-        //    #endregion data
-
-        //    #region validate root
-        //    //check if root has edge
-        //    var dbo = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), root);
-        //    if (dbo.Failed())
-        //    {
-        //        throw new NotImplementedException();
-        //    }
-
-        //    if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
-        //    {
-        //        return false;
-        //    }
-        //    #endregion validate root
-
-        //    #region get friends of startElement and check if they are the target and valid
-        //    //instead of inserting only the startObject, we are using the startObject and the friends of the startObject (which could be restricted)
-        //    var firstUUIDs = myEdge.GetAllReferenceIDs();
-
-        //    for (int i = 0; i < firstUUIDs.Count(); i++)
-        //    {
-        //        var element = firstUUIDs.ElementAt(i);
-
-        //        if (element != null)
-        //        {
-        //            //create a new node and set root = parent
-        //            var currentNode = element;
-
-        //            #region check if the child is the target
-        //            //start and target are conntected directly
-        //            if (currentNode.Equals(myEnd.ObjectUUID))
-        //            {
-        //                //add node (which coud be the target) to startFriends (if start and target are directly connected, the target in the rootFriends list is needed)
-        //                rootFriends.Add(currentNode);
-
-        //                return true;
-        //            }
-        //            #endregion check if the child is the target
-
-        //            //check if element has edge
-        //            var dbobject = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), currentNode);
-        //            if (dbobject.Failed())
-        //            {
-        //                continue;
-        //            }
-
-        //            if (!dbobject.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
-        //            {
-        //                continue;
-        //            }
-
-        //            //enqueue node to start from left side
-        //            queue.Enqueue(currentNode);
-
-        //            //add node to visitedNodes
-        //            visitedNodes.Add(currentNode);
-
-        //            //add node to startFriends
-        //            rootFriends.Add(currentNode);
-        //        }
-        //    }
-        //    #endregion get friends of startElement and check if they are the target and valid
-
-        //    //enqueue dummy
-        //    queue.Enqueue(dummy);
-
-        //    #region BFS
-
-        //    //if there is more than one object in the queue and the actual depth is less than MaxDepth
-        //    while ((queue.Count > 1) && (depth <= myMaxDepth))
-        //    {
-        //        //get the first Object of the queue
-        //        ObjectUUID nodeOfQueue = queue.Dequeue();
-
-        //        #region check if nodeOfQueue is a dummy
-        //        //if nodeOfQueue is a dummy, this level is completely worked off
-        //        if (nodeOfQueue == null)
-        //        {
-        //            depth++;
-
-        //            queue.Enqueue(nodeOfQueue);
-
-        //            continue;
-        //        }
-        //        #endregion check if current is a dummy
-
-        //        //load DBObject
-        //        currentDBObject = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), nodeOfQueue);
-        //        if (currentDBObject.Failed())
-        //        {
-        //            throw new NotImplementedException();
-        //        }
-
-        //        if (currentDBObject.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
-        //        {
-        //            #region EdgeType is ASetOfReferencesEdgeType
-        //            if (myTypeAttribute.EdgeType is ASetOfReferencesEdgeType)
-        //            {
-        //                //get all referenced ObjectUUIDs using the given Edge                                                
-        //                var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASetOfReferencesEdgeType).GetAllReferenceIDs();
-        //                ObjectUUID currentNode;
-
-        //                foreach (ObjectUUID obj in objectUUIDs)
-        //                {
-        //                    #region obj is target
-        //                    //if the child is the target
-        //                    if (target.Equals(obj))
-        //                    {
-        //                        return true;
-        //                    }
-        //                    #endregion obj is target
-        //                    #region never seen before
-        //                    else if (!visitedNodes.Contains(obj))
-        //                    {
-        //                        //create new node and set nodeOfQueue as parent
-        //                        currentNode = new ObjectUUID(obj.ToString());
-
-        //                        //mark the node as visited
-        //                        visitedNodes.Add(currentNode);
-
-        //                        //put created node in queue
-        //                        queue.Enqueue(currentNode);
-        //                    }
-        //                    #endregion never seen before
-        //                }
-        //            }
-        //            #endregion EdgeType is ASetOfReferencesEdgeType
-        //            #region EdgeType is ASingleReferenceEdgeType
-        //            else if (myTypeAttribute.EdgeType is ASingleReferenceEdgeType)
-        //            {
-        //                //get all referenced ObjectUUIDs using the given Edge                                                
-        //                var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASingleReferenceEdgeType).GetAllReferenceIDs();
-        //                ObjectUUID objectUUID = objectUUIDs.First<ObjectUUID>();
-        //                ObjectUUID currentNode;
-
-        //                #region obj is target
-        //                //if the child is the target
-        //                if (target.Equals(objectUUID))
-        //                {
-        //                    return true;
-        //                }
-        //                #endregion obj is target
-        //                #region never seen before
-        //                else if (!visitedNodes.Contains(objectUUID))
-        //                {
-        //                    //create new node and set nodeOfQueue as parent
-        //                    currentNode = new ObjectUUID(objectUUID.ToString());
-
-        //                    //mark the node as visited
-        //                    visitedNodes.Add(currentNode);
-
-        //                    //put created node in queue
-        //                    queue.Enqueue(currentNode);
-        //                }
-        //                #endregion never seen before
-        //            }
-        //            #endregion EdgeType is ASingleReferenceEdgeType
-        //            else
-        //            {
-        //                throw new NotImplementedException();
-        //            }
-        //        }
-        //    }
-
-        //    #endregion BFS
-
-        //    return false;
-        //}
+        #endregion
 
         /// <summary>
         /// Searches shortest, all shortest or all paths starting from "myStart" to "myEnd".
@@ -408,7 +56,14 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         /// <param name="myMaxDepth">The maximum depth to search</param>
         /// <param name="myMaxPathLength">The maximum path length which shall be analyzed</param>
         /// <returns>A HashSet which contains all found paths. Every path is represented by a List of ObjectUUIDs</returns>
-        public HashSet<List<Tuple<long, long>>> Find(IAttributeDefinition myTypeAttribute, IVertex myStart, IVertex myEnd, bool shortestOnly, bool findAll, byte myMaxDepth, byte myMaxPathLength)
+        public HashSet<List<Tuple<long, long>>> Find(IAttributeDefinition myTypeAttribute, 
+                                                        IVertexType myVertexType,
+                                                        IVertex myStart, 
+                                                        IVertex myEnd, 
+                                                        bool shortestOnly, 
+                                                        bool findAll, 
+                                                        byte myMaxDepth, 
+                                                        byte myMaxPathLength)
         {
             #region data
 
@@ -421,7 +76,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             HashSet<Tuple<long, long>> visitedVertices = new HashSet<Tuple<long, long>>();
 
             //current depth
-            byte depth = 0;
+            byte depth = 1;
 
             //first node in path tree, the start of the select
             Node root = new Node(myStart.VertexTypeID, myStart.VertexID);
@@ -445,23 +100,41 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             //add root to visitedNodes
             visitedNodes.Add(root.Key, root);
 
+            //search the type on which the attribute is defined
+            IVertexType currentType = myVertexType;
+            List<IVertexType> tempList = new List<IVertexType>();
+            tempList.Add(currentType);
+
+            bool foundDefinedType = false;
+
+            while (currentType.HasParentType && !foundDefinedType)
+            {
+                if (currentType.ParentVertexType.HasAttribute(myTypeAttribute.Name))
+                {
+                    foundDefinedType = true;
+                }
+
+                currentType = currentType.ParentVertexType;
+                tempList.Add(currentType);
+            }
+
+            if (foundDefinedType)
+                _Types = tempList;
+            else
+                _Types.Add(myVertexType);
+
             #endregion
 
             #region BFS
 
-            //check if root node has edge and target has backwardedge
-            if (!myStart.HasOutgoingEdge(myTypeAttribute.ID))
-            {
-                return null;
-            }
-
-            if (!myEnd.HasIncomingVertices(myEnd.VertexTypeID, myTypeAttribute.ID))
+            //check that the start node has the outgoing edge and the target has incoming vertices
+            if (!myStart.HasOutgoingEdge(myTypeAttribute.ID) && !HasIncomingVertices(myEnd, myTypeAttribute.ID))
             {
                 return null;
             }
 
             //if there is more than one object in the queue and the actual depth is less than MaxDepth
-            while ((queue.Count > 0) && (depth <= myMaxDepth))
+            while ((queue.Count > 0) && (depth < myMaxDepth))
             {
                 //get the first Object of the queue
                 IVertex currentVertex = queue.Dequeue();
@@ -511,9 +184,13 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             {
                                 if (findAll)
                                 {
-                                    //continue searching the current depth if there are any other shortest paths
-                                    myMaxDepth = Convert.ToByte(depth);
-                                    myMaxPathLength = Convert.ToByte(depth + 2);
+                                    if (Convert.ToByte(depth + 1) <= myMaxPathLength)
+                                    {
+                                        //continue searching the current depth if there are any other shortest paths
+                                        myMaxDepth = Convert.ToByte(depth + 1);
+
+                                        myMaxPathLength = Convert.ToByte(depth + 1);
+                                    }
                                 }
                                 else
                                 {
@@ -558,5 +235,20 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             //analyze paths
             return new TargetAnalyzer(root, target, myMaxPathLength, shortestOnly, findAll).GetPaths();
         }
+
+        #region private member
+
+        private bool HasIncomingVertices(IVertex myVertex, long myAttributeID)
+        {
+            foreach (var type in _Types)
+            {
+                if (myVertex.HasIncomingVertices(type.ID, myAttributeID))
+                    return true;
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

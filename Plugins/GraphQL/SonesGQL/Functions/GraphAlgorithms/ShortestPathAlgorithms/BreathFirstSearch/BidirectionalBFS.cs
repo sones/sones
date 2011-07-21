@@ -215,6 +215,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
             #region check if start has outgoing and _Target has incoming edge
 
+            //check that the start node has the outgoing edge and the target has incoming vertices
             if (!myStart.HasOutgoingEdge(_AttributeDefinition.ID) && !HasIncomingVertices(myEnd))
             {
                 return null;
@@ -298,7 +299,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             Tuple<long, long> nextLeft = new Tuple<long, long>(nextLeftVertex.VertexTypeID, nextLeftVertex.VertexID);
 
                             #region if the child is the _Target
-                            if (nextLeftVertex.VertexID.Equals(_Target.Key))
+                            if (nextLeft.Equals(_Target.Key))
                             {
                                 if (TargetFoundCheckAbort(nextLeft, ref currentNodeLeft, ref nextLeftNode, nextLeftVertex))
                                     return new TargetAnalyzer(_Root, _Target, _ShortestPathLength, _ShortestOnly, _FindAll).GetPaths();
@@ -329,7 +330,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             Tuple<long, long> nextRight = new Tuple<long, long>(nextRightVertex.VertexTypeID, nextRightVertex.VertexID);
 
                             #region if the child is the _Target
-                            if (_Root.Key.Equals(nextRightVertex.VertexID))
+                            if (_Root.Key.Equals(nextRight))
                             {
                                 if (RootFoundCheckAbort(nextRight, ref currentNodeRight, ref nextRightNode, nextRightVertex))
                                     return new TargetAnalyzer(_Root, _Target, _ShortestPathLength, _ShortestOnly, _FindAll).GetPaths();
@@ -906,7 +907,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                 Tuple<long, long> nextLeft = new Tuple<long, long>(nextLeftVertex.VertexTypeID, nextLeftVertex.VertexID);
 
                 #region if the child is the _Target
-                if (nextLeftVertex.VertexID.Equals(_Target.Key))
+                if (nextLeft.Equals(_Target.Key))
                 {
                     if (TargetFoundCheckAbort(nextLeft, ref myCurrentNodeLeft, ref nextLeftNode, nextLeftVertex))
                         return new TargetAnalyzer(_Root, _Target, _ShortestPathLength, _ShortestOnly, _FindAll).GetPaths();
@@ -949,7 +950,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                 Tuple<long, long> nextRight = new Tuple<long, long>(nextRightVertex.VertexTypeID, nextRightVertex.VertexID);
 
                 #region if the child is the _Target
-                if (_Root.Key.Equals(nextRightVertex.VertexID))
+                if (_Root.Key.Equals(nextRight))
                 {
                     if (RootFoundCheckAbort(nextRight, ref myCurrentNodeRight, ref nextRightNode, nextRightVertex))
                         return new TargetAnalyzer(_Root, _Target, _ShortestPathLength, _ShortestOnly, _FindAll).GetPaths();
