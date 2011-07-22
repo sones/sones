@@ -193,8 +193,8 @@ namespace sones.sonesGraphDBStarter
                 Console.WriteLine("     parameter.");
                 Console.WriteLine();
                 Console.WriteLine("   * REST Service is started at http://localhost:"+Properties.Settings.Default.ListeningPort);
-                Console.WriteLine("      * access it directly like in this example: ");
-                Console.WriteLine("           http://localhost:"+Properties.Settings.Default.ListeningPort+"/gql?DESCRIBE%20VERTEX%20TYPES");
+                Console.WriteLine("      * access it directly by passing the GraphQL query using the");
+                Console.WriteLine("        REST interface or a client library. (see documentation)");
                 Console.WriteLine("      * if you want JSON Output add ACCEPT: application/json ");
                 Console.WriteLine("        to the client request header (or application/xml or");
                 Console.WriteLine("        application/text)");
