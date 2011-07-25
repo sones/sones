@@ -31,5 +31,6 @@ namespace sones.Library.DiscordianDate
         public int day; /* 0-72 */
         public int yday; /* 0-365 */
         public int year; /* 3066- */
+        public bool StTibsDay;
     }
 }

@@ -180,6 +180,11 @@ namespace sones.Library.DiscordianDate
         {
             DiscordianDateStructure Output = new DiscordianDateStructure();
 
+            if ((imonth == 2) && (iday == 29))
+                Output.StTibsDay = true;
+            else
+                Output.StTibsDay = false;
+
             int[,] cal = new int[2, 12]
             {
                 {31,28,31,30,31,30,31,31,30,31,30,31},
@@ -243,6 +248,9 @@ namespace sones.Library.DiscordianDate
                 else
                     Holiday = " Celebrate " + Holidays[hastur.season, 1];
             }
+
+            if (hastur.StTibsDay)
+                Holiday = " Celebrate St. Tib's Day";
 
             return "Today is " + GetDayName(hastur.yday) + ", the " + hastur.day + Ending(hastur.day) + " day of " + Seasons[hastur.season] + " in the YOLD " + hastur.year + Holiday + "\n";
         }
