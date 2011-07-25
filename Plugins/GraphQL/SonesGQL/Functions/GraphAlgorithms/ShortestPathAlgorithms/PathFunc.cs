@@ -41,8 +41,6 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
         public PathFunc()
         {
-            /// these are the starting edges and TypeAttribute.
-            /// This is not the starting DBObject but just the content of the attribute defined by TypeAttribute!!!
             Parameters.Add(new ParameterValue("TargetVertex", typeof(IEnumerable<IVertex>)));
             Parameters.Add(new ParameterValue("MaxDepth", typeof(UInt64)));
             Parameters.Add(new ParameterValue("MaxPathLength", typeof(Int64)));
@@ -55,8 +53,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
         public override string GetDescribeOutput()
         {
-            return @"A path algorithm. This algorithm searches the shortest, all shortest or all paths up to a given depth an path length.
-                    Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used.";
+            return "A path algorithm. This algorithm searches the shortest, all shortest or all paths up to a given depth an path length." +
+                    "Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used.";
         }
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
@@ -80,7 +78,13 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             }
         }
 
-        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myStartVertex, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, 
+                                                Object myCallingObject, 
+                                                IVertex myStartVertex, 
+                                                IGraphDB myGraphDB, 
+                                                SecurityToken mySecurityToken, 
+                                                TransactionToken myTransactionToken, 
+                                                params FuncParameter[] myParams)
         {
             #region initialize data
 
@@ -140,9 +144,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
             HashSet<List<Tuple<long, long>>> paths = null;
 
-            //BFS
+            //call BFS find methods
             if (useBidirectionalBFS)
-                //bidirectional BFS
                 paths = new BidirectionalBFS().Find(typeAttribute, vertexType, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
             else
                 paths = new BFS().Find(typeAttribute, vertexType, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
@@ -166,14 +169,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
                 #endregion
 
-                //ALT
-                //return new FuncParameter(new EdgeTypePath(paths, typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
                 return new FuncParameter(view);
             }
             else
             {
-                //ALT
-                //return new FuncParameter(new EdgeTypePath(new HashSet<List<long>>(), typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
                 return new FuncParameter(new VertexView(null, null));
             }
 
@@ -260,6 +259,15 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
         public void Dispose()
         { }
+
+        #endregion
+
+        #region IGQLFunction member
+
+        public override Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            return typeof(IVertexView);
+        }
 
         #endregion
     }

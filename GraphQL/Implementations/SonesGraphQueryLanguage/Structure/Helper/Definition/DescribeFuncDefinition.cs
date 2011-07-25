@@ -187,8 +187,8 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             var edges = new Dictionary<String, IEdgeView>();
 
             _Function.Add("Function", myFunc.FunctionName);
-            _Function.Add("Type", myFuncName);
             _Function.Add("Description", myFunc.GetDescribeOutput());
+            //_Function.Add("ReturnType", myFunc.GetReturnType());
 
             int count = 1;
             foreach (var parameter in ((IPluginable)myFunc).SetableParameters)
