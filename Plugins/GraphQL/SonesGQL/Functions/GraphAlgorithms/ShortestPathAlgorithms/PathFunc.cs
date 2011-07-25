@@ -224,9 +224,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
             foreach (var enumerator in myEnumerator)
             {
-                enumerator.MoveNext();
-
-                if (enumerator.Current == null)
+                if(!enumerator.MoveNext())
                     continue;
 
                 current.Add(enumerator);
