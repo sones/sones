@@ -181,19 +181,21 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <returns>List of readouts with the information.</returns>
         private IVertexView GenerateOutput(IGQLFunction myFunc, String myFuncName)
         {
-            var _Function = new Dictionary<String, Object>();
-            var temp = new Dictionary<String, object>();
-            var temp2 = new Dictionary<String, object>();
+            var function = new Dictionary<String, Object>();
+            var setableParameters = new Dictionary<String, object>();
+            var parameters = new Dictionary<String, object>();
             var edges = new Dictionary<String, IEdgeView>();
 
-            _Function.Add("Function", myFunc.FunctionName);
-            _Function.Add("Description", myFunc.GetDescribeOutput());
-            //_Function.Add("ReturnType", myFunc.GetReturnType());
+            function.Add("Function", myFunc.FunctionName);
+            function.Add("Description", myFunc.GetDescribeOutput());
+            
+            if (myFunc.GetReturnType() != null)
+                function.Add("ReturnType", myFunc.GetReturnType().Name);
 
             int count = 1;
             foreach (var parameter in ((IPluginable)myFunc).SetableParameters)
             {
-                temp.Add("Parameter " + count.ToString() + " Key: ", parameter.Key);
+                setableParameters.Add("Parameter " + count.ToString() + " Key: ", parameter.Key);
 
                 count++;
             }
@@ -201,15 +203,15 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             count = 1;
             foreach (var parameter in myFunc.GetParameters())
             {
-                temp2.Add("Parameter " + count.ToString() + " Name: ", parameter.Name);
+                parameters.Add("Parameter " + count.ToString() + " Name: ", parameter.Name);
 
                 count++;
             }
 
-            edges.Add("SetableParameters", new SingleEdgeView(null, new VertexView(temp, null)));
-            edges.Add("Parameters", new SingleEdgeView(null, new VertexView(temp2, null)));
+            edges.Add("SetableParameters", new SingleEdgeView(null, new VertexView(setableParameters, null)));
+            edges.Add("Parameters", new SingleEdgeView(null, new VertexView(parameters, null)));
 
-            return new VertexView(_Function, edges);
+            return new VertexView(function, edges);
         }
 
         #endregion

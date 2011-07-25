@@ -64,7 +64,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
-        Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        Type GetReturnType();
 
         /// <summary>
         /// Name of the function

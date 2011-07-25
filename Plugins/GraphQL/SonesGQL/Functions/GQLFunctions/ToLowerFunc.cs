@@ -82,6 +82,8 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
+        #region IPluginable
+
         public override string PluginName
         {
             get { return"sones.tolower"; }
@@ -104,5 +106,16 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             get { return "tolower"; }
         }
+
+        #endregion
+
+        #region IGQLFunction
+
+        public override Type GetReturnType()
+        {
+            return typeof(String);
+        }
+
+        #endregion
     }
 }

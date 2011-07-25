@@ -110,5 +110,14 @@ namespace sones.Plugins.SonesGQL.Functions
         { }
 
         #endregion
+
+        #region IGQLFunction
+
+        public override Type GetReturnType()
+        {
+            return typeof(String);
+        }
+
+        #endregion
     }
 }

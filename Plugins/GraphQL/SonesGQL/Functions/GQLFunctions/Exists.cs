@@ -70,6 +70,8 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
+        #region IPLuginable
+
         public override string PluginName
         {
             get { return "sones.exists"; }
@@ -92,5 +94,16 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             get { return "exists"; }
         }
+
+        #endregion
+
+        #region IGQLFunction
+
+        public override Type GetReturnType()
+        {
+            return typeof(Boolean);
+        }
+
+        #endregion
     }
 }

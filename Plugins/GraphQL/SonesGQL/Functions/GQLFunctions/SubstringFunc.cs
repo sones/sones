@@ -76,6 +76,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new FuncParameter(substring);
         }
 
+        #region IPluginable
+
         public override string PluginName
         {
             get { return"sones.substring"; }
@@ -98,5 +100,16 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             get { return "substring"; }
         }
+
+        #endregion
+
+        #region IGQLFunction
+
+        public override Type GetReturnType()
+        {
+            return typeof(String);
+        }
+
+        #endregion
     }
 }

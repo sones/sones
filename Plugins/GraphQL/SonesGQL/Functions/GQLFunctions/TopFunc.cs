@@ -100,6 +100,8 @@ namespace sones.Plugins.SonesGQL.Functions
             throw new InvalidTypeException(myCallingObject.GetType().ToString(), "IHyperEdge");
         }
 
+        #region IPLuginbable
+
         public override string PluginName
         {
             get { return"sones.top"; }
@@ -122,5 +124,16 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             get { return "top"; }
         }
+
+        #endregion
+
+        #region IGQLFunction
+
+        public override Type GetReturnType()
+        {
+            return typeof(IEnumerable<IVertex>);
+        }
+
+        #endregion
     }
 }

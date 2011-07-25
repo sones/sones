@@ -111,6 +111,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new FuncParameter(resString.ToString());
         }
 
+        #region IPluginable
+
         public override string PluginName
         {
             get { return"sones.insert"; }
@@ -133,5 +135,16 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             get { return "insert"; }
         }
+
+        #endregion
+
+        #region IGQLFunction
+
+        public override Type GetReturnType()
+        {
+            return typeof(String);
+        }
+
+        #endregion
     }
 }

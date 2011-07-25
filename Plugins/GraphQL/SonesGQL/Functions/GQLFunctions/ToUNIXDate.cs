@@ -88,6 +88,8 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
+        #region IPluginable
+
         public override string PluginName
         {
             get { return"sones.tounixdate"; }
@@ -111,9 +113,15 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "tounixdate"; }
         }
 
-        public override Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        #endregion
+
+        #region IGQLFunction
+
+        public override Type GetReturnType()
         {
             return typeof(Int64);
         }
+
+        #endregion
     }
 }

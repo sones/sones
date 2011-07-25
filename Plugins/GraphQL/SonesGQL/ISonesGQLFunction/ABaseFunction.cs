@@ -70,10 +70,8 @@ namespace sones.Plugins.SonesGQL.Functions
         /// <summary>
         /// Get the return type of this methods. Default is null - neither attribute nor function is valid on this methods.
         /// </summary>
-        /// <param name="myWorkingBase"></param>
-        /// <param name="myTypeManager"></param>
-        /// <returns></returns>
-        public virtual Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        /// <returns>The type of the result inside the resulting FuncParameter.</returns>
+        public virtual Type GetReturnType()
         {
             return null;
         }

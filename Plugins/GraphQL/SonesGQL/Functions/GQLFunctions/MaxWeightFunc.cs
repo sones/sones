@@ -98,6 +98,8 @@ namespace sones.Plugins.SonesGQL.Functions
             throw new InvalidTypeException(myCallingObject.GetType().ToString(), "Weighted IHyperEdge");
         }
 
+        #region IPluginable
+
         public override string PluginName
         {
             get { return"sones.maxweight"; }
@@ -121,9 +123,15 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "maxweight"; }
         }
 
-        public override Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        #endregion
+
+        #region IGQLFunction
+
+        public override Type GetReturnType()
         {
-            return typeof(Int64);
+            return typeof(Double);
         }
+
+        #endregion
     }
 }

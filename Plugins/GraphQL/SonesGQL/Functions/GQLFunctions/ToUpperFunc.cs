@@ -72,6 +72,8 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
+        #region Ipluginable
+
         public override string PluginName
         {
             get { return "sones.toupper"; }
@@ -94,5 +96,16 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             get { return "toupper"; }
         }
+
+        #endregion
+
+        #region IGQLFunction
+
+        public override Type GetReturnType()
+        {
+            return typeof(String);
+        }
+
+        #endregion
     }
 }

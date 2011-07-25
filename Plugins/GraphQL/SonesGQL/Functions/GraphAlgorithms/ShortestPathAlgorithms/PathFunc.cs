@@ -264,7 +264,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
         #region IGQLFunction member
 
-        public override Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override Type GetReturnType()
         {
             return typeof(IVertexView);
         }

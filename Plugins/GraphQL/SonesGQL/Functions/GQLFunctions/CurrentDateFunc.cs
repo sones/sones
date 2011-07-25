@@ -56,6 +56,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new FuncParameter(DateTime.Now);
         }
 
+        #region IPluginable
+
         public override string PluginName
         {
             get { return "sones.currentdate"; }
@@ -78,10 +80,16 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             get { return "currentdate"; }
         }
+        
+        #endregion
 
-        public override Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        #region IGQLFunction
+
+        public override Type GetReturnType()
         {
             return typeof(DateTime);
         }
+
+        #endregion
     }
 }

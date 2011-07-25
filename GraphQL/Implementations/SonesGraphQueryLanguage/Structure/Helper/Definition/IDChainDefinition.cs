@@ -755,7 +755,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
                         throw new InvalidFunctionBaseException(_LastAttribute.Name, funcPart.FuncName);
                     }
 
-                    var returnType = funcPart.Function.GetReturnType(_LastAttribute, myGraphDB, mySecurityToken, myTransactionToken);
+                    var returnType = funcPart.Function.GetReturnType();
                     if (returnType != null)
                     {
                         if (returnType is IAttributeDefinition)

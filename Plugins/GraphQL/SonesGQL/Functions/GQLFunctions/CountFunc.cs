@@ -132,11 +132,20 @@ namespace sones.Plugins.SonesGQL.Functions
         public void Dispose()
         { }
 
-        #endregion
-
         public override string FunctionName
         {
             get { return "count"; }
         }
+
+        #endregion
+
+        #region IGQLFunction
+
+        public override Type GetReturnType()
+        {
+            return typeof(UInt64);
+        }
+
+        #endregion
     }
 }
