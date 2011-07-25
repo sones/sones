@@ -78,12 +78,12 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             }
         }
 
-        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, 
-                                                Object myCallingObject, 
-                                                IVertex myStartVertex, 
-                                                IGraphDB myGraphDB, 
-                                                SecurityToken mySecurityToken, 
-                                                TransactionToken myTransactionToken, 
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition,
+                                                Object myCallingObject,
+                                                IVertex myStartVertex,
+                                                IGraphDB myGraphDB,
+                                                SecurityToken mySecurityToken,
+                                                TransactionToken myTransactionToken,
                                                 params FuncParameter[] myParams)
         {
             #region initialize data
@@ -99,7 +99,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
             if ((myParams[0].Value as IEnumerable<IVertex>) == null)
                 throw new InvalidFunctionParameterException("TargetVertex", "Set of vertices that represents the target vertices", "null");
-            
+
             //set the target node
             var targetNode = (myParams[0].Value as IEnumerable<IVertex>).First();
 
@@ -184,8 +184,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             var enumerators = MoveNext(myEnumerators);
 
             Dictionary<String, Object> props = null;
-            List<ISingleEdgeView> singleEdges = new List<ISingleEdgeView>();
-            Dictionary<String, IEdgeView> edge = new Dictionary<string, IEdgeView>();
+            List<ISingleEdgeView> singleEdges = null;
+            Dictionary<String, IEdgeView> edge = null;
             Tuple<long, long> current = null;
 
             foreach (var enumerator in enumerators)
@@ -201,6 +201,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                 props.Add("VertexTypeID", current.Item1);
 
                 var _enums = enumerators.Where(x => x.Current.Equals(current));
+                singleEdges = new List<ISingleEdgeView>();
+
                 foreach (var _enum in _enums)
                 {
                     //call next
@@ -210,8 +212,12 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                         singleEdges.Add(new SingleEdgeView(null, nextLevel));
                 }
             }
-            if (singleEdges.Count > 0)
+
+            if (singleEdges != null && singleEdges.Count > 0)
+            {
+                edge = new Dictionary<string, IEdgeView>();
                 edge.Add("path", new HyperEdgeView(null, singleEdges));
+            }
 
             if (props != null)
                 return new VertexView(props, edge);
