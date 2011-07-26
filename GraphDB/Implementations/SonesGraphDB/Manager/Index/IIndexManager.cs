@@ -25,7 +25,6 @@ using System.Collections;
 using System;
 using sones.Plugins.Index.Interfaces;
 using System.Collections.Generic;
-using sones.GraphDB.Request.CreateVertexTypes;
 using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.Request;
 

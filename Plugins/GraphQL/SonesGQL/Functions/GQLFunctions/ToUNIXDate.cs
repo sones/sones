@@ -78,6 +78,11 @@ namespace sones.Plugins.SonesGQL.Functions
                 var dtValue = Convert.ToDateTime((UInt64)myCallingObject);
                 return new FuncParameter((Int64)UNIXTimeConversionExtension.ToUnixTimeStamp(dtValue));
             }
+            else if (myCallingObject is Int64)
+            {
+                var dtValue = Convert.ToDateTime((Int64)myCallingObject);
+                return new FuncParameter((Int64)UNIXTimeConversionExtension.ToUnixTimeStamp(dtValue));
+            }
             else if (myCallingObject is DateTime)
             {
                 return new FuncParameter(UNIXTimeConversionExtension.ToUnixTimeStamp((DateTime)myCallingObject));

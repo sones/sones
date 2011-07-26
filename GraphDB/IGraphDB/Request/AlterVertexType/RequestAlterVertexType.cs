@@ -20,7 +20,6 @@
 
 using System.Linq;
 using System.Collections.Generic;
-using sones.GraphDB.Request.CreateVertexTypes;
 using System;
 
 namespace sones.GraphDB.Request

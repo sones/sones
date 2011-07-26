@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using sones.GraphDB;
 using sones.GraphDB.Request;
-using sones.GraphDB.Request.CreateVertexTypes;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDS;
 using sones.GraphDSServer;

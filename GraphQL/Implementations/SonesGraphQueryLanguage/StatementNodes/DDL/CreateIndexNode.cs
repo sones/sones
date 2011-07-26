@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphDB;
-using sones.GraphDB.Request.CreateVertexTypes;
 using sones.GraphQL.GQL.Manager.Plugin;
 using sones.GraphQL.GQL.Structure.Helper.Definition;
 using sones.GraphQL.Result;

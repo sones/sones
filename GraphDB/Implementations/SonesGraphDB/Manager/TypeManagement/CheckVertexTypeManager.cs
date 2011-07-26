@@ -22,15 +22,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.ErrorHandling;
+using sones.GraphDB.Manager.BaseGraph;
 using sones.GraphDB.Request;
-using sones.GraphDB.Request.CreateVertexTypes;
 using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.LanguageExtensions;
-using sones.GraphDB.Manager.BaseGraph;
-using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {

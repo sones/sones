@@ -338,11 +338,18 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
       
         private FuncParameter ValidateAndAddParameter(ParameterValue myParameter, Object myValue, IAttributeDefinition myTypeAttribute)
         {
+            bool parameterIsBaseType = false;
+
+            //is necessary because 'String' is no primitive type
+            if ((myParameter.Value as Type).Name.Equals("String"))
+                parameterIsBaseType = true;
+
             if (myParameter.Value != null)
             {
                 if (!(myParameter.Value as Type).IsAssignableFrom(myValue.GetType()))
                 {
-                    throw new FunctionParameterTypeMismatchException(myParameter.Value as Type, myValue.GetType());
+                    if (!(myValue.GetType().IsPrimitive && parameterIsBaseType))
+                        throw new FunctionParameterTypeMismatchException(myParameter.Value as Type, myValue.GetType());
                 }
             }
             else

@@ -28,7 +28,6 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.VertexStore;
 using sones.Plugins.Index.Interfaces;
-using sones.GraphDB.Request.CreateVertexTypes;
 using sones.GraphDB.Manager.BaseGraph;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.Library.LanguageExtensions;

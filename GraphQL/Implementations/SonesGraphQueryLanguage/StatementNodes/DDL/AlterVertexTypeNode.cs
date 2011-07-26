@@ -34,7 +34,6 @@ using sones.GraphDB.Request;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.Structure.Helper.Enums;
 using sones.GraphQL.GQL.Structure.Helper.Definition;
-using sones.GraphDB.Request.CreateVertexTypes;
 
 namespace sones.GraphQL.StatementNodes.DDL
 {

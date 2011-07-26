@@ -24,7 +24,7 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.TypeSystem;
 
-namespace sones.GraphDB.Request.CreateVertexTypes
+namespace sones.GraphDB.Request
 {
     /// <summary>
     /// A class that represents a property that has to be mandatory

@@ -26,15 +26,28 @@ using System.Text;
 namespace sones.GraphDB.Request
 {
     /// <summary>
-    /// A request for creating a new edge type
+    /// A request for creating a new edge type.
     /// </summary>
     public sealed class RequestCreateEdgeType : IRequest
     {
+        #region data
+
+        /// <summary>
+        /// The definition of the edge that is going to be created.
+        /// </summary>
+        public EdgeTypePredefinition EdgeTypeDefinition;
+
+        #endregion
+
         #region Constructor
 
-        public RequestCreateEdgeType()
+        /// <summary>
+        /// Creates a new request that creates a new vertex type inside the Graphdb
+        /// </summary>
+        /// <param name="myVertexTypeDefinition">Describes the vertex that is going to be created</param>
+        public RequestCreateEdgeType(EdgeTypePredefinition myEdgeTypeDefinition)
         {
-
+            EdgeTypeDefinition = myEdgeTypeDefinition;
         }
 
         #endregion
@@ -43,10 +56,9 @@ namespace sones.GraphDB.Request
 
         public GraphDBAccessMode AccessMode
         {
-            get { return GraphDBAccessMode.ReadWrite; }
+            get { return GraphDBAccessMode.TypeChange; }
         }
 
         #endregion
-
     }
 }

@@ -1105,12 +1105,14 @@ namespace sones.GraphQL
 
             #region CREATE TYPE(S)
 
-            createTypesStmt.Rule = S_CREATE + S_VERTEX + S_TYPES + bulkTypeList
-                                    | S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkType
-                                    | S_CREATE + S_VERTEX + S_TYPE + bulkType;
+            createTypesStmt.Rule =      S_CREATE + S_VERTEX + S_TYPES + bulkTypeList
+                                    |   S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkType
+                                    |   S_CREATE + S_VERTEX + S_TYPE + bulkType
+            
+                                    |   S_CREATE + S_EDGE + S_TYPES + bulkTypeList
+                                    |   S_CREATE + S_ABSTRACT + S_EDGE + S_TYPE + bulkType
+                                    |   S_CREATE + S_EDGE + S_TYPE + bulkType;
 
-            //vertexType.Rule = S_VERTEX + S_TYPE;
-            //BNF_VertexTypes.Rule = S_VERTEX + S_TYPES;
 
             bulkTypeList.Rule = MakePlusRule(bulkTypeList, S_comma, bulkTypeListMember);
 
@@ -1155,6 +1157,8 @@ namespace sones.GraphQL
             
             AttrDefaultOpValue.Rule = Empty
                                     | "=" + Values;
+
+
 
             #endregion
 

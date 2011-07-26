@@ -46,14 +46,15 @@ namespace sones.Plugins.SonesGQL.Functions
             return "Convert from unix datime format to DBDateTime format.";
         }
 
-        public override bool ValidateWorkingBase(Object myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            if (myWorkingBase == typeof(Int64))
+            if ((myWorkingBase as Type) == typeof(Int64) || (myWorkingBase as Type) == typeof(UInt64))
             {
                 return true;
             }
-            else if ((myWorkingBase is IAttributeDefinition) && (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && (myWorkingBase as IPropertyDefinition).BaseType.Name.Equals(("Int64")))
-                                                                
+            else if ((myWorkingBase is IAttributeDefinition) && 
+                        (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && 
+                        ((myWorkingBase as IPropertyDefinition).BaseType.Name.Equals(("Int64")) || (myWorkingBase as IPropertyDefinition).BaseType.Name.Equals(("UInt64"))))
             {
                 return true;
             }

@@ -27,7 +27,6 @@ using sones.GraphDB.Manager.BaseGraph;
 using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Manager.Vertex;
 using sones.GraphDB.Request;
-using sones.GraphDB.Request.CreateVertexTypes;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.TypeSystem;
