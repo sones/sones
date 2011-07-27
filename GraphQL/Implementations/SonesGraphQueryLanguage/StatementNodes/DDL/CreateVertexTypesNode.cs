@@ -68,32 +68,20 @@ namespace sones.GraphQL.StatementNodes.DDL
             {
                 #region Abstract & Single VertexType
 
-                if (myParseTreeNode.ChildNodes[2].Token.KeyTerm == ((SonesGQLGrammar)context.Language.Grammar).S_VERTEX)
+                BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[4].AstNode;
+
+                Boolean isAbstract = true;
+
+                if (HasChildNodes(myParseTreeNode.ChildNodes[1]))
                 {
-                    BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[4].AstNode;
-
-                    Boolean isAbstract = true;
-
-                    if (HasChildNodes(myParseTreeNode.ChildNodes[1]))
-                    {
-                        isAbstract = true;
-                    }
-
-                    _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, isAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
+                    isAbstract = true;
                 }
-                #endregion
-                #region Abstract & Single EdgeType
-                else if (myParseTreeNode.ChildNodes[2].Token.KeyTerm == ((SonesGQLGrammar)context.Language.Grammar).S_EDGE)
-                {
-                    BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[4].AstNode;
-
-                    Boolean isAbstract = true;
-
-                    _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, isAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
-                }
+                
+                _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, isAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
+                
                 #endregion
             }
-            else if (myParseTreeNode.ChildNodes[1].Token.KeyTerm == ((SonesGQLGrammar)context.Language.Grammar).S_VERTEX)
+            else
             {
                 if (myParseTreeNode.ChildNodes[2].Token.KeyTerm == ((SonesGQLGrammar)context.Language.Grammar).S_TYPES)
                 {
@@ -120,16 +108,6 @@ namespace sones.GraphQL.StatementNodes.DDL
 
                     #endregion
                 }
-            }
-            else if (myParseTreeNode.ChildNodes[1].Token.KeyTerm == ((SonesGQLGrammar)context.Language.Grammar).S_EDGE)
-            {
-                #region single edge type
-
-                BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[3].AstNode;
-
-                _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, false, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
-
-                #endregion
             }
 
         }
