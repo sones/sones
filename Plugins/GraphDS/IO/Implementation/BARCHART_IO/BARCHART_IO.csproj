@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1A2B672E-DD8C-4948-8370-1483408E3B50}</ProjectGuid>
+    <ProjectGuid>{DB2FEFF5-230E-4E2F-8DF9-053DCD9BBAD9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UserdefinedDataType</RootNamespace>
-    <AssemblyName>UserdefinedDataType</AssemblyName>
+    <RootNamespace>BARCHART_IO</RootNamespace>
+    <AssemblyName>BARCHART_IO</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,21 +40,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AUserdefinedDataType.cs" />
+    <Compile Include="BARCHART_IO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\External\NewFastSerializer\NewFastSerializer.csproj">
-      <Project>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</Project>
-      <Name>NewFastSerializer</Name>
+    <ProjectReference Include="..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
+      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
+      <Name>IGraphQL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ErrorHandling\ErrorHandling.csproj">
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IPluginable\IPluginable.csproj">
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\Settings\Settings.csproj">
+      <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
+      <Name>Settings</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interface\IOInterface.csproj">
+      <Project>{991132D2-15E0-4BB7-8328-3A51646D4F01}</Project>
+      <Name>IOInterface</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
