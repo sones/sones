@@ -69,6 +69,8 @@
                     xhr.setRequestHeader('Accept', 'application/html');
                 else if (goosh.config.webservice_default_format == "text")
                     xhr.setRequestHeader('Accept', 'text/plain');
+                else if (goosh.config.webservice_default_format == "barchart")
+                    xhr.setRequestHeader('Accept', 'application/x-sones-barchart');
                 else
                     xhr.setRequestHeader('Accept', 'application/json');
             }
@@ -138,6 +140,10 @@
 
             // html
             else if (ContentType.indexOf("text/html") > -1)
+                return '<pre class=\"AttrTagValue\">' + result + '</pre>';
+
+            // barchart
+            else if (ContentType.indexOf("application/x-sones-barchart") > -1)
                 return '<pre class=\"AttrTagValue\">' + result + '</pre>';
 
             // error
@@ -228,7 +234,7 @@
         goosh.config.webservice_path = jQuery.url.attr("directory").substring(0, jQuery.url.attr("directory").lastIndexOf('/'));
         goosh.config.webservice_port = jQuery.url.attr("port");
         goosh.config.webservice_default_format = "json";
-        goosh.config.webservice_formats = new Array("xml", "json", "text", "html");
+        goosh.config.webservice_formats = new Array("xml", "json", "text", "html", "barchart");
 
         //sones.licence
         goosh.module.license = function () {

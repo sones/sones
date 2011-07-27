@@ -258,7 +258,7 @@ namespace sones.Plugins.GraphDS.IO
             _StringBuilder.AppendLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"/resources/WebShell/WebShell.css\" />");
             _StringBuilder.AppendLine("</head>");
             _StringBuilder.AppendLine("<body>");
-            _StringBuilder.AppendLine("<h1>sones GraphDS</h1>");
+            _StringBuilder.AppendLine("<h1>sones GraphDS - BarChart</h1>");
             _StringBuilder.Append("<h2>").Append(EscapeForXMLandHTML(myQueryResult.Query)).AppendLine("</h2>");
             _StringBuilder.AppendLine("<table>");
             _StringBuilder.AppendLine("<tr>");
