@@ -572,7 +572,7 @@ Global
 		{26BFEE62-82B9-4EFA-9F91-08FD947551A8} = {22437279-5F02-40BE-847C-D7A425D468BE}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = GraphDB\Implementations\SonesGraphDB\SonesGraphDB.csproj
+		StartupItem = Applications\sonesGraphDB\sonesGraphDBStarter.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
