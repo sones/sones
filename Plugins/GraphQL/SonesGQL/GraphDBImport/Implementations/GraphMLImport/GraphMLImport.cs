@@ -18,7 +18,6 @@
 * 
 */
 
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -143,7 +142,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		
 		public const string PARAM_VERTEXTYPENAME 	= "VertexTypeName";
 		
-		public const string PARAM_EDGETYPENAME		= "EdgeTypeName";
+		public const string PARAM_EDGENAME			= "EdgeName";
 		
 		#endregion
 		
@@ -181,29 +180,45 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		
 		#region constructors
 		
-		/// <summary>
-		/// Initializes a new instance of the <see cref="sones.Plugins.SonesGQL.GraphMLImport.GraphMLImport"/> class.
-		/// </summary>
-		/// <param name='myVertexTypeName'>
-		/// Name of the VertexType to be used for storing imported vertices.
-		/// </param>
-		/// <param name='myEdgeTypeName'>
-		/// Name of the edge to declare imported edges.
-		/// </param>
-		public GraphMLImport (String myVertexTypeName, String myEdgeTypeName)
+		public GraphMLImport ()
+		{}
+		
+		#endregion
+
+		#region IGraphDBImport implementation
+		
+		private void InitVertexSettings(Dictionary<string, string> myOptions)
 		{
-			_VertexTypeName 		= myVertexTypeName;
-			_EdgeTypeName 			= myEdgeTypeName;
+			if(!myOptions.ContainsKey(PARAM_VERTEXTYPENAME))
+			{
+				throw new ArgumentException(String.Format("{0} has not been defined.", PARAM_VERTEXTYPENAME));
+			}
+			if(!myOptions.ContainsKey(PARAM_EDGENAME))
+			{
+				throw new ArgumentException(String.Format("{0} has not been defined.", PARAM_EDGENAME));	
+			}
+			
+			var vertexTypeName 	= (string)myOptions[PARAM_VERTEXTYPENAME];
+			var edgeTypeName 	= (string)myOptions[PARAM_EDGENAME];
+			
+			if(vertexTypeName == null || "".Equals(vertexTypeName))
+			{
+				throw new ArgumentException(String.Format("{0} is invalid (null or empty)", PARAM_VERTEXTYPENAME));	
+			}
+			
+			if(edgeTypeName == null || "".Equals(edgeTypeName))
+			{
+				throw new ArgumentException(String.Format("{0} is invalid (null or empty)", PARAM_EDGENAME));	
+			}
+			
+			_VertexTypeName 		= vertexTypeName;
+			_EdgeTypeName 			= edgeTypeName;
 			_VertexMapping 			= new Dictionary<string, long>();
 			_AttributeDefinitions 	= new Dictionary<string, Tuple<string, string, string, string>>();
 			
 			_Vertices 		= new HashSet<long>();
 			_EdgeCount 		= 0;
 		}
-		
-		#endregion
-
-		#region IGraphDBImport implementation
 		
 		public QueryResult Import (string myLocation, 
 			IGraphDB myGraphDB,
@@ -214,7 +229,8 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			IEnumerable<string> myComments = null,
 			UInt64? myOffset = null,
 			UInt64? myLimit = null,
-			VerbosityTypes myVerbosityTypes = VerbosityTypes.Silent)
+			VerbosityTypes myVerbosityTypes = VerbosityTypes.Silent,
+			Dictionary<string, string> myOptions = null)
 		{
 			#region data
 			
@@ -225,30 +241,47 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 						0, 
 						ResultType.Failed, 
 						null, 
-						new UnknownException(new ArgumentNullException("myGraphDB")));
+						new UnknownException(new ArgumentNullException("Missing GraphDB object")));
 			}
-			if(mySecurityToken == null)
+			
+//			if(mySecurityToken == null)
+//			{
+//				return new QueryResult("", 
+//						ImportFormat, 
+//						0, 
+//						ResultType.Failed, 
+//						null, 
+//						new UnknownException(new ArgumentNullException("mySecurityToken")));
+//			}
+//			if(myTransactionToken == null)
+//			{
+//				return new QueryResult("", 
+//						ImportFormat, 
+//						0, 
+//						ResultType.Failed, 
+//						null, 
+//						new UnknownException(new ArgumentNullException("myTransactionToken")));	
+//			}
+			
+			if(myOptions == null)
 			{
 				return new QueryResult("", 
 						ImportFormat, 
 						0, 
 						ResultType.Failed, 
 						null, 
-						new UnknownException(new ArgumentNullException("mySecurityToken")));
-			}
-			if(myTransactionToken == null)
-			{
-				return new QueryResult("", 
-						ImportFormat, 
-						0, 
-						ResultType.Failed, 
-						null, 
-						new UnknownException(new ArgumentNullException("myTransactionToken")));	
+						new UnknownException(
+					new ArgumentNullException(
+						String.Format("Missing Options {0}, {1}",
+							PARAM_VERTEXTYPENAME,
+							PARAM_EDGENAME
+						))));
 			}
 			
 			_GraphDB 			= myGraphDB;
 			_SecurityToken 		= mySecurityToken;
 			_TransactionToken 	= myTransactionToken;
+			InitVertexSettings(myOptions);
 			
 			var sw = new Stopwatch();
 			
@@ -268,7 +301,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 
 	            try
 	            {
-	                var reader = XmlReader.Create(new FileStream(myLocation,FileMode.Open));
+					var reader = XmlReader.Create(new FileStream(new Uri(myLocation).LocalPath, FileMode.Open));
 					
 					sw.Start();
 					
@@ -292,7 +325,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 	                                ReadEdge(reader);
 	                                break;
 	                            default:
-	                                throw new XmlException(String.Format("Unsupported Node Type in GraphML File: {0}", 
+	                                throw new XmlException(String.Format("Unsupported Node Type in GraphML File: {0}",
 									reader.Name));
 	                        }
 	                    }
@@ -300,7 +333,10 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 	            }
 	            catch (Exception ex)
 	            {
-	                return new QueryResult("", 
+					// drop vertex type in case of exception
+					DropVertexType();
+					
+	                return new QueryResult("VertexType has been removed", 
 						ImportFormat, 
 						(ulong)sw.ElapsedMilliseconds, 
 						ResultType.Failed, 
@@ -317,7 +353,12 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			
 			#endregion
 			
-			return new QueryResult("", ImportFormat, (ulong)sw.ElapsedMilliseconds, ResultType.Successful, null, null);
+			return new QueryResult("", 
+				ImportFormat, 
+				(ulong)sw.ElapsedMilliseconds, 
+				ResultType.Successful,
+				null, 
+				null);
 		}
 		
 		/// <summary>
@@ -357,36 +398,8 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		/// Is thrown when an argument passed to a method is invalid.
 		/// </exception>
 		public IPluginable InitializePlugin (string UniqueString, Dictionary<string, object> myParameters)
-		{
-			if(myParameters == null || myParameters.Count == 0)
-			{
-				throw new ArgumentException("myParameters was either null or empty.");
-			}
-			if(!myParameters.ContainsKey(PARAM_VERTEXTYPENAME))
-			{
-				throw new ArgumentException("VertexTypeName has not been defined.");
-			}
-			if(!myParameters.ContainsKey(PARAM_EDGETYPENAME))
-			{
-				throw new ArgumentException("EdgeTypeName has not been defined.");	
-			}
-			
-			var vertexTypeName 	= (string)myParameters[PARAM_VERTEXTYPENAME];
-			var edgeTypeName 	= (string)myParameters[PARAM_EDGETYPENAME];
-			
-			if(vertexTypeName == null || "".Equals(vertexTypeName))
-			{
-				throw new ArgumentException("VertexTypeName is invalid");	
-			}
-			
-			if(edgeTypeName == null || "".Equals(edgeTypeName))
-			{
-				throw new ArgumentException("EdgeTypeName is invalid");
-			}
-			
-			myParameters.Add("test", null);
-			
-			return new GraphMLImport(vertexTypeName, edgeTypeName);
+		{			
+			return new GraphMLImport();
 		}
 
 		public string PluginName 
@@ -407,7 +420,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 				return new PluginParameters<Type>()
 				{
 					{PARAM_VERTEXTYPENAME, 	typeof(string)},
-					{PARAM_EDGETYPENAME, 	typeof(string)}
+					{PARAM_EDGENAME, 	typeof(string)}
 				}; 
 			}
 		}
@@ -452,6 +465,14 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			                         requestCreateVertexType,
 			                         (stats, vType) => vType);
 			#endregion
+		}
+		
+		private void DropVertexType()
+		{
+			_GraphDB.DropType(_SecurityToken,
+				_TransactionToken,
+				new RequestDropVertexType(_VertexTypeName),
+				(stats, removedIDs) => removedIDs);
 		}
 		
 		#region vertex stuff
