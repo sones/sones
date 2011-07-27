@@ -1478,7 +1478,7 @@ namespace sones.GraphQL
 
             //BNF_ImportFormat.Rule = Empty;
 
-            NT_ImportStmt.Rule = S_IMPORT + S_FROM + location_literal + S_FORMAT + NT_ImportFormat + paramParallelTasks + paramComments + offsetOpt + limitOpt + verbosity;
+            NT_ImportStmt.Rule = S_IMPORT + S_FROM + location_literal + S_FORMAT + NT_ImportFormat + paramParallelTasks + paramComments + offsetOpt + limitOpt + verbosity + NT_Options;
 
             #endregion
 

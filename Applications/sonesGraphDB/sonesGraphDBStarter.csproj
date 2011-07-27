@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -30,6 +30,7 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
+    <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -197,6 +198,10 @@
     <ProjectReference Include="..\..\Plugins\GraphDS\DrainPipeLog\Implementations\AppendLog\DrainPipeLog.csproj">
       <Project>{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}</Project>
       <Name>DrainPipeLog</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\GraphMLImport\GraphMLImport.csproj">
+      <Project>{DFC1BC4B-F865-48C6-B8E1-64644D410748}</Project>
+      <Name>GraphMLImport</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
