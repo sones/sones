@@ -284,7 +284,7 @@ namespace sones.Plugins.SonesGQL
 			InitVertexSettings(myOptions);
 			
 			var sw = new Stopwatch();
-			FileStream stream;
+			FileStream stream = null;
 			
 			#endregion
 			
@@ -336,7 +336,10 @@ namespace sones.Plugins.SonesGQL
 	            }
 	            catch (Exception ex)
 	            {
-					stream.Close();
+					if(stream != null)
+					{
+						stream.Close();
+					}
 					// drop vertex type in case of exception
 					DropVertexType();
 					
