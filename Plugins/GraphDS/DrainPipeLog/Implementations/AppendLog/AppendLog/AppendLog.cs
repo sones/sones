@@ -93,7 +93,7 @@ namespace sones.Plugins.GraphDS.DrainPipeLog.Storage
         /// <returns></returns>
         public OnDiscAdress ReadOnDiscAdress(long NumberOfAdress)
         {
-            byte[] Readin;
+            //byte[] Readin;
             lock (DatabaseIndexFile)
             {
                 // check if this is even possible...

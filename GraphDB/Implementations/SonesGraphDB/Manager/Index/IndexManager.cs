@@ -303,7 +303,7 @@ namespace sones.GraphDB.Manager.Index
                 throw new NotImplementedException("It's currently not supported to use ranged or versioned indices");
             }
 
-            IEnumerable<String> result;
+            //IEnumerable<String> result;
             if (myIsSingleValue)
             {
                 return _applicationSettings.Get<DefaultSingleValueIndexImplementation>();

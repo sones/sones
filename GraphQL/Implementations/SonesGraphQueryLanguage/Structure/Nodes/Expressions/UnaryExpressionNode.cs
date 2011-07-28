@@ -31,7 +31,7 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
         #region Data
 
         private String _OperatorSymbol;
-        private Object _Term;
+        //private Object _Term;
 
         #endregion
 

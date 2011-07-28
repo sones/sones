@@ -98,9 +98,9 @@ namespace sones.GraphDB
         /// </summary>
         private readonly CancellationTokenSource _cts;
 
-        private readonly SecurityToken _security;
+        private readonly SecurityToken _security = null;
 
-        private readonly TransactionToken _transaction;
+        private readonly TransactionToken _transaction = null;
         private IDManager _idManager;
 
         #endregion

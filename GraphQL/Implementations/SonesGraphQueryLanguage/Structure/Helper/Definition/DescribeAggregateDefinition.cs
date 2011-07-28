@@ -129,7 +129,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                                 error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "");
                             }
                         }
-                        catch (ASonesException ee)
+                        catch (ASonesException)
                         {
                             error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "", e);
                         }

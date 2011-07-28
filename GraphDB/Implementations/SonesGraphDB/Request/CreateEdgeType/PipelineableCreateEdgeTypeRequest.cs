@@ -42,7 +42,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The parentVertex type that has been created during execution
         /// </summary>
-        private IEdgeType _createdEdgeType;
+        private IEdgeType _createdEdgeType = null;
 
         #endregion
 

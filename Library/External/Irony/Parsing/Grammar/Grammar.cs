@@ -264,12 +264,12 @@ namespace Irony.Parsing {
             var openBrace = context.OpenBraces.Peek();
             error = string.Format(Resources.ErrNoClosingBrace, openBrace.Text);
         } else {
-            var expectedTerms = context.GetExpectedTermSet(); 
-            if (expectedTerms.Count > 0) 
-              error = ConstructParserErrorMessage(context, expectedTerms); //deprecated, use next line in the future
-              //error = string.Format(Resources.ErrParserUnexpInput, expectedTerms.ToString(" ")
-            else 
-              error = Resources.ErrUnexpEof;
+            var expectedTerms = context.GetExpectedTermSet();
+            if (expectedTerms.Count > 0)
+                //error = ConstructParserErrorMessage(context, expectedTerms); //deprecated, use next line in the future
+                error = string.Format(Resources.ErrParserUnexpInput, expectedTerms.ToString(" "));
+            else
+                error = Resources.ErrUnexpEof;
         }
         context.AddParserError(error);
     }//method

@@ -32,11 +32,11 @@ namespace sones.GraphDB.ErrorHandling
     /// </summary>
     public class PropertyHasWrongTypeException : AGraphDBAttributeException  
     {
-        private string p;
-        private string p_2;
-        private TypeSystem.PropertyMultiplicity propertyMultiplicity;
-        private string p_3;
-        private string p_4;
+        //private string p;
+        //private string p_2;
+        //private TypeSystem.PropertyMultiplicity propertyMultiplicity;
+        //private string p_3;
+        //private string p_4;
 
         /// <summary>
         /// The type that defines the property.
