@@ -21,7 +21,7 @@
 
 using System;
 
-namespace sones.Plugins.SonesGQL.GraphMLImport
+namespace sones.Plugins.SonesGQL
 {
 	/// <summary>
     /// Class defines the XML tokens which are used for parsing.

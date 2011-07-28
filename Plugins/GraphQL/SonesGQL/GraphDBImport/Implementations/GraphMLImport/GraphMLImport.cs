@@ -37,7 +37,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.SonesGQL.DBImport;
 
-namespace sones.Plugins.SonesGQL.GraphMLImport
+namespace sones.Plugins.SonesGQL
 {
 	/// <summary>
     /// Class deserializes a graph stored in GraphML format.
