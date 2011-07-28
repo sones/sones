@@ -45,8 +45,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             Parameters.Add(new ParameterValue("MaxDepth", typeof(UInt64)));
             Parameters.Add(new ParameterValue("MaxPathLength", typeof(Int64)));
             Parameters.Add(new ParameterValue("OnlyShortestPath", typeof(Boolean)));
-            Parameters.Add(new ParameterValue("AllPaths", typeof(Boolean)));
-            Parameters.Add(new ParameterValue("UseBidirectionalBFS", typeof(Boolean)));
+            Parameters.Add(new ParameterValue("AllPaths", typeof(Boolean), true));
         }
 
         #endregion
@@ -120,8 +119,11 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                 allPaths = true;
             }
 
-            //mark if the BidirectionalBFS should be used
-            bool useBidirectionalBFS = Convert.ToBoolean(myParams[5].Value);
+            bool useBidirectionalBFS = false;
+            
+            if(myParams.GetLength(0) == 6)
+                //mark if the BidirectionalBFS should be used
+                useBidirectionalBFS = Convert.ToBoolean(myParams[5].Value);
 
             var vertexType = myGraphDB.GetVertexType<IVertexType>(mySecurityToken, myTransactionToken, new GraphDB.Request.RequestGetVertexType(startNode.VertexTypeID), (stats, type) => type);
 
