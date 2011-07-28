@@ -91,34 +91,76 @@ namespace sones.Plugins.GraphDS.IO
         {
             StringBuilder Output = new StringBuilder();
 
-            Output.Append("<table class=\"gql_table\" border=\"1\"> <!-- MainTable -->");
-            Output.Append("<tr><td style=\"width:250px\">query</td><td style=\"width:400px\">").Append(EscapeForXMLandHTML(myQueryResult.Query)).Append("</td></tr>");
-            Output.Append("<tr><td style=\"width:250px\">result</td><td style=\"width:400px\">").Append(EscapeForXMLandHTML(myQueryResult.TypeOfResult.ToString())).Append("</td></tr>");
-            Output.Append("<tr><td style=\"width:250px\">duration</td><td style=\"width:400px\">").Append(myQueryResult.Duration).Append(" ms</td></tr>");
+            Output.Append("var data = d3.range(10).map(Math.random);");
 
-            if (myQueryResult.Error != null)
-            {
-                Output.Append("<tr><td style=\"width:250px\">error</td><td style=\"width:400px\">").Append(EscapeForXMLandHTML(myQueryResult.Error.GetType().ToString()+" - "+HandleQueryExceptions(myQueryResult))).Append("</td></tr>");
-            }
+            Output.Append("var w = 430,");
+            Output.Append("h = 230,");
+            Output.Append("x = d3.scale.linear().domain([0, 1]).range([0, w]),");
+            Output.Append("y = d3.scale.ordinal().domain(d3.range(data.length)).rangeBands([0, h], .2);");
 
-            if (myQueryResult.Vertices != null)
-            {
-                Output.Append("<table class=\"gql_table\" border=\"1\"> <!-- Vertices -->");
-                Output.Append("<tr><td style=\"width:250px\">result</td><td style=\"width:400px\">");
+            Output.Append("var vis = d3.select(\"#output\")");
+            Output.Append(".append(\"svg:svg\")");
+            Output.Append(".attr(\"width\", w + 40)");
+            Output.Append(".attr(\"height\", h + 20)");
+            Output.Append(".append(\"svg:g\")");
+            Output.Append(".attr(\"transform\", \"translate(20,0)\");");
 
-                foreach (IVertexView _vertex in myQueryResult.Vertices)
-                {
-                    Output.Append("<table class=\"gql_table\" border=\"1\"> <!-- Vertices-2 -->");
-                    Output.Append(GenerateVertexViewHTML(_vertex));
-                    Output.Append("</table> <!-- Vertices-2 -->");
-                }
-                
-                Output.Append("</td></tr>");
-                Output.Append("</table> <!-- Vertices -->");
-            }
+            Output.Append("var bars = vis.selectAll(\"g.bar\")");
+            Output.Append(".data(data)");
+            Output.Append(".enter().append(\"svg:g\")");
+            Output.Append(".attr(\"class\", \"bar\")");
+            Output.Append(".attr(\"transform\", function(d, i) { return \"translate(0,\" + y(i) + \")\"; });");
+        
+            Output.Append("bars.append(\"svg:rect\")");
+            Output.Append(".attr(\"fill\", \"steelblue\")");
+            Output.Append(".attr(\"width\", x)");
+            Output.Append(".attr(\"height\", y.rangeBand());");
 
-            Output.Append("</table>  <!-- MainTable -->");
-            return HTMLBuilder(myQueryResult,Output).ToString();
+            Output.Append("bars.append(\"svg:text\")");
+            Output.Append(".attr(\"x\", x)");
+            Output.Append(".attr(\"y\", y.rangeBand() / 2)");
+            Output.Append(".attr(\"dx\", -6)");
+            Output.Append(".attr(\"dy\", \".35em\")");
+            Output.Append(".attr(\"fill\", \"white\")");
+            Output.Append(".attr(\"text-anchor\", \"end\")");
+            Output.Append(".text(x.tickFormat(100));");
+
+            Output.Append("bars.append(\"svg:text\")");
+            Output.Append(".attr(\"x\", 0)");
+            Output.Append(".attr(\"y\", y.rangeBand() / 2)");
+            Output.Append(".attr(\"dx\", -6)");
+            Output.Append(".attr(\"dy\", \".35em\")");
+            Output.Append(".attr(\"text-anchor\", \"end\")");
+            Output.Append(".text(function(d, i) { return String.fromCharCode(65 + i); });");
+
+            Output.Append("var rules = vis.selectAll(\"g.rule\")");
+            Output.Append(".data(x.ticks(10))");
+            Output.Append(".enter().append(\"svg:g\")");
+            Output.Append(".attr(\"class\", \"rule\")");
+            Output.Append(".attr(\"transform\", function(d) { return \"translate(\" + x(d) + \",0)\"; });");
+            Output.Append("rules.append(\"svg:line\")");
+            Output.Append(".attr(\"y1\", h)");
+            Output.Append(".attr(\"y2\", h + 6)");
+            Output.Append(".attr(\"stroke\", \"black\");");
+
+            Output.Append("rules.append(\"svg:line\")");
+            Output.Append(".attr(\"y1\", 0)");
+            Output.Append(".attr(\"y2\", h)");
+            Output.Append(".attr(\"stroke\", \"white\")");
+            Output.Append(".attr(\"stroke-opacity\", .3);");
+
+            Output.Append("rules.append(\"svg:text\")");
+            Output.Append(".attr(\"y\", h + 9)");
+            Output.Append(".attr(\"dy\", \".71em\")");
+            Output.Append(".attr(\"text-anchor\", \"middle\")");
+            Output.Append(".text(x.tickFormat(10));");
+
+            Output.Append("vis.append(\"svg:line\")");
+            Output.Append(".attr(\"y1\", 0)");
+            Output.Append(".attr(\"y2\", h)");
+            Output.Append(".attr(\"stroke\", \"black\");");
+
+            return Output.ToString();
         }
 
         private String HandleQueryExceptions(QueryResult queryresult)
@@ -132,106 +174,6 @@ namespace sones.Plugins.GraphDS.IO
             return SB.ToString();
         }
 
-        #region private toHTML
-        private String GenerateVertexViewHTML(IVertexView aVertex)
-        {
-            StringBuilder Output = new StringBuilder();
-            // take one IVertexView and traverse through it
-            #region Vertex Properties
-            if (aVertex.GetCountOfProperties() > 0)
-            {
-                //Output.Append("<table class=\"gql_table\" border=\"1\"> <!-- VertexProperties -->");
-                foreach (var _property in aVertex.GetAllProperties())
-                {
-                    if (_property.Item2 == null)
-                        Output.Append("<tr><td style=\"width:250px\">").Append(EscapeForXMLandHTML(_property.Item1)).Append("</td><td style=\"width:400px\"></td></tr>");
-                    else
-                        if (_property.Item2 is Stream)
-                            Output.Append("<tr><td style=\"width:250px\">").Append(EscapeForXMLandHTML(_property.Item1)).Append("</td><td style=\"width:400px\">BinaryProperty</td></tr>");
-                        else
-                            Output.Append("<tr><td style=\"width:250px\">").Append(EscapeForXMLandHTML(_property.Item1)).Append("</td><td style=\"width:400px\">").Append(EscapeForXMLandHTML(_property.Item2.ToString())).Append("</td></tr>");
-                }
-                //Output.Append("</table> <!-- VertexProperties -->");
-            }
-            #endregion
-
-            #region Edges
-            Output.Append("<tr><td><td><table class=\"gql_table\"border=\"1\"> <!-- Edges -->");
-            Output.Append("<tr><td style=\"width:250px\">edges</td><td style=\"width:400px\">");
-
-            foreach (var _edge in aVertex.GetAllEdges())
-            {
-                if (_edge.Item2 == null)
-                {
-                    Output.Append("<tr><td style=\"width:250px\">").Append(EscapeForXMLandHTML(_edge.Item1)).Append("</td><td style=\"width:400px\"></td></tr>");
-                }
-                else
-                {
-                    Output.Append("<tr><td style=\"width:250px\">").Append(EscapeForXMLandHTML(_edge.Item1)).Append("</td><td style=\"width:400px\">").Append(GenerateEdgeViewHTML(_edge.Item2)).Append("</td></tr>");
-                }
-            }
-
-            Output.Append("</td></td></tr>");
-            Output.Append("</table> <!-- Edges -->");
-            // add to the results...
-            //_results.Add(new JObject(new JProperty("edges", _edges)));
-            #endregion
-
-            return Output.ToString();
-        }
-
-        private String GenerateEdgeViewHTML(IEdgeView aEdge)
-        {
-            StringBuilder Output = new StringBuilder();
-            Output.Append("<table class=\"gql_table\"border=\"1\"> <!-- EdgeView -->");
-
-            #region Edge Properties
-            if (aEdge.GetCountOfProperties() > 0)
-            {
-                Output.Append("<tr><td style=\"width:250px\">properties</td><td style=\"width:400px\">");
-                Output.Append("<table class=\"gql_table\"border=\"1\"><tr><td style=\"width:400px\"> <!-- EdgeViewProperties -->");
-
-                foreach (var _property in aEdge.GetAllProperties())
-                {
-                    if (_property.Item2 == null)
-                        Output.Append(EscapeForXMLandHTML(_property.Item1)).Append("</td><td style=\"width:400px\"></td></tr>");
-                    else
-                        if (_property.Item2 is Stream)
-                        {
-                            Output.Append(EscapeForXMLandHTML(_property.Item1)).Append("</td><td style=\"width:400px\">BinaryProperty</td></tr>");
-                        }
-                        else
-                            Output.Append(EscapeForXMLandHTML(_property.Item1)).Append("</td><td style=\"width:400px\">").Append(EscapeForXMLandHTML(_property.Item2.ToString())).Append("</td></tr>");
-                }
-
-                Output.Append("</table></td></tr> <!-- EdgeViewProperties -->");
-            }
-            #endregion
-
-
-            #region Target Vertices
-            Output.Append("<tr><td style=\"width:250px\">targetvertices</td><td style=\"width:400px\">");
-            Output.Append("<table class=\"gql_table\"border=\"1\"><tr><td style=\"width:400px\"> <!-- TargetVertices -->");
-
-            foreach (IVertexView _vertex in aEdge.GetTargetVertices())
-            {
-                Output.Append("<table class=\"gql_table\" border=\"1\"> <!-- Vertices-2 -->");
-                Output.Append(GenerateVertexViewHTML(_vertex));
-                Output.Append("</table> <!-- Vertices-2 -->");
-            }
-
-            Output.Append("</td></table> <!-- TargetVertices -->");
-
-            Output.Append("</table></td></tr> <!-- EdgesView -->");
-
-            return Output.ToString();
-            #endregion
-
-        }
-
-
-        #endregion
-
         #region Generate a QueryResult from HTML - not really needed right now
         public QueryResult GenerateQueryResult(string myResult)
         {
@@ -243,42 +185,7 @@ namespace sones.Plugins.GraphDS.IO
             get { return _contentType; }
         }
         #endregion
-
-        #region HTMLBuilder(myGraphDBName, myFunc)
-
-        public StringBuilder HTMLBuilder(QueryResult myQueryResult, StringBuilder Input)
-        {
-            var _StringBuilder = new StringBuilder();
-
-            _StringBuilder.AppendLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-            _StringBuilder.AppendLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
-            _StringBuilder.AppendLine("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-            _StringBuilder.AppendLine("<head>");
-            _StringBuilder.AppendLine("<title>sones GraphDS</title>");
-            _StringBuilder.AppendLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"/resources/WebShell/WebShell.css\" />");
-            _StringBuilder.AppendLine("</head>");
-            _StringBuilder.AppendLine("<body>");
-            _StringBuilder.AppendLine("<h1>sones GraphDS - BarChart</h1>");
-            _StringBuilder.Append("<h2>").Append(EscapeForXMLandHTML(myQueryResult.Query)).AppendLine("</h2>");
-            _StringBuilder.AppendLine("<table>");
-            _StringBuilder.AppendLine("<tr>");
-            _StringBuilder.AppendLine("<td style=\"width: 100px\">&nbsp;</td>");
-            _StringBuilder.AppendLine("<td>");
-
-            // paste in the previous StringBuilder Input
-            _StringBuilder.AppendLine(Input.ToString());
-
-            _StringBuilder.AppendLine("</td>");
-            _StringBuilder.AppendLine("</tr>");
-            _StringBuilder.AppendLine("</table>");
-            _StringBuilder.AppendLine("</body>").AppendLine("</html>").AppendLine();
-
-            return _StringBuilder;
-
-        }
-
-        #endregion
-
+        
         #endregion
 
         #endregion

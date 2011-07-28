@@ -143,8 +143,11 @@
                 return '<pre class=\"AttrTagValue\">' + result + '</pre>';
 
             // barchart
-            else if (ContentType.indexOf("application/x-sones-barchart") > -1)
-                return '<pre class=\"AttrTagValue\">' + result + '</pre>';
+            else if (ContentType.indexOf("application/x-sones-barchart") > -1) {
+                $('body').append('<script type=\"text/javascript\" src=\"resources/d3/d3.js\"/>');
+                $('body').append('<script type=\"text/javascript\">'+ result + '</script/>');
+                return '';
+            }
 
             // error
             else

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("HTML_IO")]
+[assembly: AssemblyTitle("BARCHART_IO")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("sones GmbH")]
-[assembly: AssemblyProduct("HTML_IO")]
+[assembly: AssemblyProduct("BARCHART_IO")]
 [assembly: AssemblyCopyright("Copyright © sones GmbH 2007-2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
