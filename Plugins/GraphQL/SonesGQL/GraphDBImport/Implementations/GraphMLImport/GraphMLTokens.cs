@@ -59,13 +59,20 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 
         #region base types
 
-        public const String STRING = "String";
-        public const String INT = "Int";
-        public const String BOOLEAN = "Boolean";
-        public const String FLOAT = "Float";
-        public const String DOUBLE = "Double";
-        public const String LONG = "Long";
-
+        public const String STRING 				= "String";
+        public const String INT 				= "Int";
+		public const String LONG 				= "Long";
+        public const String BOOLEAN 			= "Boolean";
+        public const String FLOAT 				= "Float";
+        public const String DOUBLE 				= "Double";
+        
+		public const String STRING_INTERNAL 	= "String";
+		public const String INT_INTERNAL 		= "Int32";
+		public const String LONG_INTERNAL 		= "Int64";
+		public const String BOOLEAN_INTERNAL 	= "Boolean";
+		public const String FLOAT_INTERNAL		= "Double";
+        public const String DOUBLE_INTERNAL		= "Double";
+		
         #endregion
 		
 		#region GraphDB specific

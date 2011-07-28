@@ -284,6 +284,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			InitVertexSettings(myOptions);
 			
 			var sw = new Stopwatch();
+			FileStream stream;
 			
 			#endregion
 			
@@ -301,7 +302,9 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 
 	            try
 	            {
-					var reader = XmlReader.Create(new FileStream(new Uri(myLocation).LocalPath, FileMode.Open));
+					stream = new FileStream(new Uri(myLocation).LocalPath, FileMode.Open);
+					
+					var reader = XmlReader.Create(stream);
 					
 					sw.Start();
 					
@@ -333,6 +336,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 	            }
 	            catch (Exception ex)
 	            {
+					stream.Close();
 					// drop vertex type in case of exception
 					DropVertexType();
 					
@@ -623,7 +627,9 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			
 			                    if (attrType != null && value != null)
 			                    {
-									myRequestInsertVertex.AddStructuredProperty(attrName, 
+//									myRequestInsertVertex.AddStructuredProperty(attrName, 
+//										(IComparable)ParseValue(attrType, value));
+									myRequestInsertVertex.AddUnknownProperty(attrName,
 										(IComparable)ParseValue(attrType, value));
 			                    }
 			                }
@@ -759,7 +765,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			
             var attrId 		= myReader.GetAttribute(GraphMLTokens.ID);
             var attrFor 	= myReader.GetAttribute(GraphMLTokens.FOR);
-            var attrName 	= myReader.GetAttribute(GraphMLTokens.ATTRIBUTE_NAME).ToLower();
+			var attrName 	= myReader.GetAttribute(GraphMLTokens.ATTRIBUTE_NAME);
             var attrType 	= myReader.GetAttribute(GraphMLTokens.ATTRIBUTE_TYPE).ToLower();
 
             string attrDefault = null;
@@ -779,6 +785,8 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			attrType = char.ToUpper(attrType[0]) + attrType.Substring(1).ToLower();
 			// and store the whole definition
             _AttributeDefinitions.Add(attrId, new Tuple<string, string, string, string>(attrFor, attrName, attrType, attrDefault));
+			// get GraphDB internal type
+			attrType = GetInternalTypeName(attrType);
 			
 			#endregion
 			
@@ -842,6 +850,10 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
             {
                 return Int64.Parse(myValue);
             }
+			else if (myType.Equals(GraphMLTokens.BOOLEAN))
+            {
+                return Boolean.Parse(myValue);
+            }
 			else if(myType.Equals(GraphMLTokens.STRING))
 			{
 				return myValue;	
@@ -852,7 +864,41 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 					myType));
             }
         }
-			
+		
+		private String GetInternalTypeName(String myExternalTypeName)
+		{
+			if(myExternalTypeName.Equals(GraphMLTokens.STRING))
+			{
+				return GraphMLTokens.STRING_INTERNAL;	
+			} 
+			else if(myExternalTypeName.Equals(GraphMLTokens.INT))
+			{
+				return GraphMLTokens.INT_INTERNAL;	
+			}
+			else if(myExternalTypeName.Equals(GraphMLTokens.LONG))
+			{
+				return GraphMLTokens.LONG_INTERNAL;	
+			}
+			else if(myExternalTypeName.Equals(GraphMLTokens.FLOAT))
+			{
+				return GraphMLTokens.FLOAT_INTERNAL;
+			}
+			else if(myExternalTypeName.Equals(GraphMLTokens.DOUBLE))
+			{
+				return GraphMLTokens.DOUBLE_INTERNAL;
+			}
+			else if(myExternalTypeName.Equals(GraphMLTokens.BOOLEAN))
+			{
+				return GraphMLTokens.BOOLEAN_INTERNAL;
+			}
+			else
+            {
+                throw new ArgumentException(String.Format("Attribute Type {0} not supported by GraphML Parser",
+					myExternalTypeName));
+            }
+				
+		}
+		
 		#endregion
 			
 		#endregion
