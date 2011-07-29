@@ -36,6 +36,7 @@ using sones.Library.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.SonesGQL.DBImport;
+using System.Net;
 
 namespace sones.Plugins.SonesGQL
 {
@@ -244,6 +245,16 @@ namespace sones.Plugins.SonesGQL
 						new UnknownException(new ArgumentNullException("Missing GraphDB object")));
 			}
 			
+			if(myLocation == null)
+			{
+				return new QueryResult("", 
+						ImportFormat, 
+						0, 
+						ResultType.Failed, 
+						null, 
+						new UnknownException(new ArgumentNullException("Missing Location object")));	
+			}
+			
 //			if(mySecurityToken == null)
 //			{
 //				return new QueryResult("", 
@@ -284,7 +295,7 @@ namespace sones.Plugins.SonesGQL
 			InitVertexSettings(myOptions);
 			
 			var sw = new Stopwatch();
-			FileStream stream = null;
+			Stream stream = null;
 			
 			#endregion
 			
@@ -301,8 +312,19 @@ namespace sones.Plugins.SonesGQL
 				#region read elements
 
 	            try
-	            {
-					stream = new FileStream(new Uri(myLocation).LocalPath, FileMode.Open);
+	            {					
+					if(myLocation.ToLower().StartsWith("file://") || myLocation.ToLower().StartsWith("file:\\"))
+					{
+						stream = GetStreamFromFile(myLocation.Substring("file://".Length));
+					} 
+					else if(myLocation.StartsWith("http://"))
+					{
+						stream = GetStreamFromHttp(myLocation);	
+					} 
+					else
+					{
+						throw new FormatException("Given file location is invalid.");
+					}
 					
 					var reader = XmlReader.Create(stream);
 					
@@ -901,6 +923,32 @@ namespace sones.Plugins.SonesGQL
             }
 				
 		}
+		
+		#region Get streams
+
+        /// <summary>
+        /// Reads a file, just let all exceptions thrown, they are too much to pack them into a graphDBException.
+        /// </summary>
+        /// <param name="myLocation"></param>
+        /// <returns></returns>
+        private Stream GetStreamFromFile(String myLocation)
+        {
+            return File.OpenRead(myLocation);
+        }
+
+        /// <summary>
+        /// Reads a http ressource, just let all exceptions thrown, they are too much to pack them into a graphDBException.
+        /// </summary>
+        /// <param name="myLocation"></param>
+        /// <returns></returns>
+        private Stream GetStreamFromHttp(String myLocation)
+        {
+            var request = (HttpWebRequest)WebRequest.Create(myLocation);
+            var response = request.GetResponse();
+            return response.GetResponseStream();
+        }
+
+        #endregion
 		
 		#endregion
 			
