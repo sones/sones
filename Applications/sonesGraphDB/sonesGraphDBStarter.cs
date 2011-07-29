@@ -37,6 +37,7 @@ using System.IO;
 using System.Globalization;
 using sones.Library.DiscordianDate;
 using System.Security.AccessControl;
+using sones.GraphDSServer.ErrorHandling;
 
 
 namespace sones.sonesGraphDBStarter
@@ -82,7 +83,8 @@ namespace sones.sonesGraphDBStarter
 
             if (Properties.Settings.Default.UsePersistence)
             {
-                Console.WriteLine("Initializing persistence layer...");
+                if (!quiet)
+                   Console.WriteLine("Initializing persistence layer...");
                 string configuredLocation = Properties.Settings.Default.PersistenceLocation;
                 Uri location = null;
 
@@ -101,16 +103,19 @@ namespace sones.sonesGraphDBStarter
                 {
                     //Make a new GraphDB instance
                     GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location } })));
-                    Console.WriteLine("Persistence layer initialized...");
+                    if (!quiet)
+                        Console.WriteLine("Persistence layer initialized...");
                 }
                 catch (Exception a)
                 {
-                    Console.WriteLine(a.Message);
-                    Console.WriteLine(a.StackTrace);
+                    if (!quiet)
+                    { 
+                        Console.WriteLine(a.Message);
+                        Console.WriteLine(a.StackTrace);
 
-                    Console.Error.WriteLine("Could not access the data directory " + location.AbsoluteUri + ". Please make sure you that you have the right file access permissions!");
-                    Console.Error.WriteLine("Using in memory storage instead.");
-
+                        Console.Error.WriteLine("Could not access the data directory " + location.AbsoluteUri + ". Please make sure you that you have the right file access permissions!");
+                        Console.Error.WriteLine("Using in memory storage instead.");
+                    }
                     GraphDB = new SonesGraphDB(null,true,new CultureInfo(Properties.Settings.Default.DatabaseCulture));
                 }
             }
@@ -175,6 +180,7 @@ namespace sones.sonesGraphDBStarter
 
             _dsServer = new GraphDS_Server(GraphDB, Properties.Settings.Default.ListeningPort,Properties.Settings.Default.Username,Properties.Settings.Default.Password, IPAddress.Any, PluginsAndParameters);
             _dsServer.LogOn(new UserPasswordCredentials(Properties.Settings.Default.Username,Properties.Settings.Default.Password));
+
             _dsServer.StartRESTService("", Properties.Settings.Default.ListeningPort, IPAddress.Any);
 
             #endregion
@@ -182,12 +188,6 @@ namespace sones.sonesGraphDBStarter
             #region Some helping lines...
             if (!quiet)
             {
-                DiscordianDate ddate = new DiscordianDate();
-
-                Console.WriteLine("sones GraphDB version 2.0 - "+ddate.ToString());
-                Console.WriteLine("(C) sones GmbH 2007-2011 - http://www.sones.com");
-                Console.WriteLine("-----------------------------------------------");
-                Console.WriteLine();
                 Console.WriteLine("This GraphDB Instance offers the following options:");
                 Console.WriteLine("   * If you want to suppress console output add --Q as a");
                 Console.WriteLine("     parameter.");
@@ -203,7 +203,6 @@ namespace sones.sonesGraphDBStarter
                 Console.WriteLine("        Browse to http://localhost:"+Properties.Settings.Default.ListeningPort+"/WebShell and use");
                 Console.WriteLine("        the username \""+Properties.Settings.Default.Username+"\" and password \""+Properties.Settings.Default.Password+"\"");
                 Console.WriteLine();
-
                 Console.WriteLine("Enter 'shutdown' to initiate the shutdown of this instance.");
             }
 
@@ -229,7 +228,42 @@ namespace sones.sonesGraphDBStarter
     {
         static void Main(string[] args)
         {
-            var sonesGraphDBStartup = new sonesGraphDBStartup(args);
+            bool quiet = false;
+
+            if (args.Count() > 0)
+            {
+                foreach (String parameter in args)
+                {
+                    if (parameter.ToUpper() == "--Q")
+                        quiet = true;
+                }
+            }
+
+            if (!quiet)
+            {
+                DiscordianDate ddate = new DiscordianDate();
+
+                Console.WriteLine("sones GraphDB version 2.0 - " + ddate.ToString());
+                Console.WriteLine("(C) sones GmbH 2007-2011 - http://www.sones.com");
+                Console.WriteLine("-----------------------------------------------");
+                Console.WriteLine();
+                Console.WriteLine("Starting up GraphDB...");
+            }
+
+            try
+            {
+                var sonesGraphDBStartup = new sonesGraphDBStartup(args);
+            }
+            catch (RESTServiceCouldNotBeStartedException e)
+            {
+                if (!quiet)
+                { 
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine();
+                    Console.WriteLine("Press <return> to exit.");
+                    Console.ReadLine();
+                }
+            }
         }
     }
 }

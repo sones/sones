@@ -126,6 +126,10 @@
       <Project>{8E0390D0-A7BF-46FE-900C-C411F762EFF2}</Project>
       <Name>DiscordianDate</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\PluginDefinition\PluginDefinition.csproj">
       <Project>{CE9BF2C2-C785-4661-8F4F-64266C697343}</Project>
       <Name>PluginDefinition</Name>
