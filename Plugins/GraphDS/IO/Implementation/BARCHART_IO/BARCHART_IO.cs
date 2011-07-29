@@ -90,6 +90,28 @@ namespace sones.Plugins.GraphDS.IO
         public string GenerateOutputResult(QueryResult myQueryResult)
         {
             StringBuilder Output = new StringBuilder();
+            Dictionary<String, object> barchart;
+
+            if (myQueryResult.Error != null)
+            {
+                Output.Append(ConvertString2WebShellOut(HandleQueryExceptions(myQueryResult)));
+                return Output.ToString();
+            }
+
+            barchart = GenerateBarChart(myQueryResult);
+
+            if (barchart.Count == 0)
+            {
+                Output.Append(ConvertString2WebShellOut("Error: No Properties with name x and y found!"));
+                return Output.ToString();
+            }
+            else
+            {
+                foreach (KeyValuePair<string, object> bar in barchart)
+                {
+                    Output.Append(ConvertString2WebShellOut("Key: "+bar.Key.ToString()+ " Value: "+bar.Value.ToString()));
+                }
+            }
 
             Output.Append("var data = d3.range(10).map(Math.random);");
 
@@ -172,6 +194,78 @@ namespace sones.Plugins.GraphDS.IO
                 SB.Append(" InnerException: " + queryresult.Error.InnerException.Message);
 
             return SB.ToString();
+        }
+
+        private String ConvertString2WebShellOut(String input)
+        {
+            StringBuilder SB = new StringBuilder();
+
+            SB.Append("goosh.gui.out(\'");
+            SB.Append(input.Replace("\n", "<br>"));
+            SB.Append("\');");
+
+            return SB.ToString();
+        }
+
+        private Dictionary<String, object> GenerateBarChart(QueryResult myQueryResult)
+        {
+            Dictionary<String, object> barchart = new Dictionary<string, object>();
+
+            foreach (var aVertex in myQueryResult)
+            {
+                AnalyzeProperties(aVertex.GetAllProperties(), ref barchart);
+                AnalyzeEdges(aVertex.GetAllEdges(), ref barchart);
+            }
+
+            return barchart;
+        }
+
+        private void AnalyzeProperties(IEnumerable<Tuple<String, Object>> properties, ref Dictionary<String, object> barchart)
+        {
+            String x = null;
+            object y = 0;
+            bool hasx = false;
+            bool hasy = false;
+
+            foreach (var property in properties)
+            {
+                if ((property.Item1 != null) && (property.Item2 != null))
+                {
+                    if ((property.Item1 is String) && (property.Item1.ToString().ToUpper() == "X"))
+                    {
+                        hasx = true;
+                        x = property.Item2.ToString();
+                    }
+
+                    if ((property.Item2 is object) && (property.Item1.ToString().ToUpper() == "Y"))
+                    {
+                        hasy = true;
+                        y = property.Item2;
+                    }
+                }
+            }
+
+            if (hasx && hasy)
+            {
+                barchart.Add(x, y);
+            }
+        }
+
+        private void AnalyzeEdges(IEnumerable<Tuple<String, IEdgeView>> edges, ref Dictionary<String, object> barchart)
+        {
+            foreach (Tuple<String, IEdgeView> edge in edges)
+            {
+                AnalyzeTargetVertices(edge.Item2.GetTargetVertices(), ref barchart);
+            }
+        }
+
+        private void AnalyzeTargetVertices(IEnumerable<IVertexView> targetvertices, ref Dictionary<String, object> barchart)
+        {
+            foreach (var aVertex in targetvertices)
+            {
+                AnalyzeProperties(aVertex.GetAllProperties(), ref barchart);
+                AnalyzeEdges(aVertex.GetAllEdges(), ref barchart);
+            }
         }
 
         #region Generate a QueryResult from HTML - not really needed right now
