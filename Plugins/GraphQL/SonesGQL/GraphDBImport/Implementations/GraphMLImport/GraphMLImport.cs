@@ -655,7 +655,9 @@ namespace sones.Plugins.SonesGQL
 //									myRequestInsertVertex.AddStructuredProperty(attrName, 
 //										(IComparable)ParseValue(attrType, value));
 									myRequestInsertVertex.AddUnknownProperty(attrName,
-										(IComparable)ParseValue(attrType, value));
+										Convert.ChangeType(ParseValue(attrType, value), 
+										typeof(String), 
+										CultureInfo.GetCultureInfo("en-us")));
 			                    }
 			                }
 			            }
@@ -863,13 +865,12 @@ namespace sones.Plugins.SonesGQL
             }
             else if (myType.Equals(GraphMLTokens.FLOAT))
             {
-				//mh..had to use invariant culture or he made 10.0 out of 1.0
-                return float.Parse(myValue, CultureInfo.InvariantCulture);
+				var f = float.Parse(myValue, CultureInfo.InvariantCulture);
+               	return float.Parse(myValue, CultureInfo.GetCultureInfo("en-us"));
             }
             else if (myType.Equals(GraphMLTokens.DOUBLE))
             {
-                //mh..had to use invariant culture or he made 10.0 out of 1.0
-                return Double.Parse(myValue, CultureInfo.InvariantCulture);
+                return Double.Parse(myValue, CultureInfo.GetCultureInfo("en-us"));
             }
             else if (myType.Equals(GraphMLTokens.LONG))
             {
