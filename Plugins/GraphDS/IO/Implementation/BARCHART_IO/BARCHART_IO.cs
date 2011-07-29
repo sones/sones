@@ -107,80 +107,82 @@ namespace sones.Plugins.GraphDS.IO
             }
             else
             {
+                Output.Append("var data = new Array();");
+                Output.Append("var names = new Array();");
+
                 foreach (KeyValuePair<string, object> bar in barchart)
                 {
-                    Output.Append(ConvertString2WebShellOut("Key: "+bar.Key.ToString()+ " Value: "+bar.Value.ToString()));
+                    Output.Append("data.push(" + bar.Value + ");");
+                    Output.Append("names.push(\'" + bar.Key.ToString() + "\');");
                 }
+
+                Output.Append("var w = 430,");
+                Output.Append("h = data.length * 23,");
+                Output.Append("x = d3.scale.linear().domain([0, d3.max(data)]).range([0, w]),");
+                Output.Append("y = d3.scale.ordinal().domain(d3.range(data.length)).rangeBands([0, h], .2);");
+
+                Output.Append("var vis = d3.select(\"#output\")");
+                Output.Append(".append(\"svg:svg\")");
+                Output.Append(".attr(\"width\", w + 200)");
+                Output.Append(".attr(\"height\", h + 20)");
+                Output.Append(".append(\"svg:g\")");
+                Output.Append(".attr(\"transform\", \"translate(20,0)\");");
+
+                Output.Append("var bars = vis.selectAll(\"g.bar\")");
+                Output.Append(".data(data)");
+                Output.Append(".enter().append(\"svg:g\")");
+                Output.Append(".attr(\"class\", \"bar\")");
+                Output.Append(".attr(\"transform\", function(d, i) { return \"translate(0,\" + y(i) + \")\"; });");
+
+                Output.Append("bars.append(\"svg:rect\")");
+                Output.Append(".attr(\"fill\", \"steelblue\")");
+                Output.Append(".attr(\"width\", x)");
+                Output.Append(".attr(\"height\", y.rangeBand());");
+
+                Output.Append("bars.append(\"svg:text\")");
+                Output.Append(".attr(\"x\", x)");
+                Output.Append(".attr(\"y\", y.rangeBand() / 2)");
+                Output.Append(".attr(\"dx\", -6)");
+                Output.Append(".attr(\"dy\", \".35em\")");
+                Output.Append(".attr(\"fill\", \"white\")");
+                Output.Append(".attr(\"text-anchor\", \"end\")");
+                Output.Append(".text(x.tickFormat(100));");
+
+                Output.Append("bars.append(\"svg:text\")");
+                Output.Append(".attr(\"x\", x)");
+                Output.Append(".attr(\"y\", y.rangeBand() / 2)");
+                Output.Append(".attr(\"dx\", 2)");
+                Output.Append(".attr(\"dy\", \".35em\")");
+                Output.Append(".attr(\"text-anchor\", \"start\")");
+                Output.Append(".text(function(d, i) { return names[i]; });");
+
+                Output.Append("var rules = vis.selectAll(\"g.rule\")");
+                Output.Append(".data(x.ticks(10))");
+                Output.Append(".enter().append(\"svg:g\")");
+                Output.Append(".attr(\"class\", \"rule\")");
+                Output.Append(".attr(\"transform\", function(d) { return \"translate(\" + x(d) + \",0)\"; });");
+                Output.Append("rules.append(\"svg:line\")");
+                Output.Append(".attr(\"y1\", h)");
+                Output.Append(".attr(\"y2\", h + 6)");
+                Output.Append(".attr(\"stroke\", \"black\");");
+
+                Output.Append("rules.append(\"svg:line\")");
+                Output.Append(".attr(\"y1\", 0)");
+                Output.Append(".attr(\"y2\", h)");
+                Output.Append(".attr(\"stroke\", \"white\")");
+                Output.Append(".attr(\"stroke-opacity\", .3);");
+
+                Output.Append("rules.append(\"svg:text\")");
+                Output.Append(".attr(\"y\", h + 9)");
+                Output.Append(".attr(\"dy\", \".71em\")");
+                Output.Append(".attr(\"text-anchor\", \"middle\")");
+                Output.Append(".text(x.tickFormat(10));");
+
+                Output.Append("vis.append(\"svg:line\")");
+                Output.Append(".attr(\"y1\", 0)");
+                Output.Append(".attr(\"y2\", h)");
+                Output.Append(".attr(\"stroke\", \"black\");");
             }
-
-            Output.Append("var data = d3.range(10).map(Math.random);");
-
-            Output.Append("var w = 430,");
-            Output.Append("h = 230,");
-            Output.Append("x = d3.scale.linear().domain([0, 1]).range([0, w]),");
-            Output.Append("y = d3.scale.ordinal().domain(d3.range(data.length)).rangeBands([0, h], .2);");
-
-            Output.Append("var vis = d3.select(\"#output\")");
-            Output.Append(".append(\"svg:svg\")");
-            Output.Append(".attr(\"width\", w + 40)");
-            Output.Append(".attr(\"height\", h + 20)");
-            Output.Append(".append(\"svg:g\")");
-            Output.Append(".attr(\"transform\", \"translate(20,0)\");");
-
-            Output.Append("var bars = vis.selectAll(\"g.bar\")");
-            Output.Append(".data(data)");
-            Output.Append(".enter().append(\"svg:g\")");
-            Output.Append(".attr(\"class\", \"bar\")");
-            Output.Append(".attr(\"transform\", function(d, i) { return \"translate(0,\" + y(i) + \")\"; });");
-        
-            Output.Append("bars.append(\"svg:rect\")");
-            Output.Append(".attr(\"fill\", \"steelblue\")");
-            Output.Append(".attr(\"width\", x)");
-            Output.Append(".attr(\"height\", y.rangeBand());");
-
-            Output.Append("bars.append(\"svg:text\")");
-            Output.Append(".attr(\"x\", x)");
-            Output.Append(".attr(\"y\", y.rangeBand() / 2)");
-            Output.Append(".attr(\"dx\", -6)");
-            Output.Append(".attr(\"dy\", \".35em\")");
-            Output.Append(".attr(\"fill\", \"white\")");
-            Output.Append(".attr(\"text-anchor\", \"end\")");
-            Output.Append(".text(x.tickFormat(100));");
-
-            Output.Append("bars.append(\"svg:text\")");
-            Output.Append(".attr(\"x\", 0)");
-            Output.Append(".attr(\"y\", y.rangeBand() / 2)");
-            Output.Append(".attr(\"dx\", -6)");
-            Output.Append(".attr(\"dy\", \".35em\")");
-            Output.Append(".attr(\"text-anchor\", \"end\")");
-            Output.Append(".text(function(d, i) { return String.fromCharCode(65 + i); });");
-
-            Output.Append("var rules = vis.selectAll(\"g.rule\")");
-            Output.Append(".data(x.ticks(10))");
-            Output.Append(".enter().append(\"svg:g\")");
-            Output.Append(".attr(\"class\", \"rule\")");
-            Output.Append(".attr(\"transform\", function(d) { return \"translate(\" + x(d) + \",0)\"; });");
-            Output.Append("rules.append(\"svg:line\")");
-            Output.Append(".attr(\"y1\", h)");
-            Output.Append(".attr(\"y2\", h + 6)");
-            Output.Append(".attr(\"stroke\", \"black\");");
-
-            Output.Append("rules.append(\"svg:line\")");
-            Output.Append(".attr(\"y1\", 0)");
-            Output.Append(".attr(\"y2\", h)");
-            Output.Append(".attr(\"stroke\", \"white\")");
-            Output.Append(".attr(\"stroke-opacity\", .3);");
-
-            Output.Append("rules.append(\"svg:text\")");
-            Output.Append(".attr(\"y\", h + 9)");
-            Output.Append(".attr(\"dy\", \".71em\")");
-            Output.Append(".attr(\"text-anchor\", \"middle\")");
-            Output.Append(".text(x.tickFormat(10));");
-
-            Output.Append("vis.append(\"svg:line\")");
-            Output.Append(".attr(\"y1\", 0)");
-            Output.Append(".attr(\"y2\", h)");
-            Output.Append(".attr(\"stroke\", \"black\");");
 
             return Output.ToString();
         }
