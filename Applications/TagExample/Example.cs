@@ -124,7 +124,7 @@ namespace TagExample
 
             //create a VertexTypePredefinition
             var Tag_VertexTypePredefinition = new VertexTypePredefinition("Tag");
-
+            
             //create property
             var PropertyName = new PropertyPredefinition("Name")
                                            .SetAttributeType("String")

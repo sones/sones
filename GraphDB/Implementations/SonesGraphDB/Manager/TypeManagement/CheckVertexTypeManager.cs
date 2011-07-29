@@ -650,7 +650,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             
             //Contains dictionary of parent vertex name to list of vertex predefinitions.
             var defsByParentVertexName = myVertexTypeDefinitions
-                .GroupBy(def=>def.SuperVertexTypeName)
+                .GroupBy(def=>def.SuperTypeName)
                 .ToDictionary(group => group.Key, group=>group.AsEnumerable());
 
             //Contains list of vertex predefinitions sorted topologically.
@@ -733,7 +733,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             if (myVertexTypeDefinition.BinaryProperties != null)
                 foreach (var prop in myVertexTypeDefinition.BinaryProperties)
                 {
-                    prop.CheckNull("Binary Property in vertex type predefinition " + myVertexTypeDefinition.VertexTypeName);
+                    prop.CheckNull("Binary Property in vertex type predefinition " + myVertexTypeDefinition.TypeName);
                     if (!myUniqueNameSet.Add(prop.AttributeName))
                         throw new DuplicatedAttributeNameException(myVertexTypeDefinition, prop.AttributeName);
                 }
@@ -764,9 +764,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypeDefinition"></param>
         private static void CheckParentTypeAreNoBaseTypes(VertexTypePredefinition myVertexTypeDefinition)
         {
-            if (!CanBeParentType(myVertexTypeDefinition.SuperVertexTypeName))
+            if (!CanBeParentType(myVertexTypeDefinition.SuperTypeName))
             {
-                throw new InvalidBaseVertexTypeException(myVertexTypeDefinition.VertexTypeName);
+                throw new InvalidBaseVertexTypeException(myVertexTypeDefinition.TypeName);
             }
         }
 
@@ -802,7 +802,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
         private static void CheckVertexTypeName(VertexTypePredefinition myVertexTypeDefinition)
         {
-            if (string.IsNullOrWhiteSpace(myVertexTypeDefinition.VertexTypeName))
+            if (string.IsNullOrWhiteSpace(myVertexTypeDefinition.TypeName))
             {
                 throw new EmptyVertexTypeNameException();
             }

@@ -166,7 +166,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             //Contains dictionary of parent vertex name to list of vertex predefinitions.
             var defsByParentVertexName = myVertexTypeDefinitions
-                .GroupBy(def => def.SuperVertexTypeName)
+                .GroupBy(def => def.SuperTypeName)
                 .ToDictionary(group => group.Key, group => group.AsEnumerable());
 
             //Contains list of vertex predefinitions sorted topologically.
@@ -187,22 +187,22 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                var newVertexType = _baseStorageManager.StoreVertexType(
                     _vertexManager.ExecuteManager.VertexStore,
-                    typeInfos[current.Value.VertexTypeName].VertexInfo,
-                    current.Value.VertexTypeName,
+                    typeInfos[current.Value.TypeName].VertexInfo,
+                    current.Value.TypeName,
                     current.Value.Comment,
                     creationDate,
                     current.Value.IsAbstract,
                     current.Value.IsSealed,
                     true,
-                    typeInfos[current.Value.SuperVertexTypeName].VertexInfo,
+                    typeInfos[current.Value.SuperTypeName].VertexInfo,
                     null, 
                     mySecurity,
                     myTransaction);
 
                  result[resultPos++] = newVertexType;
-                _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName).Add(current.Value.VertexTypeName, typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID);
+                 _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName).Add(current.Value.TypeName, typeInfos[current.Value.TypeName].VertexInfo.VertexID);
 
-                _nameIndex.Add(current.Value.VertexTypeName, typeInfos[current.Value.VertexTypeName].VertexInfo.VertexID);
+                _nameIndex.Add(current.Value.TypeName, typeInfos[current.Value.TypeName].VertexInfo.VertexID);
             }
 
             #region Store Attributes
@@ -218,7 +218,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     continue;
 
                 var firstAttrID = _idManager[(long)BaseTypes.Attribute].ReserveIDs(current.Value.PropertyCount);
-                var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - 1;
+                var currentExternID = typeInfos[current.Value.TypeName].AttributeCountWithParents - current.Value.PropertyCount - 1;
 
                 foreach (var prop in current.Value.Properties)
                 {
@@ -232,7 +232,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         prop.Multiplicity,
                         prop.DefaultValue,
                         true,
-                        typeInfos[current.Value.VertexTypeName].VertexInfo,
+                        typeInfos[current.Value.TypeName].VertexInfo,
                         ConvertBasicType(prop.AttributeType),
                         mySecurity,
                         myTransaction);
@@ -250,7 +250,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     continue;
 
                 var firstAttrID = _idManager[(long)BaseTypes.Attribute].ReserveIDs(current.Value.BinaryPropertyCount);
-                var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.BinaryPropertyCount - 1;
+                var currentExternID = typeInfos[current.Value.TypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.BinaryPropertyCount - 1;
 
                 foreach (var prop in current.Value.BinaryProperties)
                 {
@@ -261,7 +261,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         prop.Comment,
                         true,
                         creationDate,
-                        typeInfos[current.Value.VertexTypeName].VertexInfo,
+                        typeInfos[current.Value.TypeName].VertexInfo,
                         mySecurity,
                         myTransaction);
                 }
@@ -278,7 +278,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     continue;
 
                 var firstAttrID = _idManager[(long)BaseTypes.Attribute].ReserveIDs(current.Value.OutgoingEdgeCount);
-                var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.OutgoingEdgeCount - current.Value.BinaryPropertyCount - 1;
+                var currentExternID = typeInfos[current.Value.TypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.OutgoingEdgeCount - current.Value.BinaryPropertyCount - 1;
 
                 foreach (var edge in current.Value.OutgoingEdges)
                 {
@@ -296,7 +296,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         true,
                         creationDate,
                         edge.Multiplicity,
-                        typeInfos[current.Value.VertexTypeName].VertexInfo,
+                        typeInfos[current.Value.TypeName].VertexInfo,
                         new VertexInformation((long)BaseTypes.EdgeType, _edgeManager.ExecuteManager.GetEdgeType(edge.EdgeType, myTransaction, mySecurity).ID),
                         innerEdgeType,
                         typeInfos[edge.AttributeType].VertexInfo,
@@ -316,7 +316,11 @@ namespace sones.GraphDB.Manager.TypeManagement
                     continue;
 
                 var firstAttrID = _idManager[(long)BaseTypes.Attribute].ReserveIDs(current.Value.IncomingEdgeCount);
-                var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.BinaryPropertyCount - current.Value.OutgoingEdgeCount - current.Value.IncomingEdgeCount - 1;
+                var currentExternID = typeInfos[current.Value.TypeName].AttributeCountWithParents - 
+                                                                            current.Value.PropertyCount - 
+                                                                            current.Value.BinaryPropertyCount - 
+                                                                            current.Value.OutgoingEdgeCount - 
+                                                                            current.Value.IncomingEdgeCount - 1;
 
                 foreach (var edge in current.Value.IncomingEdges)
                 {
@@ -328,8 +332,11 @@ namespace sones.GraphDB.Manager.TypeManagement
                         edge.Comment,
                         true,
                         creationDate,
-                        typeInfos[current.Value.VertexTypeName].VertexInfo,
-                        GetOutgoingEdgeVertexInformation(GetTargetVertexTypeFromAttributeType(edge.AttributeType), GetTargetEdgeNameFromAttributeType(edge.AttributeType), myTransaction, mySecurity),
+                        typeInfos[current.Value.TypeName].VertexInfo,
+                        GetOutgoingEdgeVertexInformation(GetTargetVertexTypeFromAttributeType(edge.AttributeType), 
+                                                            GetTargetEdgeNameFromAttributeType(edge.AttributeType), 
+                                                            myTransaction, 
+                                                            mySecurity),
                         mySecurity,
                         myTransaction);
                 }
@@ -370,12 +377,12 @@ namespace sones.GraphDB.Manager.TypeManagement
                     if (current.Value.Uniques != null)
                     {
                         var indexPredefs = current.Value.Uniques.Select(unique =>
-                            new IndexPredefinition().AddProperty(unique.Properties).SetIndexType(uniqueIdx).SetVertexType(current.Value.VertexTypeName));
+                            new IndexPredefinition().AddProperty(unique.Properties).SetIndexType(uniqueIdx).SetVertexType(current.Value.TypeName));
 
                         var indexDefs = indexPredefs.Select(indexPredef => _indexManager.CreateIndex(indexPredef, mySecurity, myTransaction, false)).ToArray();
 
                         //only own unique indices are connected to the vertex type on the UniquenessDefinitions attribute
-                        ConnectVertexToUniqueIndex(typeInfos[current.Value.VertexTypeName], indexDefs, mySecurity, myTransaction);
+                        ConnectVertexToUniqueIndex(typeInfos[current.Value.TypeName], indexDefs, mySecurity, myTransaction);
                     }
 
                     #endregion
@@ -406,7 +413,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     foreach (var index in resultTypes[resultPos].ParentVertexType.GetIndexDefinitions(true))
                     {
                         _indexManager.CreateIndex(
-                            new IndexPredefinition().AddProperty(index.IndexedProperties.Select(x => x.Name)).SetVertexType(current.Value.VertexTypeName).SetIndexType(index.IndexTypeName),
+                            new IndexPredefinition().AddProperty(index.IndexedProperties.Select(x => x.Name)).SetVertexType(current.Value.TypeName).SetIndexType(index.IndexTypeName),
                             mySecurity,
                             myTransaction);
                     }
@@ -463,27 +470,27 @@ namespace sones.GraphDB.Manager.TypeManagement
             if (parentPredef == null)
             {
                 //Get the parent type from FS.
-                var parent = Get(myTopologicallySortedPointer.Value.SuperVertexTypeName, myTransaction, mySecurity);
+                var parent = Get(myTopologicallySortedPointer.Value.SuperTypeName, myTransaction, mySecurity);
 
                 if (parent == null)
                     //No parent type was found.
-                    throw new InvalidBaseVertexTypeException(myTopologicallySortedPointer.Value.SuperVertexTypeName);
+                    throw new InvalidBaseVertexTypeException(myTopologicallySortedPointer.Value.SuperTypeName);
 
                 if (parent.GetProperty<bool>((long)AttributeDefinitions.BaseTypeDotIsSealed))
                     //The parent type is sealed.
-                    throw new SealedBaseVertexTypeException(myTopologicallySortedPointer.Value.VertexTypeName, parent.GetPropertyAsString((long)AttributeDefinitions.AttributeDotName));
+                    throw new SealedBaseVertexTypeException(myTopologicallySortedPointer.Value.TypeName, parent.GetPropertyAsString((long)AttributeDefinitions.AttributeDotName));
 
                 var parentType = new VertexType(parent, _baseStorageManager);
                 var attributeNames = parentType.GetAttributeDefinitions(true).Select(_=>_.Name);
 
-                myAttributes[myTopologicallySortedPointer.Value.VertexTypeName] = new HashSet<string>(attributeNames);
+                myAttributes[myTopologicallySortedPointer.Value.TypeName] = new HashSet<string>(attributeNames);
             }
             else
             {
-                myAttributes[myTopologicallySortedPointer.Value.VertexTypeName] = new HashSet<string>(myAttributes[parentPredef.Value.VertexTypeName]);
+                myAttributes[myTopologicallySortedPointer.Value.TypeName] = new HashSet<string>(myAttributes[parentPredef.Value.TypeName]);
             }
 
-            var attributeNamesSet = myAttributes[myTopologicallySortedPointer.Value.VertexTypeName];
+            var attributeNamesSet = myAttributes[myTopologicallySortedPointer.Value.TypeName];
 
             CheckIncomingEdgesUniqueName(myTopologicallySortedPointer.Value, attributeNamesSet);
             CheckOutgoingEdgesUniqueName(myTopologicallySortedPointer.Value, attributeNamesSet);
@@ -539,7 +546,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myDefsByName">The vertex type predefinitions indexed by their name that are alse defined in this CanAdd operation.<remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        private void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition, IDictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity)
+        private void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition, 
+                                                    IDictionary<string, VertexTypePredefinition> myDefsByName, 
+                                                    TransactionToken myTransaction, 
+                                                    SecurityToken mySecurity)
         {
             if (myVertexTypePredefinition.OutgoingEdges == null)
                 return;
@@ -565,8 +575,8 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         private void CanAddCheckVertexNameUniqueWithFS(VertexTypePredefinition myVertexTypePredefinition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            if (Get(myVertexTypePredefinition.VertexTypeName, myTransaction, mySecurity) != null)
-                throw new DuplicatedVertexTypeNameException(myVertexTypePredefinition.VertexTypeName);
+            if (Get(myVertexTypePredefinition.TypeName, myTransaction, mySecurity) != null)
+                throw new DuplicatedVertexTypeNameException(myVertexTypePredefinition.TypeName);
         }
 
         private void ConnectVertexToUniqueIndex(TypeInfo myTypeInfo, IEnumerable<IIndexDefinition> myIndexDefinitions, SecurityToken mySecurity, TransactionToken myTransaction)
@@ -604,8 +614,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             foreach (var def in myDefsByName)
             {
-                neededVertexTypes.Add(def.Value.VertexTypeName);
-                neededVertexTypes.Add(def.Value.SuperVertexTypeName);
+                neededVertexTypes.Add(def.Value.TypeName);
+                neededVertexTypes.Add(def.Value.SuperTypeName);
                 if (def.Value.OutgoingEdges != null)
                     foreach (var edge in def.Value.OutgoingEdges)
                     {
@@ -640,12 +650,12 @@ namespace sones.GraphDB.Manager.TypeManagement
             //accumulate attribute counts
             for (var current = myDefsSortedTopologically.First; current != null; current = current.Next)
             {
-                if (!result.ContainsKey(current.Value.VertexTypeName)) 
+                if (!result.ContainsKey(current.Value.TypeName)) 
                     continue;
 
-                var info = result[current.Value.VertexTypeName];
-                info.AttributeCountWithParents = info.AttributeCountWithParents + result[current.Value.SuperVertexTypeName].AttributeCountWithParents;
-                result[current.Value.VertexTypeName] = info;
+                var info = result[current.Value.TypeName];
+                info.AttributeCountWithParents = info.AttributeCountWithParents + result[current.Value.SuperTypeName].AttributeCountWithParents;
+                result[current.Value.TypeName] = info;
             }
 
 
@@ -706,7 +716,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             for (var parent = myCurrent.Previous; parent != null; parent = parent.Previous)
             {
-                if (parent.Value.VertexTypeName.Equals(myCurrent.Value.SuperVertexTypeName))
+                if (parent.Value.TypeName.Equals(myCurrent.Value.SuperTypeName))
                     return parent;
             }
             return null;

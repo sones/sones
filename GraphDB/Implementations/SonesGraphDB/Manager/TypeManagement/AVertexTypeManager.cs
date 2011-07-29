@@ -83,10 +83,10 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             foreach (var predef in myVertexTypeDefinitions)
             {
-                if (result.ContainsKey(predef.VertexTypeName))
-                    throw new DuplicatedVertexTypeNameException(predef.VertexTypeName);
+                if (result.ContainsKey(predef.TypeName))
+                    throw new DuplicatedVertexTypeNameException(predef.TypeName);
 
-                result.Add(predef.VertexTypeName, predef);
+                result.Add(predef.TypeName, predef);
             }
             return result;
         }
@@ -117,11 +117,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             //Thus we can add all predefinitions, that has parent predefinition in the list to the end of the list.
             for (var current = result.First; current != null; current = current.Next)
             {
-                if (!myDefsByParentVertexName.ContainsKey(current.Value.VertexTypeName)) 
+                if (!myDefsByParentVertexName.ContainsKey(current.Value.TypeName)) 
                     continue;
 
                 //All predefinitions, that has the current predefintion as parent vertex type.
-                var corrects = myDefsByParentVertexName[current.Value.VertexTypeName];
+                var corrects = myDefsByParentVertexName[current.Value.TypeName];
 
                 foreach (var correct in corrects)
                 {
@@ -147,7 +147,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             if (myVertexTypeDefinition.IncomingEdges != null)
                 foreach (var edge in myVertexTypeDefinition.IncomingEdges)
                 {
-                    edge.CheckNull("Incoming myEdge in vertex type predefinition " + myVertexTypeDefinition.VertexTypeName);
+                    edge.CheckNull("Incoming myEdge in vertex type predefinition " + myVertexTypeDefinition.TypeName);
                     if (!myUniqueNameSet.Add(edge.AttributeName))
                         throw new DuplicatedAttributeNameException(myVertexTypeDefinition, edge.AttributeName);
                 }
@@ -163,7 +163,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             if (myVertexTypeDefinition.OutgoingEdges != null)
                 foreach (var edge in myVertexTypeDefinition.OutgoingEdges)
                 {
-                    edge.CheckNull("Outgoing myEdge in vertex type predefinition " + myVertexTypeDefinition.VertexTypeName);
+                    edge.CheckNull("Outgoing myEdge in vertex type predefinition " + myVertexTypeDefinition.TypeName);
                     if (!myUniqueNameSet.Add(edge.AttributeName))
                         throw new DuplicatedAttributeNameException(myVertexTypeDefinition, edge.AttributeName);
 
@@ -194,7 +194,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             if (myVertexTypeDefinition.Properties != null)
                 foreach (var prop in myVertexTypeDefinition.Properties)
                 {
-                    prop.CheckNull("Property in vertex type predefinition " + myVertexTypeDefinition.VertexTypeName);
+                    prop.CheckNull("Property in vertex type predefinition " + myVertexTypeDefinition.TypeName);
                     if (!myUniqueNameSet.Add(prop.AttributeName))
                         throw new DuplicatedAttributeNameException(myVertexTypeDefinition, prop.AttributeName);
 

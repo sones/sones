@@ -18,11 +18,7 @@
 * 
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -38,7 +34,7 @@ namespace sones.GraphDB.ErrorHandling
         {
             this.Predefinition = myVertexTypeDefinition;
             this.PropertyName = myPropertyName;
-            _msg = string.Format("The property {0} on vertex type {1} has an unknown type.", myPropertyName, myVertexTypeDefinition.VertexTypeName);
+            _msg = string.Format("The property {0} on vertex type {1} has an unknown type.", myPropertyName, myVertexTypeDefinition.TypeName);
         }
         
     }

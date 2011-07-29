@@ -51,14 +51,15 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Creates a new pipelineable create edge type request
         /// </summary>
-        /// <param name="myCreateEdgeTypeRequest">The create edge type request</param>
+        /// <param name="myRequestCreateEdgeType">The create edge type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableCreateEdgeTypeRequest(RequestCreateEdgeType myCreateEdgeTypeRequest,
-                                                   SecurityToken mySecurity, TransactionToken myTransactionToken)
+        public PipelineableCreateEdgeTypeRequest(RequestCreateEdgeType myRequestCreateEdgeType,
+                                                    SecurityToken mySecurity, 
+                                                    TransactionToken myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
-            _request = myCreateEdgeTypeRequest;
+            _request = myRequestCreateEdgeType;
         }
 
         #endregion

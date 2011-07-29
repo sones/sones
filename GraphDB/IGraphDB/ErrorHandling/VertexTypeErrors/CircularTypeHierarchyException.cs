@@ -20,7 +20,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -42,7 +42,7 @@ namespace sones.GraphDB.ErrorHandling
         public CircularTypeHierarchyException(IEnumerable<VertexTypePredefinition> myVertexTypeNames)
         {
             VertexTypeNames = myVertexTypeNames;
-            _msg = string.Format("The following types contains a circle in the derivation hierarchy ({0})", string.Join(",", myVertexTypeNames.Select(t => t.VertexTypeName)));
+            _msg = string.Format("The following types contains a circle in the derivation hierarchy ({0})", string.Join(",", myVertexTypeNames.Select(t => t.TypeName)));
         }
 
     }

@@ -1,41 +1,19 @@
-/*
-* sones GraphDB - Community Edition - http://www.sones.com
-* Copyright (C) 2007-2011 sones GmbH
-*
-* This file is part of sones GraphDB Community Edition.
-*
-* sones GraphDB is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
-using System;
+using System.Linq;
+using System.Text;
 
-namespace sones.GraphDB.Request
+namespace sones.GraphDB.TypeSystem
 {
-    /// <summary>
-    /// The definition for an edge type.
-    /// </summary>
-    public class EdgeTypePredefinition
+    public abstract class ATypePredefinition
     {
         #region Data
 
         /// <summary>
-        /// The name of the edge type that is going to be created.
+        /// The name of the vertex type that is going to be created
         /// </summary>
-        public readonly string EdgeTypeName;
-        private List<AttributePredefinition> _attributes;
+        public readonly string TypeName;
+        protected List<AttributePredefinition> _attributes;
         private List<UniquePredefinition> _uniques;
         private List<IndexPredefinition> _indices;
 
@@ -43,14 +21,14 @@ namespace sones.GraphDB.Request
         private int _binaries = 0;
         private int _unknown = 0;
 
-        public int AttributeCount 
-        {
-            get { return (_attributes == null) ? 0 : _attributes.Count; }
-        }
-        
         public int PropertyCount
         {
             get { return _properties; }
+        }
+
+        public int AttributeCount 
+        {
+            get { return (_attributes == null) ? 0 : _attributes.Count; }
         }
 
         public int BinaryPropertyCount 
@@ -64,9 +42,9 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// The name of the edge type this edge type inherites from.
+        /// The name of the vertex type this vertex types inherites from.
         /// </summary>
-        public string SuperEdgeTypeName { get; private set; }
+        public string SuperTypeName { get; private set; }
 
         /// <summary>
         /// The properties of the vertex type.
@@ -125,18 +103,18 @@ namespace sones.GraphDB.Request
         #region Constructor
 
         /// <summary>
-        /// Creates a new edge type definition.
+        /// Creates a new vertex type definition.
         /// </summary>
-        /// <param name="myEdgeTypeName">The name of the edge type.</param>
-        public EdgeTypePredefinition(String myEdgeTypeName)
+        /// <param name="myVertexTypeName">The name of the vertex type.</param>
+        public ATypePredefinition(String myTypeName, String mySuperTypeName)
         {
-            if (string.IsNullOrEmpty(myEdgeTypeName))
+            if (string.IsNullOrEmpty(myTypeName))
             {
-                throw new ArgumentOutOfRangeException("myVertexTypeName", myEdgeTypeName);
+                throw new ArgumentOutOfRangeException("myVertexTypeName", myTypeName);
             }
 
-            EdgeTypeName = myEdgeTypeName;
-            SuperEdgeTypeName = "Edge";
+            TypeName = myTypeName;
+            SuperTypeName = mySuperTypeName;
             IsSealed = false;
             IsAbstract = false;
             Comment = String.Empty;
@@ -147,28 +125,27 @@ namespace sones.GraphDB.Request
 
         #region fluent methods
 
-
         /// <summary>
-        /// Sets the name of the edge type this one inherits from
+        /// Sets the name of the vertex type this one inherits from
         /// </summary>
-        /// <param name="mySuperEdgeTypeName">The name of the super edge type</param>
+        /// <param name="myComment">The name of the super vertex type</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeTypePredefinition SetSuperVertexTypeName(String mySuperEdgeTypeName)
+        public ATypePredefinition SetSuperVertexTypeName(String mySuperVertexTypeName)
         {
-            if (!string.IsNullOrEmpty(mySuperEdgeTypeName))
+            if (!string.IsNullOrEmpty(mySuperVertexTypeName))
             {
-                SuperEdgeTypeName = mySuperEdgeTypeName;
+                SuperTypeName = mySuperVertexTypeName;
             }
 
             return this;
         }
 
         /// <summary>
-        /// Adds an unknown property to the edge type definition
+        /// Adds an unknown property to the vertex type definition
         /// </summary>
-        /// <param name="myUnknownPredefinition">The unknwown property definition that is going to be added.</param>
+        /// <param name="myUnknownPredefinition">The unknwown property definition that is going to be added</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeTypePredefinition AddUnknownAttribute(UnknownAttributePredefinition myUnknownPredefinition)
+        public ATypePredefinition AddUnknownAttribute(UnknownAttributePredefinition myUnknownPredefinition)
         {
             if (myUnknownPredefinition != null)
             {
@@ -181,11 +158,11 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds a property to the edge type definition
+        /// Adds a property to the vertex type definition
         /// </summary>
-        /// <param name="myPropertyDefinition">The property definition that is going to be added</param>
+        /// <param name="myPropertyDefinition">The property definition that is going to be added.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeTypePredefinition AddProperty(PropertyPredefinition myPropertyDefinition)
+        public ATypePredefinition AddProperty(PropertyPredefinition myPropertyDefinition)
         {
             if (myPropertyDefinition != null)
             {
@@ -198,11 +175,11 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds a binary property predefinition to the edge type.
+        /// Adds a binary definition.
         /// </summary>
-        /// <param name="myBinaryPropertyPredefinition">The binary property predefinition which is going to be added.</param>
+        /// <param name="myBinaryPropertyPredefinition">The property definition that is going to be added.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeTypePredefinition AddBinaryProperty(BinaryPropertyPredefinition myBinaryPropertyPredefinition)
+        public ATypePredefinition AddBinaryProperty(BinaryPropertyPredefinition myBinaryPropertyPredefinition)
         {
             if (myBinaryPropertyPredefinition != null)
             {
@@ -219,7 +196,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myUniqueDefinition">The unique definition that is going to be added.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeTypePredefinition AddUnique(UniquePredefinition myUniqueDefinition)
+        public ATypePredefinition AddUnique(UniquePredefinition myUniqueDefinition)
         {
             if (myUniqueDefinition != null)
             {
@@ -235,7 +212,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myIndexDefinition">The index definition that is going to be added.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeTypePredefinition AddIndex(IndexPredefinition myIndexDefinition)
+        public ATypePredefinition AddIndex(IndexPredefinition myIndexDefinition)
         {
             if (myIndexDefinition != null)
             {
@@ -247,31 +224,31 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Marks the edge type as sealed.
+        /// Marks the vertex type as sealed.
         /// </summary>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeTypePredefinition MarkAsSealed()
+        public ATypePredefinition MarkAsSealed()
         {
             IsSealed = true;
             return this;
         }
 
         /// <summary>
-        /// Marks the edge type as abstract.
+        /// Marks the vertex type as abstract.
         /// </summary>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeTypePredefinition MarkAsAbstract()
+        public ATypePredefinition MarkAsAbstract()
         {
             IsAbstract = true;
             return this;
         }
 
         /// <summary>
-        /// Sets the comment of the edge type.
+        /// Sets the comment of the vertex type.
         /// </summary>
         /// <param name="myComment">The comment.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeTypePredefinition SetComment(String myComment)
+        public ATypePredefinition SetComment(String myComment)
         {
             Comment = myComment;
 

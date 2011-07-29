@@ -38,11 +38,11 @@ using sones.Library.LanguageExtensions;
 
 namespace sones.GraphDB.Manager.Vertex
 {
-    sealed class CheckVertexHandler: AVertexHandler, IVertexHandler
+    sealed class CheckVertexHandler: AVertexHandler
     {
         #region IVertexHandler Members
 
-        public IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken)
+        public override IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken)
         {
             #region case 1 - Expression
 
@@ -74,12 +74,12 @@ namespace sones.GraphDB.Manager.Vertex
             return null;
         }
 
-        public IEnumerable<IVertex> GetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public override IEnumerable<IVertex> GetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             return null;
         }
 
-        public IEnumerable<IVertex> GetVertices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
+        public override IEnumerable<IVertex> GetVertices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
         {
             if (myVertexType == null)
             {
@@ -88,34 +88,34 @@ namespace sones.GraphDB.Manager.Vertex
             return null;
         }
 
-        public IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
+        public override IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
         {
             _vertexTypeManager.CheckManager.GetVertexType(myTypeID, myTransaction, mySecurity);
             return null;
         }
 
-        public IEnumerable<IVertex> GetVertices(string myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
+        public override IEnumerable<IVertex> GetVertices(string myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
         {
             _vertexTypeManager.CheckManager.GetVertexType(myVertexType, myTransaction, mySecurity);
             return null;
         }
 
-        public IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             return null;
         }
 
-        public IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             return null;
         }
 
-        public IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             return null;
         }
 
-        public IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             IVertexType vertexType = GetVertexType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
 
@@ -189,7 +189,7 @@ namespace sones.GraphDB.Manager.Vertex
             ConvertUnknownProperties(edge, myTargetType);
         }
 
-        public IVertexStore VertexStore
+        public override IVertexStore VertexStore
         {
             get { return null; }
         }
@@ -215,38 +215,6 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        private static void ConvertUnknownProperties(IPropertyProvider myPropertyProvider, IBaseType myBaseType)
-        {
-            if (myPropertyProvider.UnknownProperties != null)
-            {
-                foreach (var unknownProp in myPropertyProvider.UnknownProperties)
-                {   
-                    //ASK: What's about binary properties?
-                    if (myBaseType.HasProperty(unknownProp.Key))
-                    {
-                        var propDef = myBaseType.GetPropertyDefinition(unknownProp.Key);
-
-                        try
-                        {
-                            var converted = unknownProp.Value.ConvertToIComparable(propDef.BaseType);
-                            myPropertyProvider.AddStructuredProperty(unknownProp.Key, converted);
-                        }
-                        catch (InvalidCastException)                 
-                        {
-                            //TODO: better exception
-                            throw new Exception("Type of property does not match.");
-                        }
-                    }
-                    else
-                    {
-                        myPropertyProvider.AddUnstructuredProperty(unknownProp.Key, unknownProp.Value);
-                    }
-                }
-                myPropertyProvider.ClearUnknown();
-            }
-        }
-
-
         private static void CheckAddBinaryProperties(RequestInsertVertex myInsertDefinition, IVertexType vertexType)
         {
             foreach (var prop in myInsertDefinition.BinaryProperties)
@@ -257,12 +225,12 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        public IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             return null;
         }
 
-        public void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             GetVertices(myDeleteRequest.ToBeDeletedVertices, myTransactionToken, mySecurityToken);
         }

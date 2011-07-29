@@ -27,6 +27,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using sones.GraphDB;
 using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 using sones.GraphQL;
 using sones.GraphQL.Result;
 using sones.Library.Commons.Security;

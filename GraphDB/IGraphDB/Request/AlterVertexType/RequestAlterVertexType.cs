@@ -18,9 +18,10 @@
 * 
 */
 
-using System.Linq;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Request
 {

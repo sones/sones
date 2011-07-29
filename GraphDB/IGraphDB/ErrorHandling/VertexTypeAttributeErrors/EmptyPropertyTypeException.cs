@@ -19,10 +19,7 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -40,7 +37,7 @@ namespace sones.GraphDB.ErrorHandling
         {
             Predefinition = myPredefinition;
             PropertyName = myPropertyName;
-            _msg = string.Format("The property type {0} on vertex type {1} is empty.", myPropertyName, myPredefinition.VertexTypeName);
+            _msg = string.Format("The property type {0} on vertex type {1} is empty.", myPropertyName, myPredefinition.TypeName);
         }
 
         /// <summary>

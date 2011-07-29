@@ -19,7 +19,7 @@
 */
 
 using System;
-using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -46,7 +46,7 @@ namespace sones.GraphDB.ErrorHandling
         {
             Predefinition = myVertexTypePredefinition;
             DuplicatedName = myVertexTypeName;
-            _msg = string.Format("The attribute {0} was declared multiple times on vertex type {1}.", DuplicatedName, Predefinition.VertexTypeName);
+            _msg = string.Format("The attribute {0} was declared multiple times on vertex type {1}.", DuplicatedName, Predefinition.TypeName);
         }
 
     }

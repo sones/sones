@@ -45,7 +45,7 @@ using sones.Plugins.Index.Interfaces;
 
 namespace sones.GraphDB.Manager.Vertex
 {
-    internal class ExecuteVertexHandler : AVertexHandler, IVertexHandler
+    internal class ExecuteVertexHandler : AVertexHandler
     {
         #region data
 
@@ -58,11 +58,6 @@ namespace sones.GraphDB.Manager.Vertex
         /// Needed for index interaction
         /// </summary>
         private IIndexManager _indexManager;
-
-        /// <summary>
-        /// Needed for transforming an expression into a query plan
-        /// </summary>
-        private IQueryPlanManager _queryPlanManager;
 
         private IDManager _idManager;
 
@@ -81,14 +76,14 @@ namespace sones.GraphDB.Manager.Vertex
 
         #region GetVertices
 
-        public IEnumerable<IVertex> GetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public override IEnumerable<IVertex> GetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             var queryPlan = _queryPlanManager.CreateQueryPlan(myExpression, myIsLongrunning, myTransactionToken, mySecurityToken);
 
             return queryPlan.Execute();
         }
 
-        public IEnumerable<IVertex> GetVertices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
+        public override IEnumerable<IVertex> GetVertices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
         {
             if (includeSubtypes)
             {
@@ -101,17 +96,17 @@ namespace sones.GraphDB.Manager.Vertex
 
         }
 
-        public IEnumerable<IVertex> GetVertices(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
+        public override IEnumerable<IVertex> GetVertices(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
         {
             return GetVertices(_vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeName, myTransaction, mySecurity), myTransaction, mySecurity, includeSubtypes);
         }
 
-        public IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
+        public override IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
         {
             return GetVertices(_vertexTypeManager.ExecuteManager.GetVertexType(myTypeID, myTransaction, mySecurity), myTransaction, mySecurity, includeSubtypes);
         }
 
-        public IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken)
+        public override IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken)
         {
             IEnumerable<IVertex> result;
             #region case 1 - Expression
@@ -177,17 +172,17 @@ namespace sones.GraphDB.Manager.Vertex
 
         #region GetVertex
 
-        public IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public override IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             return _vertexStore.GetVertex(mySecurityToken, myTransactionToken, myVertexID, _vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeName, myTransactionToken, mySecurityToken).ID, (aEdition) => myEdition == aEdition, (aVertexRevisionID) => myTimespan.IsWithinTimeStamp(aVertexRevisionID));
         }
 
-        public IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken)
+        public override IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken)
         {
             return _vertexStore.GetVertex(SecurityToken, TransactionToken, myVertexID, myVertexTypeID, (aEdition) => myEdition == aEdition, (aVertexRevisionID) => myTimespan.IsWithinTimeStamp(aVertexRevisionID));
         }
 
-        public IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public override IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             return GetVertices(myExpression, false, myTransactionToken, mySecurityToken).FirstOrDefault();
         }
@@ -195,7 +190,7 @@ namespace sones.GraphDB.Manager.Vertex
         #endregion
 
 
-        public IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             IVertexType vertexType = GetVertexType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
 
@@ -581,7 +576,7 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
 
-        public IVertexStore VertexStore
+        public override IVertexStore VertexStore
         {
             get { return _vertexStore; }
         }
@@ -679,7 +674,7 @@ namespace sones.GraphDB.Manager.Vertex
         }
         #endregion
 
-        public void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             var toBeProcessedVertices = GetVertices(myDeleteRequest.ToBeDeletedVertices, myTransactionToken, mySecurityToken);
 
@@ -912,7 +907,7 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        public IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             var toBeUpdated = GetVertices(myUpdate.GetVerticesRequest, myTransaction, mySecurity);
             var groupedByTypeID = toBeUpdated.GroupBy(_ => _.VertexTypeID);
