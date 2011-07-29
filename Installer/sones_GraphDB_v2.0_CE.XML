@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <Product Id="83111110-1011-1557-1114-971121046865" Language="1033" Manufacturer="sones GmbH" Name="GraphDB Server v2.0" Version="2.0">
-        <Package Id="83111110-1011-1550-0000-000000000001" Keywords="Installer" Description="To install the Sones GraphDB Server" Manufacturer="sones GmbH" InstallerVersion="100" Compressed="yes" />
+    <Product Id="83111110-1011-1557-1114-971121046865" Language="1033" Manufacturer="sones GmbH" Name="GraphDB Community-Edition Server v2.0" Version="2.0">
+        <Package Id="83111110-1011-1550-0000-000000000001" Keywords="Installer" Description="To install the sones GraphDB Community-Edition Server" Manufacturer="sones GmbH" InstallerVersion="100" Compressed="yes" />
         <Media Id="1" EmbedCab="yes" DiskPrompt="CD-ROM #1" Cabinet="setup.cab" />
-        <Property Id="DiskPrompt" Value="Sones GraphDB Server [1]" />
-        <Condition Message="You need to be administrator to install this software.">Privileged</Condition>
+        <Property Id="DiskPrompt" Value="sones GraphDB Server [1]" />
+        <Condition Message="You need to be administrator to install and run this software.">Privileged</Condition>
         <UI />
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" Name="PFiles" DiskId="1">
