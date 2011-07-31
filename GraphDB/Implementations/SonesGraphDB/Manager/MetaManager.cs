@@ -75,12 +75,12 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// The system security token.
         /// </summary>
-        private SecurityToken _security;
+        private SecurityToken _security = null;
 
         /// <summary>
         /// The system transaction token.
         /// </summary>
-        private TransactionToken _transaction;
+        private TransactionToken _transaction = null;
 
         /// <summary>
         /// The base type manager.

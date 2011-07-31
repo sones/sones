@@ -38,8 +38,8 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            ParamType type = ParamType.Value;
-            Object param = null;
+            //ParamType type = ParamType.Value;
+            //Object param = null;
 
             if (HasChildNodes(parseNode))
             {

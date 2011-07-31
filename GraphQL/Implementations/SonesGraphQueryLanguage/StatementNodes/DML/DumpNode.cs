@@ -48,7 +48,7 @@ namespace sones.GraphQL.StatementNodes.DML
         private DumpTypes _DumpType;
         private IDumpable _DumpableGrammar;
         private String _DumpDestination;
-        private String _Query;
+        private String _Query = "";
 
         #endregion
 

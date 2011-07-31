@@ -295,6 +295,50 @@ namespace sones.Plugins.GraphDS.RESTService
 
         #endregion
                 
+		#region GetAvailableOutputFormats()
+        public Stream GetAvailableOutputFormats()
+        {
+            if (WebOperationContext.Current != null)
+            {
+                WebOperationContext.Current.OutgoingResponse.ContentType = "application/json";
+            }
+            else if (HttpServer.HttpContext != null)
+            {
+                HttpServer.HttpContext.Response.SetContentType(new ContentType("application/json"));
+            }
+			
+			StringBuilder jsonArray = new StringBuilder();
+			
+			jsonArray.AppendLine("{");
+			jsonArray.AppendLine("\"GraphDSOutputFormats\":[");
+			jsonArray.AppendLine("		{");			
+			// generate JSON formatted output of available I/O plug-ins and associated content-types
+		    // {
+		    //    "application/xml":"XML_IO",
+			//	  "text/plain":"TEXT_IO"
+			// }				
+				
+			Int32 Runthrough = 0;
+				
+			foreach (IOInterface _io_plugin in _Plugins.Values)
+			{
+				Runthrough++;
+					
+				// we have the name and the content type
+				if (Runthrough == _Plugins.Values.Count)
+						jsonArray.AppendLine("			\""+_io_plugin.ContentType+"\":\""+_io_plugin.PluginName+"\"");
+					else
+						jsonArray.AppendLine("			\""+_io_plugin.ContentType+"\":\""+_io_plugin.PluginName+"\",");
+
+			}
+			jsonArray.AppendLine("		}");
+			jsonArray.AppendLine("	]");
+			jsonArray.AppendLine("}");
+			
+            return new MemoryStream(Encoding.UTF8.GetBytes(jsonArray.ToString()));
+        }
+
+        #endregion
     }
 
 }

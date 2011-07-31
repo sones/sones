@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <Product Id="83111110-1011-1557-1114-971121046865" Language="1033" Manufacturer="sones GmbH" Name="GraphDB Server v2.0" Version="2.0">
-        <Package Id="83111110-1011-1550-0000-000000000001" Keywords="Installer" Description="To install the Sones GraphDB Server" Manufacturer="sones GmbH" InstallerVersion="100" Compressed="yes" />
+    <Product Id="83111110-1011-1557-1114-971121046865" Language="1033" Manufacturer="sones GmbH" Name="GraphDB Community-Edition Server v2.0" Version="2.0">
+        <Package Id="83111110-1011-1550-0000-000000000001" Keywords="Installer" Description="To install the sones GraphDB Community-Edition Server" Manufacturer="sones GmbH" InstallerVersion="100" Compressed="yes" />
         <Media Id="1" EmbedCab="yes" DiskPrompt="CD-ROM #1" Cabinet="setup.cab" />
-        <Property Id="DiskPrompt" Value="Sones GraphDB Server [1]" />
-        <Condition Message="You need to be administrator to install this software.">Privileged</Condition>
+        <Property Id="DiskPrompt" Value="sones GraphDB Server [1]" />
+        <Condition Message="You need to be administrator to install and run this software.">Privileged</Condition>
         <UI />
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" Name="PFiles" DiskId="1">
@@ -56,7 +56,6 @@
                             <File Id="ISonesRESTService.dll" Name="ISonesRESTService.dll" Source="..\Applications\sonesGraphDB\bin\Release\ISonesRESTService.dll" />
                             <File Id="JSON_IO.dll" Name="JSON_IO.dll" Source="..\Applications\sonesGraphDB\bin\Release\JSON_IO.dll" />
                             <File Id="LanguageExtensions.dll" Name="LanguageExtensions.dll" Source="..\Applications\sonesGraphDB\bin\Release\LanguageExtensions.dll" />
-                            <File Id="Networking.dll" Name="Networking.dll" Source="..\Applications\sonesGraphDB\bin\Release\Networking.dll" />
                             <File Id="NewFastSerializer.dll" Name="NewFastSerializer.dll" Source="..\Applications\sonesGraphDB\bin\Release\NewFastSerializer.dll" />
                             <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="..\Applications\sonesGraphDB\bin\Release\Newtonsoft.Json.dll" />
                             <File Id="PluginDefinition.dll" Name="PluginDefinition.dll" Source="..\Applications\sonesGraphDB\bin\Release\PluginDefinition.dll" />
@@ -73,6 +72,12 @@
                             <File Id="sonesGraphDBStarter.exe.config" Name="sonesGraphDBStarter.exe.config" Source="..\Applications\sonesGraphDB\bin\Release\sonesGraphDBStarter.exe.config" />
                             <File Id="Newtonsoft.Json.xml" Name="Newtonsoft.Json.xml" Source="..\Applications\sonesGraphDB\bin\Release\Newtonsoft.Json.xml" />
                             <File Id="QueryResultSchema.xsd" Name="QueryResultSchema.xsd" Source="..\Applications\sonesGraphDB\bin\Release\QueryResultSchema.xsd" />
+                            <File Id="SHORTESTPATHALGORITHMS.DLL" Name="ShortestPathAlgorithms.dll" Source="..\Applications\sonesGraphDB\bin\Release\ShortestPathAlgorithms.dll" />
+                            <File Id="USERDEFINEDDATATYPE.DLL" Name="UserdefinedDataType.dll" Source="..\Applications\sonesGraphDB\bin\Release\UserdefinedDataType.dll" />
+                            <File Id="IGRAPHDBEXTENSIONS.DLL" Name="IGraphDBExtensions.dll" Source="..\Applications\sonesGraphDB\bin\Release\IGraphDBExtensions.dll" />
+                            <File Id="COLLECTIONWRAPPER.DLL" Name="CollectionWrapper.dll" Source="..\Applications\sonesGraphDB\bin\Release\CollectionWrapper.dll" />
+                            <File Id="HTTPSERVER.DLL" Name="HttpServer.dll" Source="..\Applications\sonesGraphDB\bin\Release\HttpServer.dll" />
+                            <File Id="IGQLSTATEMENTPLUGIN.DLL" Name="IGQLStatementPlugin.dll" Source="..\Applications\sonesGraphDB\bin\Release\IGQLStatementPlugin.dll" />
                         </Component>
                         <Directory Id="links" Name="links">
                             <Component Id="LinksComponent" Guid="24485085-1E4C-46C5-8248-8A10DCBA9D7B" DiskId="1">

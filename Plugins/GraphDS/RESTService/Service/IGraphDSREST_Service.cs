@@ -188,6 +188,15 @@ namespace sones.Plugins.GraphDS.RESTService
         [WebGet(UriTemplate = "/ddate")]
         Stream GetDDate();
 
+		
+		/// <summary>
+        /// Returns the available output formats
+        /// </summary>
+        /// <returns>Returns the available output formats</returns>
+        [OperationContract, NoAuthentication]
+        [WebGet(UriTemplate = "/availableoutputformats")]
+        Stream GetAvailableOutputFormats();
+
         #endregion
 
     }

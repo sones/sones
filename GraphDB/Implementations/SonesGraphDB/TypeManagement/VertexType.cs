@@ -43,7 +43,7 @@ namespace sones.GraphDB.TypeManagement
         private readonly bool _hasOwnUniques;
         private IEnumerable<IIndexDefinition> _indices;
         private readonly bool _hasOwnIndices;
-        private IEnumerable<IVertexType> _childs;
+        //private IEnumerable<IVertexType> _childs;
         private readonly bool _hasChilds;
 
         #endregion

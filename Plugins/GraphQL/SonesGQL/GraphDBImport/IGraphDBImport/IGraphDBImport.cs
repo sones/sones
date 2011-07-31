@@ -57,6 +57,16 @@ namespace sones.Plugins.SonesGQL.DBImport
     {
         string ImportFormat { get; }
 
-        QueryResult Import(String myLocation, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, UInt64? myOffset = null, UInt64? myLimit = null, VerbosityTypes myVerbosityTypes = VerbosityTypes.Silent);
+        QueryResult Import(String myLocation, 
+			IGraphDB myGraphDB, 
+			IGraphQL myGraphQL, 
+			SecurityToken mySecurityToken, 
+			TransactionToken myTransactionToken, 
+			UInt32 myParallelTasks = 1U, 
+			IEnumerable<string> myComments = null, 
+			UInt64? myOffset = null, 
+			UInt64? myLimit = null, 
+			VerbosityTypes myVerbosityTypes = VerbosityTypes.Silent,
+			Dictionary<string, string> myOptions = null);
     }
 }
