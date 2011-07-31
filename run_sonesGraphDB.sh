@@ -27,7 +27,6 @@
 #
 # Last changes: 31-July-2011, Daniel Kirstenpfad
 #
-
 echo "sones GraphDB 2.0 Starter Script (C) sones GmbH 2007-2011";
 echo "";
 
@@ -49,12 +48,48 @@ DIRECTORY=$(cd `dirname $0` && pwd)
 
 if [ $option == "-r" ]; then
 	echo "Starting sones GraphDB 2.0 (RELEASE) in $DIRECTORY/Applications/sonesGraphDB/bin/Release/";
+	echo "";
 	cd $DIRECTORY/Applications/sonesGraphDB/bin/Release/
-	mono --runtime=v4.0.30319 sonesGraphDBStarter.exe
+
+	
+	if [ -x sonesGraphDBStarter.exe	]; then
+		if which "mono-sgen" >/dev/null; then
+   	 	 mono-sgen --runtime=v4.0.30319 sonesGraphDBStarter.exe	
+			else
+				if which "mono" >/dev/null; then
+	   			 mono --runtime=v4.0.30319 sonesGraphDBStarter.exe
+	  			else
+ 	   			 echo "You need to have MONO (>2.8) installed and in your path. Mono-SGEN is recommended.";
+	  			fi
+	 		fi
+	else
+   	 echo "You need to build before you run. Please use the buildSolution.sh script to do that first.";
+   	 exit 1;
+	fi
+
 elif [ $option == "-d" ]; then
 	echo "Starting sones GraphDB 2.0 (DEBUG) in $DIRECTORY/Applications/sonesGraphDB/bin/Debug/";
+	echo "";
 	cd $DIRECTORY/Applications/sonesGraphDB/bin/Debug/
-	mono --runtime=v4.0.30319 sonesGraphDBStarter.exe
+
+	if [ -x sonesGraphDBStarter.exe	]; then
+			if which "mono-sgen" >/dev/null; then
+			echo "Using MONO-sgen";
+   	 		mono-sgen --runtime=v4.0.30319 sonesGraphDBStarter.exe	
+			else
+				if which "mono" >/dev/null; then
+					echo "Using MONO (with boehm-gc)";
+	   				mono --runtime=v4.0.30319 sonesGraphDBStarter.exe
+	  			else
+ 	   				echo "You need to have MONO (>2.8) installed and in your path. Mono-SGEN is recommended.";
+	  			fi
+	 fi
+	else
+   	 echo "You need to build before you run. Please use the buildSolution.sh script to do that first.";
+   	 exit 1;
+	fi
+
+
 else
 	exit 0
 fi
