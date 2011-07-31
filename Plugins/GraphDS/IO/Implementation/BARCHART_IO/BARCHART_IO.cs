@@ -123,6 +123,8 @@ namespace sones.Plugins.GraphDS.IO
 
                 Output.Append("var vis = d3.select(\"#output\")");
                 Output.Append(".append(\"svg:svg\")");
+				Output.Append(".attr(\"class\",\"twodbarchart\")");
+				
                 Output.Append(".attr(\"width\", w + 200)");
                 Output.Append(".attr(\"height\", h + 20)");
                 Output.Append(".append(\"svg:g\")");
@@ -135,7 +137,6 @@ namespace sones.Plugins.GraphDS.IO
                 Output.Append(".attr(\"transform\", function(d, i) { return \"translate(0,\" + y(i) + \")\"; });");
 
                 Output.Append("bars.append(\"svg:rect\")");
-                Output.Append(".attr(\"fill\", \"steelblue\")");
                 Output.Append(".attr(\"width\", x)");
                 Output.Append(".attr(\"height\", y.rangeBand());");
 
