@@ -327,7 +327,17 @@ namespace sones.Plugins.GraphDS.RESTService
 
         #endregion
 
-        #region GetClientAccessPolicy
+        #region GetAvailableOutputFormats()
+
+        public Stream GetAvailableOutputFormats()
+        {
+            return _RESTOutput.GetAvailableOutputFormats();
+        }
+
+        #endregion
+
+		
+		#region GetClientAccessPolicy
 
         public void GetClientAccessPolicy()
         {
