@@ -30,7 +30,6 @@
 #
 
 echo "sones GraphDB 2.0 Build Script (C) sones GmbH 2007-2011";
-echo "";
 
 option=$1
 option2=$2
@@ -38,6 +37,10 @@ option2=$2
 if [ $# -lt 1 ]; then
 echo "Type -h for build options.";
 option="-d";
+option2="-d";
+fi
+
+if [ $option == "-p" ] && [ -z "$option2" ]; then
 option2="-d";
 fi
 
