@@ -31,7 +31,7 @@ namespace sones.GraphQL.Structure.Nodes.DML
     {
         #region Data
 
-        QueryResult _queryResult = null;
+        //QueryResult _queryResult = null;
 
         #endregion
 

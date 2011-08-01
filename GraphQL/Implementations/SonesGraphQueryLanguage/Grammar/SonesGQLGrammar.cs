@@ -1107,11 +1107,7 @@ namespace sones.GraphQL
 
             createTypesStmt.Rule =      S_CREATE + S_VERTEX + S_TYPES + bulkTypeList
                                     |   S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkType
-                                    |   S_CREATE + S_VERTEX + S_TYPE + bulkType
-            
-                                    |   S_CREATE + S_EDGE + S_TYPES + bulkTypeList
-                                    |   S_CREATE + S_ABSTRACT + S_EDGE + S_TYPE + bulkType
-                                    |   S_CREATE + S_EDGE + S_TYPE + bulkType;
+                                    |   S_CREATE + S_VERTEX + S_TYPE + bulkType;
 
 
             bulkTypeList.Rule = MakePlusRule(bulkTypeList, S_comma, bulkTypeListMember);
@@ -1478,7 +1474,7 @@ namespace sones.GraphQL
 
             //BNF_ImportFormat.Rule = Empty;
 
-            NT_ImportStmt.Rule = S_IMPORT + S_FROM + location_literal + S_FORMAT + NT_ImportFormat + paramParallelTasks + paramComments + offsetOpt + limitOpt + verbosity;
+            NT_ImportStmt.Rule = S_IMPORT + S_FROM + location_literal + S_FORMAT + NT_ImportFormat + paramParallelTasks + paramComments + offsetOpt + limitOpt + verbosity + NT_Options;
 
             #endregion
 

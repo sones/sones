@@ -19,6 +19,7 @@
 */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Irony.Ast;
@@ -31,6 +32,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.DataStructures;
 using sones.Plugins.SonesGQL.DBImport;
+using sones.GraphQL.Structure.Nodes.Misc;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -45,6 +47,7 @@ namespace sones.GraphQL.StatementNodes.DML
         public UInt64? Offset { get; private set; }
         public UInt64? Limit { get; private set; }
         public VerbosityTypes VerbosityType { get; private set; }
+		public Dictionary<string, string> Options { get; private set; }
 
         #endregion
 
@@ -63,6 +66,7 @@ namespace sones.GraphQL.StatementNodes.DML
             Offset = (parseNode.ChildNodes[7].AstNode as OffsetNode).Count;
             Limit = (parseNode.ChildNodes[8].AstNode as LimitNode).Count;
             VerbosityType = (parseNode.ChildNodes[9].AstNode as VerbosityNode).VerbosityType;
+			Options = (parseNode.ChildNodes[10].AstNode as OptionsNode).Options;				
         }
 
         #endregion
@@ -79,7 +83,12 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, 
+			IGraphQL myGraphQL,
+			GQLPluginManager myPluginManager,
+			String myQuery,
+			SecurityToken mySecurityToken,
+			TransactionToken myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
 
@@ -89,14 +98,29 @@ namespace sones.GraphQL.StatementNodes.DML
 
             if (plugin != null)
             {
-                result = plugin.Import(SourceLocation, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, ParallelTasks, Comments, Offset, Limit, VerbosityType);
+                result = plugin.Import(SourceLocation, 
+					myGraphDB,
+					myGraphQL,
+					mySecurityToken,
+					myTransactionToken,
+					ParallelTasks,
+					Comments,
+					Offset,
+					Limit,
+					VerbosityType,
+					Options);
             }
 
             sw.Stop();
 
             if(result != null)
             {
-                return new QueryResult(myQuery, ImportFormat, (ulong)sw.ElapsedMilliseconds, result.TypeOfResult, result.Vertices, result.Error);
+                return new QueryResult(myQuery,
+					ImportFormat,
+					(ulong)sw.ElapsedMilliseconds,
+					result.TypeOfResult,
+					result.Vertices,
+					result.Error);
             }
             else
                 return null;

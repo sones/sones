@@ -41,6 +41,7 @@ using sones.Library.VersionedPluginManager;
 using sones.GraphDS.PluginManager;
 using sones.Library.Network.HttpServer;
 using sones.Library.Network.HttpServer.Security;
+using System.Net.Sockets;
 
 namespace sones.GraphDSServer
 {
@@ -220,7 +221,7 @@ namespace sones.GraphDSServer
             }
             catch (Exception e)
             {
-                throw new RESTServiceCouldNotStartetException(e.Message);
+                throw new RESTServiceCouldNotBeStartedException("Something went wrong while GraphDB tried to open a socket on your machine. Please ensure that you are running GraphDB in the right security context (e.g. Administrator rights on Windows) and that the socket isn't already used by another process.  \n"+e.Message);
             }
         }
 

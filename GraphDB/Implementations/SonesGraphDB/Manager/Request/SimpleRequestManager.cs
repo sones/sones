@@ -43,7 +43,7 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// The cancellation token source
         /// </summary>
-        private CancellationTokenSource _cts;
+        //private CancellationTokenSource _cts;
 
         #endregion
 

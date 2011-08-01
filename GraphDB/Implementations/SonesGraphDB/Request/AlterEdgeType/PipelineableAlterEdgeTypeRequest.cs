@@ -38,7 +38,7 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public RequestAlterEdgeType _request;
 
-        private IEdgeType _alteredEdgeType;
+        private IEdgeType _alteredEdgeType = null;
 
         #endregion
 

@@ -18,7 +18,6 @@
 * 
 */
 
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -37,8 +36,9 @@ using sones.Library.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.SonesGQL.DBImport;
+using System.Net;
 
-namespace sones.Plugins.SonesGQL.GraphMLImport
+namespace sones.Plugins.SonesGQL
 {
 	/// <summary>
     /// Class deserializes a graph stored in GraphML format.
@@ -143,7 +143,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		
 		public const string PARAM_VERTEXTYPENAME 	= "VertexTypeName";
 		
-		public const string PARAM_EDGETYPENAME		= "EdgeTypeName";
+		public const string PARAM_EDGENAME			= "EdgeName";
 		
 		#endregion
 		
@@ -181,29 +181,45 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		
 		#region constructors
 		
-		/// <summary>
-		/// Initializes a new instance of the <see cref="sones.Plugins.SonesGQL.GraphMLImport.GraphMLImport"/> class.
-		/// </summary>
-		/// <param name='myVertexTypeName'>
-		/// Name of the VertexType to be used for storing imported vertices.
-		/// </param>
-		/// <param name='myEdgeTypeName'>
-		/// Name of the edge to declare imported edges.
-		/// </param>
-		public GraphMLImport (String myVertexTypeName, String myEdgeTypeName)
+		public GraphMLImport ()
+		{}
+		
+		#endregion
+
+		#region IGraphDBImport implementation
+		
+		private void InitVertexSettings(Dictionary<string, string> myOptions)
 		{
-			_VertexTypeName 		= myVertexTypeName;
-			_EdgeTypeName 			= myEdgeTypeName;
+			if(!myOptions.ContainsKey(PARAM_VERTEXTYPENAME))
+			{
+				throw new ArgumentException(String.Format("{0} has not been defined.", PARAM_VERTEXTYPENAME));
+			}
+			if(!myOptions.ContainsKey(PARAM_EDGENAME))
+			{
+				throw new ArgumentException(String.Format("{0} has not been defined.", PARAM_EDGENAME));	
+			}
+			
+			var vertexTypeName 	= (string)myOptions[PARAM_VERTEXTYPENAME];
+			var edgeTypeName 	= (string)myOptions[PARAM_EDGENAME];
+			
+			if(vertexTypeName == null || "".Equals(vertexTypeName))
+			{
+				throw new ArgumentException(String.Format("{0} is invalid (null or empty)", PARAM_VERTEXTYPENAME));	
+			}
+			
+			if(edgeTypeName == null || "".Equals(edgeTypeName))
+			{
+				throw new ArgumentException(String.Format("{0} is invalid (null or empty)", PARAM_EDGENAME));	
+			}
+			
+			_VertexTypeName 		= vertexTypeName;
+			_EdgeTypeName 			= edgeTypeName;
 			_VertexMapping 			= new Dictionary<string, long>();
 			_AttributeDefinitions 	= new Dictionary<string, Tuple<string, string, string, string>>();
 			
 			_Vertices 		= new HashSet<long>();
 			_EdgeCount 		= 0;
 		}
-		
-		#endregion
-
-		#region IGraphDBImport implementation
 		
 		public QueryResult Import (string myLocation, 
 			IGraphDB myGraphDB,
@@ -214,7 +230,8 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			IEnumerable<string> myComments = null,
 			UInt64? myOffset = null,
 			UInt64? myLimit = null,
-			VerbosityTypes myVerbosityTypes = VerbosityTypes.Silent)
+			VerbosityTypes myVerbosityTypes = VerbosityTypes.Silent,
+			Dictionary<string, string> myOptions = null)
 		{
 			#region data
 			
@@ -225,32 +242,60 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 						0, 
 						ResultType.Failed, 
 						null, 
-						new UnknownException(new ArgumentNullException("myGraphDB")));
+						new UnknownException(new ArgumentNullException("Missing GraphDB object")));
 			}
-			if(mySecurityToken == null)
+			
+			if(myLocation == null)
 			{
 				return new QueryResult("", 
 						ImportFormat, 
 						0, 
 						ResultType.Failed, 
 						null, 
-						new UnknownException(new ArgumentNullException("mySecurityToken")));
+						new UnknownException(new ArgumentNullException("Missing Location object")));	
 			}
-			if(myTransactionToken == null)
+			
+//			if(mySecurityToken == null)
+//			{
+//				return new QueryResult("", 
+//						ImportFormat, 
+//						0, 
+//						ResultType.Failed, 
+//						null, 
+//						new UnknownException(new ArgumentNullException("mySecurityToken")));
+//			}
+//			if(myTransactionToken == null)
+//			{
+//				return new QueryResult("", 
+//						ImportFormat, 
+//						0, 
+//						ResultType.Failed, 
+//						null, 
+//						new UnknownException(new ArgumentNullException("myTransactionToken")));	
+//			}
+			
+			if(myOptions == null)
 			{
 				return new QueryResult("", 
 						ImportFormat, 
 						0, 
 						ResultType.Failed, 
 						null, 
-						new UnknownException(new ArgumentNullException("myTransactionToken")));	
+						new UnknownException(
+					new ArgumentNullException(
+						String.Format("Missing Options {0}, {1}",
+							PARAM_VERTEXTYPENAME,
+							PARAM_EDGENAME
+						))));
 			}
 			
 			_GraphDB 			= myGraphDB;
 			_SecurityToken 		= mySecurityToken;
 			_TransactionToken 	= myTransactionToken;
+			InitVertexSettings(myOptions);
 			
 			var sw = new Stopwatch();
+			Stream stream = null;
 			
 			#endregion
 			
@@ -267,8 +312,21 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 				#region read elements
 
 	            try
-	            {
-	                var reader = XmlReader.Create(new FileStream(myLocation,FileMode.Open));
+	            {					
+					if(myLocation.ToLower().StartsWith("file://") || myLocation.ToLower().StartsWith("file:\\"))
+					{
+						stream = GetStreamFromFile(myLocation.Substring("file://".Length));
+					} 
+					else if(myLocation.StartsWith("http://"))
+					{
+						stream = GetStreamFromHttp(myLocation);	
+					} 
+					else
+					{
+						throw new FormatException("Given file location is invalid.");
+					}
+					
+					var reader = XmlReader.Create(stream);
 					
 					sw.Start();
 					
@@ -292,7 +350,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 	                                ReadEdge(reader);
 	                                break;
 	                            default:
-	                                throw new XmlException(String.Format("Unsupported Node Type in GraphML File: {0}", 
+	                                throw new XmlException(String.Format("Unsupported Node Type in GraphML File: {0}",
 									reader.Name));
 	                        }
 	                    }
@@ -300,7 +358,14 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 	            }
 	            catch (Exception ex)
 	            {
-	                return new QueryResult("", 
+					if(stream != null)
+					{
+						stream.Close();
+					}
+					// drop vertex type in case of exception
+					DropVertexType();
+					
+	                return new QueryResult("VertexType has been removed", 
 						ImportFormat, 
 						(ulong)sw.ElapsedMilliseconds, 
 						ResultType.Failed, 
@@ -317,7 +382,12 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			
 			#endregion
 			
-			return new QueryResult("", ImportFormat, (ulong)sw.ElapsedMilliseconds, ResultType.Successful, null, null);
+			return new QueryResult("", 
+				ImportFormat, 
+				(ulong)sw.ElapsedMilliseconds, 
+				ResultType.Successful,
+				null, 
+				null);
 		}
 		
 		/// <summary>
@@ -357,36 +427,8 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 		/// Is thrown when an argument passed to a method is invalid.
 		/// </exception>
 		public IPluginable InitializePlugin (string UniqueString, Dictionary<string, object> myParameters)
-		{
-			if(myParameters == null || myParameters.Count == 0)
-			{
-				throw new ArgumentException("myParameters was either null or empty.");
-			}
-			if(!myParameters.ContainsKey(PARAM_VERTEXTYPENAME))
-			{
-				throw new ArgumentException("VertexTypeName has not been defined.");
-			}
-			if(!myParameters.ContainsKey(PARAM_EDGETYPENAME))
-			{
-				throw new ArgumentException("EdgeTypeName has not been defined.");	
-			}
-			
-			var vertexTypeName 	= (string)myParameters[PARAM_VERTEXTYPENAME];
-			var edgeTypeName 	= (string)myParameters[PARAM_EDGETYPENAME];
-			
-			if(vertexTypeName == null || "".Equals(vertexTypeName))
-			{
-				throw new ArgumentException("VertexTypeName is invalid");	
-			}
-			
-			if(edgeTypeName == null || "".Equals(edgeTypeName))
-			{
-				throw new ArgumentException("EdgeTypeName is invalid");
-			}
-			
-			myParameters.Add("test", null);
-			
-			return new GraphMLImport(vertexTypeName, edgeTypeName);
+		{			
+			return new GraphMLImport();
 		}
 
 		public string PluginName 
@@ -407,7 +449,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 				return new PluginParameters<Type>()
 				{
 					{PARAM_VERTEXTYPENAME, 	typeof(string)},
-					{PARAM_EDGETYPENAME, 	typeof(string)}
+					{PARAM_EDGENAME, 	typeof(string)}
 				}; 
 			}
 		}
@@ -452,6 +494,14 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			                         requestCreateVertexType,
 			                         (stats, vType) => vType);
 			#endregion
+		}
+		
+		private void DropVertexType()
+		{
+			_GraphDB.DropType(_SecurityToken,
+				_TransactionToken,
+				new RequestDropVertexType(_VertexTypeName),
+				(stats, removedIDs) => removedIDs);
 		}
 		
 		#region vertex stuff
@@ -602,8 +652,12 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			
 			                    if (attrType != null && value != null)
 			                    {
-									myRequestInsertVertex.AddStructuredProperty(attrName, 
-										(IComparable)ParseValue(attrType, value));
+//									myRequestInsertVertex.AddStructuredProperty(attrName, 
+//										(IComparable)ParseValue(attrType, value));
+									myRequestInsertVertex.AddUnknownProperty(attrName,
+										Convert.ChangeType(ParseValue(attrType, value), 
+										typeof(String), 
+										CultureInfo.GetCultureInfo("en-us")));
 			                    }
 			                }
 			            }
@@ -738,7 +792,7 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			
             var attrId 		= myReader.GetAttribute(GraphMLTokens.ID);
             var attrFor 	= myReader.GetAttribute(GraphMLTokens.FOR);
-            var attrName 	= myReader.GetAttribute(GraphMLTokens.ATTRIBUTE_NAME).ToLower();
+			var attrName 	= myReader.GetAttribute(GraphMLTokens.ATTRIBUTE_NAME);
             var attrType 	= myReader.GetAttribute(GraphMLTokens.ATTRIBUTE_TYPE).ToLower();
 
             string attrDefault = null;
@@ -758,6 +812,8 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 			attrType = char.ToUpper(attrType[0]) + attrType.Substring(1).ToLower();
 			// and store the whole definition
             _AttributeDefinitions.Add(attrId, new Tuple<string, string, string, string>(attrFor, attrName, attrType, attrDefault));
+			// get GraphDB internal type
+			attrType = GetInternalTypeName(attrType);
 			
 			#endregion
 			
@@ -809,17 +865,20 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
             }
             else if (myType.Equals(GraphMLTokens.FLOAT))
             {
-				//mh..had to use invariant culture or he made 10.0 out of 1.0
-                return float.Parse(myValue, CultureInfo.InvariantCulture);
+				var f = float.Parse(myValue, CultureInfo.InvariantCulture);
+               	return float.Parse(myValue, CultureInfo.GetCultureInfo("en-us"));
             }
             else if (myType.Equals(GraphMLTokens.DOUBLE))
             {
-                //mh..had to use invariant culture or he made 10.0 out of 1.0
-                return Double.Parse(myValue, CultureInfo.InvariantCulture);
+                return Double.Parse(myValue, CultureInfo.GetCultureInfo("en-us"));
             }
             else if (myType.Equals(GraphMLTokens.LONG))
             {
                 return Int64.Parse(myValue);
+            }
+			else if (myType.Equals(GraphMLTokens.BOOLEAN))
+            {
+                return Boolean.Parse(myValue);
             }
 			else if(myType.Equals(GraphMLTokens.STRING))
 			{
@@ -831,7 +890,67 @@ namespace sones.Plugins.SonesGQL.GraphMLImport
 					myType));
             }
         }
-			
+		
+		private String GetInternalTypeName(String myExternalTypeName)
+		{
+			if(myExternalTypeName.Equals(GraphMLTokens.STRING))
+			{
+				return GraphMLTokens.STRING_INTERNAL;	
+			} 
+			else if(myExternalTypeName.Equals(GraphMLTokens.INT))
+			{
+				return GraphMLTokens.INT_INTERNAL;	
+			}
+			else if(myExternalTypeName.Equals(GraphMLTokens.LONG))
+			{
+				return GraphMLTokens.LONG_INTERNAL;	
+			}
+			else if(myExternalTypeName.Equals(GraphMLTokens.FLOAT))
+			{
+				return GraphMLTokens.FLOAT_INTERNAL;
+			}
+			else if(myExternalTypeName.Equals(GraphMLTokens.DOUBLE))
+			{
+				return GraphMLTokens.DOUBLE_INTERNAL;
+			}
+			else if(myExternalTypeName.Equals(GraphMLTokens.BOOLEAN))
+			{
+				return GraphMLTokens.BOOLEAN_INTERNAL;
+			}
+			else
+            {
+                throw new ArgumentException(String.Format("Attribute Type {0} not supported by GraphML Parser",
+					myExternalTypeName));
+            }
+				
+		}
+		
+		#region Get streams
+
+        /// <summary>
+        /// Reads a file, just let all exceptions thrown, they are too much to pack them into a graphDBException.
+        /// </summary>
+        /// <param name="myLocation"></param>
+        /// <returns></returns>
+        private Stream GetStreamFromFile(String myLocation)
+        {
+            return File.OpenRead(myLocation);
+        }
+
+        /// <summary>
+        /// Reads a http ressource, just let all exceptions thrown, they are too much to pack them into a graphDBException.
+        /// </summary>
+        /// <param name="myLocation"></param>
+        /// <returns></returns>
+        private Stream GetStreamFromHttp(String myLocation)
+        {
+            var request = (HttpWebRequest)WebRequest.Create(myLocation);
+            var response = request.GetResponse();
+            return response.GetResponseStream();
+        }
+
+        #endregion
+		
 		#endregion
 			
 		#endregion

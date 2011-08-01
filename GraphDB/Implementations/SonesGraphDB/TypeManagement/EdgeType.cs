@@ -31,7 +31,7 @@ namespace sones.GraphDB.TypeManagement
     {
         #region Data
 
-        private IEnumerable<IEdgeType> _childs;
+        //private IEnumerable<IEdgeType> _childs;
         private readonly bool _hasChilds;        
 
         #endregion
