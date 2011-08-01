@@ -46,7 +46,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// The index manager is needed to get the property related indices
         /// </summary>
-        private readonly IIndexManager _indexManager;
+        private readonly IIndexManager _indexManager = null;
 
         /// <summary>
         /// The current security token

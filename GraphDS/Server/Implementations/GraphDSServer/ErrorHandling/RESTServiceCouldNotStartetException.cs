@@ -29,13 +29,13 @@ namespace sones.GraphDSServer.ErrorHandling
     /// <summary>
     /// This exception will be thrown if the REST service could not be startet.
     /// </summary>
-    public class RESTServiceCouldNotStartetException : AGraphDSException
+    public class RESTServiceCouldNotBeStartedException : AGraphDSException
     {
         /// <summary>
         /// The constructor for the exception.
         /// </summary>
         /// <param name="myMessage">The exception message.</param>
-        public RESTServiceCouldNotStartetException(String myMessage)
+        public RESTServiceCouldNotBeStartedException(String myMessage)
         {
             _msg = myMessage;
         }

@@ -35,7 +35,7 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
         #region Data
 
         ParseTreeNode _ParseTreeNode = null;
-        ParametersNode _ParametersNode = null;
+        //ParametersNode _ParametersNode = null;
 
         #endregion
 

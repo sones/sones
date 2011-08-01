@@ -44,7 +44,7 @@ namespace sones.GraphDB.Manager
     internal class DBCreationManager
     {
         
-        private readonly Dictionary<AttributeDefinitions, VertexInformation> _infos;
+        //private readonly Dictionary<AttributeDefinitions, VertexInformation> _infos;
 
         private readonly SecurityToken _security;
         private readonly TransactionToken _transaction;

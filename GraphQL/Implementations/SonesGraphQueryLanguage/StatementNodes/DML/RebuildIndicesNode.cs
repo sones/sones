@@ -40,7 +40,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
         private HashSet<String> _Types;
         private String Query;
-        private IEnumerable<IIndexDefinition> IndexDefinitions;
+        //private IEnumerable<IIndexDefinition> IndexDefinitions;
 
         #endregion
 

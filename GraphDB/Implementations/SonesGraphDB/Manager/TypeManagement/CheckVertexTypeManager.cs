@@ -706,7 +706,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         var baseType = _baseStorageManager.GetBaseType(item.AttributeType);
                         item.DefaultValue.ConvertToIComparable(baseType);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {                        
                         throw new InvalidTypeException(item.DefaultValue.GetType().Name, item.AttributeType);
                     }

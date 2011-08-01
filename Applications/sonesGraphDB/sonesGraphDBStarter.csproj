@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -52,6 +52,9 @@
   <PropertyGroup>
     <ApplicationIcon>sonesIcon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>sonesGraphDBStarter.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -77,6 +80,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="sonesGraphDBStarter.manifest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\GraphDB\IGraphDB\IGraphDB.csproj">
@@ -122,6 +126,10 @@
     <ProjectReference Include="..\..\Library\Internal\DiscordianDate\DiscordianDate.csproj">
       <Project>{8E0390D0-A7BF-46FE-900C-C411F762EFF2}</Project>
       <Name>DiscordianDate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\PluginDefinition\PluginDefinition.csproj">
       <Project>{CE9BF2C2-C785-4661-8F4F-64266C697343}</Project>
