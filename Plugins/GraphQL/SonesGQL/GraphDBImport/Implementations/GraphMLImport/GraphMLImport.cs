@@ -703,12 +703,17 @@ namespace sones.Plugins.SonesGQL
 			
 			#region create edge (update vertex)
 			
-			var edgePreDef = new EdgePredefinition(_EdgeTypeName);
-			edgePreDef.AddVertexID(_VertexTypeName, _VertexIDMapper[targetID]);
-			edgePreDef.AddStructuredProperty(GraphMLTokens.EDGE_WEIGHT, edgeWeight);
+			var hyperEdge = new EdgePredefinition(_EdgeTypeName);
+			hyperEdge.AddEdge(new EdgePredefinition()
+				.AddVertexID(_VertexTypeName, _VertexIDMapper[targetID])
+				.AddUnknownProperty(
+					GraphMLTokens.EDGE_WEIGHT, 
+					Convert.ChangeType(edgeWeight, typeof(String), CultureInfo.GetCultureInfo("en-us"))
+				));
+			
 			
 			var requestUpdate = new RequestUpdate(new RequestGetVertices(_VertexTypeName, new List<long>() { _VertexIDMapper[sourceID] }));
-			requestUpdate.AddElementsToCollection(_EdgeTypeName, edgePreDef);
+			requestUpdate.AddElementsToCollection(_EdgeTypeName, hyperEdge);
 			
 			// process the update
 			_GraphDB.Update<IEnumerable<IVertex>>(
@@ -735,7 +740,7 @@ namespace sones.Plugins.SonesGQL
 		/// <param name='myReader'>
 		/// XmlReader
 		/// </param>
-		private double ReadEdgeWeight(XmlReader myReader)
+		private IComparable ReadEdgeWeight(XmlReader myReader)
 		{
 			using (var edgeDataReader = myReader.ReadSubtree())
             {
@@ -764,7 +769,7 @@ namespace sones.Plugins.SonesGQL
 			                    {
 									if(attrName.Equals(GraphMLTokens.EDGE_WEIGHT.ToLower()))
 									{
-										return (float)ParseValue(attrType, value);	
+										return ParseValue(attrType, value);	
 									}
 			                    }
 			                }
