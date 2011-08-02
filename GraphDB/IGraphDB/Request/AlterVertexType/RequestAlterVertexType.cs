@@ -40,7 +40,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Attributes which are to be added
         /// </summary>
-        private List<AttributePredefinition>    _toBeAddedAttributes;
+        private List<AAttributePredefinition>    _toBeAddedAttributes;
         private List<IndexPredefinition>        _toBeAddedIndices;
         private List<UniquePredefinition>       _toBeAddedUniques;
         private List<MandatoryPredefinition>    _toBeAddedMandatories;
@@ -295,7 +295,7 @@ namespace sones.GraphDB.Request
         {
             if (myUnknownPredefinition != null)
             {
-                _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AttributePredefinition>();
+                _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AAttributePredefinition>();
                 _toBeAddedAttributes.Add(myUnknownPredefinition);
                 AddUnknownPropertyCount++;
             }
@@ -312,7 +312,7 @@ namespace sones.GraphDB.Request
         {
             if (myPropertyDefinition != null)
             {
-                _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AttributePredefinition>();
+                _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AAttributePredefinition>();
                 _toBeAddedAttributes.Add(myPropertyDefinition);
                 AddPropertyCount++;
             }
@@ -329,7 +329,7 @@ namespace sones.GraphDB.Request
         {
             if (myOutgoingEdgePredefinition != null)
             {
-                _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AttributePredefinition>();
+                _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AAttributePredefinition>();
                 _toBeAddedAttributes.Add(myOutgoingEdgePredefinition);
                 AddOutgoingEdgeCount++;
             }
@@ -346,7 +346,7 @@ namespace sones.GraphDB.Request
         {
             if (myBinaryPropertyPredefinition != null)
             {
-                _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AttributePredefinition>();
+                _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AAttributePredefinition>();
                 _toBeAddedAttributes.Add(myBinaryPropertyPredefinition);
                 AddBinaryPropertyCount++;
             }
@@ -363,7 +363,7 @@ namespace sones.GraphDB.Request
         {
             if (myIncomingEdgePredefinition != null)
             {
-                _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AttributePredefinition>();
+                _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AAttributePredefinition>();
                 _toBeAddedAttributes.Add(myIncomingEdgePredefinition);
                 AddIncomingEdgeCount++;
             }

@@ -29,9 +29,6 @@ using System.Web;
 using System.IO;
 using System.Text;
 using sones.Plugins.GraphDS.IO.XML_IO;
-using sones.GraphDB.Request.GetVertexType;
-using sones.GraphDB.Request.GetEdgeType;
-using sones.GraphDB.Request.GetIndex;
 using System.Reflection;
 using System.Threading;
 

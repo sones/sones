@@ -345,10 +345,8 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <returns>A attribute predefinition</returns>
         private UnknownAttributePredefinition GenerateUnknownAttribute(KeyValuePair<AttributeDefinition, string> aAttribute)
         {
-            UnknownAttributePredefinition result = new UnknownAttributePredefinition(aAttribute.Key.AttributeName);
+            UnknownAttributePredefinition result = new UnknownAttributePredefinition(aAttribute.Key.AttributeName, aAttribute.Value);
             
-            result.SetAttributeType(aAttribute.Value);
-
             if (aAttribute.Key.AttributeType.EdgeType != null)
             {
                 result.SetInnerEdgeType(aAttribute.Key.AttributeType.EdgeType);

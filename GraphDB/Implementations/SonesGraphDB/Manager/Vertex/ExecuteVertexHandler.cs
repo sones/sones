@@ -98,12 +98,12 @@ namespace sones.GraphDB.Manager.Vertex
 
         public override IEnumerable<IVertex> GetVertices(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
         {
-            return GetVertices(_vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeName, myTransaction, mySecurity), myTransaction, mySecurity, includeSubtypes);
+            return GetVertices(_vertexTypeManager.ExecuteManager.GetType(myVertexTypeName, myTransaction, mySecurity), myTransaction, mySecurity, includeSubtypes);
         }
 
         public override IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
         {
-            return GetVertices(_vertexTypeManager.ExecuteManager.GetVertexType(myTypeID, myTransaction, mySecurity), myTransaction, mySecurity, includeSubtypes);
+            return GetVertices(_vertexTypeManager.ExecuteManager.GetType(myTypeID, myTransaction, mySecurity), myTransaction, mySecurity, includeSubtypes);
         }
 
         public override IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken)
@@ -174,7 +174,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         public override IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            return _vertexStore.GetVertex(mySecurityToken, myTransactionToken, myVertexID, _vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeName, myTransactionToken, mySecurityToken).ID, (aEdition) => myEdition == aEdition, (aVertexRevisionID) => myTimespan.IsWithinTimeStamp(aVertexRevisionID));
+            return _vertexStore.GetVertex(mySecurityToken, myTransactionToken, myVertexID, _vertexTypeManager.ExecuteManager.GetType(myVertexTypeName, myTransactionToken, mySecurityToken).ID, (aEdition) => myEdition == aEdition, (aVertexRevisionID) => myTimespan.IsWithinTimeStamp(aVertexRevisionID));
         }
 
         public override IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken)
@@ -192,7 +192,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         public override IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            IVertexType vertexType = GetVertexType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
+            IVertexType vertexType = GetType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
 
             //we check unique constraints here 
             foreach (var unique in vertexType.GetUniqueDefinitions(true))
@@ -510,7 +510,7 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     foreach (var kvP in myEdgeDef.VertexIDsByVertexTypeName)
                     {
-                        var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(kvP.Key, myTransaction, mySecurity);
+                        var vertexType = _vertexTypeManager.ExecuteManager.GetType(kvP.Key, myTransaction, mySecurity);
                         foreach (var vertex in kvP.Value)
                         {
                             result.Add(new VertexInformation(vertexType.ID, vertex));
@@ -693,7 +693,7 @@ namespace sones.GraphDB.Manager.Vertex
                 //remove the attributes
                 foreach (var aVertexTypeGroup in toBeProcessedVertices.GroupBy(_ => _.VertexTypeID))
                 {
-                    var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(aVertexTypeGroup.Key, myTransactionToken, mySecurityToken);
+                    var vertexType = _vertexTypeManager.ExecuteManager.GetType(aVertexTypeGroup.Key, myTransactionToken, mySecurityToken);
 
                     #region prepare update definition
 
@@ -837,7 +837,7 @@ namespace sones.GraphDB.Manager.Vertex
                 //remove the nodes
                 foreach (var aVertexTypeGroup in toBeProcessedVertices.GroupBy(_ => _.VertexTypeID))
                 {
-                    var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(aVertexTypeGroup.Key, myTransactionToken, mySecurityToken);
+                    var vertexType = _vertexTypeManager.ExecuteManager.GetType(aVertexTypeGroup.Key, myTransactionToken, mySecurityToken);
 
                     foreach (var aVertex in aVertexTypeGroup.ToList())
                     {
@@ -917,7 +917,7 @@ namespace sones.GraphDB.Manager.Vertex
                 Dictionary<IVertex, Tuple<long?, String, VertexUpdateDefinition>> updates = new Dictionary<IVertex, Tuple<long?, String, VertexUpdateDefinition>>();
                 foreach (var group in groupedByTypeID)
                 {
-                    var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(group.Key, myTransaction, mySecurity);
+                    var vertexType = _vertexTypeManager.ExecuteManager.GetType(group.Key, myTransaction, mySecurity);
 
                     //we copy each property in property provider, because an unknown property can be a structured at one type but unstructured at the other.
                     //this must be refactored:
@@ -973,7 +973,7 @@ namespace sones.GraphDB.Manager.Vertex
             List<IVertex> result = new List<IVertex>();
             foreach (var group in groups)
             {                
-                var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(group.Key, myTransaction, mySecurity);
+                var vertexType = _vertexTypeManager.ExecuteManager.GetType(group.Key, myTransaction, mySecurity);
 
                 var indexedProps = vertexType.GetIndexDefinitions(false).Select(_ => _.IndexedProperties);
                 var indices = indexedProps.ToDictionary(_ => _, _ => _indexManager.GetIndices(vertexType, _, mySecurity, myTransaction));

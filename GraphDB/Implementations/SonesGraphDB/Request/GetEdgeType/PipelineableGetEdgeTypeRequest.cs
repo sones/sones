@@ -80,15 +80,15 @@ namespace sones.GraphDB.Request
             _fetchedEdgeType = DoExecute(myMetaManager.EdgeTypeManager.ExecuteManager);
         }
 
-        private IEdgeType DoExecute(IEdgeTypeHandler myManager)
+        private IEdgeType DoExecute(ITypeHandler<IEdgeType> myManager)
         {
             if (_request.EdgeTypeName == null)
             {
-                return myManager.GetEdgeType(_request.EdgeTypeID, TransactionToken, SecurityToken);
+                return myManager.GetType(_request.EdgeTypeID, TransactionToken, SecurityToken);
             }
             else
             {
-                return myManager.GetEdgeType(_request.EdgeTypeName, TransactionToken, SecurityToken);
+                return myManager.GetType(_request.EdgeTypeName, TransactionToken, SecurityToken);
             }
         }
 

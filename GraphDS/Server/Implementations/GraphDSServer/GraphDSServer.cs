@@ -19,29 +19,24 @@
 */
 
 using System;
+using System.Collections.Generic;
+using System.IdentityModel.Selectors;
 using System.IdentityModel.Tokens;
 using System.Net;
-using System.Collections.Generic;
-using System.ServiceModel;
-using System.IdentityModel.Selectors;
 using sones.GraphDB;
 using sones.GraphDB.Request;
+using sones.GraphDS.PluginManager;
+using sones.GraphDS.PluginManager.GraphDSPluginManager;
 using sones.GraphDSServer.ErrorHandling;
+using sones.GraphQL;
 using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.Plugins.GraphDS.RESTService;
-using sones.GraphDS.PluginManager.GraphDSPluginManager;
-using sones.GraphQL;
-using sones.GraphDB.Request.GetVertexType;
-using sones.GraphDB.Request.GetEdgeType;
-using sones.GraphDB.Request.GetIndex;
-using sones.Plugins.GraphDS;
-using sones.Library.VersionedPluginManager;
-using sones.GraphDS.PluginManager;
 using sones.Library.Network.HttpServer;
 using sones.Library.Network.HttpServer.Security;
-using System.Net.Sockets;
+using sones.Library.VersionedPluginManager;
+using sones.Plugins.GraphDS;
+using sones.Plugins.GraphDS.RESTService;
 
 namespace sones.GraphDSServer
 {

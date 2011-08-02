@@ -22,7 +22,7 @@ using System;
 
 namespace sones.GraphDB.TypeSystem
 {
-    public class IncomingEdgePredefinition: AttributePredefinition
+    public class IncomingEdgePredefinition: AAttributePredefinition
     {
         public const char TypeSeparator = '.';
 
@@ -30,7 +30,8 @@ namespace sones.GraphDB.TypeSystem
         /// Creates a definition for an incoming edge.
         /// </summary>
         /// <param name="myEdgeName">The name of the IncomingEdge</param>
-        public IncomingEdgePredefinition(String myEdgeName): base(myEdgeName)
+        public IncomingEdgePredefinition(String myEdgeName)
+            : base(myEdgeName, "")
         {
         }
 

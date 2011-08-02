@@ -81,15 +81,18 @@
     <Compile Include="Manager\Request\IRequestManager.cs" />
     <Compile Include="Manager\Security\BasicSecurityManager.cs" />
     <Compile Include="Manager\Transaction\BasicTransactionManager.cs" />
-    <Compile Include="Manager\TypeManagement\AVertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\ATypeManager.cs" />
     <Compile Include="Manager\TypeManagement\BaseTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\ACheckTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\IDManager.cs" />
+    <Compile Include="Manager\TypeManagement\AExecuteTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\ITypeHandler.cs" />
     <Compile Include="Manager\TypeManagement\CheckEdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\CheckVertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\ExecuteEdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\ExecuteVertexTypeManager.cs" />
-    <Compile Include="Manager\TypeManagement\IDManager.cs" />
-    <Compile Include="Manager\TypeManagement\IVertexTypeHandler.cs" />
-    <Compile Include="Manager\TypeManagement\IEdgeTypeHandler.cs" />
+    <Compile Include="Manager\TypeManagement\VertexTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\UniqueID.cs" />
     <Compile Include="Manager\Vertex\AVertexHandler.cs" />
     <Compile Include="Manager\Vertex\CheckVertexHandler.cs" />
@@ -120,7 +123,6 @@
     <Compile Include="Request\GetVertexType\PipelineableGetVertexTypeRequest.cs" />
     <Compile Include="Request\GetVertex\PipelineableGetVertexRequest.cs" />
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
-    <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
     <Compile Include="Request\RebuildIndices\PipelineableRebuildIndicesRequest.cs" />
     <Compile Include="Request\TraverseVertex\PipelineableTraverseVertexRequest.cs" />
     <Compile Include="Request\Truncate\PipelineableTruncateRequest.cs" />
@@ -140,7 +142,6 @@
     <Compile Include="TypeManagement\Base\BaseUniqueIndex.cs" />
     <Compile Include="TypeManagement\Base\UniqueDefinition.cs" />
     <Compile Include="TypeManagement\EdgeType.cs" />
-    <Compile Include="Manager\TypeManagement\VertexTypeManager.cs" />
     <Compile Include="Request\Clear\PipelineableClearRequest.cs" />
     <Compile Include="Request\APipelinableRequest.cs" />
     <Compile Include="Request\CreateVertexTypes\PipelineableCreateVertexTypesRequest.cs" />
@@ -207,7 +208,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager</Name>
+      <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\Index\Indices\SonesIndices\SonesIndices.csproj">
       <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>
@@ -219,7 +220,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
-      <Name>IGraphDB</Name>
+      <Name>IGraphDB %28Dependencies\GraphDB\IGraphDB%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

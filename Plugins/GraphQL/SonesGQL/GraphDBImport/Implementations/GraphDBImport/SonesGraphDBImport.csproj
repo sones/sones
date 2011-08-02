@@ -46,7 +46,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
-      <Name>IGraphDB</Name>
+      <Name>IGraphDB %28Dependencies\GraphDB\IGraphDB%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>

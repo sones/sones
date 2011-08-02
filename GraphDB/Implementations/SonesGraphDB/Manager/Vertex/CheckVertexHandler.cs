@@ -61,12 +61,12 @@ namespace sones.GraphDB.Manager.Vertex
             else if (_request.VertexTypeName != null)
             {
                 //2.1 typeName as string
-                _vertexTypeManager.CheckManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);
+                _vertexTypeManager.CheckManager.GetType(_request.VertexTypeName, TransactionToken, SecurityToken);
             }
             else
             {
                 //2.2 type as id
-                _vertexTypeManager.CheckManager.GetVertexType(_request.VertexTypeID, TransactionToken, SecurityToken);
+                _vertexTypeManager.CheckManager.GetType(_request.VertexTypeID, TransactionToken, SecurityToken);
             }
 
             #endregion
@@ -90,23 +90,25 @@ namespace sones.GraphDB.Manager.Vertex
 
         public override IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
         {
-            _vertexTypeManager.CheckManager.GetVertexType(myTypeID, myTransaction, mySecurity);
+            _vertexTypeManager.CheckManager.GetType(myTypeID, myTransaction, mySecurity);
             return null;
         }
 
         public override IEnumerable<IVertex> GetVertices(string myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
         {
-            _vertexTypeManager.CheckManager.GetVertexType(myVertexType, myTransaction, mySecurity);
+            _vertexTypeManager.CheckManager.GetType(myVertexType, myTransaction, mySecurity);
             return null;
         }
 
         public override IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            _vertexTypeManager.CheckManager.GetType(myVertexTypeName, myTransaction, mySecurity);
             return null;
         }
 
         public override IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            _vertexTypeManager.CheckManager.GetType(myVertexTypeID, myTransaction, mySecurity);
             return null;
         }
 
@@ -117,7 +119,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         public override IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            IVertexType vertexType = GetVertexType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
+            IVertexType vertexType = GetType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
 
             if (vertexType.IsAbstract)
                 throw new AbstractConstraintViolationException(myInsertDefinition.VertexTypeName);

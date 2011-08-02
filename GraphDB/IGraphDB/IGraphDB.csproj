@@ -67,11 +67,13 @@
     <Compile Include="ErrorHandling\IndexErrors\RebuildIndicesFaildException.cs" />
     <Compile Include="ErrorHandling\Insert\AbstractConstraintViolationException.cs" />
     <Compile Include="ErrorHandling\Insert\AGraphDBInsertException.cs" />
+    <Compile Include="ErrorHandling\InvalidParameterTypeException.cs" />
     <Compile Include="ErrorHandling\Options\IllegalOptionException.cs" />
     <Compile Include="ErrorHandling\Options\UnknownOptionException.cs" />
     <Compile Include="ErrorHandling\QueryPlan\InvalidExpressionException.cs" />
     <Compile Include="ErrorHandling\Type\AGraphDBTypeException.cs" />
     <Compile Include="ErrorHandling\Type\InvalidTypeException.cs" />
+    <Compile Include="ErrorHandling\Type\TypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidAlterVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\EmptyPropertyTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DuplicatedAttributeNameException.cs" />
@@ -121,21 +123,21 @@
     <Compile Include="Request\AlterVertexType\RequestAlterVertexType.cs" />
     <Compile Include="Request\Clear\RequestClear.cs" />
     <Compile Include="Request\Converter.cs" />
-    <Compile Include="TypeSystem\Predefinitions\ATypePredefinition.cs" />
-    <Compile Include="TypeSystem\Predefinitions\EdgeTypePredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\TypePredefinitions\ATypePredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\TypePredefinitions\EdgeTypePredefinition.cs" />
     <Compile Include="Request\CreateEdgeType\RequestCreateEdgeType.cs" />
     <Compile Include="Request\CreateIndex\RequestCreateIndex.cs" />
-    <Compile Include="TypeSystem\Predefinitions\AttributePredefinition.cs" />
-    <Compile Include="TypeSystem\Predefinitions\BinaryPropertyPredefinition.cs" />
-    <Compile Include="TypeSystem\Predefinitions\MandatoryPredefinition.cs" />
-    <Compile Include="TypeSystem\Predefinitions\IncomingEdgePredefinition.cs" />
-    <Compile Include="TypeSystem\Predefinitions\IndexPredefinition.cs" />
-    <Compile Include="TypeSystem\Predefinitions\OutgoingEdgePredefinition.cs" />
-    <Compile Include="TypeSystem\Predefinitions\PropertyPredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\AttributePredefinitions\AAttributePredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\AttributePredefinitions\BinaryPropertyPredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\AttributePredefinitions\MandatoryPredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\AttributePredefinitions\IncomingEdgePredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\AttributePredefinitions\IndexPredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\AttributePredefinitions\OutgoingEdgePredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\AttributePredefinitions\PropertyPredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\RequestCreateVertexTypes.cs" />
-    <Compile Include="TypeSystem\Predefinitions\UniquePredefinition.cs" />
-    <Compile Include="TypeSystem\Predefinitions\UnknownAttributePredefinition.cs" />
-    <Compile Include="TypeSystem\Predefinitions\VertexTypePredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\AttributePredefinitions\UniquePredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\AttributePredefinitions\UnknownAttributePredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\TypePredefinitions\VertexTypePredefinition.cs" />
     <Compile Include="Request\CreateVertexType\RequestCreateVertexType.cs" />
     <Compile Include="Request\Delete\RequestDelete.cs" />
     <Compile Include="Request\DropIndex\RequestDropIndex.cs" />
@@ -154,7 +156,7 @@
     <Compile Include="Expression\Tree\Literals\SingleLiteralExpression.cs" />
     <Compile Include="Expression\Tree\IExpression.cs" />
     <Compile Include="Expression\Tree\UnaryExpression.cs" />
-    <Compile Include="TypeSystem\Predefinitions\EdgePredefinition.cs" />
+    <Compile Include="TypeSystem\Predefinitions\AttributePredefinitions\EdgePredefinition.cs" />
     <Compile Include="Request\Insert\IPropertyProvider.cs" />
     <Compile Include="Request\Insert\RequestInsertVertex.cs" />
     <Compile Include="Request\IRequestStatistics.cs" />
@@ -211,7 +213,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager</Name>
+      <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
       <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>

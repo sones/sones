@@ -26,7 +26,6 @@ using System.Text;
 using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphDB;
-using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 using sones.GraphQL.StatementNodes.DDL;

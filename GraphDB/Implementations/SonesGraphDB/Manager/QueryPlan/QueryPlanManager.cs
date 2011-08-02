@@ -28,6 +28,7 @@ using sones.Library.Commons.VertexStore;
 using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Expression.Tree.Literals;
 using sones.GraphDB.ErrorHandling.Expression;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Manager.QueryPlan
 {
@@ -41,7 +42,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <summary>
         /// A vertex type manager is needed to create certain query-plan structures
         /// </summary>
-        private IManagerOf<IVertexTypeHandler> _vertexTypeManager;
+        private IManagerOf<ITypeHandler<IVertexType>> _vertexTypeManager;
 
         /// <summary>
         /// A vertex store
@@ -203,7 +204,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <returns>A property query plan</returns>
         private IQueryPlan GenerateFromPropertyExpression(PropertyExpression myPropertyExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var type = _vertexTypeManager.ExecuteManager.GetVertexType(myPropertyExpression.NameOfVertexType, myTransaction, mySecurity);
+            var type = _vertexTypeManager.ExecuteManager.GetType(myPropertyExpression.NameOfVertexType, myTransaction, mySecurity);
 
             return new QueryPlanProperty(type, type.GetPropertyDefinition(myPropertyExpression.NameOfProperty),
                                          myPropertyExpression.Edition, myPropertyExpression.Timespan);
@@ -574,7 +575,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <returns>A Property query plan</returns>
         private QueryPlanProperty GenerateQueryPlanProperty(PropertyExpression propertyExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(propertyExpression.NameOfVertexType, myTransaction, mySecurity);
+            var vertexType = _vertexTypeManager.ExecuteManager.GetType(propertyExpression.NameOfVertexType, myTransaction, mySecurity);
             var property = vertexType.GetPropertyDefinition(propertyExpression.NameOfProperty);
 
             return new QueryPlanProperty(vertexType, property, propertyExpression.Edition, propertyExpression.Timespan);

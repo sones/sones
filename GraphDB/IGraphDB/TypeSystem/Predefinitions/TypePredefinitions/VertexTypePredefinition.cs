@@ -31,9 +31,17 @@ namespace sones.GraphDB.TypeSystem
     {
         #region Data
 
+        private List<IndexPredefinition> _indices;
+
+        private int _binaries = 0;
         private int _incoming = 0;
         private int _outgoing = 0;
-        
+
+        public int BinaryPropertyCount
+        {
+            get { return _binaries; }
+        }
+
         public int IncomingEdgeCount
         {
             get { return _incoming; }
@@ -44,6 +52,22 @@ namespace sones.GraphDB.TypeSystem
             get { return _outgoing; }
         }
 
+        /// <summary>
+        /// The binary properties of this vertex type.
+        /// </summary>
+        public IEnumerable<BinaryPropertyPredefinition> BinaryProperties
+        {
+            get { return (_attributes == null) ? null : _attributes.OfType<BinaryPropertyPredefinition>(); }
+        }
+
+        /// <summary>
+        /// The index definitions of this vertex type.
+        /// </summary>
+        public IEnumerable<IndexPredefinition> Indices
+        {
+            get { return (_indices == null) ? null : _indices.AsReadOnly(); }
+        }
+        
         /// <summary>
         /// The outgoing edges of this vertex type.
         /// </summary>
@@ -77,6 +101,39 @@ namespace sones.GraphDB.TypeSystem
         #region fluent methods
 
         /// <summary>
+        /// Adds a binary definition.
+        /// </summary>
+        /// <param name="myBinaryPropertyPredefinition">The property definition that is going to be added.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public ATypePredefinition AddBinaryProperty(BinaryPropertyPredefinition myBinaryPropertyPredefinition)
+        {
+            if (myBinaryPropertyPredefinition != null)
+            {
+                _attributes = (_attributes) ?? new List<AAttributePredefinition>();
+                _attributes.Add(myBinaryPropertyPredefinition);
+                _binaries++;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds an index definition.
+        /// </summary>
+        /// <param name="myIndexDefinition">The index definition that is going to be added.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public ATypePredefinition AddIndex(IndexPredefinition myIndexDefinition)
+        {
+            if (myIndexDefinition != null)
+            {
+                _indices = (_indices) ?? new List<IndexPredefinition>();
+                _indices.Add(myIndexDefinition);
+            }
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds an outgoing edge.
         /// </summary>
         /// <param name="myOutgoingEdgePredefinition">The definition of the outgoing IncomingEdge</param>
@@ -85,7 +142,7 @@ namespace sones.GraphDB.TypeSystem
         {
             if (myOutgoingEdgePredefinition != null)
             {
-                _attributes = (_attributes) ?? new List<AttributePredefinition>();
+                _attributes = (_attributes) ?? new List<AAttributePredefinition>();
                 _attributes.Add(myOutgoingEdgePredefinition);
                 _outgoing++;
             }
@@ -97,7 +154,7 @@ namespace sones.GraphDB.TypeSystem
         {
             if (myIncomingEdgePredefinition != null)
             {
-                _attributes = (_attributes) ?? new List<AttributePredefinition>();
+                _attributes = (_attributes) ?? new List<AAttributePredefinition>();
                 _attributes.Add(myIncomingEdgePredefinition);
                 _incoming++;
             }

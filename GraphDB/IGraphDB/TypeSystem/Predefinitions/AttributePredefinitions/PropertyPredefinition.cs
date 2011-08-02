@@ -25,7 +25,7 @@ namespace sones.GraphDB.TypeSystem
     /// <summary>
     /// The definition for vertex properties
     /// </summary>
-    public sealed class PropertyPredefinition: AttributePredefinition
+    public sealed class PropertyPredefinition: AAttributePredefinition
     {
         #region Data
 
@@ -62,8 +62,8 @@ namespace sones.GraphDB.TypeSystem
         /// Creates a new PropertyPredefinition.
         /// </summary>
         /// <param name="myPropertyName">The name of the property</param>
-        public PropertyPredefinition(String myPropertyName)
-            : base(myPropertyName)
+        public PropertyPredefinition(String myPropertyName, String myPropertyType)
+            : base(myPropertyName, myPropertyType)
         {
             IsIndexed = false;
             IsMandatory = false;

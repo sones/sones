@@ -31,6 +31,7 @@ using sones.Library.Commons.Transaction;
 using sones.Library.Commons.Security;
 using sones.GraphDB.Manager.BaseGraph;
 using sones.Library.VersionedPluginManager;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Manager
 {
@@ -55,12 +56,12 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// Gets or sets the myOutgoingEdgeVertex instance of the type manager.
         /// </summary>
-        private readonly IManagerOf<IVertexTypeHandler> _vertexTypeManager;
+        private readonly IManagerOf<ITypeHandler<IVertexType>> _vertexTypeManager;
 
         /// <summary>
         /// The edge type manager
         /// </summary>
-        private readonly IManagerOf<IEdgeTypeHandler> _edgeTypeManager;
+        private readonly IManagerOf<ITypeHandler<IEdgeType>> _edgeTypeManager;
 
         /// <summary>
         /// Gets or sets the myOutgoingEdgeVertex instance of the parentVertex manager.
@@ -108,7 +109,11 @@ namespace sones.GraphDB.Manager
         /// <param name="myPlugins">The plugin definitions</param>
         /// <param name="myPluginManager">Used to load pluginable manager</param>
         /// <param name="myApplicationSettings">The current application settings</param>
-        private MetaManager(IVertexStore myVertexStore, IDManager myIDManager, GraphDBPluginManager myPluginManager, GraphDBPlugins myPlugins, GraphApplicationSettings myApplicationSettings)
+        private MetaManager(IVertexStore myVertexStore, 
+                            IDManager myIDManager, 
+                            GraphDBPluginManager myPluginManager, 
+                            GraphDBPlugins myPlugins, 
+                            GraphApplicationSettings myApplicationSettings)
         {
             _vertexStore = myVertexStore;
             _vertexTypeManager = new VertexTypeManager(myIDManager);
@@ -125,11 +130,19 @@ namespace sones.GraphDB.Manager
 
         #region IMetaManager Members
 
-        public static IMetaManager CreateMetaManager(IVertexStore myVertexStore, IDManager myIDManager, GraphDBPlugins myPlugins, GraphDBPluginManager myPluginManager, GraphApplicationSettings myApplicationSettings, TransactionToken myTransaction, SecurityToken mySecurity)
+        public static IMetaManager CreateMetaManager(IVertexStore myVertexStore, 
+                                                        IDManager myIDManager, 
+                                                        GraphDBPlugins myPlugins, 
+                                                        GraphDBPluginManager myPluginManager, 
+                                                        GraphApplicationSettings myApplicationSettings, 
+                                                        TransactionToken myTransaction, 
+                                                        SecurityToken mySecurity)
         {
             var result = new MetaManager(myVertexStore, myIDManager, myPluginManager, myPlugins, myApplicationSettings);
             
-            DBCreationManager creationManager = new DBCreationManager(result.SystemSecurityToken, result.SystemTransactionToken, result._baseGraphStorageManager);
+            DBCreationManager creationManager = new DBCreationManager(result.SystemSecurityToken, 
+                                                                        result.SystemTransactionToken, 
+                                                                        result._baseGraphStorageManager);
             
             if (!creationManager.CheckBaseGraph(myVertexStore))
             {
@@ -146,9 +159,13 @@ namespace sones.GraphDB.Manager
             return result;
         }
 
-        private static void SetMaxID(IVertexStore myVertexStore, IDManager myIDManager, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager result)
+        private static void SetMaxID(IVertexStore myVertexStore, 
+                                        IDManager myIDManager, 
+                                        TransactionToken myTransaction, 
+                                        SecurityToken mySecurity, 
+                                        MetaManager result)
         {
-            foreach (var aUserDefinedVertexType in result._vertexTypeManager.ExecuteManager.GetAllVertexTypes(myTransaction, mySecurity))
+            foreach (var aUserDefinedVertexType in result._vertexTypeManager.ExecuteManager.GetAllTypes(myTransaction, mySecurity))
             {
                 myIDManager[aUserDefinedVertexType.ID].SetToMaxID(myVertexStore.GetHighestVertexID(mySecurity, myTransaction, aUserDefinedVertexType.ID) + 1);
             }
@@ -181,12 +198,12 @@ namespace sones.GraphDB.Manager
             get { return _indexManager; }
         }
 
-        public IManagerOf<IVertexTypeHandler> VertexTypeManager
+        public IManagerOf<ITypeHandler<IVertexType>> VertexTypeManager
         {
             get { return _vertexTypeManager; }
         }
 
-        public IManagerOf<IEdgeTypeHandler> EdgeTypeManager
+        public IManagerOf<ITypeHandler<IEdgeType>> EdgeTypeManager
         {
             get { return _edgeTypeManager; }
         }
@@ -230,7 +247,7 @@ namespace sones.GraphDB.Manager
         {
             get { return _pluginManager; }
         }
-
+        
         #endregion
     }
 }

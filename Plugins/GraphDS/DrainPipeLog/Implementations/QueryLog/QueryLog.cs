@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using sones.GraphDB;
 using sones.GraphDB.Request;
-using sones.GraphDB.Request.GetEdgeType;
-using sones.GraphDB.Request.GetIndex;
-using sones.GraphDB.Request.GetVertexType;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.VersionedPluginManager;

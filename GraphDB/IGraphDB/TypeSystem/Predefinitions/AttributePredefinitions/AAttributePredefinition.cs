@@ -25,7 +25,7 @@ using System.Text;
 
 namespace sones.GraphDB.TypeSystem
 {
-    public abstract class AttributePredefinition
+    public abstract class AAttributePredefinition
     {
         /// <summary>
         /// 
@@ -46,9 +46,11 @@ namespace sones.GraphDB.TypeSystem
         /// 
         /// </summary>
         /// <param name="myAttributeName"></param>
-        protected AttributePredefinition(String myAttributeName)
+        protected AAttributePredefinition(String myAttributeName, String myAttributeType)
         {
             AttributeName = myAttributeName;
+
+            AttributeType = myAttributeType;
         }
     }
 }

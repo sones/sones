@@ -1,4 +1,4 @@
-/*
+﻿/*
 * sones GraphDB - Community Edition - http://www.sones.com
 * Copyright (C) 2007-2011 sones GmbH
 *
@@ -19,34 +19,21 @@
 */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace sones.GraphDB.TypeSystem
+namespace sones.GraphDB.ErrorHandling
 {
-    /// <summary>
-    /// The definition for binary properties.
-    /// </summary>
-    public sealed class BinaryPropertyPredefinition: AttributePredefinition
+    public class TypeDoesNotExistException: AGraphDBTypeException
     {
-        public const string TypeName = "Stream";
+        private string _type;
 
-        #region Constructor
-
-        /// <summary>
-        /// Creates a new BinaryPropertyPredefinition
-        /// </summary>
-        public BinaryPropertyPredefinition(String myPropertyName)
-            : base(myPropertyName)
+        public TypeDoesNotExistException(string myUnexpectedTypeName, string myBaseType, string myInfo)
         {
-            AttributeType = TypeName;
-        }
+            this._type = myUnexpectedTypeName;
 
-        #endregion
-
-        public BinaryPropertyPredefinition SetComment(String myComment)
-        {
-            Comment = myComment;
-
-            return this;
+            _msg = "The " + myBaseType + " with name " +  _type + " does not exist! " + myInfo;
         }
     }
 }

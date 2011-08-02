@@ -68,7 +68,7 @@ namespace sones.GraphDB.Request
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _deletedVertexTypeIDs = myMetaManager.VertexTypeManager.ExecuteManager.ClearDB(TransactionToken, SecurityToken);
+            _deletedVertexTypeIDs = myMetaManager.VertexTypeManager.ExecuteManager.ClearTypes(TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

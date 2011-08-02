@@ -1,4 +1,4 @@
-/*
+﻿/*
 * sones GraphDB - Community Edition - http://www.sones.com
 * Copyright (C) 2007-2011 sones GmbH
 *
@@ -21,184 +21,100 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using sones.GraphDB.Expression;
-using sones.GraphDB.Manager.Vertex;
-using sones.GraphDB.Request;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.Base;
+using System.Text;
 using sones.GraphDB.TypeSystem;
-using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.Library.PropertyHyperGraph;
-using sones.GraphDB.Manager.BaseGraph;
+using sones.Library.Commons.Security;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    internal class ExecuteEdgeTypeManager: IEdgeTypeHandler
+    internal class ExecuteEdgeTypeManager: ATypeManager<IEdgeType>
     {
-        private readonly IDictionary<string, IEdgeType> _baseTypes = new Dictionary<String, IEdgeType>();
-        private IDManager _idManager;
-        private IManagerOf<IVertexHandler> _vertexManager;
-        private BaseGraphStorageManager _baseStorageManager;
-        
-        /// <summary>
-        /// A property expression on EdgeType.Name
-        /// </summary>
-        private readonly IExpression _vertexTypeNameExpression = new PropertyExpression(BaseTypes.EdgeType.ToString(), "Name");
-
-        /// <summary>
-        /// A property expression on VertexID
-        /// </summary>
-        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.EdgeType.ToString(), "VertexID");
-
+        private readonly IDManager _idManager;
 
         public ExecuteEdgeTypeManager(IDManager myIDManager)
         {
             _idManager = myIDManager;
         }
 
-        #region IEdgeTypeManager Members
+        #region ACheckTypeManager member
 
-        IEdgeType IEdgeTypeHandler.GetEdgeType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
-        {
-            #region get static types
-
-            if (Enum.IsDefined(typeof(BaseTypes), myTypeId) && _baseTypes.ContainsKey(((BaseTypes)myTypeId).ToString()))
-            {
-                return _baseTypes[((BaseTypes)myTypeId).ToString()];
-            }
-
-            #endregion
-
-
-            #region get from fs
-
-            var vertex = Get(myTypeId, myTransaction, mySecurity);
-
-            if (vertex == null)
-                throw new KeyNotFoundException(string.Format("A edge type with name {0} was not found.", myTypeId));
-
-            return new EdgeType(vertex, _baseStorageManager);
-
-            #endregion
-
-        }
-
-        IEdgeType IEdgeTypeHandler.GetEdgeType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
-        {
-            if (String.IsNullOrWhiteSpace(myTypeName))
-                throw new ErrorHandling.EmptyEdgeTypeNameException();
-
-            #region get static types
-
-            if (_baseTypes.ContainsKey(myTypeName))
-            {
-                return _baseTypes[myTypeName];
-            }
-
-            #endregion
-
-            #region get from fs
-
-            var vertex = Get(myTypeName, myTransaction, mySecurity);
-
-            if (vertex == null)
-                throw new KeyNotFoundException(string.Format("A edge type with name {0} was not found.", myTypeName));
-
-            return new EdgeType(vertex, _baseStorageManager);
-
-            #endregion
-
-        }
-
-        IEnumerable<IEdgeType> IEdgeTypeHandler.GetAllEdgeTypes(TransactionToken myTransaction, SecurityToken mySecurity)
-        {
-            var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.EdgeType.ToString(), myTransaction, mySecurity, false);
-
-            return vertices == null ? Enumerable.Empty<IEdgeType>() : vertices.Select(x => new EdgeType(x, _baseStorageManager));
-        }
-
-        IEdgeType IEdgeTypeHandler.AddEdgeType(IEnumerable<EdgeTypePredefinition> myEdgeTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEdgeType GetType(long myTypeId,
+                                            TransactionToken myTransaction,
+                                            SecurityToken mySecurity)
         {
             throw new NotImplementedException();
         }
 
-        void IEdgeTypeHandler.RemoveEdgeTypes(IEnumerable<IEdgeType> myEdgeTypes, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEdgeType GetType(string myTypeName,
+                                            TransactionToken myTransaction,
+                                            SecurityToken mySecurity)
         {
             throw new NotImplementedException();
         }
 
-        void IEdgeTypeHandler.UpdateEdgeType(IEnumerable<EdgeTypePredefinition> myEdgeTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEnumerable<IEdgeType> GetAllTypes(TransactionToken myTransaction,
+                                                            SecurityToken mySecurity)
         {
             throw new NotImplementedException();
         }
 
-        #endregion
-
-        public void Initialize(IMetaManager myMetaManager)
+        public override IEnumerable<IEdgeType> AddTypes(IEnumerable<ATypePredefinition> myTypePredefinitions,
+                                                            TransactionToken myTransaction,
+                                                            SecurityToken mySecurity)
         {
-            _vertexManager = myMetaManager.VertexManager;
-            _baseStorageManager = myMetaManager.BaseGraphStorageManager;
+            throw new NotImplementedException();
         }
 
-        public void Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        public override Dictionary<long, string> RemoveTypes(IEnumerable<IEdgeType> myTypes,
+                                                                TransactionToken myTransaction,
+                                                                SecurityToken mySecurity,
+                                                                bool myIgnoreReprimands = false)
         {
-            LoadBaseType(
-                myTransaction,
-                mySecurity,
-                BaseTypes.Edge,
-                BaseTypes.Weighted,
-                BaseTypes.Orderable);
+            throw new NotImplementedException();
         }
 
-        #region GetEdgeType
-
-        /// <summary>
-        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeName"/>.
-        /// </summary>
-        /// <param name="myTypeName">The vertex type name.</param>
-        /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurity">A security token for this operation.</param>
-        /// <returns>An IVertex instance, that represents the vertex type with the given name or <c>NULL</c>, if not present.</returns>
-        private IVertex Get(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEnumerable<long> ClearTypes(TransactionToken myTransaction,
+                                                        SecurityToken mySecurity)
         {
-            #region get the type from fs
-
-            return _vertexManager.ExecuteManager.GetSingleVertex(new BinaryExpression(_vertexTypeNameExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeName)), myTransaction, mySecurity);
-
-            #endregion
+            throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeID"/>.
-        /// </summary>
-        /// <param name="myTypeName">The vertex type ID.</param>
-        /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurity">A security token for this operation.</param>
-        /// <returns>An IVertex instance, that represents the vertex type with the given ID or <c>NULL</c>, if not present.</returns>
-        private IVertex Get(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override void TruncateType(long myTypeID,
+                                            TransactionToken myTransactionToken,
+                                            SecurityToken mySecurityToken)
         {
-            #region get the type from fs
-
-            return _vertexManager.ExecuteManager.GetSingleVertex(new BinaryExpression(_vertexTypeIDExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeId)), myTransaction, mySecurity);
-
-            #endregion
+            throw new NotImplementedException();
         }
 
-        #endregion
-
-        #region Load
-
-        private void LoadBaseType(TransactionToken myTransaction, SecurityToken mySecurity, params BaseTypes[] myBaseTypes)
+        public override void TruncateType(string myTypeName,
+                                            TransactionToken myTransactionToken,
+                                            SecurityToken mySecurityToken)
         {
-            foreach (var baseType in myBaseTypes)
-            {
-                var vertex = _vertexManager.ExecuteManager.VertexStore.GetVertex(mySecurity, myTransaction, (long)baseType, (long)BaseTypes.EdgeType, String.Empty);
-                if (vertex == null)
-                    //TODO: better exception
-                    throw new Exception("Could not load base edge type.");
-                _baseTypes.Add(baseType.ToString(), new EdgeType(vertex, _baseStorageManager));
-            }
+            throw new NotImplementedException();
+        }
+
+        public override bool HasType(string myTypeName,
+                                        SecurityToken mySecurityToken,
+                                        TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void CleanUpTypes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Initialize(IMetaManager myMetaManager)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Load(TransactionToken myTransaction,
+                                    SecurityToken mySecurity)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

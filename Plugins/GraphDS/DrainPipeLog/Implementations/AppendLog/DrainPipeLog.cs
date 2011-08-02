@@ -30,9 +30,6 @@ using sones.Library.Commons.Security;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.GraphDS.DrainPipeLog.Storage;
 using System.Threading;
-using sones.GraphDB.Request.GetVertexType;
-using sones.GraphDB.Request.GetEdgeType;
-using sones.GraphDB.Request.GetIndex;
 using System.IO;
 
 namespace sones.Plugins.GraphDS.DrainPipeLog

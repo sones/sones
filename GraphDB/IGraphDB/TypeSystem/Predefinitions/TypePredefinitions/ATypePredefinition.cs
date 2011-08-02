@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+* sones GraphDB - Community Edition - http://www.sones.com
+* Copyright (C) 2007-2011 sones GmbH
+*
+* This file is part of sones GraphDB Community Edition.
+*
+* sones GraphDB is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,33 +29,24 @@ namespace sones.GraphDB.TypeSystem
     {
         #region Data
 
-        /// <summary>
-        /// The name of the vertex type that is going to be created
-        /// </summary>
+        // The name of the vertex type that is going to be created
         public readonly string TypeName;
-        protected List<AttributePredefinition> _attributes;
+        protected List<AAttributePredefinition> _attributes;
         private List<UniquePredefinition> _uniques;
-        private List<IndexPredefinition> _indices;
-
+        
         private int _properties = 0;
-        private int _binaries = 0;
         private int _unknown = 0;
-
-        public int PropertyCount
-        {
-            get { return _properties; }
-        }
 
         public int AttributeCount 
         {
             get { return (_attributes == null) ? 0 : _attributes.Count; }
         }
-
-        public int BinaryPropertyCount 
+        
+        public int PropertyCount
         {
-            get { return _binaries; }
+            get { return _properties; }
         }
-
+        
         public int UnknownPropertyCount
         {
             get { return _unknown; }
@@ -69,20 +80,7 @@ namespace sones.GraphDB.TypeSystem
         {
             get { return (_uniques == null) ? null : _uniques.AsReadOnly(); }
         }
-
-        public IEnumerable<BinaryPropertyPredefinition> BinaryProperties
-        {
-            get { return (_attributes == null) ? null : _attributes.OfType<BinaryPropertyPredefinition>(); }
-        }
-
-        /// <summary>
-        /// The index definitions of this vertex type.
-        /// </summary>
-        public IEnumerable<IndexPredefinition> Indices
-        {
-            get { return (_indices == null) ? null : _indices.AsReadOnly(); }
-        }
-
+                
         /// <summary>
         /// Gets if the vertex type will be sealed.
         /// </summary>
@@ -118,7 +116,6 @@ namespace sones.GraphDB.TypeSystem
             IsSealed = false;
             IsAbstract = false;
             Comment = String.Empty;
-
         }
 
         #endregion
@@ -149,7 +146,7 @@ namespace sones.GraphDB.TypeSystem
         {
             if (myUnknownPredefinition != null)
             {
-                _attributes = (_attributes) ?? new List<AttributePredefinition>();
+                _attributes = (_attributes) ?? new List<AAttributePredefinition>();
                 _attributes.Add(myUnknownPredefinition);
                 _unknown++;
             }
@@ -166,26 +163,9 @@ namespace sones.GraphDB.TypeSystem
         {
             if (myPropertyDefinition != null)
             {
-                _attributes = (_attributes) ?? new List<AttributePredefinition>();
+                _attributes = (_attributes) ?? new List<AAttributePredefinition>();
                 _attributes.Add(myPropertyDefinition);
                 _properties++;
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Adds a binary definition.
-        /// </summary>
-        /// <param name="myBinaryPropertyPredefinition">The property definition that is going to be added.</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public ATypePredefinition AddBinaryProperty(BinaryPropertyPredefinition myBinaryPropertyPredefinition)
-        {
-            if (myBinaryPropertyPredefinition != null)
-            {
-                _attributes = (_attributes) ?? new List<AttributePredefinition>();
-                _attributes.Add(myBinaryPropertyPredefinition);
-                _binaries++;
             }
 
             return this;
@@ -202,22 +182,6 @@ namespace sones.GraphDB.TypeSystem
             {
                 _uniques = (_uniques) ?? new List<UniquePredefinition>();
                 _uniques.Add(myUniqueDefinition);
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Adds an index definition.
-        /// </summary>
-        /// <param name="myIndexDefinition">The index definition that is going to be added.</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public ATypePredefinition AddIndex(IndexPredefinition myIndexDefinition)
-        {
-            if (myIndexDefinition != null)
-            {
-                _indices = (_indices) ?? new List<IndexPredefinition>();
-                _indices.Add(myIndexDefinition);
             }
 
             return this;
@@ -257,6 +221,8 @@ namespace sones.GraphDB.TypeSystem
 
         #endregion
 
+        #region public methods
+
         /// <summary>
         /// Removes all unknown attributes.
         /// </summary>
@@ -266,5 +232,7 @@ namespace sones.GraphDB.TypeSystem
             _attributes.RemoveAll(x => x is UnknownAttributePredefinition);
             _unknown = 0;
         }
+
+        #endregion
     }
 }

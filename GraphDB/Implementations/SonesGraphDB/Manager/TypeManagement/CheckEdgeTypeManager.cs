@@ -1,4 +1,4 @@
-/*
+﻿/*
 * sones GraphDB - Community Edition - http://www.sones.com
 * Copyright (C) 2007-2011 sones GmbH
 *
@@ -18,56 +18,96 @@
 * 
 */
 
+using System;
 using System.Collections.Generic;
-using sones.GraphDB.Request;
-using sones.GraphDB.TypeSystem;
+using System.Linq;
+using System.Text;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    public class CheckEdgeTypeManager: IEdgeTypeHandler
+    internal class CheckEdgeTypeManager: ACheckTypeManager<IEdgeType>
     {
-        #region IEdgeTypeManager Members
+        #region ACheckTypeManager member
 
-        IEdgeType IEdgeTypeHandler.GetEdgeType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEdgeType GetType(long myTypeId, 
+                                            TransactionToken myTransaction, 
+                                            SecurityToken mySecurity)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
-        IEdgeType IEdgeTypeHandler.GetEdgeType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEdgeType GetType(string myTypeName, 
+                                            TransactionToken myTransaction, 
+                                            SecurityToken mySecurity)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
-        IEnumerable<IEdgeType> IEdgeTypeHandler.GetAllEdgeTypes(TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEnumerable<IEdgeType> GetAllTypes(TransactionToken myTransaction, 
+                                                            SecurityToken mySecurity)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
-        IEdgeType IEdgeTypeHandler.AddEdgeType(IEnumerable<EdgeTypePredefinition> myEdgeTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEnumerable<IEdgeType> AddTypes(IEnumerable<ATypePredefinition> myTypePredefinitions, 
+                                                            TransactionToken myTransaction, 
+                                                            SecurityToken mySecurity)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
-        void IEdgeTypeHandler.RemoveEdgeTypes(IEnumerable<IEdgeType> myEdgeTypes, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override Dictionary<long, string> RemoveTypes(IEnumerable<IEdgeType> myTypes, 
+                                                                TransactionToken myTransaction, 
+                                                                SecurityToken mySecurity, 
+                                                                bool myIgnoreReprimands = false)
         {
+            throw new NotImplementedException();
         }
 
-        void IEdgeTypeHandler.UpdateEdgeType(IEnumerable<EdgeTypePredefinition> myEdgeTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEnumerable<long> ClearTypes(TransactionToken myTransaction, 
+                                                        SecurityToken mySecurity)
         {
+            throw new NotImplementedException();
         }
 
-        #endregion
-
-        #region IManager Members
-
-        void IManager.Initialize(IMetaManager myMetaManager)
+        public override void TruncateType(long myTypeID, 
+                                            TransactionToken myTransactionToken, 
+                                            SecurityToken mySecurityToken)
         {
+            throw new NotImplementedException();
         }
 
-        void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        public override void TruncateType(string myTypeName, 
+                                            TransactionToken myTransactionToken, 
+                                            SecurityToken mySecurityToken)
         {
+            throw new NotImplementedException();
+        }
+
+        public override bool HasType(string myTypeName, 
+                                        SecurityToken mySecurityToken, 
+                                        TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void CleanUpTypes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Initialize(IMetaManager myMetaManager)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Load(TransactionToken myTransaction, 
+                                    SecurityToken mySecurity)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

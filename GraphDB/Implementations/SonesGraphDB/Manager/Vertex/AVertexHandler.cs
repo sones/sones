@@ -164,16 +164,16 @@ namespace sones.GraphDB.Manager.Vertex
 
         #endregion
 
-        protected IManagerOf<IVertexTypeHandler> _vertexTypeManager;
+        protected IManagerOf<ITypeHandler<IVertexType>> _vertexTypeManager;
         protected IQueryPlanManager _queryPlanManager;
 
 
-        protected IVertexType GetVertexType(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
+        protected IVertexType GetType(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             try
             {
                 //check if the vertex type exists.
-                return _vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeName, myTransaction, mySecurity);
+                return _vertexTypeManager.ExecuteManager.GetType(myVertexTypeName, myTransaction, mySecurity) as IVertexType;
             }
             catch (KeyNotFoundException)
             {

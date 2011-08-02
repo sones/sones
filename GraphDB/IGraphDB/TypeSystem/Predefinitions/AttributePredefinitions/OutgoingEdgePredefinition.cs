@@ -25,7 +25,7 @@ namespace sones.GraphDB.TypeSystem
     /// <summary>
     /// The definition for an outgoing edge.
     /// </summary>
-    public sealed class OutgoingEdgePredefinition: AttributePredefinition
+    public sealed class OutgoingEdgePredefinition: AAttributePredefinition
     {
 
         #region Constant
@@ -73,8 +73,21 @@ namespace sones.GraphDB.TypeSystem
         /// Creates a definition for an outgoing edge.
         /// </summary>
         /// <param name="myEdgeName">The name of the edge</param>
-        public OutgoingEdgePredefinition(String myEdgeName)
-            : base(myEdgeName)
+        /// <param name="mySourceType">The type of the edges source and target</param>
+        public OutgoingEdgePredefinition(String myEdgeName, String mySourceType)
+            : base(myEdgeName, mySourceType)
+        {
+            EdgeType = Edge;
+            Multiplicity = EdgeMultiplicity.SingleEdge;
+        }
+
+        /// <summary>
+        /// Creates a definition for an outgoing edge.
+        /// </summary>
+        /// <param name="myEdgeName">The name of the edge</param>
+        /// <param name="myTypePredefinition">The type of the edges source and target</param>
+        public OutgoingEdgePredefinition(String myEdgeName, VertexTypePredefinition myTypePredefinition)
+            : base(myEdgeName, (myTypePredefinition != null) ? "" : myTypePredefinition.TypeName)
         {
             EdgeType = Edge;
             Multiplicity = EdgeMultiplicity.SingleEdge;

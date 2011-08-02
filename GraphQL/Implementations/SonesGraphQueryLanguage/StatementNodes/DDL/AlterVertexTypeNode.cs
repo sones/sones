@@ -29,7 +29,6 @@ using sones.GraphQL.GQL.Manager.Plugin;
 using System.Collections.Generic;
 using sones.GraphQL.GQL.Structure.Helper.Definition.AlterType;
 using sones.GraphQL.Structure.Nodes.DDL;
-using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.Structure.Helper.Enums;
@@ -403,10 +402,8 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <returns>A attribute predefinition</returns>
         private UnknownAttributePredefinition GenerateUnknownAttribute(AttributeDefinition myAttributeDefinition)
         {
-            UnknownAttributePredefinition result = new UnknownAttributePredefinition(myAttributeDefinition.AttributeName);
+            UnknownAttributePredefinition result = new UnknownAttributePredefinition(myAttributeDefinition.AttributeName, myAttributeDefinition.AttributeType.Name);
 
-            result.SetAttributeType(myAttributeDefinition.AttributeType.Name);
-            
             if (myAttributeDefinition.AttributeType.EdgeType != null)
             {
                 result.SetInnerEdgeType(myAttributeDefinition.AttributeType.EdgeType);

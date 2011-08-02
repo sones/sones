@@ -64,7 +64,7 @@ namespace sones.GraphDB.Request.RebuildIndices
             
             if (_request.Types == null || !_request.Types.CountIsGreater(0))
             {
-                typesToRebuild = myMetaManager.VertexTypeManager.ExecuteManager.GetAllVertexTypes(TransactionToken, SecurityToken);
+                typesToRebuild = myMetaManager.VertexTypeManager.ExecuteManager.GetAllTypes(TransactionToken, SecurityToken);
             }
             else
             {
@@ -73,7 +73,7 @@ namespace sones.GraphDB.Request.RebuildIndices
 
                 foreach (var typeName in _request.Types)
                 {
-                    var type = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(typeName, TransactionToken, SecurityToken);
+                    var type = myMetaManager.VertexTypeManager.ExecuteManager.GetType(typeName, TransactionToken, SecurityToken);
 
                     if (type == null)
                     {

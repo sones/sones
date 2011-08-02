@@ -477,14 +477,12 @@ namespace sones.Plugins.SonesGQL
 			#region create vertex type
 			
 			var vertexTypePreDef 	= new VertexTypePredefinition(_VertexTypeName);
-			var outEdgePreDef 		= new OutgoingEdgePredefinition(_EdgeTypeName);
+			var outEdgePreDef 		= new OutgoingEdgePredefinition(_EdgeTypeName, vertexTypePreDef);
 			
 			// weighted multi-edge
 			outEdgePreDef.SetEdgeTypeAsWeighted();
 			// set inner edge type to weighted
 			outEdgePreDef.SetMultiplicityAsMultiEdge("Weighted");
-			// set type of vertices at edges
-			outEdgePreDef.SetAttributeType(vertexTypePreDef);
 			
 			vertexTypePreDef.AddOutgoingEdge(outEdgePreDef);			
 			
@@ -824,9 +822,8 @@ namespace sones.Plugins.SonesGQL
 			{
 				var requestAlterVertexType = new RequestAlterVertexType(_VertexTypeName);
 				
-				var propertyPreDefinition = new PropertyPredefinition(attrName);
+				var propertyPreDefinition = new PropertyPredefinition(attrName, attrType);
 				
-				propertyPreDefinition.SetAttributeType(attrType);
 				propertyPreDefinition.SetDefaultValue(attrDefault);
 				
 				requestAlterVertexType.AddProperty(propertyPreDefinition);

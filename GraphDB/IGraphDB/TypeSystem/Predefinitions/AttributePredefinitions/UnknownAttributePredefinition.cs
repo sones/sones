@@ -28,7 +28,7 @@ namespace sones.GraphDB.TypeSystem
     /// </summary>
     /// This class is internally converted into one of the other attribute predefinitions depending on the <see cref="AttributeType"/>.
     /// Properties that are not needed from this predefinitions will be ignored, e.g. a property predefinition will ignore the edge type.
-    public class UnknownAttributePredefinition: AttributePredefinition
+    public class UnknownAttributePredefinition: AAttributePredefinition
     {
         public const String LISTMultiplicity = "LIST";
 
@@ -46,10 +46,9 @@ namespace sones.GraphDB.TypeSystem
 
         public bool IsUnique { get; private set; }
 
-        public UnknownAttributePredefinition(String myAttributeName)
-            : base(myAttributeName)
+        public UnknownAttributePredefinition(String myAttributeName, String myAttributeType)
+            : base(myAttributeName, myAttributeType)
         {
-
         }
 
         public UnknownAttributePredefinition SetMultiplicity(String myMultiplicity)

@@ -22,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using sones.GraphDB;
 using sones.GraphDB.Request;
-using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.GQL.ErrorHandling;
 using sones.GraphQL.GQL.Manager.Plugin;

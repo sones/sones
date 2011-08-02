@@ -20,29 +20,28 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using sones.GraphDB.Manager;
 using sones.GraphDB.Manager.Plugin;
+using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Request;
+using sones.GraphDB.Request.AlterType;
+using sones.GraphDB.Request.CreateIndex;
+using sones.GraphDB.Request.DecribeIndex;
+using sones.GraphDB.Request.Delete;
+using sones.GraphDB.Request.DropIndex;
+using sones.GraphDB.Request.DropType;
+using sones.GraphDB.Request.GetEdgeType;
+using sones.GraphDB.Request.GetType;
+using sones.GraphDB.Request.RebuildIndices;
+using sones.GraphDB.Request.Update;
 using sones.GraphDB.Settings;
 using sones.GraphFS;
 using sones.Library.Commons.Security;
-using sones.Library.Settings;
 using sones.Library.Commons.Transaction;
+using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
-using sones.GraphDB.Request.GetEdgeType;
-using sones.GraphDB.Request.GetVertexType;
-using sones.GraphDB.Request.GetIndex;
-using sones.GraphDB.Request.DecribeIndex;
-using sones.GraphDB.Request.Delete;
-using sones.GraphDB.Request.Update;
-using sones.GraphDB.Request.DropType;
-using sones.GraphDB.Request.DropIndex;
-using sones.GraphDB.Request.CreateIndex;
-using sones.GraphDB.Request.RebuildIndices;
-using sones.GraphDB.Manager.TypeManagement;
-using sones.GraphDB.Request.AlterType;
-using System.Globalization;
 
 namespace sones.GraphDB
 {
@@ -365,7 +364,10 @@ namespace sones.GraphDB
 
         #region GetVertexType
 
-        public TResult GetVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexType myRequestGetVertexType, Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
+        public TResult GetVertexType<TResult>(SecurityToken mySecurityToken, 
+                                                TransactionToken myTransactionToken, 
+                                                RequestGetVertexType myRequestGetVertexType, 
+                                                Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
         {
             var executedRequest = _requestManager.SynchronExecution(new PipelineableGetVertexTypeRequest(myRequestGetVertexType,
                                                                                         mySecurityToken,
@@ -374,7 +376,10 @@ namespace sones.GraphDB
             return ((PipelineableGetVertexTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
-        public TResult GetAllVertexTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllVertexTypes myRequestGetVertexType, Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter)
+        public TResult GetAllVertexTypes<TResult>(SecurityToken mySecurityToken, 
+                                                    TransactionToken myTransactionToken, 
+                                                    RequestGetAllVertexTypes myRequestGetVertexType, 
+                                                    Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter)
         {
             var executedRequest = _requestManager.SynchronExecution(new PipelineableGetAllVertexTypesRequest(myRequestGetVertexType,
                                                                                         mySecurityToken,
