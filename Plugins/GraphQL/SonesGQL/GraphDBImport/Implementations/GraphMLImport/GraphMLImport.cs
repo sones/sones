@@ -70,10 +70,8 @@ namespace sones.Plugins.SonesGQL
     /// 
     /// Notes:
     /// 
-    /// 1) The GraphDB only accepts ID values in long format. If the given IDs contain any
-    /// non-numerical characters they will be removed and only the contained numbers
-    /// will be used as an ID. If there are no numerical chars included in the id string 
-    /// an exception will be thrown.
+    /// 1) Defined VertexIDs are stored in a property called "ID" as String and the database creates 
+    /// it's own internal IDs (VertexID) of type "Long"
     /// 
     /// 2) Currently the parser only supports one attribute at edges: "weight". If you
     /// want to use weighted edges, the attr.name has to be "weight" or the parser will
@@ -119,14 +117,9 @@ namespace sones.Plugins.SonesGQL
 		private Dictionary<string, Tuple<string, string, string, string>> _AttributeDefinitions;
 		
 		/// <summary>
-		/// The vertexIDs which were read.
+		/// Maps the GraphML VertexIDs to the internal GraphDB VertexIDs
 		/// </summary>
-		private HashSet<long> _Vertices;
-		
-		/// <summary>
-		/// Maps the vertex ID in the document to the vertex ID in the GraphDB.
-		/// </summary>
-		private Dictionary<string, long> _VertexMapping;
+		private Dictionary<String, long> _VertexIDMapper;
 		
 		/// <summary>
 		/// The number of edges which were read.
@@ -160,7 +153,7 @@ namespace sones.Plugins.SonesGQL
 		{
 			get 
 			{
-				return _Vertices.Count;
+				return _VertexIDMapper.Count;
 			}
 		}
 		
@@ -215,10 +208,9 @@ namespace sones.Plugins.SonesGQL
 			
 			_VertexTypeName 		= vertexTypeName;
 			_EdgeTypeName 			= edgeTypeName;
-			_VertexMapping 			= new Dictionary<string, long>();
 			_AttributeDefinitions 	= new Dictionary<string, Tuple<string, string, string, string>>();
 			
-			_Vertices 		= new HashSet<long>();
+			_VertexIDMapper 		= new Dictionary<String, long>();
 			_EdgeCount 		= 0;
 		}
 		
@@ -479,6 +471,8 @@ namespace sones.Plugins.SonesGQL
 			var vertexTypePreDef 	= new VertexTypePredefinition(_VertexTypeName);
 			var outEdgePreDef 		= new OutgoingEdgePredefinition(_EdgeTypeName, vertexTypePreDef);
 			
+			#region create edge definition
+			
 			// weighted multi-edge
 			outEdgePreDef.SetEdgeTypeAsWeighted();
 			// set inner edge type to weighted
@@ -486,12 +480,30 @@ namespace sones.Plugins.SonesGQL
 			
 			vertexTypePreDef.AddOutgoingEdge(outEdgePreDef);			
 			
+			#endregion
+			
+			#region create id definition
+			
+			var idPreDefinition = new PropertyPredefinition(GraphMLTokens.VERTEX_ID_NAME);
+				
+			idPreDefinition.SetAttributeType(GraphMLTokens.VERTEX_ID_TYPE);
+			idPreDefinition.SetDefaultValue(GraphMLTokens.VERTEX_ID_DEF_VAL);
+			
+			vertexTypePreDef.AddProperty(idPreDefinition);
+			
+			#endregion
+			
+			#region create vertex type
+			
 			var requestCreateVertexType = new RequestCreateVertexType(vertexTypePreDef);
 			
 			_GraphDB.CreateVertexType(_SecurityToken,
 			                         _TransactionToken,
 			                         requestCreateVertexType,
 			                         (stats, vType) => vType);
+			
+			#endregion
+			
 			#endregion
 		}
 		
@@ -530,14 +542,6 @@ namespace sones.Plugins.SonesGQL
 		/// <summary>
 		/// Reads the vertexID from the GraphML File.
 		/// 
-		/// GraphDB only accepts IDs of type 'long' as ID
-		/// 
-		/// If the id contains any non-numeric characters,
-		/// the method will try to extract all numbers and
-		/// use this as value.
-		/// 
-		/// If the ID doesn't contain any numbers or there is
-		/// a duplicate id, exceptions will be thrown.
 		/// </summary>
 		/// <returns>
 		/// The vertex ID.
@@ -551,45 +555,41 @@ namespace sones.Plugins.SonesGQL
 		/// <exception cref='ArgumentException'>
 		/// Is thrown when an argument passed to a method is invalid.
 		/// </exception>
-		private long ReadVertexID(XmlReader myReader, String myToken)
+		private String ReadVertexID(XmlReader myReader, String myToken)
 		{
 			var vertexIDString = myReader.GetAttribute(myToken);
 			
-			// get numbers from string
-			var vertexIDStringNumbers = String.Join(null, Regex.Split(vertexIDString, "[^\\d]"));
-			
-			long res;
-			
-			if(long.TryParse(vertexIDStringNumbers, out res))
-			{	
-				// store the mapping between external and internal vertex expressions
-				if(!_VertexMapping.ContainsKey(vertexIDString))
-				{
-					_VertexMapping.Add(vertexIDString, res);
-				}
-				return res;	
-			} else
+			if(vertexIDString == null != "".Equals(vertexIDString))
 			{
 				throw new ArgumentException(String.Format(
-					"ID format in graphml file was invalid: {0}", 
+					"Vertex ID was invalid: {0}", 
 					vertexIDString));
+			} else
+			{
+				return vertexIDString;
 			}
 		}
 		
 		/// <summary>
 		/// Inserts a vertex and its attributes into the GraphDB instance.
 		/// </summary>
-		/// <param name='myVertexID'>
+		/// <param name='myExternalVertexID'>
 		/// the vertex id
 		/// </param>
-		private void InsertVertex(XmlReader myReader, long myVertexID)
+		private void InsertVertex(XmlReader myReader, String myExternalVertexID)
 		{
 			IVertex addedVertex = null;
 			
-			if(!_Vertices.Contains(myVertexID))
+			if(!_VertexIDMapper.ContainsKey(myExternalVertexID))
 			{
 				var insertRequest = new RequestInsertVertex(_VertexTypeName);
-				insertRequest.SetUUID(myVertexID);
+//				insertRequest.SetUUID(myVertexID);
+				
+				#region store Graphml VertexID
+				
+				insertRequest.AddStructuredProperty(GraphMLTokens.VERTEX_ID_NAME, myExternalVertexID);
+				
+				#endregion
 				
 				#region read vertex attributes
 				
@@ -607,7 +607,8 @@ namespace sones.Plugins.SonesGQL
 				
 				if(addedVertex != null)
 				{
-					_Vertices.Add(myVertexID);
+					// create mapping between external and internal VertexID
+					_VertexIDMapper.Add(myExternalVertexID, addedVertex.VertexID);
 				}
 			}
 		}
@@ -686,7 +687,7 @@ namespace sones.Plugins.SonesGQL
             var sourceID = ReadVertexID(myReader, GraphMLTokens.SOURCE);
             var targetID = ReadVertexID(myReader, GraphMLTokens.TARGET);
 			
-			if(!_Vertices.Contains(sourceID) || !_Vertices.Contains(targetID))
+			if(!_VertexIDMapper.ContainsKey(sourceID) || !_VertexIDMapper.ContainsKey(targetID))
 			{
 				throw new InvalidDataException(String.Format(
 					"Source or Target vertexID for edge ({0},{1}) doesn't exist",
@@ -701,12 +702,17 @@ namespace sones.Plugins.SonesGQL
 			
 			#region create edge (update vertex)
 			
-			var edgePreDef = new EdgePredefinition(_EdgeTypeName);
-			edgePreDef.AddVertexID(_VertexTypeName, targetID);
-			edgePreDef.AddStructuredProperty(GraphMLTokens.EDGE_WEIGHT, edgeWeight);
+			var hyperEdge = new EdgePredefinition(_EdgeTypeName);
+			hyperEdge.AddEdge(new EdgePredefinition()
+				.AddVertexID(_VertexTypeName, _VertexIDMapper[targetID])
+				.AddUnknownProperty(
+					GraphMLTokens.EDGE_WEIGHT, 
+					Convert.ChangeType(edgeWeight, typeof(String), CultureInfo.GetCultureInfo("en-us"))
+				));
 			
-			var requestUpdate = new RequestUpdate(new RequestGetVertices(_VertexTypeName, new List<long>() { sourceID }));
-			requestUpdate.AddElementsToCollection(_EdgeTypeName, edgePreDef);
+			
+			var requestUpdate = new RequestUpdate(new RequestGetVertices(_VertexTypeName, new List<long>() { _VertexIDMapper[sourceID] }));
+			requestUpdate.AddElementsToCollection(_EdgeTypeName, hyperEdge);
 			
 			// process the update
 			_GraphDB.Update<IEnumerable<IVertex>>(
@@ -733,7 +739,7 @@ namespace sones.Plugins.SonesGQL
 		/// <param name='myReader'>
 		/// XmlReader
 		/// </param>
-		private double ReadEdgeWeight(XmlReader myReader)
+		private IComparable ReadEdgeWeight(XmlReader myReader)
 		{
 			using (var edgeDataReader = myReader.ReadSubtree())
             {
@@ -762,7 +768,7 @@ namespace sones.Plugins.SonesGQL
 			                    {
 									if(attrName.Equals(GraphMLTokens.EDGE_WEIGHT.ToLower()))
 									{
-										return (float)ParseValue(attrType, value);	
+										return ParseValue(attrType, value);	
 									}
 			                    }
 			                }
@@ -863,7 +869,6 @@ namespace sones.Plugins.SonesGQL
             }
             else if (myType.Equals(GraphMLTokens.FLOAT))
             {
-				var f = float.Parse(myValue, CultureInfo.InvariantCulture);
                	return float.Parse(myValue, CultureInfo.GetCultureInfo("en-us"));
             }
             else if (myType.Equals(GraphMLTokens.DOUBLE))
@@ -926,7 +931,7 @@ namespace sones.Plugins.SonesGQL
 		#region Get streams
 
         /// <summary>
-        /// Reads a file, just let all exceptions thrown, they are too much to pack them into a graphDBException.
+        /// Reads from file
         /// </summary>
         /// <param name="myLocation"></param>
         /// <returns></returns>
@@ -936,7 +941,7 @@ namespace sones.Plugins.SonesGQL
         }
 
         /// <summary>
-        /// Reads a http ressource, just let all exceptions thrown, they are too much to pack them into a graphDBException.
+        /// Reads from web resource
         /// </summary>
         /// <param name="myLocation"></param>
         /// <returns></returns>
