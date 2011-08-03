@@ -77,8 +77,12 @@ namespace sones.Plugins.SonesGQL
 		
 		#region GraphDB specific
 		
-		public const String EDGE_WEIGHT = "Weight";
-		public const float DEFAULT_EDGE_WEIGHT = 1.0f;
+		public const String VERTEX_ID_NAME		= "ID";
+		public const String VERTEX_ID_TYPE		= "String";
+		public const String VERTEX_ID_DEF_VAL	= "-1";
+		
+		public const String EDGE_WEIGHT 		= "Weight";
+		public const float 	DEFAULT_EDGE_WEIGHT = 1.0f;
 		
 		#endregion
     }
