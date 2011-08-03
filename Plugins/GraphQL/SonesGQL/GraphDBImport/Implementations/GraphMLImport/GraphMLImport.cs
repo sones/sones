@@ -484,9 +484,8 @@ namespace sones.Plugins.SonesGQL
 			
 			#region create id definition
 			
-			var idPreDefinition = new PropertyPredefinition(GraphMLTokens.VERTEX_ID_NAME);
-				
-			idPreDefinition.SetAttributeType(GraphMLTokens.VERTEX_ID_TYPE);
+			var idPreDefinition = new PropertyPredefinition(GraphMLTokens.VERTEX_ID_NAME , GraphMLTokens.VERTEX_ID_TYPE);
+
 			idPreDefinition.SetDefaultValue(GraphMLTokens.VERTEX_ID_DEF_VAL);
 			
 			vertexTypePreDef.AddProperty(idPreDefinition);
