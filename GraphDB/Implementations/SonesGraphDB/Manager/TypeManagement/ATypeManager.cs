@@ -29,6 +29,11 @@ namespace sones.GraphDB.Manager.TypeManagement
     internal abstract class ATypeManager<T>: ITypeHandler<T>
         where T: IBaseType
     {
+        /// <summary>
+        /// The base type manager
+        /// </summary>
+        protected BaseTypeManager _baseTypeManager;
+
         #region ITypeManager Members
 
         public abstract T GetType(long myTypeId, 
