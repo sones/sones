@@ -33,17 +33,27 @@ using System.Text;
 
 namespace sones.Plugins.GraphDS.IO
 {
+
+    /// <summary>
+    /// This class realize an barchart output based on D3 framework.
+    /// </summary>
     public sealed class BARCHART_IO : IOInterface
     {
 
         #region Data
 
+        /// <summary>
+        /// The io content type.
+        /// </summary>
         private readonly ContentType _contentType;
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// Constructor for a barchart io instance.
+        /// </summary>
         public BARCHART_IO()
         {
             _contentType = new ContentType("application/x-sones-barchart") { CharSet = "UTF-8" };
@@ -78,14 +88,6 @@ namespace sones.Plugins.GraphDS.IO
         #region IOInterface
 
         #region Generate Output from Query Result
-
-        public String EscapeForXMLandHTML(String myString)
-        {
-            myString = myString.Replace("<", "&lt;");
-            myString = myString.Replace(">", "&gt;");
-            myString = myString.Replace("&", "&amp;");
-            return myString;
-        }
 
         public string GenerateOutputResult(QueryResult myQueryResult)
         {
@@ -188,6 +190,11 @@ namespace sones.Plugins.GraphDS.IO
             return Output.ToString();
         }
 
+        /// <summary>
+        /// Handles query exceptions.
+        /// </summary>
+        /// <param name="queryresult">The query result.</param>
+        /// <returns>The exception string.</returns>
         private String HandleQueryExceptions(QueryResult queryresult)
         {
             StringBuilder SB = new StringBuilder();
@@ -199,6 +206,11 @@ namespace sones.Plugins.GraphDS.IO
             return SB.ToString();
         }
 
+        /// <summary>
+        /// Add necessary JS commands to a string to enable output in webshell
+        /// </summary>
+        /// <param name="input">input string</param>
+        /// <returns>string containing JS commands and embedded input string</returns>
         private String ConvertString2WebShellOut(String input)
         {
             StringBuilder SB = new StringBuilder();
@@ -210,6 +222,11 @@ namespace sones.Plugins.GraphDS.IO
             return SB.ToString();
         }
 
+        /// <summary>
+        /// generate bar chart data dictionary out of query result by searching recursively
+        /// </summary>
+        /// <param name="myQueryResult">query result</param>
+        /// <returns>dictionary containing bar chart data</returns>
         private Dictionary<String, object> GenerateBarChart(QueryResult myQueryResult)
         {
             Dictionary<String, object> barchart = new Dictionary<string, object>();
@@ -223,6 +240,11 @@ namespace sones.Plugins.GraphDS.IO
             return barchart;
         }
 
+        /// <summary>
+        /// scan IEnumerable of properties for such with name x and y that can be used for bar chart
+        /// </summary>
+        /// <param name="properties">IEnumerable of properties to scan</param>
+        /// <param name="barchart">reference to dictionary where found data should be added</param>
         private void AnalyzeProperties(IEnumerable<Tuple<String, Object>> properties, ref Dictionary<String, object> barchart)
         {
             String x = null;
@@ -254,6 +276,11 @@ namespace sones.Plugins.GraphDS.IO
             }
         }
 
+        /// <summary>
+        /// scan IEnumerable of edges recursively for bar chart data
+        /// </summary>
+        /// <param name="edges">IEnumerable of edges to be scanned</param>
+        /// <param name="barchart">reference to dictionary where found data should be added</param>
         private void AnalyzeEdges(IEnumerable<Tuple<String, IEdgeView>> edges, ref Dictionary<String, object> barchart)
         {
             foreach (Tuple<String, IEdgeView> edge in edges)
@@ -262,6 +289,11 @@ namespace sones.Plugins.GraphDS.IO
             }
         }
 
+        /// <summary>
+        /// scan IEnumerable of vertices recursively for bar chart data
+        /// </summary>
+        /// <param name="edges">IEnumerable of vertices to be scanned</param>
+        /// <param name="barchart">reference to dictionary where found data should be added</param>
         private void AnalyzeTargetVertices(IEnumerable<IVertexView> targetvertices, ref Dictionary<String, object> barchart)
         {
             foreach (var aVertex in targetvertices)
