@@ -63,16 +63,7 @@
                 return ("AJAX Error " + xhr.status + "\n" + data.responseText + "\n" + thrownError);
             },
             beforeSend: function (xhr) {
-                if (goosh.config.webservice_default_format == "xml")
-                    xhr.setRequestHeader('Accept', 'application/xml');
-                else if (goosh.config.webservice_default_format == "html")
-                    xhr.setRequestHeader('Accept', 'application/html');
-                else if (goosh.config.webservice_default_format == "text")
-                    xhr.setRequestHeader('Accept', 'text/plain');
-                else if (goosh.config.webservice_default_format == "barchart")
-                    xhr.setRequestHeader('Accept', 'application/x-sones-barchart');
-                else
-                    xhr.setRequestHeader('Accept', 'application/json');
+                xhr.setRequestHeader('Accept', goosh.config.webservice_default_format.type);
             }
         });
 
@@ -236,8 +227,6 @@
         goosh.config.webservice_host = jQuery.url.attr("host");
         goosh.config.webservice_path = jQuery.url.attr("directory").substring(0, jQuery.url.attr("directory").lastIndexOf('/'));
         goosh.config.webservice_port = jQuery.url.attr("port");
-        goosh.config.webservice_default_format = "json";
-        goosh.config.webservice_formats = new Array("xml", "json", "text", "html", "barchart");
 
         //sones.licence
         goosh.module.license = function () {
@@ -309,12 +298,12 @@
                     //result is XML
                     var result = doQuery(args);
                     if (result != undefined) {
-                        if (goosh.config.webservice_default_format == 'xml') {
+                        if (goosh.config.webservice_default_format.type.indexOf('application/xml') > -1) {
                             printXMLResult(result.firstChild);
-                        } else if (goosh.config.webservice_default_format == 'gexf') {
+                        } else if (goosh.config.webservice_default_format.type.indexOf('application/gexf') > -1) {
                             printXMLResult(result.firstChild);
                         }
-                        else if (goosh.config.webservice_default_format == 'json') { //json
+                        else if (goosh.config.webservice_default_format.type.indexOf('application/json') > -1) { //json
                             /*
                             * json is currently displayed as one line string
                             * String can be parsed to JSON Object via eval()                    

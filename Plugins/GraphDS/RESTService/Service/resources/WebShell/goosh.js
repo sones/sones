@@ -44,8 +44,8 @@ InitGoosh = function (goosh) {
     goosh.config.webservice_host = jQuery.url.attr("host");
     goosh.config.webservice_path = jQuery.url.attr("directory").substring(0, jQuery.url.attr("directory").lastIndexOf('/'));
     goosh.config.webservice_port = jQuery.url.attr("port");
-    goosh.config.webservice_default_format = "json";
-    goosh.config.webservice_formats = new Array("xml", "json", "text", "html");
+    goosh.config.webservice_formats = new Array();
+    goosh.config.webservice_default_format = { name: 'not set', type: 'not set' };
     goosh.config.numres = 4;
     goosh.config.timeout = 4;
     goosh.config.start = 0;
@@ -544,21 +544,32 @@ InitGoosh = function (goosh) {
 
     //format handler
     goosh.module.format = function () {
+        getOutputFormats();
+
         this.name = "format";
         this.aliases = new Array("format");
-        this.help = "sets the output-format  of query results default is " + goosh.config.webservice_default_format;
-        this.parameters = "[xml|json|text|html|barchart]";
+        this.help = "sets the output-format  of query results default is " + goosh.config.webservice_default_format.name;
+
+        var parameters = "[";
+        $.each(goosh.config.webservice_formats, function (key, value) {
+            if (key > 0) parameters += "|";
+            parameters += value.name;
+        });
+        parameters += "]";
+        this.parameters = parameters;
 
         this.call = function (args) {
             if ((args == undefined) || (args.length == 0)) {
-                goosh.gui.out("current output format is set to: " + goosh.config.webservice_default_format);
+                goosh.gui.out("current output format is set to: " + goosh.config.webservice_default_format.name);
             } else {
-                if ($.inArray(args[0], goosh.config.webservice_formats) > -1) {
-                    goosh.config.webservice_default_format = args[0];
-                    goosh.gui.out("current output format is set to: " + goosh.config.webservice_default_format);
-                } else {
-                    goosh.gui.error("no valid parameter found. try one of these: " + this.parameters + "\"");
+                for (i = 0; i < goosh.config.webservice_formats.length; i++) {
+                    if (goosh.config.webservice_formats[i].name == args[0]) {
+                        goosh.config.webservice_default_format = goosh.config.webservice_formats[i];
+                        goosh.gui.out("current output format is now set to: " + goosh.config.webservice_default_format.name);
+                        return 0;
+                    }
                 }
+                goosh.gui.error("no valid parameter found. try one of these: " + this.parameters + "\"");
             }
         }
     }
@@ -578,12 +589,12 @@ InitGoosh = function (goosh) {
                 //result is XML
                 var result = doQuery(args);
                 if (result != undefined) {
-                    if (goosh.config.webservice_default_format == 'xml') {
+                    if (goosh.config.webservice_default_format.type.indexOf('application/xml') > -1) {
                         printXMLResult(result.firstChild);
-                    } else if (goosh.config.webservice_default_format == 'gexf') {
+                    } else if (goosh.config.webservice_default_format.type.indexOf('application/gexf') > -1) {
                         printXMLResult(result.firstChild);
                     }
-                    else if (goosh.config.webservice_default_format == 'json') { //json
+                    else if (goosh.config.webservice_default_format.type.indexOf('application/json') > -1) { //json
                         /*
                         * json is currently displayed as one line string
                         * String can be parsed to JSON Object via eval()                    
@@ -605,9 +616,9 @@ InitGoosh = function (goosh) {
 
     //goosh.js
     goosh.command = function () {
-    	//show waiting image
+        //show waiting image
         goosh.gui.setWaiting(true);
-        
+
         var cmdpar = goosh.gui.inputfield.value;
         var tokens = cmdpar.split(" ");
         var args = new Array();
@@ -671,7 +682,7 @@ InitGoosh = function (goosh) {
         goosh.gui.inputfield.value = '';
         goosh.gui.focusinput();
 
-		//hide waiting image
+        //hide waiting image
         goosh.gui.setWaiting(false);
 
         return false;
@@ -721,4 +732,46 @@ InitGoosh = function (goosh) {
 
     return goosh;
 
+}
+
+function getOutputFormats() {
+    //build the target URI
+    var target = goosh.config.webservice_protocol + "://"
+                + goosh.config.webservice_host
+                + ((goosh.config.webservice_port != undefined) ? (":" + goosh.config.webservice_port) : "")
+                + "/"
+                + goosh.config.webservice_path + "availableoutputformats";
+
+    //do some ajax
+    var html = $.ajax({
+        url: target,
+        cache: false,
+        async: false,
+        error: function () {
+            return 1;
+        }
+    });
+
+    if (html == null) {
+        return 2;
+    } else {
+        var formats = $.parseJSON(html.responseText);
+        $.each(formats, function (key, val) {
+            if (key == "GraphDSOutputFormats") {
+                $.each(val, function (key, val) {
+                    $.each(val, function (key, val) {
+                        if (val == "sones.json_io") {
+                            goosh.config.webservice_default_format.name = val;
+                            goosh.config.webservice_default_format.type = key;
+                        }
+                        goosh.config.webservice_formats.push({ name: val, type: key });
+                    });
+                });
+            }
+        });
+        if (goosh.config.webservice_default_format.name == "not set") {
+            goosh.config.webservice_default_format = goosh.config.webservice_formats[0];
+        }
+        return 0;
+    }
 }
