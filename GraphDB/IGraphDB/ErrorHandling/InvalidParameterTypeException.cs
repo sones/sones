@@ -27,7 +27,7 @@ namespace sones.GraphDB.ErrorHandling
 {
     public class InvalidParameterTypeException: AGraphDBException
     {
-        public InvalidParameterTypeException(string myParameter, string myType, string myExpectedType, string myInfo)
+        public InvalidParameterTypeException(string myParameter, string myType, string myExpectedType, string myInfo = "")
         {
             _msg = "The type for the Parameter " +  myParameter + " is invalid. Was " + myType + " expected " + myExpectedType + "! " + myInfo;
         }

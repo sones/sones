@@ -25,33 +25,70 @@ using System.Text;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.Security;
+using sones.GraphDB.TypeManagement.Base;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.ErrorHandling;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    internal class ExecuteEdgeTypeManager: ATypeManager<IEdgeType>
+    internal class ExecuteEdgeTypeManager: AExecuteTypeManager<IEdgeType>
     {
+        #region data
+
         private readonly IDManager _idManager;
+        
+        #endregion
+
+        #region constructor
 
         public ExecuteEdgeTypeManager(IDManager myIDManager)
         {
             _idManager = myIDManager;
+
+            _baseTypes = new Dictionary<long, IBaseType>();
+            _nameIndex = new Dictionary<String, long>();
         }
+
+        #endregion
 
         #region ACheckTypeManager member
 
-        public override IEdgeType GetType(long myTypeId,
-                                            TransactionToken myTransaction,
-                                            SecurityToken mySecurity)
-        {
-            throw new NotImplementedException();
-        }
+        //public override IEdgeType GetType(long myTypeId,
+        //                                    TransactionToken myTransaction,
+        //                                    SecurityToken mySecurity)
+        //{
+        //    #region get static types
 
-        public override IEdgeType GetType(string myTypeName,
-                                            TransactionToken myTransaction,
-                                            SecurityToken mySecurity)
-        {
-            throw new NotImplementedException();
-        }
+        //    if (_baseTypes.ContainsKey(myTypeId))
+        //        return _baseTypes[myTypeId] as IEdgeType;
+
+        //    #endregion
+
+
+        //    #region get from fs
+
+        //    var vertex = Get(myTypeId, myTransaction, mySecurity);
+
+        //    if (vertex == null)
+        //        throw new KeyNotFoundException(string.Format("A vertex type with ID {0} was not found.", myTypeId));
+
+        //    var result = new EdgeType(vertex, _baseStorageManager);
+
+        //    _baseTypes.Add(result.ID, result);
+        //    _nameIndex.Add(result.Name, result.ID);
+
+        //    return result;
+
+        //    #endregion
+        //}
+
+        //public override IEdgeType GetType(string myTypeName,
+        //                                    TransactionToken myTransaction,
+        //                                    SecurityToken mySecurity)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public override IEnumerable<IEdgeType> GetAllTypes(TransactionToken myTransaction,
                                                             SecurityToken mySecurity)
@@ -95,8 +132,8 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         public override bool HasType(string myTypeName,
-                                        SecurityToken mySecurityToken,
-                                        TransactionToken myTransactionToken)
+                                        TransactionToken myTransactionToken,
+                                        SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
         }
@@ -108,13 +145,46 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override void Initialize(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            _vertexManager = myMetaManager.VertexManager;
+            _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
 
         public override void Load(TransactionToken myTransaction,
                                     SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
+            LoadBaseType(
+                myTransaction,
+                mySecurity,
+                BaseTypes.Edge,
+                BaseTypes.Weighted,
+                BaseTypes.Orderable);
+        }
+
+        protected override IEdgeType CreateType(IVertex myVertex)
+        {
+            var result = new EdgeType(myVertex, _baseStorageManager);
+
+            _baseTypes.Add(result.ID, result);
+            _nameIndex.Add(result.Name, result.ID);
+
+            return result;
+        }
+
+        #endregion
+
+        #region private helper
+
+        private void LoadBaseType(TransactionToken myTransaction, SecurityToken mySecurity, params BaseTypes[] myBaseTypes)
+        {
+            foreach (var baseType in myBaseTypes)
+            {
+                var vertex = _vertexManager.ExecuteManager.VertexStore.GetVertex(mySecurity, myTransaction, (long)baseType, (long)BaseTypes.EdgeType, String.Empty);
+                
+                if (vertex == null)
+                    throw new BaseEdgeTypeNotExistException(baseType.ToString(), "Could not load base edge type.");
+
+                _baseTypes.Add((long)baseType, new EdgeType(vertex, _baseStorageManager));
+            }
         }
 
         #endregion

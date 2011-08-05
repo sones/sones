@@ -26,13 +26,40 @@ namespace sones.GraphDB.TypeSystem
     {
         public const char TypeSeparator = '.';
 
-        /// <summary>
-        /// Creates a definition for an incoming edge.
-        /// </summary>
-        /// <param name="myEdgeName">The name of the IncomingEdge</param>
-        public IncomingEdgePredefinition(String myEdgeName)
+        ///// <summary>
+        ///// Creates a definition for an incoming edge.
+        ///// </summary>
+        ///// <param name="myEdgeName">The name of the IncomingEdge</param>
+        //private IncomingEdgePredefinition(String myEdgeName, String mySourceVertexTypeName, String myOutgoingEdgeName)
+        //    : base(myEdgeName, "")
+        //{
+        //    if (mySourceVertexTypeName != null && myOutgoingEdgeName != null)
+        //        AttributeType = Combine(mySourceVertexTypeName, myOutgoingEdgeName);
+        //}
+
+        public IncomingEdgePredefinition(String myEdgeName, VertexTypePredefinition mySourceVertexType, OutgoingEdgePredefinition myOutgoingEdge)
             : base(myEdgeName, "")
         {
+            SetOutgoingEdge(mySourceVertexType, myOutgoingEdge);
+        }
+
+        public IncomingEdgePredefinition(String myEdgeName, VertexTypePredefinition mySourceVertexType, String myOutgoingEdgeName)
+            : base(myEdgeName, "")
+        {
+            SetOutgoingEdge(mySourceVertexType, myOutgoingEdgeName);
+        }
+
+        public IncomingEdgePredefinition(String myEdgeName, String mySourceVertexTypeName, String myOutgoingEdgeName)
+            : base(myEdgeName, "")
+        {
+            SetOutgoingEdge(mySourceVertexTypeName, myOutgoingEdgeName);
+        }
+
+        public IncomingEdgePredefinition SetComment(String myComment)
+        {
+            Comment = myComment;
+
+            return this;
         }
 
         /// <summary>
@@ -41,10 +68,10 @@ namespace sones.GraphDB.TypeSystem
         /// <param name="myVertexType">A vertex type pre-definition.</param>
         /// <param name="myOutgoingEdge">An outgoing IncomingEdge pre-definition.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public IncomingEdgePredefinition SetOutgoingEdge(VertexTypePredefinition myVertexType, OutgoingEdgePredefinition myOutgoingEdge)
+        private IncomingEdgePredefinition SetOutgoingEdge(VertexTypePredefinition mySourceVertexType, OutgoingEdgePredefinition myOutgoingEdge)
         {
-            if (myVertexType != null && myOutgoingEdge != null)
-                AttributeType = Combine(myVertexType.TypeName, myOutgoingEdge.AttributeName);
+            if (mySourceVertexType != null && myOutgoingEdge != null)
+                AttributeType = Combine(mySourceVertexType.TypeName, myOutgoingEdge.AttributeName);
 
             return this;
         }
@@ -55,12 +82,12 @@ namespace sones.GraphDB.TypeSystem
         /// <param name="myVertexType">A vertex type pre-definition.</param>
         /// <param name="myOutgoingEdgeName">The name of the IncomingEdge on the vertex type.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public IncomingEdgePredefinition SetOutgoingEdge(VertexTypePredefinition myVertexType, String myOutgoingEdgeName)
+        private IncomingEdgePredefinition SetOutgoingEdge(VertexTypePredefinition mySourceVertexType, String myOutgoingEdgeName)
         {
-            if (myVertexType != null && myOutgoingEdgeName != null)
-                AttributeType = Combine(myVertexType.TypeName, myOutgoingEdgeName);
+            if (mySourceVertexType != null && myOutgoingEdgeName != null)
+                AttributeType = Combine(mySourceVertexType.TypeName, myOutgoingEdgeName);
 
-            return this;            
+            return this;
         }
 
         /// <summary>
@@ -69,17 +96,10 @@ namespace sones.GraphDB.TypeSystem
         /// <param name="VertexTypeName">The name of the vertex type that declares the outgoing IncomingEdge.</param>
         /// <param name="myOutgoingEdgeName">The name of the IncomingEdge on the vertex type.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public IncomingEdgePredefinition SetOutgoingEdge(String myVertexTypeName, String myOutgoingEdgeName)
+        private IncomingEdgePredefinition SetOutgoingEdge(String mySourceVertexTypeName, String myOutgoingEdgeName)
         {
-            if (myVertexTypeName != null && myOutgoingEdgeName != null)
-                AttributeType = Combine(myVertexTypeName, myOutgoingEdgeName);
-
-            return this;
-        }
-
-        public IncomingEdgePredefinition SetComment(String myComment)
-        {
-            Comment = myComment;
+            if (mySourceVertexTypeName != null && myOutgoingEdgeName != null)
+                AttributeType = Combine(mySourceVertexTypeName, myOutgoingEdgeName);
 
             return this;
         }

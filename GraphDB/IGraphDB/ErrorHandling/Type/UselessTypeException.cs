@@ -18,34 +18,18 @@
 * 
 */
 
-using System;
+using sones.GraphDB.TypeSystem;
 
-namespace sones.GraphDB.TypeSystem
+namespace sones.GraphDB.ErrorHandling
 {
-    /// <summary>
-    /// The definition for binary properties.
-    /// </summary>
-    public sealed class BinaryPropertyPredefinition: AAttributePredefinition
+    public class UselessTypeException : AGraphDBTypeException
     {
-        public const string TypeName = "Stream";
+        private ATypePredefinition VertexType;
 
-        #region Constructor
-
-        /// <summary>
-        /// Creates a new BinaryPropertyPredefinition
-        /// </summary>
-        public BinaryPropertyPredefinition(String myPropertyName, String myPropertyType = TypeName)
-            : base(myPropertyName, myPropertyType)
+        public UselessTypeException(ATypePredefinition predef)
         {
-        }
-
-        #endregion
-
-        public BinaryPropertyPredefinition SetComment(String myComment)
-        {
-            Comment = myComment;
-
-            return this;
+            this.VertexType = predef;
+            _msg = string.Format("The type [{0}] is marked sealed and abstract. This makes this type useless.", predef.TypeName);
         }
     }
 }

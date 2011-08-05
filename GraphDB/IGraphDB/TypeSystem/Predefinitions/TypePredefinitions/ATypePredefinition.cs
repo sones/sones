@@ -32,10 +32,10 @@ namespace sones.GraphDB.TypeSystem
         // The name of the vertex type that is going to be created
         public readonly string TypeName;
         protected List<AAttributePredefinition> _attributes;
-        private List<UniquePredefinition> _uniques;
-        
-        private int _properties = 0;
-        private int _unknown = 0;
+        protected List<UniquePredefinition> _uniques;
+
+        protected int _properties = 0;
+        protected int _unknown = 0;
 
         public int AttributeCount 
         {
@@ -55,7 +55,7 @@ namespace sones.GraphDB.TypeSystem
         /// <summary>
         /// The name of the vertex type this vertex types inherites from.
         /// </summary>
-        public string SuperTypeName { get; private set; }
+        public string SuperTypeName { get; protected set; }
 
         /// <summary>
         /// The properties of the vertex type.
@@ -84,17 +84,17 @@ namespace sones.GraphDB.TypeSystem
         /// <summary>
         /// Gets if the vertex type will be sealed.
         /// </summary>
-        public bool IsSealed { get; private set; }
+        public bool IsSealed { get; protected set; }
 
         /// <summary>
         /// Gets if the vertex type will be abstract.
         /// </summary>
-        public bool IsAbstract { get; private set; }
+        public bool IsAbstract { get; protected set; }
 
         /// <summary>
         /// Gets the comment for this vertex type.
         /// </summary>
-        public string Comment { get; private set; }
+        public string Comment { get; protected set; }
 
         #endregion
 
@@ -108,7 +108,7 @@ namespace sones.GraphDB.TypeSystem
         {
             if (string.IsNullOrEmpty(myTypeName))
             {
-                throw new ArgumentOutOfRangeException("myVertexTypeName", myTypeName);
+                throw new ArgumentOutOfRangeException("myTypeName", myTypeName);
             }
 
             TypeName = myTypeName;
@@ -121,104 +121,8 @@ namespace sones.GraphDB.TypeSystem
         #endregion
 
         #region fluent methods
-
-        /// <summary>
-        /// Sets the name of the vertex type this one inherits from
-        /// </summary>
-        /// <param name="myComment">The name of the super vertex type</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public ATypePredefinition SetSuperVertexTypeName(String mySuperVertexTypeName)
-        {
-            if (!string.IsNullOrEmpty(mySuperVertexTypeName))
-            {
-                SuperTypeName = mySuperVertexTypeName;
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Adds an unknown property to the vertex type definition
-        /// </summary>
-        /// <param name="myUnknownPredefinition">The unknwown property definition that is going to be added</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public ATypePredefinition AddUnknownAttribute(UnknownAttributePredefinition myUnknownPredefinition)
-        {
-            if (myUnknownPredefinition != null)
-            {
-                _attributes = (_attributes) ?? new List<AAttributePredefinition>();
-                _attributes.Add(myUnknownPredefinition);
-                _unknown++;
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Adds a property to the vertex type definition
-        /// </summary>
-        /// <param name="myPropertyDefinition">The property definition that is going to be added.</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public ATypePredefinition AddProperty(PropertyPredefinition myPropertyDefinition)
-        {
-            if (myPropertyDefinition != null)
-            {
-                _attributes = (_attributes) ?? new List<AAttributePredefinition>();
-                _attributes.Add(myPropertyDefinition);
-                _properties++;
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Adds a unique definition.
-        /// </summary>
-        /// <param name="myUniqueDefinition">The unique definition that is going to be added.</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public ATypePredefinition AddUnique(UniquePredefinition myUniqueDefinition)
-        {
-            if (myUniqueDefinition != null)
-            {
-                _uniques = (_uniques) ?? new List<UniquePredefinition>();
-                _uniques.Add(myUniqueDefinition);
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Marks the vertex type as sealed.
-        /// </summary>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public ATypePredefinition MarkAsSealed()
-        {
-            IsSealed = true;
-            return this;
-        }
-
-        /// <summary>
-        /// Marks the vertex type as abstract.
-        /// </summary>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public ATypePredefinition MarkAsAbstract()
-        {
-            IsAbstract = true;
-            return this;
-        }
-
-        /// <summary>
-        /// Sets the comment of the vertex type.
-        /// </summary>
-        /// <param name="myComment">The comment.</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public ATypePredefinition SetComment(String myComment)
-        {
-            Comment = myComment;
-
-            return this;
-        }
-
+        //Note: all fluent methods are declared in the specializing classes (EdgeTypePredefinition & VertexTypePredefinition)
+        //      because of the fluent interface it is impossible to declare them inside the abstract class !
         #endregion
 
         #region public methods

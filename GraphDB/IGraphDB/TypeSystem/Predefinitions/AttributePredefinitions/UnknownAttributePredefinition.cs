@@ -46,6 +46,11 @@ namespace sones.GraphDB.TypeSystem
 
         public bool IsUnique { get; private set; }
 
+        /// <summary>
+        /// Creates a new unknown attribute predefinition.
+        /// </summary>
+        /// <param name="myAttributeName">The name of the attribute.</param>
+        /// <param name="myAttributeType">The type of the attribute. Note: If this unknown attribute is an incoming edge, the attribute type must be specified as "DefiningType.OutgoingEdge" f.e. "User.OutEdge".</param>
         public UnknownAttributePredefinition(String myAttributeName, String myAttributeType)
             : base(myAttributeName, myAttributeType)
         {

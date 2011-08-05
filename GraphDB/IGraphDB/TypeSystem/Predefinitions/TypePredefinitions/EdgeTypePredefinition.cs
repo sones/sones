@@ -27,13 +27,113 @@ namespace sones.GraphDB.TypeSystem
     /// <summary>
     /// The definition for an edge type.
     /// </summary>
-    public class EdgeTypePredefinition : ATypePredefinition
+    public sealed class EdgeTypePredefinition : ATypePredefinition
     {
         #region constructor
 
         public EdgeTypePredefinition(String myTypeName)
             :base (myTypeName, "Edge")
         {
+        }
+
+        #endregion
+
+        #region fluent methods of abstract member
+
+        /// <summary>
+        /// Sets the name of the vertex type this one inherits from
+        /// </summary>
+        /// <param name="myComment">The name of the super vertex type</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public EdgeTypePredefinition SetSuperVertexTypeName(String mySuperVertexTypeName)
+        {
+            if (!string.IsNullOrEmpty(mySuperVertexTypeName))
+            {
+                SuperTypeName = mySuperVertexTypeName;
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Adds an unknown property to the vertex type definition
+        /// </summary>
+        /// <param name="myUnknownPredefinition">The unknwown property definition that is going to be added</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public EdgeTypePredefinition AddUnknownAttribute(UnknownAttributePredefinition myUnknownPredefinition)
+        {
+            if (myUnknownPredefinition != null)
+            {
+                _attributes = (_attributes) ?? new List<AAttributePredefinition>();
+                _attributes.Add(myUnknownPredefinition);
+                _unknown++;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a property to the vertex type definition
+        /// </summary>
+        /// <param name="myPropertyDefinition">The property definition that is going to be added.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public EdgeTypePredefinition AddProperty(PropertyPredefinition myPropertyDefinition)
+        {
+            if (myPropertyDefinition != null)
+            {
+                _attributes = (_attributes) ?? new List<AAttributePredefinition>();
+                _attributes.Add(myPropertyDefinition);
+                _properties++;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a unique definition.
+        /// </summary>
+        /// <param name="myUniqueDefinition">The unique definition that is going to be added.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public EdgeTypePredefinition AddUnique(UniquePredefinition myUniqueDefinition)
+        {
+            if (myUniqueDefinition != null)
+            {
+                _uniques = (_uniques) ?? new List<UniquePredefinition>();
+                _uniques.Add(myUniqueDefinition);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Marks the vertex type as sealed.
+        /// </summary>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public EdgeTypePredefinition MarkAsSealed()
+        {
+            IsSealed = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Marks the vertex type as abstract.
+        /// </summary>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public EdgeTypePredefinition MarkAsAbstract()
+        {
+            IsAbstract = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the comment of the vertex type.
+        /// </summary>
+        /// <param name="myComment">The comment.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public EdgeTypePredefinition SetComment(String myComment)
+        {
+            Comment = myComment;
+
+            return this;
         }
 
         #endregion

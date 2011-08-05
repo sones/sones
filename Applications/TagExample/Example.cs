@@ -187,8 +187,9 @@ namespace TagExample
             #endregion
 
             //add IncomingEdge "Tags", the related OutgoingEdge is "TaggedWebsites" on type "Tag"
-            Website_VertexTypePredefinition.AddIncomingEdge(new IncomingEdgePredefinition("Tags")
-                                                                        .SetOutgoingEdge("Tag", "TaggedWebsites"));
+            Website_VertexTypePredefinition.AddIncomingEdge(new IncomingEdgePredefinition("Tags",
+                                                                                            "Tag", 
+                                                                                            "TaggedWebsites"));
 
             #endregion
 

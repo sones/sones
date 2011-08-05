@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.Library.LanguageExtensions;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.Security;
@@ -29,46 +30,45 @@ using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Manager.BaseGraph;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.ErrorHandling.Type;
 using sones.GraphDB.ErrorHandling;
+using sones.GraphDB.Manager.Vertex;
+using sones.Library.PropertyHyperGraph;
+using sones.GraphDB.Expression;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    internal class ExecuteVertexTypeManager: ATypeManager<IVertexType>
+    internal class ExecuteVertexTypeManager: AExecuteTypeManager<IVertexType>
     {
-        private readonly IDictionary<long, IVertexType>     _baseTypes = new Dictionary<long, IVertexType>();
-        private readonly IDictionary<String, long>          _nameIndex = new Dictionary<String, long>();
+        #region data
+
         private readonly IDManager                          _idManager;
-        private IManagerOf<IVertexHandler>                  _vertexManager;
         private IIndexManager                               _indexManager;
         private IManagerOf<ITypeHandler<IEdgeType>>         _edgeManager;
-        private BaseGraphStorageManager                     _baseStorageManager;
+
+        
+
+        #endregion
+
+        #region constructor
 
         public ExecuteVertexTypeManager(IDManager myIDManager)
         {
             _idManager = myIDManager;
+
+            _baseTypes = new Dictionary<long, IBaseType>();
+            _nameIndex = new Dictionary<String, long>();
         }
+
+        #endregion
 
         #region ACheckTypeManager member
-
-        public override IVertexType GetType(long myTypeId,
-                                            TransactionToken myTransaction,
-                                            SecurityToken mySecurity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IVertexType GetType(string myTypeName,
-                                            TransactionToken myTransaction,
-                                            SecurityToken mySecurity)
-        {
-            throw new NotImplementedException();
-        }
 
         public override IEnumerable<IVertexType> GetAllTypes(TransactionToken myTransaction,
                                                                 SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
+            var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.VertexType.ToString(), myTransaction, mySecurity, false);
+
+            return vertices == null ? Enumerable.Empty<IVertexType>() : vertices.Select(x => new VertexType(x, _baseStorageManager));
         }
 
         public override IEnumerable<IVertexType> AddTypes(IEnumerable<ATypePredefinition> myTypePredefinitions,
@@ -107,8 +107,8 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         public override bool HasType(string myTypeName,
-                                        SecurityToken mySecurityToken,
-                                        TransactionToken myTransactionToken)
+                                        TransactionToken myTransactionToken,
+                                        SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
         }
@@ -120,11 +120,11 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override void Initialize(IMetaManager myMetaManager)
         {
-            _edgeManager = myMetaManager.EdgeTypeManager;
-            _indexManager = myMetaManager.IndexManager;
-            _vertexManager = myMetaManager.VertexManager;
-            _baseTypeManager = myMetaManager.BaseTypeManager;
-            _baseStorageManager = myMetaManager.BaseGraphStorageManager;
+            _edgeManager            = myMetaManager.EdgeTypeManager;
+            _indexManager           = myMetaManager.IndexManager;
+            _vertexManager          = myMetaManager.VertexManager;
+            _baseTypeManager        = myMetaManager.BaseTypeManager;
+            _baseStorageManager     = myMetaManager.BaseGraphStorageManager;
         }
 
         public override void Load(TransactionToken myTransaction,
@@ -140,7 +140,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                                     GetMaxID((long)BaseTypes.IncomingEdge, myTransaction, mySecurity),
                                     GetMaxID((long)BaseTypes.BinaryProperty, myTransaction, mySecurity)))) + 1);
 
-
             LoadBaseType(
                 myTransaction,
                 mySecurity,
@@ -153,6 +152,16 @@ namespace sones.GraphDB.Manager.TypeManagement
                 BaseTypes.OutgoingEdge,
                 BaseTypes.Property,
                 BaseTypes.VertexType);
+        }
+
+        protected override IVertexType CreateType(IVertex myVertex)
+        {
+            var result = new VertexType(myVertex, _baseStorageManager);
+
+            _baseTypes.Add(result.ID, result);
+            _nameIndex.Add(result.Name, result.ID);
+
+            return result;
         }
 
         #endregion
@@ -183,6 +192,44 @@ namespace sones.GraphDB.Manager.TypeManagement
                 _baseTypes.Add((long)baseType, new VertexType(vertex, _baseStorageManager));
                 _nameIndex.Add(baseType.ToString(), (long)baseType);
             }
+        }
+
+        /// <summary>
+        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeID"/>.
+        /// </summary>
+        /// <param name="myTypeId"></param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>An IVertex instance, that represents the vertex type with the given ID or <c>NULL</c>, if not present.</returns>
+        private IVertex Get(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            #region get the type from fs
+
+            return _vertexManager.ExecuteManager.GetSingleVertex(new BinaryExpression(_vertexTypeIDExpression, 
+                                                                                        BinaryOperator.Equals, 
+                                                                                        new SingleLiteralExpression(myTypeId)), 
+                                                                    myTransaction, mySecurity);
+
+            #endregion
+        }
+
+        /// <summary>
+        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeName"/>.
+        /// </summary>
+        /// <param name="myTypeName">The vertex type name.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>An IVertex instance, that represents the vertex type with the given name or <c>NULL</c>, if not present.</returns>
+        private IVertex Get(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            #region get the type from fs
+
+            return _vertexManager.ExecuteManager.GetSingleVertex(new BinaryExpression(_vertexTypeNameExpression, 
+                                                                                        BinaryOperator.Equals, 
+                                                                                        new SingleLiteralExpression(myTypeName)), 
+                                                                    myTransaction, mySecurity);
+
+            #endregion
         }
 
         #endregion

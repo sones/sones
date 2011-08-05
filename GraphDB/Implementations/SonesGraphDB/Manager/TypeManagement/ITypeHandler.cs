@@ -30,15 +30,15 @@ namespace sones.GraphDB.Manager.TypeManagement
         where T : IBaseType 
     {
         /// <summary>
-        /// Is there a type to a given name
+        /// Is there a type to a given name.
         /// </summary>
         /// <param name="myTypeName">The name of the interesting  type</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <returns>True or false</returns>
         bool HasType(string myTypeName, 
-                        SecurityToken mySecurityToken, 
-                        TransactionToken myTransactionToken);
+                        TransactionToken myTransactionToken,
+                        SecurityToken mySecurityToken);
 
         /// <summary>
         /// Gets a type by id.
@@ -69,7 +69,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <returns>An instance of IType, that represents the  type.</returns>
         IEnumerable<T> GetAllTypes(TransactionToken myTransaction, 
-                                        SecurityToken mySecurity);
+                                    SecurityToken mySecurity);
 
         /// <summary>
         /// Adds a bunch of  types to the  type manager.
@@ -106,7 +106,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                                         SecurityToken mySecurity);
 
         /// <summary>
-        /// Removes all vertices of a given  type
+        /// Removes all vertices of a given  type.
         /// </summary>
         /// <param name="myTypeID">The  type id that should be truncated</param>
         /// <param name="myTransactionToken">A transaction token for this operation.</param>
@@ -116,7 +116,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                             SecurityToken mySecurityToken);
 
         /// <summary>
-        /// Removes all vertices of a given  type
+        /// Removes all vertices of a given  type.
         /// </summary>
         /// <param name="myTypeName">The  type name that should be truncated</param>
         /// <param name="myTransactionToken">A transaction token for this operation.</param>

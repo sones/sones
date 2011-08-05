@@ -175,10 +175,10 @@ namespace sones.GraphDB.Manager
         {
             _baseGraphStorageManager.Initialize(this);
             _vertexTypeManager.Initialize(this);
+            _edgeTypeManager.Initialize(this);
             _vertexManager.Initialize(this);
             _baseTypeManager.Initialize(this);
             _queryPlanManager.Initialize(this);
-            _edgeTypeManager.Initialize(this);
             _indexManager.Initialize(this);            
         }
 
@@ -186,10 +186,10 @@ namespace sones.GraphDB.Manager
         {
             _baseGraphStorageManager.Load(SystemTransactionToken, SystemSecurityToken);
             _vertexTypeManager.Load(SystemTransactionToken, SystemSecurityToken);
+            _edgeTypeManager.Load(SystemTransactionToken, SystemSecurityToken);
             _vertexManager.Load(SystemTransactionToken, SystemSecurityToken);
             _baseTypeManager.Load(SystemTransactionToken, SystemSecurityToken);
             _queryPlanManager.Load(SystemTransactionToken, SystemSecurityToken);
-            _edgeTypeManager.Load(SystemTransactionToken, SystemSecurityToken);
             _indexManager.Load(SystemTransactionToken, SystemSecurityToken);            
         }
 

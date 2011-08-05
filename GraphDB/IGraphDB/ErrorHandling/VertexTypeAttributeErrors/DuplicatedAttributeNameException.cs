@@ -36,17 +36,18 @@ namespace sones.GraphDB.ErrorHandling
         /// <summary>
         /// The vertex type predefinition that contains a duplicated attribute name.
         /// </summary>
-        public VertexTypePredefinition Predefinition { get; private set; }
+        public ATypePredefinition Predefinition { get; private set; }
 
         /// <summary>
-        /// Creates a new instance of DuplicatedVertexTypeNameException.
+        /// Creates a new instance of DuplicatedTypeNameException.
         /// </summary>
-        /// <param name="VertexTypeName">The name of the vertex type, that is tried to be added multiple times.</param>
-        public DuplicatedAttributeNameException(VertexTypePredefinition myVertexTypePredefinition, String myVertexTypeName)
+        /// <param name="myTypeName">The name of the type, that is tried to be added multiple times.</param>
+        public DuplicatedAttributeNameException(ATypePredefinition myTypePredefinition, String myTypeName)
         {
-            Predefinition = myVertexTypePredefinition;
-            DuplicatedName = myVertexTypeName;
-            _msg = string.Format("The attribute {0} was declared multiple times on vertex type {1}.", DuplicatedName, Predefinition.TypeName);
+            Predefinition = myTypePredefinition;
+            DuplicatedName = myTypeName;
+
+            _msg = string.Format("The attribute {0} was declared multiple times on type {1}.", DuplicatedName, Predefinition.TypeName);
         }
 
     }

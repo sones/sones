@@ -372,9 +372,9 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <returns>An incoming edge predefinition</returns>
         private IncomingEdgePredefinition GenerateAIncomingEdge(IncomingEdgeDefinition aIncomingEdge)
         {
-            IncomingEdgePredefinition result = new IncomingEdgePredefinition(aIncomingEdge.AttributeName);
-
-            result.SetOutgoingEdge(aIncomingEdge.TypeName, aIncomingEdge.TypeAttributeName);
+            IncomingEdgePredefinition result = new IncomingEdgePredefinition(aIncomingEdge.AttributeName,
+                                                                                aIncomingEdge.TypeName, 
+                                                                                aIncomingEdge.TypeAttributeName);
 
             return result;
         }

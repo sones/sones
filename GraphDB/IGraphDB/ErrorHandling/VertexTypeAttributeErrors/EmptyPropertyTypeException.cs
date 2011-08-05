@@ -32,22 +32,10 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates an instance of EmptyEdgeTypeException.
         /// </summary>
         /// <param name="myPredefinition">The predefinition that causes the exception.</param>
-        /// <param name="myPropertyName"></param>
-        public EmptyPropertyTypeException(VertexTypePredefinition myPredefinition, String myPropertyName)
+        /// <param name="myPropertyName">The name of the property.</param>
+        public EmptyPropertyTypeException(ATypePredefinition myPredefinition, String myPropertyName)
         {
-            Predefinition = myPredefinition;
-            PropertyName = myPropertyName;
-            _msg = string.Format("The property type {0} on vertex type {1} is empty.", myPropertyName, myPredefinition.TypeName);
+            _msg = string.Format("The property type {0} on type {1} is empty.", myPropertyName, myPredefinition.TypeName);
         }
-
-        /// <summary>
-        /// The predefinition that causes the exception.
-        /// </summary>
-        public VertexTypePredefinition Predefinition { get; private set; }
-
-        /// <summary>
-        /// The property that causes the exception.
-        /// </summary>
-        public string PropertyName { get; private set; }
     }
 }

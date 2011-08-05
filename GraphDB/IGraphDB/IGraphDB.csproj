@@ -72,8 +72,13 @@
     <Compile Include="ErrorHandling\Options\UnknownOptionException.cs" />
     <Compile Include="ErrorHandling\QueryPlan\InvalidExpressionException.cs" />
     <Compile Include="ErrorHandling\Type\AGraphDBTypeException.cs" />
+    <Compile Include="ErrorHandling\Type\BaseEdgeTypeNotExistException.cs" />
+    <Compile Include="ErrorHandling\Type\BaseVertexTypeNotExistException.cs" />
+    <Compile Include="ErrorHandling\Type\EmptyTypeNameException.cs" />
+    <Compile Include="ErrorHandling\Type\InvalidBaseTypeException.cs" />
     <Compile Include="ErrorHandling\Type\InvalidTypeException.cs" />
     <Compile Include="ErrorHandling\Type\TypeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\Type\TypeRemoveException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidAlterVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\EmptyPropertyTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DuplicatedAttributeNameException.cs" />
@@ -102,7 +107,7 @@
     <Compile Include="ErrorHandling\VertexTypeErrors\InvalidVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\ListAttributeNotAllowedException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\ParentVertexTypeDoesNotExistException.cs" />
-    <Compile Include="ErrorHandling\VertexTypeErrors\UselessVertexTypeException.cs" />
+    <Compile Include="ErrorHandling\Type\UselessTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\VertexTypeAlreadyExistException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\VertexTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\VertexTypeDoesNotMatchException.cs" />

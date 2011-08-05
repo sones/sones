@@ -19,9 +19,12 @@
 */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
+using sones.GraphDB.Manager.Vertex;
+using sones.GraphDB.Manager.BaseGraph;
 using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDB.Manager.TypeManagement
@@ -32,7 +35,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// The base type manager
         /// </summary>
-        protected BaseTypeManager _baseTypeManager;
+        protected BaseTypeManager               _baseTypeManager;
+
+        protected IManagerOf<IVertexHandler>    _vertexManager;
+        protected BaseGraphStorageManager       _baseStorageManager;
 
         #region ITypeManager Members
 
@@ -69,9 +75,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         //public abstract IBaseType AlterVertexType(RequestAlterVertexType myAlterVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
-        public abstract bool HasType(string myTypeName, 
-                                        SecurityToken mySecurityToken, 
-                                        TransactionToken myTransactionToken);
+        public abstract bool HasType(string myTypeName,
+                                        TransactionToken myTransactionToken,
+                                        SecurityToken mySecurityToken);
 
         public abstract void CleanUpTypes();
 
@@ -83,6 +89,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public abstract void Load(TransactionToken myTransaction, 
                                     SecurityToken mySecurity);
+
+        #endregion
+
+        #region helper methods
+
+        
 
         #endregion
     }
