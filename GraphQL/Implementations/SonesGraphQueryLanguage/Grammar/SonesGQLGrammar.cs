@@ -50,6 +50,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.CollectionWrapper;
 using sones.Plugins.SonesGQL.Statements;
+using System.Globalization;
 
 namespace sones.GraphQL
 {
@@ -2950,10 +2951,16 @@ namespace sones.GraphQL
         {
             var stringBuilder = new StringBuilder();
 
-            if(mySingleAttribute.GetType() == typeof(String))
+            if (mySingleAttribute.GetType() == typeof(String))
                 stringBuilder.Append(String.Concat("'", mySingleAttribute.ToString().Replace(",", "."), "'"));
-            else
-                stringBuilder.Append(String.Concat(mySingleAttribute.ToString().Replace(",", ".")));
+            else 
+                if (mySingleAttribute.GetType() == typeof(DateTime))
+                {
+                    stringBuilder.Append(String.Concat("'", Convert.ToString(mySingleAttribute, new CultureInfo("en-US")), "'"));
+                }
+                else
+                    stringBuilder.Append(String.Concat(mySingleAttribute.ToString().Replace(",", ".")));
+
 
             return stringBuilder.ToString();
         }
