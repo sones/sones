@@ -85,9 +85,15 @@ namespace sones.sonesGraphDBStarter
             {
                 if (!quiet)
                    Console.WriteLine("Initializing persistence layer...");
+ 
                 string configuredLocation = Properties.Settings.Default.PersistenceLocation;
-                Uri location = null;
+                string configuredPageSize = Properties.Settings.Default.PageSize;
+                string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
 
+                /* Configure the location */
+
+                Uri location = null;
+                
                 if (configuredLocation.Contains("file:"))
                 {
                     location = new Uri(configuredLocation);
@@ -99,12 +105,20 @@ namespace sones.sonesGraphDBStarter
                     location = new Uri(@dataPath);
                 }
 
+                /* Configuration for the page size */
+                int pageSize = Int32.Parse(configuredPageSize);
+
+                /* Configuration for the buffer size */
+                int bufferSize = Int32.Parse(configuredBufferSize);
+
+                /* Make a new instance by applying the configuration */
                 try
                 {
                     //Make a new GraphDB instance
-                    GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location } })));
+                    GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location }, { "pageSize", pageSize }, { "bufferSizePages", bufferSize} })));
+                
                     if (!quiet)
-                        Console.WriteLine("Persistence layer initialized...");
+                        Console.WriteLine("Persistence layer initialized.");
                 }
                 catch (Exception a)
                 {
