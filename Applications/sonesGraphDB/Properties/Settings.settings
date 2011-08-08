@@ -20,5 +20,11 @@
     <Setting Name="DatabaseCulture" Type="System.String" Scope="User">
       <Value Profile="(Default)">en-us</Value>
     </Setting>
+    <Setting Name="PageSize" Type="System.String" Scope="User">
+      <Value Profile="(Default)">65536</Value>
+    </Setting>
+    <Setting Name="BufferSizeInPages" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
