@@ -19,6 +19,10 @@
 */
 
 using sones.GraphDS;
+using System;
+using sones.GraphDSServer.Services;
+
+
 
 namespace sones.GraphDSServer
 {
@@ -27,5 +31,24 @@ namespace sones.GraphDSServer
     /// </summary>
     public interface IGraphDSServer : IGraphDSREST, IGraphDS
     {
+        /// <summary>
+        /// Starts a service by the name of the service
+        /// </summary>
+        /// <param name="myServiceName">The name of the service</param>
+        void StartService(String myServiceName);
+
+        /// <summary>
+        /// Stops a service by the name of the service
+        /// </summary>
+        /// <param name="myServiceName">The name of the service</param>
+        void StopService(String myServiceName);
+
+        /// <summary>
+        /// Returns the status of a service 
+        /// </summary>
+        /// <param name="myServiceName">The name of the service</param>
+        /// <returns>The status object of the service</returns>
+        AServiceStatus GetServiceStatus(String myServiceName);
+
     }
 }

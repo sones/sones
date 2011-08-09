@@ -42,6 +42,7 @@ using sones.GraphDS.PluginManager;
 using sones.Library.Network.HttpServer;
 using sones.Library.Network.HttpServer.Security;
 using System.Net.Sockets;
+using sones.GraphDSServer.Services;
 
 namespace sones.GraphDSServer
 {
@@ -96,6 +97,7 @@ namespace sones.GraphDSServer
         /// </summary>
         private readonly Dictionary<String, IGraphQL>   _QueryLanguages;            // dictionary because we can only have one query language instance per name
         private readonly Dictionary<String, ISonesRESTService> _sonesRESTServices;  // dictionary because only one service per interface
+        private readonly Dictionary<String, IService> _IServices;                   // dictionary because only one name per service
         private readonly List<KeyValuePair<String,IDrainPipe>> _DrainPipes;         // you could have multiple drainpipes with different parameters sporting the same name
 
         #endregion
@@ -164,6 +166,24 @@ namespace sones.GraphDSServer
             }
             #endregion
 
+            #region IService Plugins
+
+            if (_plugins.IServicePlugins != null)
+            {
+                foreach (PluginDefinition _pd in _plugins.IServicePlugins)
+                {
+                    // load!
+                    IService loaded = LoadIServicePlugin(_pd);
+                    // add!
+                    if (loaded != null)
+                    {
+                        _IServices.Add(_pd.NameOfPlugin, loaded);
+                    }
+                }
+            }
+
+            #endregion
+
             #region ISonesRESTService Plugins
             if (_plugins.ISonesRESTServicePlugins != null)
             {
@@ -225,6 +245,8 @@ namespace sones.GraphDSServer
             }
         }
 
+        
+
         #endregion
 
         #region Plugin Loading Helpers
@@ -250,6 +272,36 @@ namespace sones.GraphDSServer
         private ISonesRESTService LoadISonesRESTServicePlugins(PluginDefinition myISonesRESTServicePlugin)
         {
             return _pluginManager.GetAndInitializePlugin<ISonesRESTService>(myISonesRESTServicePlugin.NameOfPlugin, myParameter: myISonesRESTServicePlugin.PluginParameter);
+        }
+
+        /// <summary>
+        /// Load the IService plugins
+        /// </summary>
+        private IService LoadIServicePlugin(PluginDefinition myIServicePlugin)
+        {
+            return _pluginManager.GetAndInitializePlugin<IService>(myIServicePlugin.NameOfPlugin, myParameter: myIServicePlugin.PluginParameter);
+        }
+
+        #endregion
+
+        #region IGraphDSServer
+
+        public void StartService(String myServiceName)
+        {
+
+        }
+
+        public void StopService(String myServiceName)
+        {
+
+        }
+
+        public AServiceStatus GetServiceStatus(String myServiceName)
+        {
+            if (!_IServices.ContainsKey(myServiceName))
+                throw new ServiceNotFoundException("The service: " + myServiceName + " could not be found!");
+
+            return _IServices[myServiceName].GetStatus();
         }
 
         #endregion
