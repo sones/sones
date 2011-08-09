@@ -30,16 +30,21 @@ using sones.GraphDB.Manager.Vertex;
 using sones.GraphDB.ErrorHandling;
 using System.Collections;
 using sones.GraphDB.TypeManagement.Base;
+using sones.GraphDB.Request;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
     internal abstract class ACheckTypeManager<T>: ATypeManager<T>
         where T: IBaseType
     {
+        #region Data
+
         /// <summary>
-        /// The expected count of vertex types to add.
+        /// Holds the instance of the Edge- / VertexTypeManager of the MetaManager.
         /// </summary>
-        private const int ExpectedTypes = 100;
+        protected ITypeHandler<T> _TypeManager;
+
+        #endregion
 
         #region ATypeManager member
 
@@ -81,12 +86,6 @@ namespace sones.GraphDB.Manager.TypeManagement
             return null;
         }
 
-        /// <summary>
-        /// Checks if the specified types can be removed.
-        /// </summary>
-        /// <param name="myTypes">The to be removed types.</param>
-        /// <param name="myIgnoreReprimands">Specifies if reprimands on any type in myTypes should be ignored.</param>
-        /// <returns></returns>
         public override Dictionary<long, string> RemoveTypes(IEnumerable<T> myTypes,
                                                                 TransactionToken myTransaction,
                                                                 SecurityToken mySecurity,
@@ -136,6 +135,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         public override void CleanUpTypes()
         { }
 
+        public override abstract T AlterType(IRequestAlterType myAlterTypeRequest,
+                                                TransactionToken myTransactionToken,
+                                                SecurityToken mySecurityToken);
+
         public override abstract void Initialize(IMetaManager myMetaManager);
 
         public override abstract void Load(TransactionToken myTransaction,
@@ -178,13 +181,68 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTypePredefinition">The predefinition which contains the properties.</param>
         protected abstract void ConvertPropertyUniques(ATypePredefinition myTypePredefinition);
 
+        /// <summary>
+        /// Checks if the specified type can be removed.
+        /// </summary>
+        /// <param name="myTypes">The types which should be removed.</param>
+        /// <param name="myTransaction">TransactionToken</param>
+        /// <param name="mySecurity">SecurityToken</param>
+        /// <param name="myIgnoreReprimands">Marks if reprimands are ignored on the types which should be removed.</param>
         protected abstract void CanRemove(IEnumerable<T> myTypes, 
                                             TransactionToken myTransaction, 
                                             SecurityToken mySecurity,
                                             bool myIgnoreReprimands);
 
+        /// <summary>
+        /// Calls a variable number of check functions.
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The alter type request.</param>
+        /// <param name="myType">The type which is going to be altered.</param>
+        /// <param name="myTransactionToken">TransactionToken</param>
+        /// <param name="mySecurityToken">SecurityToken</param>
+        protected abstract void CallCheckFunctions(IRequestAlterType myAlterTypeRequest,
+                                                    T myType,
+                                                    TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken);
+
+        /// <summary>
+        /// Checks the to be added attributes.
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The alter type request.</param>
+        /// <param name="myType">The type.</param>
+        protected abstract void CheckToBeAddedAttributes(IRequestAlterType myAlterTypeRequest,
+                                                            T myType);
+
+        /// <summary>
+        /// Checks the to be removed attributes.
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The alter type request.</param>
+        /// <param name="myType">The type.</param>
+        protected abstract void CheckToBeRemovedAttributes(IRequestAlterType myAlterTypeRequest,
+                                                            T myType);
+
+        /// <summary>
+        /// Checks if the new type name is valid.
+        /// </summary>
+        /// <param name="myAlteredTypeName">The new type name.</param>
+        /// <param name="myTransactionToken">TransactionToken</param>
+        /// <param name="mySecurityToken">SecurityToken</param>
+        protected abstract void CheckNewTypeName(string myAlteredTypeName, 
+                                                    TransactionToken myTransactionToken, 
+                                                    SecurityToken mySecurityToken);
+
+        /// <summary>
+        /// Checks if the names and types of the attributes are valid.
+        /// </summary>
+        /// <param name="myRequest">The alter type request.</param>
+        protected abstract void CheckAttributesNameAndType(IRequestAlterType myRequest);
+
         #endregion
 
+        /// <summary>
+        /// Checks the given type predefinitions and all contained members.
+        /// </summary>
+        /// <param name="myTypePredefinitions">The type predefinintions.</param>
         protected void CheckAdd(IEnumerable<ATypePredefinition> myTypePredefinitions)
         {
             #region prolog
@@ -258,6 +316,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
+        /// <summary>
+        /// Converts the unknown properties into properties / edges.
+        /// </summary>
+        /// <param name="myUnknown">The unknown property predefinition.</param>
+        /// <returns>The property predefinition.</returns>
         protected static PropertyPredefinition ConvertUnknownToProperty(UnknownAttributePredefinition myUnknown)
         {
             if (myUnknown.EdgeType != null)
@@ -287,16 +350,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                 }
 
             return prop;
-        }
-
-        protected static string GetTargetEdgeNameFromAttributeType(string myAttributeType)
-        {
-            return myAttributeType.Split(IncomingEdgePredefinition.TypeSeparator)[1];
-        }
-
-        protected static string GetTargetVertexTypeFromAttributeType(string myAttributeType)
-        {
-            return myAttributeType.Split(IncomingEdgePredefinition.TypeSeparator)[0];
         }
 
         /// <summary>
@@ -333,47 +386,16 @@ namespace sones.GraphDB.Manager.TypeManagement
             return false;
         }
 
-        protected void CheckParentTypeExistInPredefinitions(String myType, IEnumerable<ATypePredefinition> myTypePredefintions)
+        /// <summary>
+        /// Checks if the specified parent type exists inside the given type predefinitions.
+        /// </summary>
+        /// <param name="myType">The type.</param>
+        /// <param name="myTypePredefintions">The type predefinitions.</param>
+        protected static void CheckParentTypeExistInPredefinitions(String myType, 
+                                                            IEnumerable<ATypePredefinition> myTypePredefintions)
         {
             if (!myTypePredefintions.Any(_ => _.TypeName.Equals(myType)))
                 throw new InvalidBaseTypeException(myType);
-        }
-
-        /// <summary>
-        /// Checks the uniqueness of property names on a vertex type predefinition without asking the FS.
-        /// </summary>
-        /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
-        /// <param name="myUniqueNameSet">A set of attribute names defined on this vertex type predefinition.</param>
-        protected void CheckPropertiesUniqueName(ATypePredefinition myTypePredefinition, ISet<string> myUniqueNameSet)
-        {
-            if (myTypePredefinition.Properties != null)
-                foreach (var prop in myTypePredefinition.Properties)
-                {
-                    prop.CheckNull("Property in type predefinition " + myTypePredefinition.TypeName);
-
-                    if (!myUniqueNameSet.Add(prop.AttributeName))
-                        throw new DuplicatedAttributeNameException(myTypePredefinition, prop.AttributeName);
-
-                    CheckPropertyType(myTypePredefinition, prop);
-                }
-        }
-
-        /// <summary>
-        /// Checks if a given property definition has a valid type.
-        /// </summary>
-        /// <param name="myVertexTypeDefinition">The vertex type predefinition that defines the property.</param>
-        /// <param name="myProperty">The property to be checked.</param>
-        protected void CheckPropertyType(ATypePredefinition myTypePredefinition, PropertyPredefinition myProperty)
-        {
-            if (String.IsNullOrWhiteSpace(myProperty.AttributeType))
-            {
-                throw new EmptyPropertyTypeException(myTypePredefinition, myProperty.AttributeName);
-            }
-
-            if (!_baseTypeManager.IsBaseType(myProperty.AttributeType))
-            {
-                throw new UnknownPropertyTypeException(myTypePredefinition, myProperty.AttributeType);
-            }
         }
 
         /// <summary>
@@ -399,84 +421,23 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
+        /// <summary>
+        /// Checks the unique predefinitions.
+        /// </summary>
+        /// <param name="myTypePredefinition">The to be checked unique predefinitions.</param>
         protected static void CheckUniques(ATypePredefinition myTypePredefinition)
         {
             //TODO
             //check that the properties in the uniques are existing in the properties of the predefinition or any parent type
         }
 
+        /// <summary>
+        /// Checks the index predefinitions.
+        /// </summary>
+        /// <param name="myTypePredefinition">The to be checked index predefinitions.</param>
         protected static void CheckIndices(ATypePredefinition myTypePredefinition)
         {
             //TODO
-        }
-
-        /// <summary>
-        /// Checks a list of ATypePredefinitions for duplicate names.
-        /// </summary>
-        /// <param name="myTypeDefinitions">A list of type predefinitions.</param>
-        /// <returns>A dictionary of name to ATypePredefinition.</returns>
-        protected static Dictionary<String, ATypePredefinition> CanAddCheckDuplicates(
-            IEnumerable<ATypePredefinition> myTypePredefinitions)
-        {
-            var result = (myTypePredefinitions is ICollection)
-                ? new Dictionary<String, ATypePredefinition>((myTypePredefinitions as ICollection).Count)
-                : new Dictionary<String, ATypePredefinition>(ExpectedTypes);
-
-            foreach (var predef in myTypePredefinitions)
-            {
-                if (result.ContainsKey(predef.TypeName))
-                    throw new DuplicatedVertexTypeNameException(predef.TypeName);
-
-                result.Add(predef.TypeName, predef);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Sorts a list of type predefinitions topologically regarding their parentPredef type name.
-        /// </summary>
-        /// <param name="myDefsByVertexName"></param>
-        /// <param name="myDefsByParentVertexName"></param>
-        /// <returns> if the vertex type predefinition can be sorted topologically regarding their parentPredef type, otherwise false.</returns>
-        protected static LinkedList<ATypePredefinition> CanAddSortTopolocically(
-            Dictionary<String, ATypePredefinition> myDefsByName,
-            Dictionary<String, IEnumerable<ATypePredefinition>> myDefsByParentName)
-        {
-
-            //The list of topolocically sorted vertex types
-            //In this step, we assume that parent types, that are not in the list of predefinitons are correct.
-            //Correct means: either they are in fs or they are not in fs but then they are not defined. (this will be detected later)
-            var correctRoots = myDefsByParentName
-                .Where(parent => !myDefsByName.ContainsKey(parent.Key))
-                .SelectMany(x => x.Value);
-
-            var result = new LinkedList<ATypePredefinition>(correctRoots);
-
-
-            //Here we step throught the list of topolocically sorted predefinitions.
-            //Each predefinition that is in this list, is a valid parent type for other predefinitions.
-            //Thus we can add all predefinitions, that has parent predefinition in the list to the end of the list.
-            for (var current = result.First; current != null; current = current.Next)
-            {
-                if (!myDefsByParentName.ContainsKey(current.Value.TypeName))
-                    continue;
-
-                //All predefinitions, that has the current predefintion as parent vertex type.
-                var corrects = myDefsByParentName[current.Value.TypeName];
-
-                foreach (var correct in corrects)
-                {
-                    result.AddLast(correct);
-                }
-            }
-
-
-            if (myDefsByName.Count > result.Count)
-                //There are some defintions that are not in the vertex...so they must contain a circle.
-                throw new CircularTypeHierarchyException(myDefsByName.Values.Except(result));
-
-            return result;
         }
 
         /// <summary>
@@ -500,6 +461,154 @@ namespace sones.GraphDB.Manager.TypeManagement
             //            ((long)BaseTypes.Vertex).Equals(myTypeID) ||
             //            ((long)BaseTypes.VertexType).Equals(myTypeID) ||
             //            ((long)BaseTypes.Weighted).Equals(myTypeID);
+        }
+
+        /// <summary>
+        /// Checks that the attribute name and type of the given AAttributePredefinitions are not null or empty.
+        /// </summary>
+        /// <param name="myPredefinitions">The to be checked predefinitions.</param>
+        protected static void CheckNameAndTypeOfAttributePredefinitions(IEnumerable<AAttributePredefinition> myPredefinitions)
+        {
+            if (myPredefinitions != null)
+                foreach (var predef in myPredefinitions)
+                {
+                    if (predef.AttributeName.IsNullOrEmpty())
+                        throw new EmptyAttributeNameException(predef.GetType());
+
+                    if (predef.AttributeType.IsNullOrEmpty())
+                        throw new EmptyAttributeTypeException(predef.GetType());
+                }
+        }
+
+        /// <summary>
+        /// Checks that the attribute name of the given MandatoryPredefinitions are not null or empty.
+        /// </summary>
+        /// <param name="myPredefinitions">The to be checked predefinitions.</param>
+        protected static void CheckNameAndTypeOfAttributePredefinitions(IEnumerable<MandatoryPredefinition> myPredefinitions)
+        {
+            if (myPredefinitions != null)
+                foreach (var predef in myPredefinitions)
+                    if (predef.MandatoryAttribute.IsNullOrEmpty())
+                        throw new EmptyAttributeNameException(predef.GetType());
+        }
+
+        /// <summary>
+        /// Checks that the attribute name of the given MandatoryPredefinitions are not null or empty.
+        /// </summary>
+        /// <param name="myPredefinitions">The to be checked predefinitions.</param>
+        protected static void CheckNameAndTypeOfAttributePredefinitions(IEnumerable<UniquePredefinition> myPredefinitions)
+        {
+            if (myPredefinitions != null)
+                foreach (var predef in myPredefinitions)
+                    foreach(var prop in predef.Properties)
+                        if (prop.IsNullOrEmpty())
+                            throw new EmptyAttributeNameException(predef.GetType(), "A property name inside a UniquePredefinition was null or empty.");
+        }
+
+        /// <summary>
+        /// Checks that the attribute name of the given MandatoryPredefinitions are not null or empty.
+        /// </summary>
+        /// <param name="myPredefinitions">The to be checked predefinitions.</param>
+        protected static void CheckNameAndTypeOfAttributePredefinitions(IEnumerable<IndexPredefinition> myPredefinitions)
+        {
+            if (myPredefinitions != null)
+                foreach (var predef in myPredefinitions)
+                {
+                    if (predef.VertexTypeName.IsNullOrEmpty())
+                        throw new IndexCreationException(predef, "Name of vertex type is null or empty.");
+
+                    if (predef.Properties == null || predef.Properties.Count == 0)
+                        throw new IndexCreationException(predef, "Indexed properties cannot be null or empty.");
+
+                    foreach (var prop in predef.Properties)
+                        if (prop.IsNullOrEmpty())
+                            throw new EmptyAttributeNameException(predef.GetType(), "A property name inside a UniquePredefinition was null or empty.");
+                }
+        }
+
+        /// <summary>
+        /// Checks that the attribute names are not null or empty.
+        /// </summary>
+        /// <param name="myAttributes">The to be checked attributes.</param>
+        protected static void CheckNameOfAttributeList(IEnumerable<String> myAttributes)
+        {
+            if (myAttributes != null)
+                foreach (var attr in myAttributes)
+                    if (attr.IsNullOrEmpty())
+                        throw new EmptyAttributeNameException();
+        }
+
+        /// <summary>
+        /// Checks the to be renamed attributes
+        /// </summary>
+        /// <param name="myAlterTypeRequest"></param>
+        /// <param name="myType"></param>
+        protected static void CheckToBeRenamedAttributes(IRequestAlterType myAlterTypeRequest, T myType)
+        {
+            if (myAlterTypeRequest.ToBeRenamedProperties == null)
+                return;
+
+            foreach (var aToBeRenamedAttributes in myAlterTypeRequest.ToBeRenamedProperties)
+            {
+                if (aToBeRenamedAttributes.Key.IsNullOrEmpty())
+                    throw new EmptyAttributeNameException(
+                                "The to be renamed attribute name is null or empty.");
+
+                if (aToBeRenamedAttributes.Value.IsNullOrEmpty())
+                    throw new EmptyAttributeNameException(
+                                String.Format("The to be attribute name to which the attribute {0} should be renamed is null or empty.", 
+                                                aToBeRenamedAttributes.Key));
+
+                if (!CheckOldName(aToBeRenamedAttributes.Key, myType))
+                {
+                    throw new InvalidAlterTypeException(
+                        String.Format("It is not possible to rename {0} into {1}. The to be renamed attribute does not exist.", 
+                                        aToBeRenamedAttributes.Key, aToBeRenamedAttributes.Value));
+                }
+
+                if (!CheckNewName(aToBeRenamedAttributes.Value, myType))
+                {
+                    throw new InvalidAlterTypeException(
+                        String.Format("It is not possible to rename {0} into {1}. The new attribute name already exists.", 
+                                        aToBeRenamedAttributes.Key, aToBeRenamedAttributes.Value));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if the old name exists on the given vertex type
+        /// </summary>
+        /// <param name="myOldAttributeName">The old attribute name.</param>
+        /// <param name="myType">The type.</param>
+        /// <returns></returns>
+        protected static bool CheckOldName(string myOldAttributeName, T myType)
+        {
+            if (myOldAttributeName != null)
+            {
+                var attributesOfCurrentVertexType = myType.GetAttributeDefinitions(false).ToList();
+
+                return attributesOfCurrentVertexType.Any(_ => _.Name == myOldAttributeName);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if the new name of the attribute already exists
+        /// </summary>
+        /// <param name="myNewAttributeName">The new attribute name.</param>
+        /// <param name="myType">The type.</param>
+        /// <returns></returns>
+        protected static bool CheckNewName(string myNewAttributeName, T myType)
+        {
+            if (myNewAttributeName != null)
+            {
+                return myType.GetKinsmenTypesAndSelf()
+                    .Select(aVertexType => aVertexType.GetAttributeDefinitions(false).ToArray())
+                    .All(attributesOfCurrentVertexType => !attributesOfCurrentVertexType.Any(_ => _.Name == myNewAttributeName));
+            }
+
+            return true;
         }
 
         #endregion

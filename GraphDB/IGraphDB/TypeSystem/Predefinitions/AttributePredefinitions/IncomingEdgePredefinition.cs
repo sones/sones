@@ -22,20 +22,12 @@ using System;
 
 namespace sones.GraphDB.TypeSystem
 {
-    public class IncomingEdgePredefinition: AAttributePredefinition
+    /// <summary>
+    /// The definition for an incoming edge.
+    /// </summary>
+    public sealed class IncomingEdgePredefinition : AAttributePredefinition
     {
         public const char TypeSeparator = '.';
-
-        ///// <summary>
-        ///// Creates a definition for an incoming edge.
-        ///// </summary>
-        ///// <param name="myEdgeName">The name of the IncomingEdge</param>
-        //private IncomingEdgePredefinition(String myEdgeName, String mySourceVertexTypeName, String myOutgoingEdgeName)
-        //    : base(myEdgeName, "")
-        //{
-        //    if (mySourceVertexTypeName != null && myOutgoingEdgeName != null)
-        //        AttributeType = Combine(mySourceVertexTypeName, myOutgoingEdgeName);
-        //}
 
         public IncomingEdgePredefinition(String myEdgeName, VertexTypePredefinition mySourceVertexType, OutgoingEdgePredefinition myOutgoingEdge)
             : base(myEdgeName, "")
@@ -108,7 +100,5 @@ namespace sones.GraphDB.TypeSystem
         {
             return String.Join(TypeSeparator.ToString(), myTargetType, myTargetEdgeName);
         }
-
-
     }
 }

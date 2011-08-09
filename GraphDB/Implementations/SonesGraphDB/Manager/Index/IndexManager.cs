@@ -104,7 +104,7 @@ namespace sones.GraphDB.Manager.Index
         {
             myIndexDefinition.CheckNull("myIndexDefinition");
 
-            if (myIndexDefinition.Name != null && myIndexDefinition.Name.StartsWith("sones"))
+            if (myIndexDefinition.Name != null || myIndexDefinition.Name.StartsWith("sones"))
                 throw new Exception("It is not allowed to add an index with a name, that starts with 'sones'.");
 
             var vertexType = _vertexTypeManager.ExecuteManager.GetType(myIndexDefinition.VertexTypeName, myTransaction, mySecurity);
@@ -126,7 +126,7 @@ namespace sones.GraphDB.Manager.Index
                     throw new Exception("The property is not defined on the vertex type " + vertexType.Name + ", it is defined on a parent type.");
             }
 
-            var indexID = _idManager[(long)BaseTypes.Index].GetNextID();
+            var indexID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Index).GetNextID();
             var info = new VertexInformation((long)BaseTypes.Index, indexID, 0, myIndexDefinition.Edition);
 
             var typeClass = myIndexDefinition.TypeName ?? GetBestMatchingIndexName(false, false, false);
@@ -167,7 +167,7 @@ namespace sones.GraphDB.Manager.Index
 
             foreach (var childType in vertexType.GetDescendantVertexTypes())
             {
-                var childID = _idManager[(long)BaseTypes.Index].GetNextID();
+                var childID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Index).GetNextID();
                 var childName = CreateIndexName(myIndexDefinition, childType);
 
     
@@ -485,12 +485,24 @@ namespace sones.GraphDB.Manager.Index
                     _ownIndex = index as ISingleValueIndex<IComparable, Int64>;
             }
 
-            _idManager[(long)BaseTypes.Index].SetToMaxID(maxID);
+            _idManager.GetVertexTypeUniqeID((long)BaseTypes.Index).SetToMaxID(maxID);
 
-            RebuildIndices(_vertexTypeManager.ExecuteManager.GetType((long)BaseTypes.BaseType, myTransaction, mySecurity), myTransaction, mySecurity, true);
-            RebuildIndices(_vertexTypeManager.ExecuteManager.GetType((long)BaseTypes.VertexType, myTransaction, mySecurity), myTransaction, mySecurity, true);
-            RebuildIndices(_vertexTypeManager.ExecuteManager.GetType((long)BaseTypes.EdgeType, myTransaction, mySecurity), myTransaction, mySecurity, true);
-            RebuildIndices(_vertexTypeManager.ExecuteManager.GetType((long)BaseTypes.Index, myTransaction, mySecurity), myTransaction, mySecurity, true);
+            RebuildIndices(_vertexTypeManager.ExecuteManager.GetType((long)BaseTypes.BaseType, 
+                                                                        myTransaction, 
+                                                                        mySecurity), 
+                            myTransaction, mySecurity, true);
+            RebuildIndices(_vertexTypeManager.ExecuteManager.GetType((long)BaseTypes.VertexType, 
+                                                                        myTransaction, 
+                                                                        mySecurity), 
+                            myTransaction, mySecurity, true);
+            RebuildIndices(_vertexTypeManager.ExecuteManager.GetType((long)BaseTypes.EdgeType, 
+                                                                        myTransaction, 
+                                                                        mySecurity), 
+                            myTransaction, mySecurity, true);
+            RebuildIndices(_vertexTypeManager.ExecuteManager.GetType((long)BaseTypes.Index, 
+                                                                        myTransaction, 
+                                                                        mySecurity), 
+                            myTransaction, mySecurity, true);
         }
 
         private Dictionary<string, object> FillOptions(IDictionary<string, object> myParameters, IEnumerable<KeyValuePair<string, object>> myOptions)

@@ -32,8 +32,7 @@ namespace sones.GraphDB.TypeSystem
         // The name of the vertex type that is going to be created
         public readonly string TypeName;
         protected List<AAttributePredefinition> _attributes;
-        protected List<UniquePredefinition> _uniques;
-
+        
         protected int _properties = 0;
         protected int _unknown = 0;
 
@@ -73,14 +72,6 @@ namespace sones.GraphDB.TypeSystem
             get { return (_attributes == null) ? null : _attributes.OfType<UnknownAttributePredefinition>(); }
         }
 
-        /// <summary>
-        /// The unique definitions of this vertex type.
-        /// </summary>
-        public IEnumerable<UniquePredefinition> Uniques
-        {
-            get { return (_uniques == null) ? null : _uniques.AsReadOnly(); }
-        }
-                
         /// <summary>
         /// Gets if the vertex type will be sealed.
         /// </summary>

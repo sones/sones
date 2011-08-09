@@ -28,6 +28,7 @@ using sones.Library.LanguageExtensions;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.ErrorHandling;
+using sones.GraphDB.Request;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -35,9 +36,86 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         #region ACheckTypeManager member
 
+        public override IEdgeType AlterType(IRequestAlterType myAlterTypeRequest,
+                                            TransactionToken myTransactionToken,
+                                            SecurityToken mySecurityToken)
+        {
+            RequestAlterEdgeType myRequest = myAlterTypeRequest as RequestAlterEdgeType;
+
+            var edgeType = _TypeManager.GetType(myRequest.TypeName,
+                                                    myTransactionToken,
+                                                    mySecurityToken);
+
+            #region check to be added
+
+            if (myRequest.ToBeAddedUnknownAttributes != null)
+            {
+                var toBeConverted = myRequest.ToBeAddedUnknownAttributes.ToArray();
+
+                foreach (var unknown in toBeConverted)
+                {
+                    if (_baseTypeManager.IsBaseType(unknown.AttributeType))
+                    {
+                        var prop = ConvertUnknownToProperty(unknown);
+
+                        myRequest.AddProperty(prop);
+                    }
+                }
+
+                myRequest.ResetUnknown();
+            }
+
+            #endregion
+
+            #region check to be removed
+
+            if (myRequest.ToBeRemovedUnknownAttributes != null)
+            {
+                foreach (var unknownProp in myRequest.ToBeRemovedUnknownAttributes)
+                {
+                    var attrDef = edgeType.GetAttributeDefinition(unknownProp);
+
+                    if (attrDef == null)
+                        throw new VertexAttributeIsNotDefinedException(unknownProp);
+
+                    switch (attrDef.Kind)
+                    {
+                        case AttributeType.Property:
+                            myRequest.RemoveProperty(unknownProp);
+                            break;
+
+                        case AttributeType.OutgoingEdge:
+                            throw new Exception("Invalid AttributeType [OutgoingEdge] in alter type request!");
+
+                        case AttributeType.IncomingEdge:
+                            throw new Exception("Invalid AttributeType [IncomingEdge] in alter type request!");
+
+                        case AttributeType.BinaryProperty:
+                            throw new Exception("Invalid AttributeType [BinaryProperty] in alter type request!");
+
+                        default:
+                            throw new Exception("The enumeration AttributeType was changed, but not this switch statement.");
+                    }
+                }
+
+                myRequest.ClearToBeRemovedUnknownAttributes();
+            }
+
+            #endregion
+
+            #region checks
+
+            CallCheckFunctions(myAlterTypeRequest, edgeType, myTransactionToken, mySecurityToken);
+
+            #endregion
+
+            return null;
+        }
+
         public override void Initialize(IMetaManager myMetaManager)
         {
-            _baseTypeManager = myMetaManager.BaseTypeManager;
+            _TypeManager        = myMetaManager.EdgeTypeManager.ExecuteManager;
+            _baseTypeManager    = myMetaManager.BaseTypeManager;
         }
 
         public override void Load(TransactionToken myTransaction, 
@@ -50,6 +128,10 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region private abstract helper
 
+        /// <summary>
+        /// Converts the properties which marked as unique into unique predefinitions.
+        /// </summary>
+        /// <param name="myTypePredefinition">The type predefinition.</param>
         protected override void ConvertPropertyUniques(ATypePredefinition myTypePredefinition)
         {
             if (myTypePredefinition.Properties != null)
@@ -121,6 +203,13 @@ namespace sones.GraphDB.Manager.TypeManagement
             CheckPropertiesUniqueName(vertexTypeDefinition, uniqueNameSet);
         }
 
+        /// <summary>
+        /// Checks if tje given types can be removed.
+        /// </summary>
+        /// <param name="myTypes">The to be removed types.</param>
+        /// <param name="myTransaction">TransactionToken</param>
+        /// <param name="mySecurity">SecurityToken</param>
+        /// <param name="myIgnoreReprimands">Marks if reprimands are ignored on the to be removed types.</param>
         protected override void CanRemove(IEnumerable<IEdgeType> myTypes,
                                             TransactionToken myTransaction,
                                             SecurityToken mySecurity,
@@ -151,6 +240,125 @@ namespace sones.GraphDB.Manager.TypeManagement
                     throw new TypeRemoveException<IEdgeType>(delType.Name, "The given type has child types and cannot be removed.");
 
                 #endregion
+            }
+
+            #endregion
+        }
+
+        /// <summary>
+        /// Calls various check function which check the specified member inside the RequestAlterEdgeType
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The request which contains the to be checked member.</param>
+        /// <param name="myType">The Type which is returned.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected override void CallCheckFunctions(IRequestAlterType myAlterTypeRequest,
+                                                    IEdgeType myType,
+                                                    TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken)
+        {
+            CheckAttributesNameAndType(myAlterTypeRequest);
+
+            CheckToBeAddedAttributes(myAlterTypeRequest, myType);
+            CheckToBeRemovedAttributes(myAlterTypeRequest, myType);
+            CheckToBeRenamedAttributes(myAlterTypeRequest, myType);
+            CheckNewTypeName(myAlterTypeRequest.AlteredTypeName, myTransactionToken, mySecurityToken);
+        }
+
+        /// <summary>
+        /// Calls a Check function foreach IEnumerable of definied attributes.
+        /// </summary>
+        /// <param name="myRequest">The alter type request which contains the attributes.</param>
+        protected override void CheckAttributesNameAndType(IRequestAlterType myRequest)
+        {
+            CheckNameAndTypeOfAttributePredefinitions(myRequest.ToBeAddedProperties);
+            CheckNameAndTypeOfAttributePredefinitions(myRequest.ToBeAddedUnknownAttributes);
+
+            CheckNameOfAttributeList(myRequest.ToBeRemovedProperties);
+            CheckNameOfAttributeList(myRequest.ToBeRemovedUnknownAttributes);
+        }
+
+        /// <summary>
+        /// Checks if the new vertex type name already exists
+        /// </summary>
+        /// <param name="myAlteredTypeName">The new name.</param>
+        /// <param name="mySecurityToken">TransactionToken.</param>
+        /// <param name="myTransactionToken">SecurityToken.</param>
+        protected override void CheckNewTypeName(String myAlteredTypeName, 
+                                                    TransactionToken myTransactionToken, 
+                                                    SecurityToken mySecurityToken)
+        {
+            if (myAlteredTypeName != null && _TypeManager.HasType(myAlteredTypeName, myTransactionToken, mySecurityToken))
+            {
+                throw new EdgeTypeAlreadyExistException(myAlteredTypeName);
+            }
+        }
+
+        /// <summary>
+        /// Checks if the to be added attributes exist in the given vertex type or derived oness
+        /// </summary>
+        /// <param name="myAlterVertexTypeRequest"></param>
+        /// <param name="vertexType"></param>
+        protected override void CheckToBeAddedAttributes(IRequestAlterType myAlterTypeRequest, 
+                                                            IEdgeType myType)
+        {
+            foreach (var aType in myType.GetDescendantEdgeTypesAndSelf())
+            {
+                var attributesOfCurrentVertexType = aType.GetAttributeDefinitions(false).ToList();
+
+                #region property
+
+                if (myAlterTypeRequest.ToBeAddedProperties != null)
+                {
+                    foreach (var aToBeAddedAttribute in myAlterTypeRequest.ToBeAddedProperties)
+                    {
+                        if (attributesOfCurrentVertexType.Any(_ => _.Name == aToBeAddedAttribute.AttributeName))
+                        {
+                            throw new EdgeAttributeAlreadyExistException(aToBeAddedAttribute.AttributeName);
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region unknown attributes
+
+                if (myAlterTypeRequest.ToBeAddedUnknownAttributes != null)
+                {
+                    foreach (var aToBeAddedAttribute in myAlterTypeRequest.ToBeAddedUnknownAttributes)
+                    {
+                        if (attributesOfCurrentVertexType.Any(_ => _.Name == aToBeAddedAttribute.AttributeName))
+                        {
+                            throw new EdgeAttributeAlreadyExistException(aToBeAddedAttribute.AttributeName);
+                        }
+                    }
+                }
+
+                #endregion
+            }
+        }
+
+        /// <summary>
+        /// Checks if the to be removed attributes exists on this type
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The request.</param>
+        /// <param name="myType">The type.</param>
+        protected override void CheckToBeRemovedAttributes(IRequestAlterType myAlterTypeRequest, 
+                                                            IEdgeType myType)
+        {
+            #region properties
+
+            var attributesOfCurrentVertexType = myType.GetAttributeDefinitions(false).ToList();
+
+            if (myAlterTypeRequest.ToBeRemovedProperties != null)
+            {
+                foreach (var aToBeDeletedAttribute in myAlterTypeRequest.ToBeRemovedProperties)
+                {
+                    if (!attributesOfCurrentVertexType.Any(_ => _.Name == aToBeDeletedAttribute))
+                    {
+                        throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute);
+                    }
+                }
             }
 
             #endregion

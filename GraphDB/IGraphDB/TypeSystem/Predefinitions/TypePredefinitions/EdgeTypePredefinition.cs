@@ -89,22 +89,6 @@ namespace sones.GraphDB.TypeSystem
         }
 
         /// <summary>
-        /// Adds a unique definition.
-        /// </summary>
-        /// <param name="myUniqueDefinition">The unique definition that is going to be added.</param>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeTypePredefinition AddUnique(UniquePredefinition myUniqueDefinition)
-        {
-            if (myUniqueDefinition != null)
-            {
-                _uniques = (_uniques) ?? new List<UniquePredefinition>();
-                _uniques.Add(myUniqueDefinition);
-            }
-
-            return this;
-        }
-
-        /// <summary>
         /// Marks the vertex type as sealed.
         /// </summary>
         /// <returns>The reference of the current object. (fluent interface).</returns>

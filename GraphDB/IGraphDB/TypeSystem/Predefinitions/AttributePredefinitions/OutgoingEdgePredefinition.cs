@@ -19,6 +19,7 @@
 */
 
 using System;
+using System.Linq;
 
 namespace sones.GraphDB.TypeSystem
 {
@@ -27,7 +28,6 @@ namespace sones.GraphDB.TypeSystem
     /// </summary>
     public sealed class OutgoingEdgePredefinition: AAttributePredefinition
     {
-
         #region Constant
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace sones.GraphDB.TypeSystem
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public OutgoingEdgePredefinition SetEdgeType(String myEdgeType)
         {
-            if (myEdgeType != null)
+            if (!String.IsNullOrWhiteSpace(myEdgeType))
                 EdgeType = myEdgeType;
             return this;
         }
@@ -182,8 +182,5 @@ namespace sones.GraphDB.TypeSystem
 
 
         #endregion
-
-
-
     }
 }

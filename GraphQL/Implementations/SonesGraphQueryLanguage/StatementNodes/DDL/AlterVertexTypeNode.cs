@@ -321,7 +321,7 @@ namespace sones.GraphQL.StatementNodes.DDL
         {
             var command = (AlterType_RenameVertexType)myAlterCommand;
 
-            result.RenameVertexType(command.NewName);
+            result.RenameType(command.NewName);
         }
 
         private void ProcessRenameAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)

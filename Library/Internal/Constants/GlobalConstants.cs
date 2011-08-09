@@ -10,6 +10,11 @@ namespace sones.Constants
         public const string Vertex = "Vertex";
 
         /// <summary>
+        /// The name of the vertex type all other vertex types inherit from.
+        /// </summary>
+        public const string Edge = "Edge";
+
+        /// <summary>
         /// The name of the property Comment on vertex type Vertex.
         /// </summary>
         public const string VertexDotComment = "Comment";

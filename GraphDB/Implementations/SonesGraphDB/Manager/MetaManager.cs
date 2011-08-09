@@ -167,7 +167,7 @@ namespace sones.GraphDB.Manager
         {
             foreach (var aUserDefinedVertexType in result._vertexTypeManager.ExecuteManager.GetAllTypes(myTransaction, mySecurity))
             {
-                myIDManager[aUserDefinedVertexType.ID].SetToMaxID(myVertexStore.GetHighestVertexID(mySecurity, myTransaction, aUserDefinedVertexType.ID) + 1);
+                myIDManager.GetVertexTypeUniqeID(aUserDefinedVertexType.ID).SetToMaxID(myVertexStore.GetHighestVertexID(mySecurity, myTransaction, aUserDefinedVertexType.ID) + 1);
             }
         }
 

@@ -42,12 +42,19 @@
   <ItemGroup>
     <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\AGraphDBException.cs" />
+    <Compile Include="ErrorHandling\Attribute\EmptyAttributeNameException.cs" />
+    <Compile Include="ErrorHandling\Attribute\EmptyAttributeTypeException.cs" />
+    <Compile Include="ErrorHandling\Attribute\InvalidAttributeNameException.cs" />
     <Compile Include="ErrorHandling\DBObjectErrors\DBObjectCollisionException.cs" />
     <Compile Include="ErrorHandling\DBObjectErrors\AGraphDBObjectException.cs" />
+    <Compile Include="ErrorHandling\EdgeTypeAttributesErrors\AGraphDBEdgeAttributeException.cs" />
+    <Compile Include="ErrorHandling\EdgeTypeAttributesErrors\EdgeAttributeAlreadyExistsException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeErrors\AGraphDBVertexTypeException.cs" />
-    <Compile Include="ErrorHandling\EdgeTypeErrors\EmptyVertexTypeNameException.cs" />
+    <Compile Include="ErrorHandling\EdgeTypeErrors\EdgeTypeAlreadyExistException.cs" />
+    <Compile Include="ErrorHandling\EdgeTypeErrors\EmptyEdgeTypeNameException.cs" />
     <Compile Include="ErrorHandling\Expression\InvalidLikeOperationException.cs" />
+    <Compile Include="ErrorHandling\IndexErrors\EmptyVertexTypeNameOnIndexException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexRemoveException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexAttributeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexCreationException.cs" />
@@ -64,6 +71,7 @@
     <Compile Include="ErrorHandling\Attribute\AttributeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\Attribute\MandatoryConstraintViolationException.cs" />
     <Compile Include="ErrorHandling\Attribute\PropertyHasWrongTypeException.cs" />
+    <Compile Include="ErrorHandling\IndexErrors\InvalidIndexTypeNameException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\RebuildIndicesFaildException.cs" />
     <Compile Include="ErrorHandling\Insert\AbstractConstraintViolationException.cs" />
     <Compile Include="ErrorHandling\Insert\AGraphDBInsertException.cs" />
@@ -74,9 +82,11 @@
     <Compile Include="ErrorHandling\Type\AGraphDBTypeException.cs" />
     <Compile Include="ErrorHandling\Type\BaseEdgeTypeNotExistException.cs" />
     <Compile Include="ErrorHandling\Type\BaseVertexTypeNotExistException.cs" />
+    <Compile Include="ErrorHandling\Type\DuplicatedTypeNameException.cs" />
     <Compile Include="ErrorHandling\Type\EmptyTypeNameException.cs" />
     <Compile Include="ErrorHandling\Type\InvalidBaseTypeException.cs" />
     <Compile Include="ErrorHandling\Type\InvalidTypeException.cs" />
+    <Compile Include="ErrorHandling\Type\SealedBaseTypeException.cs" />
     <Compile Include="ErrorHandling\Type\TypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\Type\TypeRemoveException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidAlterVertexTypeException.cs" />
@@ -124,8 +134,9 @@
     <Compile Include="IReadOnlyGraphDB.cs" />
     <Compile Include="IReadWriteGraphDB.cs" />
     <Compile Include="Manager\ILogicExpressionOptimizer.cs" />
-    <Compile Include="Request\AlterEdgeType\RequestAlterEdgeType.cs" />
-    <Compile Include="Request\AlterVertexType\RequestAlterVertexType.cs" />
+    <Compile Include="Request\AlterType\AlterEdgeType\RequestAlterEdgeType.cs" />
+    <Compile Include="Request\AlterType\AlterVertexType\RequestAlterVertexType.cs" />
+    <Compile Include="Request\AlterType\IRequestAlterType.cs" />
     <Compile Include="Request\Clear\RequestClear.cs" />
     <Compile Include="Request\Converter.cs" />
     <Compile Include="TypeSystem\Predefinitions\TypePredefinitions\ATypePredefinition.cs" />

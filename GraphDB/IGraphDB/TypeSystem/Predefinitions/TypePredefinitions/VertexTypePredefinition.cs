@@ -31,7 +31,8 @@ namespace sones.GraphDB.TypeSystem
     {
         #region Data
 
-        private List<IndexPredefinition> _indices;
+        private List<IndexPredefinition>    _indices;
+        protected List<UniquePredefinition> _uniques;
 
         private int _binaries = 0;
         private int _incoming = 0;
@@ -84,6 +85,14 @@ namespace sones.GraphDB.TypeSystem
             get { return (_attributes == null) ? null : _attributes.OfType<IncomingEdgePredefinition>(); }
         }
 
+        /// <summary>
+        /// The unique definitions of this vertex type.
+        /// </summary>
+        public IEnumerable<UniquePredefinition> Uniques
+        {
+            get { return (_uniques == null) ? null : _uniques.AsReadOnly(); }
+        }
+                
         #endregion
 
         #region Constructor

@@ -257,7 +257,7 @@ namespace sones.GraphDB.Manager.Vertex
         {
             long vertexID = (myInsertDefinition.VertexUUID.HasValue)
                 ? myInsertDefinition.VertexUUID.Value
-                : _idManager[myVertexType.ID].GetNextID();
+                : _idManager.GetVertexTypeUniqeID(myVertexType.ID).GetNextID();
 
             var source = new VertexInformation(myVertexType.ID, vertexID);
             long creationdate = DateTime.UtcNow.ToBinary();
@@ -281,7 +281,7 @@ namespace sones.GraphDB.Manager.Vertex
             ExtractVertexProperties(ref edition, ref revision, ref comment, ref vertexID, ref creationdate, ref modificationDate, structured);
 
             //set id to maximum to allow user set UUIDs
-            _idManager[myVertexType.ID].SetToMaxID(vertexID);
+            _idManager.GetVertexTypeUniqeID(myVertexType.ID).SetToMaxID(vertexID);
 
             return Tuple.Create(revision, new VertexAddDefinition(vertexID, myVertexType.ID, edition, hyperEdges, singleEdges, null, binaries, comment, creationdate, modificationDate, structured, myInsertDefinition.UnstructuredProperties));
         }

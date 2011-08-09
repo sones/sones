@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.GraphDB.Request;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -106,9 +107,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                                         SecurityToken mySecurity);
 
         /// <summary>
-        /// Removes all vertices of a given  type.
+        /// Removes all vertices of a given type.
         /// </summary>
-        /// <param name="myTypeID">The  type id that should be truncated</param>
+        /// <param name="myTypeID">The type id that should be truncated</param>
         /// <param name="myTransactionToken">A transaction token for this operation.</param>
         /// <param name="mySecurityToken">A security token for this operation.</param>
         void TruncateType(long myTypeID, 
@@ -116,22 +117,24 @@ namespace sones.GraphDB.Manager.TypeManagement
                             SecurityToken mySecurityToken);
 
         /// <summary>
-        /// Removes all vertices of a given  type.
+        /// Removes all vertices of a given  ype.
         /// </summary>
-        /// <param name="myTypeName">The  type name that should be truncated</param>
+        /// <param name="myTypeName">The type name that should be truncated</param>
         /// <param name="myTransactionToken">A transaction token for this operation.</param>
         /// <param name="mySecurityToken">A security token for this operation.</param>
         void TruncateType(string myTypeName, 
                             TransactionToken TransactionToken, 
                             SecurityToken SecurityToken);
 
-        ///// <summary>
-        ///// Alteres a certain  type
-        ///// </summary>
-        ///// <param name="myAlterTypeRequest">The alter  type request</param>
-        ///// <param name="mySecurityToken">The current security token</param>
-        ///// <param name="myTransactionToken">The current transaction token</param>
-        //IBaseType AlterType(RequestAlterVertexType myAlterTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        /// <summary>
+        /// Alteres a certain type
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The alter type request</param>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        T AlterType(IRequestAlterType myAlterTypeRequest,
+                    TransactionToken myTransactionToken,
+                    SecurityToken mySecurityToken);
 
         void CleanUpTypes();
     }
