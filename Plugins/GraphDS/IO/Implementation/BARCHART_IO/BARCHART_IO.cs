@@ -221,7 +221,7 @@ namespace sones.Plugins.GraphDS.IO
             StringBuilder SB = new StringBuilder();
 
             SB.Append("goosh.gui.out(\'");
-            SB.Append(input.Replace("\n", "<br>"));
+            SB.Append(input.Replace("\n", "<br>").Replace("\'", "\\\'").Replace("\"", "\\\""));
             SB.Append("\');");
 
             return SB.ToString();
