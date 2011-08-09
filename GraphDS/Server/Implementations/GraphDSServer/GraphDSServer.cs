@@ -42,7 +42,8 @@ using sones.GraphDS.PluginManager;
 using sones.Library.Network.HttpServer;
 using sones.Library.Network.HttpServer.Security;
 using System.Net.Sockets;
-using sones.GraphDSServer.Services;
+using sones.Plugins.GraphDS.Services;
+using sones.GraphDS;
 
 namespace sones.GraphDSServer
 {
@@ -119,6 +120,7 @@ namespace sones.GraphDSServer
             _QueryLanguages = new Dictionary<string, IGraphQL>();
             _sonesRESTServices = new Dictionary<string, ISonesRESTService>();
             _DrainPipes = new List<KeyValuePair<String, IDrainPipe>>();
+            _IServices = new Dictionary<String, IService>();
 
             #region Load Configured Plugins
             GraphDSPlugins _plugins = Plugins;
@@ -288,20 +290,51 @@ namespace sones.GraphDSServer
 
         public void StartService(String myServiceName)
         {
+            IService Service = null;
+            IGraphDS GraphDS = this as IGraphDS;
+            Dictionary<string, object> StandardParameter = new Dictionary<string, object>();
+            StandardParameter.Add("GraphDS",GraphDS);
 
+            if (!_IServices.TryGetValue(myServiceName, out Service))
+            {
+                try
+                {
+                    Service = _pluginManager.GetAndInitializePlugin<IService>(myServiceName, StandardParameter);
+                }
+                catch
+                {
+                    throw new ServiceNotFoundException("The service " + myServiceName + " was not found!");
+                }
+                _IServices.Add(Service.PluginName, Service);
+            }
+
+            Service.Start();
         }
 
         public void StopService(String myServiceName)
         {
-
+            IService Service = null;
+            if (_IServices.TryGetValue(myServiceName, out Service))
+            {
+                try
+                {
+                    Service.Stop();
+                }
+                catch (Exception Ex)
+                {
+                    throw new ServiceException("An error occured when trying to stop " + myServiceName, Ex);
+                }
+                
+            }
+            else
+            {
+                throw new ServiceException("The service " + myServiceName + "is unrecognized! Maybe the service was never started.");
+            }
         }
 
         public AServiceStatus GetServiceStatus(String myServiceName)
         {
-            if (!_IServices.ContainsKey(myServiceName))
-                throw new ServiceNotFoundException("The service: " + myServiceName + " could not be found!");
-
-            return _IServices[myServiceName].GetStatus();
+            return null;
         }
 
         #endregion

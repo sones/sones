@@ -26,6 +26,7 @@ using sones.Library.VersionedPluginManager;
 using sones.GraphQL;
 using sones.Plugins.GraphDS.RESTService;
 using sones.Plugins.GraphDS;
+using sones.Plugins.GraphDS.Services;
 
 namespace sones.GraphDS.PluginManager.GraphDSPluginManager
 {
@@ -46,7 +47,8 @@ namespace sones.GraphDS.PluginManager.GraphDSPluginManager
             _pluginManager
                 .Register<IGraphQL>(IGraphQLVersionCompatibility.MinVersion, IGraphQLVersionCompatibility.MaxVersion)
                 .Register<ISonesRESTService>(ISonesRESTServiceCompatibility.MinVersion, ISonesRESTServiceCompatibility.MaxVersion)  // not yet used
-                .Register<IDrainPipe>(IDrainPipeCompatibility.MinVersion, IDrainPipeCompatibility.MaxVersion);
+                .Register<IDrainPipe>(IDrainPipeCompatibility.MinVersion, IDrainPipeCompatibility.MaxVersion)
+                .Register<IService>(IServiceCompatibility.MinVersion, IServiceCompatibility.MaxVersion);
 
             _pluginManager.Discover();
 
@@ -59,6 +61,7 @@ namespace sones.GraphDS.PluginManager.GraphDSPluginManager
             FillLookup<IGraphQL>(componentName, _ => _.PluginName);
             FillLookup<ISonesRESTService>(componentName, _ => _.ID);   // not yet used
             FillLookup<IDrainPipe>(componentName, _ => _.PluginName);
+            FillLookup<IService>(componentName, _ => _.PluginName);
 
             #endregion   
         

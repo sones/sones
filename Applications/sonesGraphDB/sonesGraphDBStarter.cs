@@ -156,6 +156,11 @@ namespace sones.sonesGraphDBStarter
                 // not yet used
                 #endregion
 
+                #region GraphDS Service Plugins
+                List<PluginDefinition> GraphDSServices = new List<PluginDefinition>();
+                // not yet used
+                #endregion
+
                 #region Drain Pipes            
                 
                 //// QueryLog DrainPipe
@@ -190,9 +195,10 @@ namespace sones.sonesGraphDBStarter
 
             #endregion
 
-            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(SonesRESTServices,QueryLanguages,DrainPipes);
+            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(SonesRESTServices,GraphDSServices,QueryLanguages,DrainPipes);
 
             _dsServer = new GraphDS_Server(GraphDB, Properties.Settings.Default.ListeningPort,Properties.Settings.Default.Username,Properties.Settings.Default.Password, IPAddress.Any, PluginsAndParameters);
+            _dsServer.StartService("sones.RESTService");
             _dsServer.LogOn(new UserPasswordCredentials(Properties.Settings.Default.Username,Properties.Settings.Default.Password));
 
             _dsServer.StartRESTService("", Properties.Settings.Default.ListeningPort, IPAddress.Any);

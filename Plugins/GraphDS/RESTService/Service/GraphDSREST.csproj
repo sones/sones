@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -151,7 +151,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager</Name>
+      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\IO\Implementation\XML_IO\XML_IO.csproj">
       <Project>{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}</Project>

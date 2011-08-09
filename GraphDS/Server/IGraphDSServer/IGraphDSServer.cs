@@ -20,7 +20,7 @@
 
 using sones.GraphDS;
 using System;
-using sones.GraphDSServer.Services;
+using sones.Plugins.GraphDS.Services;
 
 
 
