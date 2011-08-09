@@ -37,12 +37,14 @@ namespace sones.Plugins.GraphDS.RESTService
         public static ContentType _TEXT = new ContentType(MediaTypeNames.Text.Plain);
         public static ContentType _HTML = new ContentType("text/html");
         public static ContentType _GEXF = new ContentType("application/gexf");
+        public static ContentType _BARCHART = new ContentType("application/x-sones-barchart");
 
         public static ContentType _JSON_UTF8 = new ContentType("application/json") { CharSet = "UTF-8" };
         public static ContentType _XML_UTF8 = new ContentType("application/xml") { CharSet = "UTF-8" };
         public static ContentType _TEXT_UTF8 = new ContentType(MediaTypeNames.Text.Plain) { CharSet = "UTF-8" };
         public static ContentType _HTML_UTF8 = new ContentType("text/html") { CharSet = "UTF-8" };
         public static ContentType _GEXF_UTF8 = new ContentType("application/gexf") { CharSet = "UTF-8" };
+        public static ContentType _BARCHART_UTF8 = new ContentType("application/x-sones-barchart") { CharSet = "UTF-8" };
 
         public static ContentType _CSS = new ContentType("text/css");
         public static ContentType _GIF = new ContentType("image/gif");

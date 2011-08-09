@@ -493,7 +493,7 @@ namespace sones.Library.Network.HttpServer
 
                         var msg = Encoding.UTF8.GetBytes(ex.ToString());
                         context.Response.OutputStream.Write(msg, 0, msg.Length);
-
+                        
                         return;
 
                     }
@@ -501,8 +501,17 @@ namespace sones.Library.Network.HttpServer
             }
             finally
             {
-                context.Response.Close();
-            }
+                try
+                {
+                    context.Response.Close();
+                }
+                catch (Exception ex)
+                {
+                    // no need to handle this exception, because the underlying connection is already closed
+                }
+                
+            }    
+            
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 /*
-Theme Name: sones Theme |
+Theme Name: sones GraphDB WebShell Stylesheet |
 Theme URI:  http://developers.sones.de/
-Version: Version 1.0 |
+Version: Version 2.0 |
 */
 
 html              { height:100%;}
@@ -59,3 +59,8 @@ pre               { font-size:12px;}
 .info             { color:#B8D080;}
 :focus            { outline:0;}
 .help td          { padding-right:25px;font-size:12px;}
+
+.twodbarchart rect {
+   		stroke: black;
+   		fill: #98C000;
+ }
