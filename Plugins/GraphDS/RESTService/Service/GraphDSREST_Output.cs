@@ -84,7 +84,7 @@ namespace sones.Plugins.GraphDS.RESTService
         public void GenerateResultOutput(QueryResult myResult)
         {
 
-            var _ContentType = HttpServer.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT);
+            var _ContentType = HttpServer.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT, GraphDSREST_Constants._BARCHART);
             
            
             IOInterface plugin = null;
