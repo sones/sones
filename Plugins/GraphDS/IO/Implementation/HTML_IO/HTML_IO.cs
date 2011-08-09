@@ -58,6 +58,11 @@ namespace sones.Plugins.GraphDS.IO
             get { return "sones.html_io"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "html"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

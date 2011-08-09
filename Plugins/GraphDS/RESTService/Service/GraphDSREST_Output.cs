@@ -326,9 +326,9 @@ namespace sones.Plugins.GraphDS.RESTService
 					
 				// we have the name and the content type
 				if (Runthrough == _Plugins.Values.Count)
-						jsonArray.AppendLine("			\""+_io_plugin.ContentType+"\":\""+_io_plugin.PluginName+"\"");
+						jsonArray.AppendLine("			\""+_io_plugin.ContentType+"\":\""+_io_plugin.PluginShortName+"\"");
 					else
-						jsonArray.AppendLine("			\""+_io_plugin.ContentType+"\":\""+_io_plugin.PluginName+"\",");
+						jsonArray.AppendLine("			\""+_io_plugin.ContentType+"\":\""+_io_plugin.PluginShortName+"\",");
 
 			}
 			jsonArray.AppendLine("		}");

@@ -65,6 +65,11 @@ namespace sones.Plugins.GraphDS.IO
             get { return "sones.text_io"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "text"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

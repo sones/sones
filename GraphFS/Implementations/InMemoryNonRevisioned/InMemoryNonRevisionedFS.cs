@@ -634,6 +634,11 @@ namespace sones.GraphFS
             get { return "sones.inmemorynonrevisionedfs"; }
         }
 
+        public String PluginShortName
+        {
+            get { return "inmemnonrevfs"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

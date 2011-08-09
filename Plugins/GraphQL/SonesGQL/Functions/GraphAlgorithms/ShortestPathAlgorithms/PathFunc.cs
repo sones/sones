@@ -248,6 +248,11 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             get { return "sones.path"; }
         }
 
+        public override string PluginShortName
+        {
+            get { return "path"; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
