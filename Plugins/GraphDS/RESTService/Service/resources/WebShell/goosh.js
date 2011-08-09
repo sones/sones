@@ -760,7 +760,7 @@ function getOutputFormats() {
             if (key == "GraphDSOutputFormats") {
                 $.each(val, function (key, val) {
                     $.each(val, function (key, val) {
-                        if (val == "sones.json_io") {
+                        if (val == "json") {
                             goosh.config.webservice_default_format.name = val;
                             goosh.config.webservice_default_format.type = key;
                         }
