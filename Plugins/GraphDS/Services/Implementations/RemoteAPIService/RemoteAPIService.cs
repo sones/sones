@@ -68,17 +68,17 @@ namespace sones.GraphDS.Services.RemoteAPIService
             
             try
             {
-                if (_RPCServer.IsRunning)
+                if (_RPCServer != null && _RPCServer.IsRunning)
                     _RPCServer.StopServiceHost();
                 
                 Boolean IsSecure = false;
                 if (myStartParameter != null && myStartParameter.ContainsKey("IsSecure"))
                     IsSecure = (Boolean)Convert.ChangeType(myStartParameter["IsSecure"], typeof(Boolean));
 
-                String UriPattern = "/rpc";
+                String UriPattern = "rpc";
                 if (myStartParameter != null && myStartParameter.ContainsKey("URI"))
                     UriPattern = (String)Convert.ChangeType(myStartParameter["URI"], typeof(String));
-
+                                
                 String Namespace = "http://www.sones.com";
                 if (myStartParameter != null && myStartParameter.ContainsKey("Namespace"))
                     Namespace = (String)Convert.ChangeType(myStartParameter["Namespace"], typeof(String));
@@ -93,11 +93,12 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
                 _RunningTime.Start();
                 _RPCServer = new sonesRPCServer(_GraphDS, Address, Port, UriPattern, IsSecure, Namespace);
+                _RPCServer.StartServiceHost();
 
             }
             catch (Exception Ex)
             {
-
+                throw Ex;
             }
         }
 
@@ -109,7 +110,8 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
         public AServiceStatus GetCurrentStatus()
         {
-            return null;
+            return new RemoteAPIServiceStatus(_RPCServer.URI, _RPCServer.ListeningIPAdress, _RPCServer.ListeningPort, _RPCServer.IsSecure, _RPCServer.IsRunning,
+                _RunningTime.Elapsed);
         }
 
         #region IPluginable

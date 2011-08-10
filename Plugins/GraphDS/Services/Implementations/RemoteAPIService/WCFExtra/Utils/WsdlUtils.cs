@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Web.Services.Description;
 using System.Xml.Schema;
 using System.Xml;
+using System.Web.Services.Description;
 
 namespace WCFExtras.Utils
 {
@@ -15,7 +15,7 @@ namespace WCFExtras.Utils
             ServiceDescription rootDescription = null;
 
             //Find the "root" service description
-            foreach (ServiceDescription description in wsdls)
+            foreach (System.Web.Services.Description.ServiceDescription description in wsdls)
             {
                 if (description.Services.Count > 0)
                 {

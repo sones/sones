@@ -211,7 +211,15 @@ namespace sones.sonesGraphDBStarter
             _dsServer.StartService("sones.RESTService",RestParameter);
              
             #endregion
-            
+
+            #region Remote API Service
+
+            Dictionary<string, object> RemoteAPIParameter = new Dictionary<string, object>();
+            RemoteAPIParameter.Add("IPAddress", IPAddress.Any);
+            RemoteAPIParameter.Add("Port", (ushort)9970);
+
+            _dsServer.StartService("sones.RemoteAPIService", RemoteAPIParameter);
+            #endregion
 
 
             #endregion

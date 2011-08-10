@@ -172,6 +172,10 @@
       <Project>{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}</Project>
       <Name>XML_IO</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RemoteAPIService\RemoteAPIService.csproj">
+      <Project>{5A7B5A5F-289A-4109-AD1E-52C62F28DA51}</Project>
+      <Name>RemoteAPIService</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RESTService\RESTService.csproj">
       <Project>{9542AA45-4A4F-4364-BDD8-1446261F0963}</Project>
       <Name>RESTService</Name>

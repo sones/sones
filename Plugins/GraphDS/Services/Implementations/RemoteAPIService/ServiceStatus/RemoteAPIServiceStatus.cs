@@ -29,9 +29,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceStatus
 {
     public class RemoteAPIServiceStatus : AServiceStatus
     {
-        public RemoteAPIServiceStatus(IPAddress myIPAddress, ushort myPort,Boolean isSecure, Boolean isRunning, TimeSpan myRunningTime)
+        public RemoteAPIServiceStatus(Uri myUri, IPAddress myIPAddress,ushort myPort, Boolean isSecure, Boolean isRunning, TimeSpan myRunningTime)
         {
-            this.IPAddress = myIPAddress;
             this.Port = myPort;
             this.IsRunning = isRunning;
             this.IsNetService = true;
@@ -40,8 +39,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceStatus
             
 
             String Description = "This Service starts a SOAP - based 'Remote API Server'." + Environment.NewLine + 
-                "      * You can get the WSDL file at " + (isSecure == true ? "https" : "http") + ":" + myIPAddress.Address.ToString() + ":" + myPort.ToString() + 
-                "/rpc?wsdl" + Environment.NewLine +
+                "      * You can get the WSDL file at "+ myUri.ToString() + "?wsdl" + Environment.NewLine +
                 "      * You can also use the already built client wrapper with a better handling.";
 
             OtherStatistically.Add("Description", Description);

@@ -32,9 +32,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,6 +47,7 @@
     <Compile Include="DataContracts\ServiceRequests\ServiceAttributePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceIncomingEdgePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceIndexPredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceInsertDefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceOutgoingEdgePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServicePropertyPredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceUniquePredefinition.cs" />
@@ -73,7 +76,7 @@
     <Compile Include="ServiceContracts\IBaseTypeService.cs" />
     <Compile Include="ServiceContracts\IRPCServiceContract.cs" />
     <Compile Include="ServiceContracts\VertexTypeServices\IVertexTypeService.cs" />
-    <Compile Include="ServiceConverter\ServiceVertexTypeConverter.cs" />
+    <Compile Include="ServiceConverter\ServiceRequestMaker.cs" />
     <Compile Include="ServiceStatus\RemoteAPIServiceStatus.cs" />
     <Compile Include="sonesRPCServer.cs" />
     <Compile Include="WCFExtra\Utils\CodeDomUtils.cs" />
@@ -119,6 +122,9 @@
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
       <Name>IService</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ErrorHandling\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

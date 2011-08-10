@@ -46,7 +46,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
         /// <summary>
         /// The current listening ipaddress
         /// </summary>
-        private IPAddress ListeningIPAdress { get; private set; }
+        public IPAddress ListeningIPAdress { get; private set; }
 
         /// <summary>
         /// The current listening port
@@ -82,7 +82,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
         #region C'tor
 
-        public sonesRPCServer(IGraphDS myGraphDS, IPAddress myIPAdress, ushort myPort, String myURI, Boolean myIsSecure,String myNamespace, Boolean myAutoStart = true)
+        public sonesRPCServer(IGraphDS myGraphDS, IPAddress myIPAdress, ushort myPort, String myURI, Boolean myIsSecure,String myNamespace, Boolean myAutoStart = false)
         {
             this._GraphDS = myGraphDS;
             this.IsSecure = myIsSecure;
@@ -91,6 +91,9 @@ namespace sones.GraphDS.Services.RemoteAPIService
             this.Namespace = myNamespace;
             String CompleteUri = (myIsSecure == true ? "https://" : "http://") + myIPAdress.ToString() + ":" + myPort + "/" + myURI;
             this.URI = new Uri(CompleteUri);
+
+            if (!this.URI.IsWellFormedOriginalString())
+                throw new Exception("The URI Pattern is not well formed!");
 
             InitializeServer();
 

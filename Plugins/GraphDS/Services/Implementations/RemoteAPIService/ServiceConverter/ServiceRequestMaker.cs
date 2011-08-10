@@ -22,27 +22,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.ServiceModel;
-using System.ServiceModel.Description;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
-using sones.GraphDS.Services.RemoteAPIService.API_Services;
-using sones.GraphDS.Services.RemoteAPIService.DataContracts.VertexType;
-using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
 
-
-namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
+namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 {
-    
-    public partial class RPCServiceContract : IGraphDS_API
+    public static class ServiceRequestMaker
     {
-
-
-        public ServiceVertexType CreateVertexType(ServiceVertexTypePredefinition myVertexTypePreDef)
+        public static RequestAlterVertexType MakeRequestAlterVertexType(ServiceVertexType myVertexType, ServiceVertexTypePredefinition myChangeset)
         {
-            VertexTypePredefinition Predefinition = myVertexTypePreDef.ToVertexTypePredefinition();
-            return new ServiceVertexType(GraphDS.CreateVertexType<IVertexType>(null, null, new RequestCreateVertexType(Predefinition), (Statistics, VertexType) => VertexType));
+            var Request = new RequestAlterVertexType(myVertexType.Name);
+
+            //Todo implement MakeRequestAlterVertexType converter
+
+            return Request;
         }
+
+        public static RequestInsertVertex MakeRequestInsertVertex(ServiceInsertDefinition myInsertDefinition)
+        {
+            RequestInsertVertex Request = new RequestInsertVertex(myInsertDefinition.VertexTypeName)
+
+            //Todo implement MakeRequestInsertVertex converter
+
+            return Request;
+        }
+
+        
+        
+        
     }
 }

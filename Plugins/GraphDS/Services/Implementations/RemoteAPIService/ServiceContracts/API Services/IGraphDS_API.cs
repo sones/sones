@@ -27,6 +27,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.VertexType;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
 
 
 namespace sones.GraphDS.Services.RemoteAPIService.API_Services
@@ -34,8 +35,64 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
     [ServiceContract(Namespace = "http://www.sones.com", Name = "IGraphDS")]
     public interface IGraphDS_API
     {
+        //[OperationContract]
+        //ServiceEdgeType AlterEdgeType(ServiceEdgeTypePredefinition myEdgeTypePreDef);
+        
         [OperationContract]
-        ServiceVertexType CreateVertexType(ServiceVertexTypePredefinition myVertexTypePreDef); 
-                                                                    
+        ServiceVertexType AlterVertexType(ServiceVertexTypePredefinition myVertexTypePreDef);
+        
+        [OperationContract]
+        void Clear();
+
+        //[OperationContract]
+        //ServiceEdgeType CreateEdgeType(ServiceEdgeTypePredefinition myVertexTypePreDef);
+
+        [OperationContract]
+        ServiceIndexDefinition CreateIndex(ServiceIndexPredefinition myVertexTypePreDef);
+
+        [OperationContract]
+        ServiceVertexType CreateVertexType(ServiceVertexTypePredefinition myVertexTypePreDef);
+
+        [OperationContract]
+        List<ServiceVertexType> CreateVertexTypes(List<ServiceVertexTypePredefinition> myVertexTypePreDef);
+                
+        [OperationContract]
+        void Delete(ServiceVertexTypePredefinition myVertexTypePreDef);
+
+        [OperationContract]
+        ServiceIndexDefinition DescribeIndex(ServiceIndexPredefinition myVertexTypePreDef);
+
+        //[OperationContract]
+        //ServiceIndexDefinition DescribeIndices(ServiceIndexPredefinition myVertexTypePreDef);
+
+        [OperationContract]
+        void DropIndex(ServiceIndexPredefinition myVertexTypePreDef);
+
+        [OperationContract]
+        ServiceIndexDefinition DropType(ServiceIndexPredefinition myVertexTypePreDef);
+
+        [OperationContract]
+        List<ServiceEdgeType> GetAllEdgeTypes();
+
+        [OperationContract]
+        List<ServiceVertexType> GetAllVertexTypes();
+
+        [OperationContract]
+        List<ServiceEdgeType> GetEdgeType();
+
+        [OperationContract]
+        List<ServiceEdgeType> GetVertex();
+
+        [OperationContract]
+        List<ServiceEdgeType> GetVertexCount();
+
+        [OperationContract]
+        List<ServiceEdgeType> GetVertices();
+
+        [OperationContract]
+        ServiceVertexType Insert();
+      
+                   
+                                                 
     }
 }

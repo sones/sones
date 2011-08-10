@@ -27,7 +27,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagemen
 using sones.GraphDB.TypeSystem;
 
 
-namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.VertexType
+namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
 {
     [DataContract(Namespace = "http://www.sones.com")]
     public class ServiceVertexType : ServiceBaseType
