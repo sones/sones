@@ -322,13 +322,23 @@ namespace sones.Plugins.GraphDS.RESTService
 				
 			foreach (IOInterface _io_plugin in _Plugins.Values)
 			{
-				Runthrough++;
+                Runthrough++;
+                string name = _io_plugin.PluginShortName;
+                for (Int32 i=0; i < (Runthrough-1); i++)
+                {
+                    if (_Plugins.Values.ElementAt(i).PluginShortName == name)
+                    {
+                        // Another IO plugin already has the same shortname, so use the normal (long) name
+                        name = _io_plugin.PluginName;
+                        break;
+                    }
+                }
 					
 				// we have the name and the content type
 				if (Runthrough == _Plugins.Values.Count)
-						jsonArray.AppendLine("			\""+_io_plugin.ContentType+"\":\""+_io_plugin.PluginShortName+"\"");
+						jsonArray.AppendLine("			\""+_io_plugin.ContentType+"\":\""+name+"\"");
 					else
-						jsonArray.AppendLine("			\""+_io_plugin.ContentType+"\":\""+_io_plugin.PluginShortName+"\",");
+						jsonArray.AppendLine("			\""+_io_plugin.ContentType+"\":\""+name+"\",");
 
 			}
 			jsonArray.AppendLine("		}");
