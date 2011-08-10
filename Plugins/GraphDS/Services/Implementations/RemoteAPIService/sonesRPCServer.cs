@@ -24,6 +24,13 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.ServiceModel;
+using sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation;
+using System.ServiceModel.Description;
+using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeServices;
+using sones.GraphDS.Services.RemoteAPIService.ServiceContracts;
+using sones.GraphDS.Services.RemoteAPIService.API_Services;
+using sones.GraphDS.Services.RemoteAPIService.IncomingEdgeService;
+using WCFExtras.Wsdl;
 
 namespace sones.GraphDS.Services.RemoteAPIService
 {
@@ -56,16 +63,39 @@ namespace sones.GraphDS.Services.RemoteAPIService
         /// </summary>
         public Boolean IsRunning { get; private set; }
 
+        /// <summary>
+        /// The current used Namespace
+        /// </summary>
+        public String Namespace { get; private set; }
+
+        /// <summary>
+        /// The complete URI of the service
+        /// </summary>
+        public Uri URI { get; private set; }
+
+        /// <summary>
+        /// The WCF Service Host
+        /// </summary>
+        private ServiceHost _ServiceHost;
+
         #endregion
 
         #region C'tor
 
-        public sonesRPCServer(IGraphDS myGraphDS, IPAddress myIPAdress, ushort myPort, Boolean myIsSecure)
+        public sonesRPCServer(IGraphDS myGraphDS, IPAddress myIPAdress, ushort myPort, String myURI, Boolean myIsSecure,String myNamespace, Boolean myAutoStart = true)
         {
             this._GraphDS = myGraphDS;
             this.IsSecure = myIsSecure;
             this.ListeningIPAdress = myIPAdress;
             this.ListeningPort = myPort;
+            this.Namespace = myNamespace;
+            String CompleteUri = (myIsSecure == true ? "https://" : "http://") + myIPAdress.ToString() + ":" + myPort + "/" + myURI;
+            this.URI = new Uri(CompleteUri);
+
+            InitializeServer();
+
+            if (myAutoStart)
+                _ServiceHost.Open();
 
         }
 
@@ -75,81 +105,118 @@ namespace sones.GraphDS.Services.RemoteAPIService
  
         private void InitializeServer()
         {
-            BasicHttpBinding binding = new BasicHttpBinding();
-            binding.Name = "sonesBasic";
-            binding.Namespace = "http://www.sones.com";
-            binding.MessageEncoding = WSMessageEncoding.Text;
+            BasicHttpBinding BasicBinding = new BasicHttpBinding();
+            BasicBinding.Name = "sonesBasic";
+            BasicBinding.Namespace = this.Namespace;
+            BasicBinding.MessageEncoding = WSMessageEncoding.Text;
+            BasicBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
 
+            if (IsSecure)
+            {
+                BasicBinding.Security.Mode = BasicHttpSecurityMode.Transport;
+            }
+             
+                     
 
-            binding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
-
-            binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.None;
-
-
-
-
-            binding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
-
-
-
-            Uri address = new Uri("http://localhost:9970/rpc");
-
-            RPCServiceContract myContract = new RPCServiceContract(myGraphDSServer);
+            RPCServiceContract ContractInstance = new RPCServiceContract(_GraphDS);
 
 
             // Create a ServiceHost for the CalculatorService type and provide the base address.
-            ServiceHost serviceHost = new ServiceHost(myContract, address);
+            _ServiceHost = new ServiceHost(ContractInstance, URI);
+            _ServiceHost.Description.Namespace = this.Namespace;
 
 
+            #region Global Service Interface
 
-            serviceHost.Description.Namespace = "http://www.sones.com";
+            ContractDescription RPCServiceContract = ContractDescription.GetContract(typeof(IRPCServiceContract));
+            RPCServiceContract.Namespace = this.Namespace;
+            ServiceEndpoint RPCServiceService = new ServiceEndpoint(RPCServiceContract, BasicBinding, new EndpointAddress(URI.ToString()));
+            _ServiceHost.AddServiceEndpoint(RPCServiceService);
+
+            #endregion
+
+            #region GraphDS API Contract
+
+            ContractDescription APIContract = ContractDescription.GetContract(typeof(IGraphDS_API));
+            APIContract.Namespace = this.Namespace;
+            ServiceEndpoint APIService = new ServiceEndpoint(APIContract, BasicBinding, new EndpointAddress(URI.ToString()));
+            _ServiceHost.AddServiceEndpoint(APIService);
+
+            #endregion
+
+            #region Type Services
+
+            #region VertexTypeService
 
             ContractDescription VertexTypeContract = ContractDescription.GetContract(typeof(IVertexTypeService));
-            ContractDescription RPCServiceContract = ContractDescription.GetContract(typeof(IRPCServiceContract));
-            ContractDescription APIContract = ContractDescription.GetContract(typeof(IGraphDS_API));
+            VertexTypeContract.Namespace = this.Namespace;
+            ServiceEndpoint VertexTypeService = new ServiceEndpoint(VertexTypeContract, BasicBinding, new EndpointAddress(URI.ToString()));
+            _ServiceHost.AddServiceEndpoint(VertexTypeService);
+
+            #endregion
+
+
+
+            #region IncomingEdgeService
+
             ContractDescription IncomingEdgeContract = ContractDescription.GetContract(typeof(IIncominEdgeService));
+            IncomingEdgeContract.Namespace = this.Namespace;
+            ServiceEndpoint IncomingEdgeService = new ServiceEndpoint(IncomingEdgeContract, BasicBinding, new EndpointAddress(URI.ToString()));
+            _ServiceHost.AddServiceEndpoint(IncomingEdgeService);
 
-            ServiceEndpoint APIService = new ServiceEndpoint(APIContract, binding, new EndpointAddress("http://localhost:9970/rpc"));
-            ServiceEndpoint IncomingEdgeService = new ServiceEndpoint(IncomingEdgeContract, binding, new EndpointAddress("http://localhost:9970/rpc"));
-
-            ServiceEndpoint VertexTypeService = new ServiceEndpoint(VertexTypeContract, binding, new EndpointAddress("http://localhost:9970/rpc"));
-            ServiceEndpoint RPCServiceService = new ServiceEndpoint(RPCServiceContract, binding, new EndpointAddress("http://localhost:9970/rpc"));
-
-
-
-            serviceHost.AddServiceEndpoint(RPCServiceService);
-            serviceHost.AddServiceEndpoint(VertexTypeService);
-            serviceHost.AddServiceEndpoint(APIService);
-            serviceHost.AddServiceEndpoint(IncomingEdgeService);
+            #endregion
 
 
 
 
+            #endregion
 
 
+            #region Metadata Exchange
+
+            //Todo Add mono workaround for MEX
 
             ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
-
             smb.HttpGetEnabled = true;
-
-
-
-
             //smb.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
-            serviceHost.Description.Behaviors.Add(smb);
+            _ServiceHost.Description.Behaviors.Add(smb);
             // Add MEX endpoint
 
-            serviceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
-            foreach (ServiceEndpoint endpoint in serviceHost.Description.Endpoints)
+            _ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
+            foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
             {
                 endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
 
             }
 
-            serviceHost.Open();
-        
+
+            #endregion
+
+
         }
 
+
+
+        #endregion
+
+        #region Service Host Control
+
+        public void StartServiceHost()
+        {
+            if(!IsRunning)
+            {
+                _ServiceHost.Open();
+            }
+            
+        }
+
+        public void StopServiceHost()
+        {
+            if (IsRunning)
+            {
+                _ServiceHost.Close();
+            }
+        }
 
 
         #endregion

@@ -40,6 +40,8 @@ namespace sones.GraphDS.Services.RemoteAPIService
         
         private Stopwatch _RunningTime;
 
+        private sonesRPCServer _RPCServer;
+
         #endregion
 
         #region  C'tors
@@ -48,7 +50,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
         public RemoteAPIService(IGraphDS myGraphDS)
         {
-        
+            _RunningTime = new Stopwatch();
         }
 
         #endregion
@@ -63,11 +65,46 @@ namespace sones.GraphDS.Services.RemoteAPIService
         public void Start(IDictionary<string, object> myStartParameter = null)
         {
             
+            
+            try
+            {
+                if (_RPCServer.IsRunning)
+                    _RPCServer.StopServiceHost();
+                
+                Boolean IsSecure = false;
+                if (myStartParameter != null && myStartParameter.ContainsKey("IsSecure"))
+                    IsSecure = (Boolean)Convert.ChangeType(myStartParameter["IsSecure"], typeof(Boolean));
+
+                String UriPattern = "/rpc";
+                if (myStartParameter != null && myStartParameter.ContainsKey("URI"))
+                    UriPattern = (String)Convert.ChangeType(myStartParameter["URI"], typeof(String));
+
+                String Namespace = "http://www.sones.com";
+                if (myStartParameter != null && myStartParameter.ContainsKey("Namespace"))
+                    Namespace = (String)Convert.ChangeType(myStartParameter["Namespace"], typeof(String));
+
+                IPAddress Address = IPAddress.Any;
+                if (myStartParameter != null && myStartParameter.ContainsKey("IPAddress"))
+                    Address = (IPAddress)Convert.ChangeType(myStartParameter["IPAddress"], typeof(IPAddress));
+
+                ushort Port = 9970;
+                if (myStartParameter != null && myStartParameter.ContainsKey("Port"))
+                    Port = (ushort)Convert.ChangeType(myStartParameter["Port"], typeof(ushort));
+
+                _RunningTime.Start();
+                _RPCServer = new sonesRPCServer(_GraphDS, Address, Port, UriPattern, IsSecure, Namespace);
+
+            }
+            catch (Exception Ex)
+            {
+
+            }
         }
 
         public void Stop()
         {
-            
+            _RunningTime.Reset();
+            _RPCServer.StopServiceHost();
         }
 
         public AServiceStatus GetCurrentStatus()

@@ -31,8 +31,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
     [ServiceContract(Namespace = "http://www.sones.com")]
     public interface IRPCServiceContract
     {
-        [OperationContract]
-        ServiceVertexType TestGetAVertexType();
-
+       
     }
 }
