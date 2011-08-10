@@ -207,6 +207,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IService", "Plugins\GraphDS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RESTService", "Plugins\GraphDS\Services\Implementations\RESTService\RESTService.csproj", "{9542AA45-4A4F-4364-BDD8-1446261F0963}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteAPIService", "Plugins\GraphDS\Services\Implementations\RemoteAPIService\RemoteAPIService.csproj", "{5A7B5A5F-289A-4109-AD1E-52C62F28DA51}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -465,6 +467,10 @@ Global
 		{9542AA45-4A4F-4364-BDD8-1446261F0963}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9542AA45-4A4F-4364-BDD8-1446261F0963}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9542AA45-4A4F-4364-BDD8-1446261F0963}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A7B5A5F-289A-4109-AD1E-52C62F28DA51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A7B5A5F-289A-4109-AD1E-52C62F28DA51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A7B5A5F-289A-4109-AD1E-52C62F28DA51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A7B5A5F-289A-4109-AD1E-52C62F28DA51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -566,6 +572,7 @@ Global
 		{A4C879D7-456E-4906-A15F-63DD3E2AD9C0} = {9F93846C-9E93-4C35-9DDD-AE63F8A56F84}
 		{8250E943-02A0-499B-B0E7-C075F248CBC9} = {9F93846C-9E93-4C35-9DDD-AE63F8A56F84}
 		{9542AA45-4A4F-4364-BDD8-1446261F0963} = {A4C879D7-456E-4906-A15F-63DD3E2AD9C0}
+		{5A7B5A5F-289A-4109-AD1E-52C62F28DA51} = {A4C879D7-456E-4906-A15F-63DD3E2AD9C0}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Applications\sonesGraphDB\sonesGraphDBStarter.csproj
