@@ -41,6 +41,13 @@ The 'sones GraphDB v2.0 Community Edition' includes the following:
 
 --Note: For further details about the G(raph) Q(uery) L(anguage) please read the 'GraphQL cheat sheet', which can be found on our web site.
 
+-- Note: The sones Webshell is proved to be compatible with the following web browsers:
+
+	- Firefox 3.x
+	- Internet Explorer 9
+	- Opera 11.x
+	- Safari 4.x/5.x
+
 First steps
 ===========
 
