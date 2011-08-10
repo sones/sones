@@ -42,9 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorHandling\ServiceException.cs" />
     <Compile Include="ErrorHandling\ServiceNotFoundException.cs" />
     <Compile Include="ErrorHandling\QueryLanguageNotFoundException.cs" />
-    <Compile Include="IGraphDSREST.cs" />
     <Compile Include="IGraphDSServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

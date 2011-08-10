@@ -195,13 +195,32 @@ namespace sones.sonesGraphDBStarter
 
             #endregion
 
-            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(SonesRESTServices,GraphDSServices,QueryLanguages,DrainPipes);
+            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(QueryLanguages,DrainPipes);
+            _dsServer = new GraphDS_Server(GraphDB, PluginsAndParameters);
 
-            _dsServer = new GraphDS_Server(GraphDB, Properties.Settings.Default.ListeningPort,Properties.Settings.Default.Username,Properties.Settings.Default.Password, IPAddress.Any, PluginsAndParameters);
-            _dsServer.StartService("sones.RESTService");
+            #region Start GraphDS Services
+
+            #region REST Service
+
+            Dictionary<string, object> RestParameter = new Dictionary<string, object>();
+            RestParameter.Add("IPAddress", IPAddress.Any);
+            RestParameter.Add("Port", Properties.Settings.Default.ListeningPort);
+            RestParameter.Add("Username", Properties.Settings.Default.Username);
+            RestParameter.Add("Password", Properties.Settings.Default.Password);
+
+            _dsServer.StartService("sones.RESTService",RestParameter);
+             
+            #endregion
+            
+
+
+            #endregion
+
             _dsServer.LogOn(new UserPasswordCredentials(Properties.Settings.Default.Username,Properties.Settings.Default.Password));
 
-            _dsServer.StartRESTService("", Properties.Settings.Default.ListeningPort, IPAddress.Any);
+            
+
+            
 
             #endregion
 
@@ -212,7 +231,7 @@ namespace sones.sonesGraphDBStarter
                 Console.WriteLine("   * If you want to suppress console output add --Q as a");
                 Console.WriteLine("     parameter.");
                 Console.WriteLine();
-                Console.WriteLine("   * REST Service is started at http://localhost:"+Properties.Settings.Default.ListeningPort);
+                Console.WriteLine("   * REST Service is started at http://localhost:" + RestParameter["Port"]);
                 Console.WriteLine("      * access it directly by passing the GraphQL query using the");
                 Console.WriteLine("        REST interface or a client library. (see documentation)");
                 Console.WriteLine("      * if you want JSON Output add ACCEPT: application/json ");
@@ -220,8 +239,8 @@ namespace sones.sonesGraphDBStarter
                 Console.WriteLine("        application/text)");
                 Console.WriteLine();
                 Console.WriteLine("   * we recommend to use the AJAX WebShell. ");
-                Console.WriteLine("        Browse to http://localhost:"+Properties.Settings.Default.ListeningPort+"/WebShell and use");
-                Console.WriteLine("        the username \""+Properties.Settings.Default.Username+"\" and password \""+Properties.Settings.Default.Password+"\"");
+                Console.WriteLine("        Browse to http://localhost:" + RestParameter["Port"] + "/WebShell and use");
+                Console.WriteLine("        the username \"" + RestParameter["Username"] + "\" and password \"" + RestParameter["Password"] + "\"");
                 Console.WriteLine();
                 Console.WriteLine("Enter 'shutdown' to initiate the shutdown of this instance.");
             }
@@ -274,11 +293,11 @@ namespace sones.sonesGraphDBStarter
             {
                 var sonesGraphDBStartup = new sonesGraphDBStartup(args);
             }
-            catch (RESTServiceCouldNotBeStartedException e)
+            catch (ServiceException ex)
             {
                 if (!quiet)
                 { 
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine(ex.Message);
                     Console.WriteLine();
                     Console.WriteLine("Press <return> to exit.");
                     Console.ReadLine();

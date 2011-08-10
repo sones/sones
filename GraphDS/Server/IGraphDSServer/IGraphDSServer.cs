@@ -21,6 +21,7 @@
 using sones.GraphDS;
 using System;
 using sones.Plugins.GraphDS.Services;
+using System.Collections.Generic;
 
 
 
@@ -29,13 +30,13 @@ namespace sones.GraphDSServer
     /// <summary>
     /// The interface for all GraphDS server
     /// </summary>
-    public interface IGraphDSServer : IGraphDSREST, IGraphDS
+    public interface IGraphDSServer : IGraphDS
     {
         /// <summary>
         /// Starts a service by the name of the service
         /// </summary>
         /// <param name="myServiceName">The name of the service</param>
-        void StartService(String myServiceName);
+        void StartService(String myServiceName, IDictionary<string,object> myParameter);
 
         /// <summary>
         /// Stops a service by the name of the service

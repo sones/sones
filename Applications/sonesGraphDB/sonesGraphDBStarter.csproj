@@ -172,10 +172,6 @@
       <Project>{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}</Project>
       <Name>XML_IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\RESTService\Service\GraphDSREST.csproj">
-      <Project>{1AE9C2A9-4916-488D-B825-7B8657C0BDE5}</Project>
-      <Name>GraphDSREST</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RESTService\RESTService.csproj">
       <Project>{9542AA45-4A4F-4364-BDD8-1446261F0963}</Project>
       <Name>RESTService %28Plugins\GraphDS\Services\Implementations\RESTService\RESTService%29</Name>
