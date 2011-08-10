@@ -201,6 +201,11 @@ namespace sones.GraphDB.Manager.Transaction
             get { return "sones.basictransactionmanager"; }
         }
 
+        public String PluginShortName
+        {
+            get { return "basictaman"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type> { { "vertexStore", typeof(IVertexStore) } }; }

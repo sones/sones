@@ -143,6 +143,11 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             get { return "sones.drainpipelog"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "drainpipelog"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get

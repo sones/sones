@@ -65,6 +65,11 @@ namespace sones.Library.UserdefinedDataType
             get;
         }
 
+        public abstract string PluginShortName
+        {
+            get;
+        }
+
         public abstract PluginParameters<Type> SetableParameters
         {
             get;

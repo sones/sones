@@ -228,6 +228,11 @@ namespace sones.GraphQL
             get { return "sones.gql"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "gql"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type> { { "GraphDB", typeof(IGraphDB) } }; }

@@ -118,6 +118,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return"sones.insert"; }
         }
 
+        public override string PluginShortName
+        {
+            get { return "insert"; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

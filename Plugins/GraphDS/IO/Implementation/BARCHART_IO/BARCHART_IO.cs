@@ -68,6 +68,11 @@ namespace sones.Plugins.GraphDS.IO
             get { return "sones.barchart_io"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "barchart"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

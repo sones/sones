@@ -89,6 +89,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return"sones.tolower"; }
         }
 
+        public override string PluginShortName
+        {
+            get { return "tolower"; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

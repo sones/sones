@@ -83,6 +83,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return"sones.substring"; }
         }
 
+        public override string PluginShortName
+        {
+            get { return "substring"; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

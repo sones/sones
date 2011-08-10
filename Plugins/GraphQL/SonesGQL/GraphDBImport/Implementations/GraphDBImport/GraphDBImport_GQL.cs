@@ -396,6 +396,11 @@ namespace sones.Plugins.SonesGQL
             get { return "sones.gqlimport"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "gqlimport"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

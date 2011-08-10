@@ -290,6 +290,11 @@ namespace sones.Plugins.Index
             get { return "sones.multiplevalueindex"; }
         }
 
+        public String PluginShortName
+        {
+            get { return "multivalidx"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get
