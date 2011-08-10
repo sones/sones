@@ -175,7 +175,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                         TransactionToken myTransaction,
                                                         SecurityToken mySecurity)
         {
-            var typePredefinitions = myTypePredefinitions as IEnumerable<EdgeTypePredefinition>;
+            #region preparations
+
+            var typePredefinitions = myTypePredefinitions;// as IEnumerable<EdgeTypePredefinition>;
 
             //Perf: count is necessary, fast if it is an ICollection
             var count = typePredefinitions.Count();
@@ -195,7 +197,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             var defsTopologically = CanAddSortTopolocically(defsByVertexName,
                                                                 defsByParentVertexName
                                                                 .ToDictionary(kvp => kvp.Key,
-                                                                              kvp => kvp.Value as IEnumerable<ATypePredefinition>));
+                                                                              kvp => kvp.Value));// as IEnumerable<ATypePredefinition>));
 
             CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
 
@@ -206,6 +208,10 @@ namespace sones.GraphDB.Manager.TypeManagement
             var resultPos = 0;
 
             var result = new IVertex[count];
+
+            #endregion
+
+            #region store edge type
 
             //now we store each vertex type
             for (var current = defsTopologically.First; current != null; current = current.Next)
@@ -231,6 +237,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 _nameIndex.Add(current.Value.TypeName, typeInfos[current.Value.TypeName].VertexInfo.VertexID);
             }
+
+            #endregion
 
             #region Store Attributes
 
@@ -290,7 +298,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #endregion
 
-            //CleanUpTypes();
+            CleanUpTypes();
 
             return resultTypes;
         }
@@ -316,7 +324,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 if (parent == null)
                     //No parent type was found.
-                    throw new InvalidBaseTypeException(myTopologicallySortedPointer.Value.SuperTypeName);
+                    throw new TypeDoesNotExistException(myTopologicallySortedPointer.Value.SuperTypeName, typeof(IEdgeType).Name);
 
                 if (parent.GetProperty<bool>((long)AttributeDefinitions.BaseTypeDotIsSealed))
                     //The parent type is sealed.

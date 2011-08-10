@@ -74,8 +74,8 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         /// <param name="myEdgeName">The name of the edge</param>
         /// <param name="mySourceType">The type of the edges source and target</param>
-        public OutgoingEdgePredefinition(String myEdgeName, String mySourceType)
-            : base(myEdgeName, mySourceType)
+        public OutgoingEdgePredefinition(String myEdgeName, String myTargetType)
+            : base(myEdgeName, myTargetType)
         {
             EdgeType = Edge;
             Multiplicity = EdgeMultiplicity.SingleEdge;

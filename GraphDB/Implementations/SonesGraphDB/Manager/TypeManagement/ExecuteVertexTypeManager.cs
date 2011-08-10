@@ -195,7 +195,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                         TransactionToken myTransaction,
                                                         SecurityToken mySecurity)
         {
-            var typePredefinitions = myTypePredefinitions as IEnumerable<VertexTypePredefinition>;
+            #region preparations
+
+            var typePredefinitions = myTypePredefinitions;// as IEnumerable<VertexTypePredefinition>;
 
             //Perf: count is necessary, fast if it is an ICollection
             var count = typePredefinitions.Count();
@@ -215,7 +217,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             var defsTopologically = CanAddSortTopolocically(defsByVertexName, 
                                                                 defsByParentVertexName
                                                                 .ToDictionary(kvp => kvp.Key,
-                                                                              kvp => kvp.Value as IEnumerable<ATypePredefinition>));
+                                                                              kvp => kvp.Value));// as IEnumerable<ATypePredefinition>));
 
             CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
 
@@ -226,6 +228,10 @@ namespace sones.GraphDB.Manager.TypeManagement
             var resultPos = 0;
 
             var result = new IVertex[count];
+
+            #endregion
+
+            #region store vertex type
 
             //now we store each vertex type
             for (var current = defsTopologically.First; current != null; current = current.Next)
@@ -251,6 +257,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 _nameIndex.Add(current.Value.TypeName, typeInfos[current.Value.TypeName].VertexInfo.VertexID);
             }
+
+            #endregion
 
             #region Store Attributes
 
@@ -412,6 +420,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             var resultTypes = new VertexType[result.Length];
 
+            #region reload the stored types
+
             //reload the IVertex objects, that represents the type.
             for (int i = 0; i < result.Length; i++)
             {
@@ -425,6 +435,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                 
                 _baseTypes.Add(typeInfos[newVertexType.Name].VertexInfo.VertexID, newVertexType);
             }
+
+            #endregion
 
             #endregion
 
@@ -446,14 +458,15 @@ namespace sones.GraphDB.Manager.TypeManagement
                     if (current.Value.Uniques != null)
                     {
                         var indexPredefs = current.Value.Uniques.Select(unique =>
-                            new IndexPredefinition().AddProperty(unique.Properties)
-                                                    .SetIndexType(uniqueIdx)
-                                                    .SetVertexType(current.Value.TypeName));
+                            new IndexPredefinition(current.Value.TypeName)
+                                                    .AddProperty(unique.Properties)
+                                                    .SetIndexType(uniqueIdx));
 
-                        var indexDefs = indexPredefs.Select(indexPredef => _indexManager.CreateIndex(indexPredef, 
-                                                                                                        mySecurity, 
-                                                                                                        myTransaction, 
-                                                                                                        false)).ToArray();
+                        var indexDefs = indexPredefs.Select(indexPredef => _indexManager
+                                                                                .CreateIndex(indexPredef, 
+                                                                                                mySecurity, 
+                                                                                                myTransaction, 
+                                                                                                false)).ToArray();
 
                         //only own unique indices are connected to the vertex type on the UniquenessDefinitions attribute
                         ConnectVertexToUniqueIndex(typeInfos[current.Value.TypeName], indexDefs, mySecurity, myTransaction);
@@ -466,9 +479,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                     foreach (var unique in resultTypes[resultPos].ParentVertexType.GetUniqueDefinitions(true))
                     {
                         _indexManager.CreateIndex(
-                            new IndexPredefinition().AddProperty(unique.UniquePropertyDefinitions.Select(x => x.Name))
-                                                    .SetIndexType(uniqueIdx)
-                                                    .SetVertexType(unique.DefiningVertexType.Name),
+                            new IndexPredefinition(unique.DefiningVertexType.Name)
+                                                    .AddProperty(unique.UniquePropertyDefinitions.Select(x => x.Name))
+                                                    .SetIndexType(uniqueIdx),
                             mySecurity,
                             myTransaction,
                             false);
@@ -489,8 +502,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                     foreach (var index in resultTypes[resultPos].ParentVertexType.GetIndexDefinitions(true))
                     {
                         _indexManager.CreateIndex(
-                            new IndexPredefinition().AddProperty(index.IndexedProperties.Select(x => x.Name))
-                                                    .SetVertexType(current.Value.TypeName)
+                            new IndexPredefinition(current.Value.TypeName)
+                                                    .AddProperty(index.IndexedProperties.Select(x => x.Name))
                                                     .SetIndexType(index.IndexTypeName),
                             mySecurity,
                             myTransaction);
@@ -628,7 +641,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 if (parent == null)
                     //No parent type was found.
-                    throw new InvalidBaseVertexTypeException(myTopologicallySortedPointer.Value.SuperTypeName);
+                    throw new TypeDoesNotExistException(myTopologicallySortedPointer.Value.SuperTypeName, typeof(IVertexType).Name);
 
                 if (parent.GetProperty<bool>((long)AttributeDefinitions.BaseTypeDotIsSealed))
                     //The parent type is sealed.

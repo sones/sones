@@ -81,7 +81,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #endregion
 
-            CheckAdd(myTypePredefinitions);
+            CheckAdd(myTypePredefinitions, myTransaction, mySecurity);
 
             return null;
         }
@@ -157,6 +157,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         protected abstract void CheckPredefinitionsType(IEnumerable<ATypePredefinition> myTypePredefinitions);
 
         /// <summary>
+        /// Checks if the given parameter type is valid.
+        /// </summary>
+        /// <param name="myRequest">The parameter to be checked.</param>
+        protected abstract void CheckRequestType(IRequestAlterType myRequest);
+
+        /// <summary>
         /// Convertes Unknown attributes depending on the type of the predefinition.
         /// </summary>
         /// <param name="myTypePredefinition">The predefinitions which contains the unknown attributes.</param>
@@ -167,7 +173,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myTypeName">The type name to be checked.</param>
         /// <returns>True, if the type name is the name of a base type, otherwise false.</returns>
-        protected abstract bool CanBeParentType(string myTypeName);
+        protected abstract bool CanBaseTypeBeParentType(string myTypeName);
 
         /// <summary>
         /// Checks the uniqueness of attribute names on a vertex type predefinition without asking the FS.
@@ -243,7 +249,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Checks the given type predefinitions and all contained members.
         /// </summary>
         /// <param name="myTypePredefinitions">The type predefinintions.</param>
-        protected void CheckAdd(IEnumerable<ATypePredefinition> myTypePredefinitions)
+        protected void CheckAdd(IEnumerable<ATypePredefinition> myTypePredefinitions,
+                                TransactionToken myTransactionToken,
+                                SecurityToken mySecurityToken)
         {
             #region prolog
             // Basically first check the pre-definitions itself without asking the IVertexManager. 
@@ -268,7 +276,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             CheckPredefinitionsType(myTypePredefinitions);
 
-            CanAddCheckBasics(myTypePredefinitions);
+            CanAddCheckBasics(myTypePredefinitions, myTransactionToken, mySecurityToken);
 
             //Contains dictionary of vertex name to vertex predefinition.
             var defsByVertexName = CanAddCheckDuplicates(myTypePredefinitions);
@@ -288,6 +296,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             //Perf: We comment the FS checks out, to have a better performance
             //CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
+            
+            foreach (var type in myTypePredefinitions)
+                GetType(type.TypeName, myTransactionToken, mySecurityToken);
             #endregion
         }
 
@@ -295,7 +306,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Checks for errors in a list of vertex type predefinitions without using the FS.
         /// </summary>
         /// <param name="myVertexTypeDefinitions">The list of vertex type predefinitions to be checked.</param>
-        protected void CanAddCheckBasics(IEnumerable<ATypePredefinition> myTypePredefinitions)
+        protected void CanAddCheckBasics(IEnumerable<ATypePredefinition> myTypePredefinitions,
+                                            TransactionToken myTransactionToken,
+                                            SecurityToken mySecurityToken)
         {
             foreach (var typePredefinition in myTypePredefinitions)
             {
@@ -306,8 +319,14 @@ namespace sones.GraphDB.Manager.TypeManagement
                 CheckSealedAndAbstract(typePredefinition);
                 CheckVertexTypeName(typePredefinition);
 
-                if(CheckParentTypeAreNoBaseTypes(typePredefinition))
-                    CheckParentTypeExistInPredefinitions(typePredefinition.SuperTypeName, myTypePredefinitions);
+                if (IsTypeBaseType(typePredefinition.SuperTypeName))
+                {
+                    if (!CanBaseTypeBeParentType(typePredefinition.SuperTypeName))
+                        throw new InvalidBaseTypeException(typePredefinition.SuperTypeName);
+                }
+                else
+                    if (!CheckParentTypeExistInPredefinitions(typePredefinition.SuperTypeName, myTypePredefinitions))
+                        GetType(typePredefinition.SuperTypeName, myTransactionToken, mySecurityToken);
 
                 CheckAttributes(typePredefinition);
                 CheckDefaultValue(typePredefinition);
@@ -359,9 +378,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         protected static void CheckSealedAndAbstract(ATypePredefinition myTypePredefinition)
         {
             if (myTypePredefinition.IsSealed && myTypePredefinition.IsAbstract)
-            {
                 throw new UselessTypeException(myTypePredefinition);
-            }
         }
 
         /// <summary>
@@ -375,27 +392,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         /// <summary>
-        /// Checks whether a vertex type predefinition is not derived from a base vertex type.
-        /// </summary>
-        /// <param name="myVertexTypeDefinition"></param>
-        protected bool CheckParentTypeAreNoBaseTypes(ATypePredefinition myTypePredefinition)
-        {
-            if (!CanBeParentType(myTypePredefinition.SuperTypeName))
-                return true;
-
-            return false;
-        }
-
-        /// <summary>
         /// Checks if the specified parent type exists inside the given type predefinitions.
         /// </summary>
         /// <param name="myType">The type.</param>
         /// <param name="myTypePredefintions">The type predefinitions.</param>
-        protected static void CheckParentTypeExistInPredefinitions(String myType, 
+        protected static bool CheckParentTypeExistInPredefinitions(String myType, 
                                                             IEnumerable<ATypePredefinition> myTypePredefintions)
         {
-            if (!myTypePredefintions.Any(_ => _.TypeName.Equals(myType)))
-                throw new InvalidBaseTypeException(myType);
+            return myTypePredefintions.Any(_ => _.TypeName.Equals(myType));
         }
 
         /// <summary>
@@ -461,6 +465,15 @@ namespace sones.GraphDB.Manager.TypeManagement
             //            ((long)BaseTypes.Vertex).Equals(myTypeID) ||
             //            ((long)BaseTypes.VertexType).Equals(myTypeID) ||
             //            ((long)BaseTypes.Weighted).Equals(myTypeID);
+        }
+
+        /// <summary>
+        /// TODO find better check method
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected static bool IsTypeBaseType(string myTypeName)
+        {
+            return Enum.IsDefined(typeof(BaseTypes), myTypeName);
         }
 
         /// <summary>

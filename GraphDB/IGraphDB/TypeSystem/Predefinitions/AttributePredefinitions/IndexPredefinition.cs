@@ -61,7 +61,10 @@ namespace sones.GraphDB.TypeSystem
         /// <summary>
         /// Creates a new instance of IndexPredefinition.
         /// </summary>
-        public IndexPredefinition() { }
+        public IndexPredefinition(String myVertexTypeName) 
+        {
+            SetVertexType(myVertexTypeName);
+        }
 
         public string Comment { get; private set; }
 
@@ -69,9 +72,11 @@ namespace sones.GraphDB.TypeSystem
         /// Creates a new instance of IndexPredefinition.
         /// </summary>
         /// <param name="myName">The name of the index.</param>
-        public IndexPredefinition(String myName) 
+        public IndexPredefinition(String myName, String myVertexTypeName) 
         {
             Name = myName;
+
+            SetVertexType(myVertexTypeName);
         }
 
         /// <summary>

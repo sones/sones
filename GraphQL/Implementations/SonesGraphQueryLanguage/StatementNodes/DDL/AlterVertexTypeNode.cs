@@ -237,11 +237,11 @@ namespace sones.GraphQL.StatementNodes.DDL
 
             if (String.IsNullOrEmpty(aIndex.IndexName))
             {
-                result = new IndexPredefinition();
+                result = new IndexPredefinition(_TypeName);
             }
             else
             {
-                result = new IndexPredefinition(aIndex.IndexName);
+                result = new IndexPredefinition(aIndex.IndexName, _TypeName);
             }
 
             if (!String.IsNullOrEmpty(aIndex.IndexType))

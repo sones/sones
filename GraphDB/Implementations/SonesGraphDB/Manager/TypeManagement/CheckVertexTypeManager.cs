@@ -40,6 +40,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                 TransactionToken myTransactionToken,
                                                 SecurityToken mySecurityToken)
         {
+            CheckRequestType(myAlterTypeRequest);
+
             RequestAlterVertexType myRequest = myAlterTypeRequest as RequestAlterVertexType;
 
             var vertexType = _TypeManager.GetType(myRequest.TypeName, 
@@ -92,7 +94,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     var attrDef = vertexType.GetAttributeDefinition(unknownProp);
 
                     if (attrDef == null)
-                        throw new VertexAttributeIsNotDefinedException(unknownProp);
+                        throw new AttributeDoesNotExistException(unknownProp);
 
                     switch (attrDef.Kind)
                     {
@@ -212,7 +214,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myTypeName">The type name to be checked.</param>
         /// <returns>True, if the type name is the name of a base vertex type (but Vertex), otherwise false.</returns>
-        protected override bool CanBeParentType(string myTypeName)
+        protected override bool CanBaseTypeBeParentType(string myTypeName)
         {
             BaseTypes type;
             if (!Enum.TryParse(myTypeName, out type))
@@ -251,7 +253,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                     throw new TypeRemoveException<IVertexType>("null" , "Vertex Type is null.");
 
                 if (!delType.HasParentType)
-                    continue;
+                    //type must be base type because there is no parent type, Exception that base type cannot be deleted
+                    throw new TypeRemoveException<IVertexType>(delType.Name, "A BaseType connot be removed.");
 
                 if (delType.ParentVertexType.ID.Equals((long)BaseTypes.BaseType) && IsTypeBaseType(delType.ID))
                     //Exception that base type cannot be deleted
@@ -261,17 +264,34 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 #region check that existing child types are specified
 
-                if (delType.GetDescendantVertexTypes().Any(child => !myTypes.Contains(child)))
+                if (!delType.GetDescendantVertexTypes().All(child => myTypes.Contains(child)))
                     throw new TypeRemoveException<IVertexType>(delType.Name, "The given type has child types and cannot be removed.");
 
                 #endregion
 
                 #region check that the delete type has no incoming edges, just when reprimands should not be ignored
 
-                if(!myIgnoreReprimands)
+                if (!myIgnoreReprimands)
+                {
                     if (delType.HasIncomingEdges(false))
-                        if (delType.GetIncomingEdgeDefinitions(false).Any(edge => edge.RelatedType.ID != delType.ID))
+                        if (!delType.GetIncomingEdgeDefinitions(false).All(edge => myTypes.Contains(edge.RelatedEdgeDefinition.RelatedType) == true))
                             throw new TypeRemoveException<IVertexType>(delType.Name, "The given type has incoming edges and cannot be removed.");
+
+                    #region check if there are incoming edges of target vertices of outgoing edges of the deleting type
+
+                    foreach (var outEdge in delType.GetOutgoingEdgeDefinitions(false))
+                    {
+                        if (outEdge.TargetVertexType
+                                    .GetIncomingEdgeDefinitions(true)
+                                    .Any(inEdge => inEdge.RelatedEdgeDefinition.ID.Equals(outEdge.ID) && 
+                                            inEdge.RelatedType.ID != delType.ID) && !myIgnoreReprimands)
+                            throw new VertexTypeRemoveException(delType.Name, 
+                                        @"There are other types which have incoming edges, 
+                                        whose related type is a outgoing edge of the type which should be removed.");
+                    }
+
+                    #endregion
+                }
 
                 #endregion
             }
@@ -448,9 +468,20 @@ namespace sones.GraphDB.Manager.TypeManagement
                 foreach (var aToBeDeletedAttribute in request.ToBeRemovedProperties)
                 {
                     if (!attributesOfCurrentVertexType.Any(_ => _.Name == aToBeDeletedAttribute))
-                    {
-                        throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute);
-                    }
+                        throw new AttributeDoesNotExistException(aToBeDeletedAttribute, myType.Name);
+                }
+            }
+
+            #endregion
+
+            #region binary properties
+
+            if (request.ToBeRemovedBinaryProperties != null)
+            {
+                foreach (var aToBeDeletedAttribute in request.ToBeRemovedBinaryProperties)
+                {
+                    if (!attributesOfCurrentVertexType.Any(_ => _.Name == aToBeDeletedAttribute))
+                        throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute, myType.Name);
                 }
             }
 
@@ -463,9 +494,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 foreach (var aToBeDeletedAttribute in request.ToBeRemovedOutgoingEdges)
                 {
                     if (!attributesOfCurrentVertexType.Any(_ => _.Name == aToBeDeletedAttribute))
-                    {
-                        throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute);
-                    }
+                        throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute, myType.Name);
                 }
             }
 
@@ -478,9 +507,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 foreach (var aToBeDeletedAttribute in request.ToBeRemovedIncomingEdges)
                 {
                     if (!attributesOfCurrentVertexType.Any(_ => _.Name == aToBeDeletedAttribute))
-                    {
-                        throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute);
-                    }
+                        throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute, myType.Name);
                 }
             }
 
@@ -701,6 +728,16 @@ namespace sones.GraphDB.Manager.TypeManagement
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Checks if the given parameter type is valid.
+        /// </summary>
+        /// <param name="myRequest">The parameter to be checked.</param>
+        protected override void CheckRequestType(IRequestAlterType myRequest)
+        {
+            if (!(myRequest is RequestAlterVertexType))
+                throw new InvalidParameterTypeException("AlterTypeRequest", myRequest.GetType().Name, typeof(RequestAlterVertexType).Name);
         }
 
         #endregion

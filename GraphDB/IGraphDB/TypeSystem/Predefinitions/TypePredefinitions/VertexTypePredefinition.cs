@@ -111,15 +111,15 @@ namespace sones.GraphDB.TypeSystem
         #region fluent methods of abstract member
 
         /// <summary>
-        /// Sets the name of the vertex type this one inherits from
+        /// Sets the name of the type this one inherits from
         /// </summary>
-        /// <param name="myComment">The name of the super vertex type</param>
+        /// <param name="myComment">The name of the super type</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public VertexTypePredefinition SetSuperVertexTypeName(String mySuperVertexTypeName)
+        public VertexTypePredefinition SetSuperTypeName(String mySuperTypeName)
         {
-            if (!string.IsNullOrEmpty(mySuperVertexTypeName))
+            if (!string.IsNullOrEmpty(mySuperTypeName))
             {
-                SuperTypeName = mySuperVertexTypeName;
+                SuperTypeName = mySuperTypeName;
             }
             return this;
         }

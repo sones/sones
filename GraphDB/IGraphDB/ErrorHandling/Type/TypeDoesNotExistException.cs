@@ -29,7 +29,7 @@ namespace sones.GraphDB.ErrorHandling
     {
         private string _type;
 
-        public TypeDoesNotExistException(string myUnexpectedTypeName, string myBaseType, string myInfo)
+        public TypeDoesNotExistException(string myUnexpectedTypeName, string myBaseType, string myInfo = "")
         {
             this._type = myUnexpectedTypeName;
 

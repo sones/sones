@@ -40,6 +40,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                                             TransactionToken myTransactionToken,
                                             SecurityToken mySecurityToken)
         {
+            CheckRequestType(myAlterTypeRequest);
+
             RequestAlterEdgeType myRequest = myAlterTypeRequest as RequestAlterEdgeType;
 
             var edgeType = _TypeManager.GetType(myRequest.TypeName,
@@ -76,7 +78,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     var attrDef = edgeType.GetAttributeDefinition(unknownProp);
 
                     if (attrDef == null)
-                        throw new VertexAttributeIsNotDefinedException(unknownProp);
+                        throw new AttributeDoesNotExistException(unknownProp, edgeType.Name);
 
                     switch (attrDef.Kind)
                     {
@@ -183,7 +185,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myTypeName">The type name to be checked.</param>
         /// <returns>True, if the type name is the name of a base vertex type (but Vertex), otherwise false.</returns>
-        protected override bool CanBeParentType(string myTypeName)
+        protected override bool CanBaseTypeBeParentType(string myTypeName)
         {
             BaseTypes type;
             if (!Enum.TryParse(myTypeName, out type))
@@ -196,11 +198,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Checks the uniqueness of attribute names on a vertex type predefinition without asking the FS.
         /// </summary>
         /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
-        protected override void CheckAttributes(ATypePredefinition vertexTypeDefinition)
+        protected override void CheckAttributes(ATypePredefinition myTypePredefinition)
         {
             var uniqueNameSet = new HashSet<string>();
 
-            CheckPropertiesUniqueName(vertexTypeDefinition, uniqueNameSet);
+            CheckPropertiesUniqueName(myTypePredefinition, uniqueNameSet);
         }
 
         /// <summary>
@@ -226,17 +228,19 @@ namespace sones.GraphDB.Manager.TypeManagement
                     throw new TypeRemoveException<IEdgeType>("null", "Edge Type is null.");
 
                 if (!delType.HasParentType)
-                    continue;
-
-                if (delType.ParentEdgeType.ID.Equals((long)BaseTypes.BaseType) && IsTypeBaseType(delType.ID))
-                    //Exception that base type cannot be deleted
+                    //type must be base type because there is no parent type, Exception that base type cannot be deleted
                     throw new TypeRemoveException<IEdgeType>(delType.Name, "A BaseType connot be removed.");
+
+                //NOTE: it is not necassary to ask if the edge type is a base type because the base type id's are managed by the vertex type management!
+                //if (delType.ParentEdgeType.ID.Equals((long)BaseTypes.BaseType) && IsTypeBaseType(delType.ID))
+                //    //Exception that base type cannot be deleted
+                //    throw new TypeRemoveException<IEdgeType>(delType.Name, "A BaseType connot be removed.");
 
                 #endregion
 
                 #region check that existing child types are specified
 
-                if (delType.GetDescendantEdgeTypes().Any(child => !myTypes.Contains(child)))
+                if (!delType.GetDescendantEdgeTypes().All(child => myTypes.Contains(child)))
                     throw new TypeRemoveException<IEdgeType>(delType.Name, "The given type has child types and cannot be removed.");
 
                 #endregion
@@ -356,12 +360,22 @@ namespace sones.GraphDB.Manager.TypeManagement
                 {
                     if (!attributesOfCurrentVertexType.Any(_ => _.Name == aToBeDeletedAttribute))
                     {
-                        throw new VertexAttributeIsNotDefinedException(aToBeDeletedAttribute);
+                        throw new AttributeDoesNotExistException(aToBeDeletedAttribute, myType.Name);
                     }
                 }
             }
 
             #endregion
+        }
+
+        /// <summary>
+        /// Checks if the given parameter type is valid.
+        /// </summary>
+        /// <param name="myRequest">The parameter to be checked.</param>
+        protected override void CheckRequestType(IRequestAlterType myRequest)
+        {
+            if (!(myRequest is RequestAlterEdgeType))
+                throw new InvalidParameterTypeException("AlterTypeRequest", myRequest.GetType().Name, typeof(RequestAlterEdgeType).Name);
         }
 
         #endregion

@@ -104,7 +104,7 @@ namespace sones.GraphDB.Manager.Index
         {
             myIndexDefinition.CheckNull("myIndexDefinition");
 
-            if (myIndexDefinition.Name != null || myIndexDefinition.Name.StartsWith("sones"))
+            if (myIndexDefinition.Name != null && myIndexDefinition.Name.StartsWith("sones"))
                 throw new Exception("It is not allowed to add an index with a name, that starts with 'sones'.");
 
             var vertexType = _vertexTypeManager.ExecuteManager.GetType(myIndexDefinition.VertexTypeName, myTransaction, mySecurity);
@@ -123,7 +123,7 @@ namespace sones.GraphDB.Manager.Index
                 var propDef = vertexType.GetPropertyDefinition(prop);
                 if (!vertexType.HasProperty(prop) || (propDef.RelatedType.ID != vertexType.ID && !HasIndex(propDef, mySecurity, myTransaction)))
                     //TODO a better exception here.
-                    throw new Exception("The property is not defined on the vertex type " + vertexType.Name + ", it is defined on a parent type.");
+                    throw new AttributeDoesNotExistException("The property is not defined on the vertex type " + vertexType.Name + ", it is defined on a parent type.");
             }
 
             var indexID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Index).GetNextID();

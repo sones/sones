@@ -223,7 +223,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
             if (aDefinition.ParentType != null && aDefinition.ParentType.Length > 0)
             {
-                result.SetSuperVertexTypeName(aDefinition.ParentType);
+                result.SetSuperTypeName(aDefinition.ParentType);
             }
 
             #endregion
@@ -296,11 +296,11 @@ namespace sones.GraphQL.StatementNodes.DDL
 
             if (String.IsNullOrEmpty(aIndex.IndexName))
             {
-                result = new IndexPredefinition();
+                result = new IndexPredefinition(myVertexType);
             }
             else
             {
-                result = new IndexPredefinition(aIndex.IndexName);
+                result = new IndexPredefinition(aIndex.IndexName, myVertexType);
             }
             result.SetVertexType(myVertexType);
             if (!String.IsNullOrEmpty(aIndex.IndexType))
