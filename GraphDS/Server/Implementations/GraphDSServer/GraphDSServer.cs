@@ -74,7 +74,7 @@ namespace sones.GraphDSServer
         /// The list of supported graph ql type instances
         /// </summary>
         private readonly Dictionary<String, IGraphQL>   _QueryLanguages;            // dictionary because we can only have one query language instance per name
-        private readonly Dictionary<String, IService> _IServices;                   // dictionary because only one name per service
+        public readonly Dictionary<String, IService> GraphDSServices;                   // dictionary because only one name per service
         private readonly List<KeyValuePair<String,IDrainPipe>> _DrainPipes;         // you could have multiple drainpipes with different parameters sporting the same name
 
         #endregion
@@ -95,7 +95,7 @@ namespace sones.GraphDSServer
             _ID = new Guid();
             _QueryLanguages = new Dictionary<string, IGraphQL>();
             _DrainPipes = new List<KeyValuePair<String, IDrainPipe>>();
-            _IServices = new Dictionary<String, IService>();
+            GraphDSServices = new Dictionary<String, IService>();
             _plugins = Plugins;
 
             #region Load Configured Plugins
@@ -194,7 +194,7 @@ namespace sones.GraphDSServer
         {
             IService Service = null;
 
-            if (!_IServices.TryGetValue(myServiceName, out Service))
+            if (!GraphDSServices.TryGetValue(myServiceName, out Service))
             {
                 try
                 {
@@ -207,7 +207,7 @@ namespace sones.GraphDSServer
                 {
                     throw new ServiceException("An error occured when trying to initialize " + myServiceName + "!" + Environment.NewLine + "See inner exception for details.", Ex);
                 }
-                _IServices.Add(Service.PluginName, Service);
+                GraphDSServices.Add(Service.PluginName, Service);
             }
             try
             {
@@ -227,7 +227,7 @@ namespace sones.GraphDSServer
         public void StopService(String myServiceName)
         {
             IService Service = null;
-            if (_IServices.TryGetValue(myServiceName, out Service))
+            if (GraphDSServices.TryGetValue(myServiceName, out Service))
             {
                 try
                 {
@@ -252,7 +252,7 @@ namespace sones.GraphDSServer
         public AServiceStatus GetServiceStatus(String myServiceName)
         {
             IService Service = null;
-            if (_IServices.TryGetValue(myServiceName, out Service))
+            if (GraphDSServices.TryGetValue(myServiceName, out Service))
             {
                 try
                 {
@@ -266,7 +266,7 @@ namespace sones.GraphDSServer
             }
             else
             {
-                throw new ServiceException("The service " + myServiceName + "is unrecognized! Maybe the service was never started.");
+                throw new ServiceException("The service " + myServiceName + " is unrecognized! Maybe the service was never started.");
             }
         }
 

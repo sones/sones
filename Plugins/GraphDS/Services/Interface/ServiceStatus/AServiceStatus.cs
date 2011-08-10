@@ -56,7 +56,7 @@ namespace sones.Plugins.GraphDS.Services
         /// <summary>
         /// Returns the service-specific statistically
         /// </summary>
-        public Dictionary<String, Object> GetOtherStatistically { get; protected set; }
+        public Dictionary<String, Object> OtherStatistically { get; protected set; }
 
     }
 }

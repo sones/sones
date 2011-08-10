@@ -55,7 +55,7 @@ namespace sones.GraphDS.Services.RESTService
             var componentName = this.GetType().Assembly.GetName().Name;
 
             FillLookup<IOInterface>(componentName, _ => _.PluginName);
-            
+                        
             #endregion
 
         }

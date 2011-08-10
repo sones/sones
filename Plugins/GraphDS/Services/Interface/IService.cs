@@ -59,7 +59,8 @@ namespace sones.Plugins.GraphDS.Services
         /// <summary>
         /// Starts the service
         /// </summary>
-        void Start(IDictionary<String, Object> myParameter = null);
+        /// <param name="myStartParameter">The start parameter</param>
+        void Start(IDictionary<String, Object> myStartParameter = null);
 
         /// <summary>
         /// Stops the service

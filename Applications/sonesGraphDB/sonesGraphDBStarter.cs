@@ -227,21 +227,15 @@ namespace sones.sonesGraphDBStarter
             #region Some helping lines...
             if (!quiet)
             {
-                Console.WriteLine("This GraphDB Instance offers the following options:");
-                Console.WriteLine("   * If you want to suppress console output add --Q as a");
-                Console.WriteLine("     parameter.");
-                Console.WriteLine();
-                Console.WriteLine("   * REST Service is started at http://localhost:" + RestParameter["Port"]);
-                Console.WriteLine("      * access it directly by passing the GraphQL query using the");
-                Console.WriteLine("        REST interface or a client library. (see documentation)");
-                Console.WriteLine("      * if you want JSON Output add ACCEPT: application/json ");
-                Console.WriteLine("        to the client request header (or application/xml or");
-                Console.WriteLine("        application/text)");
-                Console.WriteLine();
-                Console.WriteLine("   * we recommend to use the AJAX WebShell. ");
-                Console.WriteLine("        Browse to http://localhost:" + RestParameter["Port"] + "/WebShell and use");
-                Console.WriteLine("        the username \"" + RestParameter["Username"] + "\" and password \"" + RestParameter["Password"] + "\"");
-                Console.WriteLine();
+                Console.WriteLine("The following GraphDS Service Plugins are initialized and started: " + Environment.NewLine);
+                
+                foreach (var Service in _dsServer.GraphDSServices)
+                {
+                    Console.WriteLine(Service.Key+ ":");
+                    Console.WriteLine(_dsServer.GetServiceStatus(Service.Key).OtherStatistically["Description"].ToString());
+                    Console.WriteLine(Environment.NewLine);
+                }
+              
                 Console.WriteLine("Enter 'shutdown' to initiate the shutdown of this instance.");
             }
 
@@ -282,12 +276,23 @@ namespace sones.sonesGraphDBStarter
             {
                 DiscordianDate ddate = new DiscordianDate();
 
-                Console.WriteLine("sones GraphDB version 2.0 - " + ddate.ToString());
-                Console.WriteLine("(C) sones GmbH 2007-2011 - http://www.sones.com");
-                Console.WriteLine("-----------------------------------------------");
+
+                
+                
+                Console.WriteLine("                    #####   ####    #         #####    #####");
+                Console.WriteLine("                   #       #    #   # ####   #     #  #");
+                Console.WriteLine("                    ####  #      #  ##    #  ######    ####");
+                Console.WriteLine("                        #  #    #   #     #  #             #");
+                Console.WriteLine("                   #####    ####    #     #   #####   #####");
+                Console.WriteLine("                                        GraphDB version 2.0");
+                Console.WriteLine("                  ------------------------------------------");
+                Console.WriteLine("                        (C)2007-2011 - http://www.sones.com");
+                //Console.WriteLine(ddate.ToString());
                 Console.WriteLine();
-                Console.WriteLine("Starting up GraphDB...");
+                //Console.WriteLine("Starting up GraphDB..." + Environment.NewLine);
+
             }
+
 
             try
             {
@@ -298,6 +303,7 @@ namespace sones.sonesGraphDBStarter
                 if (!quiet)
                 { 
                     Console.WriteLine(ex.Message);
+                    Console.WriteLine("InnerException: "+ ex.InnerException.ToString());
                     Console.WriteLine();
                     Console.WriteLine("Press <return> to exit.");
                     Console.ReadLine();

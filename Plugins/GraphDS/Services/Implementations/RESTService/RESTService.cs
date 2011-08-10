@@ -11,6 +11,7 @@ using sones.GraphDS.Services.RESTService.Networking;
 using System.Net;
 using sones.GraphDS.Services.RESTService.ServiceStatus;
 using System.Diagnostics;
+using sones.GraphDS.Services.RESTService.ErrorHandling;
 
 namespace sones.GraphDS.Services.RESTService
 {
@@ -47,41 +48,48 @@ namespace sones.GraphDS.Services.RESTService
             
         public void Start(IDictionary<String, Object> myParameters = null)
         {
-            _RunningTime = new Stopwatch();
-            String Username = "test";
-            if (myParameters != null && myParameters.ContainsKey("Username"))
-                Username = (String)Convert.ChangeType(myParameters["Username"], typeof(String));
+            try
+            {
+                _RunningTime = new Stopwatch();
+                String Username = "test";
+                if (myParameters != null && myParameters.ContainsKey("Username"))
+                    Username = (String)Convert.ChangeType(myParameters["Username"], typeof(String));
 
-            String Password = "test";
-            if (myParameters != null && myParameters.ContainsKey("Password"))
-                Password = (String)Convert.ChangeType(myParameters["Password"], typeof(String));
+                String Password = "test";
+                if (myParameters != null && myParameters.ContainsKey("Password"))
+                    Password = (String)Convert.ChangeType(myParameters["Password"], typeof(String));
 
-            IPAddress Address = IPAddress.Any;
-            if (myParameters != null && myParameters.ContainsKey("IPAddress"))
-                Address = (IPAddress)Convert.ChangeType(myParameters["IPAddress"], typeof(IPAddress));
+                IPAddress Address = IPAddress.Any;
+                if (myParameters != null && myParameters.ContainsKey("IPAddress"))
+                    Address = (IPAddress)Convert.ChangeType(myParameters["IPAddress"], typeof(IPAddress));
 
-            ushort Port = 9975;
-            if (myParameters != null && myParameters.ContainsKey("Port"))
-                Port = (ushort)Convert.ChangeType(myParameters["Port"], typeof(ushort));
+                ushort Port = 9975;
+                if (myParameters != null && myParameters.ContainsKey("Port"))
+                    Port = (ushort)Convert.ChangeType(myParameters["Port"], typeof(ushort));
 
-            _Security = new BasicServerSecurity(new PasswordValidator(null, Username, Password));
-            _RESTService = new GraphDSREST_Service();
-            _RESTService.Initialize(_GraphDS, Port, Address);
-            _HttpServer = new HttpServer(
-                    Address,
-                    Port,
-                    _RESTService,
-                    mySecurity: _Security,
-                    myAutoStart: false);
+                _Security = new BasicServerSecurity(new PasswordValidator(null, Username, Password));
+                _RESTService = new GraphDSREST_Service();
+                _RESTService.Initialize(_GraphDS, Port, Address);
+                _HttpServer = new HttpServer(
+                        Address,
+                        Port,
+                        _RESTService,
+                        mySecurity: _Security,
+                        myAutoStart: false);
 
-            _RunningTime.Start();
-            _HttpServer.Start();
+                _RunningTime.Start();
+                _HttpServer.Start();
+            }
+            catch (Exception Ex)
+            {
+                throw new RESTServiceCouldNotStartException("The REST Service could not be started. See inner exception for details.", Ex);
+            }
         }
 
         public void Stop()
         {
             _HttpServer.Stop();
-            _RunningTime.Stop();
+            _RunningTime.Reset();
         }
 
         public AServiceStatus GetCurrentStatus()
@@ -102,6 +110,10 @@ namespace sones.GraphDS.Services.RESTService
             {
                 PluginParameters<Type> Parameters = new PluginParameters<Type>();
                 Parameters.Add("GraphDS", typeof(IGraphDS));
+                Parameters.Add("Username", typeof(String));
+                Parameters.Add("Password", typeof(String));
+                Parameters.Add("IPAddress", typeof(IPAddress));
+                Parameters.Add("Port", typeof(ushort));
                 return Parameters;
             }
         }
@@ -118,7 +130,6 @@ namespace sones.GraphDS.Services.RESTService
         public void Dispose()
         {
             Stop();
-           
         }
 
         #endregion
