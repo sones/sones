@@ -21,7 +21,7 @@ Requisites
 Installation
 ============
 
-The Windows installation package comes as one single file which is named 'sones_GraphDB_v2.0_CE.msi'. Please be aware of that you need to be logged in as Administrator to install the 'sones GraphDB v2.0 Community Edition'.
+The Windows installation package comes as one single MSI-file. Please be aware of that you need to be logged in as Administrator to install the 'sones GraphDB v2.0 Community Edition'.
 Just double click on the MSI-file to start the installer. A typical installation means to install everything to 'C:\Program Files (x86)\Sones'. A custom installation allows you to change this path.
 
 
@@ -37,9 +37,9 @@ Application overview
 The 'sones GraphDB v2.0 Community Edition' includes the following:
 
 * sones GraphDB starter: A command line tool to start up sones GraphDB
-* 'sones Webshell': A simple to use shell like application which runs in your browser. It allows you to execute GQL statements. 
+* 'sones Webshell': A simple to use shell like application which runs in your browser. It allows you to execute GraphQL statements. 
 
---Note: For further details about the G(raph) Q(uery) L(anguage) please read the 'GQL cheat sheet', which can be found on our web site.
+--Note: For further details about the G(raph) Q(uery) L(anguage) please read the 'GraphQL cheat sheet', which can be found on our web site.
 
 First steps
 ===========
@@ -59,7 +59,12 @@ Here some useful steps:
 Configuration
 =============
 
-There is a configuration file which is named 'sonesGraphDBStarter.exe.cfg' located in the installation directory. 
+There is a configuration file which is named 'sonesGraphDBStarter.exe.config' located in the installation directory. To edit the file the following steps can be performed:
+
+1. Open the Windows Command Line Shell as the Administrator user
+2. Change the directory to the sones GraphDB installation directory
+3. Make sure that the file is existent: dir *.config
+4. Enter the following command: notepad sonesGraphDBStarter.exe.config
 
 FAQ
 ===
