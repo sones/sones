@@ -47,6 +47,13 @@ namespace sones.Plugins.GraphDS.IO
         /// </summary>
         private readonly ContentType _contentType;
 
+        /// <summary>
+        /// enumeration containing all possible barchart orientations
+        /// </summary>
+        private enum _eOrientations { horizontal, vertical };
+
+        private _eOrientations _Orientation;
+
         #endregion
 
         #region Constructors
@@ -57,6 +64,7 @@ namespace sones.Plugins.GraphDS.IO
         public BARCHART_IO()
         {
             _contentType = new ContentType("application/x-sones-barchart") { CharSet = "UTF-8" };
+            _Orientation = _eOrientations.horizontal;
         }
 
         #endregion
@@ -318,6 +326,18 @@ namespace sones.Plugins.GraphDS.IO
         {
             get { return _contentType; }
         }
+        #endregion
+
+        #region Output Format Parameters
+
+        public void SetOutputFormatParameters(Dictionary<string, string> parameters)
+        {
+            if (parameters.ContainsKey("ORIENTATION"))
+            {
+                _Orientation = parameters["ORIENTATION"].ToLower() == "VERTICAL" ? _eOrientations.vertical : _eOrientations.horizontal;
+            }
+        }
+
         #endregion
         
         #endregion

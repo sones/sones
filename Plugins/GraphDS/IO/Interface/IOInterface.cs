@@ -83,5 +83,16 @@ namespace sones.Plugins.GraphDS.IO
         QueryResult GenerateQueryResult(String myResult);
 
         #endregion
+
+        #region Set Output Format Parameters
+
+        /// <summary>
+        /// Set parameters that influence output generation
+        /// </summary>
+        /// <param name="myResult">The query result as string in a special format.</param>
+        void SetOutputFormatParameters(Dictionary<string, string> parameters);
+
+        #endregion
+
     }
 }

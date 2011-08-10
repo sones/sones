@@ -353,6 +353,15 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             return resultVertex;
         }
 
+        #region Output Format Parameters - not really needed right now
+
+        public void SetOutputFormatParameters(Dictionary<string, string> parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         #endregion
 
         public QueryResult GenerateQueryResult(string myResult)

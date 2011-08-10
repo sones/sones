@@ -36,6 +36,7 @@ using sones.GraphQL.Result;
 using sones.Library.DiscordianDate;
 using sones.Library.Network.HttpServer;
 using sones.Plugins.GraphDS.IO;
+using sones.Library.VersionedPluginManager;
 
 #endregion
 
@@ -346,6 +347,44 @@ namespace sones.Plugins.GraphDS.RESTService
 			jsonArray.AppendLine("}");
 			
             return new MemoryStream(Encoding.UTF8.GetBytes(jsonArray.ToString()));
+        }
+
+        #endregion
+
+        #region SetOutputFormatParam()
+
+        public Stream SetOutputFormatParams()
+        {
+            if (HttpServer.HttpContext.Request == null || HttpServer.HttpContext.Request.QueryString == null)
+                return null;
+
+            if (HttpServer.HttpContext.Request.QueryString.Count < 1)
+                return null;
+
+            var _ContentType = HttpServer.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT, GraphDSREST_Constants._BARCHART);
+
+            IOInterface plugin = null;
+
+            if (_Plugins.TryGetValue(_ContentType.MediaType, out plugin))
+            {
+                Dictionary<string, string> parameters = new Dictionary<string,string>();
+
+                foreach (String key in HttpServer.HttpContext.Request.QueryString.Keys)
+                {
+                    parameters.Add(key.ToUpper(), HttpServer.HttpContext.Request.QueryString.Get(key).ToUpper());
+                }
+
+                try
+                {
+                    plugin.SetOutputFormatParameters(parameters);
+                }
+                catch (NotImplementedException)
+                {
+                    return new MemoryStream(Encoding.ASCII.GetBytes("Error: No parameters can be set for this output format!"));
+                }
+            }
+
+            return null;
         }
 
         #endregion
