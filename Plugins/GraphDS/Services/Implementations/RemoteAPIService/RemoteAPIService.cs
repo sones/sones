@@ -32,9 +32,6 @@ namespace sones.GraphDS.Services.RemoteAPIService
 {
     public class RemoteAPIService : IService, IPluginable
     {
-
-
-
         #region Data
 
         private Boolean _IsSecure;
@@ -45,12 +42,17 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
         #endregion
 
+        #region  C'tors
+
         public RemoteAPIService(){}
 
         public RemoteAPIService(IGraphDS myGraphDS)
         {
         
         }
+
+        #endregion
+        
 
 
         public string PluginName
@@ -73,6 +75,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
             return null;
         }
 
+        #region IPluginable
 
         public PluginParameters<Type> SetableParameters
         {
@@ -99,7 +102,10 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+        
         }
+
+        #endregion
+        
     }
 }
