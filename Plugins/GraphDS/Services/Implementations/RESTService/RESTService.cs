@@ -40,7 +40,7 @@ namespace sones.GraphDS.Services.RESTService
         public RESTService(IGraphDS myGraphDS)
         {
             _GraphDS = myGraphDS;
-            
+            _RunningTime = new Stopwatch();
         }
 
 
@@ -50,7 +50,9 @@ namespace sones.GraphDS.Services.RESTService
         {
             try
             {
-                _RunningTime = new Stopwatch();
+                if(_HttpServer != null && _HttpServer.IsRunning)
+                    _HttpServer.Stop();
+                                 
                 String Username = "test";
                 if (myParameters != null && myParameters.ContainsKey("Username"))
                     Username = (String)Convert.ChangeType(myParameters["Username"], typeof(String));
