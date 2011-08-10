@@ -33,6 +33,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,9 +42,53 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataContracts\ServiceRequests\ServiceAttributePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceIncomingEdgePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceIndexPredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceOutgoingEdgePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServicePropertyPredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceUniquePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceVertexTypePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeType.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceBaseType.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceBinaryPropertyDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceEdgeMultiplicity.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceEdgeType.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceIncomingEdgeDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceIndexDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceOutgoingEdgeDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServicePropertyDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServicePropertyMultiplicity.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceVertexType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteAPIService.cs" />
+    <Compile Include="ServiceContractImplementation\AbstractBaseTypeService.cs" />
+    <Compile Include="ServiceContractImplementation\GraphDS_API.cs" />
+    <Compile Include="ServiceContractImplementation\IncomingEdgeTypeService.cs" />
+    <Compile Include="ServiceContractImplementation\RPCServiceContract.cs" />
+    <Compile Include="ServiceContractImplementation\VertexTypeService.cs" />
+    <Compile Include="ServiceContracts\API Services\IGraphDS_API.cs" />
+    <Compile Include="ServiceContracts\EdgeTypeServices\IIncominEdgeService.cs" />
+    <Compile Include="ServiceContracts\IBaseTypeService.cs" />
+    <Compile Include="ServiceContracts\IRPCServiceContract.cs" />
+    <Compile Include="ServiceContracts\VertexTypeServices\IVertexTypeService.cs" />
+    <Compile Include="ServiceConverter\ServiceVertexTypeConverter.cs" />
     <Compile Include="ServiceStatus\RemoteAPIServiceStatus.cs" />
+    <Compile Include="sonesRPCServer.cs" />
+    <Compile Include="WCFExtra\Utils\CodeDomUtils.cs" />
+    <Compile Include="WCFExtra\Utils\Extensions.cs" />
+    <Compile Include="WCFExtra\Utils\ReflectionUtils.cs" />
+    <Compile Include="WCFExtra\Utils\WsdlUtils.cs" />
+    <Compile Include="WCFExtra\Utils\XmlCommentsUtils.cs" />
+    <Compile Include="WCFExtra\Wsdl\Documentation\XmlCommentsAttribute.cs" />
+    <Compile Include="WCFExtra\Wsdl\Documentation\XmlCommentsConfig.cs" />
+    <Compile Include="WCFExtra\Wsdl\Documentation\XmlCommentsExporter.cs" />
+    <Compile Include="WCFExtra\Wsdl\Documentation\XmlCommentsImporter.cs" />
+    <Compile Include="WCFExtra\Wsdl\LocationOverrideExporter.cs" />
+    <Compile Include="WCFExtra\Wsdl\SingleFileExporter.cs" />
+    <Compile Include="WCFExtra\Wsdl\WsdlExtensions.cs" />
+    <Compile Include="WCFExtra\Wsdl\WsdlExtensionsConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
