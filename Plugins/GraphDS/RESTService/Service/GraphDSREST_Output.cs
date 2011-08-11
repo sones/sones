@@ -351,51 +351,6 @@ namespace sones.Plugins.GraphDS.RESTService
 
         #endregion
 
-        #region SetOutputFormatParam()
-
-        public Stream SetOutputFormatParams()
-        {
-            if (HttpServer.HttpContext.Request == null || HttpServer.HttpContext.Request.QueryString == null)
-                return null;
-
-            if (HttpServer.HttpContext.Request.QueryString.Count < 1)
-                return null;
-
-            var _ContentType = HttpServer.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT, GraphDSREST_Constants._BARCHART);
-
-            IOInterface plugin = null;
-
-            if (_Plugins.TryGetValue(_ContentType.MediaType, out plugin))
-            {
-                Dictionary<string, string> parameters = new Dictionary<string,string>();
-                string strret = "";
-
-                foreach (String key in HttpServer.HttpContext.Request.QueryString.Keys)
-                {
-                    if (key != null)
-                    {
-                        string value = HttpServer.HttpContext.Request.QueryString.Get(key);
-                        parameters.Add(key.ToUpper(), value.ToUpper());
-                    }
-                }
-
-                try
-                {
-                    strret = plugin.SetOutputFormatParameters(parameters);
-                    
-                }
-                catch (NotImplementedException)
-                {
-                    return new MemoryStream(Encoding.ASCII.GetBytes("Output format " + plugin.PluginShortName + " does not offer parameters to be set."));
-                }
-
-                return new MemoryStream(Encoding.ASCII.GetBytes(strret));
-            }
-
-            return null;
-        }
-
-        #endregion
     }
 
 }

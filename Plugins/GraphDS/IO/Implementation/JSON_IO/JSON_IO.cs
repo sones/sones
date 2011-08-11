@@ -333,15 +333,6 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
 
         #endregion
 
-        #region Output Format Parameters - not really needed right now
-        
-        public string SetOutputFormatParameters(Dictionary<string, string> parameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
         #endregion
 
     }

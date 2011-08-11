@@ -335,16 +335,6 @@ namespace sones.Plugins.GraphDS.RESTService
         }
 
         #endregion
-
-        #region SetOutputFormatParam()
-
-        public Stream SetOutputFormatParams()
-        {
-            return _RESTOutput.SetOutputFormatParams();
-        }
-
-        #endregion
-
 		
 		#region GetClientAccessPolicy
 

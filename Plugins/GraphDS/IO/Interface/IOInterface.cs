@@ -84,16 +84,5 @@ namespace sones.Plugins.GraphDS.IO
 
         #endregion
 
-        #region Set Output Format Parameters
-
-        /// <summary>
-        /// Set parameters that influence output generation
-        /// </summary>
-        /// <param name="myResult">The query result as string in a special format.</param>
-        /// <returns>String to be shown, e.g. list of allowed parameters if no or wrong parameters have been given</returns>
-        String SetOutputFormatParameters(Dictionary<string, string> parameters);
-
-        #endregion
-
     }
 }

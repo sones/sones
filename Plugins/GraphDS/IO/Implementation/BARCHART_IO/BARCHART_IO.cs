@@ -47,13 +47,6 @@ namespace sones.Plugins.GraphDS.IO
         /// </summary>
         private readonly ContentType _contentType;
 
-        /// <summary>
-        /// enumeration containing all possible barchart orientations
-        /// </summary>
-        private enum _eOrientations { horizontal, vertical };
-
-        private _eOrientations _Orientation;
-
         #endregion
 
         #region Constructors
@@ -64,7 +57,6 @@ namespace sones.Plugins.GraphDS.IO
         public BARCHART_IO()
         {
             _contentType = new ContentType("application/x-sones-barchart") { CharSet = "UTF-8" };
-            _Orientation = _eOrientations.horizontal;
         }
 
         #endregion
@@ -328,37 +320,7 @@ namespace sones.Plugins.GraphDS.IO
         }
         #endregion
 
-        #region Output Format Parameters
-
-        public string SetOutputFormatParameters(Dictionary<string, string> parameters)
-        {
-            bool validparamfound = false;
-            string strret = "";
-
-            if (parameters.ContainsKey("ORIENTATION"))
-            {
-                if (parameters["ORIENTATION"] == "")
-                {
-                    strret += "current Orientation is " + (_Orientation == _eOrientations.horizontal ? "horizontal" : "vertical");
-                }
-                else
-                {
-                    _Orientation = parameters["ORIENTATION"].ToUpper() == "VERTICAL" ? _eOrientations.vertical : _eOrientations.horizontal;
-                    strret += "set Orientation to " + (_Orientation == _eOrientations.horizontal ? "horizontal" : "vertical");
-                }
-                validparamfound = true;
-            }
-
-            if (!validparamfound)
-            {
-                strret += "BARCHART output - allowed parameters:<br>";
-                strret += "orientation=[horizontal|vertical] Set Orientation of BarChart (default:horizontal)";
-            }
-
-            return strret;
-        }
-
-        #endregion
+       
         
         #endregion
 
