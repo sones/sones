@@ -375,7 +375,6 @@ namespace sones.Plugins.GraphDS.RESTService
                     if (key != null)
                     {
                         string value = HttpServer.HttpContext.Request.QueryString.Get(key);
-                        if (value == null) value = "";
                         parameters.Add(key.ToUpper(), value.ToUpper());
                     }
                 }

@@ -593,7 +593,11 @@ InitGoosh = function (goosh) {
                 + "/"
                 + goosh.config.webservice_path + "setformatparams";
                 if ((args != undefined) && (args.length > 0)) {
-                    target += "?" + args[0];
+                    target += "?";
+                    var params = new Array();
+                    params = args[0].split('=');
+                    target += params[0] + "=";
+                    if (params.length > 1) target += params[1];
                 }
 
                 //do some ajax
