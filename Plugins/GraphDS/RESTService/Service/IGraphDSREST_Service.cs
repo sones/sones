@@ -201,7 +201,7 @@ namespace sones.Plugins.GraphDS.RESTService
         /// Sets configuration parameter for current output format
         /// </summary>
         [OperationContract, NoAuthentication]
-        [WebGet(UriTemplate = "/setformatparams")]
+        [WebInvoke(UriTemplate = "/setformatparams", Method = "POST")]
         Stream SetOutputFormatParams();
 
         #endregion

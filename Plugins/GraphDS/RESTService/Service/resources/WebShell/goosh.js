@@ -575,6 +575,48 @@ InitGoosh = function (goosh) {
     }
     goosh.modules.register("format");
 
+    //format option handler
+    goosh.module.formatoption = function () {
+        this.name = "formatoption";
+        this.aliases = new Array("formatoption", "fo");
+        this.help = "set option of current format plugin, list possible options when called without parameter";
+        this.parameters = "[option=value]";
+
+        this.call = function (args) {
+            if ((args == undefined) || (args.length == 0)) {
+                goosh.gui.out("list of options: bla, bla");
+            } else {
+                //build the target URI
+                var target = goosh.config.webservice_protocol + "://"
+                + goosh.config.webservice_host
+                + ((goosh.config.webservice_port != undefined) ? (":" + goosh.config.webservice_port) : "")
+                + "/"
+                + goosh.config.webservice_path + "setformatparams"
+                + "?" + args[0];
+
+                //do some ajax
+                var RESTResponse = $.ajax({
+                    type: "POST",
+                    url: target,
+                    cache: false,
+                    async: false,
+                    timeout: 0,
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        return ("AJAX Error " + xhr.status + "\n" + data.responseText + "\n" + thrownError);
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('Accept', goosh.config.webservice_default_format.type);
+                    }
+                });
+
+                if (RESTResponse != null) {
+                    goosh.gui.out(RESTResponse.responseText);
+                }
+            }
+        }
+    }
+    goosh.modules.register("formatoption");
+
     //GQL handler
     goosh.module.gql = function () {
         this.name = "gql";
