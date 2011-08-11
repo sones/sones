@@ -330,12 +330,32 @@ namespace sones.Plugins.GraphDS.IO
 
         #region Output Format Parameters
 
-        public void SetOutputFormatParameters(Dictionary<string, string> parameters)
+        public string SetOutputFormatParameters(Dictionary<string, string> parameters)
         {
+            bool validparamfound = false;
+            string strret = "";
+
             if (parameters.ContainsKey("ORIENTATION"))
             {
-                _Orientation = parameters["ORIENTATION"].ToLower() == "VERTICAL" ? _eOrientations.vertical : _eOrientations.horizontal;
+                if (parameters["ORIENTATION"] == "")
+                {
+                    strret += "current Orientation is " + (_Orientation == _eOrientations.horizontal ? "horizontal" : "vertical");
+                }
+                else
+                {
+                    _Orientation = parameters["ORIENTATION"].ToUpper() == "VERTICAL" ? _eOrientations.vertical : _eOrientations.horizontal;
+                    strret += "set Orientation to " + (_Orientation == _eOrientations.horizontal ? "horizontal" : "vertical");
+                }
+                validparamfound = true;
             }
+
+            if (!validparamfound)
+            {
+                strret += "BARCHART output - allowed parameters:<br>";
+                strret += "orientation=[horizontal|vertical] Set Orientation of BarChart (default:horizontal)";
+            }
+
+            return strret;
         }
 
         #endregion

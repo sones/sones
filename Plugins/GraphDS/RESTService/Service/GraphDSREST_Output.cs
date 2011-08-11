@@ -368,20 +368,29 @@ namespace sones.Plugins.GraphDS.RESTService
             if (_Plugins.TryGetValue(_ContentType.MediaType, out plugin))
             {
                 Dictionary<string, string> parameters = new Dictionary<string,string>();
+                string strret = "";
 
                 foreach (String key in HttpServer.HttpContext.Request.QueryString.Keys)
                 {
-                    parameters.Add(key.ToUpper(), HttpServer.HttpContext.Request.QueryString.Get(key).ToUpper());
+                    if (key != null)
+                    {
+                        string value = HttpServer.HttpContext.Request.QueryString.Get(key);
+                        if (value == null) value = "";
+                        parameters.Add(key.ToUpper(), value.ToUpper());
+                    }
                 }
 
                 try
                 {
-                    plugin.SetOutputFormatParameters(parameters);
+                    strret = plugin.SetOutputFormatParameters(parameters);
+                    
                 }
                 catch (NotImplementedException)
                 {
-                    return new MemoryStream(Encoding.ASCII.GetBytes("Error: No parameters can be set for this output format!"));
+                    return new MemoryStream(Encoding.ASCII.GetBytes("Output format " + plugin.PluginShortName + " does not offer parameters to be set."));
                 }
+
+                return new MemoryStream(Encoding.ASCII.GetBytes(strret));
             }
 
             return null;

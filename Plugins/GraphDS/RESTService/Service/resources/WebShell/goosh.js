@@ -591,8 +591,10 @@ InitGoosh = function (goosh) {
                 + goosh.config.webservice_host
                 + ((goosh.config.webservice_port != undefined) ? (":" + goosh.config.webservice_port) : "")
                 + "/"
-                + goosh.config.webservice_path + "setformatparams"
-                + "?" + args[0];
+                + goosh.config.webservice_path + "setformatparams";
+                if ((args != undefined) && (args.length > 0)) {
+                    target += "?" + args[0];
+                }
 
                 //do some ajax
                 var RESTResponse = $.ajax({

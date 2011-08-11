@@ -288,7 +288,7 @@ namespace sones.Plugins.GraphDS.IO
 
         #region Output Format Parameters - not really needed right now
 
-        public void SetOutputFormatParameters(Dictionary<string, string> parameters)
+        public string SetOutputFormatParameters(Dictionary<string, string> parameters)
         {
             throw new NotImplementedException();
         }
