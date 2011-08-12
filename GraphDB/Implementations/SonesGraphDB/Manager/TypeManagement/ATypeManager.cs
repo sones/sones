@@ -106,6 +106,16 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region helper methods
 
         /// <summary>
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected abstract bool IsTypeBaseType(long myTypeID);
+
+        /// <summary>
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected abstract bool IsTypeBaseType(string myTypeName);
+
+        /// <summary>
         /// Gets the name of the outgoing edge to which the incoming edge references.
         /// </summary>
         /// <param name="myAttributeType">The attribute type.</param>

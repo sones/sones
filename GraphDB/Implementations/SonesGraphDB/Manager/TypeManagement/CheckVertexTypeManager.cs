@@ -36,7 +36,7 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         #region ACheckTypeManager member
 
-        public override IVertexType AlterType(IRequestAlterType myAlterTypeRequest, 
+        public override IVertexType AlterType(IRequestAlterType myAlterTypeRequest,
                                                 TransactionToken myTransactionToken,
                                                 SecurityToken mySecurityToken)
         {
@@ -44,8 +44,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             RequestAlterVertexType myRequest = myAlterTypeRequest as RequestAlterVertexType;
 
-            var vertexType = _TypeManager.GetType(myRequest.TypeName, 
-                                                    myTransactionToken, 
+            var vertexType = _TypeManager.GetType(myRequest.TypeName,
+                                                    myTransactionToken,
                                                     mySecurityToken);
 
             #region check to be added
@@ -135,8 +135,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override void Initialize(IMetaManager myMetaManager)
         {
-            _TypeManager        = myMetaManager.VertexTypeManager.ExecuteManager;
-            _baseTypeManager    = myMetaManager.BaseTypeManager;
+            _TypeManager = myMetaManager.VertexTypeManager.ExecuteManager;
+            _baseTypeManager = myMetaManager.BaseTypeManager;
             _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
 
@@ -148,6 +148,35 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region private helper
 
         #region private abstract helper
+
+        /// <summary>
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected override bool IsTypeBaseType(long myTypeID)
+        {
+            return ((long)BaseTypes.Attribute).Equals(myTypeID) ||
+                        ((long)BaseTypes.BaseType).Equals(myTypeID) ||
+                        ((long)BaseTypes.BinaryProperty).Equals(myTypeID) ||
+                        ((long)BaseTypes.EdgeType).Equals(myTypeID) ||
+                        ((long)BaseTypes.IncomingEdge).Equals(myTypeID) ||
+                        ((long)BaseTypes.Index).Equals(myTypeID) ||
+                        ((long)BaseTypes.OutgoingEdge).Equals(myTypeID) ||
+                        ((long)BaseTypes.Property).Equals(myTypeID) ||
+                        ((long)BaseTypes.Vertex).Equals(myTypeID) ||
+                        ((long)BaseTypes.VertexType).Equals(myTypeID);
+        }
+
+        /// <summary>
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected override bool IsTypeBaseType(String myTypeName)
+        {
+            BaseTypes type;
+            if (!Enum.TryParse(myTypeName, out type))
+                return false;
+
+            return true;
+        }
 
         protected override void ConvertPropertyUniques(ATypePredefinition myTypePredefinition)
         {
@@ -166,10 +195,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         protected override void CheckPredefinitionsType(IEnumerable<ATypePredefinition> myTypePredefinitions)
         {
             if (!(myTypePredefinitions is IEnumerable<VertexTypePredefinition>))
-                if(!myTypePredefinitions.All(_ => _ is VertexTypePredefinition))
-                    throw new InvalidParameterTypeException("TypePredefinitions", 
-                                                            myTypePredefinitions.GetType().Name, 
-                                                            typeof(IEnumerable<VertexTypePredefinition>).GetType().Name, 
+                if (!myTypePredefinitions.All(_ => _ is VertexTypePredefinition))
+                    throw new InvalidParameterTypeException("TypePredefinitions",
+                                                            myTypePredefinitions.GetType().Name,
+                                                            typeof(IEnumerable<VertexTypePredefinition>).GetType().Name,
                                                             "");
         }
 
@@ -237,8 +266,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             CheckBinaryPropertiesUniqueName((myTypePredefinitions as VertexTypePredefinition), uniqueNameSet);
         }
 
-        protected override void CanRemove(IEnumerable<IVertexType> myTypes, 
-                                            TransactionToken myTransaction, 
+        protected override void CanRemove(IEnumerable<IVertexType> myTypes,
+                                            TransactionToken myTransaction,
                                             SecurityToken mySecurity,
                                             bool myIgnoreReprimands)
         {
@@ -247,32 +276,33 @@ namespace sones.GraphDB.Manager.TypeManagement
             //get child vertex types and check if they are specified by user
             foreach (var delType in myTypes)
             {
+                var temp = GetType(delType.ID, myTransaction, mySecurity);
+
                 #region check that the remove type is no base type
 
                 if (delType == null)
-                    throw new TypeRemoveException<IVertexType>("null" , "Vertex Type is null.");
+                    throw new TypeRemoveException<IVertexType>("null", "Vertex Type is null.");
 
                 if (!delType.HasParentType)
                     //type must be base type because there is no parent type, Exception that base type cannot be deleted
                     throw new TypeRemoveException<IVertexType>(delType.Name, "A BaseType connot be removed.");
 
-                if (delType.ParentVertexType.ID.Equals((long)BaseTypes.BaseType) && IsTypeBaseType(delType.ID))
+                if (IsTypeBaseType(delType.ID))
                     //Exception that base type cannot be deleted
                     throw new TypeRemoveException<IVertexType>(delType.Name, "A BaseType connot be removed.");
 
                 #endregion
 
-                #region check that existing child types are specified
-
-                if (!delType.GetDescendantVertexTypes().All(child => myTypes.Contains(child)))
-                    throw new TypeRemoveException<IVertexType>(delType.Name, "The given type has child types and cannot be removed.");
-
-                #endregion
-
-                #region check that the delete type has no incoming edges, just when reprimands should not be ignored
-
                 if (!myIgnoreReprimands)
                 {
+                    #region check that existing child types are specified
+
+                    if (!delType.GetDescendantVertexTypes().All(child => myTypes.Contains(child)))
+                        throw new TypeRemoveException<IVertexType>(delType.Name, "The given type has child types and cannot be removed.");
+
+                    #endregion
+
+                    #region check that the delete type has no incoming edges, just when reprimands should not be ignored
                     if (delType.HasIncomingEdges(false))
                         if (!delType.GetIncomingEdgeDefinitions(false).All(edge => myTypes.Contains(edge.RelatedEdgeDefinition.RelatedType) == true))
                             throw new TypeRemoveException<IVertexType>(delType.Name, "The given type has incoming edges and cannot be removed.");
@@ -283,9 +313,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                     {
                         if (outEdge.TargetVertexType
                                     .GetIncomingEdgeDefinitions(true)
-                                    .Any(inEdge => inEdge.RelatedEdgeDefinition.ID.Equals(outEdge.ID) && 
+                                    .Any(inEdge => inEdge.RelatedEdgeDefinition.ID.Equals(outEdge.ID) &&
                                             inEdge.RelatedType.ID != delType.ID) && !myIgnoreReprimands)
-                            throw new VertexTypeRemoveException(delType.Name, 
+                            throw new VertexTypeRemoveException(delType.Name,
                                         @"There are other types which have incoming edges, 
                                         whose related type is a outgoing edge of the type which should be removed.");
                     }
@@ -293,7 +323,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     #endregion
                 }
 
-                #endregion
+                    #endregion
             }
 
             #endregion
@@ -328,7 +358,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                     TransactionToken myTransactionToken,
                                                     SecurityToken mySecurityToken)
         {
-            if (myAlteredTypeName != null && 
+            if (myAlteredTypeName != null &&
                 _TypeManager.HasType(myAlteredTypeName, myTransactionToken, mySecurityToken))
             {
                 throw new EdgeTypeAlreadyExistException(myAlteredTypeName);
@@ -366,7 +396,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myAlterTypeRequest">The request.</param>
         /// <param name="myType">The type.</param>
-        protected override void CheckToBeAddedAttributes(IRequestAlterType myAlterTypeRequest, 
+        protected override void CheckToBeAddedAttributes(IRequestAlterType myAlterTypeRequest,
                                                             IVertexType myType)
         {
             var request = myAlterTypeRequest as RequestAlterVertexType;
@@ -454,7 +484,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myAlterTypeRequest">The request.</param>
         /// <param name="myType">The type.</param>
-        protected override void CheckToBeRemovedAttributes(IRequestAlterType myAlterTypeRequest, 
+        protected override void CheckToBeRemovedAttributes(IRequestAlterType myAlterTypeRequest,
                                                             IVertexType myType)
         {
             var request = myAlterTypeRequest as RequestAlterVertexType;
@@ -591,7 +621,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
         /// <param name="myUniqueNameSet">A set of attribute names defined on this vertex type predefinition.</param>
-        private static void CheckBinaryPropertiesUniqueName(VertexTypePredefinition myVertexTypeDefinition, 
+        private static void CheckBinaryPropertiesUniqueName(VertexTypePredefinition myVertexTypeDefinition,
                                                             ISet<string> myUniqueNameSet)
         {
             if (myVertexTypeDefinition.BinaryProperties != null)

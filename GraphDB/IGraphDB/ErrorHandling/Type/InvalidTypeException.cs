@@ -32,9 +32,10 @@ namespace sones.GraphDB.ErrorHandling
 
         public InvalidTypeException(string myUnexpectedType, string myExpectedType)
         {
-            // TODO: Complete member initialization
             this.p = myUnexpectedType;
             this.p_2 = myExpectedType;
+
+            _msg = "The given type " + myUnexpectedType + " is invalid, expected " + myExpectedType + ".";
         }
     }
 }

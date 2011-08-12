@@ -29,6 +29,7 @@ using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Expression.Tree.Literals;
 using sones.GraphDB.ErrorHandling.Expression;
 using sones.GraphDB.TypeSystem;
+using sones.Constants;
 
 namespace sones.GraphDB.Manager.QueryPlan
 {
@@ -43,6 +44,10 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// A vertex type manager is needed to create certain query-plan structures
         /// </summary>
         private IManagerOf<ITypeHandler<IVertexType>> _vertexTypeManager;
+        /// <summary>
+        /// A vertex type manager is needed to create certain query-plan structures
+        /// </summary>
+        private IManagerOf<ITypeHandler<IEdgeType>> _edgeTypeManager;
 
         /// <summary>
         /// A vertex store
@@ -575,10 +580,13 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <returns>A Property query plan</returns>
         private QueryPlanProperty GenerateQueryPlanProperty(PropertyExpression propertyExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertexType = _vertexTypeManager.ExecuteManager.GetType(propertyExpression.NameOfVertexType, myTransaction, mySecurity);
-            var property = vertexType.GetPropertyDefinition(propertyExpression.NameOfProperty);
+            IVertexType type = null;
 
-            return new QueryPlanProperty(vertexType, property, propertyExpression.Edition, propertyExpression.Timespan);
+            type = _vertexTypeManager.ExecuteManager.GetType(propertyExpression.NameOfVertexType, myTransaction, mySecurity);
+
+            var property = type.GetPropertyDefinition(propertyExpression.NameOfProperty);
+
+            return new QueryPlanProperty(type, property, propertyExpression.Edition, propertyExpression.Timespan);
         }
 
         #endregion
@@ -588,6 +596,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         void IManager.Initialize(IMetaManager myMetaManager)
         {
             _vertexTypeManager = myMetaManager.VertexTypeManager;
+            _edgeTypeManager = myMetaManager.EdgeTypeManager;
             _vertexStore = myMetaManager.VertexStore;
             _indexManager = myMetaManager.IndexManager;
         }

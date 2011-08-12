@@ -34,8 +34,8 @@ using sones.GraphDB.Request;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    internal abstract class ACheckTypeManager<T>: ATypeManager<T>
-        where T: IBaseType
+    internal abstract class ACheckTypeManager<T> : ATypeManager<T>
+        where T : IBaseType
     {
         #region Data
 
@@ -97,6 +97,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #endregion
 
+            //check if types exist
+
             CanRemove(myTypes, myTransaction, mySecurity, myIgnoreReprimands);
 
             return null;
@@ -114,6 +116,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                                             SecurityToken mySecurityToken)
         {
             GetType(myTypeID, myTransactionToken, mySecurityToken);
+
+            if (IsTypeBaseType(myTypeID))
+                throw new InvalidTypeException("[BaseType] " + myTypeID.ToString(), "userdefined type");
         }
 
         public override void TruncateType(string myTypeName,
@@ -121,6 +126,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                                             SecurityToken mySecurityToken)
         {
             GetType(myTypeName, myTransactionToken, mySecurityToken);
+            
+            if (IsTypeBaseType(myTypeName))
+                throw new InvalidTypeException("[BaseType] " + myTypeName, "userdefined type");
         }
 
         public override bool HasType(string myTypeName,
@@ -143,6 +151,16 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override abstract void Load(TransactionToken myTransaction,
                                             SecurityToken mySecurity);
+
+        /// <summary>
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected override abstract bool IsTypeBaseType(long myTypeID);
+
+        /// <summary>
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected override abstract bool IsTypeBaseType(string myTypeName);
 
         #endregion
 
@@ -194,8 +212,8 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransaction">TransactionToken</param>
         /// <param name="mySecurity">SecurityToken</param>
         /// <param name="myIgnoreReprimands">Marks if reprimands are ignored on the types which should be removed.</param>
-        protected abstract void CanRemove(IEnumerable<T> myTypes, 
-                                            TransactionToken myTransaction, 
+        protected abstract void CanRemove(IEnumerable<T> myTypes,
+                                            TransactionToken myTransaction,
                                             SecurityToken mySecurity,
                                             bool myIgnoreReprimands);
 
@@ -233,8 +251,8 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myAlteredTypeName">The new type name.</param>
         /// <param name="myTransactionToken">TransactionToken</param>
         /// <param name="mySecurityToken">SecurityToken</param>
-        protected abstract void CheckNewTypeName(string myAlteredTypeName, 
-                                                    TransactionToken myTransactionToken, 
+        protected abstract void CheckNewTypeName(string myAlteredTypeName,
+                                                    TransactionToken myTransactionToken,
                                                     SecurityToken mySecurityToken);
 
         /// <summary>
@@ -296,7 +314,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             //Perf: We comment the FS checks out, to have a better performance
             //CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
-            
+
             foreach (var type in myTypePredefinitions)
                 GetType(type.TypeName, myTransactionToken, mySecurityToken);
             #endregion
@@ -324,9 +342,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                     if (!CanBaseTypeBeParentType(typePredefinition.SuperTypeName))
                         throw new InvalidBaseTypeException(typePredefinition.SuperTypeName);
                 }
-                else
-                    if (!CheckParentTypeExistInPredefinitions(typePredefinition.SuperTypeName, myTypePredefinitions))
-                        GetType(typePredefinition.SuperTypeName, myTransactionToken, mySecurityToken);
+                else if (!CheckParentTypeExistInPredefinitions(typePredefinition.SuperTypeName, myTypePredefinitions))
+                    GetType(typePredefinition.SuperTypeName, myTransactionToken, mySecurityToken);
 
                 CheckAttributes(typePredefinition);
                 CheckDefaultValue(typePredefinition);
@@ -396,7 +413,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myType">The type.</param>
         /// <param name="myTypePredefintions">The type predefinitions.</param>
-        protected static bool CheckParentTypeExistInPredefinitions(String myType, 
+        protected static bool CheckParentTypeExistInPredefinitions(String myType,
                                                             IEnumerable<ATypePredefinition> myTypePredefintions)
         {
             return myTypePredefintions.Any(_ => _.TypeName.Equals(myType));
@@ -445,38 +462,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         /// <summary>
-        /// TODO find better check method
-        /// Checks if the given type is a base type
-        /// </summary>
-        protected static bool IsTypeBaseType(long myTypeID)
-        {
-            return Enum.IsDefined(typeof(BaseTypes), myTypeID);
-
-            //return ((long)BaseTypes.Attribute).Equals(myTypeID) ||
-            //            ((long)BaseTypes.BaseType).Equals(myTypeID) ||
-            //            ((long)BaseTypes.BinaryProperty).Equals(myTypeID) ||
-            //            ((long)BaseTypes.Edge).Equals(myTypeID) ||
-            //            ((long)BaseTypes.EdgeType).Equals(myTypeID) ||
-            //            ((long)BaseTypes.IncomingEdge).Equals(myTypeID) ||
-            //            ((long)BaseTypes.Index).Equals(myTypeID) ||
-            //            ((long)BaseTypes.Orderable).Equals(myTypeID) ||
-            //            ((long)BaseTypes.OutgoingEdge).Equals(myTypeID) ||
-            //            ((long)BaseTypes.Property).Equals(myTypeID) ||
-            //            ((long)BaseTypes.Vertex).Equals(myTypeID) ||
-            //            ((long)BaseTypes.VertexType).Equals(myTypeID) ||
-            //            ((long)BaseTypes.Weighted).Equals(myTypeID);
-        }
-
-        /// <summary>
-        /// TODO find better check method
-        /// Checks if the given type is a base type
-        /// </summary>
-        protected static bool IsTypeBaseType(string myTypeName)
-        {
-            return Enum.IsDefined(typeof(BaseTypes), myTypeName);
-        }
-
-        /// <summary>
         /// Checks that the attribute name and type of the given AAttributePredefinitions are not null or empty.
         /// </summary>
         /// <param name="myPredefinitions">The to be checked predefinitions.</param>
@@ -513,7 +498,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myPredefinitions != null)
                 foreach (var predef in myPredefinitions)
-                    foreach(var prop in predef.Properties)
+                    foreach (var prop in predef.Properties)
                         if (prop.IsNullOrEmpty())
                             throw new EmptyAttributeNameException(predef.GetType(), "A property name inside a UniquePredefinition was null or empty.");
         }
@@ -569,20 +554,20 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 if (aToBeRenamedAttributes.Value.IsNullOrEmpty())
                     throw new EmptyAttributeNameException(
-                                String.Format("The to be attribute name to which the attribute {0} should be renamed is null or empty.", 
+                                String.Format("The to be attribute name to which the attribute {0} should be renamed is null or empty.",
                                                 aToBeRenamedAttributes.Key));
 
                 if (!CheckOldName(aToBeRenamedAttributes.Key, myType))
                 {
                     throw new InvalidAlterTypeException(
-                        String.Format("It is not possible to rename {0} into {1}. The to be renamed attribute does not exist.", 
+                        String.Format("It is not possible to rename {0} into {1}. The to be renamed attribute does not exist.",
                                         aToBeRenamedAttributes.Key, aToBeRenamedAttributes.Value));
                 }
 
                 if (!CheckNewName(aToBeRenamedAttributes.Value, myType))
                 {
                     throw new InvalidAlterTypeException(
-                        String.Format("It is not possible to rename {0} into {1}. The new attribute name already exists.", 
+                        String.Format("It is not possible to rename {0} into {1}. The new attribute name already exists.",
                                         aToBeRenamedAttributes.Key, aToBeRenamedAttributes.Value));
                 }
             }

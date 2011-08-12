@@ -37,10 +37,11 @@ using sones.GraphDB.Expression;
 using sones.GraphDB.Request;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.VertexStore.Definitions.Update;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    internal class ExecuteVertexTypeManager: AExecuteTypeManager<IVertexType>
+    internal class ExecuteVertexTypeManager : AExecuteTypeManager<IVertexType>
     {
         #region Data
 
@@ -51,8 +52,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region constructor
 
         public ExecuteVertexTypeManager(IDManager myIDManager)
+            : base(myIDManager)
         {
-            _idManager = myIDManager;
+            //_idManager = myIDManager;
 
             _baseTypes = new Dictionary<long, IBaseType>();
             _nameIndex = new Dictionary<String, long>();
@@ -62,8 +64,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region ACheckTypeManager member
 
-        public override IVertexType AlterType(IRequestAlterType myAlterTypeRequest, 
-                                                TransactionToken myTransactionToken, 
+        public override IVertexType AlterType(IRequestAlterType myAlterTypeRequest,
+                                                TransactionToken myTransactionToken,
                                                 SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
@@ -72,41 +74,57 @@ namespace sones.GraphDB.Manager.TypeManagement
         public override IEnumerable<IVertexType> GetAllTypes(TransactionToken myTransaction,
                                                                 SecurityToken mySecurity)
         {
-            var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.VertexType.ToString(), 
-                                                                        myTransaction, 
-                                                                        mySecurity, 
+            var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.VertexType.ToString(),
+                                                                        myTransaction,
+                                                                        mySecurity,
                                                                         false);
 
-            return vertices == null ? Enumerable.Empty<IVertexType>() 
+            return vertices == null ? Enumerable.Empty<IVertexType>()
                                     : vertices.Select(x => new VertexType(x, _baseStorageManager));
-        }
-
-        public override Dictionary<long, string> RemoveTypes(IEnumerable<IVertexType> myTypes,
-                                                                TransactionToken myTransaction,
-                                                                SecurityToken mySecurity,
-                                                                bool myIgnoreReprimands = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerable<long> ClearTypes(TransactionToken myTransaction,
-                                                        SecurityToken mySecurity)
-        {
-            throw new NotImplementedException();
         }
 
         public override void TruncateType(long myTypeID,
                                             TransactionToken myTransactionToken,
                                             SecurityToken mySecurityToken)
         {
-            throw new NotImplementedException();
+            var vertexType = GetType(myTypeID, myTransactionToken, mySecurityToken);
+
+            if (IsTypeBaseType(myTypeID))
+                throw new InvalidTypeException("[BaseType] " + myTypeID.ToString(), "userdefined type");
+
+            #region remove all vertices of this type
+
+            _vertexManager.ExecuteManager.VertexStore.RemoveVertices(mySecurityToken, myTransactionToken, myTypeID);
+
+            #endregion
+
+            #region rebuild indices
+
+            _indexManager.RebuildIndices(myTypeID, myTransactionToken, mySecurityToken);
+
+            #endregion
         }
 
         public override void TruncateType(string myTypeName,
                                             TransactionToken myTransactionToken,
                                             SecurityToken mySecurityToken)
         {
-            throw new NotImplementedException();
+            var vertexType = GetType(myTypeName, myTransactionToken, mySecurityToken);
+
+            if (IsTypeBaseType(myTypeName))
+                throw new InvalidTypeException("[BaseType] " + myTypeName, "userdefined type");
+
+            #region remove all vertices of this type
+
+            _vertexManager.ExecuteManager.VertexStore.RemoveVertices(mySecurityToken, myTransactionToken, vertexType.ID);
+
+            #endregion
+
+            #region rebuild indices
+
+            _indexManager.RebuildIndices(vertexType.ID, myTransactionToken, mySecurityToken);
+
+            #endregion
         }
 
         public override void CleanUpTypes()
@@ -123,7 +141,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                                             BaseTypes.IncomingEdge, 
                                             BaseTypes.Index, 
                                             BaseTypes.OutgoingEdge, 
-                                            BaseTypes.VertexType })
+                                            BaseTypes.Property,
+                                            BaseTypes.VertexType,
+                                            BaseTypes.Vertex })
             {
                 _baseTypes.Add((long)type, help[(long)type]);
                 _nameIndex.Add(type.ToString(), (long)type);
@@ -132,18 +152,18 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override void Initialize(IMetaManager myMetaManager)
         {
-            _edgeManager            = myMetaManager.EdgeTypeManager;
-            _indexManager           = myMetaManager.IndexManager;
-            _vertexManager          = myMetaManager.VertexManager;
-            _baseTypeManager        = myMetaManager.BaseTypeManager;
-            _baseStorageManager     = myMetaManager.BaseGraphStorageManager;
+            _edgeManager = myMetaManager.EdgeTypeManager;
+            _indexManager = myMetaManager.IndexManager;
+            _vertexManager = myMetaManager.VertexManager;
+            _baseTypeManager = myMetaManager.BaseTypeManager;
+            _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
 
         public override void Load(TransactionToken myTransaction,
                                     SecurityToken mySecurity)
         {
-            _idManager.VertexTypeID.SetToMaxID(GetMaxID((long)BaseTypes.VertexType, 
-                                                        myTransaction, 
+            _idManager.VertexTypeID.SetToMaxID(GetMaxID((long)BaseTypes.VertexType,
+                                                        myTransaction,
                                                         mySecurity) + 1);
             _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute).SetToMaxID(
                         Math.Max(
@@ -165,7 +185,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                 BaseTypes.Index,
                 BaseTypes.OutgoingEdge,
                 BaseTypes.Property,
-                BaseTypes.VertexType);
+                BaseTypes.VertexType,
+                BaseTypes.Vertex);
         }
 
         protected override IVertexType CreateType(IVertex myVertex)
@@ -185,338 +206,54 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region abstract private helper
 
         /// <summary>
-        /// Adds a type by reading out the predefinitions and stores all attributes and the type.
+        /// Checks if the given type is a base type
         /// </summary>
-        /// <param name="myTypePredefinitions">The predefinitions for the creation.</param>
-        /// <param name="myTransaction">TransactionToken</param>
-        /// <param name="mySecurity">SecurityToken</param>
-        /// <returns>The created types.</returns>
-        protected override IEnumerable<IVertexType> Add(IEnumerable<ATypePredefinition> myTypePredefinitions,
-                                                        TransactionToken myTransaction,
-                                                        SecurityToken mySecurity)
+        protected override bool IsTypeBaseType(long myTypeID)
         {
-            #region preparations
+            return ((long)BaseTypes.Attribute).Equals(myTypeID) ||
+                        ((long)BaseTypes.BaseType).Equals(myTypeID) ||
+                        ((long)BaseTypes.BinaryProperty).Equals(myTypeID) ||
+                        ((long)BaseTypes.EdgeType).Equals(myTypeID) ||
+                        ((long)BaseTypes.IncomingEdge).Equals(myTypeID) ||
+                        ((long)BaseTypes.Index).Equals(myTypeID) ||
+                        ((long)BaseTypes.OutgoingEdge).Equals(myTypeID) ||
+                        ((long)BaseTypes.Property).Equals(myTypeID) ||
+                        ((long)BaseTypes.Vertex).Equals(myTypeID) ||
+                        ((long)BaseTypes.VertexType).Equals(myTypeID);
+        }
 
-            var typePredefinitions = myTypePredefinitions;// as IEnumerable<VertexTypePredefinition>;
+        /// <summary>
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected override bool IsTypeBaseType(String myTypeName)
+        {
+            BaseTypes type;
+            if (!Enum.TryParse(myTypeName, out type))
+                return false;
 
-            //Perf: count is necessary, fast if it is an ICollection
-            var count = typePredefinitions.Count();
+            return true;
+        }
 
-            //This operation reserves #count ids for this operation.
-            var firstTypeID = _idManager.VertexTypeID.ReserveIDs(count);
+        /// <summary>
+        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeID"/>.
+        /// </summary>
+        /// <param name="myTypeId"></param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>An IVertex instance, that represents the vertex type with the given ID or <c>NULL</c>, if not present.</returns>
+        protected override IVertex Get(long myTypeId,
+                                        TransactionToken myTransaction,
+                                        SecurityToken mySecurity)
+        {
+            #region get the type from fs
 
-            //Contains dictionary of vertex name to vertex predefinition.
-            var defsByVertexName = CanAddCheckDuplicates(typePredefinitions);
-
-            //Contains dictionary of parent vertex name to list of vertex predefinitions.
-            var defsByParentVertexName = typePredefinitions
-                .GroupBy(def => def.SuperTypeName)
-                .ToDictionary(group => group.Key, group => group.AsEnumerable());
-
-            //Contains list of vertex predefinitions sorted topologically.
-            var defsTopologically = CanAddSortTopolocically(defsByVertexName, 
-                                                                defsByParentVertexName
-                                                                .ToDictionary(kvp => kvp.Key,
-                                                                              kvp => kvp.Value));// as IEnumerable<ATypePredefinition>));
-
-            CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
-
-            var typeInfos = GenerateTypeInfos(defsTopologically, defsByVertexName, firstTypeID, myTransaction, mySecurity);
-
-            //we can add each type separately
-            var creationDate = DateTime.UtcNow.ToBinary();
-            var resultPos = 0;
-
-            var result = new IVertex[count];
-
-            #endregion
-
-            #region store vertex type
-
-            //now we store each vertex type
-            for (var current = defsTopologically.First; current != null; current = current.Next)
-            {
-                var newVertexType = _baseStorageManager.StoreVertexType(
-                     _vertexManager.ExecuteManager.VertexStore,
-                     typeInfos[current.Value.TypeName].VertexInfo,
-                     current.Value.TypeName,
-                     current.Value.Comment,
-                     creationDate,
-                     current.Value.IsAbstract,
-                     current.Value.IsSealed,
-                     true,
-                     typeInfos[current.Value.SuperTypeName].VertexInfo,
-                     null,
-                     mySecurity,
-                     myTransaction);
-
-                result[resultPos++] = newVertexType;
-
-                _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName)
-                                .Add(current.Value.TypeName, typeInfos[current.Value.TypeName].VertexInfo.VertexID);
-
-                _nameIndex.Add(current.Value.TypeName, typeInfos[current.Value.TypeName].VertexInfo.VertexID);
-            }
+            return _vertexManager.ExecuteManager
+                    .GetSingleVertex(new BinaryExpression(_VertexTypeVertexIDExpression,
+                                                            BinaryOperator.Equals,
+                                                            new SingleLiteralExpression(myTypeId)),
+                                        myTransaction, mySecurity);
 
             #endregion
-
-            #region Store Attributes
-
-            //The order of adds is important. First property, then outgoing edges (that might point to properties) and finally incoming edges (that might point to outgoing edges)
-            //Do not try to merge it into one for block.
-
-            #region Store properties
-
-            for (var current = defsTopologically.First; current != null; current = current.Next)
-            {
-                if (current.Value.Properties == null)
-                    continue;
-
-                var firstAttrID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute)
-                                            .ReserveIDs(current.Value.PropertyCount);
-
-                var currentExternID = typeInfos[current.Value.TypeName].AttributeCountWithParents - current.Value.PropertyCount - 1;
-
-                foreach (var prop in current.Value.Properties)
-                {
-                    _baseStorageManager.StoreProperty(
-                        _vertexManager.ExecuteManager.VertexStore,
-                        new VertexInformation((long)BaseTypes.Property, firstAttrID++),
-                        prop.AttributeName,
-                        prop.Comment,
-                        creationDate,
-                        prop.IsMandatory,
-                        prop.Multiplicity,
-                        prop.DefaultValue,
-                        true,
-                        typeInfos[current.Value.TypeName].VertexInfo,
-                        ConvertBasicType(prop.AttributeType),
-                        mySecurity,
-                        myTransaction);
-                }
-
-            }
-
-            #endregion
-
-            #region Store binary properties
-
-            var vertexDefsTopologically = ConvertLinkedList(defsTopologically);
-
-            for (var current = vertexDefsTopologically.First; current != null; current = current.Next)
-            {
-                if (current.Value.BinaryProperties == null)
-                    continue;
-
-                var firstAttrID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute).ReserveIDs(current.Value.BinaryPropertyCount);
-
-                var currentExternID = typeInfos[current.Value.TypeName].AttributeCountWithParents 
-                                        - current.Value.PropertyCount 
-                                        - current.Value.BinaryPropertyCount 
-                                        - 1;
-
-                foreach (var prop in current.Value.BinaryProperties)
-                {
-                    _baseStorageManager.StoreBinaryProperty(
-                        _vertexManager.ExecuteManager.VertexStore,
-                        new VertexInformation((long)BaseTypes.BinaryProperty, firstAttrID++),
-                        prop.AttributeName,
-                        prop.Comment,
-                        true,
-                        creationDate,
-                        typeInfos[current.Value.TypeName].VertexInfo,
-                        mySecurity,
-                        myTransaction);
-                }
-
-            }
-
-            #endregion
-
-            #region Store outgoing edges
-
-            for (var current = vertexDefsTopologically.First; current != null; current = current.Next)
-            {
-                if (current.Value.OutgoingEdges == null)
-                    continue;
-
-                var firstAttrID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute).ReserveIDs(current.Value.OutgoingEdgeCount);
-
-                var currentExternID = typeInfos[current.Value.TypeName].AttributeCountWithParents 
-                                        - current.Value.PropertyCount 
-                                        - current.Value.OutgoingEdgeCount 
-                                        - current.Value.BinaryPropertyCount 
-                                        - 1;
-
-                foreach (var edge in current.Value.OutgoingEdges)
-                {
-                    VertexInformation? innerEdgeType = null;
-                    if (edge.Multiplicity == EdgeMultiplicity.MultiEdge)
-                    {
-                        innerEdgeType = new VertexInformation((long)BaseTypes.EdgeType, 
-                                                                _edgeManager.ExecuteManager.GetType(edge.InnerEdgeType, myTransaction, mySecurity).ID);
-                    }
-
-                    _baseStorageManager.StoreOutgoingEdge(
-                        _vertexManager.ExecuteManager.VertexStore,
-                        new VertexInformation((long)BaseTypes.OutgoingEdge, firstAttrID++),
-                        edge.AttributeName,
-                        edge.Comment,
-                        true,
-                        creationDate,
-                        edge.Multiplicity,
-                        typeInfos[current.Value.TypeName].VertexInfo,
-                        new VertexInformation((long)BaseTypes.EdgeType, 
-                                                _edgeManager.ExecuteManager.GetType(edge.EdgeType, myTransaction, mySecurity).ID),
-                        innerEdgeType,
-                        typeInfos[edge.AttributeType].VertexInfo,
-                        mySecurity,
-                        myTransaction);
-                }
-
-            }
-
-            #endregion
-
-            #region Store incoming edges
-
-            for (var current = vertexDefsTopologically.First; current != null; current = current.Next)
-            {
-                if (current.Value.IncomingEdges == null)
-                    continue;
-
-                var firstAttrID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute)
-                                                .ReserveIDs(current.Value.IncomingEdgeCount);
-
-                var currentExternID = typeInfos[current.Value.TypeName].AttributeCountWithParents 
-                                        - current.Value.PropertyCount 
-                                        - current.Value.BinaryPropertyCount 
-                                        - current.Value.OutgoingEdgeCount 
-                                        - current.Value.IncomingEdgeCount 
-                                        - 1;
-
-                foreach (var edge in current.Value.IncomingEdges)
-                {
-
-                    _baseStorageManager.StoreIncomingEdge(
-                        _vertexManager.ExecuteManager.VertexStore,
-                        new VertexInformation((long)BaseTypes.IncomingEdge, firstAttrID++),
-                        edge.AttributeName,
-                        edge.Comment,
-                        true,
-                        creationDate,
-                        typeInfos[current.Value.TypeName].VertexInfo,
-                        GetOutgoingEdgeVertexInformation(GetTargetVertexTypeFromAttributeType(edge.AttributeType), 
-                                                            GetTargetEdgeNameFromAttributeType(edge.AttributeType), 
-                                                            myTransaction, 
-                                                            mySecurity),
-                        mySecurity,
-                        myTransaction);
-                }
-
-            }
-
-            #endregion
-
-            var resultTypes = new VertexType[result.Length];
-
-            #region reload the stored types
-
-            //reload the IVertex objects, that represents the type.
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = _vertexManager.ExecuteManager.VertexStore.GetVertex(mySecurity, myTransaction,
-                                                                                result[i].VertexID,
-                                                                                result[i].VertexTypeID, String.Empty);
-
-                var newVertexType = new VertexType(result[i], _baseStorageManager);
-                
-                resultTypes[i] = newVertexType;
-                
-                _baseTypes.Add(typeInfos[newVertexType.Name].VertexInfo.VertexID, newVertexType);
-            }
-
-            #endregion
-
-            #endregion
-
-            #region Add Indices
-
-            if (_indexManager != null)
-            {
-                var uniqueIdx = _indexManager.GetBestMatchingIndexName(true, false, false);
-
-                var indexIdx = _indexManager.GetBestMatchingIndexName(false, false, false);
-
-                resultPos = 0;
-                for (var current = vertexDefsTopologically.First; current != null; current = current.Next, resultPos++)
-                {
-                    #region Uniqueness
-
-                    #region own uniques
-
-                    if (current.Value.Uniques != null)
-                    {
-                        var indexPredefs = current.Value.Uniques.Select(unique =>
-                            new IndexPredefinition(current.Value.TypeName)
-                                                    .AddProperty(unique.Properties)
-                                                    .SetIndexType(uniqueIdx));
-
-                        var indexDefs = indexPredefs.Select(indexPredef => _indexManager
-                                                                                .CreateIndex(indexPredef, 
-                                                                                                mySecurity, 
-                                                                                                myTransaction, 
-                                                                                                false)).ToArray();
-
-                        //only own unique indices are connected to the vertex type on the UniquenessDefinitions attribute
-                        ConnectVertexToUniqueIndex(typeInfos[current.Value.TypeName], indexDefs, mySecurity, myTransaction);
-                    }
-
-                    #endregion
-
-                    #region parent uniques
-
-                    foreach (var unique in resultTypes[resultPos].ParentVertexType.GetUniqueDefinitions(true))
-                    {
-                        _indexManager.CreateIndex(
-                            new IndexPredefinition(unique.DefiningVertexType.Name)
-                                                    .AddProperty(unique.UniquePropertyDefinitions.Select(x => x.Name))
-                                                    .SetIndexType(uniqueIdx),
-                            mySecurity,
-                            myTransaction,
-                            false);
-                    }
-
-                    #endregion
-
-                    #endregion
-
-                    #region Indices
-
-                    if (current.Value.Indices != null)
-                        foreach (var index in current.Value.Indices)
-                        {
-                            _indexManager.CreateIndex(index, mySecurity, myTransaction);
-                        }
-
-                    foreach (var index in resultTypes[resultPos].ParentVertexType.GetIndexDefinitions(true))
-                    {
-                        _indexManager.CreateIndex(
-                            new IndexPredefinition(current.Value.TypeName)
-                                                    .AddProperty(index.IndexedProperties.Select(x => x.Name))
-                                                    .SetIndexType(index.IndexTypeName),
-                            mySecurity,
-                            myTransaction);
-                    }
-
-                    #endregion
-                }
-            }
-            #endregion
-
-            CleanUpTypes();
-
-            return resultTypes;
         }
 
         /// <summary>
@@ -541,53 +278,6 @@ namespace sones.GraphDB.Manager.TypeManagement
             #endregion
         }
 
-        #endregion
-
-        /// <summary>
-        /// Gets the max id of the given type id.
-        /// </summary>
-        /// <param name="myTypeID">The type id.</param>
-        /// <param name="myTransaction">TransactionToken</param>
-        /// <param name="mySecurity">SecurityToken</param>
-        /// <returns>The max id.</returns>
-        private long GetMaxID(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity)
-        {
-            var vertices = _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurity, 
-                                                                                            myTransaction, 
-                                                                                            myTypeID);
-
-            if (vertices == null)
-                throw new BaseVertexTypeNotExistException("The base vertex types are not available during loading the ExecuteVertexTypeManager.");
-
-            return (vertices.CountIsGreater(0))
-                ? vertices.Max(x => x.VertexID)
-                : Int64.MinValue;
-        }
-
-        /// <summary>
-        /// Loads the base types.
-        /// </summary>
-        /// <param name="myTransaction">TransactionToken</param>
-        /// <param name="mySecurity">SecurityToken</param>
-        /// <param name="myBaseTypes">The base types.</param>
-        private void LoadBaseType(TransactionToken myTransaction, SecurityToken mySecurity, params BaseTypes[] myBaseTypes)
-        {
-            foreach (var baseType in myBaseTypes)
-            {
-                var vertex = _vertexManager.ExecuteManager.VertexStore.GetVertex(mySecurity, 
-                                                                                    myTransaction, 
-                                                                                    (long)baseType, 
-                                                                                    (long)BaseTypes.VertexType, 
-                                                                                    String.Empty);
-
-                if (vertex == null)
-                    throw new BaseVertexTypeNotExistException(baseType.ToString(), "Could not load base vertex type during loading the ExecuteVertexTypeManager.");
-
-                _baseTypes.Add((long)baseType, new VertexType(vertex, _baseStorageManager));
-                _nameIndex.Add(baseType.ToString(), (long)baseType);
-            }
-        }
-
         /// <summary>
         /// Does the necessary checks for can add with the use of the FS.
         /// </summary>
@@ -609,13 +299,13 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 CanAddCheckVertexNameUniqueWithFS(current.Value, myTransaction, mySecurity);
                 CanAddCheckAttributeNameUniquenessWithFS(current, attributes, myTransaction, mySecurity);
-                CanAddCheckOutgoingEdgeTargets(current.Value as VertexTypePredefinition, 
-                                                myDefsByName, 
-                                                myTransaction, 
+                CanAddCheckOutgoingEdgeTargets(current.Value as VertexTypePredefinition,
+                                                myDefsByName,
+                                                myTransaction,
                                                 mySecurity);
-                CanAddCheckIncomingEdgeSources(current.Value as VertexTypePredefinition, 
-                                                myDefsByName, 
-                                                myTransaction, 
+                CanAddCheckIncomingEdgeSources(current.Value as VertexTypePredefinition,
+                                                myDefsByName,
+                                                myTransaction,
                                                 mySecurity);
             }
         }
@@ -627,9 +317,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myAttributes">A dictionary vertex type name to attribute names, that is build up during the process of CanAddCheckWithFS.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        protected override void CanAddCheckAttributeNameUniquenessWithFS(LinkedListNode<ATypePredefinition> myTopologicallySortedPointer, 
-                                                                            IDictionary<string, HashSet<string>> myAttributes, 
-                                                                            TransactionToken myTransaction, 
+        protected override void CanAddCheckAttributeNameUniquenessWithFS(LinkedListNode<ATypePredefinition> myTopologicallySortedPointer,
+                                                                            IDictionary<string, HashSet<string>> myAttributes,
+                                                                            TransactionToken myTransaction,
                                                                             SecurityToken mySecurity)
         {
             var parentPredef = GetParentPredefinitionOnTopologicallySortedList(myTopologicallySortedPointer);
@@ -645,7 +335,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 if (parent.GetProperty<bool>((long)AttributeDefinitions.BaseTypeDotIsSealed))
                     //The parent type is sealed.
-                    throw new SealedBaseVertexTypeException(myTopologicallySortedPointer.Value.TypeName, 
+                    throw new SealedBaseVertexTypeException(myTopologicallySortedPointer.Value.TypeName,
                                                             parent.GetPropertyAsString((long)AttributeDefinitions.AttributeDotName));
 
                 var parentType = new VertexType(parent, _baseStorageManager);
@@ -660,94 +350,21 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             var attributeNamesSet = myAttributes[myTopologicallySortedPointer.Value.TypeName];
 
-            CheckIncomingEdgesUniqueName(myTopologicallySortedPointer.Value as VertexTypePredefinition, 
+            CheckIncomingEdgesUniqueName(myTopologicallySortedPointer.Value as VertexTypePredefinition,
                                             attributeNamesSet);
-            CheckOutgoingEdgesUniqueName(myTopologicallySortedPointer.Value as VertexTypePredefinition, 
+            CheckOutgoingEdgesUniqueName(myTopologicallySortedPointer.Value as VertexTypePredefinition,
                                             attributeNamesSet);
             CheckPropertiesUniqueName(myTopologicallySortedPointer.Value, attributeNamesSet);
         }
 
         /// <summary>
-        /// Checks if an incoming myEdge has a coresponding outgoing myEdge.
+        /// Reservs myCountOfNeededIDs type ids in id manager depending on type and gets the first reserved id.
         /// </summary>
-        /// <param name="myVertexTypePredefinition">The vertex type definition of that the incoming edges will be checked,</param>
-        /// <param name="myDefsByName">The vertex type predefinitions indexed by their name that are alse defined in this CanAdd operation.
-        /// <remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
-        /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurity">A security token for this operation.</param>
-        private void CanAddCheckIncomingEdgeSources(VertexTypePredefinition myVertexTypePredefinition, 
-                                                    IDictionary<string, ATypePredefinition> myDefsByName, 
-                                                    TransactionToken myTransaction, 
-                                                    SecurityToken mySecurity)
+        /// <param name="myCountOfNeededIDs">Count of to be reserved ids.</param>
+        /// <returns>The first reserved id.</returns>
+        protected override long GetFirstTypeID(int myCountOfNeededIDs)
         {
-            if (myVertexTypePredefinition.IncomingEdges == null)
-                return;
-
-            var grouped = myVertexTypePredefinition.IncomingEdges.GroupBy(x => GetTargetVertexTypeFromAttributeType(x.AttributeType));
-            foreach (var group in grouped)
-            {
-                if (!myDefsByName.ContainsKey(group.Key))
-                {
-                    var vertex = Get(group.Key, myTransaction, mySecurity);
-                    if (vertex == null)
-                        throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, 
-                                                                    group.Key, 
-                                                                    group.Select(x => x.AttributeName));
-
-                    var attributes = vertex.GetIncomingVertices((long)BaseTypes.OutgoingEdge, 
-                                                                (long)AttributeDefinitions.AttributeDotDefiningType);
-
-                    foreach (var edge in group)
-                    {
-                        if (!attributes.Any(outgoing => GetTargetVertexTypeFromAttributeType(edge.AttributeName)
-                                                        .Equals(outgoing.GetPropertyAsString((long)AttributeDefinitions.AttributeDotName))))
-                            throw new OutgoingEdgeNotFoundException(myVertexTypePredefinition, edge);
-                    }
-                }
-                else
-                {
-                    var target = myDefsByName[group.Key] as VertexTypePredefinition;
-
-                    foreach (var edge in group)
-                    {
-                        if (!target.OutgoingEdges.Any(outgoing => GetTargetEdgeNameFromAttributeType(edge.AttributeType)
-                                                                    .Equals(outgoing.AttributeName)))
-                            throw new OutgoingEdgeNotFoundException(myVertexTypePredefinition, edge);
-                    }
-
-                }
-            }
-        }
-
-        /// <summary>
-        /// Checks if outgoing edges have a valid target.
-        /// </summary>
-        /// <param name="myVertexTypePredefinition">The vertex type definition of that the outgoing edges will be checked,</param>
-        /// <param name="myDefsByName">The vertex type predefinitions indexed by their name that are alse defined in this CanAdd operation.
-        /// <remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
-        /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurity">A security token for this operation.</param>
-        private void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition, 
-                                                    IDictionary<string, ATypePredefinition> myDefsByName, 
-                                                    TransactionToken myTransaction, 
-                                                    SecurityToken mySecurity)
-        {
-            if (myVertexTypePredefinition.OutgoingEdges == null)
-                return;
-
-            var grouped = myVertexTypePredefinition.OutgoingEdges.GroupBy(x => x.AttributeType);
-
-            foreach (var group in grouped)
-            {
-                if (myDefsByName.ContainsKey(group.Key))
-                    continue;
-
-                var vertex = Get(group.Key, myTransaction, mySecurity);
-
-                if (vertex == null)
-                    throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, group.Key,
-                                                                group.Select(x => x.AttributeName));
-            }
+            return _idManager.VertexTypeID.ReserveIDs(myCountOfNeededIDs);
         }
 
         protected override Dictionary<String, TypeInfo> GenerateTypeInfos(
@@ -786,9 +403,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                 else
                 {
                     var vertex = _vertexManager.ExecuteManager.GetSingleVertex(
-                                    new BinaryExpression(new SingleLiteralExpression(vertexType), 
-                                                            BinaryOperator.Equals, 
-                                                            _VertexTypeNameExpression), 
+                                    new BinaryExpression(new SingleLiteralExpression(vertexType),
+                                                            BinaryOperator.Equals,
+                                                            _VertexTypeNameExpression),
                                     myTransaction, mySecurity);
 
                     IVertexType neededVertexType = new VertexType(vertex, _baseStorageManager);
@@ -818,6 +435,504 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         /// <summary>
+        /// Calls the needed store methods depending on the typemanger.
+        /// </summary>
+        /// <param name="myDefsTopologically">The topologically sorted type predefinitions.</param>
+        /// <param name="myTypeInfos">The created type infos.</param>
+        /// <param name="myCreationDate">The creation date.</param>
+        /// <param name="myResultPos">The result position.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myResult">Ref on result array.</param>
+        protected override IEnumerable<IVertexType> StoreTypeAndAttributes(LinkedList<ATypePredefinition> myDefsTopologically,
+                                                                            Dictionary<String, TypeInfo> myTypeInfos,
+                                                                            long myCreationDate,
+                                                                            int myResultPos,
+                                                                            TransactionToken myTransactionToken,
+                                                                            SecurityToken mySecurityToken,
+                                                                            ref IVertex[] myResult)
+        {
+            #region store vertex type
+
+            StoreVertexType(myDefsTopologically,
+                            myTypeInfos,
+                            myCreationDate,
+                            myResultPos,
+                            myTransactionToken,
+                            mySecurityToken,
+                            ref myResult);
+
+            #endregion
+
+            #region Store Attributes
+
+            //The order of adds is important. First property, then outgoing edges (that might point to properties) and finally incoming edges (that might point to outgoing edges)
+            //Do not try to merge it into one for block.
+
+            #region Store properties
+
+            StoreProperties(myDefsTopologically,
+                            myTypeInfos,
+                            myCreationDate,
+                            myTransactionToken,
+                            mySecurityToken);
+
+            #endregion
+
+            var vertexDefsTopologically = ConvertLinkedList(myDefsTopologically);
+
+            #region Store binary properties
+
+            StoreBinaryProperties(vertexDefsTopologically,
+                                    myTypeInfos,
+                                    myCreationDate,
+                                    myTransactionToken,
+                                    mySecurityToken);
+
+            #endregion
+
+            #region Store outgoing edges
+
+            StoreOutgoingEdges(vertexDefsTopologically,
+                                myTypeInfos,
+                                myCreationDate,
+                                myTransactionToken,
+                                mySecurityToken);
+
+            #endregion
+
+            #region Store incoming edges
+
+            StoreIncomingEdges(vertexDefsTopologically,
+                                myTypeInfos,
+                                myCreationDate,
+                                myTransactionToken,
+                                mySecurityToken);
+
+            #endregion
+
+            var resultTypes = new VertexType[myResult.Length];
+
+            #region reload the stored types
+
+            //reload the IVertex objects, that represents the type.
+            for (int i = 0; i < myResult.Length; i++)
+            {
+                myResult[i] = _vertexManager.ExecuteManager.VertexStore.GetVertex(mySecurityToken, myTransactionToken,
+                                                                                myResult[i].VertexID,
+                                                                                myResult[i].VertexTypeID, String.Empty);
+
+                var newVertexType = new VertexType(myResult[i], _baseStorageManager);
+
+                resultTypes[i] = newVertexType;
+
+                _baseTypes.Add(myTypeInfos[newVertexType.Name].VertexInfo.VertexID, newVertexType);
+            }
+
+            #endregion
+
+            #endregion
+
+            #region Add Indices
+
+            if (_indexManager != null)
+            {
+                var uniqueIdx = _indexManager.GetBestMatchingIndexName(true, false, false);
+
+                var indexIdx = _indexManager.GetBestMatchingIndexName(false, false, false);
+
+                myResultPos = 0;
+                for (var current = vertexDefsTopologically.First; current != null; current = current.Next, myResultPos++)
+                {
+                    #region Uniqueness
+
+                    #region own uniques
+
+                    if (current.Value.Uniques != null)
+                    {
+                        var indexPredefs = current.Value.Uniques.Select(unique =>
+                            new IndexPredefinition(current.Value.TypeName)
+                                                    .AddProperty(unique.Properties)
+                                                    .SetIndexType(uniqueIdx));
+
+                        var indexDefs = indexPredefs.Select(indexPredef => _indexManager
+                                                                                .CreateIndex(indexPredef,
+                                                                                                mySecurityToken,
+                                                                                                myTransactionToken,
+                                                                                                false)).ToArray();
+
+                        //only own unique indices are connected to the vertex type on the UniquenessDefinitions attribute
+                        ConnectVertexToUniqueIndex(myTypeInfos[current.Value.TypeName], indexDefs, mySecurityToken, myTransactionToken);
+                    }
+
+                    #endregion
+
+                    #region parent uniques
+
+                    foreach (var unique in resultTypes[myResultPos].ParentVertexType.GetUniqueDefinitions(true))
+                    {
+                        _indexManager.CreateIndex(
+                            new IndexPredefinition(unique.DefiningVertexType.Name)
+                                                    .AddProperty(unique.UniquePropertyDefinitions.Select(x => x.Name))
+                                                    .SetIndexType(uniqueIdx),
+                            mySecurityToken,
+                            myTransactionToken,
+                            false);
+                    }
+
+                    #endregion
+
+                    #endregion
+
+                    #region Indices
+
+                    if (current.Value.Indices != null)
+                        foreach (var index in current.Value.Indices)
+                        {
+                            _indexManager.CreateIndex(index, mySecurityToken, myTransactionToken);
+                        }
+
+                    foreach (var index in resultTypes[myResultPos].ParentVertexType.GetIndexDefinitions(true))
+                    {
+                        _indexManager.CreateIndex(
+                            new IndexPredefinition(current.Value.TypeName)
+                                                    .AddProperty(index.IndexedProperties.Select(x => x.Name))
+                                                    .SetIndexType(index.IndexTypeName),
+                            mySecurityToken,
+                            myTransactionToken);
+                    }
+
+                    #endregion
+                }
+            }
+            #endregion
+
+            return resultTypes.AsEnumerable<IVertexType>();
+        }
+
+        /// <summary>
+        /// Removes the given types from the graphDB.
+        /// </summary>
+        /// <param name="myVertexTypes">The types to delete.</param>
+        /// <param name="myTransaction">Transaction token.</param>
+        /// <param name="mySecurity">Security Token.</param>
+        /// <param name="myIgnoreReprimands">True means, that reprimands (IncomingEdges) on the types wich should be removed are ignored.</param>
+        /// <returns>Set of deleted type IDs.</returns>
+        protected override Dictionary<Int64, String> Remove(IEnumerable<IVertexType> myTypes,
+                                                            TransactionToken myTransaction,
+                                                            SecurityToken mySecurity,
+                                                            bool myIgnoreReprimands = false)
+        {
+            //the attribute types on delete types which have to be removed
+            var toDeleteAttributeDefinitions = new List<IAttributeDefinition>();
+
+            //the indices on the delete types
+            var toDeleteIndexDefinitions = new List<IIndexDefinition>();
+
+            #region get propertydefinitions
+
+            //get child vertex types
+            foreach (var delType in myTypes)
+            {
+                try
+                {
+                    //check if type exists
+                    var temp = GetType(delType.ID, myTransaction, mySecurity);
+                }
+                catch (Exception exception)
+                {
+                    throw new TypeRemoveException<IVertexType>(delType.Name, exception);
+                }
+
+                if (!delType.HasParentType)
+                    //type must be base type because there is no parent type, Exception that base type cannot be deleted
+                    throw new TypeRemoveException<IVertexType>(delType.Name, "A BaseType connot be removed.");
+
+                if (IsTypeBaseType(delType.ID))
+                    //Exception that base type cannot be deleted
+                    throw new TypeRemoveException<IVertexType>(delType.Name, "A BaseType connot be removed.");
+
+                //just check edges if reprimands should not be ignored
+                if (!myIgnoreReprimands)
+                {
+                    #region check that existing child types are specified
+
+                    if (!delType.GetDescendantVertexTypes().All(child => myTypes.Contains(child)))
+                        throw new TypeRemoveException<IVertexType>(delType.Name, "The given type has child types and cannot be removed.");
+
+                    #endregion
+
+                    //TODO: use vertex and check if incoming edges existing of user defined types, instead of foreach
+                    var VertexOfDelType = _vertexManager.ExecuteManager
+                                            .GetSingleVertex(new BinaryExpression(_VertexTypeVertexIDExpression,
+                                                                                    BinaryOperator.Equals,
+                                                                                    new SingleLiteralExpression(delType.ID)),
+                                                                myTransaction, mySecurity);
+
+                    #region check that no other type has a outgoing edge pointing on delete type
+
+                    //get all vertex types and check if they have outgoing edges with target vertex the delete type
+                    foreach (var type in GetAllTypes(myTransaction, mySecurity))
+                    {
+                        if (type.ID != delType.ID && type.GetOutgoingEdgeDefinitions(false)
+                                                            .Any(outEdgeDef => outEdgeDef.TargetVertexType.ID.Equals(delType.ID)))
+                        {
+                            throw new TypeRemoveException<IVertexType>(delType.Name,
+                                        "There are other types which have outgoing edges pointing to the type, which should be removed.");
+                        }
+                    }
+
+                    #endregion
+
+                    #region check if there are incoming edges of target vertices of outgoing edges of the deleting type
+
+                    foreach (var outEdge in delType.GetOutgoingEdgeDefinitions(false))
+                    {
+                        if (outEdge.TargetVertexType.GetIncomingEdgeDefinitions(true)
+                                                    .Any(inEdge => inEdge.RelatedEdgeDefinition.ID.Equals(outEdge.ID) &&
+                                inEdge.RelatedType.ID != delType.ID) &&
+                                !myIgnoreReprimands)
+                            throw new TypeRemoveException<IVertexType>(delType.Name,
+                                        "There are other types which have incoming edges, whose related type is a outgoing edge of the type which should be removed.");
+                    }
+
+                    #endregion
+                }
+
+                toDeleteAttributeDefinitions.AddRange(delType.GetAttributeDefinitions(false));
+
+                toDeleteIndexDefinitions.AddRange(delType.GetIndexDefinitions(false));
+            }
+
+            #endregion
+
+            //the IDs of the deleted vertices
+            var deletedTypeIDs = new Dictionary<Int64, String>(myTypes.ToDictionary(key => key.ID, item => item.Name));
+
+            #region remove indices
+
+            //remove indices on types
+            foreach (var index in toDeleteIndexDefinitions)
+                _indexManager.RemoveIndexInstance(index.ID, myTransaction, mySecurity);
+
+            #endregion
+
+            #region remove attribute types on delete types
+
+            //delete attribute vertices
+            foreach (var attr in toDeleteAttributeDefinitions)
+            {
+                switch (attr.Kind)
+                {
+                    case (AttributeType.Property):
+                        if (!_vertexManager.ExecuteManager.VertexStore
+                                .RemoveVertex(mySecurity, myTransaction, attr.ID, (long)BaseTypes.Property))
+                            throw new VertexTypeRemoveException(myTypes.Where(x => x.HasProperty(attr.Name)).First().Name,
+                                        "The Property " + attr.Name + " could not be removed.");
+                        break;
+
+                    case (AttributeType.IncomingEdge):
+                        if (!_vertexManager.ExecuteManager.VertexStore
+                                .RemoveVertex(mySecurity, myTransaction, attr.ID, (long)BaseTypes.IncomingEdge))
+                            throw new VertexTypeRemoveException(myTypes.Where(x => x.HasIncomingEdge(attr.Name)).First().Name,
+                                        "The IncomingEdge " + attr.Name + " could not be removed.");
+                        break;
+
+                    case (AttributeType.OutgoingEdge):
+                        if (!_vertexManager.ExecuteManager.VertexStore
+                                .RemoveVertex(mySecurity, myTransaction, attr.ID, (long)BaseTypes.OutgoingEdge))
+                            throw new VertexTypeRemoveException(myTypes.Where(x => x.HasOutgoingEdge(attr.Name)).First().Name,
+                                        "The OutgoingEdge " + attr.Name + " could not be removed.");
+                        break;
+
+                    case (AttributeType.BinaryProperty):
+                        if (!_vertexManager.ExecuteManager.VertexStore
+                                .RemoveVertex(mySecurity, myTransaction, attr.ID, (long)BaseTypes.BinaryProperty))
+                            throw new VertexTypeRemoveException(myTypes.Where(x => x.HasBinaryProperty(attr.Name)).First().Name,
+                                        "The BinaryProperty " + attr.Name + " could not be removed.");
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            #endregion
+
+            #region remove vertex type names from index
+
+            foreach (var type in myTypes)
+            {
+                var result = _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName);
+
+                if (result != null)
+                    if (!result.Remove(type.Name))
+                        throw new TypeRemoveException<IVertexType>(type.Name, "Error during delete the Index on type.");
+            }
+
+            #endregion
+
+            #region remove vertices
+
+            //delete the vertices
+            foreach (var type in myTypes)
+            {
+
+                //removes the instances of the VertexType
+                _vertexManager.ExecuteManager.VertexStore.RemoveVertices(mySecurity, myTransaction, type.ID);
+
+                //removes the vertexType
+                if (!_vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, type.ID, (long)BaseTypes.VertexType))
+                    if (_vertexManager.ExecuteManager.VertexStore.VertexExists(mySecurity, myTransaction, type.ID, (long)BaseTypes.VertexType))
+                        throw new VertexTypeRemoveException(type.Name, "Could not remove the vertex representing the type.");
+
+            }
+
+            #endregion
+
+            toDeleteAttributeDefinitions.Clear();
+            toDeleteIndexDefinitions.Clear();
+
+            CleanUpTypes();
+
+            return deletedTypeIDs;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Gets the max id of the given type id.
+        /// </summary>
+        /// <param name="myTypeID">The type id.</param>
+        /// <param name="myTransaction">TransactionToken</param>
+        /// <param name="mySecurity">SecurityToken</param>
+        /// <returns>The max id.</returns>
+        private long GetMaxID(long myTypeID,
+                                TransactionToken myTransaction,
+                                SecurityToken mySecurity)
+        {
+            var vertices = _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurity,
+                                                                                            myTransaction,
+                                                                                            myTypeID);
+
+            if (vertices == null)
+                throw new BaseVertexTypeNotExistException("The base vertex types are not available during loading the ExecuteVertexTypeManager.");
+
+            return (vertices.CountIsGreater(0))
+                ? vertices.Max(x => x.VertexID)
+                : Int64.MinValue;
+        }
+
+        /// <summary>
+        /// Loads the base types.
+        /// </summary>
+        /// <param name="myTransaction">TransactionToken</param>
+        /// <param name="mySecurity">SecurityToken</param>
+        /// <param name="myBaseTypes">The base types.</param>
+        private void LoadBaseType(TransactionToken myTransaction,
+                                    SecurityToken mySecurity,
+                                    params BaseTypes[] myBaseTypes)
+        {
+            foreach (var baseType in myBaseTypes)
+            {
+                var vertex = _vertexManager.ExecuteManager.VertexStore.GetVertex(mySecurity,
+                                                                                    myTransaction,
+                                                                                    (long)baseType,
+                                                                                    (long)BaseTypes.VertexType,
+                                                                                    String.Empty);
+
+                if (vertex == null)
+                    throw new BaseVertexTypeNotExistException(baseType.ToString(), "Could not load base vertex type during loading the ExecuteVertexTypeManager.");
+
+                _baseTypes.Add((long)baseType, new VertexType(vertex, _baseStorageManager));
+                _nameIndex.Add(baseType.ToString(), (long)baseType);
+            }
+        }
+
+        /// <summary>
+        /// Checks if an incoming myEdge has a coresponding outgoing myEdge.
+        /// </summary>
+        /// <param name="myVertexTypePredefinition">The vertex type definition of that the incoming edges will be checked,</param>
+        /// <param name="myDefsByName">The vertex type predefinitions indexed by their name that are alse defined in this CanAdd operation.
+        /// <remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        private void CanAddCheckIncomingEdgeSources(VertexTypePredefinition myVertexTypePredefinition,
+                                                    IDictionary<string, ATypePredefinition> myDefsByName,
+                                                    TransactionToken myTransaction,
+                                                    SecurityToken mySecurity)
+        {
+            if (myVertexTypePredefinition.IncomingEdges == null)
+                return;
+
+            var grouped = myVertexTypePredefinition.IncomingEdges.GroupBy(x => GetTargetVertexTypeFromAttributeType(x.AttributeType));
+            foreach (var group in grouped)
+            {
+                if (!myDefsByName.ContainsKey(group.Key))
+                {
+                    var vertex = Get(group.Key, myTransaction, mySecurity);
+                    if (vertex == null)
+                        throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition,
+                                                                    group.Key,
+                                                                    group.Select(x => x.AttributeName));
+
+                    var attributes = vertex.GetIncomingVertices((long)BaseTypes.OutgoingEdge,
+                                                                (long)AttributeDefinitions.AttributeDotDefiningType);
+
+                    foreach (var edge in group)
+                    {
+                        if (!attributes.Any(outgoing => GetTargetVertexTypeFromAttributeType(edge.AttributeName)
+                                                        .Equals(outgoing.GetPropertyAsString((long)AttributeDefinitions.AttributeDotName))))
+                            throw new OutgoingEdgeNotFoundException(myVertexTypePredefinition, edge);
+                    }
+                }
+                else
+                {
+                    var target = myDefsByName[group.Key] as VertexTypePredefinition;
+
+                    foreach (var edge in group)
+                    {
+                        if (!target.OutgoingEdges.Any(outgoing => GetTargetEdgeNameFromAttributeType(edge.AttributeType)
+                                                                    .Equals(outgoing.AttributeName)))
+                            throw new OutgoingEdgeNotFoundException(myVertexTypePredefinition, edge);
+                    }
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if outgoing edges have a valid target.
+        /// </summary>
+        /// <param name="myVertexTypePredefinition">The vertex type definition of that the outgoing edges will be checked,</param>
+        /// <param name="myDefsByName">The vertex type predefinitions indexed by their name that are alse defined in this CanAdd operation.
+        /// <remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        private void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition,
+                                                    IDictionary<string, ATypePredefinition> myDefsByName,
+                                                    TransactionToken myTransaction,
+                                                    SecurityToken mySecurity)
+        {
+            if (myVertexTypePredefinition.OutgoingEdges == null)
+                return;
+
+            var grouped = myVertexTypePredefinition.OutgoingEdges.GroupBy(x => x.AttributeType);
+
+            foreach (var group in grouped)
+            {
+                if (myDefsByName.ContainsKey(group.Key))
+                    continue;
+
+                var vertex = Get(group.Key, myTransaction, mySecurity);
+
+                if (vertex == null)
+                    throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, group.Key,
+                                                                group.Select(x => x.AttributeName));
+            }
+        }
+
+        /// <summary>
         /// Converts the given linked list of ATypePredefinitions to a linked list of vertex type predefintions.
         /// </summary>
         /// <param name="myPredefinitions">The linked list of the type predefinitions.</param>
@@ -832,26 +947,26 @@ namespace sones.GraphDB.Manager.TypeManagement
             return list;
         }
 
-        private VertexInformation GetOutgoingEdgeVertexInformation(string myVertexType, 
-                                                                    string myEdgeName, 
-                                                                    TransactionToken myTransaction, 
+        private VertexInformation GetOutgoingEdgeVertexInformation(string myVertexType,
+                                                                    string myEdgeName,
+                                                                    TransactionToken myTransaction,
                                                                     SecurityToken mySecurity)
         {
             var vertices = _vertexManager.ExecuteManager.GetVertices(
                                 new BinaryExpression(
-                                    new SingleLiteralExpression(myEdgeName), 
-                                    BinaryOperator.Equals, 
-                                    _attributeNameExpression), 
-                                false, 
-                                myTransaction, 
+                                    new SingleLiteralExpression(myEdgeName),
+                                    BinaryOperator.Equals,
+                                    _attributeNameExpression),
+                                false,
+                                myTransaction,
                                 mySecurity).ToArray();
-            
+
             var vertex = vertices.First(x => IsAttributeOnVertexType(myVertexType, x));
-            
+
             return new VertexInformation(vertex.VertexTypeID, vertex.VertexID);
         }
 
-        private static bool IsAttributeOnVertexType(String myVertexTypeName, 
+        private static bool IsAttributeOnVertexType(String myVertexTypeName,
                                                     IVertex myAttributeVertex)
         {
             var vertexTypeVertex = myAttributeVertex
@@ -863,9 +978,9 @@ namespace sones.GraphDB.Manager.TypeManagement
             return name.Equals(myVertexTypeName);
         }
 
-        private void ConnectVertexToUniqueIndex(TypeInfo myTypeInfo, 
-                                                IEnumerable<IIndexDefinition> myIndexDefinitions, 
-                                                SecurityToken mySecurity, 
+        private void ConnectVertexToUniqueIndex(TypeInfo myTypeInfo,
+                                                IEnumerable<IIndexDefinition> myIndexDefinitions,
+                                                SecurityToken mySecurity,
                                                 TransactionToken myTransaction)
         {
             _vertexManager.ExecuteManager.VertexStore
@@ -888,13 +1003,172 @@ namespace sones.GraphDB.Manager.TypeManagement
                     )));
         }
 
-        private static SingleEdgeUpdateDefinition IndexDefinitionToSingleEdgeUpdate(VertexInformation mySourceVertex, 
+        private static SingleEdgeUpdateDefinition IndexDefinitionToSingleEdgeUpdate(VertexInformation mySourceVertex,
                                                                                     IIndexDefinition myDefinition)
         {
-            return new SingleEdgeUpdateDefinition(mySourceVertex, 
-                                                    new VertexInformation((long)BaseTypes.Index, 
-                                                                            myDefinition.ID), 
+            return new SingleEdgeUpdateDefinition(mySourceVertex,
+                                                    new VertexInformation((long)BaseTypes.Index,
+                                                                            myDefinition.ID),
                                                     (long)BaseTypes.Edge);
+        }
+
+        private void StoreVertexType(LinkedList<ATypePredefinition> myDefsTopologically,
+                                        Dictionary<String, TypeInfo> myTypeInfos,
+                                        long myCreationDate,
+                                        int myResultPos,
+                                        TransactionToken myTransactionToken,
+                                        SecurityToken mySecurityToken,
+                                        ref IVertex[] myResult)
+        {
+            //now we store each vertex type
+            for (var current = myDefsTopologically.First; current != null; current = current.Next)
+            {
+                var newVertexType = _baseStorageManager.StoreVertexType(
+                     _vertexManager.ExecuteManager.VertexStore,
+                     myTypeInfos[current.Value.TypeName].VertexInfo,
+                     current.Value.TypeName,
+                     current.Value.Comment,
+                     myCreationDate,
+                     current.Value.IsAbstract,
+                     current.Value.IsSealed,
+                     true,
+                     myTypeInfos[current.Value.SuperTypeName].VertexInfo,
+                     null,
+                     mySecurityToken,
+                     myTransactionToken);
+
+                myResult[myResultPos++] = newVertexType;
+
+                _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName)
+                                .Add(current.Value.TypeName, myTypeInfos[current.Value.TypeName].VertexInfo.VertexID);
+
+                _nameIndex.Add(current.Value.TypeName, myTypeInfos[current.Value.TypeName].VertexInfo.VertexID);
+            }
+        }
+
+        private void StoreBinaryProperties(LinkedList<VertexTypePredefinition> myDefsTopologically,
+                                            Dictionary<String, TypeInfo> myTypeInfos,
+                                            long myCreationDate,
+                                            TransactionToken myTransactionToken,
+                                            SecurityToken mySecurityToken)
+        {
+            for (var current = myDefsTopologically.First; current != null; current = current.Next)
+            {
+                if (current.Value.BinaryProperties == null)
+                    continue;
+
+                var firstAttrID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute).ReserveIDs(current.Value.BinaryPropertyCount);
+
+                var currentExternID = myTypeInfos[current.Value.TypeName].AttributeCountWithParents
+                                        - current.Value.PropertyCount
+                                        - current.Value.BinaryPropertyCount
+                                        - 1;
+
+                foreach (var prop in current.Value.BinaryProperties)
+                {
+                    _baseStorageManager.StoreBinaryProperty(
+                        _vertexManager.ExecuteManager.VertexStore,
+                        new VertexInformation((long)BaseTypes.BinaryProperty, firstAttrID++),
+                        prop.AttributeName,
+                        prop.Comment,
+                        true,
+                        myCreationDate,
+                        myTypeInfos[current.Value.TypeName].VertexInfo,
+                        mySecurityToken,
+                        myTransactionToken);
+                }
+
+            }
+        }
+
+        private void StoreOutgoingEdges(LinkedList<VertexTypePredefinition> myDefsTopologically,
+                                        Dictionary<String, TypeInfo> myTypeInfos,
+                                        long myCreationDate,
+                                        TransactionToken myTransactionToken,
+                                        SecurityToken mySecurityToken)
+        {
+            for (var current = myDefsTopologically.First; current != null; current = current.Next)
+            {
+                if (current.Value.OutgoingEdges == null)
+                    continue;
+
+                var firstAttrID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute).ReserveIDs(current.Value.OutgoingEdgeCount);
+
+                var currentExternID = myTypeInfos[current.Value.TypeName].AttributeCountWithParents
+                                        - current.Value.PropertyCount
+                                        - current.Value.OutgoingEdgeCount
+                                        - current.Value.BinaryPropertyCount
+                                        - 1;
+
+                foreach (var edge in current.Value.OutgoingEdges)
+                {
+                    VertexInformation? innerEdgeType = null;
+                    if (edge.Multiplicity == EdgeMultiplicity.MultiEdge)
+                    {
+                        innerEdgeType = new VertexInformation((long)BaseTypes.EdgeType,
+                                                                _edgeManager.ExecuteManager.GetType(edge.InnerEdgeType, myTransactionToken, mySecurityToken).ID);
+                    }
+
+                    _baseStorageManager.StoreOutgoingEdge(
+                        _vertexManager.ExecuteManager.VertexStore,
+                        new VertexInformation((long)BaseTypes.OutgoingEdge, firstAttrID++),
+                        edge.AttributeName,
+                        edge.Comment,
+                        true,
+                        myCreationDate,
+                        edge.Multiplicity,
+                        myTypeInfos[current.Value.TypeName].VertexInfo,
+                        new VertexInformation((long)BaseTypes.EdgeType,
+                                                _edgeManager.ExecuteManager.GetType(edge.EdgeType, myTransactionToken, mySecurityToken).ID),
+                        innerEdgeType,
+                        myTypeInfos[edge.AttributeType].VertexInfo,
+                        mySecurityToken,
+                        myTransactionToken);
+                }
+
+            }
+        }
+
+        private void StoreIncomingEdges(LinkedList<VertexTypePredefinition> myDefsTopologically,
+                                        Dictionary<String, TypeInfo> myTypeInfos,
+                                        long myCreationDate,
+                                        TransactionToken myTransactionToken,
+                                        SecurityToken mySecurityToken)
+        {
+            for (var current = myDefsTopologically.First; current != null; current = current.Next)
+            {
+                if (current.Value.IncomingEdges == null)
+                    continue;
+
+                var firstAttrID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute)
+                                                .ReserveIDs(current.Value.IncomingEdgeCount);
+
+                var currentExternID = myTypeInfos[current.Value.TypeName].AttributeCountWithParents
+                                        - current.Value.PropertyCount
+                                        - current.Value.BinaryPropertyCount
+                                        - current.Value.OutgoingEdgeCount
+                                        - current.Value.IncomingEdgeCount
+                                        - 1;
+
+                foreach (var edge in current.Value.IncomingEdges)
+                {
+
+                    _baseStorageManager.StoreIncomingEdge(
+                        _vertexManager.ExecuteManager.VertexStore,
+                        new VertexInformation((long)BaseTypes.IncomingEdge, firstAttrID++),
+                        edge.AttributeName,
+                        edge.Comment,
+                        true,
+                        myCreationDate,
+                        myTypeInfos[current.Value.TypeName].VertexInfo,
+                        GetOutgoingEdgeVertexInformation(GetTargetVertexTypeFromAttributeType(edge.AttributeType),
+                                                            GetTargetEdgeNameFromAttributeType(edge.AttributeType),
+                                                            myTransactionToken,
+                                                            mySecurityToken),
+                        mySecurityToken,
+                        myTransactionToken);
+                }
+            }
         }
 
         #endregion

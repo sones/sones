@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphDB.TypeSystem
 {
@@ -98,9 +99,7 @@ namespace sones.GraphDB.TypeSystem
         public ATypePredefinition(String myTypeName, String mySuperTypeName)
         {
             if (string.IsNullOrEmpty(myTypeName))
-            {
-                throw new ArgumentOutOfRangeException("myTypeName", myTypeName);
-            }
+                throw new EmptyTypeNameException();
 
             TypeName = myTypeName;
             SuperTypeName = mySuperTypeName;

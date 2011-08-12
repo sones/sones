@@ -51,19 +51,32 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// A property expression on VertexType.Name
         /// </summary>
-        protected readonly IExpression _VertexTypeNameExpression    = new PropertyExpression(BaseTypes.VertexType.ToString(), "Name");
+        protected readonly IExpression _VertexTypeNameExpression        = new PropertyExpression(BaseTypes.VertexType.ToString(), "Name");
         /// <summary>
         /// A property expression on EdgeType.Name
         /// </summary>
-        protected readonly IExpression _EdgeTypeNameExpression      = new PropertyExpression(BaseTypes.EdgeType.ToString(), "Name");
+        protected readonly IExpression _EdgeTypeNameExpression          = new PropertyExpression(BaseTypes.EdgeType.ToString(), "Name");
         /// <summary>
         /// A property expression on VertexType.ID
         /// </summary>
-        protected readonly IExpression _vertexIDExpression          = new PropertyExpression(BaseTypes.VertexType.ToString(), "VertexID");
+        protected readonly IExpression _VertexTypeVertexIDExpression    = new PropertyExpression(BaseTypes.VertexType.ToString(), "VertexID");
+        /// <summary>
+        /// A property expression on EdgeType.ID
+        /// </summary>
+        protected readonly IExpression _EdgeDotEdgeTypeIDExpression     = new PropertyExpression(BaseTypes.EdgeType.ToString(), "VertexID");
         /// <summary>
         /// A property expression on OutgoingEdge.Name
         /// </summary>
-        protected readonly IExpression _attributeNameExpression     = new PropertyExpression(BaseTypes.OutgoingEdge.ToString(), "Name");
+        protected readonly IExpression _attributeNameExpression         = new PropertyExpression(BaseTypes.OutgoingEdge.ToString(), "Name");
+
+        #endregion
+
+        #region constructor
+
+        public AExecuteTypeManager(IDManager myIDManager)
+        {
+            _idManager = myIDManager;
+        }
 
         #endregion
 
@@ -97,14 +110,12 @@ namespace sones.GraphDB.Manager.TypeManagement
                                     SecurityToken mySecurity)
         {
             if (String.IsNullOrWhiteSpace(myTypeName))
-                throw new ArgumentOutOfRangeException("myTypeName", "The type name must contain at least one character.");
+                throw new EmptyTypeNameException("The type name must contain at least one character.");
 
             #region get static types
 
             if (_nameIndex.ContainsKey(myTypeName))
-            {
                 return (T)_baseTypes[_nameIndex[myTypeName]];
-            }
 
             #endregion
 
@@ -133,13 +144,26 @@ namespace sones.GraphDB.Manager.TypeManagement
             return Add(myTypePredefinitions, myTransaction, mySecurity);
         }
 
-        public override abstract Dictionary<long, string> RemoveTypes(IEnumerable<T> myTypes,
-                                                                        TransactionToken myTransaction,
-                                                                        SecurityToken mySecurity,
-                                                                        bool myIgnoreReprimands = false);
+        public override Dictionary<long, string> RemoveTypes(IEnumerable<T> myTypes,
+                                                                TransactionToken myTransaction,
+                                                                SecurityToken mySecurity,
+                                                                bool myIgnoreReprimands = false)
+        {
+            if (myTypes == null)
+                throw new ArgumentNullException("myTypes");
 
-        public override abstract IEnumerable<long> ClearTypes(TransactionToken myTransaction,
-                                                                SecurityToken mySecurity);
+            return Remove(myTypes, myTransaction, mySecurity, myIgnoreReprimands);
+        }
+
+        public override IEnumerable<long> ClearTypes(TransactionToken myTransaction,
+                                                        SecurityToken mySecurity)
+        {
+            //get all UserDefined types
+            var toDeleteVertexTypes = GetAllTypes(myTransaction, mySecurity).Where(_ => _.IsUserDefined == true);
+
+            //delete them, by ignoring there reprimands
+            return RemoveTypes(toDeleteVertexTypes, myTransaction, mySecurity, true).Select(_ => _.Key).ToList();
+        }
 
         public override abstract void TruncateType(long myTypeID,
                                                     TransactionToken myTransactionToken,
@@ -159,9 +183,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             #region get static types
 
             if (_nameIndex.ContainsKey(myTypeName))
-            {
                 return true;
-            }
 
             #endregion
 
@@ -181,6 +203,16 @@ namespace sones.GraphDB.Manager.TypeManagement
         public override abstract void Load(TransactionToken myTransaction,
                                             SecurityToken mySecurity);
 
+        /// <summary>
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected override abstract bool IsTypeBaseType(long myTypeID);
+
+        /// <summary>
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected override abstract bool IsTypeBaseType(string myTypeName);
+
         #endregion
 
         #region abstract helper methods
@@ -192,18 +224,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <returns>The created type.</returns>
         protected abstract T CreateType(IVertex myVertex);
 
-        /// <summary>
-        /// Adds a type by reading out the predefinitions and stores all attributes and the type.
-        /// </summary>
-        /// <param name="myTypePredefinitions">The predefinitions for the creation.</param>
-        /// <param name="myTransaction">TransactionToken</param>
-        /// <param name="mySecurity">SecurityToken</param>
-        /// <returns>The created types.</returns>
-        protected abstract IEnumerable<T> Add(IEnumerable<ATypePredefinition> myTypePredefinitions,
-                                                TransactionToken myTransaction,
-                                                SecurityToken mySecurity);
-
-        /// <summary>
         /// Does the necessary checks for can add with the use of the FS.
         /// </summary>
         /// <param name="myDefsTopologically">A topologically sorted list of type predefinitions. <remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
@@ -242,6 +262,67 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                                             long myFirstID,
                                                                             TransactionToken myTransaction,
                                                                             SecurityToken mySecurity);
+
+        /// <summary>
+        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeName"/>.
+        /// </summary>
+        /// <param name="myTypeName">The vertex type name.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>An IVertex instance, that represents the vertex type with the given name or <c>NULL</c>, if not present.</returns>
+        protected abstract IVertex Get(string myTypeName,
+                                        TransactionToken myTransaction,
+                                        SecurityToken mySecurity);
+
+        /// <summary>
+        /// Gets an IVertex representing the type given by <paramref name="myTypeName"/>.
+        /// </summary>
+        /// <param name="myTypeName">The type id.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>An IVertex instance, that represents the type with the given name or <c>NULL</c>, if not present.</returns>
+        protected abstract IVertex Get(long myTypeID,
+                                        TransactionToken myTransaction,
+                                        SecurityToken mySecurity);
+
+        /// <summary>
+        /// Calls the needed store methods depending on the typemanger.
+        /// </summary>
+        /// <param name="myDefsTopologically">The topologically sorted type predefinitions.</param>
+        /// <param name="myTypeInfos">The created type infos.</param>
+        /// <param name="myCreationDate">The creation date.</param>
+        /// <param name="myResultPos">The result position.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myResult">Ref on result array.</param>
+        protected abstract IEnumerable<T> StoreTypeAndAttributes(LinkedList<ATypePredefinition> myDefsTopologically,
+                                                                    Dictionary<String, TypeInfo> myTypeInfos,
+                                                                    long myCreationDate,
+                                                                    int myResultPos,
+                                                                    TransactionToken myTransactionToken,
+                                                                    SecurityToken mySecurityToken,
+                                                                    ref IVertex[] myResult);
+
+        /// <summary>
+        /// Reservs myCountOfNeededIDs type ids in id manager depending on type and gets the first reserved id.
+        /// </summary>
+        /// <param name="myCountOfNeededIDs">Count of to be reserved ids.</param>
+        /// <returns>The first reserved id.</returns>
+        protected abstract long GetFirstTypeID(int myCountOfNeededIDs);
+
+        /// <summary>
+        /// Removes the given types from the graphDB.
+        /// </summary>
+        /// <param name="myVertexTypes">The types to delete.</param>
+        /// <param name="myTransaction">Transaction token.</param>
+        /// <param name="mySecurity">Security Token.</param>
+        /// <param name="myIgnoreReprimands">True means, that reprimands (IncomingEdges) on the types wich should be removed are ignored.</param>
+        /// <returns>Set of deleted type IDs.</returns>
+        protected abstract Dictionary<Int64, String> Remove(IEnumerable<T> myTypes,
+                                                            TransactionToken myTransaction,
+                                                            SecurityToken mySecurity,
+                                                            bool myIgnoreReprimands = false);
+
         #endregion
 
         #region helper structure
@@ -256,41 +337,106 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region private methods
 
-        #region abstract helper
-
         /// <summary>
-        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeName"/>.
+        /// <summary>
+        /// Adds a type by reading out the predefinitions and stores all attributes and the type.
         /// </summary>
-        /// <param name="myTypeName">The vertex type name.</param>
-        /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurity">A security token for this operation.</param>
-        /// <returns>An IVertex instance, that represents the vertex type with the given name or <c>NULL</c>, if not present.</returns>
-        protected abstract IVertex Get(string myTypeName,
+        /// <param name="myTypePredefinitions">The predefinitions for the creation.</param>
+        /// <param name="myTransaction">TransactionToken</param>
+        /// <param name="mySecurity">SecurityToken</param>
+        /// <returns>The created types.</returns>
+        protected IEnumerable<T> Add(IEnumerable<ATypePredefinition> myTypePredefinitions,
                                         TransactionToken myTransaction,
-                                        SecurityToken mySecurity);
-
-        #endregion
-
-        /// <summary>
-        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeID"/>.
-        /// </summary>
-        /// <param name="myTypeId"></param>
-        /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurity">A security token for this operation.</param>
-        /// <returns>An IVertex instance, that represents the vertex type with the given ID or <c>NULL</c>, if not present.</returns>
-        protected IVertex Get(long myTypeId, 
-                                TransactionToken myTransaction, 
-                                SecurityToken mySecurity)
+                                        SecurityToken mySecurity)
         {
-            #region get the type from fs
+            #region preparations
 
-            return _vertexManager.ExecuteManager
-                    .GetSingleVertex(new BinaryExpression(_vertexIDExpression, 
-                                                            BinaryOperator.Equals, 
-                                                            new SingleLiteralExpression(myTypeId)), 
-                                        myTransaction, mySecurity);
+            var typePredefinitions = myTypePredefinitions;
+
+            //Perf: count is necessary, fast if it is an ICollection
+            var count = typePredefinitions.Count();
+
+            //This operation reserves #count ids for this operation.
+            var firstTypeID = GetFirstTypeID(count);
+
+            //Contains dictionary of vertex name to vertex predefinition.
+            var defsByVertexName = CanAddCheckDuplicates(typePredefinitions);
+
+            //Contains dictionary of parent vertex name to list of vertex predefinitions.
+            var defsByParentVertexName = typePredefinitions
+                .GroupBy(def => def.SuperTypeName)
+                .ToDictionary(group => group.Key, group => group.AsEnumerable());
+
+            //Contains list of vertex predefinitions sorted topologically.
+            var defsTopologically = CanAddSortTopolocically(defsByVertexName,
+                                                                defsByParentVertexName
+                                                                .ToDictionary(kvp => kvp.Key,
+                                                                              kvp => kvp.Value));
+
+            CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
+
+            var typeInfos = GenerateTypeInfos(defsTopologically, defsByVertexName, firstTypeID, myTransaction, mySecurity);
+
+            //we can add each type separately
+            var creationDate = DateTime.UtcNow.ToBinary();
+            var resultPos = 0;
+
+            var result = new IVertex[count];
 
             #endregion
+
+            #region store
+
+            var resultTypes = StoreTypeAndAttributes(defsTopologically,
+                                                        typeInfos,
+                                                        creationDate,
+                                                        resultPos,
+                                                        myTransaction,
+                                                        mySecurity,
+                                                        ref result);
+
+            #endregion
+
+            CleanUpTypes();
+
+            return resultTypes;
+        }
+
+        protected void StoreProperties(LinkedList<ATypePredefinition> myDefsTopologically,
+                                        Dictionary<String, TypeInfo> myTypeInfos,
+                                        long myCreationDate,
+                                        TransactionToken myTransactionToken,
+                                        SecurityToken mySecurityToken)
+        {
+            for (var current = myDefsTopologically.First; current != null; current = current.Next)
+            {
+                if (current.Value.Properties == null)
+                    continue;
+
+                var firstAttrID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute)
+                                            .ReserveIDs(current.Value.PropertyCount);
+
+                var currentExternID = myTypeInfos[current.Value.TypeName].AttributeCountWithParents - current.Value.PropertyCount - 1;
+
+                foreach (var prop in current.Value.Properties)
+                {
+                    _baseStorageManager.StoreProperty(
+                        _vertexManager.ExecuteManager.VertexStore,
+                        new VertexInformation((long)BaseTypes.Property, firstAttrID++),
+                        prop.AttributeName,
+                        prop.Comment,
+                        myCreationDate,
+                        prop.IsMandatory,
+                        prop.Multiplicity,
+                        prop.DefaultValue,
+                        true,
+                        myTypeInfos[current.Value.TypeName].VertexInfo,
+                        ConvertBasicType(prop.AttributeType),
+                        mySecurityToken,
+                        myTransactionToken);
+                }
+
+            }
         }
 
         /// <summary>
@@ -327,7 +473,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             return _baseTypeManager.ConvertBaseType(myBasicTypeName);
         }
-               
+     
         #endregion
     }
 }

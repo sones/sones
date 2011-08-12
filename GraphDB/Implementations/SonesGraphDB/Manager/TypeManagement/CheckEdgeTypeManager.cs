@@ -118,6 +118,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             _TypeManager        = myMetaManager.EdgeTypeManager.ExecuteManager;
             _baseTypeManager    = myMetaManager.BaseTypeManager;
+            _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
 
         public override void Load(TransactionToken myTransaction, 
@@ -129,6 +130,28 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region private helper
 
         #region private abstract helper
+
+        /// <summary>
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected override bool IsTypeBaseType(long myTypeID)
+        {
+            return ((long)BaseTypes.Edge).Equals(myTypeID) ||
+                        ((long)BaseTypes.Orderable).Equals(myTypeID) ||
+                        ((long)BaseTypes.Weighted).Equals(myTypeID);
+        }
+
+        /// <summary>
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected override bool IsTypeBaseType(String myTypeName)
+        {
+            BaseTypes type;
+            if (!Enum.TryParse(myTypeName, out type))
+                return false;
+
+            return true;
+        }
 
         /// <summary>
         /// Converts the properties which marked as unique into unique predefinitions.
@@ -222,6 +245,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             //get child vertex types and check if they are specified by user
             foreach (var delType in myTypes)
             {
+                var temp = GetType(delType.ID, myTransaction, mySecurity);
+
                 #region check that the remove type is no base type
 
                 if (delType == null)
@@ -231,19 +256,21 @@ namespace sones.GraphDB.Manager.TypeManagement
                     //type must be base type because there is no parent type, Exception that base type cannot be deleted
                     throw new TypeRemoveException<IEdgeType>(delType.Name, "A BaseType connot be removed.");
 
-                //NOTE: it is not necassary to ask if the edge type is a base type because the base type id's are managed by the vertex type management!
-                //if (delType.ParentEdgeType.ID.Equals((long)BaseTypes.BaseType) && IsTypeBaseType(delType.ID))
-                //    //Exception that base type cannot be deleted
-                //    throw new TypeRemoveException<IEdgeType>(delType.Name, "A BaseType connot be removed.");
+                if (IsTypeBaseType(delType.ID))
+                    //Exception that base type cannot be deleted
+                    throw new TypeRemoveException<IEdgeType>(delType.Name, "A BaseType connot be removed.");
 
                 #endregion
 
-                #region check that existing child types are specified
+                if (!myIgnoreReprimands)
+                {
+                    #region check that existing child types are specified
 
-                if (!delType.GetDescendantEdgeTypes().All(child => myTypes.Contains(child)))
-                    throw new TypeRemoveException<IEdgeType>(delType.Name, "The given type has child types and cannot be removed.");
+                    if (!delType.GetDescendantEdgeTypes().All(child => myTypes.Contains(child)))
+                        throw new TypeRemoveException<IEdgeType>(delType.Name, "The given type has child types and cannot be removed.");
 
-                #endregion
+                    #endregion
+                }
             }
 
             #endregion

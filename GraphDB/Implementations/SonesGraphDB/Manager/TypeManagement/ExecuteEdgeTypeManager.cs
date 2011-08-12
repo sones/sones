@@ -32,6 +32,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.Request;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.GraphDB.Expression;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -39,15 +40,14 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         #region data
 
-        private readonly IDManager _idManager;
-        
         #endregion
 
         #region constructor
 
         public ExecuteEdgeTypeManager(IDManager myIDManager)
+            :base(myIDManager)
         {
-            _idManager = myIDManager;
+            //_idManager = myIDManager;
 
             _baseTypes = new Dictionary<long, IBaseType>();
             _nameIndex = new Dictionary<String, long>();
@@ -67,35 +67,37 @@ namespace sones.GraphDB.Manager.TypeManagement
         public override IEnumerable<IEdgeType> GetAllTypes(TransactionToken myTransaction,
                                                             SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
-        }
+            var egdes = _vertexManager.ExecuteManager.GetVertices(BaseTypes.EdgeType.ToString(),
+                                                                        myTransaction,
+                                                                        mySecurity,
+                                                                        false);
 
-        public override Dictionary<long, string> RemoveTypes(IEnumerable<IEdgeType> myTypes,
-                                                                TransactionToken myTransaction,
-                                                                SecurityToken mySecurity,
-                                                                bool myIgnoreReprimands = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerable<long> ClearTypes(TransactionToken myTransaction,
-                                                        SecurityToken mySecurity)
-        {
-            throw new NotImplementedException();
+            return egdes == null ? Enumerable.Empty<IEdgeType>()
+                                    : egdes.Select(x => new EdgeType(x, _baseStorageManager));
         }
 
         public override void TruncateType(long myTypeID,
                                             TransactionToken myTransactionToken,
                                             SecurityToken mySecurityToken)
         {
-            throw new NotImplementedException();
+            GetType(myTypeID, myTransactionToken, mySecurityToken);
+
+            if (IsTypeBaseType(myTypeID))
+                throw new InvalidTypeException("[BaseType] " + myTypeID.ToString(), "userdefined type");
+
+            return;
         }
 
         public override void TruncateType(string myTypeName,
                                             TransactionToken myTransactionToken,
                                             SecurityToken mySecurityToken)
         {
-            throw new NotImplementedException();
+            GetType(myTypeName, myTransactionToken, mySecurityToken);
+
+            if (IsTypeBaseType(myTypeName))
+                throw new InvalidTypeException("[BaseType] " + myTypeName, "userdefined type");
+
+            return;
         }
 
         public override void CleanUpTypes()
@@ -105,7 +107,9 @@ namespace sones.GraphDB.Manager.TypeManagement
             _baseTypes.Clear();
             _nameIndex.Clear();
 
-            foreach (var type in new[] { BaseTypes.Edge, BaseTypes.Orderable, BaseTypes.Weighted })
+            foreach (var type in new[] { BaseTypes.Edge, 
+                                            BaseTypes.Orderable, 
+                                            BaseTypes.Weighted })
             {
                 _baseTypes.Add((long)type, help[(long)type]);
                 _nameIndex.Add(type.ToString(), (long)type);
@@ -145,6 +149,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region private helper
 
+        #region abstract helper
+
         private void LoadBaseType(TransactionToken myTransaction, 
                                     SecurityToken mySecurity, 
                                     params BaseTypes[] myBaseTypes)
@@ -165,142 +171,95 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         /// <summary>
-        /// Adds a type by reading out the predefinitions and stores all attributes and the type.
+        /// Checks if the given type is a base type
         /// </summary>
-        /// <param name="myTypePredefinitions">The predefinitions for the creation.</param>
-        /// <param name="myTransaction">TransactionToken</param>
-        /// <param name="mySecurity">SecurityToken</param>
-        /// <returns>The created types.</returns>
-        protected override IEnumerable<IEdgeType> Add(IEnumerable<ATypePredefinition> myTypePredefinitions,
-                                                        TransactionToken myTransaction,
-                                                        SecurityToken mySecurity)
+        protected override bool IsTypeBaseType(long myTypeID)
         {
-            #region preparations
+            return ((long)BaseTypes.Edge).Equals(myTypeID) ||
+                        ((long)BaseTypes.Orderable).Equals(myTypeID) ||
+                        ((long)BaseTypes.Weighted).Equals(myTypeID);
+        }
 
-            var typePredefinitions = myTypePredefinitions;// as IEnumerable<EdgeTypePredefinition>;
+        /// <summary>
+        /// Checks if the given type is a base type
+        /// </summary>
+        protected override bool IsTypeBaseType(String myTypeName)
+        {
+            BaseTypes type;
+            if (!Enum.TryParse(myTypeName, out type))
+                return false;
 
-            //Perf: count is necessary, fast if it is an ICollection
-            var count = typePredefinitions.Count();
+            return true;
+        }
 
-            //This operation reserves #count ids for this operation.
-            var firstTypeID = _idManager.EdgeTypeID.ReserveIDs(count);
+        /// <summary>
+        /// Calls the needed store methods depending on the typemanger.
+        /// </summary>
+        /// <param name="myDefsTopologically">The topologically sorted type predefinitions.</param>
+        /// <param name="myTypeInfos">The created type infos.</param>
+        /// <param name="myCreationDate">The creation date.</param>
+        /// <param name="myResultPos">The result position.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myResult">Ref on result array.</param>
+        protected override IEnumerable<IEdgeType> StoreTypeAndAttributes(LinkedList<ATypePredefinition> myDefsTopologically,
+                                                                            Dictionary<String, TypeInfo> myTypeInfos,
+                                                                            long myCreationDate,
+                                                                            int myResultPos,
+                                                                            TransactionToken myTransactionToken,
+                                                                            SecurityToken mySecurityToken,
+                                                                            ref IVertex[] myResult)
+        {
+            #region store vertex type
 
-            //Contains dictionary of vertex name to vertex predefinition.
-            var defsByVertexName = CanAddCheckDuplicates(typePredefinitions);
-
-            //Contains dictionary of parent vertex name to list of vertex predefinitions.
-            var defsByParentVertexName = typePredefinitions
-                .GroupBy(def => def.SuperTypeName)
-                .ToDictionary(group => group.Key, group => group.AsEnumerable());
-
-            //Contains list of vertex predefinitions sorted topologically.
-            var defsTopologically = CanAddSortTopolocically(defsByVertexName,
-                                                                defsByParentVertexName
-                                                                .ToDictionary(kvp => kvp.Key,
-                                                                              kvp => kvp.Value));// as IEnumerable<ATypePredefinition>));
-
-            CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
-
-            var typeInfos = GenerateTypeInfos(defsTopologically, defsByVertexName, firstTypeID, myTransaction, mySecurity);
-
-            //we can add each type separately
-            var creationDate = DateTime.UtcNow.ToBinary();
-            var resultPos = 0;
-
-            var result = new IVertex[count];
-
-            #endregion
-
-            #region store edge type
-
-            //now we store each vertex type
-            for (var current = defsTopologically.First; current != null; current = current.Next)
-            {
-                var newEdgeType = _baseStorageManager.StoreEdgeType(
-                     _vertexManager.ExecuteManager.VertexStore,
-                     typeInfos[current.Value.TypeName].VertexInfo,
-                     current.Value.TypeName,
-                     current.Value.Comment,
-                     creationDate,
-                     current.Value.IsAbstract,
-                     current.Value.IsSealed,
-                     true,
-                     typeInfos[current.Value.SuperTypeName].VertexInfo,
-                     mySecurity,
-                     myTransaction);
-
-                result[resultPos++] = newEdgeType;
-
-                //get the matching index and add the created type name to it
-                _indexManager.GetIndex(BaseUniqueIndex.EdgeTypeDotName)
-                                .Add(current.Value.TypeName, typeInfos[current.Value.TypeName].VertexInfo.VertexID);
-
-                _nameIndex.Add(current.Value.TypeName, typeInfos[current.Value.TypeName].VertexInfo.VertexID);
-            }
+            StoreEdgeType(myDefsTopologically,
+                            myTypeInfos,
+                            myCreationDate,
+                            myResultPos,
+                            myTransactionToken,
+                            mySecurityToken,
+                            ref myResult);
 
             #endregion
 
             #region Store Attributes
 
-            //The order of adds is important. 
-            //First property, then outgoing edges (that might point to properties) and finally incoming edges (that might point to outgoing edges).
+            //The order of adds is important. First property, then outgoing edges (that might point to properties) and finally incoming edges (that might point to outgoing edges)
             //Do not try to merge it into one for block.
 
             #region Store properties
 
-            for (var current = defsTopologically.First; current != null; current = current.Next)
-            {
-                if (current.Value.Properties == null)
-                    continue;
-
-                var firstAttrID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute)
-                                            .ReserveIDs(current.Value.PropertyCount);
-
-                var currentExternID = typeInfos[current.Value.TypeName].AttributeCountWithParents - current.Value.PropertyCount - 1;
-
-                foreach (var prop in current.Value.Properties)
-                {
-                    _baseStorageManager.StoreProperty(
-                        _vertexManager.ExecuteManager.VertexStore,
-                        new VertexInformation((long)BaseTypes.Property, firstAttrID++),
-                        prop.AttributeName,
-                        prop.Comment,
-                        creationDate,
-                        prop.IsMandatory,
-                        prop.Multiplicity,
-                        prop.DefaultValue,
-                        true,
-                        typeInfos[current.Value.TypeName].VertexInfo,
-                        ConvertBasicType(prop.AttributeType),
-                        mySecurity,
-                        myTransaction);
-                }
-
-            }
+            StoreProperties(myDefsTopologically,
+                            myTypeInfos,
+                            myCreationDate,
+                            myTransactionToken,
+                            mySecurityToken);
 
             #endregion
 
-            var resultTypes = new EdgeType[result.Length];
+            var resultTypes = new EdgeType[myResult.Length];
+
+            #region reload the stored types
 
             //reload the IVertex objects, that represents the type.
-            for (int i = 0; i < result.Length; i++)
+            for (int i = 0; i < myResult.Length; i++)
             {
-                result[i] = _vertexManager.ExecuteManager.VertexStore.GetVertex(mySecurity, myTransaction,
-                                                                                result[i].VertexID,
-                                                                                result[i].VertexTypeID, String.Empty);
+                myResult[i] = _vertexManager.ExecuteManager.VertexStore.GetVertex(mySecurityToken, myTransactionToken,
+                                                                                myResult[i].VertexID,
+                                                                                myResult[i].VertexTypeID, String.Empty);
 
-                var newVertexType = new EdgeType(result[i], _baseStorageManager);
+                var newEdgeType = new EdgeType(myResult[i], _baseStorageManager);
 
-                resultTypes[i] = newVertexType;
+                resultTypes[i] = newEdgeType;
 
-                _baseTypes.Add(typeInfos[newVertexType.Name].VertexInfo.VertexID, newVertexType);
+                _baseTypes.Add(myTypeInfos[newEdgeType.Name].VertexInfo.VertexID, newEdgeType);
             }
 
             #endregion
 
-            CleanUpTypes();
+            #endregion
 
-            return resultTypes;
+            return resultTypes.AsEnumerable<IEdgeType>();
         }
 
         /// <summary>
@@ -437,6 +396,28 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         /// <summary>
+        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeID"/>.
+        /// </summary>
+        /// <param name="myTypeId"></param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>An IVertex instance, that represents the vertex type with the given ID or <c>NULL</c>, if not present.</returns>
+        protected override IVertex Get(long myTypeId,
+                                        TransactionToken myTransaction,
+                                        SecurityToken mySecurity)
+        {
+            #region get the type from fs
+
+            return _vertexManager.ExecuteManager
+                    .GetSingleVertex(new BinaryExpression(_EdgeDotEdgeTypeIDExpression,
+                                                            BinaryOperator.Equals,
+                                                            new SingleLiteralExpression(myTypeId)),
+                                        myTransaction, mySecurity);
+
+            #endregion
+        }
+
+        /// <summary>
         /// Gets an IVertex representing the vertex type given by <paramref name="myTypeName"/>.
         /// </summary>
         /// <param name="myTypeName">The vertex type name.</param>
@@ -456,6 +437,167 @@ namespace sones.GraphDB.Manager.TypeManagement
                                         myTransaction, mySecurity);
 
             #endregion
+        }
+
+        /// <summary>
+        /// Reservs myCountOfNeededIDs type ids in id manager depending on type and gets the first reserved id.
+        /// </summary>
+        /// <param name="myCountOfNeededIDs">Count of to be reserved ids.</param>
+        /// <returns>The first reserved id.</returns>
+        protected override long GetFirstTypeID(int myCountOfNeededIDs)
+        {
+            return _idManager.EdgeTypeID.ReserveIDs(myCountOfNeededIDs);
+        }
+
+        /// <summary>
+        /// Removes the given types from the graphDB.
+        /// </summary>
+        /// <param name="myVertexTypes">The types to delete.</param>
+        /// <param name="myTransaction">Transaction token.</param>
+        /// <param name="mySecurity">Security Token.</param>
+        /// <param name="myIgnoreReprimands">True means, that reprimands (IncomingEdges) on the types wich should be removed are ignored.</param>
+        /// <returns>Set of deleted type IDs.</returns>
+        protected override Dictionary<Int64, String> Remove(IEnumerable<IEdgeType> myTypes,
+                                                            TransactionToken myTransaction,
+                                                            SecurityToken mySecurity,
+                                                            bool myIgnoreReprimands = false)
+        {
+            //the attribute types on delete types which have to be removed
+            var toDeleteAttributeDefinitions = new List<IAttributeDefinition>();
+
+            #region get propertydefinitions
+
+            //get child vertex types
+            foreach (var delType in myTypes)
+            {
+                try
+                {
+                    //check if type exists
+                    var temp = GetType(delType.ID, myTransaction, mySecurity);
+                }
+                catch (Exception exception)
+                {
+                    throw new TypeRemoveException<IEdgeType>(delType.Name, exception); 
+                }
+
+                if (!delType.HasParentType)
+                    //type must be base type because there is no parent type, Exception that base type cannot be deleted
+                    throw new TypeRemoveException<IEdgeType>(delType.Name, "A BaseType connot be removed.");
+
+                if (IsTypeBaseType(delType.ID))
+                    //Exception that base type cannot be deleted
+                    throw new TypeRemoveException<IEdgeType>(delType.Name, "A BaseType connot be removed.");
+
+                if (!myIgnoreReprimands)
+                {
+                    #region check that existing child types are specified
+
+                    if (!delType.GetDescendantTypes().All(child => myTypes.Contains(child)))
+                        throw new TypeRemoveException<IEdgeType>(delType.Name, "The given type has child types and cannot be removed.");
+
+                    #endregion
+                }
+
+                toDeleteAttributeDefinitions.AddRange(delType.GetAttributeDefinitions(false));
+            }
+
+            #endregion
+
+            //the IDs of the deleted vertices
+            var deletedTypeIDs = new Dictionary<Int64, String>(myTypes.ToDictionary(key => key.ID, item => item.Name));
+
+            #region remove attribute types on delete types
+
+            //delete attribute vertices
+            foreach (var attr in toDeleteAttributeDefinitions)
+            {
+                switch (attr.Kind)
+                {
+                    case (AttributeType.Property):
+                        if (!_vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, 
+                                                                                    myTransaction, 
+                                                                                    attr.ID, 
+                                                                                    (long)BaseTypes.Property))
+                            throw new TypeRemoveException<IEdgeType>(attr.RelatedType.Name, 
+                                                                        "The Property " + attr.Name + " could not be removed.");
+                        break;
+
+                    default:
+                        throw new TypeRemoveException<IEdgeType>(attr.RelatedType.Name, "invalid attribute type.");
+                }
+            }
+
+            #endregion
+
+            #region remove vertex type names from index
+
+            foreach (var type in myTypes)
+            {
+                var result = _indexManager.GetIndex(BaseUniqueIndex.EdgeTypeDotName);
+
+                if (result != null)
+                    if (!result.Remove(type.Name))
+                        throw new TypeRemoveException<IEdgeType>(type.Name, "Error during delete the Index on type.");
+            }
+
+            #endregion
+
+            #region remove vertices
+
+            //delete the vertices
+            foreach (var type in myTypes)
+            {
+                //removes the instances of the VertexType
+                //_vertexManager.ExecuteManager.VertexStore.RemoveVertices(mySecurity, myTransaction, (long)BaseTypes.Edge, new List<long>{ type.ID });
+
+                //removes the vertexType
+                if (!_vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurity, myTransaction, type.ID, (long)BaseTypes.EdgeType))
+                    if (_vertexManager.ExecuteManager.VertexStore.VertexExists(mySecurity, myTransaction, type.ID, (long)BaseTypes.EdgeType))
+                        throw new TypeRemoveException<IEdgeType>(type.Name, "Could not remove the vertex representing the type.");
+            }
+
+            #endregion
+
+            toDeleteAttributeDefinitions.Clear();
+
+            CleanUpTypes();
+
+            return deletedTypeIDs;
+        }
+
+        #endregion
+        
+        private void StoreEdgeType(LinkedList<ATypePredefinition> myDefsTopologically,
+                                        Dictionary<String, TypeInfo> myTypeInfos,
+                                        long myCreationDate,
+                                        int myResultPos,
+                                        TransactionToken myTransactionToken,
+                                        SecurityToken mySecurityToken,
+                                        ref IVertex[] myResult)
+        {
+            //now we store each vertex type
+            for (var current = myDefsTopologically.First; current != null; current = current.Next)
+            {
+                var newEdgeType = _baseStorageManager.StoreEdgeType(
+                     _vertexManager.ExecuteManager.VertexStore,
+                     myTypeInfos[current.Value.TypeName].VertexInfo,
+                     current.Value.TypeName,
+                     current.Value.Comment,
+                     myCreationDate,
+                     current.Value.IsAbstract,
+                     current.Value.IsSealed,
+                     true,
+                     myTypeInfos[current.Value.SuperTypeName].VertexInfo,
+                     mySecurityToken,
+                     myTransactionToken);
+
+                myResult[myResultPos++] = newEdgeType;
+
+                _indexManager.GetIndex(BaseUniqueIndex.EdgeTypeDotName)
+                                .Add(current.Value.TypeName, myTypeInfos[current.Value.TypeName].VertexInfo.VertexID);
+
+                _nameIndex.Add(current.Value.TypeName, myTypeInfos[current.Value.TypeName].VertexInfo.VertexID);
+            }
         }
 
         #endregion
