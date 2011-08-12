@@ -26,37 +26,48 @@ using System.Net;
 
 namespace sones.Plugins.GraphDS.Services
 {
-    public abstract class AServiceStatus
+    public class ServiceStatus
     {
+        public ServiceStatus(Boolean myIsRunnning, TimeSpan myLifeTime, Boolean IsNetService, IPAddress myIPAddress, ushort myPort,
+            Dictionary<string, object> myOtherStatistics = null)
+        {
+            this.IPAddress = myIPAddress;
+            this.IsRunning = myIsRunnning;
+            this.LifeTime = myLifeTime;
+            this.Port = myPort;
+            this.OtherStatistics = myOtherStatistics;
+        }
+
+
         /// <summary>
         /// Is the service running
         /// </summary>
-        public Boolean IsRunning { get; protected set; }
+        public Boolean IsRunning { get; private set; }
 
         /// <summary>
         /// Returns the running-time
         /// </summary>
-        public TimeSpan RunningTime { get; protected set; }
+        public TimeSpan LifeTime { get; private set; }
 
         /// <summary>
         /// Is this a network service
         /// </summary>
-        public Boolean IsNetService { get; protected set; }
+        public Boolean IsNetService { get; private set; }
 
         /// <summary>
         /// The port of the Service
         /// </summary>
-        public UInt16 Port { get; protected set; }
+        public UInt16 Port { get; private set; }
 
         /// <summary>
         /// The ip-adress of the Service
         /// </summary>
-        public IPAddress IPAddress { get; protected set; }
+        public IPAddress IPAddress { get; private set; }
 
         /// <summary>
-        /// Returns the service-specific statistically
+        /// Returns the service-specific statistics
         /// </summary>
-        public Dictionary<String, Object> OtherStatistically { get; protected set; }
+        public Dictionary<String, Object> OtherStatistics { get; private set; }
 
     }
 }

@@ -249,7 +249,7 @@ namespace sones.GraphDSServer
 
         #region Status
 
-        public AServiceStatus GetServiceStatus(String myServiceName)
+        public ServiceStatus GetServiceStatus(String myServiceName)
         {
             IService Service = null;
             if (GraphDSServices.TryGetValue(myServiceName, out Service))

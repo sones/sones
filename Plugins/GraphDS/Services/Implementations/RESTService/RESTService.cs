@@ -9,7 +9,6 @@ using System.IdentityModel.Tokens;
 using sones.Library.Commons.Security;
 using sones.GraphDS.Services.RESTService.Networking;
 using System.Net;
-using sones.GraphDS.Services.RESTService.ServiceStatus;
 using System.Diagnostics;
 using sones.GraphDS.Services.RESTService.ErrorHandling;
 
@@ -27,7 +26,7 @@ namespace sones.GraphDS.Services.RESTService
 
         private HttpServer _HttpServer;
 
-        private Stopwatch _RunningTime;
+        private Stopwatch _LifeTime;
 
         #endregion
 
@@ -40,7 +39,7 @@ namespace sones.GraphDS.Services.RESTService
         public RESTService(IGraphDS myGraphDS)
         {
             _GraphDS = myGraphDS;
-            _RunningTime = new Stopwatch();
+            _LifeTime = new Stopwatch();
         }
 
 
@@ -79,7 +78,7 @@ namespace sones.GraphDS.Services.RESTService
                         mySecurity: _Security,
                         myAutoStart: false);
 
-                _RunningTime.Start();
+                _LifeTime.Start();
                 _HttpServer.Start();
             }
             catch (Exception Ex)
@@ -91,12 +90,12 @@ namespace sones.GraphDS.Services.RESTService
         public void Stop()
         {
             _HttpServer.Stop();
-            _RunningTime.Reset();
+            _LifeTime.Reset();
         }
 
-        public AServiceStatus GetCurrentStatus()
+        public ServiceStatus GetCurrentStatus()
         {
-            return new RESTServiceStatus(_HttpServer.ListeningAddress,_HttpServer.ListeningPort,_HttpServer.IsRunning, _RunningTime.Elapsed);
+            return new ServiceStatus(_HttpServer.IsRunning,_LifeTime.Elapsed,true,_HttpServer.ListeningAddress,_HttpServer.ListeningPort);
         }
 
         public string PluginName
@@ -134,8 +133,17 @@ namespace sones.GraphDS.Services.RESTService
             Stop();
         }
 
-        #endregion
         
+
+
+
+        public string PluginShortName
+        {
+            get { return "sones.RESTService"; }
+        }
+
+
+        #endregion
     }
 
 

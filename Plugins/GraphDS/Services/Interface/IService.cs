@@ -71,6 +71,6 @@ namespace sones.Plugins.GraphDS.Services
         /// Returns the status of the service
         /// </summary>
         /// <returns>The status object</returns>
-        AServiceStatus GetCurrentStatus();
+        ServiceStatus GetCurrentStatus();
     }
 }
