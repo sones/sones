@@ -29,6 +29,7 @@ namespace sones.GraphDS.PluginManager
     public sealed class GraphDSPlugins
     {
         #region data
+        public readonly List<PluginDefinition> ISonesRESTServicePlugins;
         public readonly List<PluginDefinition> IGraphQLPlugins;
         public readonly List<PluginDefinition> IDrainPipePlugins;
 
@@ -40,9 +41,11 @@ namespace sones.GraphDS.PluginManager
         /// Creates a new sones GraphDB plugins definition wrapper
         /// </summary>
         public GraphDSPlugins(
+            List<PluginDefinition> myISonesRESTServicePlugins = null,
             List<PluginDefinition> myIGraphQLPlugins = null,
             List<PluginDefinition> myIDrainPipePlugins = null)
         {
+            ISonesRESTServicePlugins = myISonesRESTServicePlugins;
             IGraphQLPlugins = myIGraphQLPlugins;
             IDrainPipePlugins = myIDrainPipePlugins;
         }

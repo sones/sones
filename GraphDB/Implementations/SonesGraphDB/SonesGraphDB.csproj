@@ -207,7 +207,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
+      <Name>PluginManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\Index\Indices\SonesIndices\SonesIndices.csproj">
       <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>

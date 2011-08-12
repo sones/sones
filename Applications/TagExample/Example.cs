@@ -59,7 +59,7 @@ namespace TagExample
             var credentials = new UserPasswordCredentials("User", "test");
 
             //GraphDSServer = new GraphDS_Server(GraphDB, (ushort)9975, "User", "test", IPAddress.Any, PluginsAndParameters);
-            GraphDSServer = new GraphDS_Server(GraphDB, null);
+            GraphDSServer = new GraphDS_Server(GraphDB, (ushort)9975, "User", "test", IPAddress.Any);
             GraphDSServer.LogOn(credentials);
             //GraphDSServer.StartRESTService("", Properties.Settings.Default.ListeningPort, IPAddress.Any);
 

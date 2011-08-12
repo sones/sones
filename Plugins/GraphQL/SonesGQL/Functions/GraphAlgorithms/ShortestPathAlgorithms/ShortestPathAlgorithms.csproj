@@ -87,7 +87,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
+      <Name>PluginManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ISonesGQLFunction\ISonesGQLFunction.csproj">
       <Project>{CDAE254B-77D9-4E59-9C07-C18F0085F570}</Project>

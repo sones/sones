@@ -18,14 +18,30 @@
 * 
 */
 
-using sones.GraphDS;
+using System;
+using System.Net;
+using System.IdentityModel.Selectors;
 
 namespace sones.GraphDSServer
 {
     /// <summary>
-    /// The interface for all GraphDS server
+    /// The interface for starting / stopping rest services
     /// </summary>
-    public interface IGraphDSServer : IGraphDSREST, IGraphDS
+    public interface IGraphDSREST
     {
+        /// <summary>
+        /// Starts a new REST service
+        /// </summary>
+        /// <param name="myServiceID">The unique identifier of the service</param>
+        /// <param name="myPort">The used port</param>
+        /// <param name="myIPAddress">The used ip-address</param>
+        void StartRESTService(String myServiceID, UInt16 myPort, IPAddress myIPAddress);
+
+        /// <summary>
+        /// Stops a REST service
+        /// </summary>
+        /// <param name="myServiceID">The unique identifier of the REST service that is going to be stopped</param>
+        /// <returns>True for successful stop, otherwise false</returns>
+        bool StopRESTService(String myServiceID);
     }
 }

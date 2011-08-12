@@ -18,14 +18,26 @@
 * 
 */
 
-using sones.Library.ErrorHandling;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using sones.GraphDB.ErrorHandling;
 
-namespace sones.GraphDB.ErrorHandling
+namespace sones.GraphDSServer.ErrorHandling
 {
     /// <summary>
-    /// The interface for all GraphDS exceptions
+    /// This exception will be thrown if the REST service could not be startet.
     /// </summary>
-    public abstract class AGraphDSException : ASonesException
+    public class RESTServiceCouldNotBeStartedException : AGraphDSException
     {
+        /// <summary>
+        /// The constructor for the exception.
+        /// </summary>
+        /// <param name="myMessage">The exception message.</param>
+        public RESTServiceCouldNotBeStartedException(String myMessage)
+        {
+            _msg = myMessage;
+        }
     }
 }
