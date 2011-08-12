@@ -87,6 +87,9 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
         {
             #region initialize data
 
+            var graph = myGraphDB;
+            
+
             // The edge we starting of (e.g. Friends)
             var typeAttribute = myAttributeDefinition;
 
@@ -101,12 +104,13 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
             //set the target node
             var targetNode = (myParams[0].Value as IEnumerable<IVertex>).First();
+            
 
             //set the maximum depth 
-            byte maxDepth = Convert.ToByte(myParams[1].Value);
+            UInt64 maxDepth = Convert.ToUInt64(myParams[1].Value);
 
             //set the maximum path length
-            byte maxPathLength = Convert.ToByte(myParams[2].Value);
+            UInt64 maxPathLength = Convert.ToUInt64(myParams[2].Value);
 
             //mark if only the shortest path should be searched
             bool onlyShortestPath = Convert.ToBoolean(myParams[3].Value);

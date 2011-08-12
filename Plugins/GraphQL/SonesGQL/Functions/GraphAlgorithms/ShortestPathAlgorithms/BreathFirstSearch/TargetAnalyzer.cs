@@ -40,7 +40,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         //end is the root or start of the select
         private Node _End;
 
-        private byte _MaxPathLength;
+        private int _MaxPathLength;
 
         private bool _ShortestOnly = true;
 
@@ -50,7 +50,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
         #region constructors
 
-        public TargetAnalyzer(Node myStart, Node myEnd, byte myMaxPathLength)
+        public TargetAnalyzer(Node myStart, Node myEnd, UInt64 myMaxPathLength)
         {
             _Paths = new HashSet<List<Tuple<long, long>>>();
 
@@ -62,15 +62,15 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
             if (myMaxPathLength != 0)
             {
-                _MaxPathLength = Convert.ToByte(myMaxPathLength - 1);
+                _MaxPathLength = Convert.ToInt16(myMaxPathLength - 1);
             }
             else
             {
-                _MaxPathLength = Convert.ToByte(myMaxPathLength);
+                _MaxPathLength = Convert.ToInt16(myMaxPathLength);
             }
         }
 
-        public TargetAnalyzer(Node myStart, Node myEnd, byte myMaxPathLength, bool myShortestOnly, bool myFindAll)
+        public TargetAnalyzer(Node myStart, Node myEnd, UInt64 myMaxPathLength, bool myShortestOnly, bool myFindAll)
             : this(myStart, myEnd, myMaxPathLength)
         {
             _ShortestOnly = myShortestOnly;
