@@ -19,6 +19,7 @@
 */
 
 using sones.Library.ErrorHandling;
+using System;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -27,5 +28,6 @@ namespace sones.GraphDB.ErrorHandling
     /// </summary>
     public abstract class AGraphDSException : ASonesException
     {
+        public AGraphDSException(Exception innerException = null):base(innerException){}
     }
 }

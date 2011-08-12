@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -42,8 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ErrorHandling\QueryLanguageNotFoundException.cs" />
-    <Compile Include="ErrorHandling\RESTServiceCouldNotStartetException.cs" />
     <Compile Include="GraphDSServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -78,19 +76,15 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager</Name>
+      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Plugins\GraphDS\DrainPipeLog\IDrainPipe\IDrainPipe.csproj">
       <Project>{F51DA5BD-5808-409E-A907-4EF93B2C5E71}</Project>
       <Name>IDrainPipe</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\RESTService\ISonesRESTService\ISonesRESTService.csproj">
-      <Project>{0D7A14D7-9851-4624-9260-858741603F98}</Project>
-      <Name>ISonesRESTService</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\RESTService\Service\GraphDSREST.csproj">
-      <Project>{1AE9C2A9-4916-488D-B825-7B8657C0BDE5}</Project>
-      <Name>GraphDSREST</Name>
+    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\Services\Interface\IService.csproj">
+      <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
+      <Name>IService</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
@@ -104,6 +98,9 @@
       <Project>{1E30E203-20DE-4DA3-854A-18FEFADA6D7A}</Project>
       <Name>IGraphDSServer</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ErrorHandling\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
