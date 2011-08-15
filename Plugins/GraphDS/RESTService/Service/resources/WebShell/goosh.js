@@ -584,40 +584,58 @@ InitGoosh = function (goosh) {
 
         this.call = function (args) {
             if ((args == undefined) || (args.length == 0)) {
-                goosh.gui.out("list of options: bla, bla");
+
             } else {
-                //build the target URI
-                var target = goosh.config.webservice_protocol + "://"
-                + goosh.config.webservice_host
-                + ((goosh.config.webservice_port != undefined) ? (":" + goosh.config.webservice_port) : "")
-                + "/"
-                + goosh.config.webservice_path + "setformatparams";
-                if ((args != undefined) && (args.length > 0)) {
-                    target += "?";
-                    var params = new Array();
-                    params = args[0].split('=');
-                    target += params[0] + "=";
-                    if (params.length > 1) target += params[1];
-                }
+                // Get params from cookie
+                var cparams = new Array();
+                cparams = document.cookie.split(",");
+                var gparams = new Array();
+                gparams = args[0].split('=');
+                var storedparams = new Array();
+                var found = false;
 
-                //do some ajax
-                var RESTResponse = $.ajax({
-                    type: "POST",
-                    url: target,
-                    cache: false,
-                    async: false,
-                    timeout: 0,
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        return ("AJAX Error " + xhr.status + "\n" + data.responseText + "\n" + thrownError);
-                    },
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader('Accept', goosh.config.webservice_default_format.type);
+                // Search for given param in stored list and build array
+                var iparam = -1;
+                if (cparams[0] != "") {
+                    for (var i = 0; i < cparams.length; i++) {
+                        if ((i % 2) == 0) {
+                            // param name
+                            iparam++;
+                            storedparams[iparam] = new Array(2);
+                            storedparams[iparam][0] = cparams[i];
+                        } else {
+                            // param value
+                            if (storedparams[iparam][0] == gparams[0]) {
+                                // found param in stored list
+                                found = true;
+                                if (gparams.length > 1) {
+                                    // value given, set it
+                                    storedparams[iparam][1] = gparams[1];
+                                } else {
+                                    // no value given, print stored value
+                                    goosh.gui.out("Value of parameter " + gparams[0] + ": " + cparams[i]);
+                                    return;
+                                }
+                            } else {
+                                // set stored value
+                                storedparams[iparam][1] = cparams[i];
+                            }
+                        }
                     }
-                });
-
-                if (RESTResponse != null) {
-                    goosh.gui.out(RESTResponse.responseText);
                 }
+
+                if (!found) {
+                    // add
+                    iparam++;
+                    storedparams[iparam] = new Array(2);
+                    storedparams[iparam][0] = gparams[0];
+                    storedparams[iparam][1] = gparams[1];
+                }
+
+                // Write params array to cookie
+                document.cookie = storedparams;
+
+                goosh.gui.out("Set parameter " + gparams[0] + " to " + gparams[1]);
             }
         }
     }
