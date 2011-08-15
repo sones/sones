@@ -101,14 +101,15 @@ namespace sones.Plugins.GraphDS.RESTService
         /// <returns>The result of the GQL query</returns>
         public void ExecuteGQLQuery()
         {
-            var gqlQuery = _RESTOutput.GetGQL();
+            Dictionary<String, String> queryparams;
+            var gqlQuery = _RESTOutput.GetGQL(out queryparams);
             
             if (gqlQuery == String.Empty)
             {
                 return;    
             }
 
-            _RESTOutput.ExecuteGQL(gqlQuery);
+            _RESTOutput.ExecuteGQL(gqlQuery, queryparams);
         }
 
         #endregion

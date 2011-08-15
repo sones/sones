@@ -68,8 +68,9 @@ namespace sones.Plugins.GraphDS.IO
         /// Generates the representation of an query result in a special format.
         /// </summary>
         /// <param name="myQueryResult">The result of an query.</param>
+        /// <param name="myParams">Optional parameters to configure output.</param>
         /// <returns>The representation of the result as string.</returns>
-        String GenerateOutputResult(QueryResult myQueryResult);
+        String GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams);
 
         #endregion
         

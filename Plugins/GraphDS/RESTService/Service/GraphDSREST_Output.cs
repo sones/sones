@@ -82,18 +82,15 @@ namespace sones.Plugins.GraphDS.RESTService
 
         #region GenerateResultOutput(myResult, myQuery)
 
-        public void GenerateResultOutput(QueryResult myResult)
+        public void GenerateResultOutput(QueryResult myResult, Dictionary<String, String> myParams)
         {
-
             var _ContentType = HttpServer.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT, GraphDSREST_Constants._BARCHART);
             
-           
             IOInterface plugin = null;
-
 
             if (_Plugins.TryGetValue(_ContentType.MediaType, out plugin))
             {
-                var content = plugin.GenerateOutputResult(myResult);
+                var content = plugin.GenerateOutputResult(myResult, myParams);
                 ExportContent(_ServerID, System.Text.Encoding.UTF8.GetBytes(content), plugin.ContentType);
             }
             else
@@ -108,13 +105,19 @@ namespace sones.Plugins.GraphDS.RESTService
 
         #region GetGQL()
 
-        public String GetGQL()
+        public String GetGQL(out Dictionary<String, String> queryparams)
         {
+            queryparams = new Dictionary<string, string>();
+
             if (HttpServer.HttpContext.Request == null || HttpServer.HttpContext.Request.InputStream == null)
                 return null;
-
+            
             using (var reader = new StreamReader(HttpServer.HttpContext.Request.InputStream, Encoding.UTF8))
             {
+                foreach (Cookie curCookie in HttpServer.HttpContext.Request.Cookies)
+                {
+                    queryparams.Add(curCookie.Name, curCookie.Value);
+                }
                 try
                 {
                     return reader.ReadToEnd();
@@ -144,14 +147,14 @@ namespace sones.Plugins.GraphDS.RESTService
 
         #region ExecuteGQLQuery(myGQLStatement)
 
-        public QueryResult ExecuteGQL(String myQuery)
+        public QueryResult ExecuteGQL(String myQuery, Dictionary<String,String> myParams)
         {
             QueryResult _QueryResult = null;
             try
             {
                 _QueryResult = _GraphDS.Query(null, null, myQuery, "sones.gql");
 
-                GenerateResultOutput(_QueryResult);
+                GenerateResultOutput(_QueryResult, myParams);
 
                 return _QueryResult;
 

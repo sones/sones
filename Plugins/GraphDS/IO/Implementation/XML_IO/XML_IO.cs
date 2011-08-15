@@ -66,7 +66,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
         #region IOInterface
 
-        public string GenerateOutputResult(QueryResult myQueryResult)
+        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             var result = new SchemaToClassesGenerator.Result();
 

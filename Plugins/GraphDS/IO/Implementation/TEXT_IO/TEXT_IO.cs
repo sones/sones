@@ -91,7 +91,7 @@ namespace sones.Plugins.GraphDS.IO
 
         #region Generate Output from Query Result
         
-        public string GenerateOutputResult(QueryResult myQueryResult)
+        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             StringBuilder Output = new StringBuilder();
             Output.AppendLine("Query:\t\t"+myQueryResult.Query);

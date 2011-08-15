@@ -92,7 +92,7 @@ namespace sones.Plugins.GraphDS.IO
             return myString;
         }
 
-        public string GenerateOutputResult(QueryResult myQueryResult)
+        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             StringBuilder Output = new StringBuilder();
 
