@@ -73,9 +73,19 @@ namespace sones.Plugins.GraphDS.IO
         String GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams);
 
         #endregion
-        
+
+        #region List Available Parameters
+
+        /// <summary>
+        /// Returns string that contains available parameters to configure output result.
+        /// </summary>
+        /// <returns>The string containing description of available parameters.</returns>
+        String ListAvailParams();
+
+        #endregion
+
         #region Query Result
-        
+
         /// <summary>
         /// Generates an query result from a special respresentation.
         /// </summary>

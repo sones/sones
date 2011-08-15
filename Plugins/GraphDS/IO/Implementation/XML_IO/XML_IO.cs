@@ -91,6 +91,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             return System.Text.Encoding.UTF8.GetString(stream.ToArray());
         }
 
+        public String ListAvailParams()
+        {
+            throw new NotImplementedException();
+        }
+
         #region private output result helpers
         
         /// <summary>

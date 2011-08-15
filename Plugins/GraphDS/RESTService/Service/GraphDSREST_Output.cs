@@ -354,6 +354,33 @@ namespace sones.Plugins.GraphDS.RESTService
 
         #endregion
 
+        #region GetAvailableOutputFormatParams()
+
+        public Stream GetAvailableOutputFormatParams()
+        {
+            var _ContentType = HttpServer.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT, GraphDSREST_Constants._BARCHART);
+
+            IOInterface plugin = null;
+
+            if (_Plugins.TryGetValue(_ContentType.MediaType, out plugin))
+            {
+                try
+                {
+                    return new MemoryStream(Encoding.UTF8.GetBytes(plugin.ListAvailParams()));
+                }
+                catch (NotImplementedException)
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        #endregion
+
     }
 
 }

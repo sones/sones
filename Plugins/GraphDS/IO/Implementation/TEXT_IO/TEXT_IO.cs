@@ -132,6 +132,11 @@ namespace sones.Plugins.GraphDS.IO
             return SB.ToString();
         }
 
+        public String ListAvailParams()
+        {
+            throw new NotImplementedException();
+        }
+
         #region private to text
 
         /// <summary>

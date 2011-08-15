@@ -195,6 +195,16 @@ namespace sones.Plugins.GraphDS.IO
             return Output.ToString();
         }
 
+        public String ListAvailParams()
+        {
+            StringBuilder list = new StringBuilder();
+
+            list.AppendLine("Available Parameters to configure BarChart Output:");
+            list.AppendLine("ORIENTATION=[HORIZONTAL|VERTICAL] Set Orientation of BarChart");
+
+            return list.ToString();
+        }
+
         /// <summary>
         /// Handles query exceptions.
         /// </summary>

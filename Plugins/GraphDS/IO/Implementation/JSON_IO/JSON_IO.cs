@@ -151,6 +151,11 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             return SB.ToString();
         }
 
+        public String ListAvailParams()
+        {
+            throw new NotImplementedException();
+        }
+
         #region private toJSON Extensions
 
         /// <summary>

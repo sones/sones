@@ -137,6 +137,11 @@ namespace sones.Plugins.GraphDS.IO
             return SB.ToString();
         }
 
+        public String ListAvailParams()
+        {
+            throw new NotImplementedException();
+        }
+
         #region private toHTML
         private String GenerateVertexViewHTML(IVertexView aVertex)
         {

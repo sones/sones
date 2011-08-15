@@ -584,7 +584,37 @@ InitGoosh = function (goosh) {
 
         this.call = function (args) {
             if ((args == undefined) || (args.length == 0)) {
+                //build the target URI
+                var target = goosh.config.webservice_protocol + "://"
+                + goosh.config.webservice_host
+                + ((goosh.config.webservice_port != undefined) ? (":" + goosh.config.webservice_port) : "")
+                + "/"
+                + goosh.config.webservice_path + "availableoutputformatparams";
 
+                //do some ajax
+                var html = $.ajax({
+                    url: target,
+                    cache: false,
+                    async: false,
+                    error: function () {
+                        return 1;
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('Accept', goosh.config.webservice_default_format.type);
+                    }
+                });
+
+                if (html == null) {
+                    return 2;
+                } else {
+                    if (html.responseText.length > 0) {
+                        var brrepl = html.responseText.replace(/\n\r/,"<br>");
+                        brrepl = brrepl.replace(/\n/,"<br>");
+                        goosh.gui.out(brrepl);
+                    } else {
+                        goosh.gui.out("current output format does not offer settable parameters");
+                    }
+                }
             } else {
                 var gparams = args[0].split('=');
 
@@ -619,7 +649,7 @@ InitGoosh = function (goosh) {
 
                 // Write param to cookie
                 document.cookie = gparams[0] + "=" + gparams[1] + "\;";
-                
+
                 goosh.gui.out("Set parameter " + gparams[0] + " to " + gparams[1]);
             }
         }
