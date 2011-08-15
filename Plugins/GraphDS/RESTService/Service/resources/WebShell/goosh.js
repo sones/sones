@@ -608,14 +608,19 @@ InitGoosh = function (goosh) {
                     return 2;
                 } else {
                     if (html.responseText.length > 0) {
-                        var brrepl = html.responseText.replace(/\n\r/,"<br>");
-                        brrepl = brrepl.replace(/\n/,"<br>");
+                        var brrepl = html.responseText.replace(/\n\r/, "<br>");
+                        brrepl = brrepl.replace(/\n/, "<br>");
                         goosh.gui.out(brrepl);
                     } else {
                         goosh.gui.out("current output format does not offer settable parameters");
                     }
                 }
             } else {
+                if (navigator.cookieEnabled == false) {
+                    goosh.gui.out("Please enable cookies!");
+                    return 2;
+                }
+
                 var gparams = args[0].split('=');
 
                 if (gparams.length == 1) {
