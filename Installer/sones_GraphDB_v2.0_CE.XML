@@ -4,6 +4,7 @@
         <Package Id="83111110-1011-1550-0000-000000000001" Keywords="Installer" Description="To install the sones GraphDB Community-Edition Server" Manufacturer="sones GmbH" InstallerVersion="100" Compressed="yes" />
         <Media Id="1" EmbedCab="yes" DiskPrompt="CD-ROM #1" Cabinet="setup.cab" />
         <Property Id="DiskPrompt" Value="sones GraphDB Server [1]" />
+        <Property Id="Notepad.exe" Value="C:\Windows\System32\notepad.exe" />
         <Condition Message="You need to be administrator to install and run this software.">Privileged</Condition>
         <UI />
         <Directory Id="TARGETDIR" Name="SourceDir">
@@ -22,6 +23,19 @@
                             <RegistryKey Key="Software\Sones\Uninstall\Desktop" Root="HKCU">
                                 <RegistryValue KeyPath="no" Type="string" Value="DesktopMenuEntry" />
                             </RegistryKey>
+                        </Component>
+                        <Component Id="sonesGraphDBStarter.exe.config" Guid="ACA308F1-CF12-4CFD-9A2A-32F017C47A5A" DiskId="1">
+                            <File Id="sonesGraphDBStarter.exe.config" Name="sonesGraphDBStarter.exe.config" Source="..\Applications\sonesGraphDB\bin\Release\sonesGraphDBStarter.exe.config">
+                                <Shortcut Id="cfgFilePrgMenuShortcut" Name="Configuration file" WorkingDirectory="GRAPHDBSERVER" Directory="ProgramMenuDir" Icon="SettingsIcon.exe" />
+                            </File>
+                            <RegistryKey Key="Software\Sones\Uninstall\Menu" Root="HKCU">
+                                <RegistryValue KeyPath="yes" Type="string" Value="ProgramMenuEntry" />
+                            </RegistryKey>
+                            <ProgId Id="cfgFileDefaultPrgId">
+                                <Extension Id="config" ContentType="application/xml">
+                                    <Verb Id="open" Command="Open" Argument="%1" TargetProperty="Notepad.exe" />
+                                </Extension>
+                            </ProgId>
                         </Component>
                         <Component Id="Libraries" Guid="8FA5B46E-844C-4D93-B940-77C848FE5D6F" DiskId="1">
                             <File Id="Arithmetics.dll" Name="Arithmetics.dll" Source="..\Applications\sonesGraphDB\bin\Release\Arithmetics.dll" />
@@ -69,7 +83,6 @@
                             <File Id="TEXT_IO.dll" Name="TEXT_IO.dll" Source="..\Applications\sonesGraphDB\bin\Release\TEXT_IO.dll" />
                             <File Id="VersionedPluginManager.dll" Name="VersionedPluginManager.dll" Source="..\Applications\sonesGraphDB\bin\Release\VersionedPluginManager.dll" />
                             <File Id="XML_IO.dll" Name="XML_IO.dll" Source="..\Applications\sonesGraphDB\bin\Release\XML_IO.dll" />
-                            <File Id="sonesGraphDBStarter.exe.config" Name="sonesGraphDBStarter.exe.config" Source="..\Applications\sonesGraphDB\bin\Release\sonesGraphDBStarter.exe.config" />
                             <File Id="Newtonsoft.Json.xml" Name="Newtonsoft.Json.xml" Source="..\Applications\sonesGraphDB\bin\Release\Newtonsoft.Json.xml" />
                             <File Id="QueryResultSchema.xsd" Name="QueryResultSchema.xsd" Source="..\Applications\sonesGraphDB\bin\Release\QueryResultSchema.xsd" />
                             <File Id="SHORTESTPATHALGORITHMS.DLL" Name="ShortestPathAlgorithms.dll" Source="..\Applications\sonesGraphDB\bin\Release\ShortestPathAlgorithms.dll" />
@@ -125,6 +138,7 @@
             <ComponentRef Id="sonesGraphDBStarter.exe" />
             <ComponentRef Id="Libraries" />
             <ComponentRef Id="license" />
+            <ComponentRef Id="sonesGraphDBStarter.exe.config" />
         </Feature>
         <Feature Id="ProgramMenuAndShortcuts" Level="1" Absent="disallow" Description="The program menu entries and desktop shortcuts" Display="expand" Title="Program menu entries and desktop shortcuts">
             <ComponentRef Id="LinksComponent" />
@@ -138,6 +152,7 @@
         <UIRef Id="WixUI_ErrorProgressText" />
         <Icon Id="DesktopIcon.exe" SourceFile="pics\sones.ico" />
         <Icon Id="DocuIcon.exe" SourceFile="pics\docu.ico" />
+		<Icon Id="SettingsIcon.exe" SourceFile="pics\settings.ico" />
         <WixVariable Id="WixUILicenseRtf" Value="license\License.rtf" />
         <WixVariable Id="WixUIBannerBmp" Value="pics\bannrbmp.bmp" />
         <WixVariable Id="WixUIDialogBmp" Value="pics\dlgbmp.bmp" />
