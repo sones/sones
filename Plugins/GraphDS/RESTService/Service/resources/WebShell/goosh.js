@@ -586,55 +586,40 @@ InitGoosh = function (goosh) {
             if ((args == undefined) || (args.length == 0)) {
 
             } else {
-                // Get params from cookie
-                var cparams = new Array();
-                cparams = document.cookie.split(",");
-                var gparams = new Array();
-                gparams = args[0].split('=');
-                var storedparams = new Array();
-                var found = false;
+                var gparams = args[0].split('=');
 
-                // Search for given param in stored list and build array
-                var iparam = -1;
-                if (cparams[0] != "") {
-                    for (var i = 0; i < cparams.length; i++) {
-                        if ((i % 2) == 0) {
-                            // param name
-                            iparam++;
-                            storedparams[iparam] = new Array(2);
-                            storedparams[iparam][0] = cparams[i];
-                        } else {
-                            // param value
-                            if (storedparams[iparam][0] == gparams[0]) {
+                if (gparams.length == 1) {
+                    var found = false;
+
+                    // Get params from cookie
+                    var cookies = new Array();
+                    cookies = document.cookie.split("; ");
+                    var cparams = new Array();
+                    for (var i = 0; i < cookies.length; i++) {
+                        cparams[i] = cookies[i].split("=");
+                    }
+
+                    // no value given, return current one
+                    if (cparams[0] != "") {
+                        for (var i = 0; i < cparams.length; i++) {
+                            if (cparams[i][0] == gparams[0]) {
                                 // found param in stored list
                                 found = true;
-                                if (gparams.length > 1) {
-                                    // value given, set it
-                                    storedparams[iparam][1] = gparams[1];
-                                } else {
-                                    // no value given, print stored value
-                                    goosh.gui.out("Value of parameter " + gparams[0] + ": " + cparams[i]);
-                                    return;
-                                }
-                            } else {
-                                // set stored value
-                                storedparams[iparam][1] = cparams[i];
+                                goosh.gui.out("Value of parameter " + cparams[i][0] + ": " + cparams[i][1]);
+                                return;
                             }
                         }
                     }
+
+                    if (!found) {
+                        goosh.gui.out("Parameter " + gparams[0] + " not found!");
+                        return;
+                    }
                 }
 
-                if (!found) {
-                    // add
-                    iparam++;
-                    storedparams[iparam] = new Array(2);
-                    storedparams[iparam][0] = gparams[0];
-                    storedparams[iparam][1] = gparams[1];
-                }
-
-                // Write params array to cookie
-                document.cookie = storedparams;
-
+                // Write param to cookie
+                document.cookie = gparams[0] + "=" + gparams[1] + "\;";
+                
                 goosh.gui.out("Set parameter " + gparams[0] + " to " + gparams[1]);
             }
         }
