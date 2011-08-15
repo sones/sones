@@ -107,6 +107,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return"sones.top"; }
         }
 
+        public override string PluginShortName
+        {
+            get { return "top"; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

@@ -890,6 +890,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             get { return "sones.xml_io"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "xml"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

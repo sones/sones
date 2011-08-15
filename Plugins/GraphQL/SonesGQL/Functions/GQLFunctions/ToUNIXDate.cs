@@ -100,6 +100,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return"sones.tounixdate"; }
         }
 
+        public override string PluginShortName
+        {
+            get { return "tounixdate"; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

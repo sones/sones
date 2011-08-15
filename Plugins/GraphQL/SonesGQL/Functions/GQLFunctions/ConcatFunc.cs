@@ -91,6 +91,11 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
+        public override string PluginShortName
+        {
+            get { return "concat"; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

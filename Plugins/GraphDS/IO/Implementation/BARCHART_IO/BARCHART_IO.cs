@@ -68,6 +68,11 @@ namespace sones.Plugins.GraphDS.IO
             get { return "sones.barchart_io"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "barchart"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -216,7 +221,7 @@ namespace sones.Plugins.GraphDS.IO
             StringBuilder SB = new StringBuilder();
 
             SB.Append("goosh.gui.out(\'");
-            SB.Append(input.Replace("\n", "<br>"));
+            SB.Append(input.Replace("\n", "<br>").Replace("\'", "\\\'").Replace("\"", "\\\""));
             SB.Append("\');");
 
             return SB.ToString();

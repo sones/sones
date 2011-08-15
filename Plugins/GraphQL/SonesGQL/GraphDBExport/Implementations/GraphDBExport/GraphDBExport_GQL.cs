@@ -190,6 +190,11 @@ namespace sones.Plugins.SonesGQL.DBExport
             get { return "sones.gqlexport"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "gqlexport"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

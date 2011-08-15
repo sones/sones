@@ -63,6 +63,11 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             get { return "sones.json_io"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "json"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

@@ -428,6 +428,11 @@ namespace sones.Plugins.SonesGQL
 		{
 			get { return "sones.graphmlimport"; }
 		}
+
+        public string PluginShortName
+        {
+            get { return "graphmlimport"; }
+        }
 		
 		/// <summary>
 		/// Returns the setable parameters for this plugin.

@@ -92,6 +92,11 @@ namespace sones.Plugins.SonesGQL.Aggregates
             get { return "sones.max"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "max"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

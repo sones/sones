@@ -93,6 +93,11 @@ namespace sones.Plugins.SonesGQL.Aggregates
             get { return "sones.min"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "min"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

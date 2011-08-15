@@ -52,6 +52,11 @@ namespace QueryLog
             get { return "sones.querylog"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "querylog"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type> { { "AppendLogPath", typeof(String) } }; }
