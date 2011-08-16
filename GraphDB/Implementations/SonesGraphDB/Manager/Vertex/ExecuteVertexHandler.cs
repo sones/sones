@@ -253,7 +253,10 @@ namespace sones.GraphDB.Manager.Vertex
 
 
 
-        private Tuple<long?, VertexAddDefinition> RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
+        private Tuple<long?, VertexAddDefinition> RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, 
+                                                                                            IVertexType myVertexType, 
+                                                                                            TransactionToken myTransaction, 
+                                                                                            SecurityToken mySecurity)
         {
             long vertexID = (myInsertDefinition.VertexUUID.HasValue)
                 ? myInsertDefinition.VertexUUID.Value
@@ -269,8 +272,14 @@ namespace sones.GraphDB.Manager.Vertex
             IEnumerable<SingleEdgeAddDefinition> singleEdges;
             IEnumerable<HyperEdgeAddDefinition> hyperEdges;
 
-            CreateEdgeAddDefinitions(myInsertDefinition.OutgoingEdges, myVertexType, myTransaction, mySecurity, source, creationdate, out singleEdges, out hyperEdges);
-
+            CreateEdgeAddDefinitions(myInsertDefinition.OutgoingEdges, 
+                                        myVertexType, 
+                                        myTransaction, 
+                                        mySecurity, 
+                                        source, 
+                                        creationdate, 
+                                        out singleEdges, 
+                                        out hyperEdges);
 
             var binaries = (myInsertDefinition.BinaryProperties == null)
                             ? null
@@ -461,14 +470,27 @@ namespace sones.GraphDB.Manager.Vertex
             VertexInformation source,
             IVertexType myTargetType = null)
         {
-            var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, myTargetType);
+            var vertexIDs = GetResultingVertexIDs(myTransaction, 
+                                                    mySecurity, 
+                                                    edgeDef, 
+                                                    myTargetType);
+            
             if (vertexIDs == null)
                 return null;
 
             CheckMandatoryConstraint(edgeDef, myEdgeType);
             CheckTargetVertices(myTargetType, vertexIDs);
             AddDefaultValues(edgeDef, myEdgeType);
-            return new SingleEdgeAddDefinition(myAttributeID, myEdgeType.ID, source, vertexIDs.First(), edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, myEdgeType), edgeDef.UnstructuredProperties);
+            
+            return new SingleEdgeAddDefinition(myAttributeID,
+                                                myEdgeType.ID, 
+                                                source, 
+                                                vertexIDs.First(), 
+                                                edgeDef.Comment, 
+                                                date, 
+                                                date, 
+                                                ConvertStructuredProperties(edgeDef, myEdgeType), 
+                                                edgeDef.UnstructuredProperties);
         }
 
         private void AddDefaultValues(EdgePredefinition edgeDef, IEdgeType myEdgeType)

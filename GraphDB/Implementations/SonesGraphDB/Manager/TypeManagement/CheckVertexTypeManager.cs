@@ -198,8 +198,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 if (!myTypePredefinitions.All(_ => _ is VertexTypePredefinition))
                     throw new InvalidParameterTypeException("TypePredefinitions",
                                                             myTypePredefinitions.GetType().Name,
-                                                            typeof(IEnumerable<VertexTypePredefinition>).GetType().Name,
-                                                            "");
+                                                            typeof(IEnumerable<VertexTypePredefinition>).GetType().Name);
         }
 
         protected override void ConvertUnknownAttributes(ATypePredefinition myTypePredefinitions)
@@ -246,6 +245,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         protected override bool CanBaseTypeBeParentType(string myTypeName)
         {
             BaseTypes type;
+
             if (!Enum.TryParse(myTypeName, out type))
                 return false;
 
@@ -360,9 +360,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (myAlteredTypeName != null &&
                 _TypeManager.HasType(myAlteredTypeName, myTransactionToken, mySecurityToken))
-            {
                 throw new EdgeTypeAlreadyExistException(myAlteredTypeName);
-            }
         }
 
         /// <summary>

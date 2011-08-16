@@ -335,9 +335,7 @@ namespace sones.GraphDB.Request
         public RequestAlterEdgeType RenameType(String myNewTypeName)
         {
             if (!String.IsNullOrWhiteSpace(myNewTypeName))
-            {
                 AlteredTypeName = myNewTypeName;
-            }
 
             return this;
         }

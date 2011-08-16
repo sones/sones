@@ -33,6 +33,8 @@ using sones.GraphDB.Request;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.GraphDB.Expression;
 using sones.Library.ErrorHandling;
+using sones.Library.LanguageExtensions;
+using sones.Library.Commons.VertexStore.Definitions.Update;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -56,13 +58,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         #endregion
 
         #region ACheckTypeManager member
-
-        public override IEdgeType AlterType(IRequestAlterType myAlterTypeRequest, 
-                                            TransactionToken myTransactionToken, 
-                                            SecurityToken mySecurityToken)
-        {
-            throw new NotImplementedException();
-        }
 
         public override IEnumerable<IEdgeType> GetAllTypes(TransactionToken myTransaction,
                                                             SecurityToken mySecurity)
@@ -151,6 +146,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region abstract helper
 
+        /// <summary>
+        /// Loads the specified base types.
+        /// </summary>
+        /// <param name="myTransaction">The TransactionToken.</param>
+        /// <param name="mySecurity">The SecurityToken.</param>
+        /// <param name="myBaseTypes">The to be loaded types.</param>
         private void LoadBaseType(TransactionToken myTransaction, 
                                     SecurityToken mySecurity, 
                                     params BaseTypes[] myBaseTypes)
@@ -565,6 +566,235 @@ namespace sones.GraphDB.Manager.TypeManagement
             return deletedTypeIDs;
         }
 
+        /// <summary>
+        /// Checks if the given parameter type is valid.
+        /// </summary>
+        /// <param name="myRequest">The parameter to be checked.</param>
+        protected override void CheckRequestType(IRequestAlterType myRequest)
+        {
+            if (!(myRequest is RequestAlterEdgeType))
+                throw new InvalidParameterTypeException("AlterTypeRequest", myRequest.GetType().Name, typeof(RequestAlterEdgeType).Name);
+        }
+
+        /// <summary>
+        /// All to be removed things of the alter type request are going to be removed inside this method,
+        /// the related operations will be executed inside here.
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The alter type request.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected override void AlterType_Remove(IRequestAlterType myAlterTypeRequest,
+                                                    IEdgeType myType,
+                                                    TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken)
+        {
+            RemoveAttributes(myAlterTypeRequest.ToBeRemovedProperties,
+                             myType,
+                             myTransactionToken,
+                             mySecurityToken);
+        }
+
+        /// <summary>
+        /// All to be added things of the alter type request are going to be added inside this method,
+        /// the related operations will be executed inside here.
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The alter type request.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected override void AlterType_Add(IRequestAlterType myAlterTypeRequest,
+                                                    IEdgeType myType,
+                                                    TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken)
+        {
+            AddAttributes(myAlterTypeRequest.ToBeAddedProperties,
+                          myType, 
+                          myTransactionToken, 
+                          mySecurityToken);         
+        }
+
+        /// <summary>
+        /// Removes properties.
+        /// </summary>
+        /// <param name="myToBeRemovedProperties">The to be removed edges.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected override void ProcessPropertyRemoval(IEnumerable<string> myToBeRemovedProperties,
+                                                        IEdgeType myType,
+                                                        TransactionToken myTransactionToken,
+                                                        SecurityToken mySecurityToken)
+        {
+            foreach (var aProperty in myToBeRemovedProperties)
+            {
+                #region remove related indices
+
+                var propertyDefinition = myType.GetPropertyDefinition(aProperty);
+
+                foreach (var aIndexDefinition in propertyDefinition.InIndices)
+                {
+                    _indexManager.RemoveIndexInstance(aIndexDefinition.ID,
+                                                        myTransactionToken,
+                                                        mySecurityToken);
+                }
+
+                #endregion
+
+                _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurityToken,
+                                                                        myTransactionToken,
+                                                                        propertyDefinition.ID,
+                                                                        (long)BaseTypes.Property);
+            }
+        }
+
+        /// <summary>
+        /// Adds the specified properties to the given type and stores them.
+        /// </summary>
+        /// <param name="myToBeAddedProperties">The to be added properties.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myType">The to be altered type.</param>
+        protected override void ProcessAddPropery(IEnumerable<PropertyPredefinition> myToBeAddedProperties,
+                                                    TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken,
+                                                    IEdgeType myType)
+        {
+            foreach (var aProperty in myToBeAddedProperties)
+            {
+                _baseStorageManager.StoreProperty(
+                    _vertexManager.ExecuteManager.VertexStore,
+                    new VertexInformation((long)BaseTypes.Property,
+                        _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute).GetNextID()),
+                        aProperty.AttributeName,
+                        aProperty.Comment,
+                        DateTime.UtcNow.ToBinary(),
+                        aProperty.IsMandatory,
+                        aProperty.Multiplicity,
+                        aProperty.DefaultValue,
+                        true,
+                        new VertexInformation(
+                            (long)BaseTypes.EdgeType,
+                            myType.ID),
+                        ConvertBasicType(aProperty.AttributeType),
+                        mySecurityToken,
+                        myTransactionToken);
+            }
+        }
+
+        /// <summary>
+        /// Renames attributes.
+        /// </summary>
+        /// <param name="myToBeRenamedAttributes">The to be renamed properties.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected override void RenameAttributes(Dictionary<string, string> myToBeRenamedAttributes, 
+                                                    IEdgeType myType, 
+                                                    TransactionToken myTransactionToken, 
+                                                    SecurityToken mySecurityToken)
+        {
+            if (!myToBeRenamedAttributes.IsNotNullOrEmpty())
+                return;
+
+            foreach (var aToBeRenamedAttribute in myToBeRenamedAttributes)
+            {
+                VertexUpdateDefinition update = new VertexUpdateDefinition(null, 
+                                                                            new StructuredPropertiesUpdate(
+                                                                                new Dictionary<long, IComparable> 
+                                                                                    { { (long)AttributeDefinitions.AttributeDotName, 
+                                                                                          aToBeRenamedAttribute.Value } }));
+
+                var attribute = myType.GetAttributeDefinition(aToBeRenamedAttribute.Key);
+
+                switch (attribute.Kind)
+                {
+                    case AttributeType.Property:
+                        _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, 
+                                                                                myTransactionToken, 
+                                                                                attribute.ID, 
+                                                                                (long)BaseTypes.Property, 
+                                                                                update);
+                        break;
+
+                    case AttributeType.IncomingEdge:
+                        throw new InvalidTypeException(AttributeType.IncomingEdge.ToString(), AttributeType.Property.ToString());
+
+                    case AttributeType.OutgoingEdge:
+                        throw new InvalidTypeException(AttributeType.OutgoingEdge.ToString(), AttributeType.Property.ToString());
+
+                    case AttributeType.BinaryProperty:
+                        throw new InvalidTypeException(AttributeType.BinaryProperty.ToString(), AttributeType.Property.ToString());
+
+                    default:
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Change the comment on the type.
+        /// </summary>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myNewComment">The new comment.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected override void ChangeCommentOnType(IEdgeType myType,
+                                                    string myNewComment,
+                                                    TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken)
+        {
+            if (!String.IsNullOrWhiteSpace(myNewComment))
+            {
+                var update = new VertexUpdateDefinition(myNewComment);
+
+                _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken,    
+                                                                        myTransactionToken, 
+                                                                        myType.ID, 
+                                                                        (long)BaseTypes.EdgeType, 
+                                                                        update);
+            }
+        }
+
+        /// <summary>
+        /// Renames a type.
+        /// </summary>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myNewTypeName">The new type name.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected override void RenameType(IEdgeType myType, 
+                                            string myNewTypeName, 
+                                            TransactionToken myTransactionToken, 
+                                            SecurityToken mySecurityToken)
+        {
+            if (!String.IsNullOrWhiteSpace(myNewTypeName))
+            {
+                var update = new VertexUpdateDefinition(null, 
+                                                        new StructuredPropertiesUpdate(
+                                                            new Dictionary<long, IComparable> 
+                                                                { { (long)AttributeDefinitions.BaseTypeDotName, 
+                                                                      myNewTypeName } }));
+
+                _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, 
+                                                                        myTransactionToken, 
+                                                                        myType.ID, 
+                                                                        (long)BaseTypes.EdgeType, 
+                                                                        update);
+            }
+        }
+
+        /// <summary>
+        /// Calls the RebuildIndices method of the index manager.
+        /// </summary>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected override void CallRebuildIndices(TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken)
+        {
+            _indexManager.RebuildIndices((long)BaseTypes.EdgeType,
+                                            myTransactionToken,
+                                            mySecurityToken);
+        }
+
         #endregion
         
         private void StoreEdgeType(LinkedList<ATypePredefinition> myDefsTopologically,
@@ -598,6 +828,49 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 _nameIndex.Add(current.Value.TypeName, myTypeInfos[current.Value.TypeName].VertexInfo.VertexID);
             }
+        }
+
+        /// <summary>
+        /// Removes attributes.
+        /// </summary>
+        /// <param name="myToBeRemovedIncomingEdges">To be removed incoming edges.</param>
+        /// <param name="myToBeRemovedOutgoingEdges">To be removed outgoing edges.</param>
+        /// <param name="myToBeRemovedProperties">To be removed Proerties.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        private void RemoveAttributes(IEnumerable<string> myToBeRemovedProperties,
+                                        IEdgeType myType,
+                                        TransactionToken myTransactionToken,
+                                        SecurityToken mySecurityToken)
+        {
+            if (myToBeRemovedProperties.IsNotNullOrEmpty())
+                ProcessPropertyRemoval(myToBeRemovedProperties, myType, myTransactionToken, mySecurityToken);
+        }
+
+        /// <summary>
+        /// Adds attributes.
+        /// </summary>
+        /// <param name="myToBeAddedProperties">The to be added properties.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        private void AddAttributes(IEnumerable<PropertyPredefinition> myToBeAddedProperties,
+                                    IEdgeType myType,
+                                    TransactionToken myTransactionToken,
+                                    SecurityToken mySecurityToken)
+        {
+
+            if (myToBeAddedProperties.IsNotNullOrEmpty())
+            {
+                ProcessAddPropery(myToBeAddedProperties,
+                                    myTransactionToken,
+                                    mySecurityToken,
+                                    myType);
+
+                CleanUpTypes();
+            }
+
         }
 
         #endregion

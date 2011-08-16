@@ -178,7 +178,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Checks if the given parameter type is valid.
         /// </summary>
         /// <param name="myRequest">The parameter to be checked.</param>
-        protected abstract void CheckRequestType(IRequestAlterType myRequest);
+        protected override abstract void CheckRequestType(IRequestAlterType myRequest);
 
         /// <summary>
         /// Convertes Unknown attributes depending on the type of the predefinition.

@@ -194,9 +194,51 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override abstract void CleanUpTypes();
 
-        public override abstract T AlterType(IRequestAlterType myAlterTypeRequest,
-                                                TransactionToken myTransactionToken,
-                                                SecurityToken mySecurityToken);
+        public override T AlterType(IRequestAlterType myAlterTypeRequest,
+                                    TransactionToken myTransactionToken,
+                                    SecurityToken mySecurityToken)
+        {
+            CheckRequestType(myAlterTypeRequest);
+            
+            var type = GetType(myAlterTypeRequest.TypeName, myTransactionToken, mySecurityToken);
+
+            #region remove stuff
+
+            AlterType_Remove(myAlterTypeRequest, 
+                                type, 
+                                myTransactionToken, 
+                                mySecurityToken);
+
+            CleanUpTypes();
+
+            #endregion
+
+            #region add stuff
+
+            AlterType_Add(myAlterTypeRequest,
+                            type,
+                            myTransactionToken,
+                            mySecurityToken);
+
+            CleanUpTypes();
+
+            #endregion
+
+            type = GetType(myAlterTypeRequest.TypeName,
+                                myTransactionToken,
+                                mySecurityToken);
+
+            RenamesAndComment(myAlterTypeRequest,
+                                type, 
+                                myTransactionToken,
+                                mySecurityToken);
+
+            CleanUpTypes();
+
+            CallRebuildIndices(myTransactionToken, mySecurityToken);
+
+            return GetType(type.ID, myTransactionToken, mySecurityToken);
+        }
 
         public override abstract void Initialize(IMetaManager myMetaManager);
 
@@ -323,6 +365,106 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                             SecurityToken mySecurity,
                                                             bool myIgnoreReprimands = false);
 
+        /// <summary>
+        /// Checks if the given parameter type is valid.
+        /// </summary>
+        /// <param name="myRequest">The parameter to be checked.</param>
+        protected override abstract void CheckRequestType(IRequestAlterType myRequest);
+
+        /// <summary>
+        /// All to be removed things of the alter type request are going to be removed inside this method,
+        /// the related operations will be executed inside here.
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The alter type request.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected abstract void AlterType_Remove(IRequestAlterType myAlterTypeRequest,
+                                                    T myType,
+                                                    TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken);
+
+        /// <summary>
+        /// All to be added things of the alter type request are going to be added inside this method,
+        /// the related operations will be executed inside here.
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The alter type request.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected abstract void AlterType_Add(IRequestAlterType myAlterTypeRequest,
+                                                    T myType,
+                                                    TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken);
+
+        /// <summary>
+        /// Removes properties.
+        /// </summary>
+        /// <param name="myToBeRemovedProperties">The to be removed edges.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected abstract void ProcessPropertyRemoval(IEnumerable<string> myToBeRemovedProperties,
+                                                        T myType,
+                                                        TransactionToken myTransactionToken,
+                                                        SecurityToken mySecurityToken);
+
+        /// <summary>
+        /// Adds the specified properties to the given type and stores them.
+        /// </summary>
+        /// <param name="myToBeAddedProperties">The to be added properties.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myType">The to be altered type.</param>
+        protected abstract void ProcessAddPropery(IEnumerable<PropertyPredefinition> myToBeAddedProperties,
+                                                    TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken,
+                                                    T myType);
+
+        /// <summary>
+        /// Renames attributes.
+        /// </summary>
+        /// <param name="myToBeRenamedAttributes">The to be renamed attributes.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected abstract void RenameAttributes(Dictionary<string, string> myToBeRenamedAttributes,
+                                                    T myType,
+                                                    TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken);
+        
+        /// <summary>
+        /// Change the comment on the type.
+        /// </summary>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myNewComment">The new comment.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected abstract void ChangeCommentOnType(T myType,
+                                                    string myNewComment,
+                                                    TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken);
+        
+        /// <summary>
+        /// Renames a type.
+        /// </summary>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myNewTypeName">The new type name.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected abstract void RenameType(T myType, 
+                                            string myNewTypeName, 
+                                            TransactionToken myTransactionToken, 
+                                            SecurityToken mySecurityToken);
+
+        /// <summary>
+        /// Calls the RebuildIndices method of the index manager.
+        /// </summary>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected abstract void CallRebuildIndices(TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken);
+        
         #endregion
 
         #region helper structure
@@ -473,7 +615,35 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             return _baseTypeManager.ConvertBaseType(myBasicTypeName);
         }
-     
+
+        /// <summary>
+        /// Calls methods to rename attrributes and changing the comment.
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The alter type request.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        protected void RenamesAndComment(IRequestAlterType myAlterTypeRequest,
+                                            T myType,
+                                            TransactionToken myTransactionToken,
+                                            SecurityToken mySecurityToken)
+        {
+            RenameAttributes(myAlterTypeRequest.ToBeRenamedProperties,
+                                           myType,
+                                           myTransactionToken,
+                                           mySecurityToken);
+
+            ChangeCommentOnType(myType,
+                                myAlterTypeRequest.AlteredComment,
+                                myTransactionToken,
+                                mySecurityToken);
+
+            RenameType(myType,
+                        myAlterTypeRequest.AlteredTypeName,
+                        myTransactionToken,
+                        mySecurityToken);
+        }
+
         #endregion
     }
 }

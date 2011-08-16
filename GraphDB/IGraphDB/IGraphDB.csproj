@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\AGraphDBException.cs" />
+    <Compile Include="ErrorHandling\Attribute\AttributeRemoveException.cs" />
     <Compile Include="ErrorHandling\Attribute\EmptyAttributeNameException.cs" />
     <Compile Include="ErrorHandling\Attribute\EmptyAttributeTypeException.cs" />
     <Compile Include="ErrorHandling\Attribute\InvalidAttributeNameException.cs" />

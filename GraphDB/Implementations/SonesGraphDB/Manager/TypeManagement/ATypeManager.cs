@@ -116,6 +116,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         protected abstract bool IsTypeBaseType(string myTypeName);
 
         /// <summary>
+        /// Checks if the given parameter type is valid.
+        /// </summary>
+        /// <param name="myRequest">The parameter to be checked.</param>
+        protected abstract void CheckRequestType(IRequestAlterType myRequest);
+
+        /// <summary>
         /// Gets the name of the outgoing edge to which the incoming edge references.
         /// </summary>
         /// <param name="myAttributeType">The attribute type.</param>
