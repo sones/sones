@@ -270,11 +270,14 @@
                 out += "\n";
                 out += "jQuery JavaScript Library - Copyright (c) 2009 John Resig\n";
                 out += "Dual licensed under the MIT and GPL licenses.\n";
-                out += "http://docs.jquery.com/License\n";
+                out += "<a href=\"http://docs.jquery.com/License\" target=\"_blank\">http://docs.jquery.com/License</a>\n";
+                out += "\n";
+                out += "d3.js JavaScript Library - Copyright (c) 2010, Michael Bostock\n";
+                out += "<a href=\"/resources/d3/license.txt\" target=\"_blank\">license</a>\n";
                 out += "\n";
                 out += "goosh is written by Stefan Grothkopp <grothkopp@gmail.com>\n";
                 out += "goosh is open source under the Artistic License/GPL.\n";
-                out += "http://www.goosh.org\n";
+                out += "<a href=\"http://www.goosh.org\" target=\"_blank\">www.goosh.org</a>\n";
                 out += "</pre>";
                 goosh.gui.outln(out);
             }

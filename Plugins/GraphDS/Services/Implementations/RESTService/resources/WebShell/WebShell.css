@@ -7,12 +7,12 @@ Version: Version 2.0 |
 html              { height:100%;}
 body              { background:#ffffff;font-size:12px;font-family:monospace;height:99%;margin:0px;padding:0px;}
 
-a                 { color:#88C000;text-decoration:none;}
-a:link            { color:#88C000;text-decoration:none;}
-a:focus           { color:#88C000;text-decoration:underline;}
-a:hover           { color:#88C000;text-decoration:underline;}
-a:active          { color:#88C000;text-decoration:underline;}
-a:visited         { color:#88C000;text-decoration:none;}
+a                 { color:#009900;text-decoration:none;}
+a:link            { color:#009900;text-decoration:none;}
+a:focus           { color:#009900;text-decoration:underline;}
+a:hover           { color:#009900;text-decoration:underline;}
+a:active          { color:#009900;text-decoration:underline;}
+a:visited         { color:#009900;text-decoration:none;}
 
 div #ddate        { padding:0px;margin:0px;display:inline;white-space:nowrap;color:#606060; }
 form              { padding:0px;margin:0px;}
@@ -30,12 +30,12 @@ input.cmdline     { padding:0px;margin:0px;font-size:12px;font-family:monospace;
 #header           { border-bottom:1px solid #98C000;width:1000px;}
 
 #footer           { border-top:2px solid #98C000;width:1000px;text-align:center;font-family:"TrebuchetMS",Arial,Helvetica,sans-serif;font-size:11px;color:#B0B0B0;}
-#footer a         { color:#B8D080;text-decoration:none;}
-#footer a:link    { color:#B8D080;text-decoration:none;}
-#footer a:focus   { color:#B8D080;text-decoration:underline;}
-#footer a:hover   { color:#B8D080;text-decoration:underline;}
-#footer a:active  { color:#B8D080;text-decoration:underline;}
-#footer a:visited { color:#B8D080;text-decoration:none;}
+#footer a         { color:#009900;text-decoration:none;}
+#footer a:link    { color:#009900;text-decoration:none;}
+#footer a:focus   { color:#009900;text-decoration:none;}
+#footer a:hover   { color:#009900;text-decoration:none;}
+#footer a:active  { color:#009900;text-decoration:none;}
+#footer a:visited { color:#009900;text-decoration:none;}
 
 img               { border:none;}
 br                { clear:both;}

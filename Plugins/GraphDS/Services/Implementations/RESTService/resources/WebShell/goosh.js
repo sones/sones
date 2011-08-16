@@ -170,25 +170,25 @@ InitGoosh = function (goosh) {
         return true;
     }
 
-    goosh.set.list['style.link'] = new goosh.set.base("goosh.config.linkcolor", "#0000CC", "goosh link color");
-    goosh.set.list['style.link'].set = function (val) {
-        goosh.gui.setstyleclass("a", "color: " + val);
-        goosh.config.linkcolor = val;
-        return true;
-    }
+    //goosh.set.list['style.link'] = new goosh.set.base("goosh.config.linkcolor", "#829F3B", "goosh link color");
+    //goosh.set.list['style.link'].set = function (val) {
+    //     goosh.gui.setstyleclass("a", "color: " + val);
+    //     goosh.config.linkcolor = val;
+    //     return true;
+    // }
 
-    goosh.set.list['style.vlink'] = new goosh.set.base("goosh.config.vlinkcolor", "#551a8b", "goosh visited link color");
-    goosh.set.list['style.vlink'].set = function (val) {
-        goosh.gui.setstyleclass("a:visited", "color: " + val);
-        goosh.config.vlinkcolor = val;
-        return true;
-    }
+    //goosh.set.list['style.vlink'] = new goosh.set.base("goosh.config.vlinkcolor", "#829F3B", "goosh visited link color");
+    //goosh.set.list['style.vlink'].set = function (val) {
+    //    goosh.gui.setstyleclass("a:visited", "color: " + val);
+    //    goosh.config.vlinkcolor = val;
+    //    return true;
+    // }
 
     goosh.set.list['place.width'] = new goosh.set.base("goosh.config.mapwidth", "300", "width of map image", 20, 600);
     goosh.set.list['place.height'] = new goosh.set.base("goosh.config.mapheight", "150", "height of map image", 20, 500);
 
     goosh.set.init = function (context, result) {
-        goosh.gui.outln("Loading local settings...");
+        //goosh.gui.outln("Loading local settings...");
 
         for (key in goosh.set.list) {
             var c = false;
@@ -495,7 +495,13 @@ InitGoosh = function (goosh) {
                 out += " <br/>";
                 out += "- Aliases will expand to commands.<br/>";
                 out += "- Use cursor up and down for command history.<br/>";
-                out += "<br/>";
+                out += "<p></p>";
+                out += "This WebShell is a unix-like shell to run ad-hoc GraphQL queries on sones GraphDB.<br />";
+                out += "<p></p>";
+                out += "Please refer to the <a href=\"http://developers.sones.de/wiki/\" target=\"_blank\">documentation</a> for further information. <br />";
+                out += "If you find a bug please use our <a href=\"http://jira.sones.de\" target=\"_blank\">bugtracking tool</a> to report it. <br />";
+                out += "To discuss with other users please refer to our <a href=\"http://forum.sones.de\" target=\"_blank\">forum</a>";
+                out += "<p></p>";
             }
             goosh.gui.outln(out);
         }

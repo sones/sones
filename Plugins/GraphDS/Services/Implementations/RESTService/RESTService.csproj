@@ -146,6 +146,7 @@
     <EmbeddedResource Include="resources\d3\d3.js" />
     <EmbeddedResource Include="resources\libs\jQuery\jquery-1.6.2.min.js" />
     <EmbeddedResource Include="resources\libs\jQuery\jquery.license.txt" />
+    <EmbeddedResource Include="resources\d3\license.txt" />
     <Content Include="resources\robots.txt" />
     <Content Include="resources\wadl.xml" />
   </ItemGroup>
