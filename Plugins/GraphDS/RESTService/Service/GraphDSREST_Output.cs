@@ -244,8 +244,14 @@ namespace sones.Plugins.GraphDS.RESTService
                 response.SetCacheControl("no-cache");
                 response.SetServerName(_ServerID);
 
-                _Content.CopyTo(response.OutputStream);
-
+                try
+                {
+                    _Content.CopyTo(response.OutputStream);
+                }
+                catch (Exception)
+                {
+                    // TODO: logging to output correct error message
+                }
                 return;
 
             }
@@ -267,8 +273,14 @@ namespace sones.Plugins.GraphDS.RESTService
                 response.SetServerName(_ServerID);
                 response.SetContentType(GraphDSREST_Constants._HTML);
 
-                _Content.CopyTo(response.OutputStream);
-
+                try
+                {
+                    _Content.CopyTo(response.OutputStream);
+                }
+                catch (Exception)
+                {
+                    // TODO: logging to output correct error message
+                }
             }
 
             #endregion
