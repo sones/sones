@@ -63,7 +63,9 @@ namespace sones.sonesGraphDBStarter
     public class sonesGraphDBStartup
     {
         private bool quiet = false;
+        private bool shutdown = false;
         private GraphDS_Server _dsServer;
+        private bool _ctrlCPressed;
 
         public sonesGraphDBStartup(String[] myArgs)
         {
@@ -229,19 +231,24 @@ namespace sones.sonesGraphDBStarter
                     Console.WriteLine(_dsServer.GetServiceStatus(Service.Key).OtherStatistically["Description"].ToString());
                     
                 }
-              
-
-                
+                Console.WriteLine();
                 Console.WriteLine("Enter 'shutdown' to initiate the shutdown of this instance.");
             }
 
-            bool shutdown = false;
+            Console.CancelKeyPress += OnCancelKeyPress;
+            
             while (!shutdown)
             {
                 String command = Console.ReadLine();
-
-                if (command.ToUpper() == "SHUTDOWN")
-                    shutdown = true;
+                
+                if (!_ctrlCPressed)
+                {
+                    if (command != null)
+                    {
+                        if (command.ToUpper() == "SHUTDOWN")
+                            shutdown = true;
+                    }
+                }
             }
 
             Console.WriteLine("Shutting down");
@@ -257,6 +264,36 @@ namespace sones.sonesGraphDBStarter
             Console.WriteLine("Shutdown complete");
             #endregion
         }
+
+        #region
+        /// <summary>
+        ///  Cancel KeyPress
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public virtual void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            e.Cancel = true; //do not abort Console here.
+            _ctrlCPressed = true;
+            Console.Write("Shutdown GraphDB (y/n)?");
+            string input;
+                do
+                {
+                    input = Console.ReadLine();
+                } while (input == null);
+
+                switch (input.ToUpper())
+                {
+                    case "Y":
+                        shutdown = true;
+                        return;
+                    default:
+                        shutdown = false;
+                        return;
+                }
+        }//method
+        #endregion
+
     }
     #endregion
 
