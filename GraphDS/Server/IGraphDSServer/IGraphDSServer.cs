@@ -49,7 +49,11 @@ namespace sones.GraphDSServer
         /// </summary>
         /// <param name="myServiceName">The name of the service</param>
         /// <returns>The status object of the service</returns>
-        AServiceStatus GetServiceStatus(String myServiceName);
+        ServiceStatus GetServiceStatus(String myServiceName);
 
+        /// <summary>
+        /// The services that are currently available
+        /// </summary>
+        IEnumerable<IService> AvailableServices { get; }
     }
 }

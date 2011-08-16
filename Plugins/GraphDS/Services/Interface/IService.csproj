@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="IService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceStatus\AServiceStatus.cs" />
+    <Compile Include="ServiceStatus\ServiceStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">

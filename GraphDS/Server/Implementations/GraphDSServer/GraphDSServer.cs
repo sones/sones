@@ -19,6 +19,7 @@
 */
 
 using System;
+using System.Linq;
 using System.IdentityModel.Tokens;
 using System.Net;
 using System.Collections.Generic;
@@ -74,8 +75,8 @@ namespace sones.GraphDSServer
         /// The list of supported graph ql type instances
         /// </summary>
         private readonly Dictionary<String, IGraphQL>   _QueryLanguages;            // dictionary because we can only have one query language instance per name
-        public readonly Dictionary<String, IService>    GraphDSServices;                   // dictionary because only one name per service
-        private readonly List<KeyValuePair<String,IDrainPipe>> _DrainPipes;         // you could have multiple drainpipes with different parameters sporting the same name
+        private readonly Dictionary<String, IService>    _graphDSServices;                   // dictionary because only one name per service
+        private readonly Dictionary<String, IDrainPipe> _DrainPipes;         // you could have multiple drainpipes with different parameters sporting the same name
 
         #endregion
 
@@ -94,8 +95,8 @@ namespace sones.GraphDSServer
             _pluginManager = new GraphDSPluginManager();
             _ID = new Guid();
             _QueryLanguages = new Dictionary<string, IGraphQL>();
-            _DrainPipes = new List<KeyValuePair<String, IDrainPipe>>();
-            GraphDSServices = new Dictionary<String, IService>();
+            _DrainPipes = new Dictionary<string, IDrainPipe>();
+            _graphDSServices = new Dictionary<String, IService>();
             _plugins = Plugins;
 
             #region Load Configured Plugins
@@ -151,7 +152,7 @@ namespace sones.GraphDSServer
                     // add!
                     if (loaded != null)
                     {
-                        _DrainPipes.Add(new KeyValuePair<string,IDrainPipe>(_pd.NameOfPlugin, loaded));
+                        _DrainPipes.Add(_pd.NameOfPlugin, loaded);
                     }
                     //                    else
                     //                        System.Diagnostics.Debug.WriteLine("Could not load plugin " + _pd.NameOfPlugin);
@@ -194,7 +195,7 @@ namespace sones.GraphDSServer
         {
             IService Service = null;
 
-            if (!GraphDSServices.TryGetValue(myServiceName, out Service))
+            if (!_graphDSServices.TryGetValue(myServiceName, out Service))
             {
                 try
                 {
@@ -207,7 +208,7 @@ namespace sones.GraphDSServer
                 {
                     throw new ServiceException("An error occured when trying to initialize " + myServiceName + "!" + Environment.NewLine + "See inner exception for details.", Ex);
                 }
-                GraphDSServices.Add(Service.PluginName, Service);
+                _graphDSServices.Add(Service.PluginName, Service);
             }
             try
             {
@@ -227,7 +228,7 @@ namespace sones.GraphDSServer
         public void StopService(String myServiceName)
         {
             IService Service = null;
-            if (GraphDSServices.TryGetValue(myServiceName, out Service))
+            if (_graphDSServices.TryGetValue(myServiceName, out Service))
             {
                 try
                 {
@@ -249,10 +250,10 @@ namespace sones.GraphDSServer
 
         #region Status
 
-        public AServiceStatus GetServiceStatus(String myServiceName)
+        public ServiceStatus GetServiceStatus(String myServiceName)
         {
             IService Service = null;
-            if (GraphDSServices.TryGetValue(myServiceName, out Service))
+            if (_graphDSServices.TryGetValue(myServiceName, out Service))
             {
                 try
                 {
@@ -271,14 +272,28 @@ namespace sones.GraphDSServer
         }
 
         #endregion
-        
+
+        #region Available Services
+
+        public IEnumerable<IService> AvailableServices
+        {
+            get { return _graphDSServices.Select(_ => _.Value); }
+        }
+
         #endregion
-         
+
+        #endregion
+
         #region IGraphDS Members
 
         public void Shutdown(sones.Library.Commons.Security.SecurityToken mySecurityToken)
         {
             _iGraphDB.Shutdown(mySecurityToken);
+
+            foreach (var aService in _graphDSServices)
+            {
+                aService.Value.Stop();
+            }
         }
 
         public QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)

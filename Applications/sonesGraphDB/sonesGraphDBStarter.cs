@@ -64,7 +64,7 @@ namespace sones.sonesGraphDBStarter
     {
         private bool quiet = false;
         private bool shutdown = false;
-        private GraphDS_Server _dsServer;
+        private IGraphDSServer _dsServer;
         private bool _ctrlCPressed;
 
         public sonesGraphDBStartup(String[] myArgs)
@@ -225,10 +225,10 @@ namespace sones.sonesGraphDBStarter
                 Console.WriteLine();
                 Console.WriteLine("   * the following GraphDS Service Plugins are initialized and started: ");
 
-                foreach (var Service in _dsServer.GraphDSServices)
+                foreach (var Service in _dsServer.AvailableServices)
                 {
-                    Console.WriteLine("      * "+Service.Key);
-                    Console.WriteLine(_dsServer.GetServiceStatus(Service.Key).OtherStatistically["Description"].ToString());
+                    Console.WriteLine("      * "+Service.PluginName);
+                    Console.WriteLine(Service.Description);
                     
                 }
                 Console.WriteLine();
@@ -251,16 +251,8 @@ namespace sones.sonesGraphDBStarter
                 }
             }
 
-            Console.WriteLine("Shutting down");
-            foreach (var Service in _dsServer.GraphDSServices)
-            {
-                Console.WriteLine("    "+Service.Key);
-                _dsServer.StopService(Service.Key);
-            }
-            Console.WriteLine("    GraphDS Server");
+            Console.WriteLine("Shutting down GraphDS Server");
             _dsServer.Shutdown(null);
-            Console.WriteLine("    GraphDB Server");
-            GraphDB.Shutdown(null);
             Console.WriteLine("Shutdown complete");
             #endregion
         }

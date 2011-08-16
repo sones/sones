@@ -63,7 +63,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RESTService.cs" />
     <Compile Include="RESTServicePluginManager\RESTServicePluginManager.cs" />
-    <Compile Include="ServiceStatus\RESTServiceStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">

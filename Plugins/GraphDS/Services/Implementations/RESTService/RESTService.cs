@@ -9,7 +9,6 @@ using System.IdentityModel.Tokens;
 using sones.Library.Commons.Security;
 using sones.GraphDS.Services.RESTService.Networking;
 using System.Net;
-using sones.GraphDS.Services.RESTService.ServiceStatus;
 using System.Diagnostics;
 using sones.GraphDS.Services.RESTService.ErrorHandling;
 
@@ -27,7 +26,9 @@ namespace sones.GraphDS.Services.RESTService
 
         private HttpServer _HttpServer;
 
-        private Stopwatch _RunningTime;
+        private Stopwatch _LifeTime;
+
+        private String _description;
 
         #endregion
 
@@ -40,7 +41,7 @@ namespace sones.GraphDS.Services.RESTService
         public RESTService(IGraphDS myGraphDS)
         {
             _GraphDS = myGraphDS;
-            _RunningTime = new Stopwatch();
+            _LifeTime = new Stopwatch();
         }
 
 
@@ -87,8 +88,24 @@ namespace sones.GraphDS.Services.RESTService
                         mySecurity: _Security,
                         myAutoStart: false);
 
-                _RunningTime.Start();
+                _LifeTime.Start();
                 _HttpServer.Start();
+
+
+                String MyIPAdressString = Address.ToString();
+
+                if (MyIPAdressString == "0.0.0.0")
+                    MyIPAdressString = "localhost";
+
+               _description =        "   * REST Service is started at http://" + MyIPAdressString + ":" + Port + Environment.NewLine +
+                                     "      * access it directly by passing the GraphQL query using the" + Environment.NewLine +
+                                     "        REST interface or a client library. (see documentation)" + Environment.NewLine +
+                                     "      * if you want JSON Output add ACCEPT: application/json " + Environment.NewLine +
+                                     "        to the client request header (or application/xml or" + Environment.NewLine +
+                                     "        application/text)" + Environment.NewLine +
+                                     "   * for first steps we recommend to use the AJAX WebShell. " + Environment.NewLine +
+                                     "     Browse to http://" + MyIPAdressString + ":" + Port + "/WebShell" + Environment.NewLine +
+                                     "     (default username and passwort: test / test)";
             }
             catch (Exception Ex)
             {
@@ -99,12 +116,17 @@ namespace sones.GraphDS.Services.RESTService
         public void Stop()
         {
             _HttpServer.Stop();
-            _RunningTime.Reset();
+            _LifeTime.Reset();
         }
 
-        public AServiceStatus GetCurrentStatus()
+        public ServiceStatus GetCurrentStatus()
         {
-            return new RESTServiceStatus(_HttpServer.ListeningAddress,_HttpServer.ListeningPort,_HttpServer.IsRunning, _RunningTime.Elapsed);
+            return new ServiceStatus(_HttpServer.ListeningAddress, _HttpServer.ListeningPort, _HttpServer.IsRunning, _LifeTime.Elapsed, true);
+        }
+
+        public string Description
+        {
+            get { return _description; }
         }
 
         public string PluginName
