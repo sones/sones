@@ -33,6 +33,13 @@ echo "sones GraphDB 2.0 Build Script (C) sones GmbH 2007-2011";
 
 option=$1
 option2=$2
+git_revision=`git rev-parse HEAD`
+
+export EXP_FILE=$PWD/GraphDB/BuildConstant.cs
+
+export TODAY_DAY=`date '+%d'`
+export TODAY_MONTH=`date '+%m'`
+export TODAY_YEAR=`date '+%Y'`
 
 if [ $# -lt 1 ]; then
 echo "Type -h for build options.";
@@ -62,6 +69,10 @@ else
 ./clearDirectory.sh Library *.pidb *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt
 ./clearDirectory.sh Plugins *.pidb *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt
 fi
+
+echo "Branding current commit-hash...";
+sed -i "s#new DateTime(2099, 12, 31)#new DateTime($TODAY_YEAR, $TODAY_MONTH, $TODAY_DAY)#g" $EXP_FILE
+sed -i "s#----------------------------------------#$git_revision#g" $EXP_FILE
 
 if [ $option == "-r" ] || [ $option2 == "-r" ]; then
 	echo "Doing a release build";
