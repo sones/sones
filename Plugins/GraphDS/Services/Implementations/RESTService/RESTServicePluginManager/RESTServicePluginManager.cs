@@ -23,31 +23,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.Library.VersionedPluginManager;
-using sones.GraphQL;
 using sones.Plugins.GraphDS;
-using sones.Plugins.GraphDS.Services;
+using sones.Plugins.GraphDS.IO;
 
-namespace sones.GraphDS.PluginManager.GraphDSPluginManager
+namespace sones.GraphDS.Services.RESTService
 {
-    public sealed class GraphDSPluginManager : AComponentPluginManager
+
+    public sealed class RESTServicePluginManager : AComponentPluginManager
     {
         #region Constructor
 
         /// <summary>
         /// A plugin manager for the GraphDS
         /// </summary>
-        public GraphDSPluginManager()
+        public RESTServicePluginManager()
         {
             #region Register & Discover
 
             // Change the version if there are ANY changes which will prevent loading the plugin.
-            // As long as there are still some plugins which does not have their own assembly you need to change the compatibility of ALL plugins of the GraphDS assembly.
+            // As long as there are still some plugins which does not have their own assembly you need to change the compatibility of ALL plugins of the GraphDS and GraphFSInterface assembly.
             // So, if any plugin in the GraphDS changes you need to change the AssemblyVersion of the GraphDS AND modify the compatibility version of the other plugins.
             _pluginManager
-                .Register<IGraphQL>(IGraphQLVersionCompatibility.MinVersion, IGraphQLVersionCompatibility.MaxVersion)
-                .Register<IDrainPipe>(IDrainPipeCompatibility.MinVersion, IDrainPipeCompatibility.MaxVersion)
-                .Register<IService>(IServiceCompatibility.MinVersion, IServiceCompatibility.MaxVersion);
-
+                .Register<IOInterface>(IOInterfaceCompatibility.MinVersion, IOInterfaceCompatibility.MaxVersion);
+              
             _pluginManager.Discover();
 
             #endregion
@@ -56,12 +54,10 @@ namespace sones.GraphDS.PluginManager.GraphDSPluginManager
 
             var componentName = this.GetType().Assembly.GetName().Name;
 
-            FillLookup<IGraphQL>(componentName, _ => _.PluginName);
-            FillLookup<IDrainPipe>(componentName, _ => _.PluginName);
-            FillLookup<IService>(componentName, _ => _.PluginName);
+            FillLookup<IOInterface>(componentName, _ => _.PluginName);
+                        
+            #endregion
 
-            #endregion   
-        
         }
 
         #endregion

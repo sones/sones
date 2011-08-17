@@ -18,16 +18,17 @@
 * 
 */
 
-using sones.Library.ErrorHandling;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace sones.GraphDB.ErrorHandling
+namespace sones.GraphDS.Services.RESTService
 {
-    /// <summary>
-    /// The interface for all GraphDS exceptions
-    /// </summary>
-    public abstract class AGraphDSException : ASonesException
+    public enum GraphDSREST_OutputFormat
     {
-        public AGraphDSException(Exception innerException = null):base(innerException){}
+        JSON,
+        XML
+        //,TEXT
     }
 }

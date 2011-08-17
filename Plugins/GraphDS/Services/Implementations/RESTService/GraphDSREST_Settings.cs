@@ -18,16 +18,35 @@
 * 
 */
 
-using sones.Library.ErrorHandling;
-using System;
 
-namespace sones.GraphDB.ErrorHandling
+#region Usings
+
+using System;
+using sones.Library.LanguageExtensions;
+
+#endregion
+
+namespace sones.GraphDS.Services.RESTService
 {
-    /// <summary>
-    /// The interface for all GraphDS exceptions
-    /// </summary>
-    public abstract class AGraphDSException : ASonesException
+
+    public class GraphDSREST_Settings
     {
-        public AGraphDSException(Exception innerException = null):base(innerException){}
+
+        public String Username { get; set; }
+        //public String Password { get; set; }
+        public String DBName { get; set; }
+        public GraphDSREST_OutputFormat OutputFormat { get; set; }
+
+        public override String ToString()
+        {
+            return String.Format("user={0},password={1},db={2},outputformat={3}", "", "", DBName, OutputFormat);
+        }
+
+        public String ToBase64()
+        {
+            return ToString().ToBase64();
+        }
+
     }
+
 }
