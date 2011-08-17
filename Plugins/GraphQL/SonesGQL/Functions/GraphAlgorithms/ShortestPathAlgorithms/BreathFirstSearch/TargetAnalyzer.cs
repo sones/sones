@@ -85,7 +85,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         /// For a detailed documentation on how this evaluation works, have look at the class documentation.
         /// </summary>
         /// <returns>An HashSet which contains all paths between the Start- and the End-Node.</returns>
-        public HashSet<List<Tuple<long, long>>> getPaths()
+        public HashSet<List<Tuple<long, long>>> GetPaths()
         {
             //MaxPathLength is not reached
             if (_TempList.Count < _MaxPathLength)

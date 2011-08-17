@@ -48,7 +48,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             Parameters.Add(new ParameterValue("MaxPathLength", typeof(Int64)));
             Parameters.Add(new ParameterValue("OnlyShortestPath", typeof(Boolean)));
             Parameters.Add(new ParameterValue("AllPaths", typeof(Boolean)));
-            Parameters.Add(new ParameterValue("UseBidirectionalBFS", typeof(Boolean)));
+            Parameters.Add(new ParameterValue("UseBidirectionalBFS", typeof(Boolean), true));
         }
 
         #endregion
@@ -80,7 +80,13 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             }
         }
 
-        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myStartVertex, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, 
+                                                Object myCallingObject, 
+                                                IVertex myStartVertex, 
+                                                IGraphDB myGraphDB, 
+                                                SecurityToken mySecurityToken, 
+                                                TransactionToken myTransactionToken, 
+                                                params FuncParameter[] myParams)
         {
             #region initialize data
 
@@ -88,16 +94,16 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             var typeAttribute = myAttributeDefinition;
 
             if (myStartVertex == null)
-                throw new InvalidFunctionParameterException("StartNode", "IVertex that represents the start node", "null");
+                throw new InvalidFunctionParameterException("StartVertex", "Vertex that represents the start vertex", "null");
 
             //set the start node
             var startNode = myStartVertex;
 
+            if ((myParams[0].Value as IEnumerable<IVertex>) == null)
+                throw new InvalidFunctionParameterException("TargetVertex", "Set of vertices that represents the target vertices", "null");
+
             //set the target node
             var targetNode = (myParams[0].Value as IEnumerable<IVertex>).First();
-
-            if (targetNode == null)
-                throw new InvalidFunctionParameterException("TargetNode", "IVertex that represents the target node", "null");
 
             //set the maximum depth 
             byte maxDepth = Convert.ToByte(myParams[1].Value);
@@ -112,13 +118,18 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             bool allPaths = Convert.ToBoolean(myParams[4].Value);
 
             if (!onlyShortestPath && !allPaths)
-            {
                 allPaths = true;
-            }
 
-            //mark if the BidirectionalBFS should be used
-            bool useBidirectionalBFS = Convert.ToBoolean(myParams[5].Value);
+            bool useBidirectionalBFS = false;
 
+            if (myParams.GetLength(0) == 6)
+                //mark if the BidirectionalBFS should be used
+                useBidirectionalBFS = Convert.ToBoolean(myParams[5].Value);
+
+            var vertexType = myGraphDB.GetVertexType<IVertexType>(mySecurityToken, myTransactionToken, new GraphDB.Request.RequestGetVertexType(startNode.VertexTypeID), (stats, type) => type);
+
+            if (vertexType == null)
+                throw new InvalidFunctionParameterException("StartVertexType", "VertexType that represents the start vertex type not found", startNode.VertexTypeID);
             #endregion
 
             #region check correctness of parameters
@@ -136,12 +147,11 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
             HashSet<List<Tuple<long, long>>> paths = null;
 
-            //BFS
-            //if (useBidirectionalBFS)
-            //    //bidirectional BFS
-            //    paths = new BidirectionalBFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
-            //else
-            //    paths = new BFS().Find(typeAttribute, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
+            //call BFS find methods
+            if (useBidirectionalBFS)
+                paths = new BidirectionalBFS().Find(typeAttribute, vertexType, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
+            else
+                paths = new BFS().Find(typeAttribute, vertexType, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
 
             #endregion
 
@@ -162,68 +172,68 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
                 #endregion
 
-                //ALT
-                //return new FuncParameter(new EdgeTypePath(paths, typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
                 return new FuncParameter(view);
             }
             else
             {
-                //ALT
-                //return new FuncParameter(new EdgeTypePath(new HashSet<List<long>>(), typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
                 return new FuncParameter(new VertexView(null, null));
             }
 
             #endregion
         }
 
-        private VertexView GenerateVertexView(List<List<Tuple<long, long>>.Enumerator> myEnumerators)
+        private VertexView GenerateVertexView(IEnumerable<List<Tuple<long, long>>.Enumerator> myEnumerators)
         {
             var enumerators = MoveNext(myEnumerators);
-            
+
             Dictionary<String, Object> props = null;
-            List<ISingleEdgeView> singleEdges = new List<ISingleEdgeView>();
-            Dictionary<String, IEdgeView> edge = new Dictionary<string, IEdgeView>();
+            List<ISingleEdgeView> singleEdges = null;
+            Dictionary<String, IEdgeView> edge = null;
             Tuple<long, long> current = null;
 
             foreach (var enumerator in enumerators)
             {
-                if (enumerator.Current != null)
+                if (current == null || !enumerator.Current.Equals(current))
                     current = enumerator.Current;
                 else
                     continue;
 
-                if (props == null)
+                props = new Dictionary<String, Object>();
+
+                props.Add("VertexID", current.Item2);
+                props.Add("VertexTypeID", current.Item1);
+
+                var _enums = enumerators.Where(x => x.Current.Equals(current));
+                singleEdges = new List<ISingleEdgeView>();
+
+                foreach (var _enum in _enums)
                 {
-                    props = new Dictionary<String, Object>();
+                    //call next
+                    var nextLevel = GenerateVertexView(new List<List<Tuple<long, long>>.Enumerator> { _enum });
 
-                    props.Add("VertexID", current.Item2);
-                    props.Add("VertexTypeID", current.Item1);
+                    if (nextLevel != null)
+                        singleEdges.Add(new SingleEdgeView(null, nextLevel));
                 }
-
-                //call next
-                var nextLevel = GenerateVertexView(enumerators);
-
-                if(nextLevel != null)
-                    singleEdges.Add(new SingleEdgeView(null, nextLevel));
             }
 
-            if(singleEdges.Count > 0)
+            if (singleEdges != null && singleEdges.Count > 0)
+            {
+                edge = new Dictionary<string, IEdgeView>();
                 edge.Add("path", new HyperEdgeView(null, singleEdges));
+            }
 
             if (props != null)
                 return new VertexView(props, edge);
             else return null;
         }
 
-        private List<List<Tuple<long, long>>.Enumerator> MoveNext(List<List<Tuple<long, long>>.Enumerator> myEnumerator)
+        private List<List<Tuple<long, long>>.Enumerator> MoveNext(IEnumerable<List<Tuple<long, long>>.Enumerator> myEnumerator)
         {
             List<List<Tuple<long, long>>.Enumerator> current = new List<List<Tuple<long, long>>.Enumerator>();
 
             foreach (var enumerator in myEnumerator)
             {
-                enumerator.MoveNext();
-
-                if (enumerator.Current == null)
+                if (!enumerator.MoveNext())
                     continue;
 
                 current.Add(enumerator);
