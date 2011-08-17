@@ -107,7 +107,7 @@ namespace sones.Plugins.GraphDS.RESTService
 
         public String GetGQL(out Dictionary<String, String> queryparams)
         {
-            queryparams = new Dictionary<string, string>();
+            queryparams = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
             if (HttpServer.HttpContext.Request == null || HttpServer.HttpContext.Request.InputStream == null)
                 return null;

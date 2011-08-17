@@ -47,6 +47,11 @@ namespace sones.Plugins.GraphDS.IO
         /// </summary>
         private readonly ContentType _contentType;
 
+        /// <summary>
+        /// Enumeration containing all possible orientations
+        /// </summary>
+        private enum _eOrientation {HORIZONTAL, VERTICAL};
+
         #endregion
 
         #region Constructors
@@ -98,6 +103,19 @@ namespace sones.Plugins.GraphDS.IO
         {
             StringBuilder Output = new StringBuilder();
             Dictionary<String, object> barchart;
+            _eOrientation Orientation = _eOrientation.HORIZONTAL;
+
+            if (myParams.ContainsKey("orientation"))
+            {
+                if (myParams["orientation"] == "vertical")
+                {
+                    Orientation = _eOrientation.VERTICAL;
+                }
+                else if (myParams["orientation"] == "horizontal")
+                {
+                    Orientation = _eOrientation.HORIZONTAL;
+                }
+            }
 
             if (myQueryResult.Error != null)
             {
@@ -123,73 +141,161 @@ namespace sones.Plugins.GraphDS.IO
                     Output.Append("names.push(\'" + bar.Key.ToString() + "\');");
                 }
 
-                Output.Append("var w = 430,");
-                Output.Append("h = data.length * 23,");
-                Output.Append("x = d3.scale.linear().domain([0, d3.max(data)]).range([0, w]),");
-                Output.Append("y = d3.scale.ordinal().domain(d3.range(data.length)).rangeBands([0, h], .2);");
+                switch (Orientation)
+                {
+                    case _eOrientation.HORIZONTAL:
+                        {
+                            Output.Append("var w = 430,");
+                            Output.Append("h = data.length * 23,");
+                            Output.Append("x = d3.scale.linear().domain([0, d3.max(data)]).range([0, w]),");
+                            Output.Append("y = d3.scale.ordinal().domain(d3.range(data.length)).rangeBands([0, h], .2);");
 
-                Output.Append("var vis = d3.select(\"#output\")");
-                Output.Append(".append(\"svg:svg\")");
-				Output.Append(".attr(\"class\",\"twodbarchart\")");
-				
-                Output.Append(".attr(\"width\", w + 200)");
-                Output.Append(".attr(\"height\", h + 20)");
-                Output.Append(".append(\"svg:g\")");
-                Output.Append(".attr(\"transform\", \"translate(20,0)\");");
+                            Output.Append("var vis = d3.select(\"#output\")");
+                            Output.Append(".append(\"svg:svg\")");
+                            Output.Append(".attr(\"class\",\"twodbarchart\")");
 
-                Output.Append("var bars = vis.selectAll(\"g.bar\")");
-                Output.Append(".data(data)");
-                Output.Append(".enter().append(\"svg:g\")");
-                Output.Append(".attr(\"class\", \"bar\")");
-                Output.Append(".attr(\"transform\", function(d, i) { return \"translate(0,\" + y(i) + \")\"; });");
+                            Output.Append(".attr(\"width\", w + 200)");
+                            Output.Append(".attr(\"height\", h + 20)");
+                            Output.Append(".append(\"svg:g\")");
+                            Output.Append(".attr(\"transform\", \"translate(20,0)\");");
 
-                Output.Append("bars.append(\"svg:rect\")");
-                Output.Append(".attr(\"width\", x)");
-                Output.Append(".attr(\"height\", y.rangeBand());");
+                            Output.Append("var bars = vis.selectAll(\"g.bar\")");
+                            Output.Append(".data(data)");
+                            Output.Append(".enter().append(\"svg:g\")");
+                            Output.Append(".attr(\"class\", \"bar\")");
+                            Output.Append(".attr(\"transform\", function(d, i) { return \"translate(0,\" + y(i) + \")\"; });");
 
-                Output.Append("bars.append(\"svg:text\")");
-                Output.Append(".attr(\"x\", x)");
-                Output.Append(".attr(\"y\", y.rangeBand() / 2)");
-                Output.Append(".attr(\"dx\", -6)");
-                Output.Append(".attr(\"dy\", \".35em\")");
-                Output.Append(".attr(\"fill\", \"white\")");
-                Output.Append(".attr(\"text-anchor\", \"end\")");
-                Output.Append(".text(x.tickFormat(100));");
+                            Output.Append("bars.append(\"svg:rect\")");
+                            Output.Append(".attr(\"width\", x)");
+                            Output.Append(".attr(\"height\", y.rangeBand());");
 
-                Output.Append("bars.append(\"svg:text\")");
-                Output.Append(".attr(\"x\", x)");
-                Output.Append(".attr(\"y\", y.rangeBand() / 2)");
-                Output.Append(".attr(\"dx\", 2)");
-                Output.Append(".attr(\"dy\", \".35em\")");
-                Output.Append(".attr(\"text-anchor\", \"start\")");
-                Output.Append(".text(function(d, i) { return names[i]; });");
+                            Output.Append("bars.append(\"svg:text\")");
+                            Output.Append(".attr(\"x\", x)");
+                            Output.Append(".attr(\"y\", y.rangeBand() / 2)");
+                            Output.Append(".attr(\"dx\", -6)");
+                            Output.Append(".attr(\"dy\", \".35em\")");
+                            Output.Append(".attr(\"fill\", \"white\")");
+                            Output.Append(".attr(\"text-anchor\", \"end\")");
+                            Output.Append(".text(x.tickFormat(100));");
 
-                Output.Append("var rules = vis.selectAll(\"g.rule\")");
-                Output.Append(".data(x.ticks(10))");
-                Output.Append(".enter().append(\"svg:g\")");
-                Output.Append(".attr(\"class\", \"rule\")");
-                Output.Append(".attr(\"transform\", function(d) { return \"translate(\" + x(d) + \",0)\"; });");
-                Output.Append("rules.append(\"svg:line\")");
-                Output.Append(".attr(\"y1\", h)");
-                Output.Append(".attr(\"y2\", h + 6)");
-                Output.Append(".attr(\"stroke\", \"black\");");
+                            Output.Append("bars.append(\"svg:text\")");
+                            Output.Append(".attr(\"x\", x)");
+                            Output.Append(".attr(\"y\", y.rangeBand() / 2)");
+                            Output.Append(".attr(\"dx\", 2)");
+                            Output.Append(".attr(\"dy\", \".35em\")");
+                            Output.Append(".attr(\"text-anchor\", \"start\")");
+                            Output.Append(".text(function(d, i) { return names[i]; });");
 
-                Output.Append("rules.append(\"svg:line\")");
-                Output.Append(".attr(\"y1\", 0)");
-                Output.Append(".attr(\"y2\", h)");
-                Output.Append(".attr(\"stroke\", \"white\")");
-                Output.Append(".attr(\"stroke-opacity\", .3);");
+                            Output.Append("var rules = vis.selectAll(\"g.rule\")");
+                            Output.Append(".data(x.ticks(10))");
+                            Output.Append(".enter().append(\"svg:g\")");
+                            Output.Append(".attr(\"class\", \"rule\")");
+                            Output.Append(".attr(\"transform\", function(d) { return \"translate(\" + x(d) + \",0)\"; });");
+                            Output.Append("rules.append(\"svg:line\")");
+                            Output.Append(".attr(\"y1\", h)");
+                            Output.Append(".attr(\"y2\", h + 6)");
+                            Output.Append(".attr(\"stroke\", \"black\");");
 
-                Output.Append("rules.append(\"svg:text\")");
-                Output.Append(".attr(\"y\", h + 9)");
-                Output.Append(".attr(\"dy\", \".71em\")");
-                Output.Append(".attr(\"text-anchor\", \"middle\")");
-                Output.Append(".text(x.tickFormat(10));");
+                            Output.Append("rules.append(\"svg:line\")");
+                            Output.Append(".attr(\"y1\", 0)");
+                            Output.Append(".attr(\"y2\", h)");
+                            Output.Append(".attr(\"stroke\", \"white\")");
+                            Output.Append(".attr(\"stroke-opacity\", .3);");
 
-                Output.Append("vis.append(\"svg:line\")");
-                Output.Append(".attr(\"y1\", 0)");
-                Output.Append(".attr(\"y2\", h)");
-                Output.Append(".attr(\"stroke\", \"black\");");
+                            Output.Append("rules.append(\"svg:text\")");
+                            Output.Append(".attr(\"y\", h + 9)");
+                            Output.Append(".attr(\"dy\", \".71em\")");
+                            Output.Append(".attr(\"text-anchor\", \"middle\")");
+                            Output.Append(".text(x.tickFormat(10));");
+
+                            Output.Append("vis.append(\"svg:line\")");
+                            Output.Append(".attr(\"y1\", 0)");
+                            Output.Append(".attr(\"y2\", h)");
+                            Output.Append(".attr(\"stroke\", \"black\");");
+                            break;
+                        }
+                    case _eOrientation.VERTICAL:
+                        {
+                            Output.Append("var h = 450;");
+                            Output.Append("var th = 180;");
+                            Output.Append("var bh = h-th;");
+                            Output.Append("w = data.length * 23,");
+                            Output.Append("y = d3.scale.linear().domain([0, d3.max(data)]).range([0, bh]),");
+                            Output.Append("x = d3.scale.ordinal().domain(d3.range(data.length)).rangeBands([0, w], .2);");
+
+                            Output.Append("var vis = d3.select(\"#output\")");
+                            Output.Append(".append(\"svg:svg\")");
+                            Output.Append(".attr(\"class\",\"twodbarchart\")");
+
+                            Output.Append(".attr(\"height\", h + 20)");
+                            Output.Append(".attr(\"width\", w + 200)");
+                            Output.Append(".append(\"svg:g\")");
+                            Output.Append(".attr(\"transform\", \"translate(20,0)\");");
+
+                            Output.Append("var bars = vis.selectAll(\"g.bar\")");
+                            Output.Append(".data(data)");
+                            Output.Append(".enter().append(\"svg:g\")");
+                            Output.Append(".attr(\"class\", \"bar\")");
+                            Output.Append(".attr(\"transform\", function(d, i) { var dy = h - y(d); var dx = x(i) + 10; return \"translate(\" + dx + \", \" + dy + \")\"; });");
+                            
+                            Output.Append("bars.append(\"svg:rect\")");
+                            Output.Append(".attr(\"width\", x.rangeBand())");
+                            Output.Append(".attr(\"height\", y);");
+
+                            Output.Append("bars.append(\"svg:text\")");
+                            Output.Append(".attr(\"x\", x.rangeBand() / 2)");
+                            Output.Append(".attr(\"y\", -5)");
+                            Output.Append(".attr(\"fill\", \"white\")");
+                            Output.Append(".attr(\"text-anchor\", \"start\")");
+                            Output.Append(".attr(\"transform\", \"rotate(90)\")");
+                            Output.Append(".text(y.tickFormat(100));");
+
+                            Output.Append("bars.append(\"svg:text\")");
+                            Output.Append(".attr(\"x\", 10 + x.rangeBand() / 2)");
+                            Output.Append(".attr(\"y\", 0)");
+                            Output.Append(".attr(\"dx\", 2)");
+                            Output.Append(".attr(\"dy\", -5)");
+                            Output.Append(".attr(\"text-anchor\", \"end\")");
+                            Output.Append(".attr(\"transform\", \"rotate(90) translate(-23)\")");
+                            Output.Append(".text(function(d, i) { return names[i]; });");
+
+                            Output.Append("var rules = vis.selectAll(\"g.rule\")");
+                            Output.Append(".data(y.ticks(10))");
+                            Output.Append(".enter().append(\"svg:g\")");
+                            Output.Append(".attr(\"class\", \"rule\")");
+                            Output.Append(".attr(\"transform\", function(d) { var dy = bh - y(d); return \"translate(0,\" + dy + \")\"; });");
+
+                            Output.Append("rules.append(\"svg:line\")");
+                            Output.Append(".attr(\"x1\", w + 10)");
+                            Output.Append(".attr(\"x2\", w + 16)");
+                            Output.Append(".attr(\"y1\", th)");
+                            Output.Append(".attr(\"y2\", th)");
+                            Output.Append(".attr(\"stroke\", \"black\");");
+
+                            Output.Append("rules.append(\"svg:line\")");
+                            Output.Append(".attr(\"x1\", 0)");
+                            Output.Append(".attr(\"x2\", w+20)");
+                            Output.Append(".attr(\"y1\", th)");
+                            Output.Append(".attr(\"y2\", th)");
+                            Output.Append(".attr(\"stroke\", \"white\")");
+                            Output.Append(".attr(\"stroke-opacity\", .3);");
+
+                            Output.Append("rules.append(\"svg:text\")");
+                            Output.Append(".attr(\"y\", th - 3)");
+                            Output.Append(".attr(\"x\", w + 18)");
+                            Output.Append(".attr(\"text-anchor\", \"right\")");
+                            Output.Append(".text(y.tickFormat(10));");
+
+                            Output.Append("vis.append(\"svg:line\")");
+                            Output.Append(".attr(\"y1\", h)");
+                            Output.Append(".attr(\"y2\", h)");
+                            Output.Append(".attr(\"x1\", 15)");
+                            Output.Append(".attr(\"x2\", w + 6)");
+                            Output.Append(".attr(\"stroke\", \"black\");");
+                            break;
+                        }
+                    default: throw new NotImplementedException();
+                }
             }
 
             return Output.ToString();
