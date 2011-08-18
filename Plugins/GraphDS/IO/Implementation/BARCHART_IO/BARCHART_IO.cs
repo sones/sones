@@ -324,7 +324,7 @@ namespace sones.Plugins.GraphDS.IO
                             Output.Append(".attr(\"begin\", function(d, i) { return \"bar\"+i+\".mouseover\"; } )");
                             Output.Append(".attr(\"end\", function(d, i) { return \"bar\"+i+\".mouseout\"; } );");
 
-                            Output.Append("var rules = vis.val(\"g.rule\")");
+                            Output.Append("var rules = vis.append(\"g.rule\")");
                             Output.Append(".data(y.ticks(10))");
                             Output.Append(".enter().append(\"svg:g\")");
                             Output.Append(".attr(\"class\", \"rule\")");
