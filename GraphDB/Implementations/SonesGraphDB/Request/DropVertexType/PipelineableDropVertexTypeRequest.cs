@@ -64,20 +64,38 @@ namespace sones.GraphDB.Request.DropType
         
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CheckManager.GetType(_request.TypeName, TransactionToken, SecurityToken);
+            myMetaManager
+                .VertexTypeManager
+                .CheckManager
+                .GetType(_request.TypeName, 
+                            TransactionToken, 
+                            SecurityToken);
 
-            myMetaManager.VertexTypeManager.CheckManager.RemoveTypes(new List<IVertexType> { myMetaManager.VertexTypeManager.ExecuteManager.GetType(_request.TypeName, TransactionToken, SecurityToken) }, 
-                                                                            TransactionToken, 
-                                                                            SecurityToken);
+            myMetaManager
+                .VertexTypeManager
+                .CheckManager
+                .RemoveTypes(new List<IVertexType> { myMetaManager
+                                                        .VertexTypeManager
+                                                        .ExecuteManager
+                                                        .GetType(_request.TypeName, 
+                                                                    TransactionToken, 
+                                                                    SecurityToken) }, 
+                                TransactionToken, 
+                                SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            IVertexType graphDBType = myMetaManager.VertexTypeManager.ExecuteManager.GetType(_request.TypeName, TransactionToken, SecurityToken);
+            IVertexType graphDBType = myMetaManager
+                                        .VertexTypeManager
+                                        .ExecuteManager
+                                        .GetType(_request.TypeName, 
+                                                    TransactionToken, 
+                                                    SecurityToken);
 
             if (graphDBType == null)
             {
-                throw new VertexTypeDoesNotExistException(_request.TypeName);
+                throw new TypeDoesNotExistException<IVertexType>(_request.TypeName);
             }
 
             _deletedTypeIDs = myMetaManager.VertexTypeManager.ExecuteManager.RemoveTypes(new List<IVertexType> {graphDBType}, TransactionToken, SecurityToken);

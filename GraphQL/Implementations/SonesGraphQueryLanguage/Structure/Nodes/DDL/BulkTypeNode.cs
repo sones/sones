@@ -32,7 +32,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
     /// <summary>
     /// This node is requested in case of an BulkType node.
     /// </summary>
-    public sealed class BulkTypeNode : AStructureNode, IAstNodeInit
+    public sealed class BulkVertexTypeNode : AStructureNode, IAstNodeInit
     {
         #region Data
 
@@ -58,7 +58,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 
         #region constructor
 
-        public BulkTypeNode()
+        public BulkVertexTypeNode()
         { }
 
         #endregion

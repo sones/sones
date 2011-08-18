@@ -68,10 +68,23 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
+            myMetaManager
+                .EdgeTypeManager
+                .CheckManager
+                .AddTypes(new List<ATypePredefinition> { _request.EdgeTypePredefinition }, 
+                            TransactionToken, 
+                            SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
+            _createdEdgeType = 
+                myMetaManager
+                    .EdgeTypeManager
+                    .ExecuteManager
+                    .AddTypes(new List<ATypePredefinition> { _request.EdgeTypePredefinition },
+                                TransactionToken,
+                                SecurityToken).FirstOrDefault();
         }
 
         public override IRequest GetRequest()

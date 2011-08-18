@@ -60,15 +60,15 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         public void Init(ParsingContext context, ParseTreeNode myParseTreeNode)
         {
-            //createTypesStmt.Rule =      S_CREATE + S_VERTEX + S_TYPES + bulkTypeList
-            //                        |   S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkType
-            //                        |   S_CREATE + S_VERTEX + S_TYPE + bulkType;
+            //createTypesStmt.Rule =      S_CREATE + S_VERTEX + S_TYPES + bulkVertexTypeList
+            //                        |   S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkVertexType
+            //                        |   S_CREATE + S_VERTEX + S_TYPE + bulkVertexType;
 
             if (myParseTreeNode.ChildNodes[1].Token.KeyTerm == ((SonesGQLGrammar)context.Language.Grammar).S_ABSTRACT)
             {
                 #region Abstract & Single VertexType
 
-                BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[4].AstNode;
+                BulkVertexTypeNode aTempNode = (BulkVertexTypeNode)myParseTreeNode.ChildNodes[4].AstNode;
 
                 Boolean isAbstract = true;
 
@@ -91,7 +91,7 @@ namespace sones.GraphQL.StatementNodes.DDL
                     {
                         if (_ParseTreeNode.AstNode != null)
                         {
-                            BulkTypeListMemberNode aTempNode = (BulkTypeListMemberNode)_ParseTreeNode.AstNode;
+                            BulkVertexTypeListMemberNode aTempNode = (BulkVertexTypeListMemberNode)_ParseTreeNode.AstNode;
                             _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, aTempNode.IsAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
                         }
                     }
@@ -102,7 +102,7 @@ namespace sones.GraphQL.StatementNodes.DDL
                 {
                     #region single vertex type
 
-                    BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[3].AstNode;
+                    BulkVertexTypeNode aTempNode = (BulkVertexTypeNode)myParseTreeNode.ChildNodes[3].AstNode;
 
                     _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, false, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
 

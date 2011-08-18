@@ -1326,14 +1326,14 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                     if (myDBObject.HasOutgoingEdge(typeAttribute.ID))
                     {
-                        var dbos = myDBObject.GetOutgoingEdge(typeAttribute.ID);
+                        var edge = myDBObject.GetOutgoingEdge(typeAttribute.ID);
 
-                        if (dbos != null)
+                        if (edge != null)
                         {
                             if (myDepth > 0)
                             {
                                 attributeValue = ResolveAttributeValue((IOutgoingEdgeDefinition)typeAttribute, 
-                                                                        dbos, 
+                                                                        edge, 
                                                                         myDepth, 
                                                                         myLevelKey, 
                                                                         myDBObject, 
@@ -1344,11 +1344,10 @@ namespace sones.GraphQL.GQL.Manager.Select
                             }
                             else
                             {
-                                attributeValue = GetNotResolvedReferenceEdgeAttributeValue(dbos.GetTargetVertices());
+                                attributeValue = GetNotResolvedReferenceEdgeAttributeValue(edge.GetTargetVertices());
                             }
 
                             return true;
-
                         }
                     }
 
@@ -1630,17 +1629,24 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             if (myEdgeList.Level == 0)
             {
-                myEdgeList = new EdgeList(new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.ID));
+                myEdgeList = new EdgeList(new EdgeKey(attrDefinition.RelatedType.ID, 
+                                                        attrDefinition.ID));
             }
             else
             {
-                myEdgeList += new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.ID);
+                myEdgeList += new EdgeKey(attrDefinition.RelatedType.ID, 
+                                            attrDefinition.ID);
             }
 
-            // at some deeper level we could get into graph independend results. From this time, we can use the GUID index rather than asking the graph all the time
+            // at some deeper level we could get into graph independend results. 
+            //From this time, we can use the GUID index rather than asking the graph all the time
             if (myUsingGraph)
             {
-                myUsingGraph = _ExpressionGraph.IsGraphRelevant(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject);
+                myUsingGraph = _ExpressionGraph.IsGraphRelevant(new LevelKey(myEdgeList.Edges, 
+                                                                                _graphdb, 
+                                                                                mySecurityToken, 
+                                                                                myTransactionToken), 
+                                                                mySourceDBObject);
             }
 
             #endregion
@@ -1654,12 +1660,24 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 if (myUsingGraph)
                 {
-                    var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject, true).ToList();
+                    var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, 
+                                                                    _graphdb, 
+                                                                    mySecurityToken, 
+                                                                    myTransactionToken), 
+                                                        mySourceDBObject, 
+                                                        true).ToList();
 
                     //Todo: find a better way to get the edge properties
-                    resultList = GenerateSingleEdgeViews(mySecurityToken, myTransactionToken,
-                        ((IHyperEdge)myEdge).GetAllEdges((aSingleEdge) => dbos.Contains(aSingleEdge.GetTargetVertex())),
-                        attrDefinition.TargetVertexType, myDepth, myEdgeList, reference, myUsingGraph, attrDefinition.InnerEdgeType);
+                    resultList = GenerateSingleEdgeViews(mySecurityToken, 
+                                                            myTransactionToken,
+                                                            ((IHyperEdge)myEdge).GetAllEdges((aSingleEdge) => 
+                                                                                                dbos.Contains(aSingleEdge.GetTargetVertex())),
+                                                            attrDefinition.TargetVertexType, 
+                                                            myDepth, 
+                                                            myEdgeList, 
+                                                            reference, 
+                                                            myUsingGraph, 
+                                                            attrDefinition.InnerEdgeType);
 
                 }
                 else
@@ -1700,7 +1718,15 @@ namespace sones.GraphQL.GQL.Manager.Select
         {
             foreach (var aSingleEdge in mySingleEdges)
             {
-                yield return GenerateASingleEdgeView(mySecurityToken, myTransactionToken, aSingleEdge, myVertexType, myDepth, myEdgeList, reference, myUsingGraph, myInnerEdgeType);
+                yield return GenerateASingleEdgeView(mySecurityToken, 
+                                                        myTransactionToken, 
+                                                        aSingleEdge, 
+                                                        myVertexType, 
+                                                        myDepth, 
+                                                        myEdgeList, 
+                                                        reference, 
+                                                        myUsingGraph, 
+                                                        myInnerEdgeType);
             }
 
             yield break;
@@ -1716,7 +1742,15 @@ namespace sones.GraphQL.GQL.Manager.Select
                                                         bool myUsingGraph, 
                                                         IEdgeType myInnerEdgeType)
         {
-            return new SingleEdgeView(GetEdgeProperties(aSingleEdge, myInnerEdgeType), LoadAndResolveVertex(mySecurityToken, myTransactionToken, aSingleEdge.GetTargetVertex(), myVertexType, myDepth, myEdgeList, reference, myUsingGraph));
+            return new SingleEdgeView(GetEdgeProperties(aSingleEdge, myInnerEdgeType), 
+                                        LoadAndResolveVertex(mySecurityToken, 
+                                                                myTransactionToken, 
+                                                                aSingleEdge.GetTargetVertex(), 
+                                                                myVertexType, 
+                                                                myDepth, 
+                                                                myEdgeList, 
+                                                                reference, 
+                                                                myUsingGraph));
         }
 
         private IDictionary<string, object> GetEdgeProperties(ISingleEdge aSingleEdge, IEdgeType myInnerEdgeType)
@@ -1732,6 +1766,15 @@ namespace sones.GraphQL.GQL.Manager.Select
                     if (aSingleEdge.HasProperty(aProperty.ID))
                     {
                         result.Add(aProperty.Name, aProperty.GetValue(aSingleEdge));
+                    }
+                    else
+                    {
+                        var tempResult = aProperty.GetValue(aSingleEdge);
+
+                        if (tempResult != null)
+                        {
+                            result.Add(aProperty.Name, tempResult);
+                        }
                     }
                 }
             }

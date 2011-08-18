@@ -36,19 +36,19 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The definition of the edge that is going to be created.
         /// </summary>
-        public EdgeTypePredefinition EdgeTypeDefinition;
+        public EdgeTypePredefinition EdgeTypePredefinition;
 
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// Creates a new request that creates a new vertex type inside the Graphdb
+        /// Creates a new request that creates a new edge type inside the Graphdb
         /// </summary>
-        /// <param name="myVertexTypeDefinition">Describes the vertex that is going to be created</param>
-        public RequestCreateEdgeType(EdgeTypePredefinition myEdgeTypeDefinition)
+        /// <param name="myVertexTypeDefinition">Describes the edge that is going to be created</param>
+        public RequestCreateEdgeType(EdgeTypePredefinition myEdgeTypePredefinition)
         {
-            EdgeTypeDefinition = myEdgeTypeDefinition;
+            EdgeTypePredefinition = myEdgeTypePredefinition;
         }
 
         #endregion

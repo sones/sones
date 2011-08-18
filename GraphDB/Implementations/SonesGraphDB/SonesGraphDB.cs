@@ -100,6 +100,7 @@ namespace sones.GraphDB
         private readonly SecurityToken _security = null;
 
         private readonly TransactionToken _transaction = null;
+        
         private IDManager _idManager;
 
         #endregion
@@ -204,6 +205,44 @@ namespace sones.GraphDB
                                                                                         myTransactionToken));
 
             return ((PipelineableCreateVertexTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
+        #region create EdgeType(s)
+
+        public TResult CreateEdgeType<TResult>(
+            SecurityToken mySecurity,
+            TransactionToken myTransactionToken,
+            RequestCreateEdgeType myRequestCreateEdgeType,
+            Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            var executedRequest = 
+                _requestManager
+                    .SynchronExecution(
+                        new PipelineableCreateEdgeTypeRequest(myRequestCreateEdgeType,
+                                                                mySecurity,
+                                                                myTransactionToken));
+
+            return ((PipelineableCreateEdgeTypeRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
+        }
+
+        public TResult CreateEdgeTypes<TResult>(
+            SecurityToken mySecurity,
+            TransactionToken myTransactionToken,
+            RequestCreateEdgeTypes myRequestCreateEdgeTypes,
+            Converter.CreateEdgeTypesResultConverter<TResult> myOutputconverter)
+        {
+            var executedRequest =
+                _requestManager
+                    .SynchronExecution(
+                        new PipelineableCreateEdgeTypesRequest(myRequestCreateEdgeTypes,
+                                                                mySecurity,
+                                                                myTransactionToken));
+
+            return ((PipelineableCreateEdgeTypesRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -392,22 +431,36 @@ namespace sones.GraphDB
 
         #region GetEdgeType
 
-        public TResult GetEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetEdgeType myRequestGetEdgeType, Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
+        public TResult GetEdgeType<TResult>(SecurityToken mySecurityToken, 
+                                            TransactionToken myTransactionToken, 
+                                            RequestGetEdgeType myRequestGetEdgeType, 
+                                            Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
         {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableGetEdgeTypeRequest(myRequestGetEdgeType,
-                                                                                        mySecurityToken,
-                                                                                        myTransactionToken));
+            var executedRequest = 
+                _requestManager
+                    .SynchronExecution(
+                        new PipelineableGetEdgeTypeRequest(myRequestGetEdgeType,
+                                                            mySecurityToken,
+                                                            myTransactionToken));
 
-            return ((PipelineableGetEdgeTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableGetEdgeTypeRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
         }
 
-        public TResult GetAllEdgeTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllEdgeTypes myRequestGetEdgeType, Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter)
+        public TResult GetAllEdgeTypes<TResult>(SecurityToken mySecurityToken, 
+                                                TransactionToken myTransactionToken, 
+                                                RequestGetAllEdgeTypes myRequestGetEdgeType, 
+                                                Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter)
         {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableGetAllEdgeTypesRequest(myRequestGetEdgeType,
-                                                                                        mySecurityToken,
-                                                                                        myTransactionToken));
+            var executedRequest = 
+                _requestManager
+                    .SynchronExecution(
+                        new PipelineableGetAllEdgeTypesRequest(myRequestGetEdgeType,
+                                                                mySecurityToken,
+                                                                myTransactionToken));
 
-            return ((PipelineableGetAllEdgeTypesRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableGetAllEdgeTypesRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -491,28 +544,22 @@ namespace sones.GraphDB
 
         #endregion
 
-        #region CreateEdgeType
-
-        public TResult CreateEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateVertexType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
-        {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableCreateEdgeTypeRequest(myRequestCreateVertexType,
-                                                                                        mySecurityToken,
-                                                                                        myTransactionToken));
-
-            return ((PipelineableCreateEdgeTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
-        }
-
-        #endregion
-
         #region AlterEdgeType
 
-        public TResult AlterEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestAlterEdgeType myRequestAlterEdgeType, Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter)
+        public TResult AlterEdgeType<TResult>(SecurityToken mySecurityToken, 
+                                                TransactionToken myTransactionToken, 
+                                                RequestAlterEdgeType myRequestAlterEdgeType, 
+                                                Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter)
         {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableAlterEdgeTypeRequest(myRequestAlterEdgeType,
-                                                                                        mySecurityToken,
-                                                                                        myTransactionToken));
+            var executedRequest = 
+                _requestManager
+                    .SynchronExecution(
+                        new PipelineableAlterEdgeTypeRequest(myRequestAlterEdgeType,
+                                                                mySecurityToken,
+                                                                myTransactionToken));
 
-            return ((PipelineableAlterEdgeTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableAlterEdgeTypeRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
         }
 
         #endregion

@@ -43,7 +43,27 @@ namespace sones.GraphDB.Extensions
 
         private static bool HasValue(this IPropertyDefinition myProperty, IEdge myEdge)
         {
-            return myEdge.HasProperty(myProperty.ID);
+            if (myProperty.RelatedType == null)
+                throw new ArgumentException("A property with nor related type is not allowed.");
+
+            if (!myProperty.RelatedType.Name.Equals(GlobalConstants.Edge))
+                return myEdge.HasProperty(myProperty.ID);
+
+            switch (myProperty.Name)
+            {
+                case GlobalConstants.EdgeDotComment:
+                    return myEdge.Comment != null;
+
+                case GlobalConstants.EdgeDotCreationDate:
+                case GlobalConstants.EdgeDotModificationDate:
+                case GlobalConstants.EdgeDotEdgeTypeID:
+                case GlobalConstants.EdgeDotEdgeTypeName:
+                    return true;
+
+                default:
+                    throw new Exception(
+                        "A new property was added to the edge type Edge, but this switch stement was not changed.");
+            }
         }
 
         private static bool HasValue(this IPropertyDefinition myProperty, IVertex myVertex)
@@ -78,7 +98,34 @@ namespace sones.GraphDB.Extensions
 
         private static IComparable GetValue(this IPropertyDefinition myProperty, IEdge myEdge)
         {
-            return myEdge.GetProperty<IComparable>(myProperty.ID);
+            if (myProperty.RelatedType == null)
+                throw new ArgumentException("A property with nor related type is not allowed.");
+
+            if (!myProperty.RelatedType.Name.Equals(GlobalConstants.Edge))
+                return myEdge.GetProperty<IComparable>(myProperty.ID);
+
+            switch (myProperty.Name)
+            {
+                case GlobalConstants.EdgeDotComment:
+                    return myEdge.Comment;
+
+                case GlobalConstants.EdgeDotCreationDate:
+                    return myEdge.CreationDate;
+
+                case GlobalConstants.EdgeDotModificationDate:
+                    return myEdge.ModificationDate;
+
+                case GlobalConstants.EdgeDotEdgeTypeID:
+                    return myEdge.EdgeTypeID;
+
+                case GlobalConstants.EdgeDotEdgeTypeName:
+                    return myProperty.RelatedType.GetDescendantTypesAndSelf().Where(_ => _.ID == myEdge.EdgeTypeID).Select(__ => __.Name).FirstOrDefault();
+
+                default:
+                    throw new System.Exception(
+                        "A new property was added to the edeg type Edge, but this switch stement was not changed.");
+
+            }
         }
 
         private static IComparable GetValue(this IPropertyDefinition myProperty, IVertex myVertex)

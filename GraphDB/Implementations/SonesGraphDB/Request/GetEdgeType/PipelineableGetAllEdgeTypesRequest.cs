@@ -53,8 +53,7 @@ namespace sones.GraphDB.Request.GetEdgeType
         /// <param name="myGetEdgeTypeRequest">The get edge type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The transaction token</param>
-        public PipelineableGetAllEdgeTypesRequest(
-                                                    RequestGetAllEdgeTypes myGetAllEdgeTypesRequest, 
+        public PipelineableGetAllEdgeTypesRequest(RequestGetAllEdgeTypes myGetAllEdgeTypesRequest, 
                                                     SecurityToken mySecurity,
                                                     TransactionToken myTransactionToken)
             : base(mySecurity, myTransactionToken)
@@ -68,12 +67,20 @@ namespace sones.GraphDB.Request.GetEdgeType
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.EdgeTypeManager.CheckManager.GetAllTypes(TransactionToken, SecurityToken);                
+            myMetaManager
+                .EdgeTypeManager
+                .CheckManager
+                .GetAllTypes(TransactionToken, 
+                                SecurityToken);                
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _fetchedEdgeTypes = myMetaManager.EdgeTypeManager.ExecuteManager.GetAllTypes(TransactionToken, SecurityToken);                
+            _fetchedEdgeTypes = myMetaManager
+                                    .EdgeTypeManager
+                                    .ExecuteManager
+                                    .GetAllTypes(TransactionToken, 
+                                                    SecurityToken);                
         }
 
         public override IRequest GetRequest()

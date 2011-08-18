@@ -442,12 +442,21 @@ namespace sones.GraphDSServer
                 myOutputconverter);
         }
 
-        public TResult CreateEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateVertexType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
+        public TResult CreateEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateEdgeType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.CreateEdgeType<TResult>(
                 mySecurityToken,
                 myTransactionToken,
-                myRequestCreateVertexType,
+                myRequestCreateEdgeType,
+                myOutputconverter);
+        }
+
+        public TResult CreateEdgeTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeTypes myRequestCreateEdgeTypes, Converter.CreateEdgeTypesResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.CreateEdgeTypes<TResult>(
+                mySecurityToken,
+                myTransactionToken,
+                myRequestCreateEdgeTypes,
                 myOutputconverter);
         }
 

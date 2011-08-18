@@ -106,6 +106,7 @@
     </Compile>
     <Compile Include="Request\AlterEdgeType\PipelineableAlterEdgeTypeRequest.cs" />
     <Compile Include="Request\AlterVertexType\PipelineableAlterVertexTypeRequest.cs" />
+    <Compile Include="Request\CreateEdgeTypes\PipelineableCreateEdgeTypesRequest.cs" />
     <Compile Include="Request\CreateEdgeType\PipelineableCreateEdgeTypeRequest.cs" />
     <Compile Include="Request\CreateIndex\PipelineableCreateIndexRequest.cs" />
     <Compile Include="Request\CreateVertexType\PipelineableCreateVertexTypeRequest.cs">
@@ -114,6 +115,7 @@
     <Compile Include="Request\DecribeIndex\PipelineableDescribeIndexRequest.cs" />
     <Compile Include="Request\DecribeIndex\PipelineableDescribeIndicesRequest.cs" />
     <Compile Include="Request\Delete\PipelineableDeleteRequest.cs" />
+    <Compile Include="Request\DropEdgeType\PipelineableDropEdgeTypeRequest.cs" />
     <Compile Include="Request\DropIndex\PipelineableDropIndexRequest.cs" />
     <Compile Include="Request\DropVertexType\PipelineableDropVertexTypeRequest.cs" />
     <Compile Include="Request\GetEdgeType\PipelineableGetAllEdgeTypesRequest.cs" />

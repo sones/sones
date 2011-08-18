@@ -47,7 +47,9 @@ namespace sones.GraphDB.Request.AlterType
         /// <param name="myRequest">The alter type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableAlterVertexTypeRequest(RequestAlterVertexType myRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public PipelineableAlterVertexTypeRequest(RequestAlterVertexType myRequest, 
+                                                    SecurityToken mySecurityToken, 
+                                                    TransactionToken myTransactionToken)
             :base(mySecurityToken, myTransactionToken)
         {
             _request = myRequest;
@@ -62,7 +64,12 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public override void Validate(IMetaManager myMetaManager)
         {
-            //myMetaManager.VertexTypeManager.CheckManager.AlterType(_request, SecurityToken, TransactionToken);
+            myMetaManager
+                .VertexTypeManager
+                .CheckManager
+                .AlterType(_request, 
+                            TransactionToken, 
+                            SecurityToken);
         }
 
         /// <summary>
@@ -70,7 +77,13 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public override void Execute(IMetaManager myMetaManager)
         {
-            //_alteredVertexType = myMetaManager.VertexTypeManager.ExecuteManager.AlterType(_request, SecurityToken, TransactionToken);
+            _alteredVertexType = 
+                myMetaManager
+                .VertexTypeManager
+                .ExecuteManager
+                .AlterType(_request,
+                            TransactionToken,
+                            SecurityToken);
         }
 
         /// <summary>

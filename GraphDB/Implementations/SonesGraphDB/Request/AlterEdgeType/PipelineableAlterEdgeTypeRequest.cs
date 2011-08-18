@@ -50,7 +50,9 @@ namespace sones.GraphDB.Request.AlterType
         /// <param name="myRequest">The alter edge type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableAlterEdgeTypeRequest(RequestAlterEdgeType myRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public PipelineableAlterEdgeTypeRequest(RequestAlterEdgeType myRequest, 
+                                                SecurityToken mySecurityToken, 
+                                                TransactionToken myTransactionToken)
             :base(mySecurityToken, myTransactionToken)
         {
             _request = myRequest;
@@ -65,7 +67,19 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public override void Validate(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            myMetaManager
+                .EdgeTypeManager
+                .CheckManager
+                .GetType(_request.TypeName,
+                            TransactionToken,
+                            SecurityToken);
+
+            myMetaManager
+                .EdgeTypeManager
+                .CheckManager
+                .AlterType(_request, 
+                            TransactionToken, 
+                            SecurityToken);
         }
 
         /// <summary>
@@ -73,7 +87,13 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public override void Execute(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            _alteredEdgeType = 
+                myMetaManager
+                    .EdgeTypeManager
+                    .ExecuteManager
+                    .AlterType(_request,
+                                TransactionToken,
+                                SecurityToken);
         }
 
         /// <summary>

@@ -88,8 +88,22 @@ namespace sones.GraphDB
         /// <returns>A generic result</returns>
         TResult CreateEdgeType<TResult>(  SecurityToken mySecurityToken,
                                           TransactionToken myTransactionToken,
-                                          RequestCreateEdgeType myRequestCreateVertexType,
+                                          RequestCreateEdgeType myRequestCreateEdgeType,
                                           Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Creates new edge types
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestCreateVertexType">The create edge types request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired types</param>
+        /// <returns>A generic result</returns>
+        TResult CreateEdgeTypes<TResult>(SecurityToken mySecurityToken,
+                                          TransactionToken myTransactionToken,
+                                          RequestCreateEdgeTypes myRequestCreateEdgeTypes,
+                                          Converter.CreateEdgeTypesResultConverter<TResult> myOutputconverter);
 
         /// <summary>
         /// Alteres a edge type

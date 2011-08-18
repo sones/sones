@@ -520,6 +520,7 @@ namespace sones.GraphQL
             var SelectStmtGraph = new NonTerminal("SelectStmtGraph", CreateSelectStatementNode);
             var parSelectStmt = new NonTerminal("parSelectStmt", CreatePartialSelectStmtNode);
             var createTypesStmt = new NonTerminal("createTypesStmt", CreateCreateTypesStatementNode);
+            var createEdgeTypesStmt = new NonTerminal("createEdgeTypeStmt", CreateCreateEdgeTypesStatementNode);
             var insertorupdateStmt = new NonTerminal("insertorupdateStmt", CreateInsertOrUpdateStatementNode);
             var insertorreplaceStmt = new NonTerminal("insertorreplaceStmt", CreateInsertOrReplaceStatementNode);
             var replaceStmt = new NonTerminal("replaceStmt", CreateReplaceStatementNode);
@@ -550,7 +551,8 @@ namespace sones.GraphQL
             var extendsOpt = new NonTerminal("extendsOpt");
             var abstractOpt = new NonTerminal("abstractOpt");
             var commentOpt = new NonTerminal("CommentOpt");
-            var bulkTypeList = new NonTerminal("bulkTypeList");
+            var bulkVertexTypeList = new NonTerminal("bulkVertexTypeList");
+            var bulkEdgeTypeList = new NonTerminal("bulkEdgeTypeList");
             var attributesOpt = new NonTerminal("attributesOpt");
             var insertValuesOpt = new NonTerminal("insertValuesOpt");
 
@@ -646,8 +648,10 @@ namespace sones.GraphQL
             var resolutionDepthOpt = new NonTerminal("resolutionDepthOpt");
             var limitOpt = new NonTerminal("limitOpt", typeof(LimitNode));
             var SimpleIdList = new NonTerminal("SimpleIdList");
-            var bulkTypeListMember = new NonTerminal("bulkTypeListMember", CreateBulkTypeListMemberNode);
-            var bulkType = new NonTerminal("bulkType", CreateBulkTypeNode);
+            var bulkVertexTypeListMember = new NonTerminal("bulkVertexTypeListMember", CreateBulkVertexTypeListMemberNode);
+            var bulkEdgeTypeListMember = new NonTerminal("bulkEdgeTypeListMember", CreateBulkEdgeTypeListMemberNode);
+            var bulkVertexType = new NonTerminal("bulVertexkType", CreateBulkVertexTypeNode);
+            var bulkEdgeType = new NonTerminal("bulkEdgeType", CreateBulkEdgeTypeNode);
             var truncateStmt = new NonTerminal("truncateStmt", CreateTruncateStmNode);
             var uniquenessOpt = new NonTerminal("UniquenessOpt", typeof(UniqueAttributesOptNode));
             var mandatoryOpt = new NonTerminal("MandatoryOpt", typeof(MandatoryOptNode));
@@ -771,6 +775,7 @@ namespace sones.GraphQL
                             | dropIndexStmt
                             | createIndexStmt
                             | createTypesStmt
+                            | createEdgeTypesStmt
                             | deleteStmt
                             | truncateStmt
                             | DescrInfoStmt
@@ -1103,18 +1108,18 @@ namespace sones.GraphQL
 
             #endregion
 
-            #region CREATE TYPE(S)
+            #region CREATE VERTEX TYPE(S)
 
-            createTypesStmt.Rule =      S_CREATE + S_VERTEX + S_TYPES + bulkTypeList
-                                    |   S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkType
-                                    |   S_CREATE + S_VERTEX + S_TYPE + bulkType;
+            createTypesStmt.Rule =      S_CREATE + S_VERTEX + S_TYPES + bulkVertexTypeList
+                                    |   S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkVertexType
+                                    |   S_CREATE + S_VERTEX + S_TYPE + bulkVertexType;
 
 
-            bulkTypeList.Rule = MakePlusRule(bulkTypeList, S_comma, bulkTypeListMember);
+            bulkVertexTypeList.Rule = MakePlusRule(bulkVertexTypeList, S_comma, bulkVertexTypeListMember);
 
-            bulkTypeListMember.Rule = abstractOpt + bulkType;
+            bulkVertexTypeListMember.Rule = abstractOpt + bulkVertexType;
 
-            bulkType.Rule = Id_simple + extendsOpt + attributesOpt + incomingEdgesOpt + uniquenessOpt + mandatoryOpt + indexOptOnCreateType + commentOpt;
+            bulkVertexType.Rule = Id_simple + extendsOpt + attributesOpt + incomingEdgesOpt + uniquenessOpt + mandatoryOpt + indexOptOnCreateType + commentOpt;
 
             commentOpt.Rule = Empty
                                     | S_COMMENT + "=" + string_literal;
@@ -1156,6 +1161,20 @@ namespace sones.GraphQL
 
 
 
+            #endregion
+
+            #region CREATE EDGE TYPE(s)
+
+            createEdgeTypesStmt.Rule =    S_CREATE + S_ABSTRACT + S_EDGE + S_TYPE + bulkEdgeType
+                                        | S_CREATE + S_EDGE + S_TYPE + bulkEdgeType
+                                        | S_CREATE + S_EDGE + S_TYPES + bulkEdgeTypeList;
+
+            bulkEdgeType.Rule = Id_simple + extendsOpt + attributesOpt + commentOpt;
+
+            bulkEdgeTypeList.Rule = MakePlusRule(bulkEdgeTypeList, S_comma, bulkEdgeTypeListMember);
+
+            bulkEdgeTypeListMember.Rule = abstractOpt + bulkVertexType;
+            
             #endregion
 
             #region ALTER VERTEX TYPE
@@ -1595,9 +1614,18 @@ namespace sones.GraphQL
             parseNode.AstNode = aGraphTypeNode;
         }
 
-        private void CreateBulkTypeListMemberNode(ParsingContext context, ParseTreeNode parseNode)
+        private void CreateBulkVertexTypeListMemberNode(ParsingContext context, ParseTreeNode parseNode)
         {
-            BulkTypeListMemberNode aBulkTypeListMemberNode = new BulkTypeListMemberNode();
+            BulkVertexTypeListMemberNode aBulkTypeListMemberNode = new BulkVertexTypeListMemberNode();
+
+            aBulkTypeListMemberNode.Init(context, parseNode);
+
+            parseNode.AstNode = aBulkTypeListMemberNode;
+        }
+
+        private void CreateBulkEdgeTypeListMemberNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            BulkEdgeTypeListMemberNode aBulkTypeListMemberNode = new BulkEdgeTypeListMemberNode();
 
             aBulkTypeListMemberNode.Init(context, parseNode);
 
@@ -1631,9 +1659,18 @@ namespace sones.GraphQL
             parseNode.AstNode = aKeyValuePairNode;
         }
 
-        private void CreateBulkTypeNode(ParsingContext context, ParseTreeNode parseNode)
+        private void CreateBulkVertexTypeNode(ParsingContext context, ParseTreeNode parseNode)
         {
-            BulkTypeNode aBulkTypeNode = new BulkTypeNode();
+            BulkVertexTypeNode aBulkTypeNode = new BulkVertexTypeNode();
+
+            aBulkTypeNode.Init(context, parseNode);
+
+            parseNode.AstNode = aBulkTypeNode;
+        }
+
+        private void CreateBulkEdgeTypeNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            BulkEdgeTypeNode aBulkTypeNode = new BulkEdgeTypeNode();
 
             aBulkTypeNode.Init(context, parseNode);
 
@@ -1671,6 +1708,16 @@ namespace sones.GraphQL
         {
 
             CreateVertexTypesNode aCreateTypesNode = new CreateVertexTypesNode();
+
+            aCreateTypesNode.Init(context, parseNode);
+
+            parseNode.AstNode = aCreateTypesNode;
+        }
+
+        private void CreateCreateEdgeTypesStatementNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+
+            CreateEdgeTypesNode aCreateTypesNode = new CreateEdgeTypesNode();
 
             aCreateTypesNode.Init(context, parseNode);
 

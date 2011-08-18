@@ -29,7 +29,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
     /// <summary>
     /// This node is requested in case of an BulkTypeListMember node.
     /// </summary>
-    public sealed class BulkTypeListMemberNode : AStructureNode, IAstNodeInit
+    public sealed class BulkVertexTypeListMemberNode : AStructureNode, IAstNodeInit
     {
         #region Data
 
@@ -57,9 +57,8 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 
         #region constructor
 
-        public BulkTypeListMemberNode()
-        {
-        }
+        public BulkVertexTypeListMemberNode()
+        { }
 
         #endregion
 
@@ -74,7 +73,7 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 
             #endregion
 
-            var bulkTypeNode = (BulkTypeNode)parseNode.ChildNodes[1].AstNode;
+            var bulkTypeNode = (BulkVertexTypeNode)parseNode.ChildNodes[1].AstNode;
 
             #region get Name
 
