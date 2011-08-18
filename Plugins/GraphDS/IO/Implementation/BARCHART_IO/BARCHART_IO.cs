@@ -66,6 +66,21 @@ namespace sones.Plugins.GraphDS.IO
 
         #endregion
 
+        #region Parameter Strings
+
+        private static class _OptionStrings
+        {
+            public static class Orientation
+            {
+                public static string name = "orientation";
+                public static string horizontal = "horizontal";
+                public static string vertical = "vertical";
+                public static string description = "Set Orientation of BarChart";
+            }
+        }
+
+        #endregion
+
         #region IPluginable
 
         public string PluginName
@@ -104,14 +119,14 @@ namespace sones.Plugins.GraphDS.IO
             StringBuilder Output = new StringBuilder();
             Dictionary<String, object> barchart;
             _eOrientation Orientation = _eOrientation.HORIZONTAL;
-
-            if (myParams.ContainsKey("orientation"))
+            
+            if (myParams.ContainsKey(_OptionStrings.Orientation.name))
             {
-                if (myParams["orientation"] == "vertical")
+                if (StringComparer.InvariantCultureIgnoreCase.Compare(myParams[_OptionStrings.Orientation.name], _OptionStrings.Orientation.vertical) == 0)
                 {
                     Orientation = _eOrientation.VERTICAL;
                 }
-                else if (myParams["orientation"] == "horizontal")
+                else if (StringComparer.InvariantCultureIgnoreCase.Compare(myParams[_OptionStrings.Orientation.name], _OptionStrings.Orientation.horizontal) == 0)
                 {
                     Orientation = _eOrientation.HORIZONTAL;
                 }
@@ -371,7 +386,7 @@ namespace sones.Plugins.GraphDS.IO
             StringBuilder list = new StringBuilder();
 
             list.AppendLine("Available Parameters to configure BarChart Output:");
-            list.AppendLine("ORIENTATION=[HORIZONTAL|VERTICAL] Set Orientation of BarChart");
+            list.AppendLine(_OptionStrings.Orientation.name+"=["+_OptionStrings.Orientation.horizontal+"|"+_OptionStrings.Orientation.vertical+"] "+_OptionStrings.Orientation.description);
 
             return list.ToString();
         }
