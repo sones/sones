@@ -65,17 +65,17 @@ namespace sones.GraphDB.Request
         public override void Validate(IMetaManager myMetaManager)
         {
             myMetaManager
-                .VertexTypeManager
+                .EdgeTypeManager
                 .CheckManager
                 .GetType(_request.TypeName, 
                             TransactionToken, 
                             SecurityToken);
 
             myMetaManager
-                .VertexTypeManager
+                .EdgeTypeManager
                 .CheckManager
-                .RemoveTypes(new List<IVertexType> { myMetaManager
-                                                        .VertexTypeManager
+                .RemoveTypes(new List<IEdgeType> { myMetaManager
+                                                        .EdgeTypeManager
                                                         .ExecuteManager
                                                         .GetType(_request.TypeName, 
                                                                     TransactionToken, 
@@ -86,20 +86,20 @@ namespace sones.GraphDB.Request
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            IVertexType graphDBType = myMetaManager
-                                        .VertexTypeManager
+            IEdgeType graphDBType = myMetaManager
+                                        .EdgeTypeManager
                                         .ExecuteManager
                                         .GetType(_request.TypeName, 
-                                        TransactionToken, 
-                                        SecurityToken);
+                                                    TransactionToken, 
+                                                    SecurityToken);
 
             if (graphDBType == null)
                 throw new TypeDoesNotExistException<IEdgeType>(_request.TypeName);
 
             _deletedTypeIDs = myMetaManager
-                                .VertexTypeManager
+                                .EdgeTypeManager
                                 .ExecuteManager
-                                .RemoveTypes(new List<IVertexType> {graphDBType}, 
+                                .RemoveTypes(new List<IEdgeType> { graphDBType }, 
                                                 TransactionToken, 
                                                 SecurityToken);
         }
@@ -117,7 +117,7 @@ namespace sones.GraphDB.Request
         /// <typeparam name="TResult">The type of the myResult</typeparam>
         /// <param name="myOutputconverter">The delegate that is executed uppon output-generation</param>
         /// <returns>A TResult</returns>
-        internal TResult GenerateRequestResult<TResult>(Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
+        internal TResult GenerateRequestResult<TResult>(Converter.DropEdgeTypeResultConverter<TResult> myOutputconverter)
         {
             return myOutputconverter(Statistics, _deletedTypeIDs);
         }

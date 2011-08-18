@@ -513,7 +513,7 @@ namespace sones.Plugins.SonesGQL
 		
 		private void DropVertexType()
 		{
-			_GraphDB.DropType(_SecurityToken,
+			_GraphDB.DropVertexType(_SecurityToken,
 				_TransactionToken,
 				new RequestDropVertexType(_VertexTypeName),
 				(stats, removedIDs) => removedIDs);

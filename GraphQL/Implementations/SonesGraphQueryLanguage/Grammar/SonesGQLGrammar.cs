@@ -511,8 +511,10 @@ namespace sones.GraphQL
 
             var singlestmt = new NonTerminal("singlestmt");
             var createIndexStmt = new NonTerminal("createIndexStmt", CreateCreateIndexStatementNode);
-            var alterStmt = new NonTerminal("alterStmt", CreateAlterStmNode);
-            var dropTypeStmt = new NonTerminal("dropTypeStmt", CreateDropTypeStmNode);
+            var alterVertexTypeStmt = new NonTerminal("alterVertexTypeStmt", CreateAlterVertexTypeStmNode);
+            var alterEdgeTypeStmt = new NonTerminal("alterEdgeTypeStmt", CreateAlterEdgeTypeStmNode);
+            var dropVertexTypeStmt = new NonTerminal("dropVertexTypeStmt", CreateDropVertexTypeStmNode);
+            var dropEdgeTypeStmt = new NonTerminal("dropEdgeTypeStmt", CreateDropEdgeTypeStmNode);
             var dropIndexStmt = new NonTerminal("dropIndexStmt", CreateDropIndexStmNode);
             var InsertStmt = new NonTerminal("InsertStmt", CreateInsertStatementNode);
             var updateStmt = new NonTerminal("updateStmt", CreateUpdateStatementNode);
@@ -542,8 +544,10 @@ namespace sones.GraphQL
             NT_IndexTypeOpt = new NonTerminal("indexTypeOpt", typeof(IndexTypeOptNode));
             var indexNameOpt = new NonTerminal("indextNameOpt", typeof(IndexNameOptNode));
             var editionOpt = new NonTerminal("editionOpt", typeof(EditionOptNode));
-            var alterCmd = new NonTerminal("alterCmd", typeof(AlterCommandNode));
-            var alterCmdList = new NonTerminal("alterCmdList");
+            var alterVertexTypeCmd = new NonTerminal("alterVertexTypeCmd", typeof(AlterVertexTypeCommandNode));
+            var alterVertexTypeCmdList = new NonTerminal("alterVertexTypeCmdList");
+            var alterEdgeTypeCmd = new NonTerminal("alterEdgeTypeCmd", typeof(AlterEdgeTypeCommandNode));
+            var alterEdgeTypeCmdList = new NonTerminal("alterEdgeTypeCmdList");
             var insertData = new NonTerminal("insertData");
             var intoOpt = new NonTerminal("intoOpt");
             var assignList = new NonTerminal("assignList");
@@ -553,7 +557,8 @@ namespace sones.GraphQL
             var commentOpt = new NonTerminal("CommentOpt");
             var bulkVertexTypeList = new NonTerminal("bulkVertexTypeList");
             var bulkEdgeTypeList = new NonTerminal("bulkEdgeTypeList");
-            var attributesOpt = new NonTerminal("attributesOpt");
+            var vertexTypeAttributesOpt = new NonTerminal("vertexTypeAttributesOpt");
+            var edgeTypeAttributesOpt = new NonTerminal("edgeTypeAttributesOpt");
             var insertValuesOpt = new NonTerminal("insertValuesOpt");
 
 
@@ -608,9 +613,12 @@ namespace sones.GraphQL
             var term = new NonTerminal("term");
             var notOpt = new NonTerminal("notOpt");
 
-            var VertexType = new NonTerminal(SonesGQLConstants.VertexType, CreateGraphDBTypeNode);
-            var AttributeList = new NonTerminal("AttributeList");
-            var AttrDefinition = new NonTerminal("AttrDefinition", CreateAttributeDefinitionNode);
+            var VertexType = new NonTerminal(SonesGQLConstants.VertexType, CreateVertexTypeNode);
+            var EdgeType = new NonTerminal(SonesGQLConstants.EdgeType, CreateEdgeTypeNode);
+            var VertexTypeAttributeList = new NonTerminal("VertexTypeAttributeList");
+            var VertexTypeAttrDefinition = new NonTerminal("VertexTypeAttrDefinition", CreateVertexTypeAttributeDefinitionNode);
+            var EdgeTypeAttributeList = new NonTerminal("EdgeTypeAttributeList");
+            var EdgeTypeAttrDefinition = new NonTerminal("EdgeTypeAttrDefinition", CreateEdgeTypeAttributeDefinitionNode);
             var ResultObject = new NonTerminal("ResultObject");
             var ResultList = new NonTerminal("ResultList");
             var PrefixOperation = new NonTerminal("PrefixOperation");
@@ -769,9 +777,11 @@ namespace sones.GraphQL
 
             singlestmt.Rule = SelectStmtGraph
                             | InsertStmt
-                            | alterStmt
+                            | alterVertexTypeStmt
+                            | alterEdgeTypeStmt
                             | updateStmt
-                            | dropTypeStmt
+                            | dropVertexTypeStmt
+                            | dropEdgeTypeStmt
                             | dropIndexStmt
                             | createIndexStmt
                             | createTypesStmt
@@ -908,13 +918,13 @@ namespace sones.GraphQL
 
             #region GraphType
 
-            ////                 SET<                   WEIGHTED  (Double, DEFAULT=2, SORTED=DESC)<   [idsimple]  >>
+            //                 SET<                   WEIGHTED  (Double, DEFAULT=2, SORTED=DESC)<   [idsimple]  >>
             //EdgeTypeDef.Rule = S_SET + S_ListTypePrefix + Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePrefix + Id_simple + S_ListTypePostfix + S_ListTypePostfix;
             //                 SET     <                  USER        (                WEIGHTED    )                 >
             EdgeTypeDef.Rule = S_SET + S_ListTypePrefix + Id_simple + S_BRACKET_LEFT + Id_simple + S_BRACKET_RIGHT + S_ListTypePostfix;
 
 
-            ////                       COUNTED        (Integer, DEFAULT=2)                   <   [idsimple]  >
+            //                       COUNTED        (Integer, DEFAULT=2)                   <   [idsimple]  >
             //SingleEdgeTypeDef.Rule = Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePrefix + Id_simple + S_ListTypePostfix;
 
             //                       USER        (                COUNTED     )   
@@ -936,13 +946,21 @@ namespace sones.GraphQL
                                    | EdgeTypeDef
                                    | SingleEdgeTypeDef;
 
+            EdgeType.Rule = Id_simple
+                                   | S_LIST + S_ListTypePrefix + Id_simple + S_ListTypePostfix
+                                   | S_SET + S_ListTypePrefix + Id_simple + S_ListTypePostfix;
+
             #endregion
 
-            #region AttributeList
+            #region TypeAttributeList
 
-            AttributeList.Rule = MakePlusRule(AttributeList, S_comma, AttrDefinition);
+            VertexTypeAttributeList.Rule = MakePlusRule(VertexTypeAttributeList, S_comma, VertexTypeAttrDefinition);
 
-            AttrDefinition.Rule = VertexType + Id_simple + AttrDefaultOpValue;
+            VertexTypeAttrDefinition.Rule = VertexType + Id_simple + AttrDefaultOpValue;
+
+            EdgeTypeAttributeList.Rule = MakePlusRule(EdgeTypeAttributeList, S_comma, EdgeTypeAttrDefinition);
+
+            EdgeTypeAttrDefinition.Rule = EdgeType + Id_simple + AttrDefaultOpValue;
 
             #endregion
 
@@ -1119,7 +1137,7 @@ namespace sones.GraphQL
 
             bulkVertexTypeListMember.Rule = abstractOpt + bulkVertexType;
 
-            bulkVertexType.Rule = Id_simple + extendsOpt + attributesOpt + incomingEdgesOpt + uniquenessOpt + mandatoryOpt + indexOptOnCreateType + commentOpt;
+            bulkVertexType.Rule = Id_simple + extendsOpt + vertexTypeAttributesOpt + incomingEdgesOpt + uniquenessOpt + mandatoryOpt + indexOptOnCreateType + commentOpt;
 
             commentOpt.Rule = Empty
                                     | S_COMMENT + "=" + string_literal;
@@ -1130,8 +1148,8 @@ namespace sones.GraphQL
             extendsOpt.Rule = Empty
                                     | S_EXTENDS + Id_simple;
 
-            attributesOpt.Rule = Empty
-                                    | S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT;
+            vertexTypeAttributesOpt.Rule = Empty
+                                    | S_ATTRIBUTES + S_BRACKET_LEFT + VertexTypeAttributeList + S_BRACKET_RIGHT;
 
             incomingEdgesOpt.Rule = Empty
                                     | S_INCOMINGEDGES + S_BRACKET_LEFT + IncomingEdgesList + S_BRACKET_RIGHT;
@@ -1159,8 +1177,6 @@ namespace sones.GraphQL
             AttrDefaultOpValue.Rule = Empty
                                     | "=" + Values;
 
-
-
             #endregion
 
             #region CREATE EDGE TYPE(s)
@@ -1169,7 +1185,10 @@ namespace sones.GraphQL
                                         | S_CREATE + S_EDGE + S_TYPE + bulkEdgeType
                                         | S_CREATE + S_EDGE + S_TYPES + bulkEdgeTypeList;
 
-            bulkEdgeType.Rule = Id_simple + extendsOpt + attributesOpt + commentOpt;
+            bulkEdgeType.Rule = Id_simple + extendsOpt + edgeTypeAttributesOpt + commentOpt;
+
+            edgeTypeAttributesOpt.Rule = Empty
+                                    | S_ATTRIBUTES + S_BRACKET_LEFT + EdgeTypeAttributeList + S_BRACKET_RIGHT;
 
             bulkEdgeTypeList.Rule = MakePlusRule(bulkEdgeTypeList, S_comma, bulkEdgeTypeListMember);
 
@@ -1179,10 +1198,10 @@ namespace sones.GraphQL
 
             #region ALTER VERTEX TYPE
 
-            alterStmt.Rule = S_ALTER + S_VERTEX + S_TYPE + Id_simple + alterCmdList + uniquenessOpt + mandatoryOpt;
+            alterVertexTypeStmt.Rule = S_ALTER + S_VERTEX + S_TYPE + Id_simple + alterVertexTypeCmdList + uniquenessOpt + mandatoryOpt;
 
-            alterCmd.Rule = Empty
-                            | S_ADD + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
+            alterVertexTypeCmd.Rule = Empty
+                            | S_ADD + S_ATTRIBUTES + S_BRACKET_LEFT + VertexTypeAttributeList + S_BRACKET_RIGHT
                             | S_DROP + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
                             | S_ADD + S_INCOMINGEDGES + S_BRACKET_LEFT + IncomingEdgesList + S_BRACKET_RIGHT
                             | S_DROP + S_INCOMINGEDGES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
@@ -1191,19 +1210,36 @@ namespace sones.GraphQL
                             | S_RENAME + S_ATTRIBUTE + Id_simple + S_TO + Id_simple
                             | S_RENAME + S_INCOMINGEDGE + Id_simple + S_TO + Id_simple
                             | S_RENAME + S_TO + Id_simple
-                //| S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
+                //| S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + VertexTypeAttributeList + S_BRACKET_RIGHT
                 //| S_UNDEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
                             | S_DROP + S_UNIQUE + S_ON + Id_simple
                             | S_DROP + S_MANDATORY + S_ON + Id_simple
                             | S_COMMENT + "=" + string_literal;
 
-            alterCmdList.Rule = MakePlusRule(alterCmdList, S_comma, alterCmd);
+            alterVertexTypeCmdList.Rule = MakePlusRule(alterVertexTypeCmdList, S_comma, alterVertexTypeCmd);
 
             IndexDropOnAlterTypeMember.Rule = S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT;
 
             IndexDropOnAlterTypeMemberList.Rule = MakePlusRule(IndexDropOnAlterTypeMemberList, S_comma, IndexDropOnAlterTypeMember);
 
             IndexDropOnAlterType.Rule = S_INDICES + IndexDropOnAlterTypeMember;
+
+            #endregion
+
+            #region ALTER EDGE TYPE
+
+            alterEdgeTypeStmt.Rule = S_ALTER + S_EDGE + S_TYPE + Id_simple + alterEdgeTypeCmdList;
+
+            alterEdgeTypeCmd.Rule = Empty
+                            | S_ADD + S_ATTRIBUTES + S_BRACKET_LEFT + EdgeTypeAttributeList + S_BRACKET_RIGHT
+                            | S_DROP + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
+                            | S_RENAME + S_ATTRIBUTE + Id_simple + S_TO + Id_simple
+                            | S_RENAME + S_TO + Id_simple
+                //| S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + EdgeTypeAttributeList + S_BRACKET_RIGHT
+                //| S_UNDEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
+                            | S_COMMENT + "=" + string_literal;
+
+            alterEdgeTypeCmdList.Rule = MakePlusRule(alterEdgeTypeCmdList, S_comma, alterEdgeTypeCmd);
 
             #endregion
 
@@ -1351,9 +1387,15 @@ namespace sones.GraphQL
 
             #endregion
 
-            #region DROP TYPE
+            #region DROP VertexType
 
-            dropTypeStmt.Rule = S_DROP + S_VERTEX + S_TYPE + Id_simple;
+            dropVertexTypeStmt.Rule = S_DROP + S_VERTEX + S_TYPE + Id_simple;
+
+            #endregion
+
+            #region DROP EdgeType
+
+            dropEdgeTypeStmt.Rule = S_DROP + S_EDGE + S_TYPE + Id_simple;
 
             #endregion
 
@@ -1380,7 +1422,16 @@ namespace sones.GraphQL
 
             DescrInfoStmt.Rule = S_DESCRIBE + DescrArgument;
 
-            DescrArgument.Rule = DescrAggrStmt | DescrAggrsStmt | DescrEdgeStmt | DescrEdgesStmt | DescrTypeStmt | DescrTypesStmt | DescrFuncStmt | DescrFunctionsStmt | DescrIdxStmt | DescrIdxsStmt;
+            DescrArgument.Rule = DescrAggrStmt 
+                                | DescrAggrsStmt 
+                                | DescrEdgeStmt 
+                                | DescrEdgesStmt 
+                                | DescrTypeStmt 
+                                | DescrTypesStmt 
+                                | DescrFuncStmt 
+                                | DescrFunctionsStmt 
+                                | DescrIdxStmt 
+                                | DescrIdxsStmt;
 
             DescrAggrStmt.Rule = S_AGGREGATE + string_literal;
 
@@ -1605,9 +1656,18 @@ namespace sones.GraphQL
             parseNode.AstNode = aUnExpressionNode;
         }
 
-        private void CreateGraphDBTypeNode(ParsingContext context, ParseTreeNode parseNode)
+        private void CreateVertexTypeNode(ParsingContext context, ParseTreeNode parseNode)
         {
             VertexTypeNode aGraphTypeNode = new VertexTypeNode();
+
+            aGraphTypeNode.Init(context, parseNode);
+
+            parseNode.AstNode = aGraphTypeNode;
+        }
+
+        private void CreateEdgeTypeNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            EdgeTypeNode aGraphTypeNode = new EdgeTypeNode();
 
             aGraphTypeNode.Init(context, parseNode);
 
@@ -1724,9 +1784,18 @@ namespace sones.GraphQL
             parseNode.AstNode = aCreateTypesNode;
         }
 
-        private void CreateAttributeDefinitionNode(ParsingContext context, ParseTreeNode parseNode)
+        private void CreateVertexTypeAttributeDefinitionNode(ParsingContext context, ParseTreeNode parseNode)
         {
-            AttributeDefinitionNode aCreateAttributeNode = new AttributeDefinitionNode();
+            VertexTypeAttributeDefinitionNode aCreateAttributeNode = new VertexTypeAttributeDefinitionNode();
+
+            aCreateAttributeNode.Init(context, parseNode);
+
+            parseNode.AstNode = aCreateAttributeNode;
+        }
+
+        private void CreateEdgeTypeAttributeDefinitionNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            EdgeTypeAttributeDefinitionNode aCreateAttributeNode = new EdgeTypeAttributeDefinitionNode();
 
             aCreateAttributeNode.Init(context, parseNode);
 
@@ -1889,9 +1958,18 @@ namespace sones.GraphQL
             }
         }
 
-        private void CreateAlterStmNode(ParsingContext context, ParseTreeNode parseNode)
+        private void CreateAlterVertexTypeStmNode(ParsingContext context, ParseTreeNode parseNode)
         {
             AlterVertexTypeNode aAlterTypeStatementNode = new AlterVertexTypeNode();
+
+            aAlterTypeStatementNode.Init(context, parseNode);
+
+            parseNode.AstNode = aAlterTypeStatementNode;
+        }
+
+        private void CreateAlterEdgeTypeStmNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            AlterEdgeTypeNode aAlterTypeStatementNode = new AlterEdgeTypeNode();
 
             aAlterTypeStatementNode.Init(context, parseNode);
 
@@ -1939,9 +2017,18 @@ namespace sones.GraphQL
 
         #endregion
 
-        private void CreateDropTypeStmNode(ParsingContext context, ParseTreeNode parseNode)
+        private void CreateDropVertexTypeStmNode(ParsingContext context, ParseTreeNode parseNode)
         {
-            DropTypeNode dropTypeNode = new DropTypeNode();
+            DropVertexTypeNode dropTypeNode = new DropVertexTypeNode();
+
+            dropTypeNode.Init(context, parseNode);
+
+            parseNode.AstNode = dropTypeNode;
+        }
+
+        private void CreateDropEdgeTypeStmNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            DropEdgeTypeNode dropTypeNode = new DropEdgeTypeNode();
 
             dropTypeNode.Init(context, parseNode);
 

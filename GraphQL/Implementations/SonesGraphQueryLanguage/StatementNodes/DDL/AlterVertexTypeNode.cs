@@ -64,7 +64,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             {
                 if (alterCmds.AstNode != null)
                 {
-                    var alterCommand = (AlterCommandNode) alterCmds.AstNode;
+                    var alterCommand = (AlterVertexTypeCommandNode) alterCmds.AstNode;
 
                     if (alterCommand.AlterTypeCommand != null)
                     {
@@ -102,7 +102,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         public override string StatementName
         {
-            get { return "AlterType"; }
+            get { return "AlterVertexType"; }
         }
 
         public override TypesOfStatements TypeOfStatement
@@ -166,7 +166,7 @@ namespace sones.GraphQL.StatementNodes.DDL
                     ProcessRenameAttribute(myAlterCommand, ref result);
 
                     break;
-                case TypesOfAlterCmd.RenameVertexType:
+                case TypesOfAlterCmd.RenameType:
 
                     ProcessRenameVertexType(myAlterCommand, ref result);
 
@@ -319,7 +319,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         private void ProcessRenameVertexType(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            var command = (AlterType_RenameVertexType)myAlterCommand;
+            var command = (AlterType_RenameType)myAlterCommand;
 
             result.RenameType(command.NewName);
         }
@@ -343,7 +343,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         private void ProcessAddAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            var command = (AlterType_AddAttributes)myAlterCommand;
+            var command = (AlterVertexType_AddAttributes)myAlterCommand;
 
             if (command.ListOfAttributes != null && command.ListOfAttributes.Count > 0)
             {

@@ -24,21 +24,22 @@ using System.Linq;
 using System.Text;
 using sones.GraphQL.Structure.Helper.Enums;
 using sones.GraphQL.Result;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
 {
     /// <summary>
-    /// Change the name of a vertex
+    /// Change the name of a vertex / edge
     /// </summary>
-    public sealed class AlterType_RenameVertexType : AAlterTypeCommand
+    public sealed class AlterType_RenameType : AAlterTypeCommand
     {
 
         /// <summary>
-        /// The old name of the vertex
+        /// The old name of the vertex / edge
         /// </summary>
         public String OldName { get; set; }
         /// <summary>
-        /// The new name of the vertex
+        /// The new name of the vertex / edge
         /// </summary>
         public String NewName { get; set; }
 
@@ -47,10 +48,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
         /// </summary>
         public override TypesOfAlterCmd AlterType
         {
-            get { return TypesOfAlterCmd.RenameVertexType; }
+            get { return TypesOfAlterCmd.RenameType; }
         }
 
-        public override IVertexView CreateResult(GraphDB.TypeSystem.IVertexType myAlteredVertexType)
+        public override IVertexView CreateResult(IBaseType myAlteredType)
         {
             throw new NotImplementedException();
         }

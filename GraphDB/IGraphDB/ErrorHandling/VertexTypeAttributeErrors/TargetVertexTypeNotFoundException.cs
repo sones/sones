@@ -61,7 +61,7 @@ namespace sones.GraphDB.ErrorHandling
             this.Predefinition = myPredefinition;
             this.TargetVertexTypeName = myTargetVertexTypeName;
             this.Edges = myEdges;
-            _msg = string.Format("The outgoing edges ({0}) on vertex type {1} does point to a not existing target vertex type {2}.", String.Join(",", myEdges), myPredefinition.TypeName, myTargetVertexTypeName);
+            _msg = string.Format("The outgoing edges ({0}) on vertex type {1} does point to a not existing target type {2}.", String.Join(",", myEdges), myPredefinition.TypeName, myTargetVertexTypeName);
         }
     }
 }

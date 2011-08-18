@@ -281,19 +281,42 @@ namespace sones.GraphDB
 
         #endregion
 
-        #region drop type
+        #region drop VertexType
 
-        public TResult DropType<TResult>(
+        public TResult DropVertexType<TResult>(
             SecurityToken mySecurity,
             TransactionToken myTransactionToken,
             RequestDropVertexType myRequestDropType,
             Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableDropVertexTypeRequest(myRequestDropType,
-                                                                                        mySecurity,
-                                                                                        myTransactionToken));
+            var executedRequest = 
+                _requestManager
+                .SynchronExecution(new PipelineableDropVertexTypeRequest(myRequestDropType,
+                                                                            mySecurity,
+                                                                            myTransactionToken));
 
-            return ((PipelineableDropVertexTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableDropVertexTypeRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
+        #region drop EdgeType
+
+        public TResult DropEdgeType<TResult>(
+            SecurityToken mySecurity,
+            TransactionToken myTransactionToken,
+            RequestDropEdgeType myRequestDropType,
+            Converter.DropEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            var executedRequest = 
+                _requestManager
+                .SynchronExecution(new PipelineableDropEdgeTypeRequest(myRequestDropType,
+                                                                        mySecurity,
+                                                                        myTransactionToken));
+
+            return ((PipelineableDropEdgeTypeRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -401,7 +424,7 @@ namespace sones.GraphDB
 
         #endregion
 
-        #region GetVertexType
+        #region GetVertexType / GetAllVertexTypes
 
         public TResult GetVertexType<TResult>(SecurityToken mySecurityToken, 
                                                 TransactionToken myTransactionToken, 
@@ -429,7 +452,7 @@ namespace sones.GraphDB
 
         #endregion
 
-        #region GetEdgeType
+        #region GetEdgeType / GetAllEdgeTypes
 
         public TResult GetEdgeType<TResult>(SecurityToken mySecurityToken, 
                                             TransactionToken myTransactionToken, 
@@ -520,13 +543,19 @@ namespace sones.GraphDB
 
         #region Update
 
-        public TResult Update<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestUpdate myRequestUpdate, Converter.UpdateResultConverter<TResult> myOutputconverter)
+        public TResult Update<TResult>(SecurityToken mySecurityToken, 
+                                        TransactionToken myTransactionToken, 
+                                        RequestUpdate myRequestUpdate, 
+                                        Converter.UpdateResultConverter<TResult> myOutputconverter)
         {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableUpdateRequest(myRequestUpdate,
-                                                                                        mySecurityToken,
-                                                                                        myTransactionToken));
+            var executedRequest = 
+                _requestManager
+                .SynchronExecution(new PipelineableUpdateRequest(myRequestUpdate,
+                                                                    mySecurityToken,
+                                                                    myTransactionToken));
 
-            return ((PipelineableUpdateRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableUpdateRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
         }
 
         #endregion

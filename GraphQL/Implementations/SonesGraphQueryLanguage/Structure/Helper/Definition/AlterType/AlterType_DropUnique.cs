@@ -48,7 +48,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
             get { return TypesOfAlterCmd.DropUnqiue; }
         }
 
-        public override IVertexView CreateResult(IVertexType myAlteredVertexType)
+        public override IVertexView CreateResult(IBaseType myAlteredVertexType)
         {
             throw new NotImplementedException();
         }
