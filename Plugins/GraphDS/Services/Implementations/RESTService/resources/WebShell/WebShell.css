@@ -60,7 +60,10 @@ pre               { font-size:12px;}
 :focus            { outline:0;}
 .help td          { padding-right:25px;font-size:12px;}
 
-.twodbarchart rect {
-   		stroke: black;
-   		fill: #98C000;
- }
+.twodbarchart rect { stroke: black; }
+.twodbarchartunselected { fill: #98C000; }
+.twodbarchartselected {	fill: #C09800; }
+.twodbarcharttextselected { fill: blue; }
+.twodbarcharttextunselected { fill: black; }
+
+

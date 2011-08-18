@@ -153,7 +153,6 @@ namespace sones.Plugins.GraphDS.IO
                             Output.Append("var vis = d3.select(\"#output\")");
                             Output.Append(".append(\"svg:svg\")");
                             Output.Append(".attr(\"class\",\"twodbarchart\")");
-
                             Output.Append(".attr(\"width\", w + 200)");
                             Output.Append(".attr(\"height\", h + 20)");
                             Output.Append(".append(\"svg:g\")");
@@ -163,22 +162,40 @@ namespace sones.Plugins.GraphDS.IO
                             Output.Append(".data(data)");
                             Output.Append(".enter().append(\"svg:g\")");
                             Output.Append(".attr(\"class\", \"bar\")");
-                            Output.Append(".attr(\"transform\", function(d, i) { return \"translate(0,\" + y(i) + \")\"; });");
-
-                            Output.Append("bars.append(\"svg:rect\")");
+                            Output.Append(".attr(\"transform\", function(d, i) { return \"translate(0,\" + y(i) + \")\"; })");
+                            Output.Append(".attr(\"id\", function(d, i) { return \"bar\"+i; } );");
+                            
+                            Output.Append("var rects = bars.append(\"svg:rect\")");
+                            Output.Append(".attr(\"class\",\"twodbarchartunselected\")");
                             Output.Append(".attr(\"width\", x)");
                             Output.Append(".attr(\"height\", y.rangeBand());");
+                                                        
+                            Output.Append("rects.append(\"svg:set\")");
+                            Output.Append(".attr(\"attributeName\", \"class\")");
+                            Output.Append(".attr(\"from\", \"twodbarchartunselected\")");
+                            Output.Append(".attr(\"to\", \"twodbarchartselected\")");
+                            Output.Append(".attr(\"begin\", \"mouseover\")");
+                            Output.Append(".attr(\"end\", \"mouseout\");");
+
+                            Output.Append("rects.append(\"svg:set\")");
+                            Output.Append(".attr(\"attributeName\", \"class\")");
+                            Output.Append(".attr(\"from\", \"twodbarchartunselected\")");
+                            Output.Append(".attr(\"to\", \"twodbarchartselected\")");
+                            Output.Append(".attr(\"begin\", function(d, i) { return \"val\"+i+\".mouseover\"; } )");
+                            Output.Append(".attr(\"end\", function(d, i) { return \"val\"+i+\".mouseout\"; } );");
 
                             Output.Append("bars.append(\"svg:text\")");
                             Output.Append(".attr(\"x\", x)");
                             Output.Append(".attr(\"y\", y.rangeBand() / 2)");
+                            Output.Append(".attr(\"id\", function(d, i) { return \"val\"+i; } )");
                             Output.Append(".attr(\"dx\", -6)");
                             Output.Append(".attr(\"dy\", \".35em\")");
                             Output.Append(".attr(\"fill\", \"white\")");
                             Output.Append(".attr(\"text-anchor\", \"end\")");
                             Output.Append(".text(x.tickFormat(100));");
 
-                            Output.Append("bars.append(\"svg:text\")");
+                            Output.Append("var texts = bars.append(\"svg:text\")");
+                            Output.Append(".attr(\"class\",\"twodbarcharttextunselected\")");
                             Output.Append(".attr(\"x\", x)");
                             Output.Append(".attr(\"y\", y.rangeBand() / 2)");
                             Output.Append(".attr(\"dx\", 2)");
@@ -186,11 +203,27 @@ namespace sones.Plugins.GraphDS.IO
                             Output.Append(".attr(\"text-anchor\", \"start\")");
                             Output.Append(".text(function(d, i) { return names[i]; });");
 
+                            Output.Append("texts.append(\"svg:set\")");
+                            Output.Append(".attr(\"attributeName\", \"class\")");
+                            Output.Append(".attr(\"from\", \"twodbarcharttextunselected\")");
+                            Output.Append(".attr(\"to\", \"twodbarcharttextselected\")");
+                            Output.Append(".attr(\"begin\", function(d, i) { return \"val\"+i+\".mouseover\"; } )");
+                            Output.Append(".attr(\"end\", function(d, i) { return \"val\"+i+\".mouseout\"; } );");
+
+                            Output.Append("texts.append(\"svg:set\")");
+                            Output.Append(".attr(\"attributeName\", \"class\")");
+                            Output.Append(".attr(\"from\", \"twodbarcharttextunselected\")");
+                            Output.Append(".attr(\"to\", \"twodbarcharttextselected\")");
+                            Output.Append(".attr(\"begin\", function(d, i) { return \"bar\"+i+\".mouseover\"; } )");
+                            Output.Append(".attr(\"end\", function(d, i) { return \"bar\"+i+\".mouseout\"; } );");
+
                             Output.Append("var rules = vis.selectAll(\"g.rule\")");
                             Output.Append(".data(x.ticks(10))");
                             Output.Append(".enter().append(\"svg:g\")");
                             Output.Append(".attr(\"class\", \"rule\")");
-                            Output.Append(".attr(\"transform\", function(d) { return \"translate(\" + x(d) + \",0)\"; });");
+                            Output.Append(".attr(\"transform\", function(d) { return \"translate(\" + x(d) + \",0)\"; })");
+                            Output.Append(".attr(\"id\", function(d, i) { return \"bar\"+i; } );");
+
                             Output.Append("rules.append(\"svg:line\")");
                             Output.Append(".attr(\"y1\", h)");
                             Output.Append(".attr(\"y2\", h + 6)");
@@ -238,19 +271,37 @@ namespace sones.Plugins.GraphDS.IO
                             Output.Append(".attr(\"class\", \"bar\")");
                             Output.Append(".attr(\"transform\", function(d, i) { var dy = h - y(d); var dx = x(i) + 10; return \"translate(\" + dx + \", \" + dy + \")\"; });");
                             
-                            Output.Append("bars.append(\"svg:rect\")");
+                            Output.Append("var rects = bars.append(\"svg:rect\")");
+                            Output.Append(".attr(\"class\",\"twodbarchartunselected\")");
                             Output.Append(".attr(\"width\", x.rangeBand())");
-                            Output.Append(".attr(\"height\", y);");
+                            Output.Append(".attr(\"height\", y)");
+                            Output.Append(".attr(\"id\", function(d, i) { return \"bar\"+i; } );");
+
+                            Output.Append("rects.append(\"svg:set\")");
+                            Output.Append(".attr(\"attributeName\", \"class\")");
+                            Output.Append(".attr(\"from\", \"twodbarchartunselected\")");
+                            Output.Append(".attr(\"to\", \"twodbarchartselected\")");
+                            Output.Append(".attr(\"begin\", \"mouseover\")");
+                            Output.Append(".attr(\"end\", \"mouseout\");");
+
+                            Output.Append("rects.append(\"svg:set\")");
+                            Output.Append(".attr(\"attributeName\", \"class\")");
+                            Output.Append(".attr(\"from\", \"twodbarchartunselected\")");
+                            Output.Append(".attr(\"to\", \"twodbarchartselected\")");
+                            Output.Append(".attr(\"begin\", function(d, i) { return \"val\"+i+\".mouseover\"; } )");
+                            Output.Append(".attr(\"end\", function(d, i) { return \"val\"+i+\".mouseout\"; } );");
 
                             Output.Append("bars.append(\"svg:text\")");
                             Output.Append(".attr(\"x\", x.rangeBand() / 2)");
                             Output.Append(".attr(\"y\", -5)");
+                            Output.Append(".attr(\"id\", function(d, i) { return \"val\"+i; } )");
                             Output.Append(".attr(\"fill\", \"white\")");
                             Output.Append(".attr(\"text-anchor\", \"start\")");
                             Output.Append(".attr(\"transform\", \"rotate(90)\")");
                             Output.Append(".text(y.tickFormat(100));");
 
-                            Output.Append("bars.append(\"svg:text\")");
+                            Output.Append("var texts = bars.append(\"svg:text\")");
+                            Output.Append(".attr(\"class\",\"twodbarcharttextunselected\")");
                             Output.Append(".attr(\"x\", 10 + x.rangeBand() / 2)");
                             Output.Append(".attr(\"y\", 0)");
                             Output.Append(".attr(\"dx\", 2)");
@@ -259,7 +310,21 @@ namespace sones.Plugins.GraphDS.IO
                             Output.Append(".attr(\"transform\", \"rotate(90) translate(-23)\")");
                             Output.Append(".text(function(d, i) { return names[i]; });");
 
-                            Output.Append("var rules = vis.selectAll(\"g.rule\")");
+                            Output.Append("texts.append(\"svg:set\")");
+                            Output.Append(".attr(\"attributeName\", \"class\")");
+                            Output.Append(".attr(\"from\", \"twodbarcharttextunselected\")");
+                            Output.Append(".attr(\"to\", \"twodbarcharttextselected\")");
+                            Output.Append(".attr(\"begin\", function(d, i) { return \"val\"+i+\".mouseover\"; } )");
+                            Output.Append(".attr(\"end\", function(d, i) { return \"val\"+i+\".mouseout\"; } );");
+
+                            Output.Append("texts.append(\"svg:set\")");
+                            Output.Append(".attr(\"attributeName\", \"class\")");
+                            Output.Append(".attr(\"from\", \"twodbarcharttextunselected\")");
+                            Output.Append(".attr(\"to\", \"twodbarcharttextselected\")");
+                            Output.Append(".attr(\"begin\", function(d, i) { return \"bar\"+i+\".mouseover\"; } )");
+                            Output.Append(".attr(\"end\", function(d, i) { return \"bar\"+i+\".mouseout\"; } );");
+
+                            Output.Append("var rules = vis.val(\"g.rule\")");
                             Output.Append(".data(y.ticks(10))");
                             Output.Append(".enter().append(\"svg:g\")");
                             Output.Append(".attr(\"class\", \"rule\")");
