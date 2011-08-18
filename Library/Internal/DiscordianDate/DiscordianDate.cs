@@ -143,8 +143,11 @@ namespace sones.Library.DiscordianDate
 
             }
 
-            return _Output;
+            if (myNumber.ToString().EndsWith("11"))
+                _Output = "th";
 
+
+            return _Output;
         }
 
         #endregion
@@ -252,7 +255,7 @@ namespace sones.Library.DiscordianDate
             if (hastur.StTibsDay)
                 Holiday = " Celebrate St. Tib's Day";
 
-            return "Today is " + GetDayName(hastur.yday) + ", the " + hastur.day + Ending(hastur.day) + " day of " + Seasons[hastur.season] + " in the YOLD " + hastur.year + Holiday + "\n";
+            return "Today is " + GetDayName(hastur.yday) + ", the " + hastur.day + Ending(hastur.day) + " day of " + Seasons[hastur.season] + " in the YOLD " + hastur.year + Holiday;
         }
 
         #endregion
