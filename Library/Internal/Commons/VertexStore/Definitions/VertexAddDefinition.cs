@@ -124,27 +124,16 @@ namespace sones.Library.Commons.VertexStore.Definitions
             IDictionary<String, Object> myUnstructuredProperties)
         {
             Edition = !string.IsNullOrEmpty(myEdition) ? myEdition : ConstantsVertexStore.DefaultVertexEdition;
-
             VertexID = myVertexID;
-
             VertexTypeID = myVertexTypeID;
-
             OutgoingHyperEdges = myOutgoingHyperEdges;
-
             OutgoingSingleEdges = myOutgoingSingleEdges;
-
             IncomingEdges = myIncomingEdges;
-
             BinaryProperties = myBinaryProperties;
-
             Comment = myComment;
-
             CreationDate = myCreationDate;
-
             ModificationDate = myModificationDate;
-
             StructuredProperties = myStructuredProperties;
-
             UnstructuredProperties = myUnstructuredProperties;
         }
 

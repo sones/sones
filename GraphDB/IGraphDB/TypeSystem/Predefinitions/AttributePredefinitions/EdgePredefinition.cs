@@ -89,13 +89,20 @@ namespace sones.GraphDB.TypeSystem
         public EdgePredefinition(String myEdgeName)
         {
             EdgeName = myEdgeName;
+
+            Comment = String.Empty;
         }
 
         /// <summary>
         /// Creates a new instance of EdgeDefinition.
         /// </summary>
         /// <remarks>Use this constructor, if a contained edge is to be created.</remarks>
-        public EdgePredefinition() { }
+        public EdgePredefinition() 
+        {
+            EdgeName = String.Empty;
+
+            Comment = String.Empty;
+        }
 
         #endregion
 

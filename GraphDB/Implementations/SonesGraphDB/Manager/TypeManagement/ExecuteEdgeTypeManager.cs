@@ -284,7 +284,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 if (parent == null)
                     //No parent type was found.
-                    throw new TypeDoesNotExistException(myTopologicallySortedPointer.Value.SuperTypeName, typeof(IEdgeType).Name);
+                    throw new TypeDoesNotExistException<IEdgeType>(myTopologicallySortedPointer.Value.SuperTypeName);
 
                 if (parent.GetProperty<bool>((long)AttributeDefinitions.BaseTypeDotIsSealed))
                     //The parent type is sealed.

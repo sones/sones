@@ -368,7 +368,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 if (parent == null)
                     //No parent type was found.
-                    throw new TypeDoesNotExistException(myTopologicallySortedPointer.Value.SuperTypeName, typeof(IVertexType).Name);
+                    throw new TypeDoesNotExistException<IVertexType>(myTopologicallySortedPointer.Value.SuperTypeName);
 
                 if (parent.GetProperty<bool>((long)AttributeDefinitions.BaseTypeDotIsSealed))
                     //The parent type is sealed.
@@ -378,19 +378,23 @@ namespace sones.GraphDB.Manager.TypeManagement
                 var parentType = new VertexType(parent, _baseStorageManager);
                 var attributeNames = parentType.GetAttributeDefinitions(true).Select(_ => _.Name);
 
-                myAttributes[myTopologicallySortedPointer.Value.TypeName] = new HashSet<string>(attributeNames);
+                myAttributes[myTopologicallySortedPointer.Value.TypeName] 
+                    = new HashSet<string>(attributeNames);
             }
             else
             {
-                myAttributes[myTopologicallySortedPointer.Value.TypeName] = new HashSet<string>(myAttributes[parentPredef.Value.TypeName]);
+                myAttributes[myTopologicallySortedPointer.Value.TypeName] 
+                    = new HashSet<string>(myAttributes[parentPredef.Value.TypeName]);
             }
 
             var attributeNamesSet = myAttributes[myTopologicallySortedPointer.Value.TypeName];
 
             CheckIncomingEdgesUniqueName(myTopologicallySortedPointer.Value as VertexTypePredefinition,
                                             attributeNamesSet);
+
             CheckOutgoingEdgesUniqueName(myTopologicallySortedPointer.Value as VertexTypePredefinition,
                                             attributeNamesSet);
+
             CheckPropertiesUniqueName(myTopologicallySortedPointer.Value, attributeNamesSet);
         }
 
@@ -1970,11 +1974,6 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             foreach (var aToBeAddedIndex in myToBeAddedIndices)
             {
-                aToBeAddedIndex.SetVertexType(myType.Name)
-                    .AddProperty(aToBeAddedIndex.Properties)
-                    .SetEdition(aToBeAddedIndex.Edition)
-                    .SetIndexType(aToBeAddedIndex.TypeName);
-
                 _indexManager.CreateIndex(aToBeAddedIndex, mySecurityToken, myTransactionToken);
             }
         }

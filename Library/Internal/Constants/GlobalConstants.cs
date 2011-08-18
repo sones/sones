@@ -40,11 +40,6 @@ namespace sones.Constants
         public const string VertexDotEdition = "Edition";
 
         /// <summary>
-        /// The name of the property Edition on edge type edge.
-        /// </summary>
-        public const string EdgeDotEdition = "Edition";
-
-        /// <summary>
         /// The name of the property ModificationDate on vertex type Vertex.
         /// </summary>
         public const string VertexDotModificationDate = "ModificationDate";
@@ -58,11 +53,6 @@ namespace sones.Constants
         /// The name of the property Revision on vertex type Vertex.
         /// </summary>
         public const string VertexDotRevision = "Revision";
-
-        /// <summary>
-        /// The name of the property Revision on edge type edge.
-        /// </summary>
-        public const string EdgeDotRevision = "Revision";
 
         /// <summary>
         /// The name of the property VertexTypeID on vertex type Vertex.

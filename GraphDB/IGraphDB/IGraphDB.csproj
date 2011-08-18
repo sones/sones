@@ -140,6 +140,8 @@
     <Compile Include="Request\AlterType\IRequestAlterType.cs" />
     <Compile Include="Request\Clear\RequestClear.cs" />
     <Compile Include="Request\Converter.cs" />
+    <Compile Include="Request\CreateEdgeTypes\RequestCreateEdgeTypes.cs" />
+    <Compile Include="Request\DropEdgeType\RequestDropVertexType.cs" />
     <Compile Include="TypeSystem\Predefinitions\TypePredefinitions\ATypePredefinition.cs" />
     <Compile Include="TypeSystem\Predefinitions\TypePredefinitions\EdgeTypePredefinition.cs" />
     <Compile Include="Request\CreateEdgeType\RequestCreateEdgeType.cs" />

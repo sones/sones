@@ -22,18 +22,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.ErrorHandling
 {
-    public class TypeDoesNotExistException: AGraphDBTypeException
+    public class TypeDoesNotExistException<T>: AGraphDBTypeException
+        where T: IBaseType
     {
         private string _type;
 
-        public TypeDoesNotExistException(string myUnexpectedTypeName, string myBaseType, string myInfo = "")
+        public TypeDoesNotExistException(string myUnexpectedTypeName, string myInfo = "")
         {
             this._type = myUnexpectedTypeName;
 
-            _msg = "The " + myBaseType + " with name " +  _type + " does not exist! " + myInfo;
+            _msg = "The " + typeof(T).Name + " with name " +  _type + " does not exist! " + myInfo;
         }
     }
 }

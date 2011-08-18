@@ -287,15 +287,38 @@ namespace sones.GraphDB.Manager.Vertex
 
             var structured = ConvertStructuredProperties(myInsertDefinition, myVertexType);
 
-            ExtractVertexProperties(ref edition, ref revision, ref comment, ref vertexID, ref creationdate, ref modificationDate, structured);
+            ExtractVertexProperties(ref edition, 
+                                    ref revision, 
+                                    ref comment, 
+                                    ref vertexID, 
+                                    ref creationdate, 
+                                    ref modificationDate, 
+                                    structured);
 
             //set id to maximum to allow user set UUIDs
             _idManager.GetVertexTypeUniqeID(myVertexType.ID).SetToMaxID(vertexID);
 
-            return Tuple.Create(revision, new VertexAddDefinition(vertexID, myVertexType.ID, edition, hyperEdges, singleEdges, null, binaries, comment, creationdate, modificationDate, structured, myInsertDefinition.UnstructuredProperties));
+            return Tuple.Create(revision, new VertexAddDefinition(vertexID, 
+                                                                    myVertexType.ID, 
+                                                                    edition, 
+                                                                    hyperEdges, 
+                                                                    singleEdges,
+                                                                    null, 
+                                                                    binaries, 
+                                                                    comment, 
+                                                                    creationdate, 
+                                                                    modificationDate, 
+                                                                    structured, 
+                                                                    myInsertDefinition.UnstructuredProperties));
         }
 
-        private static void ExtractVertexProperties(ref String edition, ref long? revision, ref String comment, ref long vertexID, ref long creationdate, ref long modificationDate, IDictionary<long, IComparable> structured)
+        private static void ExtractVertexProperties(ref String edition, 
+                                                    ref long? revision, 
+                                                    ref String comment, 
+                                                    ref long vertexID, ref 
+                                                    long creationdate, 
+                                                    ref long modificationDate, 
+                                                    IDictionary<long, IComparable> structured)
         {
             if (structured != null)
             {
@@ -303,33 +326,38 @@ namespace sones.GraphDB.Manager.Vertex
                 foreach (var structure in structured)
                 {
                     long? toDelete = null;
+
                     switch ((AttributeDefinitions)structure.Key)
                     {
                         case AttributeDefinitions.VertexDotComment:
                             comment = structure.Value as String;
                             toDelete = structure.Key;
                             break;
+
                         case AttributeDefinitions.VertexDotCreationDate:
                             creationdate = (long)structure.Value;
                             toDelete = structure.Key;
                             break;
+
                         case AttributeDefinitions.VertexDotEdition:
                             edition = structure.Value as String;
                             toDelete = structure.Key;
                             break;
+
                         case AttributeDefinitions.VertexDotModificationDate:
                             modificationDate = (long)structure.Value;
                             toDelete = structure.Key;
                             break;
+
                         case AttributeDefinitions.VertexDotRevision:
                             revision = (long)structure.Value;
                             toDelete = structure.Key;
                             break;
+
                         case AttributeDefinitions.VertexDotVertexID:
                             vertexID = (long)structure.Value;
                             toDelete = structure.Key;
                             break;
-
                     }
 
                     if (toDelete.HasValue)
@@ -478,15 +506,19 @@ namespace sones.GraphDB.Manager.Vertex
             if (vertexIDs == null)
                 return null;
 
-            CheckMandatoryConstraint(edgeDef, myEdgeType);
+            //checks if the mandatorie attributes are set, also the basic attributes like CreationDate, ModificationDate ... 
+            //CheckMandatoryConstraint(edgeDef, myEdgeType);
+            
             CheckTargetVertices(myTargetType, vertexIDs);
-            AddDefaultValues(edgeDef, myEdgeType);
+            
+            //adds the basic attributes like CreationDate, ModificationDate ... to the structured properties
+            //AddDefaultValues(edgeDef, myEdgeType);
             
             return new SingleEdgeAddDefinition(myAttributeID,
                                                 myEdgeType.ID, 
                                                 source, 
                                                 vertexIDs.First(), 
-                                                edgeDef.Comment, 
+                                                edgeDef.Comment,
                                                 date, 
                                                 date, 
                                                 ConvertStructuredProperties(edgeDef, myEdgeType), 
