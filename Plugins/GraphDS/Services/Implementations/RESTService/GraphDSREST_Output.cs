@@ -81,7 +81,7 @@ namespace sones.GraphDS.Services.RESTService
 
 		#region GenerateResultOutput(myResult, myQuery)
 
-		public void GenerateResultOutput(QueryResult myResult)
+        public void GenerateResultOutput(QueryResult myResult, Dictionary<String, String> myParams)
 		{
             List<ContentType> Types = new List<ContentType>();
 
@@ -97,7 +97,7 @@ namespace sones.GraphDS.Services.RESTService
 
 			if (_Plugins.TryGetValue(_ContentType.MediaType, out plugin))
 			{
-				var content = plugin.GenerateOutputResult(myResult);
+				var content = plugin.GenerateOutputResult(myResult, myParams);
 				ExportContent(_ServerID, System.Text.Encoding.UTF8.GetBytes(content), plugin.ContentType);
 			}
 			else
@@ -112,28 +112,34 @@ namespace sones.GraphDS.Services.RESTService
 
 		#region GetGQL()
 
-		public String GetGQL()
-		{
-			if (HttpServer.HttpContext.Request == null || HttpServer.HttpContext.Request.InputStream == null)
-				return null;
+        public String GetGQL(out Dictionary<String, String> queryparams)
+        {
+            queryparams = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
-			using (var reader = new StreamReader(HttpServer.HttpContext.Request.InputStream, Encoding.UTF8))
-			{
-				try
-				{
-					return reader.ReadToEnd();
-				}
-				catch
-				{
-					return null;
-				}
-				finally
-				{
-					HttpServer.HttpContext.Request.InputStream.Close();
-				}
-			}
+            if (HttpServer.HttpContext.Request == null || HttpServer.HttpContext.Request.InputStream == null)
+                return null;
+            
+            using (var reader = new StreamReader(HttpServer.HttpContext.Request.InputStream, Encoding.UTF8))
+            {
+                foreach (Cookie curCookie in HttpServer.HttpContext.Request.Cookies)
+                {
+                    queryparams.Add(curCookie.Name, curCookie.Value);
+                }
+                try
+                {
+                    return reader.ReadToEnd();
+                }
+                catch
+                {
+                    return null;
+                }
+                finally
+                {
+                    HttpServer.HttpContext.Request.InputStream.Close();
+                }
+            }
 
-		}
+        }
 
 		#endregion
 
@@ -148,29 +154,29 @@ namespace sones.GraphDS.Services.RESTService
 
 		#region ExecuteGQLQuery(myGQLStatement)
 
-		public QueryResult ExecuteGQL(String myQuery)
-		{
-			QueryResult _QueryResult = null;
-			try
-			{
-				_QueryResult = _GraphDS.Query(null, null, myQuery, "sones.gql");
+        public QueryResult ExecuteGQL(String myQuery, Dictionary<String,String> myParams)
+        {
+            QueryResult _QueryResult = null;
+            try
+            {
+                _QueryResult = _GraphDS.Query(null, null, myQuery, "sones.gql");
 
-				GenerateResultOutput(_QueryResult);
+                GenerateResultOutput(_QueryResult, myParams);
 
-				return _QueryResult;
+                return _QueryResult;
 
-			}
-			catch (Exception ex)
-			{
-				if (ex.Message != null)
-					_ErrorMsg.Error400_BadRequest(ex.Message + ex.StackTrace);
-				else
-					_ErrorMsg.Error400_BadRequest("Error from " + ex.Source + ex.StackTrace);
-			}
-		   
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message != null)
+                    _ErrorMsg.Error400_BadRequest(ex.Message + ex.StackTrace);
+                else
+                    _ErrorMsg.Error400_BadRequest("Error from " + ex.Source + ex.StackTrace);
+            }
+           
 
-			return _QueryResult;
-		}
+            return _QueryResult;
+        }
 
 		#endregion
 
@@ -368,7 +374,41 @@ namespace sones.GraphDS.Services.RESTService
         }
 
         #endregion
+
+        #region GetAvailableOutputFormatParams()
+
+        public Stream GetAvailableOutputFormatParams()
+        {
+            List<ContentType> Types = new List<ContentType>();
+
+            foreach (IOInterface _io_plugin in _Plugins.Values)
+            {
+                Types.Add(_io_plugin.ContentType);
+            }
+
+            var _ContentType = HttpServer.GetBestMatchingAcceptHeader(Types.ToArray());
+
+            IOInterface plugin = null;
+
+            if (_Plugins.TryGetValue(_ContentType.MediaType, out plugin))
+            {
+                try
+                {
+                    return new MemoryStream(Encoding.UTF8.GetBytes(plugin.ListAvailParams()));
+                }
+                catch (NotImplementedException)
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        #endregion
+
     }
 
 }
-

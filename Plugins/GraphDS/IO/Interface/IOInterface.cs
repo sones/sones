@@ -68,13 +68,24 @@ namespace sones.Plugins.GraphDS.IO
         /// Generates the representation of an query result in a special format.
         /// </summary>
         /// <param name="myQueryResult">The result of an query.</param>
+        /// <param name="myParams">Optional parameters to configure output.</param>
         /// <returns>The representation of the result as string.</returns>
-        String GenerateOutputResult(QueryResult myQueryResult);
+        String GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams);
 
         #endregion
-        
+
+        #region List Available Parameters
+
+        /// <summary>
+        /// Returns string that contains available parameters to configure output result.
+        /// </summary>
+        /// <returns>The string containing description of available parameters.</returns>
+        String ListAvailParams();
+
+        #endregion
+
         #region Query Result
-        
+
         /// <summary>
         /// Generates an query result from a special respresentation.
         /// </summary>
@@ -83,5 +94,6 @@ namespace sones.Plugins.GraphDS.IO
         QueryResult GenerateQueryResult(String myResult);
 
         #endregion
+
     }
 }

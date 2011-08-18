@@ -581,6 +581,92 @@ InitGoosh = function (goosh) {
     }
     goosh.modules.register("format");
 
+    //format option handler
+    goosh.module.formatoption = function () {
+        this.name = "formatoption";
+        this.aliases = new Array("formatoption", "fo");
+        this.help = "set option of current format plugin, list possible options when called without parameter";
+        this.parameters = "[option=value]";
+
+        this.call = function (args) {
+            if ((args == undefined) || (args.length == 0)) {
+                //build the target URI
+                var target = goosh.config.webservice_protocol + "://"
+                + goosh.config.webservice_host
+                + ((goosh.config.webservice_port != undefined) ? (":" + goosh.config.webservice_port) : "")
+                + "/"
+                + goosh.config.webservice_path + "availableoutputformatparams";
+
+                //do some ajax
+                var html = $.ajax({
+                    url: target,
+                    cache: false,
+                    async: false,
+                    error: function () {
+                        return 1;
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('Accept', goosh.config.webservice_default_format.type);
+                    }
+                });
+
+                if (html == null) {
+                    return 2;
+                } else {
+                    if (html.responseText.length > 0) {
+                        var brrepl = html.responseText.replace(/\n\r/, "<br>");
+                        brrepl = brrepl.replace(/\n/, "<br>");
+                        goosh.gui.out(brrepl);
+                    } else {
+                        goosh.gui.out("current output format does not offer settable parameters");
+                    }
+                }
+            } else {
+                if (navigator.cookieEnabled == false) {
+                    goosh.gui.out("Please enable cookies!");
+                    return 2;
+                }
+
+                var gparams = args[0].split('=');
+
+                if (gparams.length == 1) {
+                    var found = false;
+
+                    // Get params from cookie
+                    var cookies = new Array();
+                    cookies = document.cookie.split("; ");
+                    var cparams = new Array();
+                    for (var i = 0; i < cookies.length; i++) {
+                        cparams[i] = cookies[i].split("=");
+                    }
+
+                    // no value given, return current one
+                    if (cparams[0] != "") {
+                        for (var i = 0; i < cparams.length; i++) {
+                            if (cparams[i][0] == gparams[0]) {
+                                // found param in stored list
+                                found = true;
+                                goosh.gui.out("Value of parameter " + cparams[i][0] + ": " + cparams[i][1]);
+                                return;
+                            }
+                        }
+                    }
+
+                    if (!found) {
+                        goosh.gui.out("Parameter " + gparams[0] + " not found!");
+                        return;
+                    }
+                }
+
+                // Write param to cookie
+                document.cookie = gparams[0] + "=" + gparams[1] + "\;";
+
+                goosh.gui.out("Set parameter " + gparams[0] + " to " + gparams[1]);
+            }
+        }
+    }
+    goosh.modules.register("formatoption");
+
     //GQL handler
     goosh.module.gql = function () {
         this.name = "gql";

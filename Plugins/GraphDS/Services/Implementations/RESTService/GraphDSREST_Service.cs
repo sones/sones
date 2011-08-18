@@ -101,14 +101,15 @@ namespace sones.GraphDS.Services.RESTService
         /// <returns>The result of the GQL query</returns>
         public void ExecuteGQLQuery()
         {
-            var gqlQuery = _RESTOutput.GetGQL();
+            Dictionary<String, String> queryparams;
+            var gqlQuery = _RESTOutput.GetGQL(out queryparams);
             
             if (gqlQuery == String.Empty)
             {
                 return;    
             }
 
-            _RESTOutput.ExecuteGQL(gqlQuery);
+            _RESTOutput.ExecuteGQL(gqlQuery, queryparams);
         }
 
         #endregion
@@ -336,6 +337,14 @@ namespace sones.GraphDS.Services.RESTService
 
         #endregion
 
+        #region GetAvailableOutputFormatParams()
+
+        public Stream GetAvailableOutputFormatParams()
+        {
+            return _RESTOutput.GetAvailableOutputFormatParams();
+        }
+
+        #endregion
 		
 		#region GetClientAccessPolicy
 
