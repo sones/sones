@@ -521,7 +521,7 @@ namespace sones.GraphQL
             var deleteStmt = new NonTerminal("deleteStmt", CreateDeleteStatementNode);
             var SelectStmtGraph = new NonTerminal("SelectStmtGraph", CreateSelectStatementNode);
             var parSelectStmt = new NonTerminal("parSelectStmt", CreatePartialSelectStmtNode);
-            var createTypesStmt = new NonTerminal("createTypesStmt", CreateCreateTypesStatementNode);
+            var createTypesStmt = new NonTerminal("createTypesStmt", CreateCreateVertexTypesStatementNode);
             var createEdgeTypesStmt = new NonTerminal("createEdgeTypeStmt", CreateCreateEdgeTypesStatementNode);
             var insertorupdateStmt = new NonTerminal("insertorupdateStmt", CreateInsertOrUpdateStatementNode);
             var insertorreplaceStmt = new NonTerminal("insertorreplaceStmt", CreateInsertOrReplaceStatementNode);
@@ -1764,7 +1764,7 @@ namespace sones.GraphQL
             parseNode.AstNode = aInsertOrUpdateNode;
         }
 
-        private void CreateCreateTypesStatementNode(ParsingContext context, ParseTreeNode parseNode)
+        private void CreateCreateVertexTypesStatementNode(ParsingContext context, ParseTreeNode parseNode)
         {
 
             CreateVertexTypesNode aCreateTypesNode = new CreateVertexTypesNode();

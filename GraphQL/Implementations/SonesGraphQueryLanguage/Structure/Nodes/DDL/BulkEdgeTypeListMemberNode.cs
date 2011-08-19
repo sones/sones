@@ -32,22 +32,31 @@ namespace sones.GraphQL.Structure.Nodes.DDL
     public sealed class BulkEdgeTypeListMemberNode : AStructureNode, IAstNodeInit
     {
         #region Data
-
-        private String _TypeName = ""; //the name of the type that should be created
-        private String _Extends = ""; //the name of the type that should be extended
-        private String _Comment = ""; //the name of the type that should be extended
+        //the name of the type that should be created
+        private String _TypeName = "";
+        //the name of the type that should be extended
+        private String _Extends = "";
+        //the name of the type that should be extended
+        private String _Comment = ""; 
         private Boolean _IsAbstract = false;
-        private Dictionary<AttributeDefinition, String> _Attributes = new Dictionary<AttributeDefinition, String>(); //the dictionayry of attribute definitions
+        //the dictionayry of attribute definitions
+        private Dictionary<AttributeDefinition, String> _Attributes 
+                    = new Dictionary<AttributeDefinition, String>(); 
 
         #endregion
 
         #region Accessessors
 
-        public String TypeName { get { return _TypeName; } }
-        public String Extends { get { return _Extends; } }
-        public String Comment { get { return _Comment; } }
-        public Boolean IsAbstract { get { return _IsAbstract; } }
-        public Dictionary<AttributeDefinition, String> Attributes { get { return _Attributes; } }
+        public String TypeName 
+                { get { return _TypeName; } }
+        public String Extends 
+                { get { return _Extends; } }
+        public String Comment 
+                { get { return _Comment; } }
+        public Boolean IsAbstract 
+                { get { return _IsAbstract; } }
+        public Dictionary<AttributeDefinition, String> Attributes 
+                { get { return _Attributes; } }
 
         #endregion
 

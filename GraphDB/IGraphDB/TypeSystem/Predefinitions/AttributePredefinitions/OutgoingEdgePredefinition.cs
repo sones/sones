@@ -87,7 +87,7 @@ namespace sones.GraphDB.TypeSystem
         /// <param name="myEdgeName">The name of the edge</param>
         /// <param name="myTypePredefinition">The type of the edges source and target</param>
         public OutgoingEdgePredefinition(String myEdgeName, VertexTypePredefinition myTypePredefinition)
-            : base(myEdgeName, (myTypePredefinition != null) ? "" : myTypePredefinition.TypeName)
+            : base(myEdgeName, (myTypePredefinition == null) ? "" : myTypePredefinition.TypeName)
         {
             EdgeType = Edge;
             Multiplicity = EdgeMultiplicity.SingleEdge;

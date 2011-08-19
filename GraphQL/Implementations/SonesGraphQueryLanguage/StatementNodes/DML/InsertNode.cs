@@ -76,7 +76,10 @@ namespace sones.GraphQL.StatementNodes.DML
             #region get myAttributes
 
             if (HasChildNodes(parseNode.ChildNodes[3]))
-                _AttributeAssignList = ((parseNode.ChildNodes[3].ChildNodes[1].AstNode as AttributeAssignListNode).AttributeAssigns);
+                _AttributeAssignList = ((parseNode
+                                            .ChildNodes[3]
+                                            .ChildNodes[1]
+                                            .AstNode as AttributeAssignListNode).AttributeAssigns);
 
             #endregion
         }
@@ -111,7 +114,10 @@ namespace sones.GraphQL.StatementNodes.DML
                 result = myGraphDB.Insert<QueryResult>(
                         mySecurityToken,
                         myTransactionToken,
-                        CreateRequest(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken),
+                        CreateRequest(myPluginManager, 
+                                        myGraphDB, 
+                                        mySecurityToken, 
+                                        myTransactionToken),
                         CreateQueryResult);
             }
             catch (ASonesException e)
@@ -254,7 +260,9 @@ namespace sones.GraphQL.StatementNodes.DML
                                                                         aAttributeDefinition.AttributeIDChain.ContentString));
                         }
 
-                        IAttributeDefinition attribute = vertexType.GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString);
+                        IAttributeDefinition attribute = vertexType.GetAttributeDefinition(aAttributeDefinition
+                                                                                            .AttributeIDChain
+                                                                                            .ContentString);
 
                         EdgePredefinition edgeDefinition = new EdgePredefinition(value.AttributeIDChain.ContentString);
 
@@ -304,7 +312,8 @@ namespace sones.GraphQL.StatementNodes.DML
                         Type myRequestedType;
                         if (vertexType.HasProperty(aAttributeDefinition.AttributeIDChain.ContentString))
                         {
-                            myRequestedType = ((IPropertyDefinition)vertexType.GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString)).BaseType;
+                            myRequestedType = ((IPropertyDefinition)vertexType
+                                                .GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString)).BaseType;
                         }
                         else
                         {
@@ -419,7 +428,8 @@ namespace sones.GraphQL.StatementNodes.DML
 
                             if (vertexIDs.Count > 1)
                             {
-                                throw new ReferenceAssignmentExpectedException(String.Format("It is not possible to create a single edge pointing to {0} vertices", vertexIDs.Count));
+                                throw new ReferenceAssignmentExpectedException(String.Format("It is not possible to create a single edge pointing to {0} vertices", 
+                                                                                vertexIDs.Count));
                             }
 
                             var inneredge = new EdgePredefinition();

@@ -42,7 +42,8 @@ namespace sones.GraphQL.StatementNodes.DDL
     {
         #region Data
 
-        private List<ATypePredefinition> _TypePredefinitions = new List<ATypePredefinition>();
+        private List<ATypePredefinition> _TypePredefinitions 
+                                            = new List<ATypePredefinition>();
         private String _query;
 
         #endregion
@@ -63,7 +64,8 @@ namespace sones.GraphQL.StatementNodes.DDL
             //                        | S_CREATE + S_EDGE + S_TYPE + bulkEdgeType
             //                        | S_CREATE + S_EDGE + S_TYPES + bulkEdgeTypeList;
 
-            if (myParseTreeNode.ChildNodes[1].Token.KeyTerm == ((SonesGQLGrammar)context.Language.Grammar).S_ABSTRACT)
+            if (myParseTreeNode.ChildNodes[1].Token.KeyTerm == 
+                ((SonesGQLGrammar)context.Language.Grammar).S_ABSTRACT)
             {
                 #region Abstract & Single EdgeType
 
@@ -91,7 +93,8 @@ namespace sones.GraphQL.StatementNodes.DDL
             }
             else
             {
-                if (myParseTreeNode.ChildNodes[2].Token.KeyTerm == ((SonesGQLGrammar)context.Language.Grammar).S_TYPES)
+                if (myParseTreeNode.ChildNodes[2].Token.KeyTerm == 
+                    ((SonesGQLGrammar)context.Language.Grammar).S_TYPES)
                 {
                     #region multiple VertexTypes
 
@@ -174,7 +177,12 @@ namespace sones.GraphQL.StatementNodes.DDL
             }
             catch (ASonesException e)
             {
-                result = new QueryResult(_query, SonesGQLConstants.GQL, 0, ResultType.Failed, null, e);
+                result = new QueryResult(_query, 
+                                            SonesGQLConstants.GQL, 
+                                            0, 
+                                            ResultType.Failed, 
+                                            null, 
+                                            e);
             }
 
             return result;
@@ -238,7 +246,8 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <returns>A attribute predefinition</returns>
         private PropertyPredefinition GenerateProperty(KeyValuePair<AttributeDefinition, string> aAttribute)
         {
-            PropertyPredefinition result = new PropertyPredefinition(aAttribute.Key.AttributeName, aAttribute.Value);
+            PropertyPredefinition result = new PropertyPredefinition(aAttribute.Key.AttributeName, 
+                                                                        aAttribute.Value);
             
             switch (aAttribute.Key.AttributeType.Type)
             {

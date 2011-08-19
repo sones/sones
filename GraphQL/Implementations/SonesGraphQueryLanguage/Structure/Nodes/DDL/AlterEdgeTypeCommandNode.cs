@@ -44,27 +44,6 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 
                 switch (parseNode.ChildNodes[0].Token.Text.ToLower())
                 {
-                    case "drop":
-
-                        #region drop
-
-                        #region data
-
-                        List<String> listOfToBeDroppedAttributes = new List<string>();
-
-                        #endregion
-
-                        foreach (ParseTreeNode aNode in parseNode.ChildNodes[1].ChildNodes)
-                        {
-                            listOfToBeDroppedAttributes.Add(aNode.Token.ValueString);
-                        }
-
-                        AlterTypeCommand = new AlterType_DropAttributes(listOfToBeDroppedAttributes);
-
-                        #endregion
-
-                        break;
-
                     case "add":
 
                         #region add
@@ -88,6 +67,27 @@ namespace sones.GraphQL.Structure.Nodes.DDL
                         AlterTypeCommand = new AlterEdgeType_AddAttributes(listOfToBeAddedAttributes);
 
                         #endregion
+
+                        #endregion
+
+                        break;
+
+                    case "drop":
+
+                        #region drop
+
+                        #region data
+
+                        List<String> listOfToBeDroppedAttributes = new List<string>();
+
+                        #endregion
+
+                        foreach (ParseTreeNode aNode in parseNode.ChildNodes[2].ChildNodes)
+                        {
+                            listOfToBeDroppedAttributes.Add(aNode.Token.ValueString);
+                        }
+
+                        AlterTypeCommand = new AlterType_DropAttributes(listOfToBeDroppedAttributes);
 
                         #endregion
 

@@ -51,23 +51,28 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// A property expression on VertexType.Name
         /// </summary>
-        protected readonly IExpression _VertexTypeNameExpression        = new PropertyExpression(BaseTypes.VertexType.ToString(), "Name");
+        protected readonly IExpression _VertexTypeNameExpression        
+                                        = new PropertyExpression(BaseTypes.VertexType.ToString(), "Name");
         /// <summary>
         /// A property expression on EdgeType.Name
         /// </summary>
-        protected readonly IExpression _EdgeTypeNameExpression          = new PropertyExpression(BaseTypes.EdgeType.ToString(), "Name");
+        protected readonly IExpression _EdgeTypeNameExpression          
+                                        = new PropertyExpression(BaseTypes.EdgeType.ToString(), "Name");
         /// <summary>
         /// A property expression on VertexType.ID
         /// </summary>
-        protected readonly IExpression _VertexTypeVertexIDExpression    = new PropertyExpression(BaseTypes.VertexType.ToString(), "VertexID");
+        protected readonly IExpression _VertexTypeVertexIDExpression    
+                                        = new PropertyExpression(BaseTypes.VertexType.ToString(), "VertexID");
         /// <summary>
         /// A property expression on EdgeType.ID
         /// </summary>
-        protected readonly IExpression _EdgeDotEdgeTypeIDExpression     = new PropertyExpression(BaseTypes.EdgeType.ToString(), "VertexID");
+        protected readonly IExpression _EdgeDotEdgeTypeIDExpression     
+                                        = new PropertyExpression(BaseTypes.EdgeType.ToString(), "VertexID");
         /// <summary>
         /// A property expression on OutgoingEdge.Name
         /// </summary>
-        protected readonly IExpression _attributeNameExpression         = new PropertyExpression(BaseTypes.OutgoingEdge.ToString(), "Name");
+        protected readonly IExpression _attributeNameExpression         
+                                        = new PropertyExpression(BaseTypes.OutgoingEdge.ToString(), "Name");
 
         #endregion
 
@@ -159,10 +164,14 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                         SecurityToken mySecurity)
         {
             //get all UserDefined types
-            var toDeleteVertexTypes = GetAllTypes(myTransaction, mySecurity).Where(_ => _.IsUserDefined == true);
+            var toDeleteVertexTypes = GetAllTypes(myTransaction, 
+                                                    mySecurity).Where(_ => _.IsUserDefined == true);
 
             //delete them, by ignoring there reprimands
-            return RemoveTypes(toDeleteVertexTypes, myTransaction, mySecurity, true).Select(_ => _.Key).ToList();
+            return RemoveTypes(toDeleteVertexTypes, 
+                                myTransaction, 
+                                mySecurity, 
+                                true).Select(_ => _.Key).ToList();
         }
 
         public override abstract void TruncateType(long myTypeID,
@@ -268,27 +277,33 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         /// Does the necessary checks for can add with the use of the FS.
         /// </summary>
-        /// <param name="myDefsTopologically">A topologically sorted list of type predefinitions. <remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
-        /// <param name="myDefsByName">The same type predefinitions as in <paramref name="myDefsTpologically"/>, but indexed by their name. <remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
+        /// <param name="myDefsTopologically">A topologically sorted list of type predefinitions. 
+        /// <remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
+        /// <param name="myDefsByName">The same type predefinitions as in <paramref name="myDefsTpologically"/>
+        /// , but indexed by their name. <remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <remarks><paramref name="myDefsTopologically"/> and <paramref name="myDefsByName"/> must contain the same type predefinitions. This is never checked.</remarks>
+        /// <remarks><paramref name="myDefsTopologically"/> and 
+        /// <paramref name="myDefsByName"/> must contain the same type predefinitions. This is never checked.</remarks>
         /// The predefinitions are checked one by one in topologically order. 
-        protected abstract void CanAddCheckWithFS(LinkedList<ATypePredefinition> myDefsTopologically,
-                                                    IDictionary<string, ATypePredefinition> myDefsByName,
-                                                    TransactionToken myTransaction, SecurityToken mySecurity);
+        protected abstract void CanAddCheckWithFS(
+                                    LinkedList<ATypePredefinition> myDefsTopologically,
+                                    IDictionary<string, ATypePredefinition> myDefsByName,
+                                    TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Checks if the attribute names on type definitions are unique, containing parent myAttributes.
         /// </summary>
         /// <param name="myTopologicallySortedPointer">A pointer to a type predefinitions in a topologically sorted linked list.</param>
-        /// <param name="myAttributes">A dictionary type name to attribute names, that is build up during the process of CanAddCheckWithFS.</param>
+        /// <param name="myAttributes">A dictionary type name to attribute names, 
+        /// that is build up during the process of CanAddCheckWithFS.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        protected abstract void CanAddCheckAttributeNameUniquenessWithFS(LinkedListNode<ATypePredefinition> myTopologicallySortedPointer,
-                                                                            IDictionary<string, HashSet<string>> myAttributes,
-                                                                            TransactionToken myTransaction,
-                                                                            SecurityToken mySecurity);
+        protected abstract void CanAddCheckAttributeNameUniquenessWithFS(
+                                    LinkedListNode<ATypePredefinition> myTopologicallySortedPointer,
+                                    IDictionary<string, HashSet<string>> myAttributes,
+                                    TransactionToken myTransaction,
+                                    SecurityToken mySecurity);
 
         /// <summary>
         /// Generates TypeInfo's of the given types.
@@ -299,11 +314,13 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransaction">TransactionToken</param>
         /// <param name="mySecurity">SecurityToken</param>
         /// <returns>The created TypeInfo's.</returns>
-        protected abstract Dictionary<String, TypeInfo> GenerateTypeInfos(LinkedList<ATypePredefinition> myDefsSortedTopologically,
-                                                                            IDictionary<string, ATypePredefinition> myDefsByName,
-                                                                            long myFirstID,
-                                                                            TransactionToken myTransaction,
-                                                                            SecurityToken mySecurity);
+        protected abstract Dictionary<String, TypeInfo> 
+                            GenerateTypeInfos(  
+                                LinkedList<ATypePredefinition> myDefsSortedTopologically,
+                                IDictionary<string, ATypePredefinition> myDefsByName,
+                                long myFirstID,
+                                TransactionToken myTransaction,
+                                SecurityToken mySecurity);
 
         /// <summary>
         /// Gets an IVertex representing the vertex type given by <paramref name="myTypeName"/>.
@@ -337,13 +354,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransactionToken">The TransactionToken.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         /// <param name="myResult">Ref on result array.</param>
-        protected abstract IEnumerable<T> StoreTypeAndAttributes(LinkedList<ATypePredefinition> myDefsTopologically,
-                                                                    Dictionary<String, TypeInfo> myTypeInfos,
-                                                                    long myCreationDate,
-                                                                    int myResultPos,
-                                                                    TransactionToken myTransactionToken,
-                                                                    SecurityToken mySecurityToken,
-                                                                    ref IVertex[] myResult);
+        protected abstract IEnumerable<T> StoreTypeAndAttributes(
+                                            LinkedList<ATypePredefinition> myDefsTopologically,
+                                            Dictionary<String, TypeInfo> myTypeInfos,
+                                            long myCreationDate,
+                                            int myResultPos,
+                                            TransactionToken myTransactionToken,
+                                            SecurityToken mySecurityToken,
+                                            ref IVertex[] myResult);
 
         /// <summary>
         /// Reservs myCountOfNeededIDs type ids in id manager depending on type and gets the first reserved id.
@@ -358,7 +376,8 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypes">The types to delete.</param>
         /// <param name="myTransaction">Transaction token.</param>
         /// <param name="mySecurity">Security Token.</param>
-        /// <param name="myIgnoreReprimands">True means, that reprimands (IncomingEdges) on the types wich should be removed are ignored.</param>
+        /// <param name="myIgnoreReprimands">True means, that reprimands (IncomingEdges) 
+        /// on the types wich should be removed are ignored.</param>
         /// <returns>Set of deleted type IDs.</returns>
         protected abstract Dictionary<Int64, String> Remove(IEnumerable<T> myTypes,
                                                             TransactionToken myTransaction,
@@ -515,9 +534,16 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                                 .ToDictionary(kvp => kvp.Key,
                                                                               kvp => kvp.Value));
 
-            CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
+            CanAddCheckWithFS(defsTopologically, 
+                                defsByVertexName, 
+                                myTransaction, 
+                                mySecurity);
 
-            var typeInfos = GenerateTypeInfos(defsTopologically, defsByVertexName, firstTypeID, myTransaction, mySecurity);
+            var typeInfos = GenerateTypeInfos(defsTopologically, 
+                                                defsByVertexName, 
+                                                firstTypeID, 
+                                                myTransaction, 
+                                                mySecurity);
 
             //we can add each type separately
             var creationDate = DateTime.UtcNow.ToBinary();
@@ -558,7 +584,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                 var firstAttrID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute)
                                             .ReserveIDs(current.Value.PropertyCount);
 
-                var currentExternID = myTypeInfos[current.Value.TypeName].AttributeCountWithParents - current.Value.PropertyCount - 1;
+                var currentExternID = myTypeInfos[current.Value.TypeName]
+                                        .AttributeCountWithParents - 
+                                        current.Value.PropertyCount - 1;
 
                 foreach (var prop in current.Value.Properties)
                 {
@@ -599,9 +627,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Gets the parent predefinition of the given predefinition.
         /// </summary>
         /// <param name="myCurrent">The predefinition of that the parent predefinition is searched.</param>
-        /// <returns>The link to the parent predefinition of the <paramref name="myCurrent"/> predefinition, otherwise <c>NULL</c>.</returns>
-        protected static LinkedListNode<ATypePredefinition> GetParentPredefinitionOnTopologicallySortedList(
-                                                                LinkedListNode<ATypePredefinition> myCurrent)
+        /// <returns>The link to the parent predefinition of the 
+        /// <paramref name="myCurrent"/> predefinition, otherwise <c>NULL</c>.</returns>
+        protected static LinkedListNode<ATypePredefinition> 
+                            GetParentPredefinitionOnTopologicallySortedList(
+                                LinkedListNode<ATypePredefinition> myCurrent)
         {
             for (var parent = myCurrent.Previous; parent != null; parent = parent.Previous)
             {

@@ -497,6 +497,22 @@ namespace sones.GraphDB.Manager.TypeManagement
                         throw new TypeRemoveException<IEdgeType>(delType.Name, "The given type has child types and cannot be removed.");
 
                     #endregion
+
+                    #region check if there is a vertex type with an outgoing edge of type - delType
+
+                    var vertex = Get(delType.ID, myTransaction, mySecurity);
+                    List<long> incomingVertices = new List<long>();
+                    foreach (var collection in vertex.GetAllIncomingVertices().Select(_ => _.Item3.Select(x => x.VertexID)))
+                        incomingVertices.AddRange(collection);
+
+                    var attributes = delType.GetAttributeDefinitions(true).Select(_ => _.ID);
+
+                    if(!incomingVertices.All(_ => attributes.Contains(_)))
+                        throw new TypeRemoveException<IEdgeType>(delType.Name, 
+                                    @"There are reprimands on the type which shoul be removed.
+                                        There exist an outgoing edge of type " + delType.Name);
+
+                    #endregion
                 }
 
                 toDeleteAttributeDefinitions.AddRange(delType.GetAttributeDefinitions(false));
