@@ -93,6 +93,56 @@ namespace sones.Plugins.GraphDS.IO
         {
             StringBuilder Output = new StringBuilder();
 
+            Output.AppendLine("var w = 960,");
+            Output.AppendLine("h = 500,");
+            Output.AppendLine("fill = d3.scale.category20();");
+            Output.AppendLine("var vis = d3.select(\"#output\")");
+            Output.AppendLine(".append(\"svg:svg\")");
+            Output.AppendLine(".attr(\"width\", w)");
+            Output.AppendLine(".attr(\"height\", h);");
+            //Output.AppendLine("d3.json(\"miserables.json\", function(json) {");
+            Output.AppendLine("var json = jQuery.parseJSON('{\"nodes\":[{\"name\":\"Myriel\",\"group\":1},{\"name\":\"Gervais\",\"group\":2}],\"links\":[{\"source\":1,\"target\":0,\"value\":1}]}\');");
+            Output.AppendLine("var force = d3.layout.force()");
+            Output.AppendLine(".charge(-120)");
+            Output.AppendLine(".linkDistance(30)");
+            Output.AppendLine(".nodes(json.nodes)");
+            Output.AppendLine(".links(json.links)");
+            Output.AppendLine(".size([w, h])");
+            Output.AppendLine(".start();");
+
+            Output.AppendLine("var link = vis.selectAll(\"line.link\")");
+            Output.AppendLine(".data(json.links)");
+            Output.AppendLine(".enter().append(\"svg:line\")");
+            Output.AppendLine(".attr(\"class\", \"link\")");
+            Output.AppendLine(".style(\"stroke-width\", function(d) { return Math.sqrt(d.value); })");
+            Output.AppendLine(".attr(\"x1\", function(d) { return d.source.x; })");
+            Output.AppendLine(".attr(\"y1\", function(d) { return d.source.y; })");
+            Output.AppendLine(".attr(\"x2\", function(d) { return d.target.x; })");
+            Output.AppendLine(".attr(\"y2\", function(d) { return d.target.y; });");
+            Output.AppendLine("var node = vis.selectAll(\"circle.node\")");
+            Output.AppendLine(".data(json.nodes)");
+            Output.AppendLine(".enter().append(\"svg:circle\")");
+            Output.AppendLine(".attr(\"class\", \"node\")");
+            Output.AppendLine(".attr(\"cx\", function(d) { return d.x; })");
+            Output.AppendLine(".attr(\"cy\", function(d) { return d.y; })");
+            Output.AppendLine(".attr(\"r\", 5)");
+            Output.AppendLine(".style(\"fill\", function(d) { return fill(d.group); })");
+            Output.AppendLine(".call(force.drag);");
+            Output.AppendLine("node.append(\"svg:title\")");
+            Output.AppendLine(".text(function(d) { return d.name; });");
+            Output.AppendLine("vis.style(\"opacity\", 1e-6)");
+            Output.AppendLine(".transition()");
+            Output.AppendLine(".duration(1000)");
+            Output.AppendLine(".style(\"opacity\", 1);");
+            Output.AppendLine("force.on(\"tick\", function() {");
+            Output.AppendLine("link.attr(\"x1\", function(d) { return d.source.x; })");
+            Output.AppendLine(".attr(\"y1\", function(d) { return d.source.y; })");
+            Output.AppendLine(".attr(\"x2\", function(d) { return d.target.x; })");
+            Output.AppendLine(".attr(\"y2\", function(d) { return d.target.y; });");
+            Output.AppendLine("node.attr(\"cx\", function(d) { return d.x; })");
+            Output.AppendLine(".attr(\"cy\", function(d) { return d.y; });");
+            Output.AppendLine("});");
+
             return Output.ToString();
         }
 
