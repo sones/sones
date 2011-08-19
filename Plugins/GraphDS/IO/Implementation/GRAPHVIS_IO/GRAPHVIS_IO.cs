@@ -45,6 +45,13 @@ namespace sones.Plugins.GraphDS.IO
 
         #endregion
 
+        private class NodeLink
+        {
+            public int source;
+            public int target;
+            public string name;
+        }
+
         #region Constructors
 
         /// <summary>
@@ -94,56 +101,176 @@ namespace sones.Plugins.GraphDS.IO
             StringBuilder Output = new StringBuilder();
 
             Output.AppendLine("var w = 960,");
-            Output.AppendLine("h = 500,");
-            Output.AppendLine("fill = d3.scale.category20();");
+            Output.AppendLine("h = 500;");
             Output.AppendLine("var vis = d3.select(\"#output\")");
             Output.AppendLine(".append(\"svg:svg\")");
             Output.AppendLine(".attr(\"width\", w)");
             Output.AppendLine(".attr(\"height\", h);");
-            //Output.AppendLine("d3.json(\"miserables.json\", function(json) {");
-            Output.AppendLine("var json = jQuery.parseJSON('{\"nodes\":[{\"name\":\"Myriel\",\"group\":1},{\"name\":\"Gervais\",\"group\":2}],\"links\":[{\"source\":1,\"target\":0,\"value\":1}]}\');");
-            Output.AppendLine("var force = d3.layout.force()");
-            Output.AppendLine(".charge(-120)");
-            Output.AppendLine(".linkDistance(30)");
-            Output.AppendLine(".nodes(json.nodes)");
-            Output.AppendLine(".links(json.links)");
+
+            List<string> Nodes;
+            List<NodeLink> Links;
+            GenerateVisGraph(myQueryResult, out Nodes, out Links);
+
+            Output.AppendLine("var nodes = new Array();");
+            Output.AppendLine("var links = new Array();");
+
+            foreach (var Node in Nodes)
+            {
+                Output.AppendLine("var node = new Object();");
+                Output.AppendLine("node.name=\"" + Node + "\";");
+                Output.AppendLine("nodes.push(node);");
+            }
+
+            foreach (var Link in Links)
+            {
+                Output.AppendLine("var link = new Object();");
+                Output.AppendLine("link.source=" + Link.source + ";");
+                Output.AppendLine("link.target=" + Link.target + ";");
+                Output.AppendLine("link.name=\"" + Link.name + "\";");
+                Output.AppendLine("links.push(link);");
+            }
+            
+            Output.AppendLine("var force = self.force = d3.layout.force()");
+            Output.AppendLine(".nodes(nodes)");
+            Output.AppendLine(".links(links)");
+            Output.AppendLine(".gravity(.05)");
+            Output.AppendLine(".distance(100)");
+            Output.AppendLine(".charge(-100)");
             Output.AppendLine(".size([w, h])");
             Output.AppendLine(".start();");
 
             Output.AppendLine("var link = vis.selectAll(\"line.link\")");
-            Output.AppendLine(".data(json.links)");
+            Output.AppendLine(".data(links)");
             Output.AppendLine(".enter().append(\"svg:line\")");
-            Output.AppendLine(".attr(\"class\", \"link\")");
-            Output.AppendLine(".style(\"stroke-width\", function(d) { return Math.sqrt(d.value); })");
+            Output.AppendLine(".attr(\"class\", \"graphlink\")");
             Output.AppendLine(".attr(\"x1\", function(d) { return d.source.x; })");
             Output.AppendLine(".attr(\"y1\", function(d) { return d.source.y; })");
             Output.AppendLine(".attr(\"x2\", function(d) { return d.target.x; })");
             Output.AppendLine(".attr(\"y2\", function(d) { return d.target.y; });");
-            Output.AppendLine("var node = vis.selectAll(\"circle.node\")");
-            Output.AppendLine(".data(json.nodes)");
-            Output.AppendLine(".enter().append(\"svg:circle\")");
+
+            Output.AppendLine("var node = vis.selectAll(\"g.node\")");
+            Output.AppendLine(".data(nodes)");
+            Output.AppendLine(".enter().append(\"svg:g\")");
             Output.AppendLine(".attr(\"class\", \"node\")");
-            Output.AppendLine(".attr(\"cx\", function(d) { return d.x; })");
-            Output.AppendLine(".attr(\"cy\", function(d) { return d.y; })");
-            Output.AppendLine(".attr(\"r\", 5)");
-            Output.AppendLine(".style(\"fill\", function(d) { return fill(d.group); })");
             Output.AppendLine(".call(force.drag);");
-            Output.AppendLine("node.append(\"svg:title\")");
-            Output.AppendLine(".text(function(d) { return d.name; });");
-            Output.AppendLine("vis.style(\"opacity\", 1e-6)");
-            Output.AppendLine(".transition()");
-            Output.AppendLine(".duration(1000)");
-            Output.AppendLine(".style(\"opacity\", 1);");
+
+            Output.AppendLine("node.append(\"svg:image\")");
+            Output.AppendLine(".attr(\"class\", \"circle\")");
+            Output.AppendLine(".attr(\"xlink:href\", \"favicon.ico\")");
+            Output.AppendLine(".attr(\"x\", \"-8px\")");
+            Output.AppendLine(".attr(\"y\", \"-8px\")");
+            Output.AppendLine(".attr(\"width\", \"16px\")");
+            Output.AppendLine(".attr(\"height\", \"16px\");");
+
+            Output.AppendLine("node.append(\"svg:text\")");
+            Output.AppendLine(".attr(\"class\", \"nodetext\")");
+            Output.AppendLine(".attr(\"dx\", 12)");
+            Output.AppendLine(".attr(\"dy\", \".35em\")");
+            Output.AppendLine(".text(function(d) { return d.name });");
+
             Output.AppendLine("force.on(\"tick\", function() {");
             Output.AppendLine("link.attr(\"x1\", function(d) { return d.source.x; })");
             Output.AppendLine(".attr(\"y1\", function(d) { return d.source.y; })");
             Output.AppendLine(".attr(\"x2\", function(d) { return d.target.x; })");
             Output.AppendLine(".attr(\"y2\", function(d) { return d.target.y; });");
-            Output.AppendLine("node.attr(\"cx\", function(d) { return d.x; })");
-            Output.AppendLine(".attr(\"cy\", function(d) { return d.y; });");
+            Output.AppendLine("node.attr(\"transform\", function(d) { return \"translate(\" + d.x + \",\" + d.y + \")\"; });");
             Output.AppendLine("});");
 
             return Output.ToString();
+        }
+
+        private void GenerateVisGraph(QueryResult myQueryResult, out List<string> Nodes, out List<NodeLink> Links)
+        {
+            GenerateNodeList(myQueryResult, out Nodes);
+            GenerateLinkList(myQueryResult, Nodes, out Links);
+        }
+
+        private void GenerateNodeList(QueryResult myQueryResult, out List<string> Nodes)
+        {
+            Nodes = new List<string>();
+
+            GenerateNodeList_AnalyzeVertices(myQueryResult, ref Nodes);
+        }
+
+        private void GenerateNodeList_AnalyzeVertices(IEnumerable<IVertexView> vertices, ref List<string> Nodes)
+        {
+            foreach (var aVertex in vertices)
+            {
+                foreach (var property in aVertex.GetAllProperties())
+                {
+                    if ((property.Item1 != null) && (property.Item2 != null))
+                    {
+                        if ((property.Item1 is String) && (property.Item1.ToString().ToUpper() == "NODE"))
+                        {
+                            Nodes.Add(property.Item2.ToString());
+                        }
+                    }
+                }
+
+                foreach (var edge in aVertex.GetAllEdges())
+                {
+                    GenerateNodeList_AnalyzeVertices(edge.Item2.GetTargetVertices(), ref Nodes);
+                }
+            }
+        }
+
+        private void GenerateLinkList(QueryResult myQueryResult, List<string> Nodes, out List<NodeLink> Links)
+        {
+            Links = new List<NodeLink>();
+
+            if (Nodes.Count() <= 0) return;
+
+            GenerateLinkList_AnalyzeVertices(myQueryResult, Nodes, ref Links);
+        }
+
+        private void GenerateLinkList_AnalyzeVertices(IEnumerable<IVertexView> vertices, List<string> Nodes, ref List<NodeLink> Links)
+        {
+            foreach (var aVertex in vertices)
+            {
+                string sourcename = null;
+
+                foreach (var property in aVertex.GetAllProperties())
+                {
+                    if ((property.Item1 is String) && (property.Item1.ToString().ToUpper() == "NODE") && (property.Item2 is String))
+                    {
+                        sourcename = property.Item2.ToString();
+                    }
+                }
+
+                foreach (var edge in aVertex.GetAllEdges())
+                {
+                    foreach (var targetvertex in edge.Item2.GetTargetVertices())
+                    {
+                        string targetname = null;
+
+                        foreach (var property in targetvertex.GetAllProperties())
+                        {
+                            if ((property.Item1 is String) && (property.Item1.ToString().ToUpper() == "NODE") && (property.Item2 is String))
+                            {
+                                targetname = property.Item2.ToString();
+                                break;
+                            }
+                        }
+
+                        if ((sourcename != null) && (targetname != null))
+                        {
+                            NodeLink newlink = new NodeLink();
+
+                            if (edge.Item1 is String) newlink.name = edge.Item1.ToString();
+                            else newlink.name = "";
+                            newlink.source = Nodes.IndexOf(sourcename);
+                            newlink.target = Nodes.IndexOf(targetname);
+
+                            if ((newlink.source >= 0) && (newlink.target >= 0))
+                            {
+                                Links.Add(newlink);
+                            }
+                        }
+                    }
+
+                    GenerateLinkList_AnalyzeVertices(edge.Item2.GetTargetVertices(), Nodes, ref Links);
+                }
+            }
         }
 
         public String ListAvailParams()
