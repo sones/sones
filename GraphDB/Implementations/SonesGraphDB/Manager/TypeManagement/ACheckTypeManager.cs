@@ -559,14 +559,14 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 if (!CheckOldName(aToBeRenamedAttributes.Key, myType))
                 {
-                    throw new InvalidAlterTypeException(
+                    throw new AttributeDoesNotExistException(
                         String.Format("It is not possible to rename {0} into {1}. The to be renamed attribute does not exist.",
                                         aToBeRenamedAttributes.Key, aToBeRenamedAttributes.Value));
                 }
 
                 if (!CheckNewName(aToBeRenamedAttributes.Value, myType))
                 {
-                    throw new InvalidAlterTypeException(
+                    throw new AttributeAlreadyExistsException(
                         String.Format("It is not possible to rename {0} into {1}. The new attribute name already exists.",
                                         aToBeRenamedAttributes.Key, aToBeRenamedAttributes.Value));
                 }

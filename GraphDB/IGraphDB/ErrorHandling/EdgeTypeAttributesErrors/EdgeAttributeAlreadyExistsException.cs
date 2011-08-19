@@ -25,7 +25,7 @@ namespace sones.GraphDB.ErrorHandling
     /// <summary>
     /// The vertex attribute already exists in the type
     /// </summary>
-    public sealed class EdgeAttributeAlreadyExistException : AGraphDBEdgeAttributeException
+    public sealed class EdgeAttributeAlreadyExistException: AGraphDBEdgeAttributeException
     {
         public String AttributeName { get; private set; }
         public String TypeName { get; private set; }

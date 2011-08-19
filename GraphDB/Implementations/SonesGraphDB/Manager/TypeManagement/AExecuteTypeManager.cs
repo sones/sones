@@ -129,7 +129,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             var vertex = Get(myTypeName, myTransaction, mySecurity);
 
             if (vertex == null)
-                throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeName));
+                throw new KeyNotFoundException(string.Format("A type with name {0} was not found.", myTypeName));
 
             if (_baseTypes.ContainsKey(vertex.VertexID))
                 return (T)_baseTypes[vertex.VertexID];

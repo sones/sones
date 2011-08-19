@@ -47,6 +47,7 @@
     <Compile Include="ErrorHandling\Attribute\EmptyAttributeNameException.cs" />
     <Compile Include="ErrorHandling\Attribute\EmptyAttributeTypeException.cs" />
     <Compile Include="ErrorHandling\Attribute\InvalidAttributeNameException.cs" />
+    <Compile Include="ErrorHandling\Attribute\InvalidAttributeTypeException.cs" />
     <Compile Include="ErrorHandling\DBObjectErrors\DBObjectCollisionException.cs" />
     <Compile Include="ErrorHandling\DBObjectErrors\AGraphDBObjectException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeAttributesErrors\AGraphDBEdgeAttributeException.cs" />

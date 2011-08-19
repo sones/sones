@@ -62,6 +62,10 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                         myRequest.AddProperty(prop);
                     }
+                    else
+                        throw new InvalidAttributeTypeException(unknown.AttributeName, 
+                                                                unknown.AttributeType, 
+                                                                "This type is an invalid attribute type for an edge type!");
                 }
 
                 myRequest.ResetUnknown();
@@ -344,9 +348,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     foreach (var aToBeAddedAttribute in myAlterTypeRequest.ToBeAddedProperties)
                     {
                         if (attributesOfCurrentVertexType.Any(_ => _.Name == aToBeAddedAttribute.AttributeName))
-                        {
-                            throw new EdgeAttributeAlreadyExistException(aToBeAddedAttribute.AttributeName);
-                        }
+                            throw new AttributeAlreadyExistsException(aToBeAddedAttribute.AttributeName);
                     }
                 }
 
@@ -360,7 +362,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     {
                         if (attributesOfCurrentVertexType.Any(_ => _.Name == aToBeAddedAttribute.AttributeName))
                         {
-                            throw new EdgeAttributeAlreadyExistException(aToBeAddedAttribute.AttributeName);
+                            throw new AttributeAlreadyExistsException(aToBeAddedAttribute.AttributeName);
                         }
                     }
                 }
