@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.IO;
 using sones.GraphDB.Request.Insert;
 using sones.GraphDB.TypeSystem;
+using sones.Library.Commons.VertexStore.Definitions.Update;
 
 namespace sones.GraphDB.Request
 {
@@ -37,7 +38,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// A GetVertices request to get the vertices to be updated
         /// </summary>
-        public readonly RequestGetVertices GetVerticesRequest;
+        public RequestGetVertices GetVerticesRequest { get; private set; }
 
         public IDictionary<string, IEnumerable<IComparable>> AddedElementsToCollectionProperties { get; private set; }
         public IDictionary<string, IEnumerable<IComparable>> RemovedElementsFromCollectionProperties { get; private set; }
@@ -75,6 +76,11 @@ namespace sones.GraphDB.Request
         public List<EdgePredefinition> UpdateOutgoingEdges { get; private set; }
 
         /// <summary>
+        /// The outgoing edges of updated vertex.
+        /// </summary>
+        public List<SingleEdgeUpdateDefinition> UpdateOutgoingEdgesProperties { get; private set; }
+
+        /// <summary>
         /// The unknwon properties of updated.
         /// </summary>
         public IDictionary<string, object> UpdatedUnknownProperties { get; private set; }
@@ -83,6 +89,11 @@ namespace sones.GraphDB.Request
         /// The well defined properties which should be removed of updated vertex.
         /// </summary>
         public List<String> RemovedAttributes { get; private set; }
+
+        /// <summary>
+        /// The well defined properties which should be removed after a type is altered.
+        /// </summary>
+        public List<IAttributeDefinition> RemovedAlteredAttributes { get; private set; }
 
         #endregion
 
@@ -96,6 +107,12 @@ namespace sones.GraphDB.Request
         {
             GetVerticesRequest = myGetVerticesRequest;
         }
+
+        /// <summary>
+        /// Creates a new update request.
+        /// </summary>
+        public RequestUpdate()
+        { }
 
         #endregion
 
@@ -132,6 +149,18 @@ namespace sones.GraphDB.Request
         public RequestUpdate UpdateEdition(String myEdition)
         {
             UpdatedEdition = myEdition;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the GetVertices request.
+        /// </summary>
+        /// <param name="myRequest">The get vertices request.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestUpdate SetGetVerticesRequest(RequestGetVertices myRequest)
+        {
+            GetVerticesRequest = myRequest;
 
             return this;
         }
@@ -196,13 +225,27 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Adds a new edge to the vertex defintion
         /// </summary>
-        /// <param name="myEdgeName">The name of the edge to be inserted</param>
         /// <param name="myEdgeDefinition">The definition of the edge</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestUpdate UpdateEdge(EdgePredefinition myEdgeDefinition)
         {
             UpdateOutgoingEdges = UpdateOutgoingEdges ?? new List<EdgePredefinition>();
             UpdateOutgoingEdges.Add(myEdgeDefinition);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a edge update definition.
+        /// </summary>
+        /// <param name="myEdgeUpdateDefinition">The name of the edge to be inserted</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestUpdate UpdateEdge(SingleEdgeUpdateDefinition myEdgeUpdateDefinition)
+        {
+            UpdateOutgoingEdgesProperties = 
+                UpdateOutgoingEdgesProperties ?? new List<SingleEdgeUpdateDefinition>();
+
+            UpdateOutgoingEdgesProperties.Add(myEdgeUpdateDefinition);
 
             return this;
         }
@@ -216,6 +259,32 @@ namespace sones.GraphDB.Request
         {
             RemovedAttributes = RemovedAttributes ?? new List<String>();
             RemovedAttributes.Add(myPropertyName);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes structured property.
+        /// </summary>
+        /// <param name="myAttribute">The property.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestUpdate RemoveAlteredAttribute(IAttributeDefinition myAttribute)
+        {
+            RemovedAlteredAttributes = RemovedAlteredAttributes ?? new List<IAttributeDefinition>();
+            RemovedAlteredAttributes.Add(myAttribute);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes structured properties.
+        /// </summary>
+        /// <param name="myAttributes">The properties.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestUpdate RemoveAlteredAttribute(IEnumerable<IAttributeDefinition> myAttributes)
+        {
+            RemovedAlteredAttributes = RemovedAlteredAttributes ?? new List<IAttributeDefinition>();
+            RemovedAlteredAttributes.AddRange(myAttributes);
 
             return this;
         }

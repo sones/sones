@@ -84,7 +84,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public abstract T AlterType(IRequestAlterType myAlterTypeRequest,
                                         TransactionToken myTransactionToken,
-                                        SecurityToken mySecurityToken);
+                                        SecurityToken mySecurityToken,
+                                        out RequestUpdate myUpdateRequest);
 
         public abstract bool HasType(string myTypeName,
                                         TransactionToken myTransactionToken,

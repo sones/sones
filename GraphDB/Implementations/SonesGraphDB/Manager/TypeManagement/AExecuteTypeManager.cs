@@ -34,6 +34,7 @@ using sones.GraphDB.ErrorHandling;
 using sones.Library.LanguageExtensions;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.GraphDB.Manager.Index;
+using sones.Library.Commons.VertexStore.Definitions.Update;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -205,18 +206,24 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override T AlterType(IRequestAlterType myAlterTypeRequest,
                                     TransactionToken myTransactionToken,
-                                    SecurityToken mySecurityToken)
+                                    SecurityToken mySecurityToken,
+                                    out RequestUpdate myUpdateRequest)
         {
             CheckRequestType(myAlterTypeRequest);
             
             var type = GetType(myAlterTypeRequest.TypeName, myTransactionToken, mySecurityToken);
+
+            RequestUpdate updateRequest = (myAlterTypeRequest is RequestAlterVertexType) ? 
+                                            new RequestUpdate(new RequestGetVertices(type.ID)) 
+                                            : new RequestUpdate();
 
             #region remove stuff
 
             AlterType_Remove(myAlterTypeRequest, 
                                 type, 
                                 myTransactionToken, 
-                                mySecurityToken);
+                                mySecurityToken,
+                                ref updateRequest);
 
             CleanUpTypes();
 
@@ -227,7 +234,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             AlterType_Add(myAlterTypeRequest,
                             type,
                             myTransactionToken,
-                            mySecurityToken);
+                            mySecurityToken,
+                            ref updateRequest);
 
             CleanUpTypes();
 
@@ -245,6 +253,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             CleanUpTypes();
 
             CallRebuildIndices(myTransactionToken, mySecurityToken);
+
+            myUpdateRequest = updateRequest;
 
             return GetType(type.ID, myTransactionToken, mySecurityToken);
         }
@@ -398,10 +408,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myType">The to be altered type.</param>
         /// <param name="myTransactionToken">The TransactionToken.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myUpdateRequest">A reference to an update request to update relevant vertices.</param>
         protected abstract void AlterType_Remove(IRequestAlterType myAlterTypeRequest,
                                                     T myType,
                                                     TransactionToken myTransactionToken,
-                                                    SecurityToken mySecurityToken);
+                                                    SecurityToken mySecurityToken,
+                                                    ref RequestUpdate myUpdateRequest);
 
         /// <summary>
         /// All to be added things of the alter type request are going to be added inside this method,
@@ -410,23 +422,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myAlterTypeRequest">The alter type request.</param>
         /// <param name="myType">The to be altered type.</param>
         /// <param name="myTransactionToken">The TransactionToken.</param>
-        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myUpdateRequest">A reference to an update request to update relevant vertices.</param>
         protected abstract void AlterType_Add(IRequestAlterType myAlterTypeRequest,
                                                     T myType,
                                                     TransactionToken myTransactionToken,
-                                                    SecurityToken mySecurityToken);
-
-        /// <summary>
-        /// Removes properties.
-        /// </summary>
-        /// <param name="myToBeRemovedProperties">The to be removed edges.</param>
-        /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
-        /// <param name="mySecurityToken">The SecurityToken.</param>
-        protected abstract void ProcessPropertyRemoval(IEnumerable<string> myToBeRemovedProperties,
-                                                        T myType,
-                                                        TransactionToken myTransactionToken,
-                                                        SecurityToken mySecurityToken);
+                                                    SecurityToken mySecurityToken,
+                                                    ref RequestUpdate myUpdateRequest);
 
         /// <summary>
         /// Adds the specified properties to the given type and stores them.
@@ -672,6 +673,48 @@ namespace sones.GraphDB.Manager.TypeManagement
                         myAlterTypeRequest.AlteredTypeName,
                         myTransactionToken,
                         mySecurityToken);
+        }
+
+        /// <summary>
+        /// Removes properties.
+        /// </summary>
+        /// <param name="myToBeRemovedProperties">The to be removed edges.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <returns>A list with the deleted property id's.</returns>
+        protected IEnumerable<long> ProcessPropertyRemoval(IEnumerable<string> myToBeRemovedProperties,
+                                                            T myType,
+                                                            TransactionToken myTransactionToken,
+                                                            SecurityToken mySecurityToken)
+        {
+            List<long> removed = null;
+
+            foreach (var aProperty in myToBeRemovedProperties)
+            {
+                #region remove related indices
+
+                var propertyDefinition = myType.GetPropertyDefinition(aProperty);
+
+                foreach (var aIndexDefinition in propertyDefinition.InIndices)
+                {
+                    _indexManager.RemoveIndexInstance(aIndexDefinition.ID,
+                                                        myTransactionToken,
+                                                        mySecurityToken);
+                }
+
+                #endregion
+
+                removed = removed ?? new List<long>();
+                removed.Add(propertyDefinition.ID);
+
+                _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurityToken,
+                                                                        myTransactionToken,
+                                                                        propertyDefinition.ID,
+                                                                        (long)BaseTypes.Property);
+            }
+
+            return removed;
         }
 
         #endregion

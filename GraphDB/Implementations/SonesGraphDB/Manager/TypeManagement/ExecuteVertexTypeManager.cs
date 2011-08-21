@@ -844,12 +844,15 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// the related operations will be executed inside here.
         /// </summary>
         /// <param name="myAlterTypeRequest">The alter type request.</param>
+        /// <param name="myType">The to be altered type.</param>
         /// <param name="myTransactionToken">The TransactionToken.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myUpdateRequest">A reference to an update request to update relevant vertices.</param>
         protected override void AlterType_Remove(IRequestAlterType myAlterTypeRequest,
                                                     IVertexType myType,
-                                                    TransactionToken myTransactionToken, 
-                                                    SecurityToken mySecurityToken)
+                                                    TransactionToken myTransactionToken,
+                                                    SecurityToken mySecurityToken,
+                                                    ref RequestUpdate myUpdateRequest)
         {
             var request = myAlterTypeRequest as RequestAlterVertexType;
 
@@ -878,7 +881,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                              request.ToBeRemovedProperties, 
                              myType, 
                              myTransactionToken,
-                             mySecurityToken);
+                             mySecurityToken,
+                             ref myUpdateRequest);
         }
 
         /// <summary>
@@ -886,12 +890,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// the related operations will be executed inside here.
         /// </summary>
         /// <param name="myAlterTypeRequest">The alter type request.</param>
+        /// <param name="myType">The to be altered type.</param>
         /// <param name="myTransactionToken">The TransactionToken.</param>
-        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myUpdateRequest">A reference to an update request to update relevant vertices.</param>
         protected override void AlterType_Add(IRequestAlterType myAlterTypeRequest,
-                                                    IVertexType myType,
-                                                    TransactionToken myTransactionToken,
-                                                    SecurityToken mySecurityToken)
+                                                IVertexType myType,
+                                                TransactionToken myTransactionToken,
+                                                SecurityToken mySecurityToken,
+                                                ref RequestUpdate myUpdateRequest)
         {
             var request = myAlterTypeRequest as RequestAlterVertexType;
 
@@ -918,40 +924,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                                         indexDefinitions, 
                                         mySecurityToken, 
                                         myTransactionToken);
-        }
-
-        /// <summary>
-        /// Removes properties.
-        /// </summary>
-        /// <param name="myToBeRemovedProperties">The to be removed edges.</param>
-        /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
-        /// <param name="mySecurityToken">The SecurityToken.</param>
-        protected override void ProcessPropertyRemoval(IEnumerable<string> myToBeRemovedProperties,
-                                                        IVertexType myType,
-                                                        TransactionToken myTransactionToken,
-                                                        SecurityToken mySecurityToken)
-        {
-            foreach (var aProperty in myToBeRemovedProperties)
-            {
-                #region remove related indices
-
-                var propertyDefinition = myType.GetPropertyDefinition(aProperty);
-
-                foreach (var aIndexDefinition in propertyDefinition.InIndices)
-                {
-                    _indexManager.RemoveIndexInstance(aIndexDefinition.ID,
-                                                        myTransactionToken,
-                                                        mySecurityToken);
-                }
-
-                #endregion
-
-                _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurityToken,
-                                                                        myTransactionToken,
-                                                                        propertyDefinition.ID,
-                                                                        (long)BaseTypes.Property);
-            }
         }
 
         /// <summary>
@@ -1621,7 +1593,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                                         IEnumerable<string> myToBeRemovedProperties, 
                                         IVertexType myType, 
                                         TransactionToken myTransactionToken, 
-                                        SecurityToken mySecurityToken)
+                                        SecurityToken mySecurityToken,
+                                        ref RequestUpdate myUpdateRequest)
         {
             if (myToBeRemovedIncomingEdges.IsNotNullOrEmpty() || 
                 myToBeRemovedOutgoingEdges.IsNotNullOrEmpty() || 
@@ -1629,17 +1602,41 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 if (myToBeRemovedIncomingEdges.IsNotNullOrEmpty())
                 {
-                    ProcessIncomingEdgeRemoval(myToBeRemovedIncomingEdges, myType, myTransactionToken, mySecurityToken);
+                    ProcessIncomingEdgeRemoval(myToBeRemovedIncomingEdges, 
+                                                myType, 
+                                                myTransactionToken, 
+                                                mySecurityToken);
+
+                    myUpdateRequest
+                        .RemoveAlteredAttribute(myType
+                                                .GetAttributeDefinitions(true)
+                                                .Where(_ => myToBeRemovedIncomingEdges.Contains(_.Name)));
                 }
 
                 if (myToBeRemovedOutgoingEdges.IsNotNullOrEmpty())
                 {
-                    ProcessOutgoingEdgeRemoval(myToBeRemovedOutgoingEdges, myType, myTransactionToken, mySecurityToken);
+                    ProcessOutgoingEdgeRemoval(myToBeRemovedOutgoingEdges, 
+                                                myType, 
+                                                myTransactionToken, 
+                                                mySecurityToken);
+
+                    myUpdateRequest
+                        .RemoveAlteredAttribute(myType
+                                                .GetAttributeDefinitions(true)
+                                                .Where(_ => myToBeRemovedOutgoingEdges.Contains(_.Name)));
                 }
 
                 if (myToBeRemovedProperties.IsNotNullOrEmpty())
                 {
-                    ProcessPropertyRemoval(myToBeRemovedProperties, myType, myTransactionToken, mySecurityToken);
+                    ProcessPropertyRemoval(myToBeRemovedProperties, 
+                                            myType, 
+                                            myTransactionToken, 
+                                            mySecurityToken);
+
+                    myUpdateRequest
+                        .RemoveAlteredAttribute(myType
+                                                .GetAttributeDefinitions(true)
+                                                .Where(_ => myToBeRemovedProperties.Contains(_.Name)));
                 }
             }
         }

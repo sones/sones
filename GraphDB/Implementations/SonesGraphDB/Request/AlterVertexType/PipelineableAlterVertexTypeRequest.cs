@@ -64,12 +64,15 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public override void Validate(IMetaManager myMetaManager)
         {
+            RequestUpdate update;
+
             myMetaManager
                 .VertexTypeManager
                 .CheckManager
                 .AlterType(_request, 
                             TransactionToken, 
-                            SecurityToken);
+                            SecurityToken,
+                            out update);
         }
 
         /// <summary>
@@ -77,13 +80,23 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public override void Execute(IMetaManager myMetaManager)
         {
+            RequestUpdate update;
+
             _alteredVertexType = 
                 myMetaManager
                 .VertexTypeManager
                 .ExecuteManager
                 .AlterType(_request,
                             TransactionToken,
-                            SecurityToken);
+                            SecurityToken,
+                            out update);
+
+            myMetaManager
+                .VertexManager
+                .ExecuteManager
+                .UpdateVertices(update,
+                                TransactionToken,
+                                SecurityToken);
         }
 
         /// <summary>

@@ -145,7 +145,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override abstract T AlterType(IRequestAlterType myAlterTypeRequest,
                                                 TransactionToken myTransactionToken,
-                                                SecurityToken mySecurityToken);
+                                                SecurityToken mySecurityToken,
+                                                out RequestUpdate myUpdateRequest);
 
         public override abstract void Initialize(IMetaManager myMetaManager);
 

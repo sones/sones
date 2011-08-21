@@ -19,10 +19,12 @@
 */
 
 using System;
+using System.Linq;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.Manager;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphDB.Request.AlterType
 {
@@ -67,19 +69,15 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager
-                .EdgeTypeManager
-                .CheckManager
-                .GetType(_request.TypeName,
-                            TransactionToken,
-                            SecurityToken);
+            RequestUpdate update;
 
             myMetaManager
                 .EdgeTypeManager
                 .CheckManager
                 .AlterType(_request, 
                             TransactionToken, 
-                            SecurityToken);
+                            SecurityToken,
+                            out update);
         }
 
         /// <summary>
@@ -87,13 +85,33 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public override void Execute(IMetaManager myMetaManager)
         {
+            RequestUpdate update;
+
             _alteredEdgeType = 
                 myMetaManager
                     .EdgeTypeManager
                     .ExecuteManager
                     .AlterType(_request,
                                 TransactionToken,
-                                SecurityToken);
+                                SecurityToken,
+                                out update);
+
+            if (update.GetVerticesRequest == null)
+            {
+                var getVerticesRequest = CreateGetVerticesRequest(myMetaManager, update);
+
+                if (getVerticesRequest != null)
+                {
+                    update.SetGetVerticesRequest(getVerticesRequest);
+
+                    myMetaManager
+                        .VertexManager
+                        .ExecuteManager
+                        .UpdateVertices(update,
+                                        TransactionToken,
+                                        SecurityToken);
+                }
+            }
         }
 
         /// <summary>
@@ -117,6 +135,47 @@ namespace sones.GraphDB.Request.AlterType
         internal TResult GenerateRequestResult<TResult>(Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter)
         {
             return myOutputconverter(Statistics, _alteredEdgeType);
+        }
+
+        internal RequestGetVertices CreateGetVerticesRequest(IMetaManager myMetaManager, 
+                                                                RequestUpdate myRequestUpdate)
+        {
+            var outEdges = myRequestUpdate.UpdateOutgoingEdgesProperties;
+
+            if (outEdges != null)
+            {
+                var userdefTypes = myMetaManager
+                        .VertexTypeManager
+                        .ExecuteManager
+                        .GetAllTypes(TransactionToken,
+                                        SecurityToken)
+                            .Where(_ => _
+                                        .IsUserDefined);
+
+                if (userdefTypes != null && userdefTypes.Count() > 0)
+                {
+                    var types =
+                        userdefTypes
+                            .Where(_ => _
+                                        .GetOutgoingEdgeDefinitions(false)
+                                        .Any(x => x.EdgeType
+                                                    .ID
+                                                    .Equals(outEdges.First().EdgeTypeID) ||
+                                                    x
+                                                    .InnerEdgeType
+                                                    .ID
+                                                    .Equals(outEdges.First().EdgeTypeID)));
+
+                    if(types != null && types.Count() > 0)
+                        return new RequestGetVertices(types.FirstOrDefault().ID);
+                }
+            }
+            else
+                throw new TypeDoesNotExistException<IVertexType>(
+                            "Empty", 
+                            "There is no type found to update after alter type.");
+
+            return null;
         }
 
         #endregion

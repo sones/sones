@@ -38,7 +38,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public override IEdgeType AlterType(IRequestAlterType myAlterTypeRequest,
                                             TransactionToken myTransactionToken,
-                                            SecurityToken mySecurityToken)
+                                            SecurityToken mySecurityToken,
+                                            out RequestUpdate myUpdateRequest)
         {
             CheckRequestType(myAlterTypeRequest);
 
@@ -114,6 +115,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             CallCheckFunctions(myAlterTypeRequest, edgeType, myTransactionToken, mySecurityToken);
 
             #endregion
+
+            myUpdateRequest = new RequestUpdate();
 
             return null;
         }

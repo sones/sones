@@ -132,9 +132,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myAlterTypeRequest">The alter type request</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="myUpdateRequest">A update request to update the vertices,
+        /// which are affected of the alter request.</param>
         T AlterType(IRequestAlterType myAlterTypeRequest,
                     TransactionToken myTransactionToken,
-                    SecurityToken mySecurityToken);
+                    SecurityToken mySecurityToken,
+                    out RequestUpdate myUpdateRequest);
 
         void CleanUpTypes();
     }
