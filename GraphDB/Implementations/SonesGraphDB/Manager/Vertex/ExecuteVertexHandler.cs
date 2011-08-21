@@ -1710,13 +1710,22 @@ namespace sones.GraphDB.Manager.Vertex
                                     toBeUpdatedHyper = toBeUpdatedHyper ?? 
                                                         new Dictionary<long, HyperEdgeUpdateDefinition>();
 
-                                    toBeUpdatedHyper.Add(edgeDef.ID,
-                                                            new HyperEdgeUpdateDefinition(edgeDef.EdgeType.ID,
-                                                                                            null,
-                                                                                            null,
-                                                                                            null,
-                                                                                            null,
+                                    if (toBeUpdatedHyper.ContainsKey(edgeDef.ID))
+                                    {
+                                        var temp = toBeUpdatedHyper[edgeDef.ID];
+                                        toBeUpdatedHyper.Remove(edgeDef.ID);
+                                        toBeUpdatedHyper.Add(edgeDef.ID, 
+                                                            MergeToBeAddedHyperEdgeUpdates(temp, 
                                                                                             internSingleUpdate));
+                                    }
+                                    else
+                                        toBeUpdatedHyper.Add(edgeDef.ID,
+                                                                new HyperEdgeUpdateDefinition(edgeDef.EdgeType.ID,
+                                                                                                null,
+                                                                                                null,
+                                                                                                null,
+                                                                                                null,
+                                                                                                internSingleUpdate));
 
                                     #endregion
                                 }
@@ -1954,6 +1963,29 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-            #endregion
+        private HyperEdgeUpdateDefinition MergeToBeAddedHyperEdgeUpdates(
+                HyperEdgeUpdateDefinition myExisting, 
+                IEnumerable<SingleEdgeUpdateDefinition> myToBeAdded)
+        {
+            IEnumerable<SingleEdgeDeleteDefinition> del = null;
+            IEnumerable<SingleEdgeUpdateDefinition> update = null;
+            StructuredPropertiesUpdate structuredUp = null;
+            UnstructuredPropertiesUpdate unstructuredUp = null;
+
+            if (myExisting.ToBeUpdatedSingleEdges != null && myToBeAdded != null)
+            {
+                update = myExisting.ToBeUpdatedSingleEdges;
+                (update as List<SingleEdgeUpdateDefinition>).AddRange(myToBeAdded);
+            }
+
+            return new HyperEdgeUpdateDefinition(myExisting.EdgeTypeID,
+                                                    null,
+                                                    structuredUp,
+                                                    unstructuredUp,
+                                                    del,
+                                                    update);
+        }
+
+        #endregion
     }
 }

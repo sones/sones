@@ -436,10 +436,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransactionToken">The TransactionToken.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         /// <param name="myType">The to be altered type.</param>
-        protected abstract void ProcessAddPropery(IEnumerable<PropertyPredefinition> myToBeAddedProperties,
-                                                    TransactionToken myTransactionToken,
-                                                    SecurityToken mySecurityToken,
-                                                    T myType);
+        /// <returns>A dictionary with to be added attributes and default value</returns>returns>
+        protected abstract Dictionary<long, IComparable> ProcessAddPropery(
+            IEnumerable<PropertyPredefinition> myToBeAddedProperties,
+            TransactionToken myTransactionToken,
+            SecurityToken mySecurityToken,
+            T myType);
 
         /// <summary>
         /// Renames attributes.

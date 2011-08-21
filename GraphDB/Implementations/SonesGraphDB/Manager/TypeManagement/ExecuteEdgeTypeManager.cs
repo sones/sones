@@ -636,10 +636,18 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                 SecurityToken mySecurityToken,
                                                 ref RequestUpdate myUpdateRequest)
         {
-            AddAttributes(myAlterTypeRequest.ToBeAddedProperties,
-                          myType, 
-                          myTransactionToken, 
-                          mySecurityToken);         
+            var addedProps = AddAttributes(myAlterTypeRequest.ToBeAddedProperties,
+                                              myType, 
+                                              myTransactionToken, 
+                                              mySecurityToken);
+
+            myUpdateRequest
+                .UpdateEdge(new SingleEdgeUpdateDefinition(
+                                    new VertexInformation(),
+                                    new VertexInformation(),
+                                    myType.ID,
+                                    null,
+                                    new StructuredPropertiesUpdate(addedProps)));
         }
 
         /// <summary>
@@ -649,31 +657,49 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransactionToken">The TransactionToken.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         /// <param name="myType">The to be altered type.</param>
-        protected override void ProcessAddPropery(IEnumerable<PropertyPredefinition> myToBeAddedProperties,
-                                                    TransactionToken myTransactionToken,
-                                                    SecurityToken mySecurityToken,
-                                                    IEdgeType myType)
+        /// <returns>A dictionary with to be added attributes and default value</returns>returns>
+        protected override Dictionary<long, IComparable> ProcessAddPropery(
+            IEnumerable<PropertyPredefinition> myToBeAddedProperties,
+            TransactionToken myTransactionToken,
+            SecurityToken mySecurityToken,
+            IEdgeType myType)
         {
+            Dictionary<long, IComparable> dict = null;
+
             foreach (var aProperty in myToBeAddedProperties)
             {
+                var id = _idManager
+                            .GetVertexTypeUniqeID((long)BaseTypes.Attribute)
+                            .GetNextID();
+
+                if (aProperty.DefaultValue != null)
+                {
+                    dict = dict ?? new Dictionary<long, IComparable>();
+
+                    dict.Add(id, aProperty.DefaultValue);
+                }
+                
                 _baseStorageManager.StoreProperty(
                     _vertexManager.ExecuteManager.VertexStore,
-                    new VertexInformation((long)BaseTypes.Property,
-                        _idManager.GetVertexTypeUniqeID((long)BaseTypes.Attribute).GetNextID()),
-                        aProperty.AttributeName,
-                        aProperty.Comment,
-                        DateTime.UtcNow.ToBinary(),
-                        aProperty.IsMandatory,
-                        aProperty.Multiplicity,
-                        aProperty.DefaultValue,
-                        true,
-                        new VertexInformation(
-                            (long)BaseTypes.EdgeType,
-                            myType.ID),
-                        ConvertBasicType(aProperty.AttributeType),
-                        mySecurityToken,
-                        myTransactionToken);
+                    new VertexInformation(
+                        (long)BaseTypes.Property,
+                        id),
+                    aProperty.AttributeName,
+                    aProperty.Comment,
+                    DateTime.UtcNow.ToBinary(),
+                    aProperty.IsMandatory,
+                    aProperty.Multiplicity,
+                    aProperty.DefaultValue,
+                    true,
+                    new VertexInformation(
+                        (long)BaseTypes.EdgeType,
+                        myType.ID),
+                    ConvertBasicType(aProperty.AttributeType),
+                    mySecurityToken,
+                    myTransactionToken);
             }
+
+            return dict;
         }
 
         /// <summary>
@@ -857,22 +883,21 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myType">The to be altered type.</param>
         /// <param name="myTransactionToken">The TransactionToken.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
-        private void AddAttributes(IEnumerable<PropertyPredefinition> myToBeAddedProperties,
-                                    IEdgeType myType,
-                                    TransactionToken myTransactionToken,
-                                    SecurityToken mySecurityToken)
+        /// <returns>A dictionary with to be added attributes and default value.</returns>
+        private Dictionary<long, IComparable> AddAttributes(
+            IEnumerable<PropertyPredefinition> myToBeAddedProperties,
+            IEdgeType myType,
+            TransactionToken myTransactionToken,
+            SecurityToken mySecurityToken)
         {
 
             if (myToBeAddedProperties.IsNotNullOrEmpty())
-            {
-                ProcessAddPropery(myToBeAddedProperties,
-                                    myTransactionToken,
-                                    mySecurityToken,
-                                    myType);
+                return ProcessAddPropery(myToBeAddedProperties,
+                                            myTransactionToken,
+                                            mySecurityToken,
+                                            myType);
 
-                CleanUpTypes();
-            }
-
+            return null;
         }
 
         #endregion

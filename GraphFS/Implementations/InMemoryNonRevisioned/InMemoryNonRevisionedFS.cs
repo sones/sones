@@ -1086,7 +1086,7 @@ namespace sones.GraphFS
                                     if (item.Value.UpdatedStructuredProperties != null)
                                         hyperEdge.UpdateStructuredProperties(
                                             item.Value.UpdatedStructuredProperties.Updated,
-                                        item.Value.UpdatedStructuredProperties.Deleted);
+                                            item.Value.UpdatedStructuredProperties.Deleted);
 
                                     #region update the containing single edges
 
