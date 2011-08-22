@@ -19,10 +19,7 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -42,7 +39,7 @@ namespace sones.GraphDB.ErrorHandling
             Info = myInfo;
             IndexPredef = myIndexPredef;
 
-            _msg = String.Format("Could Not Create Index {0}  type {1} on type {2}.\n\n{3}.", IndexPredef.Name, IndexPredef.TypeName, IndexPredef.VertexTypeName, Info);
+            _msg = String.Format("Could Not Create Index {0} type {1} on type {2}.\n\n{3}.", IndexPredef.Name, IndexPredef.TypeName, IndexPredef.VertexTypeName, Info);
         }
     }
 }

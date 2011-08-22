@@ -60,15 +60,15 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         public void Init(ParsingContext context, ParseTreeNode myParseTreeNode)
         {
-            //createTypesStmt.Rule =      S_CREATE + S_VERTEX + S_TYPES + bulkTypeList
-            //                        |   S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkType
-            //                        |   S_CREATE + S_VERTEX + S_TYPE + bulkType;
+            //createTypesStmt.Rule =      S_CREATE + S_VERTEX + S_TYPES + bulkVertexTypeList
+            //                        |   S_CREATE + S_ABSTRACT + S_VERTEX + S_TYPE + bulkVertexType
+            //                        |   S_CREATE + S_VERTEX + S_TYPE + bulkVertexType;
 
             if (myParseTreeNode.ChildNodes[1].Token.KeyTerm == ((SonesGQLGrammar)context.Language.Grammar).S_ABSTRACT)
             {
                 #region Abstract & Single VertexType
 
-                BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[4].AstNode;
+                BulkVertexTypeNode aTempNode = (BulkVertexTypeNode)myParseTreeNode.ChildNodes[4].AstNode;
 
                 Boolean isAbstract = true;
 
@@ -91,7 +91,7 @@ namespace sones.GraphQL.StatementNodes.DDL
                     {
                         if (_ParseTreeNode.AstNode != null)
                         {
-                            BulkTypeListMemberNode aTempNode = (BulkTypeListMemberNode)_ParseTreeNode.AstNode;
+                            BulkVertexTypeListMemberNode aTempNode = (BulkVertexTypeListMemberNode)_ParseTreeNode.AstNode;
                             _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, aTempNode.IsAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
                         }
                     }
@@ -102,7 +102,7 @@ namespace sones.GraphQL.StatementNodes.DDL
                 {
                     #region single vertex type
 
-                    BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[3].AstNode;
+                    BulkVertexTypeNode aTempNode = (BulkVertexTypeNode)myParseTreeNode.ChildNodes[3].AstNode;
 
                     _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, false, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
 
@@ -223,7 +223,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
             if (aDefinition.ParentType != null && aDefinition.ParentType.Length > 0)
             {
-                result.SetSuperVertexTypeName(aDefinition.ParentType);
+                result.SetSuperTypeName(aDefinition.ParentType);
             }
 
             #endregion
@@ -296,11 +296,11 @@ namespace sones.GraphQL.StatementNodes.DDL
 
             if (String.IsNullOrEmpty(aIndex.IndexName))
             {
-                result = new IndexPredefinition();
+                result = new IndexPredefinition(myVertexType);
             }
             else
             {
-                result = new IndexPredefinition(aIndex.IndexName);
+                result = new IndexPredefinition(aIndex.IndexName, myVertexType);
             }
             result.SetVertexType(myVertexType);
             if (!String.IsNullOrEmpty(aIndex.IndexType))
@@ -331,9 +331,9 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <returns>An incoming edge predefinition</returns>
         private IncomingEdgePredefinition GenerateAIncomingEdge(IncomingEdgeDefinition aIncomingEdge)
         {
-            IncomingEdgePredefinition result = new IncomingEdgePredefinition(aIncomingEdge.AttributeName);
-
-            result.SetOutgoingEdge(aIncomingEdge.TypeName, aIncomingEdge.TypeAttributeName);
+            IncomingEdgePredefinition result = new IncomingEdgePredefinition(aIncomingEdge.AttributeName,
+                                                                                aIncomingEdge.TypeName, 
+                                                                                aIncomingEdge.TypeAttributeName);
 
             return result;
         }
@@ -345,10 +345,8 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <returns>A attribute predefinition</returns>
         private UnknownAttributePredefinition GenerateUnknownAttribute(KeyValuePair<AttributeDefinition, string> aAttribute)
         {
-            UnknownAttributePredefinition result = new UnknownAttributePredefinition(aAttribute.Key.AttributeName);
+            UnknownAttributePredefinition result = new UnknownAttributePredefinition(aAttribute.Key.AttributeName, aAttribute.Value);
             
-            result.SetAttributeType(aAttribute.Value);
-
             if (aAttribute.Key.AttributeType.EdgeType != null)
             {
                 result.SetInnerEdgeType(aAttribute.Key.AttributeType.EdgeType);

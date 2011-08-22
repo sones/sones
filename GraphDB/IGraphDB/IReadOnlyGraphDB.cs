@@ -25,9 +25,6 @@ using System.Text;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.Request;
-using sones.GraphDB.Request.GetEdgeType;
-using sones.GraphDB.Request.GetVertexType;
-using sones.GraphDB.Request.GetIndex;
 
 namespace sones.GraphDB
 {

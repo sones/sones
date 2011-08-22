@@ -29,7 +29,6 @@ using sones.GraphQL.GQL.Manager.Plugin;
 using System.Collections.Generic;
 using sones.GraphQL.GQL.Structure.Helper.Definition.AlterType;
 using sones.GraphQL.Structure.Nodes.DDL;
-using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.Structure.Helper.Enums;
@@ -65,7 +64,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             {
                 if (alterCmds.AstNode != null)
                 {
-                    var alterCommand = (AlterCommandNode) alterCmds.AstNode;
+                    var alterCommand = (AlterVertexTypeCommandNode) alterCmds.AstNode;
 
                     if (alterCommand.AlterTypeCommand != null)
                     {
@@ -103,7 +102,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         public override string StatementName
         {
-            get { return "AlterType"; }
+            get { return "AlterVertexType"; }
         }
 
         public override TypesOfStatements TypeOfStatement
@@ -167,7 +166,7 @@ namespace sones.GraphQL.StatementNodes.DDL
                     ProcessRenameAttribute(myAlterCommand, ref result);
 
                     break;
-                case TypesOfAlterCmd.RenameVertexType:
+                case TypesOfAlterCmd.RenameType:
 
                     ProcessRenameVertexType(myAlterCommand, ref result);
 
@@ -238,11 +237,11 @@ namespace sones.GraphQL.StatementNodes.DDL
 
             if (String.IsNullOrEmpty(aIndex.IndexName))
             {
-                result = new IndexPredefinition();
+                result = new IndexPredefinition(_TypeName);
             }
             else
             {
-                result = new IndexPredefinition(aIndex.IndexName);
+                result = new IndexPredefinition(aIndex.IndexName, _TypeName);
             }
 
             if (!String.IsNullOrEmpty(aIndex.IndexType))
@@ -320,9 +319,9 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         private void ProcessRenameVertexType(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            var command = (AlterType_RenameVertexType)myAlterCommand;
+            var command = (AlterType_RenameType)myAlterCommand;
 
-            result.RenameVertexType(command.NewName);
+            result.RenameType(command.NewName);
         }
 
         private void ProcessRenameAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
@@ -344,7 +343,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         private void ProcessAddAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            var command = (AlterType_AddAttributes)myAlterCommand;
+            var command = (AlterVertexType_AddAttributes)myAlterCommand;
 
             if (command.ListOfAttributes != null && command.ListOfAttributes.Count > 0)
             {
@@ -373,9 +372,9 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <returns>An incoming edge predefinition</returns>
         private IncomingEdgePredefinition GenerateAIncomingEdge(IncomingEdgeDefinition aIncomingEdge)
         {
-            IncomingEdgePredefinition result = new IncomingEdgePredefinition(aIncomingEdge.AttributeName);
-
-            result.SetOutgoingEdge(aIncomingEdge.TypeName, aIncomingEdge.TypeAttributeName);
+            IncomingEdgePredefinition result = new IncomingEdgePredefinition(aIncomingEdge.AttributeName,
+                                                                                aIncomingEdge.TypeName, 
+                                                                                aIncomingEdge.TypeAttributeName);
 
             return result;
         }
@@ -403,10 +402,8 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <returns>A attribute predefinition</returns>
         private UnknownAttributePredefinition GenerateUnknownAttribute(AttributeDefinition myAttributeDefinition)
         {
-            UnknownAttributePredefinition result = new UnknownAttributePredefinition(myAttributeDefinition.AttributeName);
+            UnknownAttributePredefinition result = new UnknownAttributePredefinition(myAttributeDefinition.AttributeName, myAttributeDefinition.AttributeType.Name);
 
-            result.SetAttributeType(myAttributeDefinition.AttributeType.Name);
-            
             if (myAttributeDefinition.AttributeType.EdgeType != null)
             {
                 result.SetInnerEdgeType(myAttributeDefinition.AttributeType.EdgeType);

@@ -29,7 +29,7 @@ using sones.GraphQL.Structure.Helper.Enums;
 namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
 {
     /// <summary>
-    /// Drop attributes from a vertex
+    /// Drop attributes from a vertex / edge
     /// </summary>
     public sealed class AlterType_DropAttributes : AAlterTypeCommand
     {
@@ -48,7 +48,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
             get { return TypesOfAlterCmd.DropAttribute; }
         }
 
-        public override IVertexView CreateResult(IVertexType myAlteredVertexType)
+        public override IVertexView CreateResult(IBaseType myAlteredType)
         {
             throw new NotImplementedException();
         }

@@ -27,6 +27,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using sones.GraphDB;
 using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 using sones.GraphQL;
 using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
@@ -473,7 +474,7 @@ namespace sones.Plugins.SonesGQL
 			#region create vertex type
 			
 			var vertexTypePreDef 	= new VertexTypePredefinition(_VertexTypeName);
-			var outEdgePreDef 		= new OutgoingEdgePredefinition(_EdgeTypeName);
+			var outEdgePreDef 		= new OutgoingEdgePredefinition(_EdgeTypeName, vertexTypePreDef);
 			
 			#region create edge definition
 			
@@ -481,8 +482,6 @@ namespace sones.Plugins.SonesGQL
 			outEdgePreDef.SetEdgeTypeAsWeighted();
 			// set inner edge type to weighted
 			outEdgePreDef.SetMultiplicityAsMultiEdge("Weighted");
-			// set type of vertices at edges
-			outEdgePreDef.SetAttributeType(vertexTypePreDef);
 			
 			vertexTypePreDef.AddOutgoingEdge(outEdgePreDef);			
 			
@@ -490,9 +489,8 @@ namespace sones.Plugins.SonesGQL
 			
 			#region create id definition
 			
-			var idPreDefinition = new PropertyPredefinition(GraphMLTokens.VERTEX_ID_NAME);
-				
-			idPreDefinition.SetAttributeType(GraphMLTokens.VERTEX_ID_TYPE);
+			var idPreDefinition = new PropertyPredefinition(GraphMLTokens.VERTEX_ID_NAME , GraphMLTokens.VERTEX_ID_TYPE);
+
 			idPreDefinition.SetDefaultValue(GraphMLTokens.VERTEX_ID_DEF_VAL);
 			
 			vertexTypePreDef.AddProperty(idPreDefinition);
@@ -515,7 +513,7 @@ namespace sones.Plugins.SonesGQL
 		
 		private void DropVertexType()
 		{
-			_GraphDB.DropType(_SecurityToken,
+			_GraphDB.DropVertexType(_SecurityToken,
 				_TransactionToken,
 				new RequestDropVertexType(_VertexTypeName),
 				(stats, removedIDs) => removedIDs);
@@ -834,9 +832,8 @@ namespace sones.Plugins.SonesGQL
 			{
 				var requestAlterVertexType = new RequestAlterVertexType(_VertexTypeName);
 				
-				var propertyPreDefinition = new PropertyPredefinition(attrName);
+				var propertyPreDefinition = new PropertyPredefinition(attrName, attrType);
 				
-				propertyPreDefinition.SetAttributeType(attrType);
 				propertyPreDefinition.SetDefaultValue(attrDefault);
 				
 				requestAlterVertexType.AddProperty(propertyPreDefinition);

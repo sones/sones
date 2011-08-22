@@ -29,9 +29,6 @@ using System.Web;
 using System.IO;
 using System.Text;
 using sones.Plugins.GraphDS.IO.XML_IO;
-using sones.GraphDB.Request.GetVertexType;
-using sones.GraphDB.Request.GetEdgeType;
-using sones.GraphDB.Request.GetIndex;
 using System.Reflection;
 using System.Threading;
 
@@ -224,11 +221,15 @@ namespace sones.GraphDS.GraphDSRESTClient
             throw new NotImplementedException();
         }
 
-        public TResult DropType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropVertexType myRequestDropType, Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
+        public TResult DropVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropVertexType myRequestDropType, Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
 
+        public TResult DropEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropEdgeType myRequestDropType, Converter.DropEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
         public TResult DropIndex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropIndex myRequestDropIndex, Converter.DropIndexResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
@@ -249,7 +250,12 @@ namespace sones.GraphDS.GraphDSRESTClient
             throw new NotImplementedException();
         }
 
-        public TResult CreateEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateVertexType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
+        public TResult CreateEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateEdgeType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult CreateEdgeTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeTypes myRequestCreateEdgeTypes, Converter.CreateEdgeTypesResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

@@ -111,7 +111,6 @@ namespace sones.Library.Commons.VertexStore.Definitions
             ModificationDate = myModificationDate;
             StructuredProperties = myStructuredProperties;
             UnstructuredProperties = myUnstructuredProperties;
-
         }
 
         #endregion

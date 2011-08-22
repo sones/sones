@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using sones.GraphDB;
-using sones.GraphDB.Request.GetIndex;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.GQL.ErrorHandling;
 using sones.GraphQL.GQL.Manager.Plugin;
@@ -31,6 +30,7 @@ using sones.Library.Commons.Transaction;
 using System.Linq;
 using sones.Library.ErrorHandling;
 using sones.Library.CollectionWrapper;
+using sones.GraphDB.Request;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition
 {

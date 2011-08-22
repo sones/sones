@@ -505,42 +505,41 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #region Edge type
 
-        public void StoreEdgeType(
+        public IVertex StoreEdgeType(
             IVertexStore myStore,
             VertexInformation myVertex,
             String myName,
             String myComment,
-            bool myIsUserDefined,
             Int64 myCreationDate,
             bool myIsAbstract,
             bool myIsSealed,
+            bool myIsUserDefined,
             VertexInformation? myParent,
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
-            Store(
-                myStore,
-                myVertex,
-                myComment,
-                myCreationDate,
-                (myParent == null)
-                    ? null
-                    : new Dictionary<Tuple<long, long>, VertexInformation>
-                    {
-                        { _EdgeEdgeTypeDotParent, myParent.Value },
-                    },
-                null,
-                new Dictionary<long, IComparable>
-                {
-                    { (long) AttributeDefinitions.BaseTypeDotName, myName },
-                    { (long) AttributeDefinitions.BaseTypeDotIsUserDefined, myIsUserDefined },
-                    { (long) AttributeDefinitions.BaseTypeDotIsAbstract, myIsAbstract },
-                    { (long) AttributeDefinitions.BaseTypeDotIsSealed, myIsSealed },
-                    //{ (long) AttributeDefinitions.Behaviour, null },
-                },
-                null,
-                mySecurity,
-                myTransaction);
+            return Store(myStore,
+                            myVertex,
+                            myComment,
+                            myCreationDate,
+                            (myParent == null)
+                                ? null
+                                : new Dictionary<Tuple<long, long>, VertexInformation>
+                                {
+                                    { _EdgeEdgeTypeDotParent, myParent.Value },
+                                },
+                            null,
+                            new Dictionary<long, IComparable>
+                            {
+                                { (long) AttributeDefinitions.BaseTypeDotName, myName },
+                                { (long) AttributeDefinitions.BaseTypeDotIsUserDefined, myIsUserDefined },
+                                { (long) AttributeDefinitions.BaseTypeDotIsAbstract, myIsAbstract },
+                                { (long) AttributeDefinitions.BaseTypeDotIsSealed, myIsSealed },
+                                //{ (long) AttributeDefinitions.Behaviour, null },
+                            },
+                            null,
+                            mySecurity,
+                            myTransaction);
         }
 
         #endregion

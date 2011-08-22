@@ -25,7 +25,6 @@ using System.Linq;
 using System.Net;
 using sones.GraphDB;
 using sones.GraphDB.Request;
-using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL;
 using sones.GraphQL.Result;

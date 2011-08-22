@@ -47,13 +47,14 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="myAttributeName">The name of the attribute that does not exist.</param>
         /// <param name="myTypeName">The name of the vertex type or edge type that should define the attribute.</param>
-        public AttributeDoesNotExistException(String myAttributeName, String myTypeName = null)
+        public AttributeDoesNotExistException(String myAttributeName, String myTypeName = null, String myInfo = "")
         {
             TypeName = myTypeName;
             AttributeName = myAttributeName;
+
             _msg = (myTypeName == null)
-                ? String.Format("The attribute {0} does not exist.", myAttributeName)
-                : String.Format("The attribute {1}.{0} does not exist.", myAttributeName, myTypeName);
+                ? String.Format("The attribute {0} does not exist. {1}", myAttributeName, myInfo)
+                : String.Format("The attribute {1}.{0} does not exist. {2}", myAttributeName, myTypeName, myInfo);
         }
 
     }

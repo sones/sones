@@ -75,7 +75,15 @@ namespace sones.GraphDB.Manager
 
         #region Edge
 
-        private readonly VertexInformation _Edge = new VertexInformation((long)BaseTypes.EdgeType, (long)BaseTypes.Edge);
+        private readonly VertexInformation _Edge                    = new VertexInformation((long)BaseTypes.EdgeType, (long)BaseTypes.Edge);
+        private readonly VertexInformation _EdgeDotCreationDate     = new VertexInformation((long)BaseTypes.Property, (long)AttributeDefinitions.EdgeDotCreationDate);
+        private readonly VertexInformation _EdgeDotModificationDate = new VertexInformation((long)BaseTypes.Property, (long)AttributeDefinitions.EdgeDotModificationDate);
+        private readonly VertexInformation _EdgeDotComment          = new VertexInformation((long)BaseTypes.Property, (long)AttributeDefinitions.EdgeDotComment);
+        private readonly VertexInformation _EdgeDotTypeID           = new VertexInformation((long)BaseTypes.Property, (long)AttributeDefinitions.EdgeDotEdgeTypeID);
+        private readonly VertexInformation _EdgeDotTypeName         = new VertexInformation((long)BaseTypes.Property, (long)AttributeDefinitions.EdgeDotEdgeTypeName);
+        //currently not needed
+        //private readonly VertexInformation _EdgeDotRevision         = new VertexInformation((long)BaseTypes.Property, (long)AttributeDefinitions.EdgeDotRevision);
+        //private readonly VertexInformation _EdgeDotEdition          = new VertexInformation((long)BaseTypes.Property, (long)AttributeDefinitions.EdgeDotEdition);
 
         #endregion
 
@@ -350,7 +358,17 @@ namespace sones.GraphDB.Manager
         {
             #region OrderableEdge vertex
 
-            _storageManager.StoreEdgeType(myStore, _OrderableEdge, "Orderable", "OrderableEdgeEdgeComment", false, myCreationDate, false, true, _Edge, _security, _transaction);
+            _storageManager.StoreEdgeType(myStore, 
+                                            _OrderableEdge, 
+                                            "Orderable", 
+                                            "OrderableEdgeEdgeComment", 
+                                            myCreationDate, 
+                                            true, 
+                                            false, 
+                                            false, 
+                                            _Edge, 
+                                            _security, 
+                                            _transaction);
 
             #endregion
 
@@ -365,7 +383,17 @@ namespace sones.GraphDB.Manager
         {
             #region WeightedEdge vertex
 
-            _storageManager.StoreEdgeType(myStore, _WeightedEdge, "Weighted", "WeightedEdgeComment", false, myCreationDate, false, true, _Edge, _security, _transaction);
+            _storageManager.StoreEdgeType(myStore, 
+                                            _WeightedEdge, 
+                                            "Weighted", 
+                                            "WeightedEdgeComment", 
+                                            myCreationDate, 
+                                            true, 
+                                            false, 
+                                            false, 
+                                            _Edge, 
+                                            _security, 
+                                            _transaction);
 
             #endregion
 
@@ -378,9 +406,29 @@ namespace sones.GraphDB.Manager
 
         private void AddEdge(IVertexStore myStore, Int64 myCreationDate)
         {
-            #region WeightedEdge vertex
+            #region Edge vertex
 
-            _storageManager.StoreEdgeType(myStore, _Edge, "Edge", "EdgeComment", false, myCreationDate, false, true, null, _security, _transaction);
+            var edge = _storageManager.StoreEdgeType(myStore, 
+                                            _Edge, 
+                                            GlobalConstants.Edge, 
+                                            "EdgeComment", 
+                                            myCreationDate, 
+                                            true, 
+                                            false, 
+                                            false,
+                                            null, 
+                                            _security, 
+                                            _transaction);
+
+            #endregion
+
+            #region Property vertices
+
+            _storageManager.StoreProperty(myStore, _EdgeDotCreationDate, GlobalConstants.EdgeDotCreationDate, "CreationDateComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Edge, _BaseTypeInt64, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _EdgeDotModificationDate, GlobalConstants.EdgeDotModificationDate, "ModificationDateComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Edge, _BaseTypeInt64, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _EdgeDotTypeName, GlobalConstants.EdgeDotEdgeTypeName, "TypeNameComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Edge, _BaseTypeString, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _EdgeDotTypeID, GlobalConstants.EdgeDotEdgeTypeID, "TypeIDComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _Edge, _BaseTypeInt64, _security, _transaction);
+            _storageManager.StoreProperty(myStore, _EdgeDotComment, GlobalConstants.EdgeDotComment, "CommentComment", myCreationDate, false, PropertyMultiplicity.Single, null, false, _Edge, _BaseTypeString, _security, _transaction);
 
             #endregion
         }
@@ -462,7 +510,18 @@ namespace sones.GraphDB.Manager
         {
             #region Property vertex
 
-            _storageManager.StoreVertexType(myStore, _Property, BaseTypes.Property, "PropertyComment", myCreationDate, false, true, false, _Attribute, null, _security, _transaction);
+            _storageManager.StoreVertexType(myStore, 
+                                            _Property, 
+                                            BaseTypes.Property, 
+                                            "PropertyComment", 
+                                            myCreationDate, 
+                                            false, 
+                                            true, 
+                                            false, 
+                                            _Attribute, 
+                                            null, 
+                                            _security, 
+                                            _transaction);
 
             #endregion
 
@@ -534,7 +593,6 @@ namespace sones.GraphDB.Manager
 
             _storageManager.StoreVertexType(myStore, _EdgeType, BaseTypes.EdgeType, "EdgeTypeComment", myCreationDate, false, true, false, _BaseType, new[] {_BaseUniqueIndexEdgeTypeDotName}, _security, _transaction); 
 
-
             #endregion
 
             #region Property vertices
@@ -550,7 +608,6 @@ namespace sones.GraphDB.Manager
             #region VertexType vertex
 
             _storageManager.StoreVertexType(myStore, _VertexType, BaseTypes.VertexType, "VertexTypeComment", myCreationDate, false, true, false, _BaseType, new[] {_BaseUniqueIndexVertexTypeDotName}, _security, _transaction); 
-
 
             #endregion
 
@@ -569,7 +626,6 @@ namespace sones.GraphDB.Manager
             #region BaseType vertex
 
             _storageManager.StoreVertexType(myStore, _BaseType, BaseTypes.BaseType, "BaseTypeComment", myCreationDate, false, false, false, _Vertex, new[] {_BaseUniqueIndexBaseTypeDotName}, _security, _transaction); 
-
 
             #endregion
 

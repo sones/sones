@@ -40,7 +40,7 @@ namespace sones.GraphQL.GQL.ErrorHandling
         /// <summary>
         /// Creates a new EdgeTypeDoesNotExistException exception
         /// </summary>
-        public EdgeTypeDoesNotExistException(String myEdge, String myInfo)
+        public EdgeTypeDoesNotExistException(String myEdge, String myInfo = "")
         {
             Info = myInfo;
             Edge = myEdge;

@@ -1,4 +1,4 @@
-/*
+﻿/*
 * sones GraphDB - Community Edition - http://www.sones.com
 * Copyright (C) 2007-2011 sones GmbH
 *
@@ -19,44 +19,16 @@
 */
 
 using System;
-using sones.Library.Commons.Security;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using sones.Library.Commons.Transaction;
-
-/*
- * edge cases:
- *   - if someone changes the super type of an vertex or edge type 
- *     - Henning, Timo 
- *       - that this isn't a required feature for version 2.0
- * 
- *   - undoability of the typemanager 
- *     - Henning, Timo 
- *       - the type manager is only responsible for converting type changing request into filesystem requests
- *       - the ability to undo an request should be implemented in the corresponding piplineable request
- * 
- *   - unique myAttributes
- *     - Henning, Timo
- *       - the type manager creates unique indices on attributes on the type that declares the uniqueness attribute and all deriving types
- * 
- *   - load 
- *     - Timo
- *       - will proove if the main vertex types are available
- *       - will load the main vertex types
- *       - looks for the maximum vertex type id
- * 
- *   - create
- *     - Timo
- *       - not part of the vertex type manager
- *       
- *   - get vertex type
- *     - if one of the base vertex types is requested, return a predefined vertex.
- * 
- *   - insert vertex type
- *     - no type can derive from the base types
- */
+using sones.Library.Commons.Security;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    public sealed class VertexTypeManager : IManagerOf<IVertexTypeHandler>
+    public sealed class VertexTypeManager: IManagerOf<ITypeHandler<IVertexType>>
     {
         #region Data
 
@@ -77,17 +49,17 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region IManagerOf<IVertexTypeManager> Members
 
-        public IVertexTypeHandler CheckManager
+        public ITypeHandler<IVertexType> CheckManager
         {
             get {  return _check; }
         }
 
-        public IVertexTypeHandler ExecuteManager
+        public ITypeHandler<IVertexType> ExecuteManager
         {
             get { return _execute; }
         }
 
-        public IVertexTypeHandler UndoManager
+        public ITypeHandler<IVertexType> UndoManager
         {
             get { throw new NotImplementedException(); }
         }
@@ -106,5 +78,4 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #endregion
     }
-
 }

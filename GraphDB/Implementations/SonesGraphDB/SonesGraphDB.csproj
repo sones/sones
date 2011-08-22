@@ -81,15 +81,18 @@
     <Compile Include="Manager\Request\IRequestManager.cs" />
     <Compile Include="Manager\Security\BasicSecurityManager.cs" />
     <Compile Include="Manager\Transaction\BasicTransactionManager.cs" />
-    <Compile Include="Manager\TypeManagement\AVertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\ATypeManager.cs" />
     <Compile Include="Manager\TypeManagement\BaseTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\ACheckTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\IDManager.cs" />
+    <Compile Include="Manager\TypeManagement\AExecuteTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\ITypeHandler.cs" />
     <Compile Include="Manager\TypeManagement\CheckEdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\CheckVertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\ExecuteEdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\ExecuteVertexTypeManager.cs" />
-    <Compile Include="Manager\TypeManagement\IDManager.cs" />
-    <Compile Include="Manager\TypeManagement\IVertexTypeHandler.cs" />
-    <Compile Include="Manager\TypeManagement\IEdgeTypeHandler.cs" />
+    <Compile Include="Manager\TypeManagement\VertexTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\UniqueID.cs" />
     <Compile Include="Manager\Vertex\AVertexHandler.cs" />
     <Compile Include="Manager\Vertex\CheckVertexHandler.cs" />
@@ -103,6 +106,7 @@
     </Compile>
     <Compile Include="Request\AlterEdgeType\PipelineableAlterEdgeTypeRequest.cs" />
     <Compile Include="Request\AlterVertexType\PipelineableAlterVertexTypeRequest.cs" />
+    <Compile Include="Request\CreateEdgeTypes\PipelineableCreateEdgeTypesRequest.cs" />
     <Compile Include="Request\CreateEdgeType\PipelineableCreateEdgeTypeRequest.cs" />
     <Compile Include="Request\CreateIndex\PipelineableCreateIndexRequest.cs" />
     <Compile Include="Request\CreateVertexType\PipelineableCreateVertexTypeRequest.cs">
@@ -111,6 +115,7 @@
     <Compile Include="Request\DecribeIndex\PipelineableDescribeIndexRequest.cs" />
     <Compile Include="Request\DecribeIndex\PipelineableDescribeIndicesRequest.cs" />
     <Compile Include="Request\Delete\PipelineableDeleteRequest.cs" />
+    <Compile Include="Request\DropEdgeType\PipelineableDropEdgeTypeRequest.cs" />
     <Compile Include="Request\DropIndex\PipelineableDropIndexRequest.cs" />
     <Compile Include="Request\DropVertexType\PipelineableDropVertexTypeRequest.cs" />
     <Compile Include="Request\GetEdgeType\PipelineableGetAllEdgeTypesRequest.cs" />
@@ -120,7 +125,6 @@
     <Compile Include="Request\GetVertexType\PipelineableGetVertexTypeRequest.cs" />
     <Compile Include="Request\GetVertex\PipelineableGetVertexRequest.cs" />
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
-    <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
     <Compile Include="Request\RebuildIndices\PipelineableRebuildIndicesRequest.cs" />
     <Compile Include="Request\TraverseVertex\PipelineableTraverseVertexRequest.cs" />
     <Compile Include="Request\Truncate\PipelineableTruncateRequest.cs" />
@@ -140,7 +144,6 @@
     <Compile Include="TypeManagement\Base\BaseUniqueIndex.cs" />
     <Compile Include="TypeManagement\Base\UniqueDefinition.cs" />
     <Compile Include="TypeManagement\EdgeType.cs" />
-    <Compile Include="Manager\TypeManagement\VertexTypeManager.cs" />
     <Compile Include="Request\Clear\PipelineableClearRequest.cs" />
     <Compile Include="Request\APipelinableRequest.cs" />
     <Compile Include="Request\CreateVertexTypes\PipelineableCreateVertexTypesRequest.cs" />

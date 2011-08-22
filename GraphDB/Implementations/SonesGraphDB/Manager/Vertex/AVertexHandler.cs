@@ -39,18 +39,141 @@ using sones.Library.LanguageExtensions;
 
 namespace sones.GraphDB.Manager.Vertex
 {
-    internal abstract class AVertexHandler: IManager
+    internal abstract class AVertexHandler: IVertexHandler
     {
-        protected IManagerOf<IVertexTypeHandler> _vertexTypeManager;
+        #region IVertexTypeHandler member
+
+        #region Get Vertices
+
+        /// <summary>
+        /// Gets all vertices correspondig to a vertex type
+        /// </summary>
+        /// <param name="myVertexType">The interesting vertex type</param>
+        /// <param name="myTransaction">The current transaction token</param>
+        /// <param name="mySecurity">The current security token</param>
+        /// <returns>An enumerable of all vertices</returns>
+        public abstract IEnumerable<IVertex> GetVertices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes = true);
+
+        /// <summary>
+        /// Gets all vertices depending to a request
+        /// </summary>
+        /// <param name="myRequest">The request</param>
+        /// <param name="TransactionToken">The current transaction token</param>
+        /// <param name="SecurityToken">The current security token</param>
+        /// <returns>An enumerable of all vertices</returns>
+        public abstract IEnumerable<IVertex> GetVertices(RequestGetVertices myRequest, TransactionToken TransactionToken, SecurityToken SecurityToken);
+
+        /// <summary>
+        /// Gets all vertices for one vertex type.
+        /// </summary>
+        /// <param name="myVertexType">The interesting vertex type.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>
+        /// All vertices of the interesting vertex type.
+        /// </returns>
+        public abstract IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes = true);
+
+        /// <summary>
+        /// Gets all vertices for one vertex type ID.
+        /// </summary>
+        /// <param name="myVertexType">The interesting vertex type ID.</param>
+        /// <param name="myTransactionToken">A transaction token for this operation.</param>
+        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <returns>
+        /// All vertices of the interesting vertex type.
+        /// </returns>
+        public abstract IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes = true);
+
+        /// <summary>
+        /// Returns the list of vertices that matches the expression.
+        /// </summary>
+        /// <param name="myExpression">An logical expression tree. Migth be unoptimized.</param>
+        /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer.</param>
+        /// <param name="myTransactionToken">A transaction token for this operation.</param>
+        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <returns>
+        /// A possible emtpy list of vertices that matches the expression. The myResult is never <c>NULL</c>.
+        /// Any implementation should try to optimize the way the underlying parentVertex store and indices are used to get the myResult.
+        /// </returns>
+        public abstract IEnumerable<IVertex> GetVertices(IExpression myExpression, Boolean myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+
+        #endregion
+
+        #region GetVertex
+
+        /// <summary>
+        /// Execution of the request
+        /// </summary>
+        /// <param name="myVertexTypeID">The vertex type id of the requested vertex</param>
+        /// <param name="myVertexID">The id of the requested vertex</param>
+        /// <param name="myEdition">The edition that should be processed</param>
+        /// <param name="myTimespan">The timespan that should be processed</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation</param>
+        /// <returns>The requested vertex</returns>
+        public abstract IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity);
+
+        /// <summary>
+        /// Execution of the request
+        /// </summary>
+        /// <param name="myVertexTypeName">The vertex type name of the requested vertex</param>
+        /// <param name="myVertexID">The id of the requested vertex</param>
+        /// <param name="myEdition">The edition that should be processed</param>
+        /// <param name="myTimespan">The timespan that should be processed</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation</param>
+        /// <returns>The requested vertex</returns>
+        public abstract IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity);
+
+        public abstract IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity);
+
+        #endregion
+
+        /// <summary>
+        /// Adds a vertex to the FS.
+        /// </summary>
+        /// <param name="myInsertDefinition">The insert request.</param>
+        /// <param name="TransactionToken">A transaction token for this operation.</param>
+        /// <param name="SecurityToken">A security token for this operation.</param>
+        /// <returns>The added vertex.</returns>
+        public abstract IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity);
+
+
+        /// <summary>
+        /// Updates a set of vertices and returns them.
+        /// </summary>
+        /// <param name="myUpdate">The request that represents the update.</param>
+        /// <param name="TransactionToken">A transaction token for this operation.</param>
+        /// <param name="SecurityToken">A security token for this operation.</param>
+        /// <returns>The updated vertivess.</returns>
+        public abstract IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity);
+
+        /// <summary>
+        /// Gets the vertex store this vertex manager is acting on.
+        /// </summary>
+        public abstract IVertexStore VertexStore { get; }
+
+        /// <summary>
+        /// Deletes a set of vertices
+        /// </summary>
+        /// <param name="myDeleteRequest">The request that represents the delete operation</param>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        public abstract void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+
+        #endregion
+
+        protected IManagerOf<ITypeHandler<IVertexType>> _vertexTypeManager;
         protected IQueryPlanManager _queryPlanManager;
 
 
-        protected IVertexType GetVertexType(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
+        protected IVertexType GetType(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             try
             {
                 //check if the vertex type exists.
-                return _vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeName, myTransaction, mySecurity);
+                return _vertexTypeManager.ExecuteManager.GetType(myVertexTypeName, myTransaction, mySecurity) as IVertexType;
             }
             catch (KeyNotFoundException)
             {

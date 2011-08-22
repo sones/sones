@@ -28,7 +28,7 @@ namespace sones.GraphQL.Structure.Helper.Enums
         DropIncomingEdge,
         DropIndex,
         RenameAttribute,
-        RenameVertexType,
+        RenameType,
         RenameIncomingEdge,
         Unqiue,
         DropUnqiue,

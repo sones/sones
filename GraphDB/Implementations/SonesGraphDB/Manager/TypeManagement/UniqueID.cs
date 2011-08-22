@@ -25,8 +25,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 {
     public class UniqueID
     {
-        private long _id = Int64.MinValue;
-        private readonly Object _lock = new Object();
+        private long _id                = Int64.MinValue;
+        private readonly Object _lock   = new Object();
 
         public UniqueID(long myStartID = Int64.MinValue)
         {
