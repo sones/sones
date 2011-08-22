@@ -34,8 +34,9 @@ namespace sones.GraphDB.Manager.Plugin
         public readonly PluginDefinition TransactionManagerPlugin;
         public readonly PluginDefinition SecurityManagerPlugin;
         public readonly PluginDefinition LogicExpressionOptimizerPlugin;
+        public readonly PluginDefinition AutostartGraphDBPlugin;
         public readonly List<PluginDefinition> IndexPlugins;
-
+        
         #endregion
 
         #region constructor
@@ -52,12 +53,14 @@ namespace sones.GraphDB.Manager.Plugin
             PluginDefinition myTransactionManagerPlugin = null,
             PluginDefinition mySecurityManagerPlugin = null,
             PluginDefinition myLogicExpressionOptimizerPlugin = null,
+            PluginDefinition myAutostartGraphDBPlugin = null,
             List<PluginDefinition> myIndexPlugins = null)
         {
             IGraphFSDefinition = myIGraphFSDefinition;
             TransactionManagerPlugin = myTransactionManagerPlugin;
             SecurityManagerPlugin = mySecurityManagerPlugin;
             LogicExpressionOptimizerPlugin = myLogicExpressionOptimizerPlugin;
+            AutostartGraphDBPlugin = myAutostartGraphDBPlugin;
             IndexPlugins = myIndexPlugins;
         }
 

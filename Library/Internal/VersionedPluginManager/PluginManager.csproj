@@ -52,7 +52,6 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UDCPluginManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ErrorHandling\ErrorHandling.csproj">
