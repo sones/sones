@@ -97,7 +97,7 @@ namespace sones.Plugins.Index
 
                         if (_Indexer.ContainsKey(myKey))
                         {
-                            throw new UniqueIndexConstraintException(String.Format("Index key {0} already exist.", myKey.ToString()));
+                            throw new IndexKeyExistsException(String.Format("Index key {0} already exist.", myKey.ToString()));
                         }
                         else
                         {

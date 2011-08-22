@@ -41,9 +41,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\ASonesIndexException.cs" />
-    <Compile Include="ErrorHandling\UniqueIndexConstraintException.cs" />
+    <Compile Include="ErrorHandling\IndexAddFailedException.cs" />
+    <Compile Include="ErrorHandling\IndexKeyNotFoundException.cs" />
+    <Compile Include="ErrorHandling\IndexKeyExistsException.cs" />
+    <Compile Include="ErrorHandling\IndexRemoveFailedException.cs" />
     <Compile Include="ErrorHandling\UnknownIndexException.cs" />
     <Compile Include="Helper\IndexAddStrategy.cs" />
+    <Compile Include="Interfaces\Compound\ICompoundIndexKey.cs" />
+    <Compile Include="Interfaces\Compound\ISonesCompoundIndex.cs" />
+    <Compile Include="Interfaces\Fulltext\ISonesFulltextIndex.cs" />
+    <Compile Include="Interfaces\Fulltext\ISonesFulltextResult.cs" />
+    <Compile Include="Interfaces\Fulltext\ISonesFulltextResultEntry.cs" />
     <Compile Include="Interfaces\IIndex.cs" />
     <Compile Include="Interfaces\ISonesIndex.cs" />
     <Compile Include="Interfaces\IMultipleValueIndex.cs" />
@@ -56,6 +64,13 @@
     <Compile Include="Interfaces\ISingleValueRangeVersionedIndex.cs" />
     <Compile Include="Interfaces\ISingleValueVersionedIndex.cs" />
     <Compile Include="Interfaces\IVersionedIndex.cs" />
+    <Compile Include="Interfaces\Range\ISonesRangeIndex.cs" />
+    <Compile Include="Interfaces\Spatial\Geometries\ICircle.cs" />
+    <Compile Include="Interfaces\Spatial\Geometries\IGeometry.cs" />
+    <Compile Include="Interfaces\Spatial\Geometries\IPoint.cs" />
+    <Compile Include="Interfaces\Spatial\Geometries\IRectangle.cs" />
+    <Compile Include="Interfaces\Spatial\ISonesSpatialIndex.cs" />
+    <Compile Include="Interfaces\Transactional\ISonesTransactionalIndex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -67,10 +82,15 @@
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Interfaces\IndexInterfaces.cd" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

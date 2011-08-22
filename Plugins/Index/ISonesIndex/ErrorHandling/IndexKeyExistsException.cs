@@ -26,7 +26,7 @@ using System;
 
 namespace sones.Plugins.Index.ErrorHandling
 {
-    public sealed class UniqueIndexConstraintException : ASonesIndexException
+    public sealed class IndexKeyExistsException : ASonesIndexException
     {
         #region Data
 
@@ -36,7 +36,7 @@ namespace sones.Plugins.Index.ErrorHandling
 
         #region Constructor
 
-        public UniqueIndexConstraintException(String myInfo)
+        public IndexKeyExistsException(String myInfo)
         {
             Info = myInfo;
         }
