@@ -63,7 +63,9 @@ namespace sones.sonesGraphDBStarter
     public class sonesGraphDBStartup
     {
         private bool quiet = false;
-        private GraphDS_Server _dsServer;
+        private bool shutdown = false;
+        private IGraphDSServer _dsServer;
+        private bool _ctrlCPressed;
 
         public sonesGraphDBStartup(String[] myArgs)
         {
@@ -156,6 +158,10 @@ namespace sones.sonesGraphDBStarter
                 // not yet used
                 #endregion
 
+                #region GraphDS Service Plugins
+                List<PluginDefinition> GraphDSServices = new List<PluginDefinition>();
+                #endregion
+
                 #region Drain Pipes            
                 
                 //// QueryLog DrainPipe
@@ -190,12 +196,23 @@ namespace sones.sonesGraphDBStarter
 
             #endregion
 
-            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(SonesRESTServices,QueryLanguages,DrainPipes);
+            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(QueryLanguages, DrainPipes);
+            _dsServer = new GraphDS_Server(GraphDB, PluginsAndParameters);
 
-            _dsServer = new GraphDS_Server(GraphDB, Properties.Settings.Default.ListeningPort,Properties.Settings.Default.Username,Properties.Settings.Default.Password, IPAddress.Any, PluginsAndParameters);
-            _dsServer.LogOn(new UserPasswordCredentials(Properties.Settings.Default.Username,Properties.Settings.Default.Password));
+            #region Start GraphDS Services
 
-            _dsServer.StartRESTService("", Properties.Settings.Default.ListeningPort, IPAddress.Any);
+            #region pre-configure REST Service
+            Dictionary<string, object> RestParameter = new Dictionary<string, object>();
+            RestParameter.Add("IPAddress", IPAddress.Any);
+            RestParameter.Add("Port", Properties.Settings.Default.ListeningPort);
+            RestParameter.Add("Username", Properties.Settings.Default.Username);
+            RestParameter.Add("Password", Properties.Settings.Default.Password);
+            _dsServer.StartService("sones.RESTService", RestParameter);
+            #endregion
+
+            #endregion
+            
+            _dsServer.LogOn(new UserPasswordCredentials(Properties.Settings.Default.Username, Properties.Settings.Default.Password));
 
             #endregion
 
@@ -206,35 +223,69 @@ namespace sones.sonesGraphDBStarter
                 Console.WriteLine("   * If you want to suppress console output add --Q as a");
                 Console.WriteLine("     parameter.");
                 Console.WriteLine();
-                Console.WriteLine("   * REST Service is started at http://localhost:"+Properties.Settings.Default.ListeningPort);
-                Console.WriteLine("      * access it directly by passing the GraphQL query using the");
-                Console.WriteLine("        REST interface or a client library. (see documentation)");
-                Console.WriteLine("      * if you want JSON Output add ACCEPT: application/json ");
-                Console.WriteLine("        to the client request header (or application/xml or");
-                Console.WriteLine("        application/text)");
-                Console.WriteLine();
-                Console.WriteLine("   * we recommend to use the AJAX WebShell. ");
-                Console.WriteLine("        Browse to http://localhost:"+Properties.Settings.Default.ListeningPort+"/WebShell and use");
-                Console.WriteLine("        the username \""+Properties.Settings.Default.Username+"\" and password \""+Properties.Settings.Default.Password+"\"");
+                Console.WriteLine("   * the following GraphDS Service Plugins are initialized and started: ");
+
+                foreach (var Service in _dsServer.AvailableServices)
+                {
+                    Console.WriteLine("      * "+Service.PluginName);
+                    Console.WriteLine(Service.Description);
+                    
+                }
                 Console.WriteLine();
                 Console.WriteLine("Enter 'shutdown' to initiate the shutdown of this instance.");
             }
 
-            bool shutdown = false;
+            Console.CancelKeyPress += OnCancelKeyPress;
+            
             while (!shutdown)
             {
                 String command = Console.ReadLine();
-
-                if (command.ToUpper() == "SHUTDOWN")
-                    shutdown = true;
+                
+                if (!_ctrlCPressed)
+                {
+                    if (command != null)
+                    {
+                        if (command.ToUpper() == "SHUTDOWN")
+                            shutdown = true;
+                    }
+                }
             }
 
+            Console.WriteLine("Shutting down GraphDS Server");
             _dsServer.Shutdown(null);
-
-            //GraphDB.Shutdown(null);
-
+            Console.WriteLine("Shutdown complete");
             #endregion
         }
+
+        #region
+        /// <summary>
+        ///  Cancel KeyPress
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public virtual void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            e.Cancel = true; //do not abort Console here.
+            _ctrlCPressed = true;
+            Console.Write("Shutdown GraphDB (y/n)?");
+            string input;
+                do
+                {
+                    input = Console.ReadLine();
+                } while (input == null);
+
+                switch (input.ToUpper())
+                {
+                    case "Y":
+                        shutdown = true;
+                        return;
+                    default:
+                        shutdown = false;
+                        return;
+                }
+        }//method
+        #endregion
+
     }
     #endregion
 
@@ -266,13 +317,14 @@ namespace sones.sonesGraphDBStarter
 
             try
             {
-                var sonesGraphDBStartup = new sonesGraphDBStartup(args);
+                var sonesGraphDBStartup = new sonesGraphDBStartup(args);                
             }
-            catch (RESTServiceCouldNotBeStartedException e)
+            catch (ServiceException e)
             {
                 if (!quiet)
                 { 
                     Console.WriteLine(e.Message);
+                    Console.WriteLine("InnerException: " + e.InnerException.ToString());
                     Console.WriteLine();
                     Console.WriteLine("Press <return> to exit.");
                     Console.ReadLine();

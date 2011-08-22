@@ -19,6 +19,7 @@
 */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IdentityModel.Selectors;
 using System.IdentityModel.Tokens;
@@ -35,33 +36,11 @@ using sones.Library.Commons.Transaction;
 using sones.Library.Network.HttpServer;
 using sones.Library.Network.HttpServer.Security;
 using sones.Library.VersionedPluginManager;
-using sones.Plugins.GraphDS;
-using sones.Plugins.GraphDS.RESTService;
+using sones.Plugins.GraphDS.Services;
+using sones.GraphDS;
 
 namespace sones.GraphDSServer
 {
-    internal class PasswordValidator : UserNamePasswordValidator
-    {
-        private readonly IUserAuthentication _dbauth;
-        private String _Username;
-        private String _Password;
-
-        public PasswordValidator(IUserAuthentication dbAuthentcator, String Username, String Password)
-        {
-            _dbauth = dbAuthentcator;
-            _Username = Username;
-            _Password = Password;
-        }
-
-        public override void Validate(string userName, string password)
-        {
-            if (!(userName ==  _Username && password == _Password))
-            {
-                throw new SecurityTokenException("Username or password incorrect.");
-            }
-        }
-    }
-    
     public sealed class GraphDS_Server : IGraphDSServer
     {
         #region Data
@@ -70,11 +49,6 @@ namespace sones.GraphDSServer
         /// The internal iGraphDB instance
         /// </summary>
         private readonly IGraphDB                       _iGraphDB;
-
-        /// <summary>
-        /// The web server, which starts the REST service.
-        /// </summary>
-        private HttpServer                             _httpServer;
 
         /// <summary>
         /// The service guid.
@@ -87,11 +61,16 @@ namespace sones.GraphDSServer
         private readonly GraphDSPluginManager           _pluginManager;
 
         /// <summary>
+        /// The plugins with there settings.
+        /// </summary>
+        private readonly GraphDSPlugins                 _plugins;
+
+        /// <summary>
         /// The list of supported graph ql type instances
         /// </summary>
         private readonly Dictionary<String, IGraphQL>   _QueryLanguages;            // dictionary because we can only have one query language instance per name
-        private readonly Dictionary<String, ISonesRESTService> _sonesRESTServices;  // dictionary because only one service per interface
-        private readonly List<KeyValuePair<String,IDrainPipe>> _DrainPipes;         // you could have multiple drainpipes with different parameters sporting the same name
+        private readonly Dictionary<String, IService>    _graphDSServices;                   // dictionary because only one name per service
+        private readonly Dictionary<String, IDrainPipe> _DrainPipes;         // you could have multiple drainpipes with different parameters sporting the same name
 
         #endregion
 
@@ -104,18 +83,18 @@ namespace sones.GraphDSServer
         /// <param name="myIPAddress">the IP adress this GraphDS Server should bind itself to</param>
         /// <param name="myPort">the port this GraphDS Server should listen on</param>
         /// <param name="PluginDefinitions">the plugins that shall be loaded and their according parameters</param>
-        public GraphDS_Server(IGraphDB myGraphDB, ushort myPort, String Username, String Password, IPAddress myIPAddress,GraphDSPlugins Plugins = null)
+        public GraphDS_Server(IGraphDB myGraphDB, GraphDSPlugins Plugins = null)
         {        
             _iGraphDB = myGraphDB;
             _pluginManager = new GraphDSPluginManager();
             _ID = new Guid();
             _QueryLanguages = new Dictionary<string, IGraphQL>();
-            _sonesRESTServices = new Dictionary<string, ISonesRESTService>();
-            _DrainPipes = new List<KeyValuePair<String, IDrainPipe>>();
+            _DrainPipes = new Dictionary<string, IDrainPipe>();
+            _graphDSServices = new Dictionary<String, IService>();
+            _plugins = Plugins;
 
             #region Load Configured Plugins
-            GraphDSPlugins _plugins = Plugins;
-
+            
             if (_plugins == null)
             {
                 #region set the defaults
@@ -129,11 +108,7 @@ namespace sones.GraphDSServer
                 QueryLanguages.Add(new PluginDefinition("sones.gql", GQL_Parameters));
                 #endregion
 
-                #region REST Service Plugins
-                List<PluginDefinition> SonesRESTServices = new List<PluginDefinition>();
-                #endregion
-
-                _plugins = new GraphDSPlugins(SonesRESTServices, QueryLanguages, null);
+                _plugins = new GraphDSPlugins(QueryLanguages,null);
                 #endregion
             }
 
@@ -159,25 +134,7 @@ namespace sones.GraphDSServer
             }
             #endregion
 
-            #region ISonesRESTService Plugins
-            if (_plugins.ISonesRESTServicePlugins != null)
-            {
-                // we got ISonesRESTServicePlugins
-                foreach (PluginDefinition _pd in _plugins.ISonesRESTServicePlugins)
-                {
-                    // load!
-                    ISonesRESTService loaded = LoadISonesRESTServicePlugins(_pd);
-                    // add!
-                    if (loaded != null)
-                    {
-                        _sonesRESTServices.Add(_pd.NameOfPlugin, loaded);
-                    }
-                    //                    else
-                    //                        System.Diagnostics.Debug.WriteLine("Could not load plugin " + _pd.NameOfPlugin);
-                }
-            }
-            #endregion
-
+           
             #region IDrainPipe Plugins
             if (_plugins.IDrainPipePlugins != null)
             {
@@ -189,7 +146,7 @@ namespace sones.GraphDSServer
                     // add!
                     if (loaded != null)
                     {
-                        _DrainPipes.Add(new KeyValuePair<string,IDrainPipe>(_pd.NameOfPlugin, loaded));
+                        _DrainPipes.Add(_pd.NameOfPlugin, loaded);
                     }
                     //                    else
                     //                        System.Diagnostics.Debug.WriteLine("Could not load plugin " + _pd.NameOfPlugin);
@@ -199,26 +156,9 @@ namespace sones.GraphDSServer
             #endregion
 
             #endregion
-
-            try
-            {
-                var security = new BasicServerSecurity(new PasswordValidator(_iGraphDB, Username, Password));
-
-                var restService = new GraphDSREST_Service();
-                restService.Initialize(this, myPort, myIPAddress);
-
-                _httpServer = new HttpServer(
-                    myIPAddress,
-                    myPort,
-                    restService,
-                    mySecurity: security,
-                    myAutoStart: true);
-            }
-            catch (Exception e)
-            {
-                throw new RESTServiceCouldNotBeStartedException("Something went wrong while GraphDB tried to open a socket on your machine. Please ensure that you are running GraphDB in the right security context (e.g. Administrator rights on Windows) and that the socket isn't already used by another process.  \n"+e.Message);
-            }
         }
+
+        
 
         #endregion
 
@@ -239,36 +179,102 @@ namespace sones.GraphDSServer
             return _pluginManager.GetAndInitializePlugin<IGraphQL>(myIGraphQLPlugin.NameOfPlugin, myParameter: myIGraphQLPlugin.PluginParameter);
         }
 
-        /// <summary>
-        /// Load the ISonesRESTService plugins
-        /// </summary>
-        private ISonesRESTService LoadISonesRESTServicePlugins(PluginDefinition myISonesRESTServicePlugin)
+        #endregion
+
+        #region IGraphDSServer Member
+
+        #region Start GraphDS Service
+
+        public void StartService(String myServiceName, IDictionary<string, object> myParameter)
         {
-            return _pluginManager.GetAndInitializePlugin<ISonesRESTService>(myISonesRESTServicePlugin.NameOfPlugin, myParameter: myISonesRESTServicePlugin.PluginParameter);
+            IService Service = null;
+
+            if (!_graphDSServices.TryGetValue(myServiceName, out Service))
+            {
+                try
+                {
+                    IGraphDS GraphDS = this as IGraphDS;
+                    Dictionary<string, object> Parameter = new Dictionary<string, object>();
+                    Parameter.Add("GraphDS", GraphDS);
+                    Service = _pluginManager.GetAndInitializePlugin<IService>(myServiceName, Parameter);
+                }
+                catch (Exception Ex)
+                {
+                    throw new ServiceException("An error occured when trying to initialize " + myServiceName + "!" + Environment.NewLine + "See inner exception for details.", Ex);
+                }
+                _graphDSServices.Add(Service.PluginName, Service);
+            }
+            try
+            {
+                Service.Start(myParameter);
+            }
+            catch (Exception Ex)
+            {
+                throw new ServiceException("An error occured when trying to start " + myServiceName + "!" + Environment.NewLine + "See inner exception for details.", Ex);
+            }
+
         }
 
         #endregion
 
-        #region IGraphDSREST Members
+        #region Stop GraphDS Service
 
-        public void StartRESTService(string myServiceID, ushort myPort, IPAddress myIPAddress)
+        public void StopService(String myServiceName)
         {
-            
+            IService Service = null;
+            if (_graphDSServices.TryGetValue(myServiceName, out Service))
+            {
+                try
+                {
+                    Service.Stop();
+                }
+                catch (Exception Ex)
+                {
+                    throw new ServiceException("An error occured when trying to stop " + myServiceName + "!", Ex);
+                }
+
+            }
+            else
+            {
+                throw new ServiceException("The service " + myServiceName + "is unrecognized! Maybe the service was never started.");
+            }
         }
 
-        public bool StopRESTService(string myServiceID)
+        #endregion
+
+        #region Status
+
+        public ServiceStatus GetServiceStatus(String myServiceName)
         {
-            try
+            IService Service = null;
+            if (_graphDSServices.TryGetValue(myServiceName, out Service))
             {
-                _httpServer.Stop();
+                try
+                {
+                    return Service.GetCurrentStatus();
+                }
+                catch (Exception Ex)
+                {
+                    throw new ServiceException("An error occured when trying to get the current status of " + myServiceName + "!", Ex);
+                }
+
             }
-            catch
+            else
             {
-                return false;
+                throw new ServiceException("The service " + myServiceName + " is unrecognized! Maybe the service was never started.");
             }
-            
-            return true;
         }
+
+        #endregion
+
+        #region Available Services
+
+        public IEnumerable<IService> AvailableServices
+        {
+            get { return _graphDSServices.Select(_ => _.Value); }
+        }
+
+        #endregion
 
         #endregion
 
@@ -276,8 +282,12 @@ namespace sones.GraphDSServer
 
         public void Shutdown(sones.Library.Commons.Security.SecurityToken mySecurityToken)
         {
-            _httpServer.Close();
             _iGraphDB.Shutdown(mySecurityToken);
+
+            foreach (var aService in _graphDSServices)
+            {
+                aService.Value.Stop();
+            }
         }
 
         public QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)

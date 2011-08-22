@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+  <title>sones GraphDB 2.0 WebShell</title>
+
+  <meta name="description" content="The sones WebShell is a tool to view the results of a graph query" />
+  <meta name="keywords"    content="sones, graphdb, webshell" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+  <link rel="stylesheet"   type   ="text/css" href="/resources/WebShell/WebShell.css" /> 
+
+  <script type="text/javascript" src="/resources/libs/jQuery/jquery-1.6.2.min.js"></script>
+  <script type="text/javascript" src="/resources/libs/jQuery/jquery.url.parser.js"></script>
+  <script type="text/javascript" src="/resources/libs/jQuery/jquery.urlencode.js"></script>
+  <script type="text/javascript" src="/resources/libs/jQuery/jquery.base64.js"></script>
+  <script type="text/javascript" src="/resources/WebShell/WebShell.js"></script>
+  <script type="text/javascript" src="/resources/WebShell/goosh.js"></script>
+
+  <script type="text/javascript">
+
+     var goosh    = new Object();
+     var WebShell = InitGoosh(goosh);
+
+     if (typeof window.addEventListener !== 'undefined')
+     {
+         window.addEventListener('load', WebShell.onload, false);
+     }
+
+     else if (typeof window.attachEvent !== 'undefined')
+     {
+         window.attachEvent('onload', WebShell.onload);
+     }
+
+  </script>
+
+</head>
+
+<body id="body">
+    
+    <div id="frame">
+        
+        <div id="header">
+            <span class='less'>| <a href="http://developers.sones.de/wiki/" target="_blank">Documentation</a> | <a href="http://jira.sones.de" target="_blank">Bugtracking</a> | <a href="http://forum.sones.de" target="_blank">Forum</a> | -  <div id='ddate' class='ddate'></div></span><br/>
+        </div>
+        
+        <div id="output">
+            <p></p>
+                This WebShell is a unix-like shell to run ad-hoc GraphQL queries on sones GraphDB.<br />
+            <p></p>
+                Please refer to the <a href="http://developers.sones.de/wiki/" target="_blank">documentation</a> for further information. <br />
+                If you find a bug please use our <a href="http://jira.sones.de" target="_blank">bugtracking tool</a> to report it. <br />
+                To discuss with other users please refer to our <a href="http://forum.sones.de" target="_blank">forum</a>
+            <p></p>
+            Enter <span class='info'>help</span> or <span class='info'>h</span> for a list of commands.
+            <p></p>
+        </div>
+
+        <div id="input">
+            <form name='f' onsubmit='return false;' class='cmdline' action=''>
+                <table class="commandline">
+                    <tr>
+                        <td class="prompt">
+                            <div id='prompt' class='less'></div>
+                        </td>
+                        <td class="cmdline">
+                            <input id='inputfield' name='q' type='text' class='cmdline' autocomplete='off' value="" />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
+        <div id="footer">
+            sones webshell is based on <a href="http://www.goosh.org"  target="_blank">goosh.org</a> and <a href="http://jquery.com/"  target="_blank">JQuery</a><br />
+            &copy; 2007-2011 sones GmbH | <a href = "http://en.wikipedia.org/wiki/BSD_licenses#3-clause_license_.28.22New_BSD_License.22.29  target="_blank"">New BSD License</a>
+        </div> 
+
+    </div>
+
+</body>
+
+</html>

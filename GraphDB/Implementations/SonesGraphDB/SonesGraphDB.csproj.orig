@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1FC72801-4046-4CC7-BF83-8082FFD593BC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>sones.GraphDB</RootNamespace>
+    <AssemblyName>SonesGraphDB</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ConstantsSonesGraphDB.cs" />
+    <Compile Include="Expression\QueryPlan\AComparativeIndexOperator.cs" />
+    <Compile Include="Expression\QueryPlan\AComparativeOperator.cs" />
+    <Compile Include="Expression\QueryPlan\GreaterOrEquals\QueryPlanGreaterOrEqualsWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\GreaterOrEquals\QueryPlanGreaterOrEqualsWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Greater\QueryPlanGreaterWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Greater\QueryPlanGreaterWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\InRange\QueryPlanInRangeWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\InRange\QueryPlanInRangeWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\LessOrEquals\QueryPlanLessOrEqualsThanWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\LessOrEquals\QueryPlanLessOrEqualsThanWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Less\QueryPlanLessThanWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Less\QueryPlanLessThanWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Like\QueryPlanLikeWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Like\QueryPlanLikeWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\NotEquals\QueryPlanNotEqualsWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\NotEquals\QueryPlanNotEqualsWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\OR\QueryPlanORSequentiell.cs" />
+    <Compile Include="Expression\QueryPlan\AND\QueryPlanANDSequentiell.cs" />
+    <Compile Include="Expression\QueryPlan\Equals\QueryPlanEqualsWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Equals\QueryPlanEqualsWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\IQueryPlan.cs" />
+    <Compile Include="Expression\QueryPlan\Misc\QueryPlanProperty.cs" />
+    <Compile Include="Index\IndexDefinition.cs" />
+    <Compile Include="Manager\BaseGraph\BaseGraphStorageManager.cs" />
+    <Compile Include="Manager\DBCreationManager.cs" />
+    <Compile Include="Manager\Expression\BasicLogicExpressionOptimizer.cs" />
+    <Compile Include="Manager\IManager.cs" />
+    <Compile Include="Manager\IManagerOf.cs" />
+    <Compile Include="Manager\IMetaManager.cs" />
+    <Compile Include="Manager\Index\IIndexManager.cs" />
+    <Compile Include="Manager\Index\IndexManager.cs" />
+    <Compile Include="Manager\MetaManager.cs" />
+    <Compile Include="Manager\Plugin\GraphDBPlugins.cs" />
+    <Compile Include="Manager\Plugin\GraphDBPluginManager.cs" />
+    <Compile Include="Manager\QueryPlan\QueryPlanManager.cs" />
+    <Compile Include="Manager\QueryPlan\IQueryPlanManager.cs" />
+    <Compile Include="Manager\Request\SimpleRequestManager.cs" />
+    <Compile Include="Manager\Request\IRequestManager.cs" />
+    <Compile Include="Manager\Security\BasicSecurityManager.cs" />
+    <Compile Include="Manager\Transaction\BasicTransactionManager.cs" />
+    <Compile Include="Manager\TypeManagement\ATypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\BaseTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\ACheckTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\IDManager.cs" />
+    <Compile Include="Manager\TypeManagement\AExecuteTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\ITypeHandler.cs" />
+    <Compile Include="Manager\TypeManagement\CheckEdgeTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\CheckVertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\ExecuteEdgeTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\ExecuteVertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\VertexTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\UniqueID.cs" />
+    <Compile Include="Manager\Vertex\AVertexHandler.cs" />
+    <Compile Include="Manager\Vertex\CheckVertexHandler.cs" />
+    <Compile Include="Manager\Vertex\ExecuteVertexHandler.cs" />
+    <Compile Include="Manager\Vertex\IVertexHandler.cs" />
+    <Compile Include="Manager\Vertex\VertexManager.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Request\AlterEdgeType\PipelineableAlterEdgeTypeRequest.cs" />
+    <Compile Include="Request\AlterVertexType\PipelineableAlterVertexTypeRequest.cs" />
+    <Compile Include="Request\CreateEdgeTypes\PipelineableCreateEdgeTypesRequest.cs" />
+    <Compile Include="Request\CreateEdgeType\PipelineableCreateEdgeTypeRequest.cs" />
+    <Compile Include="Request\CreateIndex\PipelineableCreateIndexRequest.cs" />
+    <Compile Include="Request\CreateVertexType\PipelineableCreateVertexTypeRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Request\DecribeIndex\PipelineableDescribeIndexRequest.cs" />
+    <Compile Include="Request\DecribeIndex\PipelineableDescribeIndicesRequest.cs" />
+    <Compile Include="Request\Delete\PipelineableDeleteRequest.cs" />
+    <Compile Include="Request\DropEdgeType\PipelineableDropEdgeTypeRequest.cs" />
+    <Compile Include="Request\DropIndex\PipelineableDropIndexRequest.cs" />
+    <Compile Include="Request\DropVertexType\PipelineableDropVertexTypeRequest.cs" />
+    <Compile Include="Request\GetEdgeType\PipelineableGetAllEdgeTypesRequest.cs" />
+    <Compile Include="Request\GetEdgeType\PipelineableGetEdgeTypeRequest.cs" />
+    <Compile Include="Request\GetVertexCount\PipelineableGetVertexCountRequest.cs" />
+    <Compile Include="Request\GetVertexType\PipelineableGetAllVertexTypesRequest.cs" />
+    <Compile Include="Request\GetVertexType\PipelineableGetVertexTypeRequest.cs" />
+    <Compile Include="Request\GetVertex\PipelineableGetVertexRequest.cs" />
+    <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
+    <Compile Include="Request\RebuildIndices\PipelineableRebuildIndicesRequest.cs" />
+    <Compile Include="Request\TraverseVertex\PipelineableTraverseVertexRequest.cs" />
+    <Compile Include="Request\Truncate\PipelineableTruncateRequest.cs" />
+    <Compile Include="Request\Update\PipelineableUpdateRequest.cs" />
+    <Compile Include="Settings\DefaultMultipleValueIndexImplementation.cs" />
+    <Compile Include="Settings\DefaultSingleValueIndexImplementation.cs" />
+    <Compile Include="Settings\DefaultRequestManagerImplementation.cs" />
+    <Compile Include="Settings\DefaultRequestSchedulerImplementation.cs" />
+    <Compile Include="Settings\DefaultSecurityManagerImplementation.cs" />
+    <Compile Include="Settings\DefaultTransactionManagerImplementation.cs" />
+    <Compile Include="Settings\DefaultGraphFSImplementation.cs" />
+    <Compile Include="TypeManagement\BaseType.cs" />
+    <Compile Include="TypeManagement\Base\BaseTypes.cs" />
+    <Compile Include="TypeManagement\Base\AttributeDefinitions.cs" />
+    <Compile Include="TypeManagement\Base\BasicTypes.cs" />
+    <Compile Include="TypeManagement\Base\BinaryPropertyDefinition.cs" />
+    <Compile Include="TypeManagement\Base\BaseUniqueIndex.cs" />
+    <Compile Include="TypeManagement\Base\UniqueDefinition.cs" />
+    <Compile Include="TypeManagement\EdgeType.cs" />
+    <Compile Include="Request\Clear\PipelineableClearRequest.cs" />
+    <Compile Include="Request\APipelinableRequest.cs" />
+    <Compile Include="Request\CreateVertexTypes\PipelineableCreateVertexTypesRequest.cs" />
+    <Compile Include="Request\Insert\PipelineableInsertRequest.cs" />
+    <Compile Include="SonesGraphDB.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeManagement\Base\IncomingEdgeDefinition.cs" />
+    <Compile Include="TypeManagement\Base\OutgoingEdgeDefinition.cs" />
+    <Compile Include="TypeManagement\Base\PropertyDefinition.cs" />
+    <Compile Include="TypeManagement\VertexType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\GraphFS\IGraphFS\IGraphFS.csproj">
+      <Project>{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}</Project>
+      <Name>IGraphFS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\External\NewFastSerializer\NewFastSerializer.csproj">
+      <Project>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</Project>
+      <Name>NewFastSerializer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\CollectionWrapper\CollectionWrapper.csproj">
+      <Project>{7748D9BA-FB40-42F9-9F51-F636F9F1DA8E}</Project>
+      <Name>CollectionWrapper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Commons\Commons.csproj">
+      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
+      <Name>Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Constants\Constants.csproj">
+      <Project>{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723}</Project>
+      <Name>Constants</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Extensions\IGraphDBExtensions\IGraphDBExtensions.csproj">
+      <Project>{33A00226-6C65-49DF-AFCA-89440AF492E5}</Project>
+      <Name>IGraphDBExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Extensions\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{E4A4B5FF-2203-48AA-99A9-41A52407452E}</Project>
+      <Name>LanguageExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
+      <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
+      <Name>IPluginable</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\PluginDefinition\PluginDefinition.csproj">
+      <Project>{CE9BF2C2-C785-4661-8F4F-64266C697343}</Project>
+      <Name>PluginDefinition</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Settings\Settings.csproj">
+      <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
+      <Name>Settings</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\UserdefinedDataType\UserdefinedDataType.csproj">
+      <Project>{1A2B672E-DD8C-4948-8370-1483408E3B50}</Project>
+      <Name>UserdefinedDataType</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
+      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
+<<<<<<< HEAD
+      <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
+=======
+      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
+>>>>>>> master
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\Index\Indices\SonesIndices\SonesIndices.csproj">
+      <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>
+      <Name>SonesIndices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
+      <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
+      <Name>ISonesIndex</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IGraphDB\IGraphDB.csproj">
+      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
+      <Name>IGraphDB %28Dependencies\GraphDB\IGraphDB%29</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="SonesGraphDB.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

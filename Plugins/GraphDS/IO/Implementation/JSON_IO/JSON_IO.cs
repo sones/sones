@@ -89,7 +89,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
 
         #region Generate Output from Query Result
 
-        public string GenerateOutputResult(QueryResult myQueryResult)
+        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             // root element...
             var _Query = new JObject();
@@ -149,6 +149,11 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             }
 
             return SB.ToString();
+        }
+
+        public String ListAvailParams()
+        {
+            throw new NotImplementedException();
         }
 
         #region private toJSON Extensions

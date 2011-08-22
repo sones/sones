@@ -67,15 +67,15 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
+      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\GraphDS\DrainPipeLog\IDrainPipe\IDrainPipe.csproj">
       <Project>{F51DA5BD-5808-409E-A907-4EF93B2C5E71}</Project>
       <Name>IDrainPipe</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Plugins\GraphDS\RESTService\ISonesRESTService\ISonesRESTService.csproj">
-      <Project>{0D7A14D7-9851-4624-9260-858741603F98}</Project>
-      <Name>ISonesRESTService</Name>
+    <ProjectReference Include="..\..\..\Plugins\GraphDS\Services\Interface\IService.csproj">
+      <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
+      <Name>IService</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>

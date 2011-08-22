@@ -1,0 +1,386 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{26BFEE62-82B9-4EFA-9F91-08FD947551A8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>sones.GraphQL.GQL</RootNamespace>
+    <AssemblyName>SonesGraphQueryLanguage</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\InvalidEdgeListOperationException.cs" />
+    <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\ExpressionGraphInternalException.cs" />
+    <Compile Include="ErrorHandling\GQLGrammarSetExtandableMemberException.cs" />
+    <Compile Include="ErrorHandling\GQLParsingException.cs" />
+    <Compile Include="ErrorHandling\GQLStatementNodeExecutionException.cs" />
+    <Compile Include="ErrorHandling\GqlSyntaxException.cs" />
+    <Compile Include="ErrorHandling\IndexTypeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\InvalidBinaryExpressionException.cs" />
+    <Compile Include="ErrorHandling\InvalidDumpFormatException.cs" />
+    <Compile Include="ErrorHandling\InvalidDumpTypeException.cs" />
+    <Compile Include="ErrorHandling\InvalidLevelKeyOperationException.cs" />
+    <Compile Include="ErrorHandling\InvalidTransactionIsolationLevelException.cs" />
+    <Compile Include="ErrorHandling\IronyInitializeGrammarException.cs" />
+    <Compile Include="ErrorHandling\NotADumpableGrammarException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeDoesNotExistException.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Grammar\SonesGQLGrammar.cs" />
+    <Compile Include="Manager\Plugin\GQLPluginManager.cs" />
+    <Compile Include="Manager\Select\EdgeList.cs" />
+    <Compile Include="Manager\Select\GroupingKey.cs" />
+    <Compile Include="Manager\Select\SelectionElement.cs" />
+    <Compile Include="Manager\Select\SelectManager.cs" />
+    <Compile Include="Manager\Select\SelectResultManager.cs" />
+    <Compile Include="SonesGQLConstants.cs" />
+    <Compile Include="SonesQueryLanguage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StatementNodes\AStatement.cs" />
+    <Compile Include="StatementNodes\DDL\AlterEdgeTypeNode.cs" />
+    <Compile Include="StatementNodes\DDL\AlterVertexTypeNode.cs" />
+    <Compile Include="StatementNodes\DDL\CreateEdgeTypesNode.cs" />
+    <Compile Include="StatementNodes\DDL\DropEdgeTypeNode.cs" />
+    <Compile Include="StatementNodes\DML\UnlinkNode.cs" />
+    <Compile Include="StatementNodes\DML\LinkNode.cs" />
+    <Compile Include="StatementNodes\DML\ImportNode.cs" />
+    <Compile Include="StatementNodes\DML\DescribeNode.cs" />
+    <Compile Include="StatementNodes\DML\RebuildIndicesNode.cs" />
+    <Compile Include="StatementNodes\DML\DumpNode.cs" />
+    <Compile Include="StatementNodes\DML\DeleteNode.cs" />
+    <Compile Include="StatementNodes\DML\TruncateNode.cs" />
+    <Compile Include="StatementNodes\DDL\DropIndexNode.cs" />
+    <Compile Include="StatementNodes\DDL\DropVertexTypeNode.cs" />
+    <Compile Include="StatementNodes\DDL\CreateIndexNode.cs" />
+    <Compile Include="StatementNodes\DDL\CreateVertexTypesNode.cs" />
+    <Compile Include="StatementNodes\DML\SelectNode.cs" />
+    <Compile Include="StatementNodes\DML\UpdateNode.cs" />
+    <Compile Include="StatementNodes\DML\InsertNode.cs" />
+    <Compile Include="StatementNodes\DML\InsertOrUpdateNode.cs" />
+    <Compile Include="StatementNodes\DML\InsertOrReplaceNode.cs" />
+    <Compile Include="StatementNodes\DML\ReplaceNode.cs" />
+    <Compile Include="StatementNodes\Settings\SettingNode.cs" />
+    <Compile Include="StatementNodes\Transactions\BeginTransactionNode.cs" />
+    <Compile Include="StatementNodes\Transactions\CommitRollbackTransactionNode.cs" />
+    <Compile Include="Structure\Helper\Definition\ADescribeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AAlterTypeCommand.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterEdgeType_AddAttributes.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterVertexType_AddAttributes.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_AddIndices.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_ChangeComment.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_DefineAttributes.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_DropAttributes.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_DropIndices.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_DropMandatory.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_DropUnique.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_RenameAttribute.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_RenameBackwardedge.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_RenameType.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_SetMandatory.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_SetUnique.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_UndefineAttributes.cs" />
+    <Compile Include="Structure\Helper\Definition\AttributeAssignOrUpdateExpression.cs" />
+    <Compile Include="Structure\Helper\Definition\AttributeAssignOrUpdateList.cs" />
+    <Compile Include="Structure\Helper\Definition\AttributeAssignOrUpdateSetRef.cs" />
+    <Compile Include="Structure\Helper\Definition\AttributeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\BackwardEdgeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\CollectionDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\DBTypeOfAttributeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\DescribeAggregateDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\DescribeEdgeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\DescribeFuncDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\DescribeIndexDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\DescribeTypeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\EdgeTypeParamDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\GraphDBTypeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\IndexAttributeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\IndexDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\SetRefDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\TypeCharacteristics.cs" />
+    <Compile Include="Structure\Helper\Definition\Update\AAttributeAssignOrUpdate.cs" />
+    <Compile Include="Structure\Helper\Definition\Update\AAttributeAssignOrUpdateOrRemove.cs" />
+    <Compile Include="Structure\Helper\Definition\Update\AAttributeRemove.cs" />
+    <Compile Include="Structure\Helper\Definition\Update\AttributeAssignOrUpdateValue.cs" />
+    <Compile Include="Structure\Helper\Definition\Update\AttributeRemove.cs" />
+    <Compile Include="Structure\Helper\Definition\Update\AttributeRemoveList.cs" />
+    <Compile Include="Structure\Helper\Definition\Update\RemoveFromListAttrUpdateNode.cs" />
+    <Compile Include="Structure\Helper\Enums\KindOfTuple.cs" />
+    <Compile Include="Structure\Helper\Enums\ParamType.cs" />
+    <Compile Include="Structure\Helper\Enums\SelectOutputTypes.cs" />
+    <Compile Include="Structure\Helper\Enums\SortDirection.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesOfSelect.cs" />
+    <Compile Include="Structure\Helper\Enums\KindOfDelimiter.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesOfAlterCmd.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesOfAssociativity.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesOfAtrributeValues.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesOfAType.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesOfBinaryExpression.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesOfColumnSource.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesOfOperators.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesOfSettingOperation.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesOfStatements.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesOfUpdate.cs" />
+    <Compile Include="Structure\Helper\Enums\TypesSettingScope.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\AExpressionGraph.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\CommonUsageGraph.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\ExpressionEdge.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\ExpressionLevel.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\ExpressionLevelEntry.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\ExpressionNode.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\GraphPerformanceCriteria.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\Helper\EdgeKey.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\IExpressionEdge.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\IExpressionGraph.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\IExpressionLevel.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\IExpressionLevelEntry.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\IExpressionNode.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\Helper\LevelKey.cs" />
+    <Compile Include="Structure\Helper\Operator\ABinaryCompareOperator.cs" />
+    <Compile Include="Structure\Nodes\AStructureNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\AlterEdgeTypeCommandNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\BulkVertexTypeListMemberNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\BulkVertexTypeNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\EdgeTypeAttributeDefinitionNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\VertexTypeAttributeDefinitionNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\BulkEdgeTypeNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\BulkEdgeTypeListMemberNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\IncomingEdgesNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\IncomingEdgeNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\SingleEdgeTypeDefNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\EdgeTypeDefNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\IndexOptOnCreateTypeMemberNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\IndexDropOnAlterType.cs" />
+    <Compile Include="Structure\Nodes\DDL\IndexOnCreateTypeNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\EdgeType_SortedNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\EdgeTypeParamNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\EdgeTypeParamsNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\DefaultValueDefNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\MandatoryOptNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\UniqueAttributesOptNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\ShardsNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\AlterVertexTypeCommandNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\EditionOptNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\IndexNameOptNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\IndexTypeOptNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\IndexAttributeNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\IndexAttributeListNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\UniqueOptNode.cs" />
+    <Compile Include="Structure\Nodes\DML\ADescrNode.cs" />
+    <Compile Include="Structure\Nodes\DML\AttrUpdateOrAssignListNode.cs" />
+    <Compile Include="Structure\Nodes\DML\AttributeAssignNode.cs" />
+    <Compile Include="Structure\Nodes\DML\AttrRemoveNode.cs" />
+    <Compile Include="Structure\Nodes\DML\AddToListAttrUpdateNode.cs" />
+    <Compile Include="Structure\Nodes\DML\CollectionOfDBObjectsNode.cs" />
+    <Compile Include="Structure\Nodes\DML\AttrAssignListNode.cs" />
+    <Compile Include="Structure\Nodes\DML\AddToListAttrUpdateAddToNode.cs" />
+    <Compile Include="Structure\Nodes\DML\AddToListAttrUpdateOperatorNode.cs" />
+    <Compile Include="Structure\Nodes\DML\AttrDefaultValueNode.cs" />
+    <Compile Include="Structure\Nodes\DML\CommentsNode.cs" />
+    <Compile Include="Structure\Nodes\DML\VertexTypeVertexElementNode.cs" />
+    <Compile Include="Structure\Nodes\DML\VertexTypeVertexIDCollectionNode.cs" />
+    <Compile Include="Structure\Nodes\DML\VerbosityNode.cs" />
+    <Compile Include="Structure\Nodes\DML\ParallelTasksNode.cs" />
+    <Compile Include="Structure\Nodes\DML\DescribeEdgesNode.cs" />
+    <Compile Include="Structure\Nodes\DML\DescribeEdgeNode.cs" />
+    <Compile Include="Structure\Nodes\DML\DescribeIndicesNode.cs" />
+    <Compile Include="Structure\Nodes\DML\DescribeIndexNode.cs" />
+    <Compile Include="Structure\Nodes\DML\DescribeTypesNode.cs" />
+    <Compile Include="Structure\Nodes\DML\DescribeTypeNode.cs" />
+    <Compile Include="Structure\Nodes\DML\DescrAggrsNode.cs" />
+    <Compile Include="Structure\Nodes\DML\DescrAggrNode.cs" />
+    <Compile Include="Structure\Nodes\DML\DescrFunctionsNode.cs" />
+    <Compile Include="Structure\Nodes\DML\DescrFuncNode.cs" />
+    <Compile Include="Structure\Nodes\DML\RemoveFromListAttrUpdateScopeNode.cs" />
+    <Compile Include="Structure\Nodes\DML\RemoveFromListAttrUpdateAddToOperatorNode.cs" />
+    <Compile Include="Structure\Nodes\DML\RemoveFromListAttrUpdateAddToRemoveFromNode.cs" />
+    <Compile Include="Structure\Nodes\DML\DumpFormatNode.cs" />
+    <Compile Include="Structure\Nodes\DML\DumpTypeNode.cs" />
+    <Compile Include="Structure\Nodes\DML\PartialSelectStmtNode.cs" />
+    <Compile Include="Structure\Nodes\DML\SelByTypeNode.cs" />
+    <Compile Include="Structure\Nodes\DML\SelectValueAssignmentNode.cs" />
+    <Compile Include="Structure\Nodes\DML\EdgeTraversalNode.cs" />
+    <Compile Include="Structure\Nodes\DML\EdgeInformationNode.cs" />
+    <Compile Include="Structure\Nodes\DML\SelectionDelimiterNode.cs" />
+    <Compile Include="Structure\Nodes\DML\ParametersNode.cs" />
+    <Compile Include="Structure\Nodes\DML\LimitNode.cs" />
+    <Compile Include="Structure\Nodes\DML\OffsetNode.cs" />
+    <Compile Include="Structure\Nodes\DML\SelectOutputOptNode.cs" />
+    <Compile Include="Structure\Nodes\DML\SelectionListElementNode.cs" />
+    <Compile Include="Structure\Nodes\DML\OrderByNode.cs" />
+    <Compile Include="Structure\Nodes\DML\HavingExpressionNode.cs" />
+    <Compile Include="Structure\Helper\Operator\ABinaryBaseOperator.cs" />
+    <Compile Include="Structure\Helper\Operator\ABinaryLogicalOperator.cs" />
+    <Compile Include="Structure\Helper\Operator\ABinaryOperator.cs" />
+    <Compile Include="Structure\Helper\Definition\AExpressionDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\AggregateDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\AggregateNode.cs" />
+    <Compile Include="Structure\Helper\Definition\AOperationDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\ATermDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\BinaryExpressionDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\BinaryExpressionNode.cs" />
+    <Compile Include="Structure\Nodes\Expressions\FuncCallNode.cs" />
+    <Compile Include="Structure\Helper\Definition\OrderByDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\SelectDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\SelectValueAssignment.cs" />
+    <Compile Include="Structure\Helper\Definition\TupleDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\TupleElement.cs" />
+    <Compile Include="Structure\Helper\Definition\TypeReferenceDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\UnaryExpressionDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\ValueDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\WhereExpressionNode.cs" />
+    <Compile Include="Structure\Nodes\Expressions\SetRefNode.cs" />
+    <Compile Include="Structure\Nodes\Expressions\ExpressionOfAListNode.cs" />
+    <Compile Include="Structure\Nodes\Expressions\ExpressionNode.cs" />
+    <Compile Include="Structure\Nodes\Expressions\TupleNode.cs" />
+    <Compile Include="Structure\Nodes\Expressions\UnaryExpressionNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\AliasNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\ATypeNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\EdgeTypeNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\OptionsNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\KeyValuePairNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\KeyValueListNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\VertexTypeNode.cs" />
+    <Compile Include="Structure\Helper\Definition\IDChainDefinition.cs" />
+    <Compile Include="Structure\Nodes\Misc\IDNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\VertexTypeListNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\UnstructuredProperty.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
+      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
+      <Name>IGraphDB %28Dependencies\GraphDB\IGraphDB%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\External\Irony\Irony.csproj">
+      <Project>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</Project>
+      <Name>Irony</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\External\NewFastSerializer\NewFastSerializer.csproj">
+      <Project>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</Project>
+      <Name>NewFastSerializer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Arithmetics\Arithmetics\Arithmetics.csproj">
+      <Project>{E33D0E75-43A1-4643-928D-DA9E5D99E041}</Project>
+      <Name>Arithmetics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\CollectionWrapper\CollectionWrapper.csproj">
+      <Project>{7748D9BA-FB40-42F9-9F51-F636F9F1DA8E}</Project>
+      <Name>CollectionWrapper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Commons\Commons.csproj">
+      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
+      <Name>Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\DataStructures\DataStructures.csproj">
+      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
+      <Name>DataStructures</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Extensions\IGraphDBExtensions\IGraphDBExtensions.csproj">
+      <Project>{33A00226-6C65-49DF-AFCA-89440AF492E5}</Project>
+      <Name>IGraphDBExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Extensions\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{E4A4B5FF-2203-48AA-99A9-41A52407452E}</Project>
+      <Name>LanguageExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
+      <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
+      <Name>IPluginable</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Settings\Settings.csproj">
+      <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
+      <Name>Settings</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
+      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
+<<<<<<< HEAD
+      <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
+=======
+      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
+>>>>>>> master
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\IGraphDBExport\IGraphDBExport.csproj">
+      <Project>{80934A33-3BCB-4732-AA2D-02D8925336C9}</Project>
+      <Name>IGraphDBExport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\IGraphDBImport\ISonesGraphDBImport.csproj">
+      <Project>{3B43C10E-28AE-42E5-9B9B-08F2B4153951}</Project>
+      <Name>ISonesGraphDBImport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\ISonesGQLAggregate\ISonesGQLAggregate.csproj">
+      <Project>{B70DCE72-B636-442A-8825-F3BE78D86D34}</Project>
+      <Name>ISonesGQLAggregate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\ISonesGQLFunction\ISonesGQLFunction.csproj">
+      <Project>{CDAE254B-77D9-4E59-9C07-C18F0085F570}</Project>
+      <Name>ISonesGQLFunction</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\Statements\IGQLStatementPlugin\IGQLStatementPlugin.csproj">
+      <Project>{47F01C51-E6DA-496D-8F78-F475727C8708}</Project>
+      <Name>IGQLStatementPlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
+      <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
+      <Name>ISonesIndex</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IGraphQL\IGraphQL.csproj">
+      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
+      <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QueryResult\QueryResult.csproj">
+      <Project>{BE2A2669-CCDE-40A8-AEAB-673260D7260A}</Project>
+      <Name>QueryResult</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Documentation\ClassDiagram.cd" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
