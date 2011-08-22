@@ -45,6 +45,21 @@ namespace sones.Plugins.GraphDS.IO
 
         #endregion
 
+        #region Parameter Strings
+
+        private static class _OptionStrings
+        {
+            public static class ShowEdgeNames
+            {
+                public static string name = "edgenames";
+                public static string description = "show edge names";
+                public static string show = "show";
+                public static string hide = "hide";
+            }
+        }
+
+        #endregion
+
         private class NodeLink
         {
             public int source;
@@ -99,6 +114,19 @@ namespace sones.Plugins.GraphDS.IO
         public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             StringBuilder Output = new StringBuilder();
+            bool bShowEdgeNames = false;
+
+            if (myParams.ContainsKey(_OptionStrings.ShowEdgeNames.name))
+            {
+                if (StringComparer.InvariantCultureIgnoreCase.Compare(myParams[_OptionStrings.ShowEdgeNames.name], _OptionStrings.ShowEdgeNames.show) == 0)
+                {
+                    bShowEdgeNames = true;
+                }
+                else if (StringComparer.InvariantCultureIgnoreCase.Compare(myParams[_OptionStrings.ShowEdgeNames.name], _OptionStrings.ShowEdgeNames.hide) == 0)
+                {
+                    bShowEdgeNames = false;
+                }
+            }
 
             Output.AppendLine("var w = 960,");
             Output.AppendLine("h = 500;");
@@ -139,14 +167,19 @@ namespace sones.Plugins.GraphDS.IO
             Output.AppendLine(".size([w, h])");
             Output.AppendLine(".start();");
 
-            Output.AppendLine("var link = vis.selectAll(\"line.link\")");
+            Output.AppendLine("var linkgroup = vis.selectAll(\"g.link\")");
             Output.AppendLine(".data(links)");
-            Output.AppendLine(".enter().append(\"svg:line\")");
-            Output.AppendLine(".attr(\"class\", \"graphlink\")");
-            Output.AppendLine(".attr(\"x1\", function(d) { return d.source.x; })");
-            Output.AppendLine(".attr(\"y1\", function(d) { return d.source.y; })");
-            Output.AppendLine(".attr(\"x2\", function(d) { return d.target.x; })");
-            Output.AppendLine(".attr(\"y2\", function(d) { return d.target.y; });");
+            Output.AppendLine(".enter().append(\"svg:g\");");
+            
+            Output.AppendLine("var link = linkgroup.append(\"svg:line\")");
+            Output.AppendLine(".attr(\"class\", \"graphlink\");");
+
+            if (bShowEdgeNames)
+            {
+                Output.AppendLine("var linkname = linkgroup.append(\"svg:text\")");
+                Output.AppendLine(".attr(\"class\", \"graphlinktext\")");
+                Output.AppendLine(".text(function(d) { return d.name; });");
+            }
 
             Output.AppendLine("var node = vis.selectAll(\"g.node\")");
             Output.AppendLine(".data(nodes)");
@@ -173,6 +206,11 @@ namespace sones.Plugins.GraphDS.IO
             Output.AppendLine(".attr(\"y1\", function(d) { return d.source.y; })");
             Output.AppendLine(".attr(\"x2\", function(d) { return d.target.x; })");
             Output.AppendLine(".attr(\"y2\", function(d) { return d.target.y; });");
+            if (bShowEdgeNames)
+            {
+                Output.AppendLine("linkname.attr(\"x\", function(d) { return (d.source.x + d.target.x) / 2; })");
+                Output.AppendLine(".attr(\"y\", function(d) { return (d.source.y + d.target.y) / 2; });");
+            }
             Output.AppendLine("node.attr(\"transform\", function(d) { return \"translate(\" + d.x + \",\" + d.y + \")\"; });");
             Output.AppendLine("});");
 
@@ -202,7 +240,10 @@ namespace sones.Plugins.GraphDS.IO
                     {
                         if ((property.Item1 is String) && (property.Item1.ToString().ToUpper() == "NODE"))
                         {
-                            Nodes.Add(property.Item2.ToString());
+                            if (!Nodes.Exists((s) => (s == property.Item2.ToString())))
+                            {
+                                Nodes.Add(property.Item2.ToString());
+                            }
                         }
                     }
                 }
@@ -275,7 +316,12 @@ namespace sones.Plugins.GraphDS.IO
 
         public String ListAvailParams()
         {
-            throw new NotImplementedException();
+            StringBuilder list = new StringBuilder();
+
+            list.AppendLine("Available Parameters to configure GraphVis Output:");
+            list.AppendLine(_OptionStrings.ShowEdgeNames.name + "=[" + _OptionStrings.ShowEdgeNames.show + "|" + _OptionStrings.ShowEdgeNames.hide + "] " + _OptionStrings.ShowEdgeNames.description);
+
+            return list.ToString();
         }
 
         public QueryResult GenerateQueryResult(string myResult)

@@ -67,6 +67,7 @@ pre               { font-size:12px;}
 .twodbarcharttextunselected { fill: black; }
 
 .graphnodetext { pointer-events: none; font: 10px sans-serif; }
+.graphlinktext { pointer-events: none; font: 8px sans-serif; }
 .graphlink { stroke: #ccc; }
 
 
