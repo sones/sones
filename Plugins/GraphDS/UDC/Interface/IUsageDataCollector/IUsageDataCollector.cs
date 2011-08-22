@@ -36,18 +36,19 @@ namespace sones.GraphDS.UDC
     {
         public static Version MinVersion
         {
-            get { return new Version("2.1.0.0"); }
+            get { return new Version("2.0.0.0"); }
         }
 
         public static Version MaxVersion
         {
-            get { return new Version("2.1.0.0"); }
+            get { return new Version("2.0.0.0"); }
         }
     }
     #endregion
 
     public interface IUsageDataCollector : IPluginable
     {
+        void Shutdown();
 
     }
 }

@@ -94,6 +94,7 @@ namespace sones.GraphDS.UDC
 
         public Library.VersionedPluginManager.IPluginable InitializePlugin(string UniqueString, Dictionary<string, object> myParameters = null)
         {
+            Console.WriteLine("UDC");
             var result = new UDC_Client(UniqueString, myParameters);
             return (IPluginable)result;
 
@@ -101,8 +102,15 @@ namespace sones.GraphDS.UDC
         #endregion
 
         public void Dispose()
+        {            
+        }
+
+        public void Shutdown()
         {
-            throw new NotImplementedException();
+            if (UDCClientThreadInstance != null)
+            {
+                UDCClientThreadInstance.Shutdown();
+            }
         }
     }
 }

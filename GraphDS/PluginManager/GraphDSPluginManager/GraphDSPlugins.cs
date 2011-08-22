@@ -31,7 +31,7 @@ namespace sones.GraphDS.PluginManager
         #region data
         public readonly List<PluginDefinition> IGraphQLPlugins;
         public readonly List<PluginDefinition> IDrainPipePlugins;
-
+        public readonly List<PluginDefinition> IUsageDataCollectorPlugIns;
         #endregion
 
         #region constructor
@@ -41,10 +41,12 @@ namespace sones.GraphDS.PluginManager
         /// </summary>
         public GraphDSPlugins(
             List<PluginDefinition> myIGraphQLPlugins = null,
-            List<PluginDefinition> myIDrainPipePlugins = null)
+            List<PluginDefinition> myIDrainPipePlugins = null,
+            List<PluginDefinition> myIUsageDataCollectorPlugIns = null)
         {
             IGraphQLPlugins = myIGraphQLPlugins;
             IDrainPipePlugins = myIDrainPipePlugins;
+            IUsageDataCollectorPlugIns = myIUsageDataCollectorPlugIns;
         }
 
         #endregion

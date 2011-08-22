@@ -51,9 +51,19 @@ namespace sones.GraphDS.UDC
         #region Main Loop - Polling Mode
         public void Run()
         {
+            Int32 Waited = 0;
+
             while (!Stop)
             {
-                Thread.Sleep(UpdateInterval); // wait the time which was pre-configured
+                //Console.WriteLine("....");
+                Thread.Sleep(1000); // wait the time which was pre-configured
+                Waited += 1000;
+
+                if (Waited >= UpdateInterval)
+                {
+                    Waited = 0;
+                    //do something
+                }
             }
 
             ShutdownComplete = true;

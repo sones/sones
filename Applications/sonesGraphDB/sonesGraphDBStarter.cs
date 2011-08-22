@@ -193,10 +193,21 @@ namespace sones.sonesGraphDBStarter
                 //DrainPipes.Add(new PluginDefinition("sones.drainpipelog", DrainPipeLog_Parameters));
                 //DrainPipes.Add(new PluginDefinition("sones.drainpipelog", DrainPipeLog2_Parameters));
                 #endregion
+                List<PluginDefinition> UsageDataCollector = new List<PluginDefinition>();
+
+                #region UsageDataCollector
+                if (Properties.Settings.Default.UDCEnabled)
+                {
+                    Dictionary<string, object> UDC_parameters = new Dictionary<string, object>();
+                    UDC_parameters.Add("UDCWaitUpfrontTime", (Int32)Properties.Settings.Default.UDCWaitUpfront);  // do the work in a separate thread to not slow down queries
+                    UDC_parameters.Add("UDCUpdateInterval", (Int32)Properties.Settings.Default.UDCUpdateInterval); // 10
+                    UsageDataCollector.Add(new PluginDefinition("sones.GraphDS.UsageDataCollectorClient",UDC_parameters));
+                }                
+                #endregion
 
             #endregion
 
-            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(QueryLanguages, DrainPipes);
+            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(QueryLanguages, DrainPipes,UsageDataCollector);
             _dsServer = new GraphDS_Server(GraphDB, PluginsAndParameters);
 
             #region Start GraphDS Services

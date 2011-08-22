@@ -39,6 +39,7 @@ using sones.Library.VersionedPluginManager;
 using sones.Plugins.GraphDS.Services;
 using sones.GraphDS;
 using sones.Plugins.GraphDS;
+using sones.GraphDS.UDC;
 
 namespace sones.GraphDSServer
 {
@@ -72,6 +73,7 @@ namespace sones.GraphDSServer
         private readonly Dictionary<String, IGraphQL>   _QueryLanguages;     // dictionary because we can only have one query language instance per name
         private readonly Dictionary<String, IService>   _graphDSServices;    // dictionary because only one name per service
         private readonly Dictionary<String, IDrainPipe> _DrainPipes;         // you could have multiple drainpipes with different parameters sporting the same name
+        private readonly Dictionary<String, IUsageDataCollector> _usagedatacollectors; // Usage Data Collector
 
         #endregion
 
@@ -92,6 +94,7 @@ namespace sones.GraphDSServer
             _QueryLanguages = new Dictionary<string, IGraphQL>();
             _DrainPipes = new Dictionary<string, IDrainPipe>();
             _graphDSServices = new Dictionary<String, IService>();
+            _usagedatacollectors = new Dictionary<string, IUsageDataCollector>();
             _plugins = Plugins;
 
             #region Load Configured Plugins
@@ -134,7 +137,6 @@ namespace sones.GraphDSServer
                 }
             }
             #endregion
-
            
             #region IDrainPipe Plugins
             if (_plugins.IDrainPipePlugins != null)
@@ -156,6 +158,23 @@ namespace sones.GraphDSServer
             }
             #endregion
 
+            #region IUsageDataCollector Plugins
+            if (_plugins.IUsageDataCollectorPlugIns!= null)
+            {
+                // we got IUsageDataCollector
+                foreach (PluginDefinition _pd in _plugins.IUsageDataCollectorPlugIns)
+                {
+                    // load!
+                    IUsageDataCollector loaded = LoadIUsageDataCollector(_pd);
+                    // add!
+                    if (loaded != null)
+                    {
+                        _usagedatacollectors.Add(_pd.NameOfPlugin, loaded);
+                    }
+                }
+            }
+            #endregion
+
             #endregion
         }
 
@@ -164,6 +183,13 @@ namespace sones.GraphDSServer
         #endregion
 
         #region Plugin Loading Helpers
+        /// <summary>
+        /// Load the IUsageDateCollector plugins
+        /// </summary>
+        private IUsageDataCollector LoadIUsageDataCollector(PluginDefinition myIUsageDataCollector)
+        {
+            return _pluginManager.GetAndInitializePlugin<IUsageDataCollector>(myIUsageDataCollector.NameOfPlugin, myParameter: myIUsageDataCollector.PluginParameter);
+        }
         /// <summary>
         /// Load the IDrainPipes plugins
         /// </summary>
@@ -282,8 +308,19 @@ namespace sones.GraphDSServer
         #region IGraphDS Members
 
         public void Shutdown(sones.Library.Commons.Security.SecurityToken mySecurityToken)
-        {
+         {
             _iGraphDB.Shutdown(mySecurityToken);
+
+            foreach (var aDrainPipe in _DrainPipes)
+            {
+                aDrainPipe.Value.Shutdown(mySecurityToken);
+            }
+
+            foreach (var aUsageDataCollector in _usagedatacollectors)
+            {
+                aUsageDataCollector.Value.Shutdown();
+                
+            }
 
             foreach (var aService in _graphDSServices)
             {

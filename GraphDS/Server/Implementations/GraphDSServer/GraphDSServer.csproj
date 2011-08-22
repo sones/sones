@@ -86,6 +86,10 @@
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
       <Name>IService</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\UDC\Interface\IUsageDataCollector\IUsageDataCollector.csproj">
+      <Project>{284AC56E-77A3-49E9-A2B7-23D015EE34FB}</Project>
+      <Name>IUsageDataCollector</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
       <Name>IGraphDS</Name>
@@ -99,9 +103,7 @@
       <Name>IGraphDSServer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ErrorHandling\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
