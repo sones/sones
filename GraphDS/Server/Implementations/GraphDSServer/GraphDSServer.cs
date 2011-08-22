@@ -38,6 +38,7 @@ using sones.Library.Network.HttpServer.Security;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.GraphDS.Services;
 using sones.GraphDS;
+using sones.Plugins.GraphDS;
 
 namespace sones.GraphDSServer
 {
@@ -68,8 +69,8 @@ namespace sones.GraphDSServer
         /// <summary>
         /// The list of supported graph ql type instances
         /// </summary>
-        private readonly Dictionary<String, IGraphQL>   _QueryLanguages;            // dictionary because we can only have one query language instance per name
-        private readonly Dictionary<String, IService>    _graphDSServices;                   // dictionary because only one name per service
+        private readonly Dictionary<String, IGraphQL>   _QueryLanguages;     // dictionary because we can only have one query language instance per name
+        private readonly Dictionary<String, IService>   _graphDSServices;    // dictionary because only one name per service
         private readonly Dictionary<String, IDrainPipe> _DrainPipes;         // you could have multiple drainpipes with different parameters sporting the same name
 
         #endregion

@@ -96,22 +96,26 @@ namespace sones.GraphDB.Request.AlterType
                                 SecurityToken,
                                 out update);
 
-            if (update.GetVerticesRequest == null)
-            {
-                var getVerticesRequest = CreateGetVerticesRequest(myMetaManager, update);
+            #region update vertices
 
-                if (getVerticesRequest != null)
-                {
-                    update.SetGetVerticesRequest(getVerticesRequest);
+            //if (update.GetVerticesRequest == null)
+            //{
+            //    var getVerticesRequest = CreateGetVerticesRequest(myMetaManager, update);
 
-                    myMetaManager
-                        .VertexManager
-                        .ExecuteManager
-                        .UpdateVertices(update,
-                                        TransactionToken,
-                                        SecurityToken);
-                }
-            }
+            //    if (getVerticesRequest != null)
+            //    {
+            //        update.SetGetVerticesRequest(getVerticesRequest);
+
+            //        myMetaManager
+            //            .VertexManager
+            //            .ExecuteManager
+            //            .UpdateVertices(update,
+            //                            TransactionToken,
+            //                            SecurityToken);
+            //    }
+            //}
+
+            #endregion
         }
 
         /// <summary>

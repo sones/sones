@@ -51,7 +51,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
-      <Name>IGraphDB %28Dependencies\GraphDB\IGraphDB%29</Name>
+      <Name>IGraphDB</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\Arithmetics\Arithmetics\Arithmetics.csproj">
       <Project>{E33D0E75-43A1-4643-928D-DA9E5D99E041}</Project>
