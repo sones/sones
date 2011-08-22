@@ -56,7 +56,8 @@ namespace sones.GraphQL.StatementNodes.DML
         /// </summary>
         /// <param name="myTypeName"></param>
         /// <param name="myAttributeAssignList"></param>
-        public void Init(String myTypeName, List<AAttributeAssignOrUpdate> myAttributeAssignList)
+        public void Init(String myTypeName, 
+                            List<AAttributeAssignOrUpdate> myAttributeAssignList)
         {
             _AttributeAssignList = myAttributeAssignList;
             _TypeName = myTypeName;
@@ -75,9 +76,10 @@ namespace sones.GraphQL.StatementNodes.DML
             #region get myAttributes
 
             if (HasChildNodes(parseNode.ChildNodes[3]))
-            {
-                _AttributeAssignList = ((parseNode.ChildNodes[3].ChildNodes[1].AstNode as AttributeAssignListNode).AttributeAssigns);
-            }
+                _AttributeAssignList = ((parseNode
+                                            .ChildNodes[3]
+                                            .ChildNodes[1]
+                                            .AstNode as AttributeAssignListNode).AttributeAssigns);
 
             #endregion
         }
@@ -96,7 +98,12 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, 
+                                            IGraphQL myGraphQL, 
+                                            GQLPluginManager myPluginManager, 
+                                            String myQuery, 
+                                            SecurityToken mySecurityToken, 
+                                            TransactionToken myTransactionToken)
         {
             _queryString = myQuery;
 
@@ -107,7 +114,10 @@ namespace sones.GraphQL.StatementNodes.DML
                 result = myGraphDB.Insert<QueryResult>(
                         mySecurityToken,
                         myTransactionToken,
-                        CreateRequest(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken),
+                        CreateRequest(myPluginManager, 
+                                        myGraphDB, 
+                                        mySecurityToken, 
+                                        myTransactionToken),
                         CreateQueryResult);
             }
             catch (ASonesException e)
@@ -130,9 +140,11 @@ namespace sones.GraphQL.StatementNodes.DML
         /// <returns>The created query result</returns>
         private QueryResult CreateQueryResult(IRequestStatistics myStats, IVertex myCreatedVertex)
         {
-            return new QueryResult(_queryString, SonesGQLConstants.GQL,
-                                   Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds), ResultType.Successful,
-                                   new List<IVertexView> {CreateAVertexView(myCreatedVertex)});
+            return new QueryResult(_queryString, 
+                                    SonesGQLConstants.GQL,
+                                    Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds), 
+                                    ResultType.Successful,
+                                    new List<IVertexView> {CreateAVertexView(myCreatedVertex)});
         }
 
         private IVertexView CreateAVertexView(IVertex myCreatedVertex)
@@ -148,7 +160,10 @@ namespace sones.GraphQL.StatementNodes.DML
         /// Creates the request for the graphdb
         /// </summary>
         /// <returns>The created vertex</returns>
-        private RequestInsertVertex CreateRequest(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private RequestInsertVertex CreateRequest(GQLPluginManager myPluginManager, 
+                                                    IGraphDB myGraphDB, 
+                                                    SecurityToken mySecurityToken, 
+                                                    TransactionToken myTransactionToken)
         {
             #region data
 
@@ -166,27 +181,52 @@ namespace sones.GraphQL.StatementNodes.DML
             {
                 foreach (var aAttributeDefinition in _AttributeAssignList)
                 {
-                    ProcessAAttributeDefinition(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken,
-                                                vertexType, aAttributeDefinition, ref result);
+                    ProcessAAttributeDefinition(myPluginManager, 
+                                                myGraphDB, 
+                                                mySecurityToken, 
+                                                myTransactionToken,
+                                                vertexType, 
+                                                aAttributeDefinition, 
+                                                ref result);
                 }
             }
 
             return result;
         }
 
-        private static void ProcessAAttributeDefinition(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType, AAttributeAssignOrUpdate aAttributeDefinition, ref RequestInsertVertex result)
+        private static void ProcessAAttributeDefinition(GQLPluginManager myPluginManager, 
+                                                        IGraphDB myGraphDB, 
+                                                        SecurityToken mySecurityToken, 
+                                                        TransactionToken myTransactionToken, 
+                                                        IVertexType vertexType, 
+                                                        AAttributeAssignOrUpdate aAttributeDefinition, 
+                                                        ref RequestInsertVertex result)
         {
             if (vertexType.HasAttribute(aAttributeDefinition.AttributeIDChain.ContentString))
             {
-                ProcessStructuredProperty(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType, aAttributeDefinition, ref result);
+                ProcessStructuredProperty(myPluginManager, 
+                                            myGraphDB, 
+                                            mySecurityToken, 
+                                            myTransactionToken, 
+                                            vertexType, 
+                                            aAttributeDefinition, 
+                                            ref result);
             }
             else
             {
-                ProcessUnstructuredAttribute(vertexType, aAttributeDefinition, ref result);                                
+                ProcessUnstructuredAttribute(vertexType, 
+                                                aAttributeDefinition, 
+                                                ref result);                                
             }
         }
 
-        private static void ProcessStructuredProperty(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType, AAttributeAssignOrUpdate aAttributeDefinition, ref RequestInsertVertex result)
+        private static void ProcessStructuredProperty(GQLPluginManager myPluginManager, 
+                                                        IGraphDB myGraphDB, 
+                                                        SecurityToken mySecurityToken, 
+                                                        TransactionToken myTransactionToken, 
+                                                        IVertexType vertexType, 
+                                                        AAttributeAssignOrUpdate aAttributeDefinition, 
+                                                        ref RequestInsertVertex result)
         {
             #region AttributeAssignOrUpdateValue
 
@@ -215,10 +255,14 @@ namespace sones.GraphQL.StatementNodes.DML
 
                         if (!vertexType.HasAttribute(aAttributeDefinition.AttributeIDChain.ContentString))
                         {
-                            throw new InvalidVertexAttributeException(String.Format("The vertex type {0} has no attribute named {1}.", vertexType.Name, aAttributeDefinition.AttributeIDChain.ContentString));
+                            throw new InvalidVertexAttributeException(String.Format("The vertex type {0} has no attribute named {1}.", 
+                                                                        vertexType.Name, 
+                                                                        aAttributeDefinition.AttributeIDChain.ContentString));
                         }
 
-                        IAttributeDefinition attribute = vertexType.GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString);
+                        IAttributeDefinition attribute = vertexType.GetAttributeDefinition(aAttributeDefinition
+                                                                                            .AttributeIDChain
+                                                                                            .ContentString);
 
                         EdgePredefinition edgeDefinition = new EdgePredefinition(value.AttributeIDChain.ContentString);
 
@@ -268,7 +312,8 @@ namespace sones.GraphQL.StatementNodes.DML
                         Type myRequestedType;
                         if (vertexType.HasProperty(aAttributeDefinition.AttributeIDChain.ContentString))
                         {
-                            myRequestedType = ((IPropertyDefinition)vertexType.GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString)).BaseType;
+                            myRequestedType = ((IPropertyDefinition)vertexType
+                                                .GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString)).BaseType;
                         }
                         else
                         {
@@ -344,7 +389,8 @@ namespace sones.GraphQL.StatementNodes.DML
                                 edgeDefinition.AddUnknownProperty(aProperty.Key, aProperty.Value);
                             }
 
-                            edgeDefinition.AddVertexID(value.SetRefDefinition.ReferencedVertexType, Convert.ToInt64(((ValueDefinition) aTupleElement.Value).Value));
+                            edgeDefinition.AddVertexID(value.SetRefDefinition.ReferencedVertexType, 
+                                                        Convert.ToInt64(((ValueDefinition) aTupleElement.Value).Value));
 
                             #endregion
                         }
@@ -362,7 +408,9 @@ namespace sones.GraphQL.StatementNodes.DML
 
                     if (!vertexType.HasAttribute(aAttributeDefinition.AttributeIDChain.ContentString))
                     {
-                        throw new InvalidVertexAttributeException(String.Format("The vertex type {0} has no attribute named {1}.", vertexType.Name, aAttributeDefinition.AttributeIDChain.ContentString));
+                        throw new InvalidVertexAttributeException(String.Format("The vertex type {0} has no attribute named {1}.", 
+                                                                    vertexType.Name, 
+                                                                    aAttributeDefinition.AttributeIDChain.ContentString));
                     }
                     IAttributeDefinition attribute = vertexType.GetAttributeDefinition(aAttributeDefinition.AttributeIDChain.ContentString);
 
@@ -380,7 +428,8 @@ namespace sones.GraphQL.StatementNodes.DML
 
                             if (vertexIDs.Count > 1)
                             {
-                                throw new ReferenceAssignmentExpectedException(String.Format("It is not possible to create a single edge pointing to {0} vertices", vertexIDs.Count));
+                                throw new ReferenceAssignmentExpectedException(String.Format("It is not possible to create a single edge pointing to {0} vertices", 
+                                                                                vertexIDs.Count));
                             }
 
                             var inneredge = new EdgePredefinition();
@@ -411,7 +460,9 @@ namespace sones.GraphQL.StatementNodes.DML
             #endregion
         }
 
-        private static void ProcessUnstructuredAttribute(IVertexType vertexType, AAttributeAssignOrUpdate aAttributeDefinition, ref RequestInsertVertex result)
+        private static void ProcessUnstructuredAttribute(IVertexType vertexType, 
+                                                            AAttributeAssignOrUpdate aAttributeDefinition, 
+                                                            ref RequestInsertVertex result)
         {
             #region AttributeAssignOrUpdateValue
 
@@ -432,11 +483,25 @@ namespace sones.GraphQL.StatementNodes.DML
             }
         }
 
-        private static IEnumerable<IVertex> ProcessBinaryExpression(BinaryExpressionDefinition binExpression, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexType vertexType)
+        private static IEnumerable<IVertex> ProcessBinaryExpression(BinaryExpressionDefinition binExpression, 
+                                                                    GQLPluginManager myPluginManager, 
+                                                                    IGraphDB myGraphDB, 
+                                                                    SecurityToken mySecurityToken, 
+                                                                    TransactionToken myTransactionToken, 
+                                                                    IVertexType vertexType)
         {
-            binExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+            binExpression.Validate(myPluginManager, 
+                                    myGraphDB, 
+                                    mySecurityToken, 
+                                    myTransactionToken, 
+                                    vertexType);
 
-            var expressionGraph = binExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+            var expressionGraph = binExpression.Calculon(myPluginManager, 
+                                                            myGraphDB, 
+                                                            mySecurityToken, 
+                                                            myTransactionToken, 
+                                                            new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), 
+                                                            false);
 
             return
                 expressionGraph.Select(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);

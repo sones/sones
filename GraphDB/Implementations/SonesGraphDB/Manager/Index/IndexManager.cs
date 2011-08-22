@@ -65,7 +65,7 @@ namespace sones.GraphDB.Manager.Index
 
         private IVertexStore _vertexStore;
 
-        private IManagerOf<IVertexTypeHandler> _vertexTypeManager;
+        private IManagerOf<ITypeHandler<IVertexType>> _vertexTypeManager;
 
         private BaseGraphStorageManager _baseStorageManager;
 
@@ -107,7 +107,7 @@ namespace sones.GraphDB.Manager.Index
             if (myIndexDefinition.Name != null && myIndexDefinition.Name.StartsWith("sones"))
                 throw new Exception("It is not allowed to add an index with a name, that starts with 'sones'.");
 
-            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myIndexDefinition.VertexTypeName, myTransaction, mySecurity);
+            var vertexType = _vertexTypeManager.ExecuteManager.GetType(myIndexDefinition.VertexTypeName, myTransaction, mySecurity);
             
             var indexName = myIndexDefinition.Name ?? CreateIndexName(myIndexDefinition, vertexType);
 
@@ -123,10 +123,10 @@ namespace sones.GraphDB.Manager.Index
                 var propDef = vertexType.GetPropertyDefinition(prop);
                 if (!vertexType.HasProperty(prop) || (propDef.RelatedType.ID != vertexType.ID && !HasIndex(propDef, mySecurity, myTransaction)))
                     //TODO a better exception here.
-                    throw new Exception("The property is not defined on the vertex type " + vertexType.Name + ", it is defined on a parent type.");
+                    throw new AttributeDoesNotExistException("The property is not defined on the vertex type " + vertexType.Name + ", it is defined on a parent type.");
             }
 
-            var indexID = _idManager[(long)BaseTypes.Index].GetNextID();
+            var indexID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Index).GetNextID();
             var info = new VertexInformation((long)BaseTypes.Index, indexID, 0, myIndexDefinition.Edition);
 
             var typeClass = myIndexDefinition.TypeName ?? GetBestMatchingIndexName(false, false, false);
@@ -167,7 +167,7 @@ namespace sones.GraphDB.Manager.Index
 
             foreach (var childType in vertexType.GetDescendantVertexTypes())
             {
-                var childID = _idManager[(long)BaseTypes.Index].GetNextID();
+                var childID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Index).GetNextID();
                 var childName = CreateIndexName(myIndexDefinition, childType);
 
     
@@ -202,7 +202,7 @@ namespace sones.GraphDB.Manager.Index
 
             _vertexTypeManager.ExecuteManager.CleanUpTypes();
 
-            var reloadedVertexType = _vertexTypeManager.ExecuteManager.GetVertexType(vertexType.Name, myTransaction, mySecurity);
+            var reloadedVertexType = _vertexTypeManager.ExecuteManager.GetType(vertexType.Name, myTransaction, mySecurity);
 
             foreach(var type in reloadedVertexType.GetDescendantVertexTypesAndSelf())
             {
@@ -316,7 +316,7 @@ namespace sones.GraphDB.Manager.Index
 
         public IEnumerable<IIndexDefinition> DescribeIndices(TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {   
-            var vertexTypes = _vertexTypeManager.ExecuteManager.GetAllVertexTypes(myTransactionToken, mySecurityToken);
+            var vertexTypes = _vertexTypeManager.ExecuteManager.GetAllTypes(myTransactionToken, mySecurityToken);
 
             foreach (var type in vertexTypes)
             {
@@ -331,7 +331,7 @@ namespace sones.GraphDB.Manager.Index
 
         public IEnumerable<IIndexDefinition> DescribeIndex(String myTypeName, String myIndexName, String myEdition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertextype = _vertexTypeManager.ExecuteManager.GetVertexType(myTypeName, myTransaction, mySecurity);
+            var vertextype = _vertexTypeManager.ExecuteManager.GetType(myTypeName, myTransaction, mySecurity);
 
             var indices = vertextype.GetIndexDefinitions(true);
 
@@ -361,7 +361,7 @@ namespace sones.GraphDB.Manager.Index
 
         public void RebuildIndices(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myVertexTypeID, myTransactionToken, mySecurityToken);
+            var vertexType = _vertexTypeManager.ExecuteManager.GetType(myVertexTypeID, myTransactionToken, mySecurityToken);
 
             RebuildIndices(vertexType, myTransactionToken, mySecurityToken, false);
         }
@@ -485,12 +485,24 @@ namespace sones.GraphDB.Manager.Index
                     _ownIndex = index as ISingleValueIndex<IComparable, Int64>;
             }
 
-            _idManager[(long)BaseTypes.Index].SetToMaxID(maxID);
+            _idManager.GetVertexTypeUniqeID((long)BaseTypes.Index).SetToMaxID(maxID);
 
-            RebuildIndices(_vertexTypeManager.ExecuteManager.GetVertexType((long)BaseTypes.BaseType, myTransaction, mySecurity), myTransaction, mySecurity, true);
-            RebuildIndices(_vertexTypeManager.ExecuteManager.GetVertexType((long)BaseTypes.VertexType, myTransaction, mySecurity), myTransaction, mySecurity, true);
-            RebuildIndices(_vertexTypeManager.ExecuteManager.GetVertexType((long)BaseTypes.EdgeType, myTransaction, mySecurity), myTransaction, mySecurity, true);
-            RebuildIndices(_vertexTypeManager.ExecuteManager.GetVertexType((long)BaseTypes.Index, myTransaction, mySecurity), myTransaction, mySecurity, true);
+            RebuildIndices(_vertexTypeManager.ExecuteManager.GetType((long)BaseTypes.BaseType, 
+                                                                        myTransaction, 
+                                                                        mySecurity), 
+                            myTransaction, mySecurity, true);
+            RebuildIndices(_vertexTypeManager.ExecuteManager.GetType((long)BaseTypes.VertexType, 
+                                                                        myTransaction, 
+                                                                        mySecurity), 
+                            myTransaction, mySecurity, true);
+            RebuildIndices(_vertexTypeManager.ExecuteManager.GetType((long)BaseTypes.EdgeType, 
+                                                                        myTransaction, 
+                                                                        mySecurity), 
+                            myTransaction, mySecurity, true);
+            RebuildIndices(_vertexTypeManager.ExecuteManager.GetType((long)BaseTypes.Index, 
+                                                                        myTransaction, 
+                                                                        mySecurity), 
+                            myTransaction, mySecurity, true);
         }
 
         private Dictionary<string, object> FillOptions(IDictionary<string, object> myParameters, IEnumerable<KeyValuePair<string, object>> myOptions)
@@ -539,7 +551,7 @@ namespace sones.GraphDB.Manager.Index
 
         public void DropIndex(RequestDropIndex myDropIndexRequest, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(myDropIndexRequest.TypeName, myTransactionToken, mySecurityToken);
+            var vertexType = _vertexTypeManager.ExecuteManager.GetType(myDropIndexRequest.TypeName, myTransactionToken, mySecurityToken);
 
             if (!String.IsNullOrEmpty(myDropIndexRequest.IndexName))
             {

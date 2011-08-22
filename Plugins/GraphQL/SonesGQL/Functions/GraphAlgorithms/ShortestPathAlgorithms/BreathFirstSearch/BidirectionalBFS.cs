@@ -96,6 +96,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         /// Please look at the class documentation for detailed description how this algorithm works.
         /// </summary>
         /// <param name="myTypeAttribute">The Attribute representing the edge to follow (p.e. "Friends")</param>
+        /// <param name="myVertexType">The type of the start node.</param>
         /// <param name="myStart">The start node</param>
         /// <param name="myEnd">The end node</param>
         /// <param name="shortestOnly">true, if only shortest path shall be found</param>

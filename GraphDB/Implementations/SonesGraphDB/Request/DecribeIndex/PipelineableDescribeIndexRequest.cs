@@ -18,15 +18,11 @@
 * 
 */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.Request.GetIndex;
+using sones.GraphDB.Manager;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphDB.Manager;
 
 namespace sones.GraphDB.Request.DecribeIndex
 {
@@ -69,7 +65,7 @@ namespace sones.GraphDB.Request.DecribeIndex
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CheckManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.CheckManager.GetType(_request.TypeName, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)

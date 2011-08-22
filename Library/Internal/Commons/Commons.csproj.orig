@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>sones.Library.Commons</RootNamespace>
+    <AssemblyName>Commons</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DisposalService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\Authentication\IAuthentication.cs" />
+    <Compile Include="Security\Authentication\IGraphElementAuthentication.cs" />
+    <Compile Include="Security\Authentication\IUserAuthentication.cs" />
+    <Compile Include="Security\Authentication\Right.cs" />
+    <Compile Include="Security\Credentials\IUserCredentials.cs" />
+    <Compile Include="Security\Credentials\UserPasswordCredentials.cs" />
+    <Compile Include="Security\Encryption\IEncryption.cs" />
+    <Compile Include="Security\Integrety\IIntegrity.cs" />
+    <Compile Include="Security\ISecurityManager.cs" />
+    <Compile Include="Security\Token\SecurityToken.cs" />
+    <Compile Include="Transaction\IsolationLevel.cs" />
+    <Compile Include="Transaction\ITransactionable.cs" />
+    <Compile Include="Transaction\ITransactionManager.cs" />
+    <Compile Include="Transaction\TransactionID.cs" />
+    <Compile Include="Transaction\TransactionState.cs" />
+    <Compile Include="Transaction\TransactionToken.cs" />
+    <Compile Include="VertexStore\ConstantsVertexStore.cs" />
+    <Compile Include="VertexStore\Definitions\IncomingEdgeAddDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\HyperEdgeAddDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\SingleEdgeAddDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\StreamAddDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\Update\AGraphElementUpdateDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\Update\BinaryPropertiesUpdate.cs" />
+    <Compile Include="VertexStore\Definitions\Update\HyperEdgeUpdate.cs" />
+    <Compile Include="VertexStore\Definitions\Update\HyperEdgeUpdateDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\Update\SingleEdgeDeleteDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\Update\SingleEdgeUpdate.cs" />
+    <Compile Include="VertexStore\Definitions\Update\SingleEdgeUpdateDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\Update\StructuredPropertiesUpdate.cs" />
+    <Compile Include="VertexStore\Definitions\Update\UnstructuredPropertiesUpdate.cs" />
+    <Compile Include="VertexStore\Definitions\VertexAddDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\VertexInformation.cs" />
+    <Compile Include="VertexStore\Definitions\VertexUpdateDefinition.cs" />
+    <Compile Include="VertexStore\IVertexStore.cs" />
+    <Compile Include="VertexStore\VertexStoreFilter.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\IPluginable\IPluginable.csproj">
+      <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
+      <Name>IPluginable</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VersionedPluginManager\PluginManager.csproj">
+      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
+<<<<<<< HEAD
+      <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
+=======
+      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
+>>>>>>> master
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Security\Documentation\ClassDiagram.cd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

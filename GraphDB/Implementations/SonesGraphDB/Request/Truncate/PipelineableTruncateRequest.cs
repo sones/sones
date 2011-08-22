@@ -53,14 +53,14 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CheckManager.TruncateVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.CheckManager.TruncateType(_request.VertexTypeName, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            var vertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);
+            var vertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetType(_request.VertexTypeName, TransactionToken, SecurityToken);
 
-            myMetaManager.VertexTypeManager.ExecuteManager.TruncateVertexType(vertexType.ID, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.ExecuteManager.TruncateType(vertexType.ID, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

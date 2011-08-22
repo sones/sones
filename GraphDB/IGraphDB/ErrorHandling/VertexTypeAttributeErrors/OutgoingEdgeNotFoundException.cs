@@ -18,7 +18,7 @@
 * 
 */
 
-using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -50,7 +50,7 @@ namespace sones.GraphDB.ErrorHandling
         {
             Predefinition = myPredefinition;
             IncomingEdge = myIncomingEdge;
-            _msg = string.Format("Vertextype {0} defines an incoming edge on a nonexisting outgoing edge ({1}).", myPredefinition.VertexTypeName, myIncomingEdge.AttributeType);
+            _msg = string.Format("Vertextype {0} defines an incoming edge on a nonexisting outgoing edge ({1}).", myPredefinition.TypeName, myIncomingEdge.AttributeType);
         }
     }
 }

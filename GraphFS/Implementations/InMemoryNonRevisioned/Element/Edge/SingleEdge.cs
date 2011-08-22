@@ -279,7 +279,7 @@ namespace sones.GraphFS.Element.Edge
                 {
                     if (_structuredProperties != null)
                     {
-                        foreach (var item in _structuredProperties)
+                        foreach (var item in myUpdatedProperties)
                         {
                             if (_structuredProperties.ContainsKey(item.Key))
                             {

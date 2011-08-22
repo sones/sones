@@ -85,12 +85,6 @@ namespace sones.GraphDB.TypeSystem
         IEdgeType ParentEdgeType { get; }
 
         ///// <summary>
-        ///// Gets the parent vertex type
-        ///// </summary>
-        ///// <returns>The parent vertex type</returns>
-        //IEdgeType ParentEdgeType { get; }
-
-        ///// <summary>
         ///// Get all child edge types.
         ///// </summary>
         ///// <param name="myRecursive">Include all dexcendant.</param>

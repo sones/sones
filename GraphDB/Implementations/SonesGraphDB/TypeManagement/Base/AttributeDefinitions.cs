@@ -123,12 +123,24 @@ namespace sones.GraphDB.TypeManagement.Base
 
         #endregion
 
-
         #region Orderable
 
         OrderableEdgeDotOrder = Int64.MinValue + 16 * 10,
 
         #endregion
+
+        #region Edge
+
+        EdgeDotCreationDate = Int64.MinValue + 16 * 11,
+        EdgeDotModificationDate,
+        EdgeDotRevision,
+        EdgeDotEdition,
+        EdgeDotComment,
+        EdgeDotEdgeTypeID,
+        EdgeDotEdgeTypeName,
+
+        #endregion
+
     }
 
 }

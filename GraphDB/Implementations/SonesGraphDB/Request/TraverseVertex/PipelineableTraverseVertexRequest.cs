@@ -233,7 +233,7 @@ namespace sones.GraphDB.Request
 
             if (myMatchEvaluator != null)
                 //there is a match evaluator... use it
-                match = myMatchEvaluator(myCurrentVertex, myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken));
+                match = myMatchEvaluator(myCurrentVertex, myMetaManager.VertexTypeManager.ExecuteManager.GetType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken));
 
             #endregion
 
@@ -277,7 +277,7 @@ namespace sones.GraphDB.Request
             //first do recursive search by using the outgoing edges
 
             //get vertex type of myCurrentVetex
-            var currVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken);
+            var currVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken);
 
             foreach (var _OutEdgeDef in currVertexType.GetOutgoingEdgeDefinitions(true))
             {
@@ -308,7 +308,7 @@ namespace sones.GraphDB.Request
                 if (myFollowThisEdge != null)
                 {
                     if (!myFollowThisEdge(myCurrentVertex,
-                                            myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
+                                            myMetaManager.VertexTypeManager.ExecuteManager.GetType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
                                             outEdge,
                                             _OutEdgeDef))
                     {

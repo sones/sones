@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using sones.GraphDB;
 using sones.GraphDB.Request;
-using sones.GraphDB.Request.GetEdgeType;
-using sones.GraphDB.Request.GetIndex;
-using sones.GraphDB.Request.GetVertexType;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.VersionedPluginManager;
@@ -152,7 +149,12 @@ namespace QueryLog
             throw new NotImplementedException();
         }
 
-        public TResult CreateEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateVertexType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
+        public TResult CreateEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateEdgeType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult CreateEdgeTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeTypes myRequestCreateEdgeTypes, Converter.CreateEdgeTypesResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
@@ -187,7 +189,12 @@ namespace QueryLog
             throw new NotImplementedException();
         }
 
-        public TResult DropType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropVertexType myRequestDropType, Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
+        public TResult DropVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropVertexType myRequestDropType, Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult DropEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropEdgeType myRequestDropType, Converter.DropEdgeTypeResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

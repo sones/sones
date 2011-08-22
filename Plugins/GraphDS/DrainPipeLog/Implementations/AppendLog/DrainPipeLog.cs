@@ -30,9 +30,6 @@ using sones.Library.Commons.Security;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.GraphDS.DrainPipeLog.Storage;
 using System.Threading;
-using sones.GraphDB.Request.GetVertexType;
-using sones.GraphDB.Request.GetEdgeType;
-using sones.GraphDB.Request.GetIndex;
 using System.IO;
 
 namespace sones.Plugins.GraphDS.DrainPipeLog
@@ -61,9 +58,7 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         #region Constructors
 
         public DrainPipeLog()
-        {
-
-        }
+        { }
 
         public DrainPipeLog(String myUniqueString, Dictionary<string, object> myParameters = null)
         {
@@ -369,7 +364,12 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             throw new NotImplementedException();
         }
 
-        public TResult DropType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropVertexType myRequestDropType, Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
+        public TResult DropVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropVertexType myRequestDropType, Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult DropEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropEdgeType myRequestDropType, Converter.DropEdgeTypeResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
@@ -395,6 +395,11 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         }
 
         public TResult CreateEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateVertexType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult CreateEdgeTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeTypes myRequestCreateEdgeTypes, Converter.CreateEdgeTypesResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

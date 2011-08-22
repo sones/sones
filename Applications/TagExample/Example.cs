@@ -124,18 +124,16 @@ namespace TagExample
 
             //create a VertexTypePredefinition
             var Tag_VertexTypePredefinition = new VertexTypePredefinition("Tag");
-
+            
             //create property
-            var PropertyName = new PropertyPredefinition("Name")
-                                           .SetAttributeType("String")
+            var PropertyName = new PropertyPredefinition("Name", "String")
                                            .SetComment("This is a property on type 'Tag' named 'Name' and is of type 'String'");
 
             //add property
             Tag_VertexTypePredefinition.AddProperty(PropertyName);
 
             //create outgoing edge to "Website"
-            var OutgoingEdgesTaggedWebsites = new OutgoingEdgePredefinition("TaggedWebsites")
-                                                          .SetAttributeType("Website")
+            var OutgoingEdgesTaggedWebsites = new OutgoingEdgePredefinition("TaggedWebsites", "Website")
                                                           .SetMultiplicityAsMultiEdge()
                                                           .SetComment(@"This is an outgoing edge on type 'Tag' wich points to the type 'Website' (the AttributeType) 
                                                                             and is defined as 'MultiEdge', which means that this edge can contain multiple single edges");
@@ -151,12 +149,10 @@ namespace TagExample
             var Website_VertexTypePredefinition = new VertexTypePredefinition("Website");
 
             //create properties
-            PropertyName = new PropertyPredefinition("Name")
-                                       .SetAttributeType("String")
+            PropertyName = new PropertyPredefinition("Name", "String")
                                        .SetComment("This is a property on type 'Website' named 'Name' and is of type 'String'");
 
-            var PropertyUrl = new PropertyPredefinition("URL")
-                                         .SetAttributeType("String")
+            var PropertyUrl = new PropertyPredefinition("URL", "String")
                                          .SetAsMandatory();
 
             //add properties
@@ -191,8 +187,9 @@ namespace TagExample
             #endregion
 
             //add IncomingEdge "Tags", the related OutgoingEdge is "TaggedWebsites" on type "Tag"
-            Website_VertexTypePredefinition.AddIncomingEdge(new IncomingEdgePredefinition("Tags")
-                                                                        .SetOutgoingEdge("Tag", "TaggedWebsites"));
+            Website_VertexTypePredefinition.AddIncomingEdge(new IncomingEdgePredefinition("Tags",
+                                                                                            "Tag", 
+                                                                                            "TaggedWebsites"));
 
             #endregion
 

@@ -19,10 +19,7 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -35,17 +32,17 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates an instance of EmptyEdgeTypeException.
         /// </summary>
         /// <param name="myPredefinition">The predefinition that causes the exception.</param>
-        public EmptyEdgeTypeException(VertexTypePredefinition myPredefinition, String myOutgoingEdgeName)
+        public EmptyEdgeTypeException(ATypePredefinition myPredefinition, String myOutgoingEdgeName)
         {
             Predefinition = myPredefinition;
             PropertyName = myOutgoingEdgeName;
-            _msg = string.Format("The outgoing edge {0} on vertex type {1} is empty.",myOutgoingEdgeName, myPredefinition.VertexTypeName);
+            _msg = string.Format("The outgoing edge {0} on vertex type {1} is empty.", myOutgoingEdgeName, myPredefinition.TypeName);
         }
 
         /// <summary>
         /// The predefinition that causes the exception.
         /// </summary>
-        public VertexTypePredefinition Predefinition { get; private set; }
+        public ATypePredefinition Predefinition { get; private set; }
 
         /// <summary>
         /// The outgoing IncomingEdge that causes the exception.

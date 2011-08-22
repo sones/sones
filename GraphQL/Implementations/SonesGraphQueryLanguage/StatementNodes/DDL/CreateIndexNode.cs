@@ -120,14 +120,18 @@ namespace sones.GraphQL.StatementNodes.DDL
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, 
+                                            IGraphQL myGraphQL, 
+                                            GQLPluginManager myPluginManager, 
+                                            String myQuery, 
+                                            SecurityToken mySecurityToken, 
+                                            TransactionToken myTransactionToken)
         {
             Query = myQuery;
 
-            var indexDef = new IndexPredefinition(_IndexName);
-            indexDef.SetIndexType(_IndexType);
-            indexDef.SetVertexType(_DBType);
-            indexDef.SetEdition(_IndexEdition);
+            var indexDef = new IndexPredefinition(_IndexName, _DBType)
+                                .SetIndexType(_IndexType)
+                                .SetEdition(_IndexEdition);
             
             //to be indices attributes
             foreach (var aIndexedProperty in _AttributeList)

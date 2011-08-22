@@ -645,12 +645,14 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="myExistingElement"></param>
         /// <param name="myNewElement"></param>
         /// <returns></returns>
-        private Boolean IsNewSelectionElement(SelectionElement myExistingElement, SelectionElement myNewElement)
+        private Boolean IsNewSelectionElement(SelectionElement myExistingElement, 
+                                                SelectionElement myNewElement)
         {
 
             #region The existing is an asterisk and the new one is NOT a SpecialTypeAttribute
 
-            if (myExistingElement.Selection == TypesOfSelect.Asterisk && !myNewElement.RelatedIDChainDefinition.IsSpecialTypeAttribute())
+            if (myExistingElement.Selection == TypesOfSelect.Asterisk && 
+                !myNewElement.RelatedIDChainDefinition.IsSpecialTypeAttribute())
             {
                 return false;
             }
@@ -663,8 +665,9 @@ namespace sones.GraphQL.GQL.Manager.Select
             var selElem = myNewElement;
 
             if (item.Alias == selElem.Alias// &&
-                // same depth                                                                 or Undefined and one lower depth Friends.Undefined is Depth 1 and Friends.Age is Depth 2 but at the same selection level
-                //	(item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth || (selElem.RelatedIDChainDefinition.IsUndefinedAttribute && item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth + 1))
+                // same depth or Undefined and one lower depth Friends.Undefined is Depth 1 and Friends.Age is Depth 2 but at the same selection level
+                //	(item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth || 
+                //      (selElem.RelatedIDChainDefinition.IsUndefinedAttribute && item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth + 1))
                 )
             {
                 return false;
@@ -703,7 +706,10 @@ namespace sones.GraphQL.GQL.Manager.Select
             IEnumerable<IVertex> dbos;
             if (myUsingGraph)
             {
-                dbos = _ExpressionGraph.Select(new LevelKey(myLevelKey.Edges, _graphdb, mySecurityToken, myTransactionToken), null, true);
+                dbos = _ExpressionGraph.Select(new LevelKey(myLevelKey.Edges, 
+                                                            _graphdb, 
+                                                            mySecurityToken, 
+                                                            myTransactionToken), null, true);
             }
             else // using GUID index
             {
@@ -718,7 +724,13 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             if (aggregates.IsNotNullOrEmpty())
             {
-                foreach (var val in ExamineDBO_Aggregates(myTransactionToken, mySecurityToken, dbos, aggregates, _Selections, myUsingGraph, myResolutionDepth))
+                foreach (var val in ExamineDBO_Aggregates(myTransactionToken, 
+                                                            mySecurityToken, 
+                                                            dbos, 
+                                                            aggregates, 
+                                                            _Selections, 
+                                                            myUsingGraph, 
+                                                            myResolutionDepth))
                 {
                     if (val != null)
                     {
@@ -753,14 +765,15 @@ namespace sones.GraphQL.GQL.Manager.Select
                 {
                     #region Create a readoutObject for this DBO and yield it: on failure throw an exception
 
-                    Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> Attributes = GetAllSelectedAttributesFromVertex(mySecurityToken, 
-                                                                                                                                        myTransactionToken, 
-                                                                                                                                        aDBObject, 
-                                                                                                                                        vertexType, 
-                                                                                                                                        myResolutionDepth, 
-                                                                                                                                        myLevelKey, 
-                                                                                                                                        myReference, 
-                                                                                                                                        myUsingGraph);
+                    Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> Attributes = 
+                        GetAllSelectedAttributesFromVertex(mySecurityToken, 
+                                                            myTransactionToken, 
+                                                            aDBObject, 
+                                                            vertexType, 
+                                                            myResolutionDepth, 
+                                                            myLevelKey, 
+                                                            myReference, 
+                                                            myUsingGraph);
 
                     if (Attributes != null && (Attributes.Item1.Count > 0 || Attributes.Item2.Count > 0))
                     {
@@ -780,7 +793,8 @@ namespace sones.GraphQL.GQL.Manager.Select
 
         }
 
-        public IEnumerable<IVertexView> GetTypeIndependendResult(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IEnumerable<IVertexView> GetTypeIndependendResult(SecurityToken mySecurityToken, 
+                                                                    TransactionToken myTransactionToken)
         {
 
             //_DBOs = new IEnumerable<Vertex>();
@@ -843,14 +857,15 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="reference"></param>
         /// <param name="myUsingGraph"></param>
         /// <returns></returns>
-        public Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> GetAllSelectedAttributesFromVertex(SecurityToken mySecurityToken, 
-                                                                                                                        TransactionToken myTransactionToken, 
-                                                                                                                        IVertex myDBObject, 
-                                                                                                                        IVertexType myDBType, 
-                                                                                                                        Int64 myDepth, 
-                                                                                                                        EdgeList myLevelKey, 
-                                                                                                                        String myReference, 
-                                                                                                                        Boolean myUsingGraph)
+        public Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> 
+                GetAllSelectedAttributesFromVertex(SecurityToken mySecurityToken, 
+                                                    TransactionToken myTransactionToken, 
+                                                    IVertex myDBObject, 
+                                                    IVertexType myDBType, 
+                                                    Int64 myDepth, 
+                                                    EdgeList myLevelKey, 
+                                                    String myReference, 
+                                                    Boolean myUsingGraph)
         {
             IDictionary<String, Object> properties = new Dictionary<string, object>();
             IDictionary<String, IEdgeView> edges = new Dictionary<string, IEdgeView>();
@@ -1326,29 +1341,29 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                     if (myDBObject.HasOutgoingEdge(typeAttribute.ID))
                     {
-                        var dbos = myDBObject.GetOutgoingEdge(typeAttribute.ID);
+                        var edge = myDBObject.GetOutgoingEdge(typeAttribute.ID);
 
-                        if (dbos != null)
+                        if (edge != null)
                         {
                             if (myDepth > 0)
                             {
-                                attributeValue = ResolveAttributeValue((IOutgoingEdgeDefinition)typeAttribute, 
-                                                                        dbos, 
-                                                                        myDepth, 
-                                                                        myLevelKey, 
-                                                                        myDBObject, 
-                                                                        reference, 
-                                                                        myUsingGraph, 
-                                                                        mySecurityToken, 
-                                                                        myTransactionToken);
+                                attributeValue = ResolveAttributeValue(
+                                                    (IOutgoingEdgeDefinition)typeAttribute, 
+                                                    edge, 
+                                                    myDepth, 
+                                                    myLevelKey, 
+                                                    myDBObject, 
+                                                    reference, 
+                                                    myUsingGraph, 
+                                                    mySecurityToken, 
+                                                    myTransactionToken);
                             }
                             else
                             {
-                                attributeValue = GetNotResolvedReferenceEdgeAttributeValue(dbos.GetTargetVertices());
+                                attributeValue = GetNotResolvedReferenceEdgeAttributeValue(edge.GetTargetVertices());
                             }
 
                             return true;
-
                         }
                     }
 
@@ -1431,7 +1446,8 @@ namespace sones.GraphQL.GQL.Manager.Select
 
 
         /// <summary>
-        /// This will add all attributes of <paramref name="myDBObject"/> to the <paramref name="myAttributes"/> reference. Reference attributes will be resolved to the <paramref name="myDepth"/>
+        /// This will add all attributes of <paramref name="myDBObject"/> to the 
+        /// <paramref name="myAttributes"/> reference. Reference attributes will be resolved to the <paramref name="myDepth"/>
         /// </summary>
         private void AddAttributesByDBO(
             SecurityToken mySecurityToken,
@@ -1497,7 +1513,10 @@ namespace sones.GraphQL.GQL.Manager.Select
                     }
                     else
                     {
-                        myAttributes.Item2.Add(outgoingEdgeDefinition.Name, GetNotResolvedReferenceEdgeAttributeValue(myDBObject.GetOutgoingEdge(outgoingEdgeDefinition.ID).GetTargetVertices()));
+                        myAttributes.Item2.Add(outgoingEdgeDefinition.Name, 
+                                                GetNotResolvedReferenceEdgeAttributeValue(myDBObject
+                                                                                            .GetOutgoingEdge(outgoingEdgeDefinition.ID)
+                                                                                            .GetTargetVertices()));
                     }
                 }
             }
@@ -1508,7 +1527,11 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             foreach (var aIncomingEdgeDefinition in myType.GetIncomingEdgeDefinitions(true))
             {
-                if (myDBObject.HasIncomingVertices(aIncomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, aIncomingEdgeDefinition.RelatedEdgeDefinition.ID))
+                if (myDBObject.HasIncomingVertices(aIncomingEdgeDefinition
+                                                    .RelatedEdgeDefinition
+                                                    .RelatedType.ID, 
+                                                   aIncomingEdgeDefinition
+                                                    .RelatedEdgeDefinition.ID))
                 {
                     if (myDepth > 0)
                     {
@@ -1516,7 +1539,12 @@ namespace sones.GraphQL.GQL.Manager.Select
                             aIncomingEdgeDefinition.Name,
                             ResolveIncomingEdgeValue(
                                 aIncomingEdgeDefinition,
-                                myDBObject.GetIncomingVertices(aIncomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, aIncomingEdgeDefinition.RelatedEdgeDefinition.ID),
+                                myDBObject.GetIncomingVertices(aIncomingEdgeDefinition
+                                                                .RelatedEdgeDefinition
+                                                                .RelatedType
+                                                                .ID, 
+                                                               aIncomingEdgeDefinition
+                                                                .RelatedEdgeDefinition.ID),
                                 myDepth,
                                 myEdgeList,
                                 myDBObject,
@@ -1527,7 +1555,12 @@ namespace sones.GraphQL.GQL.Manager.Select
                     }
                     else
                     {
-                        myAttributes.Item2.Add(aIncomingEdgeDefinition.Name, GetNotResolvedReferenceEdgeAttributeValue(myDBObject.GetIncomingVertices(aIncomingEdgeDefinition.RelatedEdgeDefinition.RelatedType.ID, aIncomingEdgeDefinition.RelatedEdgeDefinition.ID)));
+                        myAttributes.Item2.Add(aIncomingEdgeDefinition.Name, 
+                                                GetNotResolvedReferenceEdgeAttributeValue(myDBObject.GetIncomingVertices(aIncomingEdgeDefinition
+                                                                                                                            .RelatedEdgeDefinition
+                                                                                                                            .RelatedType.ID, 
+                                                                                                                          aIncomingEdgeDefinition
+                                                                                                                            .RelatedEdgeDefinition.ID)));
                     }
                 }
             }
@@ -1575,13 +1608,32 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             if (myUsingGraph)
             {
-                var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject, true);
+                var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, 
+                                                                _graphdb, 
+                                                                mySecurityToken, 
+                                                                myTransactionToken), 
+                                                                mySourceDBObject, 
+                                                                true);
 
-                resultList = GetVertices(mySecurityToken, myTransactionToken, attrDefinition.RelatedEdgeDefinition.SourceVertexType, dbos, myDepth, myEdgeList, reference, myUsingGraph);
+                resultList = GetVertices(mySecurityToken, 
+                                            myTransactionToken, 
+                                            attrDefinition.RelatedEdgeDefinition.SourceVertexType, 
+                                            dbos, 
+                                            myDepth, 
+                                            myEdgeList, 
+                                            reference, 
+                                            myUsingGraph);
             }
             else
             {
-                resultList = GetVertices(mySecurityToken, myTransactionToken, attrDefinition.RelatedEdgeDefinition.SourceVertexType, myIncomingVertices, myDepth, myEdgeList, reference, myUsingGraph);
+                resultList = GetVertices(mySecurityToken, 
+                                            myTransactionToken, 
+                                            attrDefinition.RelatedEdgeDefinition.SourceVertexType, 
+                                            myIncomingVertices, 
+                                            myDepth, 
+                                            myEdgeList, 
+                                            reference, 
+                                            myUsingGraph);
             }
 
             return new HyperEdgeView(null, resultList.Select(aTargetVertex => new SingleEdgeView(null, aTargetVertex)));
@@ -1589,7 +1641,8 @@ namespace sones.GraphQL.GQL.Manager.Select
         }
 
         /// <summary>
-        /// Resolve a AListReferenceEdgeType to a DBObjectReadouts. This will resolve each edge target using the 'GetAllAttributesFromDBO' method
+        /// Resolve a AListReferenceEdgeType to a DBObjectReadouts. 
+        /// This will resolve each edge target using the 'GetAllAttributesFromDBO' method
         /// </summary>
 
         private IEnumerable<IVertexView> GetVertices(SecurityToken mySecurityToken, 
@@ -1606,7 +1659,14 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             foreach (var aVertex in myObjectUUIDs)
             {
-                yield return LoadAndResolveVertex(mySecurityToken, myTransactionToken, aVertex, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph);
+                yield return LoadAndResolveVertex(mySecurityToken, 
+                                                    myTransactionToken, 
+                                                    aVertex, 
+                                                    myTypeOfAttribute, 
+                                                    myDepth, 
+                                                    myLevelKey, 
+                                                    myReference, 
+                                                    myUsingGraph);
             }
 
             yield break;
@@ -1630,17 +1690,24 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             if (myEdgeList.Level == 0)
             {
-                myEdgeList = new EdgeList(new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.ID));
+                myEdgeList = new EdgeList(new EdgeKey(attrDefinition.RelatedType.ID, 
+                                                        attrDefinition.ID));
             }
             else
             {
-                myEdgeList += new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.ID);
+                myEdgeList += new EdgeKey(attrDefinition.RelatedType.ID, 
+                                            attrDefinition.ID);
             }
 
-            // at some deeper level we could get into graph independend results. From this time, we can use the GUID index rather than asking the graph all the time
+            // at some deeper level we could get into graph independend results. 
+            //From this time, we can use the GUID index rather than asking the graph all the time
             if (myUsingGraph)
             {
-                myUsingGraph = _ExpressionGraph.IsGraphRelevant(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject);
+                myUsingGraph = _ExpressionGraph.IsGraphRelevant(new LevelKey(myEdgeList.Edges, 
+                                                                                _graphdb, 
+                                                                                mySecurityToken, 
+                                                                                myTransactionToken), 
+                                                                mySourceDBObject);
             }
 
             #endregion
@@ -1654,12 +1721,25 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 if (myUsingGraph)
                 {
-                    var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject, true).ToList();
+                    var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, 
+                                                                    _graphdb, 
+                                                                    mySecurityToken, 
+                                                                    myTransactionToken), 
+                                                        mySourceDBObject, 
+                                                        true).ToList();
 
                     //Todo: find a better way to get the edge properties
-                    resultList = GenerateSingleEdgeViews(mySecurityToken, myTransactionToken,
-                        ((IHyperEdge)myEdge).GetAllEdges((aSingleEdge) => dbos.Contains(aSingleEdge.GetTargetVertex())),
-                        attrDefinition.TargetVertexType, myDepth, myEdgeList, reference, myUsingGraph, attrDefinition.InnerEdgeType);
+                    resultList = GenerateSingleEdgeViews(mySecurityToken, 
+                                                            myTransactionToken,
+                                                            ((IHyperEdge)myEdge)
+                                                                .GetAllEdges((aSingleEdge) => 
+                                                                              dbos.Contains(aSingleEdge.GetTargetVertex())),
+                                                            attrDefinition.TargetVertexType, 
+                                                            myDepth, 
+                                                            myEdgeList, 
+                                                            reference, 
+                                                            myUsingGraph, 
+                                                            attrDefinition.InnerEdgeType);
 
                 }
                 else
@@ -1667,7 +1747,12 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                     resultList = GenerateSingleEdgeViews(mySecurityToken, myTransactionToken,
                         ((IHyperEdge)myEdge).GetAllEdges(),
-                        attrDefinition.TargetVertexType, myDepth, myEdgeList, reference, myUsingGraph, attrDefinition.InnerEdgeType);
+                        attrDefinition.TargetVertexType, 
+                        myDepth, 
+                        myEdgeList, 
+                        reference, 
+                        myUsingGraph, 
+                        attrDefinition.InnerEdgeType);
                 }
 
                 return new HyperEdgeView(null, resultList);
@@ -1681,7 +1766,12 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 return GenerateSingleEdgeViews(mySecurityToken, myTransactionToken,
                     new List<ISingleEdge> { (ISingleEdge)myEdge },
-                    attrDefinition.TargetVertexType, myDepth, myEdgeList, reference, myUsingGraph, attrDefinition.InnerEdgeType).FirstOrDefault();
+                    attrDefinition.TargetVertexType, 
+                    myDepth, 
+                    myEdgeList, 
+                    reference, 
+                    myUsingGraph, 
+                    attrDefinition.InnerEdgeType).FirstOrDefault();
 
                 #endregion
 
@@ -1700,7 +1790,15 @@ namespace sones.GraphQL.GQL.Manager.Select
         {
             foreach (var aSingleEdge in mySingleEdges)
             {
-                yield return GenerateASingleEdgeView(mySecurityToken, myTransactionToken, aSingleEdge, myVertexType, myDepth, myEdgeList, reference, myUsingGraph, myInnerEdgeType);
+                yield return GenerateASingleEdgeView(mySecurityToken, 
+                                                        myTransactionToken, 
+                                                        aSingleEdge, 
+                                                        myVertexType, 
+                                                        myDepth, 
+                                                        myEdgeList, 
+                                                        reference, 
+                                                        myUsingGraph, 
+                                                        myInnerEdgeType);
             }
 
             yield break;
@@ -1716,7 +1814,15 @@ namespace sones.GraphQL.GQL.Manager.Select
                                                         bool myUsingGraph, 
                                                         IEdgeType myInnerEdgeType)
         {
-            return new SingleEdgeView(GetEdgeProperties(aSingleEdge, myInnerEdgeType), LoadAndResolveVertex(mySecurityToken, myTransactionToken, aSingleEdge.GetTargetVertex(), myVertexType, myDepth, myEdgeList, reference, myUsingGraph));
+            return new SingleEdgeView(GetEdgeProperties(aSingleEdge, myInnerEdgeType), 
+                                        LoadAndResolveVertex(mySecurityToken, 
+                                                                myTransactionToken, 
+                                                                aSingleEdge.GetTargetVertex(), 
+                                                                myVertexType, 
+                                                                myDepth, 
+                                                                myEdgeList, 
+                                                                reference, 
+                                                                myUsingGraph));
         }
 
         private IDictionary<string, object> GetEdgeProperties(ISingleEdge aSingleEdge, IEdgeType myInnerEdgeType)
@@ -1732,6 +1838,15 @@ namespace sones.GraphQL.GQL.Manager.Select
                     if (aSingleEdge.HasProperty(aProperty.ID))
                     {
                         result.Add(aProperty.Name, aProperty.GetValue(aSingleEdge));
+                    }
+                    else
+                    {
+                        var tempResult = aProperty.GetValue(aSingleEdge);
+
+                        if (tempResult != null)
+                        {
+                            result.Add(aProperty.Name, tempResult);
+                        }
                     }
                 }
             }
@@ -1774,10 +1889,15 @@ namespace sones.GraphQL.GQL.Manager.Select
                 myEdgeList += new EdgeKey(attrDefinition.RelatedType.ID, attrDefinition.ID);
             }
 
-            // at some deeper level we could get into graph independend results. From this time, we can use the GUID index rather than asking the graph all the time
+            // at some deeper level we could get into graph independend results. 
+            // From this time, we can use the GUID index rather than asking the graph all the time
             if (myUsingGraph)
             {
-                myUsingGraph = _ExpressionGraph.IsGraphRelevant(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject);
+                myUsingGraph = _ExpressionGraph.IsGraphRelevant(new LevelKey(myEdgeList.Edges, 
+                                                                                _graphdb, 
+                                                                                mySecurityToken, 
+                                                                                myTransactionToken), 
+                                                                mySourceDBObject);
             }
 
             #endregion
@@ -1791,13 +1911,33 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 if (myUsingGraph)
                 {
-                    var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, _graphdb, mySecurityToken, myTransactionToken), mySourceDBObject, true);
+                    var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, 
+                                                                    _graphdb, 
+                                                                    mySecurityToken, 
+                                                                    myTransactionToken), 
+                                                       mySourceDBObject, 
+                                                       true);
 
-                    resultList = GetVertices(mySecurityToken, myTransactionToken, attrDefinition.TargetVertexType, dbos, myDepth, myEdgeList, reference, myUsingGraph);
+                    resultList = GetVertices(mySecurityToken, 
+                                                myTransactionToken, 
+                                                attrDefinition.TargetVertexType, 
+                                                dbos, 
+                                                myDepth, 
+                                                myEdgeList, 
+                                                reference, 
+                                                myUsingGraph);
                 }
                 else
                 {
-                    resultList = GetVertices(mySecurityToken, myTransactionToken, attrDefinition.TargetVertexType, attributeValue, myDepth, myEdgeList, reference, myUsingGraph);
+                    resultList = GetVertices(mySecurityToken, 
+                                                myTransactionToken, 
+                                                attrDefinition.
+                                                TargetVertexType, 
+                                                attributeValue, 
+                                                myDepth, 
+                                                myEdgeList, 
+                                                reference, 
+                                                myUsingGraph);
                 }
 
                 return new HyperEdgeView(null, resultList.Select(aTargetVertex => new SingleEdgeView(null, aTargetVertex)));
@@ -1809,7 +1949,14 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                 #region Single reference
 
-                return new SingleEdgeView(null, LoadAndResolveVertex(mySecurityToken, myTransactionToken, attributeValue.FirstOrDefault(), attrDefinition.SourceVertexType, myDepth, myEdgeList, reference, myUsingGraph));
+                return new SingleEdgeView(null, LoadAndResolveVertex(mySecurityToken, 
+                                                                        myTransactionToken, 
+                                                                        attributeValue.FirstOrDefault(), 
+                                                                        attrDefinition.SourceVertexType, 
+                                                                        myDepth, 
+                                                                        myEdgeList, 
+                                                                        reference, 
+                                                                        myUsingGraph));
 
                 #endregion
 
@@ -1829,7 +1976,15 @@ namespace sones.GraphQL.GQL.Manager.Select
                                                 String myReference, 
                                                 Boolean myUsingGraph)
         {
-            var tuple = GetAllSelectedAttributesFromVertex(mySecurityToken, myTransactionToken, myObjectUUID, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph);
+            var tuple = GetAllSelectedAttributesFromVertex(mySecurityToken, 
+                                                            myTransactionToken, 
+                                                            myObjectUUID, 
+                                                            myTypeOfAttribute, 
+                                                            myDepth, 
+                                                            myLevelKey, 
+                                                            myReference, 
+                                                            myUsingGraph);
+
             return new VertexView(tuple.Item1, tuple.Item2);
         }
 
@@ -2030,7 +2185,10 @@ namespace sones.GraphQL.GQL.Manager.Select
 
                     if (aggr.Aggregate.AggregateName == "count" && aggr.RelatedIDChainDefinition.SelectType == TypesOfSelect.Asterisk)
                     {
-                        aggrResult = new FuncParameter(_graphdb.GetVertexCount<UInt64>(mySecurityToken, myTransactionToken, new RequestGetVertexCount(aggr.EdgeList.LastEdge.VertexTypeID), (stats, count) => count));
+                        aggrResult = new FuncParameter(_graphdb.GetVertexCount<UInt64>(mySecurityToken, 
+                                                                                        myTransactionToken, 
+                                                                                        new RequestGetVertexCount(aggr.EdgeList.LastEdge.VertexTypeID), 
+                                                                                        (stats, count) => count));
                     }
                     else
                     {
@@ -2080,7 +2238,8 @@ namespace sones.GraphQL.GQL.Manager.Select
         }
 
         /// <summary>
-        /// This will check the exceptional for errors. Depending on the SettingInvalidReferenceHandling an expcetion will be thrown or false will be return on any load error.
+        /// This will check the exceptional for errors. 
+        /// Depending on the SettingInvalidReferenceHandling an expcetion will be thrown or false will be return on any load error.
         /// </summary>
         /// <returns></returns>
         private Boolean CheckLoadedDBObjectStream(IVertex dbStream, IVertexType myDBType, IAttributeDefinition myTypeAttribute = null)
