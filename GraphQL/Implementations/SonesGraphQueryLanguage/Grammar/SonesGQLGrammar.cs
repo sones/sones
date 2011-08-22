@@ -518,6 +518,7 @@ namespace sones.GraphQL
             var dropIndexStmt = new NonTerminal("dropIndexStmt", CreateDropIndexStmNode);
             var InsertStmt = new NonTerminal("InsertStmt", CreateInsertStatementNode);
             var updateStmt = new NonTerminal("updateStmt", CreateUpdateStatementNode);
+            var updateEdgesStmt = new NonTerminal("updateStmt", CreateUpdateEdgesStatementNode);
             var deleteStmt = new NonTerminal("deleteStmt", CreateDeleteStatementNode);
             var SelectStmtGraph = new NonTerminal("SelectStmtGraph", CreateSelectStatementNode);
             var parSelectStmt = new NonTerminal("parSelectStmt", CreatePartialSelectStmtNode);
@@ -632,6 +633,7 @@ namespace sones.GraphQL
 
             var AttrAssignList = new NonTerminal("AttrAssignList", CreateAttrAssignListNode);
             var AttrUpdateList = new NonTerminal("AttrUpdateList", typeof(AttributeUpdateOrAssignListNode));
+            var EdgeAttrUpdateList = new NonTerminal("EdgeAttrUpdateList", typeof(EdgeAttributeUpdateListNode));
             var AttrAssign = new NonTerminal("AttrAssign", typeof(AttributeAssignNode));
             var AttrRemove = new NonTerminal("AttrRemove", typeof(AttributeRemoveNode));
             var ListAttrUpdate = new NonTerminal("AttrUpdate");
@@ -641,8 +643,10 @@ namespace sones.GraphQL
             var RemoveFromListAttrUpdateAddToRemoveFrom = new NonTerminal("RemoveFromListAttrUpdateAddToRemoveFrom", CreateRemoveFromListAttrUpdateAddToRemoveFromNode);
             var RemoveFromListAttrUpdateAddToOperator = new NonTerminal("RemoveFromListAttrUpdateAddToOperator", CreateRemoveFromListAttrUpdateAddToOperatorNode);
             var RemoveFromListAttrUpdateScope = new NonTerminal("RemoveFromListAttrUpdateScope", CreateRemoveFromListAttrUpdateScope);
+            var EdgeAttrUpdate = new NonTerminal("EdgeAttrUpdate", typeof(EdgeAttributeUpdateNode));
             var AttrUpdateOrAssign = new NonTerminal("AttrUpdateOrAssign");
             var CollectionOfDBObjects = new NonTerminal("ListOfDBObjects", typeof(CollectionOfDBObjectsNode));
+            var CollectionOfEdges = new NonTerminal("ListOfEdges", typeof(CollectionOfEdgesNode));
             var VertexTypeVertexIDCollection = new NonTerminal("VertexTypeVertexIDCollection", CreateVertexTypeVertexIDCollection);
             var VertexTypeVertexElement = new NonTerminal("VertexTypeVertexElement", CreateVertexTypeVertexElement);
             var CollectionTuple = new NonTerminal("CollectionTuple", typeof(TupleNode));
@@ -780,6 +784,7 @@ namespace sones.GraphQL
                             | alterVertexTypeStmt
                             | alterEdgeTypeStmt
                             | updateStmt
+                            | updateEdgesStmt
                             | dropVertexTypeStmt
                             | dropEdgeTypeStmt
                             | dropIndexStmt
@@ -1387,6 +1392,24 @@ namespace sones.GraphQL
 
             #endregion
 
+            #region UPDATE EDGES
+            
+            //                       UPDATE     EDGES     ON      User
+            updateEdgesStmt.Rule = S_UPDATE + S_EDGES + S_ON + Id_simple +
+            //                                (      Friends = (), Fiends = ()      )       WHERE Name = 'Hans'
+                                    S_BRACKET_LEFT + EdgeAttrUpdateList + S_BRACKET_RIGHT + NT_whereClauseOpt;
+
+            //                          Friends = (), Fiends = ()
+            EdgeAttrUpdateList.Rule = MakePlusRule(EdgeAttrUpdateList, S_comma, EdgeAttrUpdate);
+
+            //                    Friends  =   (Name = 'Hans' : (Weight = 1.5))
+            EdgeAttrUpdate.Rule = NT_Id + "=" + CollectionOfEdges;
+            
+            //                       Name = 'Hans' : (Weight = 1.5)
+            CollectionOfEdges.Rule = CollectionTuple;
+                                     
+            #endregion
+
             #region DROP VertexType
 
             dropVertexTypeStmt.Rule = S_DROP + S_VERTEX + S_TYPE + Id_simple;
@@ -1877,6 +1900,17 @@ namespace sones.GraphQL
         {
 
             UpdateNode aUpdateNode = new UpdateNode();
+
+            aUpdateNode.Init(context, parseNode);
+
+            parseNode.AstNode = aUpdateNode;
+
+        }
+
+        private void CreateUpdateEdgesStatementNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+
+            UpdateEdgesNode aUpdateNode = new UpdateEdgesNode();
 
             aUpdateNode.Init(context, parseNode);
 
