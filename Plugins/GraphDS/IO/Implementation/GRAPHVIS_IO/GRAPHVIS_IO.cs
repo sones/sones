@@ -33,6 +33,9 @@ using System.Text;
 
 namespace sones.Plugins.GraphDS.IO
 {
+    /// <summary>
+    /// This class realize a visual graph output based on D3 framework.
+    /// </summary>
     public class GRAPHVIS_IO : IOInterface
     {
 
@@ -47,8 +50,15 @@ namespace sones.Plugins.GraphDS.IO
 
         #region Parameter Strings
 
+        /// <summary>
+        /// static class containing strings used to set plugin options
+        /// </summary>
         private static class _OptionStrings
         {
+
+            /// <summary>
+            /// static class containing strings used to set ShowEdgeNames option
+            /// </summary>
             public static class ShowEdgeNames
             {
                 public static string name = "edgenames";
@@ -60,6 +70,9 @@ namespace sones.Plugins.GraphDS.IO
 
         #endregion
 
+        /// <summary>
+        /// class describing one link between nodes
+        /// </summary>
         private class NodeLink
         {
             public int source;
@@ -217,12 +230,23 @@ namespace sones.Plugins.GraphDS.IO
             return Output.ToString();
         }
 
+        /// <summary>
+        /// generates information needed for visual graph out of query result
+        /// <param name="myQueryResult">The query result.</param>
+        /// <param name="Nodes">out parameter returning list of nodes</param>
+        /// <param name="Links">out parameter returning list of NodeLink classes</param>
+        /// </summary>
         private void GenerateVisGraph(QueryResult myQueryResult, out List<string> Nodes, out List<NodeLink> Links)
         {
             GenerateNodeList(myQueryResult, out Nodes);
             GenerateLinkList(myQueryResult, Nodes, out Links);
         }
 
+        /// <summary>
+        /// generate node list needed for visual graph out of query result
+        /// <param name="myQueryResult">The query result.</param>
+        /// <param name="Nodes">out parameter returning list of nodes</param>
+        /// </summary>
         private void GenerateNodeList(QueryResult myQueryResult, out List<string> Nodes)
         {
             Nodes = new List<string>();
@@ -230,6 +254,11 @@ namespace sones.Plugins.GraphDS.IO
             GenerateNodeList_AnalyzeVertices(myQueryResult, ref Nodes);
         }
 
+        /// <summary>
+        /// recursive function analyzing vertices and adding found nodes to node list
+        /// <param name="myQueryResult">The query result.</param>
+        /// <param name="Nodes">reference to list of nodes where found nodes are added</param>
+        /// </summary>
         private void GenerateNodeList_AnalyzeVertices(IEnumerable<IVertexView> vertices, ref List<string> Nodes)
         {
             foreach (var aVertex in vertices)
@@ -255,6 +284,11 @@ namespace sones.Plugins.GraphDS.IO
             }
         }
 
+        /// <summary>
+        /// generate link list needed for visual graph out of query result
+        /// <param name="myQueryResult">The query result.</param>
+        /// <param name="Links">out parameter returning list of NodeLink classes</param>
+        /// </summary>
         private void GenerateLinkList(QueryResult myQueryResult, List<string> Nodes, out List<NodeLink> Links)
         {
             Links = new List<NodeLink>();
@@ -264,6 +298,12 @@ namespace sones.Plugins.GraphDS.IO
             GenerateLinkList_AnalyzeVertices(myQueryResult, Nodes, ref Links);
         }
 
+        /// <summary>
+        /// recursive function analyzing vertices and adding found links to link list
+        /// <param name="myQueryResult">The query result.</param>
+        /// <param name="Nodes">list of nodes containing all nodes found by GenerateNodeList previously</param>
+        /// <param name="Nodes">reference to list of nodes where found nodes are added</param>
+        /// </summary>
         private void GenerateLinkList_AnalyzeVertices(IEnumerable<IVertexView> vertices, List<string> Nodes, ref List<NodeLink> Links)
         {
             foreach (var aVertex in vertices)
