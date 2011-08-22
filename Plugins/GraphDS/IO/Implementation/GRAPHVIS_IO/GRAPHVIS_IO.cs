@@ -141,93 +141,108 @@ namespace sones.Plugins.GraphDS.IO
                 }
             }
 
-            Output.AppendLine("var w = 960,");
-            Output.AppendLine("h = 500;");
-            Output.AppendLine("var vis = d3.select(\"#output\")");
-            Output.AppendLine(".append(\"svg:svg\")");
-            Output.AppendLine(".attr(\"width\", w)");
-            Output.AppendLine(".attr(\"height\", h);");
+            if (myQueryResult.Error != null)
+            {
+                Output.Append(ConvertString2WebShellOut(HandleQueryExceptions(myQueryResult)));
+                return Output.ToString();
+            }
 
             List<string> Nodes;
             List<NodeLink> Links;
             GenerateVisGraph(myQueryResult, out Nodes, out Links);
 
-            Output.AppendLine("var nodes = new Array();");
-            Output.AppendLine("var links = new Array();");
-
-            foreach (var Node in Nodes)
+            if (Nodes.Count == 0)
             {
-                Output.AppendLine("var node = new Object();");
-                Output.AppendLine("node.name=\"" + Node + "\";");
-                Output.AppendLine("nodes.push(node);");
+                Output.Append(ConvertString2WebShellOut("Error: No vertex with property \"node\" found!"));
+                Output.Append(ConvertString2WebShellOut("Please change your query string using \"as node\" for returned vertices"));
+                return Output.ToString();
             }
-
-            foreach (var Link in Links)
+            else
             {
-                Output.AppendLine("var link = new Object();");
-                Output.AppendLine("link.source=" + Link.source + ";");
-                Output.AppendLine("link.target=" + Link.target + ";");
-                Output.AppendLine("link.name=\"" + Link.name + "\";");
-                Output.AppendLine("links.push(link);");
+                Output.AppendLine("var w = 960,");
+                Output.AppendLine("h = 500;");
+                Output.AppendLine("var vis = d3.select(\"#output\")");
+                Output.AppendLine(".append(\"svg:svg\")");
+                Output.AppendLine(".attr(\"width\", w)");
+                Output.AppendLine(".attr(\"height\", h);");
+
+                Output.AppendLine("var nodes = new Array();");
+                Output.AppendLine("var links = new Array();");
+
+                foreach (var Node in Nodes)
+                {
+                    Output.AppendLine("var node = new Object();");
+                    Output.AppendLine("node.name=\"" + Node + "\";");
+                    Output.AppendLine("nodes.push(node);");
+                }
+
+                foreach (var Link in Links)
+                {
+                    Output.AppendLine("var link = new Object();");
+                    Output.AppendLine("link.source=" + Link.source + ";");
+                    Output.AppendLine("link.target=" + Link.target + ";");
+                    Output.AppendLine("link.name=\"" + Link.name + "\";");
+                    Output.AppendLine("links.push(link);");
+                }
+
+                Output.AppendLine("var force = self.force = d3.layout.force()");
+                Output.AppendLine(".nodes(nodes)");
+                Output.AppendLine(".links(links)");
+                Output.AppendLine(".gravity(.05)");
+                Output.AppendLine(".distance(100)");
+                Output.AppendLine(".charge(-100)");
+                Output.AppendLine(".size([w, h])");
+                Output.AppendLine(".start();");
+
+                Output.AppendLine("var linkgroup = vis.selectAll(\"g.link\")");
+                Output.AppendLine(".data(links)");
+                Output.AppendLine(".enter().append(\"svg:g\");");
+
+                Output.AppendLine("var link = linkgroup.append(\"svg:line\")");
+                Output.AppendLine(".attr(\"class\", \"graphlink\");");
+
+                if (bShowEdgeNames)
+                {
+                    Output.AppendLine("var linkname = linkgroup.append(\"svg:text\")");
+                    Output.AppendLine(".attr(\"class\", \"graphlinktext\")");
+                    Output.AppendLine(".text(function(d) { return d.name; });");
+                }
+
+                Output.AppendLine("var node = vis.selectAll(\"g.node\")");
+                Output.AppendLine(".data(nodes)");
+                Output.AppendLine(".enter().append(\"svg:g\")");
+                Output.AppendLine(".attr(\"class\", \"node\")");
+                Output.AppendLine(".call(force.drag);");
+
+                Output.AppendLine("node.append(\"svg:image\")");
+                Output.AppendLine(".attr(\"class\", \"circle\")");
+                Output.AppendLine(".attr(\"xlink:href\", \"favicon.ico\")");
+                Output.AppendLine(".attr(\"x\", \"-8px\")");
+                Output.AppendLine(".attr(\"y\", \"-8px\")");
+                Output.AppendLine(".attr(\"width\", \"16px\")");
+                Output.AppendLine(".attr(\"height\", \"16px\");");
+
+                Output.AppendLine("node.append(\"svg:text\")");
+                Output.AppendLine(".attr(\"class\", \"nodetext\")");
+                Output.AppendLine(".attr(\"dx\", 12)");
+                Output.AppendLine(".attr(\"dy\", \".35em\")");
+                Output.AppendLine(".text(function(d) { return d.name });");
+
+                Output.AppendLine("force.on(\"tick\", function() {");
+                Output.AppendLine("link.attr(\"x1\", function(d) { return d.source.x; })");
+                Output.AppendLine(".attr(\"y1\", function(d) { return d.source.y; })");
+                Output.AppendLine(".attr(\"x2\", function(d) { return d.target.x; })");
+                Output.AppendLine(".attr(\"y2\", function(d) { return d.target.y; });");
+                if (bShowEdgeNames)
+                {
+                    Output.AppendLine("linkname.attr(\"x\", function(d) { return (d.source.x + d.target.x) / 2; })");
+                    Output.AppendLine(".attr(\"y\", function(d) { return (d.source.y + d.target.y) / 2; });");
+                }
+                Output.AppendLine("node.attr(\"transform\", function(d) { return \"translate(\" + d.x + \",\" + d.y + \")\"; });");
+                Output.AppendLine("});");
+
+                return Output.ToString();
             }
-            
-            Output.AppendLine("var force = self.force = d3.layout.force()");
-            Output.AppendLine(".nodes(nodes)");
-            Output.AppendLine(".links(links)");
-            Output.AppendLine(".gravity(.05)");
-            Output.AppendLine(".distance(100)");
-            Output.AppendLine(".charge(-100)");
-            Output.AppendLine(".size([w, h])");
-            Output.AppendLine(".start();");
-
-            Output.AppendLine("var linkgroup = vis.selectAll(\"g.link\")");
-            Output.AppendLine(".data(links)");
-            Output.AppendLine(".enter().append(\"svg:g\");");
-            
-            Output.AppendLine("var link = linkgroup.append(\"svg:line\")");
-            Output.AppendLine(".attr(\"class\", \"graphlink\");");
-
-            if (bShowEdgeNames)
-            {
-                Output.AppendLine("var linkname = linkgroup.append(\"svg:text\")");
-                Output.AppendLine(".attr(\"class\", \"graphlinktext\")");
-                Output.AppendLine(".text(function(d) { return d.name; });");
-            }
-
-            Output.AppendLine("var node = vis.selectAll(\"g.node\")");
-            Output.AppendLine(".data(nodes)");
-            Output.AppendLine(".enter().append(\"svg:g\")");
-            Output.AppendLine(".attr(\"class\", \"node\")");
-            Output.AppendLine(".call(force.drag);");
-
-            Output.AppendLine("node.append(\"svg:image\")");
-            Output.AppendLine(".attr(\"class\", \"circle\")");
-            Output.AppendLine(".attr(\"xlink:href\", \"favicon.ico\")");
-            Output.AppendLine(".attr(\"x\", \"-8px\")");
-            Output.AppendLine(".attr(\"y\", \"-8px\")");
-            Output.AppendLine(".attr(\"width\", \"16px\")");
-            Output.AppendLine(".attr(\"height\", \"16px\");");
-
-            Output.AppendLine("node.append(\"svg:text\")");
-            Output.AppendLine(".attr(\"class\", \"nodetext\")");
-            Output.AppendLine(".attr(\"dx\", 12)");
-            Output.AppendLine(".attr(\"dy\", \".35em\")");
-            Output.AppendLine(".text(function(d) { return d.name });");
-
-            Output.AppendLine("force.on(\"tick\", function() {");
-            Output.AppendLine("link.attr(\"x1\", function(d) { return d.source.x; })");
-            Output.AppendLine(".attr(\"y1\", function(d) { return d.source.y; })");
-            Output.AppendLine(".attr(\"x2\", function(d) { return d.target.x; })");
-            Output.AppendLine(".attr(\"y2\", function(d) { return d.target.y; });");
-            if (bShowEdgeNames)
-            {
-                Output.AppendLine("linkname.attr(\"x\", function(d) { return (d.source.x + d.target.x) / 2; })");
-                Output.AppendLine(".attr(\"y\", function(d) { return (d.source.y + d.target.y) / 2; });");
-            }
-            Output.AppendLine("node.attr(\"transform\", function(d) { return \"translate(\" + d.x + \",\" + d.y + \")\"; });");
-            Output.AppendLine("});");
-
-            return Output.ToString();
         }
 
         /// <summary>
@@ -352,6 +367,38 @@ namespace sones.Plugins.GraphDS.IO
                     GenerateLinkList_AnalyzeVertices(edge.Item2.GetTargetVertices(), Nodes, ref Links);
                 }
             }
+        }
+
+        /// <summary>
+        /// Handles query exceptions.
+        /// </summary>
+        /// <param name="queryresult">The query result.</param>
+        /// <returns>The exception string.</returns>
+        private String HandleQueryExceptions(QueryResult queryresult)
+        {
+            StringBuilder SB = new StringBuilder();
+
+            SB.Append(queryresult.Error.ToString());
+            if (queryresult.Error.InnerException != null)
+                SB.Append(" InnerException: " + queryresult.Error.InnerException.Message);
+
+            return SB.ToString();
+        }
+
+        /// <summary>
+        /// Add necessary JS commands to a string to enable output in webshell
+        /// </summary>
+        /// <param name="input">input string</param>
+        /// <returns>string containing JS commands and embedded input string</returns>
+        private String ConvertString2WebShellOut(String input)
+        {
+            StringBuilder SB = new StringBuilder();
+
+            SB.Append("goosh.gui.out(\'");
+            SB.Append(input.Replace("\n", "<br>").Replace("\'", "\\\'").Replace("\"", "\\\""));
+            SB.Append("\');");
+
+            return SB.ToString();
         }
 
         public String ListAvailParams()
