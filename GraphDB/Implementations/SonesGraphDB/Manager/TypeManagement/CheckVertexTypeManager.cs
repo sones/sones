@@ -545,6 +545,17 @@ namespace sones.GraphDB.Manager.TypeManagement
             #endregion
         }
 
+        /// <summary>
+        /// Checks whether a vertex type predefinition is not sealed and abstract.
+        /// </summary>
+        /// <param name="myVertexTypePredefinition">The vertex type predefinition to be checked.</param>
+        protected override void CheckSealedAndAbstract(ATypePredefinition myTypePredefinition)
+        {
+            if (myTypePredefinition.IsSealed && 
+                (myTypePredefinition as VertexTypePredefinition).IsAbstract)
+                throw new UselessTypeException(myTypePredefinition);
+        }
+
         #endregion
 
         /// <summary>

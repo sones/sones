@@ -33,8 +33,7 @@ namespace sones.GraphDB.TypeSystem
 
         public EdgeTypePredefinition(String myTypeName)
             :base (myTypeName, "Edge")
-        {
-        }
+        { }
 
         #endregion
 
@@ -95,16 +94,6 @@ namespace sones.GraphDB.TypeSystem
         public EdgeTypePredefinition MarkAsSealed()
         {
             IsSealed = true;
-            return this;
-        }
-
-        /// <summary>
-        /// Marks the vertex type as abstract.
-        /// </summary>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeTypePredefinition MarkAsAbstract()
-        {
-            IsAbstract = true;
             return this;
         }
 

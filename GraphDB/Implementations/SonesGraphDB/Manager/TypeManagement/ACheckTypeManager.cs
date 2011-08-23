@@ -262,6 +262,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myRequest">The alter type request.</param>
         protected abstract void CheckAttributesNameAndType(IRequestAlterType myRequest);
 
+        /// <summary>
+        /// Checks whether a vertex type predefinition is not sealed and abstract.
+        /// </summary>
+        /// <param name="myVertexTypePredefinition">The vertex type predefinition to be checked.</param>
+        protected abstract void CheckSealedAndAbstract(ATypePredefinition myTypePredefinition);
+        
         #endregion
 
         /// <summary>
@@ -387,16 +393,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                 }
 
             return prop;
-        }
-
-        /// <summary>
-        /// Checks whether a vertex type predefinition is not sealed and abstract.
-        /// </summary>
-        /// <param name="myVertexTypePredefinition">The vertex type predefinition to be checked.</param>
-        protected static void CheckSealedAndAbstract(ATypePredefinition myTypePredefinition)
-        {
-            if (myTypePredefinition.IsSealed && myTypePredefinition.IsAbstract)
-                throw new UselessTypeException(myTypePredefinition);
         }
 
         /// <summary>

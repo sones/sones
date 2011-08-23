@@ -128,7 +128,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             Edge.Add("ID", myEdge.ID);
             Edge.Add("Type", myEdge.GetType().Name);
             Edge.Add("Name", myEdge.Name);
-            Edge.Add("IsAbstract", myEdge.IsAbstract);
             Edge.Add("IsUserDefined", myEdge.IsUserDefined);
             Edge.Add("IsSealed", myEdge.IsSealed);
             Edge.Add("ParentEdgeType", myEdge.ParentEdgeType.Name);
