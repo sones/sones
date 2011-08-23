@@ -1,4 +1,4 @@
-(function(){d3 = {version: "1.28.0"}; // semver
+(function(){d3 = {version: "1.29.5"}; // semver
 if (!Date.now) Date.now = function() {
   return +new Date;
 };
@@ -35,10 +35,10 @@ d3.rebind = function(object, method) {
   };
 };
 d3.ascending = function(a, b) {
-  return a < b ? -1 : a > b ? 1 : 0;
+  return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
 };
 d3.descending = function(a, b) {
-  return b < a ? -1 : b > a ? 1 : 0;
+  return b < a ? -1 : b > a ? 1 : b >= a ? 0 : NaN;
 };
 d3.min = function(array, f) {
   var i = -1,
@@ -322,8 +322,13 @@ function d3_call(callback) {
  * @param {number=} step
  */
 d3.range = function(start, stop, step) {
-  if (arguments.length === 1) { stop = start; start = 0; }
-  if (step == null) step = 1;
+  if (arguments.length < 3) {
+    step = 1;
+    if (arguments.length < 2) {
+      stop = start;
+      start = 0;
+    }
+  }
   if ((stop - start) / step == Infinity) throw new Error("infinite range");
   var range = [],
        i = -1,
@@ -336,7 +341,7 @@ d3.requote = function(s) {
   return s.replace(d3_requote_re, "\\$&");
 };
 
-var d3_requote_re = /[\\\^\$\*\+\?\[\]\(\)\.\{\}]/g;
+var d3_requote_re = /[\\\^\$\*\+\?\|\[\]\(\)\.\{\}]/g;
 d3.round = function(x, n) {
   return n
       ? Math.round(x * Math.pow(10, n)) * Math.pow(10, -n)
@@ -520,7 +525,7 @@ var d3_format_types = {
   f: function(x, p) { return x.toFixed(p); },
   r: function(x, p) {
     var n = 1 + Math.floor(1e-15 + Math.log(x) / Math.LN10);
-    return d3.round(x, p - n).toFixed(Math.max(0, p - n));
+    return d3.round(x, p - n).toFixed(Math.max(0, Math.min(20, p - n)));
   }
 };
 
@@ -628,7 +633,7 @@ function d3_ease_sin(t) {
 }
 
 function d3_ease_exp(t) {
-  return t ? Math.pow(2, 10 * (t - 1)) - 1e-3 : 0;
+  return Math.pow(2, 10 * (t - 1));
 }
 
 function d3_ease_circle(t) {
@@ -836,7 +841,7 @@ d3.interpolators = [
   d3.interpolateObject,
   function(a, b) { return (b instanceof Array) && d3.interpolateArray(a, b); },
   function(a, b) { return (typeof b === "string") && d3.interpolateString(String(a), b); },
-  function(a, b) { return (b in d3_rgb_names || /^(#|rgb\(|hsl\()/.test(b)) && d3.interpolateRgb(String(a), b); },
+  function(a, b) { return (typeof b === "string" ? b in d3_rgb_names || /^(#|rgb\(|hsl\()/.test(b) : b instanceof d3_Rgb || b instanceof d3_Hsl) && d3.interpolateRgb(String(a), b); },
   function(a, b) { return (typeof b === "number") && d3.interpolateNumber(+a, b); }
 ];
 function d3_uninterpolateNumber(a, b) {
@@ -1958,7 +1963,7 @@ function d3_transition(groups) {
         delay[++k] = delayMin;
       });
     }
-    d3_timer(step, delayMin);
+    d3.timer(step, delayMin);
     return transition;
   };
 
@@ -2078,17 +2083,14 @@ var d3_timer_queue = null,
     d3_timer_timeout; // is a timeout active?
 
 // The timer will continue to fire until callback returns true.
-d3.timer = function(callback) {
-  d3_timer(callback, 0);
-};
-
-function d3_timer(callback, delay) {
+d3.timer = function(callback, delay) {
   var now = Date.now(),
       found = false,
       t0,
       t1 = d3_timer_queue;
 
-  if (!isFinite(delay)) return;
+  if (arguments.length < 2) delay = 0;
+  else if (!isFinite(delay)) return;
 
   // See if the callback's already in the queue.
   while (t1) {
@@ -2125,7 +2127,7 @@ function d3_timer_step() {
 
   while (t1) {
     elapsed = now - t1.then;
-    if (elapsed > t1.delay) t1.flush = t1.callback(elapsed);
+    if (elapsed >= t1.delay) t1.flush = t1.callback(elapsed);
     t1 = t1.next;
   }
 
@@ -2178,6 +2180,7 @@ var d3_timer_frame = window.requestAnimationFrame
     || window.oRequestAnimationFrame
     || window.msRequestAnimationFrame
     || function(callback) { setTimeout(callback, 17); };
+function d3_noop() {}
 d3.scale = {};
 
 function d3_scaleExtent(domain) {
@@ -2429,9 +2432,8 @@ d3.scale.pow = function() {
 
   scale.domain = function(x) {
     if (!arguments.length) return linear.domain().map(powb);
-    var pow = (x[0] || x[x.length - 1]) < 0 ? d3_scale_pown : d3_scale_pow;
-    powp = pow(exponent);
-    powb = pow(1 / exponent);
+    powp = d3_scale_powPow(exponent);
+    powb = d3_scale_powPow(1 / exponent);
     linear.domain(x.map(powp));
     return scale;
   };
@@ -2458,15 +2460,9 @@ d3.scale.pow = function() {
   return d3_scale_linearRebind(scale, linear);
 };
 
-function d3_scale_pow(e) {
+function d3_scale_powPow(e) {
   return function(x) {
-    return Math.pow(x, e);
-  };
-}
-
-function d3_scale_pown(e) {
-  return function(x) {
-    return -Math.pow(-x, e);
+    return x < 0 ? -Math.pow(-x, e) : Math.pow(x, e);
   };
 }
 d3.scale.sqrt = function() {
@@ -2476,7 +2472,8 @@ d3.scale.ordinal = function() {
   var domain = [],
       index = {},
       range = [],
-      rangeBand = 0;
+      rangeBand = 0,
+      rerange = d3_noop;
 
   function scale(x) {
     var i = x in index ? index[x] : (index[x] = domain.push(x) - 1);
@@ -2491,46 +2488,54 @@ d3.scale.ordinal = function() {
       x = domain[i];
       if (!(x in index)) index[x] = ++j;
     }
+    rerange();
     return scale;
   };
 
   scale.range = function(x) {
     if (!arguments.length) return range;
     range = x;
+    rerange = d3_noop;
     return scale;
   };
 
   scale.rangePoints = function(x, padding) {
     if (arguments.length < 2) padding = 0;
-    var start = x[0],
-        stop = x[1],
-        step = (stop - start) / (domain.length - 1 + padding);
-    range = domain.length == 1
-        ? [(start + stop) / 2]
-        : d3.range(start + step * padding / 2, stop + step / 2, step);
-    rangeBand = 0;
+    (rerange = function() {
+      var start = x[0],
+          stop = x[1],
+          step = (stop - start) / (domain.length - 1 + padding);
+      range = domain.length == 1
+          ? [(start + stop) / 2]
+          : d3.range(start + step * padding / 2, stop + step / 2, step);
+      rangeBand = 0;
+    })();
     return scale;
   };
 
   scale.rangeBands = function(x, padding) {
     if (arguments.length < 2) padding = 0;
-    var start = x[0],
-        stop = x[1],
-        step = (stop - start) / (domain.length + padding);
-    range = d3.range(start + step * padding, stop, step);
-    rangeBand = step * (1 - padding);
+    (rerange = function() {
+      var start = x[0],
+          stop = x[1],
+          step = (stop - start) / (domain.length + padding);
+      range = d3.range(start + step * padding, stop, step);
+      rangeBand = step * (1 - padding);
+    })();
     return scale;
   };
 
   scale.rangeRoundBands = function(x, padding) {
     if (arguments.length < 2) padding = 0;
-    var start = x[0],
-        stop = x[1],
-        diff = stop - start,
-        step = Math.floor(diff / (domain.length + padding)),
-        err = diff - (domain.length - padding) * step;
-    range = d3.range(start + Math.round(err / 2), stop, step);
-    rangeBand = Math.round(step * (1 - padding));
+    (rerange = function() {
+      var start = x[0],
+          stop = x[1],
+          diff = stop - start,
+          step = Math.floor(diff / (domain.length + padding)),
+          err = diff - (domain.length - padding) * step;
+      range = d3.range(start + Math.round(err / 2), stop, step);
+      rangeBand = Math.round(step * (1 - padding));
+    })();
     return scale;
   };
 
@@ -2645,8 +2650,8 @@ d3.scale.quantize = function() {
 
   scale.domain = function(x) {
     if (!arguments.length) return [x0, x1];
-    x0 = x[0];
-    x1 = x[1];
+    x0 = +x[0];
+    x1 = +x[x.length - 1];
     kx = range.length / (x1 - x0);
     return scale;
   };
@@ -2673,7 +2678,7 @@ d3.svg.arc = function() {
         r1 = outerRadius.apply(this, arguments),
         a0 = startAngle.apply(this, arguments) + d3_svg_arcOffset,
         a1 = endAngle.apply(this, arguments) + d3_svg_arcOffset,
-        da = a1 - a0,
+        da = (a1 < a0 && (da = a0, a0 = a1, a1 = da), a1 - a0),
         df = da < Math.PI ? "0" : "1",
         c0 = Math.cos(a0),
         s0 = Math.sin(a0),
