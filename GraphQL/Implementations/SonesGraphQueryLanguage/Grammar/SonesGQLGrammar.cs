@@ -109,6 +109,7 @@ namespace sones.GraphQL
         public readonly NonTerminal NT_Expression;
 
         public readonly NonTerminal NT_KeyValueList;
+        public readonly NonTerminal NT_ExtKeyValueList;
 
         public readonly NonTerminal NT_Options;
 
@@ -647,6 +648,7 @@ namespace sones.GraphQL
             var AttrUpdateOrAssign = new NonTerminal("AttrUpdateOrAssign");
             var CollectionOfDBObjects = new NonTerminal("ListOfDBObjects", typeof(CollectionOfDBObjectsNode));
             var CollectionOfEdges = new NonTerminal("ListOfEdges", typeof(CollectionOfEdgesNode));
+            var CollectionOfBasicDBObjects = new NonTerminal("ListOfBasicDBObjects", typeof(CollectionOfBasicDBObjectsNode));
             var VertexTypeVertexIDCollection = new NonTerminal("VertexTypeVertexIDCollection", CreateVertexTypeVertexIDCollection);
             var VertexTypeVertexElement = new NonTerminal("VertexTypeVertexElement", CreateVertexTypeVertexElement);
             var CollectionTuple = new NonTerminal("CollectionTuple", typeof(TupleNode));
@@ -685,7 +687,9 @@ namespace sones.GraphQL
             var BooleanVal = new NonTerminal("BooleanVal");
             var Values = new NonTerminal("Values");
             NT_Options = new NonTerminal("Options", CreateOptionsNode);
-
+            var ExtKeyValuePair = new NonTerminal("ExtKeyValuePair", CreateExtendedKeyValuePairNode);
+            NT_ExtKeyValueList = new NonTerminal("ExtValueList", CreateExtendedKeyValueListNode);
+            
             var ListType = new NonTerminal("ListType");
             var ListParametersForExpression = new NonTerminal("ListParametersForExpression", typeof(ParametersNode));
             var LinkCondition = new NonTerminal("LinkCondition");
@@ -909,12 +913,27 @@ namespace sones.GraphQL
 
             #endregion
 
+            #region ExtendedKeyValue
+
+            ExtKeyValuePair.Rule =    Id_simple + "=" + string_literal
+                                    | Id_simple + "=" + number
+                                    | Id_simple + "=" + BooleanVal
+                                    | Id_simple + "=" + CollectionOfBasicDBObjects;
+
+            NT_ExtKeyValueList.Rule = MakePlusRule(NT_ExtKeyValueList, S_comma, ExtKeyValuePair);
+
+            CollectionOfBasicDBObjects.Rule =   Empty
+                                              | S_SETOF + CollectionTuple
+                                              | S_LISTOF + CollectionTuple;
+
+            #endregion
+
             #region ListType
 
             ListType.Rule = S_LIST;
 
             ListParametersForExpression.Rule = Empty
-                                         | S_colon + S_BRACKET_LEFT + NT_KeyValueList + S_BRACKET_RIGHT;
+                                         | S_colon + S_BRACKET_LEFT + NT_ExtKeyValueList + S_BRACKET_RIGHT;
 
             EdgeType_SortedMember.Rule = S_ASC | S_DESC;
             EdgeType_Sorted.Rule = S_SORTED + "=" + EdgeType_SortedMember;
@@ -1334,7 +1353,7 @@ namespace sones.GraphQL
 
             AttrAssignList.Rule = MakePlusRule(AttrAssignList, S_comma, AttrAssign);
 
-            AttrAssign.Rule = NT_Id + "=" + NT_Expression
+            AttrAssign.Rule =     NT_Id + "=" + NT_Expression
                                 | NT_Id + "=" + Reference
                                 | NT_Id + "=" + CollectionOfDBObjects;
 
@@ -1343,7 +1362,6 @@ namespace sones.GraphQL
                                             |   S_SETOFUUIDS + VertexTypeVertexIDCollection
                                             |   S_SETOFUUIDS + "()"
                                             |   S_SETOF + "()";
-
 
             VertexTypeVertexIDCollection.Rule = MakeStarRule(VertexTypeVertexIDCollection, VertexTypeVertexElement);
 
@@ -1355,10 +1373,10 @@ namespace sones.GraphQL
 
             ExtendedExpression.Rule = NT_Expression + ListParametersForExpression;
 
-            Reference.Rule = S_REFERENCE + tuple + ListParametersForExpression
-                           | S_REF + tuple + ListParametersForExpression
-                           | S_REFUUID + TERMINAL_LT + Id_simple + TERMINAL_GT + tuple + ListParametersForExpression
-                           | S_REFERENCEUUID + TERMINAL_LT + Id_simple + TERMINAL_GT + tuple + ListParametersForExpression;
+            Reference.Rule =  S_REFERENCE + tuple + ListParametersForExpression
+                            | S_REF + tuple + ListParametersForExpression
+                            | S_REFUUID + TERMINAL_LT + Id_simple + TERMINAL_GT + tuple + ListParametersForExpression
+                            | S_REFERENCEUUID + TERMINAL_LT + Id_simple + TERMINAL_GT + tuple + ListParametersForExpression;
 
             //| S_SETREF + tupleRangeSet + ListParametersForExpression;
 
@@ -1740,6 +1758,24 @@ namespace sones.GraphQL
             aKeyValuePairNode.Init(context, parseNode);
 
             parseNode.AstNode = aKeyValuePairNode;
+        }
+
+        private void CreateExtendedKeyValuePairNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            ExtKeyValuePairNode aKeyValuePairNode = new ExtKeyValuePairNode();
+
+            aKeyValuePairNode.Init(context, parseNode);
+
+            parseNode.AstNode = aKeyValuePairNode;
+        }
+
+        private void CreateExtendedKeyValueListNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            ExtKeyValueListNode aKeyValueListNode = new ExtKeyValueListNode();
+
+            aKeyValueListNode.Init(context, parseNode);
+
+            parseNode.AstNode = aKeyValueListNode;
         }
 
         private void CreateBulkVertexTypeNode(ParsingContext context, ParseTreeNode parseNode)

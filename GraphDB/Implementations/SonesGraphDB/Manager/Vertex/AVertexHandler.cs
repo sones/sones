@@ -191,14 +191,16 @@ namespace sones.GraphDB.Manager.Vertex
 
             foreach (var mand in mandatories)
             {
-                if ( myPropertyProvider == null || myPropertyProvider.StructuredProperties == null || !myPropertyProvider.StructuredProperties.Any(x => mand.Name.Equals(x.Key)))
+                if ( myPropertyProvider == null || myPropertyProvider.StructuredProperties == null || 
+                    !myPropertyProvider.StructuredProperties.Any(x => mand.Name.Equals(x.Key)))
                 {
                     throw new MandatoryConstraintViolationException(mand.Name);
                 }
             }
         }
 
-        protected static void ConvertUnknownProperties(IPropertyProvider myPropertyProvider, IBaseType myBaseType)
+        protected static void ConvertUnknownProperties(IPropertyProvider myPropertyProvider, 
+                                                        IBaseType myBaseType)
         {
             if (myPropertyProvider.UnknownProperties != null)
             {
@@ -211,7 +213,14 @@ namespace sones.GraphDB.Manager.Vertex
 
                         try
                         {
-                            var converted = unknownProp.Value.ConvertToIComparable(propDef.BaseType);
+                            IComparable converted = null;
+
+                            if(propDef.Multiplicity == PropertyMultiplicity.List ||
+                                propDef.Multiplicity == PropertyMultiplicity.Set)
+                                converted = unknownProp.Value.ConvertToIComparableList(propDef.BaseType);
+                            else
+                                converted = unknownProp.Value.ConvertToIComparable(propDef.BaseType);
+
                             myPropertyProvider.AddStructuredProperty(unknownProp.Key, converted);
                         }
                         catch (InvalidCastException)                 
@@ -257,14 +266,17 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        protected static void CheckPropertyType(String myVertexTypeName, IComparable myValue, IPropertyDefinition propertyDef)
+        protected static void CheckPropertyType(String myVertexTypeName, 
+                                                IComparable myValue, 
+                                                IPropertyDefinition propertyDef)
         {
             //Assign safty should be suffice.
             if (!propertyDef.BaseType.IsAssignableFrom(myValue.GetType()))
-                throw new PropertyHasWrongTypeException(myVertexTypeName, propertyDef.Name, propertyDef.BaseType.Name, myValue.GetType().Name);
+                throw new PropertyHasWrongTypeException(myVertexTypeName, 
+                                                        propertyDef.Name, 
+                                                        propertyDef.BaseType.Name, 
+                                                        myValue.GetType().Name);
         }
-
-
 
         private static bool IsMustSetProperty(IPropertyDefinition myPropertyDefinition)
         {
@@ -280,8 +292,6 @@ namespace sones.GraphDB.Manager.Vertex
         {
             return myPropertyDefinition.DefaultValue != null;
         }
-
-
 
         #region IManager Members
 

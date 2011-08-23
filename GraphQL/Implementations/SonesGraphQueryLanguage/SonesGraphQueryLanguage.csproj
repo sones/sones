@@ -274,6 +274,8 @@
     <Compile Include="Structure\Nodes\Misc\AliasNode.cs" />
     <Compile Include="Structure\Nodes\Misc\ATypeNode.cs" />
     <Compile Include="Structure\Nodes\Misc\EdgeTypeNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\ExtKeyValueListNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\ExtKeyValuePairNode.cs" />
     <Compile Include="Structure\Nodes\Misc\OptionsNode.cs" />
     <Compile Include="Structure\Nodes\Misc\KeyValuePairNode.cs" />
     <Compile Include="Structure\Nodes\Misc\KeyValueListNode.cs" />
@@ -375,6 +377,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Documentation\ClassDiagram.cd" />
+    <Compile Include="Structure\Nodes\DML\CollectionOfBasicDBObjectsNode.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
