@@ -61,9 +61,9 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                                                         IVertex myStart, 
                                                         IVertex myEnd, 
                                                         bool shortestOnly, 
-                                                        bool findAll, 
-                                                        byte myMaxDepth, 
-                                                        byte myMaxPathLength)
+                                                        bool findAll,
+                                                        UInt64 myMaxDepth,
+                                                        UInt64 myMaxPathLength)
         {
             #region data
 
@@ -76,7 +76,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             HashSet<Tuple<long, long>> visitedVertices = new HashSet<Tuple<long, long>>();
 
             //current depth
-            byte depth = 1;
+            UInt64 depth = 1;
 
             //first node in path tree, the start of the select
             Node root = new Node(myStart.VertexTypeID, myStart.VertexID);
@@ -184,12 +184,12 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             {
                                 if (findAll)
                                 {
-                                    if (Convert.ToByte(depth + 1) <= myMaxPathLength)
+                                    if (Convert.ToUInt64(depth + 1) <= myMaxPathLength)
                                     {
                                         //continue searching the current depth if there are any other shortest paths
-                                        myMaxDepth = Convert.ToByte(depth + 1);
+                                        myMaxDepth = Convert.ToUInt64(depth + 1);
 
-                                        myMaxPathLength = Convert.ToByte(depth + 1);
+                                        myMaxPathLength = Convert.ToUInt64(depth + 1);
                                     }
                                 }
                                 else
