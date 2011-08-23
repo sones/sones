@@ -1,5 +1,5 @@
-sones GraphDB Community Edition version 2.0
-Last updated on 9th of August 2011
+sones GraphDB Community Edition version 2.1-prerelease
+Last updated on 23rd of August 2011
 (C) sones GmbH 2007 - 2011
 
 sones is an object-orientated graph data storage for a large amount of highly connected semi-structured data
