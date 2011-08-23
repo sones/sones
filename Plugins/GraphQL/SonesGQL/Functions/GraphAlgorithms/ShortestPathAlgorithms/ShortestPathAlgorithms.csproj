@@ -46,7 +46,6 @@
     <Compile Include="BreathFirstSearch\TargetAnalyzer.cs" />
     <Compile Include="PathFunc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SGAB.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
