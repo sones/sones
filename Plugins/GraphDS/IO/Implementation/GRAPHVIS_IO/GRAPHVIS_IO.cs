@@ -282,7 +282,7 @@ namespace sones.Plugins.GraphDS.IO
                 {
                     if ((property.Item1 != null) && (property.Item2 != null))
                     {
-                        if ((property.Item1 is String) && (property.Item1.ToString().ToUpper() == "NODE"))
+                        if ((property.Item1 is String) && (property.Item1.ToString().ToUpper().IndexOf("NODE")) >= 0)
                         {
                             if (!Nodes.Exists((s) => (s == property.Item2.ToString())))
                             {
@@ -327,7 +327,7 @@ namespace sones.Plugins.GraphDS.IO
 
                 foreach (var property in aVertex.GetAllProperties())
                 {
-                    if ((property.Item1 is String) && (property.Item1.ToString().ToUpper() == "NODE") && (property.Item2 is String))
+                    if ((property.Item1 is String) && (property.Item1.ToString().ToUpper().IndexOf("NODE") >= 0) && (property.Item2 is String))
                     {
                         sourcename = property.Item2.ToString();
                     }
@@ -341,7 +341,7 @@ namespace sones.Plugins.GraphDS.IO
 
                         foreach (var property in targetvertex.GetAllProperties())
                         {
-                            if ((property.Item1 is String) && (property.Item1.ToString().ToUpper() == "NODE") && (property.Item2 is String))
+                            if ((property.Item1 is String) && (property.Item1.ToString().ToUpper().IndexOf("NODE") >= 0) && (property.Item2 is String))
                             {
                                 targetname = property.Item2.ToString();
                                 break;
