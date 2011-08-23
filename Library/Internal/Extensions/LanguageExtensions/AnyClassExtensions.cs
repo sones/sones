@@ -52,10 +52,21 @@ namespace sones.Library.LanguageExtensions
 
             if (typeof(DateTime).Equals(myConvertType) && typeof(long).Equals(myObject.GetType()))
                 return DateTime.FromBinary((long) myObject);
+            if (typeof(DateTime).Equals(myConvertType) && typeof(string).Equals(myObject.GetType()))
+            {
+                try
+                {
+                    return Convert.ToDateTime(myObject, CultureInfo.GetCultureInfo("en-US"));
+                }
+                catch (Exception e)
+                {
+                    return Convert.ToDateTime(myObject);
+                }
 
+            }
             #endregion
 
-            return (IComparable) Convert.ChangeType(myObject, myConvertType, CultureInfo.GetCultureInfo("en-us"));
+            return (IComparable)Convert.ChangeType(myObject, myConvertType, CultureInfo.GetCultureInfo("en-US"));
         }
 
     }
