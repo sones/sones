@@ -53,14 +53,6 @@ namespace sones.GraphDB.TypeSystem
         String Comment { get; }
 
         /// <summary>
-        /// Defines whether this type is abstract. 
-        /// </summary>
-        /// <value>
-        /// If true, this type can not have vertices.
-        /// </value>
-        Boolean IsAbstract { get; }
-
-        /// <summary>
         /// Defines whether this type was not created by the system itself.
         /// </summary>
         Boolean IsUserDefined { get; }

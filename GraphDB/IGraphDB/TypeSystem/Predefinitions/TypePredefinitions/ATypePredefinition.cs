@@ -79,11 +79,6 @@ namespace sones.GraphDB.TypeSystem
         public bool IsSealed { get; protected set; }
 
         /// <summary>
-        /// Gets if the type will be abstract.
-        /// </summary>
-        public bool IsAbstract { get; protected set; }
-
-        /// <summary>
         /// Gets the comment for this type.
         /// </summary>
         public string Comment { get; protected set; }
@@ -105,7 +100,6 @@ namespace sones.GraphDB.TypeSystem
             TypeName = myTypeName;
             SuperTypeName = mySuperTypeName;
             IsSealed = false;
-            IsAbstract = false;
             Comment = String.Empty;
         }
 

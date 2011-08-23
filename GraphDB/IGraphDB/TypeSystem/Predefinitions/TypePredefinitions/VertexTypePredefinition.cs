@@ -31,12 +31,20 @@ namespace sones.GraphDB.TypeSystem
     {
         #region Data
 
-        private List<IndexPredefinition>    _indices;
-        protected List<UniquePredefinition> _uniques;
+        private List<IndexPredefinition>  _indices;
+        private List<UniquePredefinition> _uniques;
 
         private int _binaries = 0;
         private int _incoming = 0;
         private int _outgoing = 0;
+
+        /// <summary>
+        /// Gets if the type will be abstract.
+        /// </summary>
+        public bool IsAbstract 
+        { 
+            get; private set; 
+        }
 
         public int BinaryPropertyCount
         {
@@ -104,6 +112,7 @@ namespace sones.GraphDB.TypeSystem
         public VertexTypePredefinition(String myTypeName)
             :base(myTypeName, "Vertex")
         {
+            IsAbstract = false;
         }
 
         #endregion

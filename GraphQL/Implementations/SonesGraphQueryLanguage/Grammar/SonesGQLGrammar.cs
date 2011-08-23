@@ -1205,8 +1205,7 @@ namespace sones.GraphQL
 
             #region CREATE EDGE TYPE(s)
 
-            createEdgeTypesStmt.Rule =    S_CREATE + S_ABSTRACT + S_EDGE + S_TYPE + bulkEdgeType
-                                        | S_CREATE + S_EDGE + S_TYPE + bulkEdgeType
+            createEdgeTypesStmt.Rule =    S_CREATE + S_EDGE + S_TYPE + bulkEdgeType
                                         | S_CREATE + S_EDGE + S_TYPES + bulkEdgeTypeList;
 
             bulkEdgeType.Rule = Id_simple + extendsOpt + edgeTypeAttributesOpt + commentOpt;

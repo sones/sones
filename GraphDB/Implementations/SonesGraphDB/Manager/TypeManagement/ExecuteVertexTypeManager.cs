@@ -507,9 +507,11 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                                             SecurityToken mySecurityToken,
                                                                             ref IVertex[] myResult)
         {
+            var vertexDefsTopologically = ConvertLinkedList(myDefsTopologically);
+
             #region store vertex type
 
-            StoreVertexType(myDefsTopologically,
+            StoreVertexType(vertexDefsTopologically,
                             myTypeInfos,
                             myCreationDate,
                             myResultPos,
@@ -533,8 +535,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                             mySecurityToken);
 
             #endregion
-
-            var vertexDefsTopologically = ConvertLinkedList(myDefsTopologically);
 
             #region Store binary properties
 
@@ -1284,7 +1284,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                     (long)BaseTypes.Edge);
         }
 
-        private void StoreVertexType(LinkedList<ATypePredefinition> myDefsTopologically,
+        private void StoreVertexType(LinkedList<VertexTypePredefinition> myDefsTopologically,
                                         Dictionary<String, TypeInfo> myTypeInfos,
                                         long myCreationDate,
                                         int myResultPos,

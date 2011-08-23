@@ -410,6 +410,16 @@ namespace sones.GraphDB.Manager.TypeManagement
                 throw new InvalidParameterTypeException("AlterTypeRequest", myRequest.GetType().Name, typeof(RequestAlterEdgeType).Name);
         }
 
+        /// <summary>
+        /// Checks whether a vertex type predefinition is not sealed and abstract.
+        /// </summary>
+        /// <param name="myVertexTypePredefinition">The vertex type predefinition to be checked.</param>
+        protected override void CheckSealedAndAbstract(ATypePredefinition myTypePredefinition)
+        {
+            if (myTypePredefinition.IsSealed)
+                throw new UselessTypeException(myTypePredefinition);
+        }
+
         #endregion
 
         #endregion
