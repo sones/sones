@@ -1520,6 +1520,7 @@ namespace sones.GraphDB.Manager.Vertex
                         {
                             case EdgeMultiplicity.SingleEdge:
                                 {
+                                    #region SingleEdge
                                     var targets = GetResultingVertexIDs(myTransaction, mySecurity, edge, edgeDef.TargetVertexType);
                                     if (targets == null || !targets.CountIsGreater(0))
                                     {
@@ -1546,23 +1547,29 @@ namespace sones.GraphDB.Manager.Vertex
                                                                                                 structured,
                                                                                                 unstructured));
                                     }
+                                    #endregion
                                 }
                                 break;
 
                             case EdgeMultiplicity.MultiEdge:
                                 {
-                                    List<SingleEdgeDeleteDefinition> internSingleDelete = null;
-                                    if (myVertex.HasOutgoingEdge(edgeDef.ID))
-                                    {
-                                        internSingleDelete = new List<SingleEdgeDeleteDefinition>();
-                                        foreach (var edgeInstance in myVertex.GetOutgoingHyperEdge(edgeDef.ID).GetTargetVertices())
-                                        {
-                                            internSingleDelete.Add(
-                                                new SingleEdgeDeleteDefinition(source,
-                                                                                new VertexInformation(edgeInstance.VertexTypeID,
-                                                                                                        edgeInstance.VertexID)));
-                                        }
-                                    }
+                                    #region MultiEdge
+                                    // Why deleting the edge instances ???
+                                    // they will never be inserted inside the update !!!
+                                    // After delete the update will be needless because the edges are deleted !!!
+
+                                    //List<SingleEdgeDeleteDefinition> internSingleDelete = null;
+                                    //if (myVertex.HasOutgoingEdge(edgeDef.ID))
+                                    //{
+                                    //    internSingleDelete = new List<SingleEdgeDeleteDefinition>();
+                                    //    foreach (var edgeInstance in myVertex.GetOutgoingHyperEdge(edgeDef.ID).GetTargetVertices())
+                                    //    {
+                                    //        internSingleDelete.Add(
+                                    //            new SingleEdgeDeleteDefinition(source,
+                                    //                                            new VertexInformation(edgeInstance.VertexTypeID,
+                                    //                                                                    edgeInstance.VertexID)));
+                                    //    }
+                                    //}
 
                                     List<SingleEdgeUpdateDefinition> internSingleUpdate = null;
                                     var targets = GetResultingVertexIDs(myTransaction, mySecurity, edge, edgeDef.TargetVertexType);
@@ -1613,8 +1620,9 @@ namespace sones.GraphDB.Manager.Vertex
                                                                                             edge.Comment,
                                                                                             outerStructured,
                                                                                             outerUnstructured,
-                                                                                            internSingleDelete,
+                                                                                            null,//internSingleDelete,
                                                                                             internSingleUpdate));
+                                    #endregion
                                 }
                                 break;
 

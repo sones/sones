@@ -71,10 +71,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
                 BulkEdgeTypeNode aTempNode = (BulkEdgeTypeNode)myParseTreeNode.ChildNodes[4].AstNode;
 
-                Boolean isAbstract = false;
-
-                if (HasChildNodes(myParseTreeNode.ChildNodes[1]))
-                    isAbstract = true;
+                Boolean isAbstract = true;
 
                 var predef = 
                     new EdgeTypePredefinition(aTempNode.TypeName)
