@@ -82,6 +82,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "exists"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "Return true if an DBObject contains this attribute."; }
+        }
+        
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

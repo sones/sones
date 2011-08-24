@@ -433,6 +433,11 @@ namespace sones.Plugins.SonesGQL
         {
             get { return "graphmlimport"; }
         }
+
+        public string PluginDescription
+        {
+            get { return "Class deserializes a graph stored in GraphML format."; }
+        }
 		
 		/// <summary>
 		/// Returns the setable parameters for this plugin.

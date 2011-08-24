@@ -72,7 +72,7 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        #region Ipluginable
+        #region IPluginable
 
         public override string PluginName
         {
@@ -82,6 +82,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override string PluginShortName
         {
             get { return "toupper"; }
+        }
+
+        public override string PluginDescription
+        {
+            get { return "Returns a copy of this attribute value converted to uppercase."; }
         }
 
         public override PluginParameters<Type> SetableParameters

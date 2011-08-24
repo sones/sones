@@ -172,6 +172,8 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public abstract string PluginShortName { get; }
 
+        public abstract string PluginDescription { get; }
+
         public abstract PluginParameters<Type> SetableParameters { get; }
 
         public abstract IPluginable InitializePlugin(String myUniqueString, Dictionary<String,Object> myParameters = null);

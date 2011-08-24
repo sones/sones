@@ -85,15 +85,17 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override string PluginName
         {
-            get
-            {
-                return "sones.concat";
-            }
+            get { return "sones.concat"; }
         }
 
         public override string PluginShortName
         {
             get { return "concat"; }
+        }
+
+        public override string PluginDescription
+        {
+            get { return "This class realizes a string concatenate function."; }
         }
 
         public override PluginParameters<Type> SetableParameters

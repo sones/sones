@@ -183,7 +183,7 @@ namespace sones.Plugins.SonesGQL.DBExport
 
         #endregion
 
-        #region IPluginable Member
+        #region IPluginable
 
         public string PluginName
         {
@@ -193,6 +193,11 @@ namespace sones.Plugins.SonesGQL.DBExport
         public string PluginShortName
         {
             get { return "gqlexport"; }
+        }
+
+        public string PluginDescription
+        {
+            get { return "This class realizes GQL code export to a file."; }
         }
 
         public PluginParameters<Type> SetableParameters

@@ -88,6 +88,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "substring"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "Retrieves a substring from the attribute value. The substring starts at a specified character position and has a specified length."; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

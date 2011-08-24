@@ -80,6 +80,11 @@ namespace sones.GraphDS.UDC
             get { return "sones.GraphDS.UsageDataCollectorClient"; }
         }
 
+        /*public String PluginDescription
+        {
+            get { return ""; }
+        }*/
+
         public Library.VersionedPluginManager.PluginParameters<Type> SetableParameters
         {
             get

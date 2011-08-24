@@ -104,6 +104,11 @@ namespace sones.Plugins.SonesGQL.Aggregates
         {
             get { return "avg"; }
         }
+
+        public string PluginDescription
+        {
+            get { return "The Aggregate Avg"; }
+        }
         
         public PluginParameters<Type> SetableParameters
         {

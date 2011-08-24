@@ -295,6 +295,11 @@ namespace sones.Plugins.Index
             get { return "multivalidx"; }
         }
 
+        public String PluginDescription
+        {
+            get { return "This class realize an multivalue index."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get

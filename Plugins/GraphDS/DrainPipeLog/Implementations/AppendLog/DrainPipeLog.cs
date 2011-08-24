@@ -143,6 +143,11 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             get { return "drainpipelog"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "This is a GraphDS plugin which can be used to create a GraphDS bypass if you like. This plugin will be notified of each and every GQL and API query and can react uppon this"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get

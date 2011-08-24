@@ -68,6 +68,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "currentdate"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "Returns the current date and time."; }
+        }
+        
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

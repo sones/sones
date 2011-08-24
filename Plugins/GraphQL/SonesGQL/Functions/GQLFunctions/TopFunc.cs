@@ -112,6 +112,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "top"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "Will return the top elements of an edge."; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

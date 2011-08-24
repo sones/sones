@@ -206,6 +206,11 @@ namespace sones.GraphDB.Manager.Transaction
             get { return "basictaman"; }
         }
 
+        public String PluginDescription
+        {
+            get { return "A basic transaction manager that handles NO transactions, every request is directly redirected to the underlying vertex store"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type> { { "vertexStore", typeof(IVertexStore) } }; }

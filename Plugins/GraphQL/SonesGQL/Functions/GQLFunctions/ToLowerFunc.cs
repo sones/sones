@@ -94,6 +94,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "tolower"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "Returns a copy of this attribute value converted to lowercase."; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

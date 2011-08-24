@@ -105,6 +105,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "tounixdate"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "Convert the datetime value to the unix datetime format."; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

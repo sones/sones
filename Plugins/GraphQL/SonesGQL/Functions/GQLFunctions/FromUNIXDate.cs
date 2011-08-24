@@ -83,7 +83,7 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        #region Ipluginable
+        #region IPluginable
 
         public override string PluginName
         {
@@ -93,6 +93,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override string PluginShortName
         {
             get { return "fromunixdate"; }
+        }
+
+        public override string PluginDescription
+        {
+            get { return "Convert from unix datime format to DBDateTime format."; }
         }
 
         public override PluginParameters<Type> SetableParameters

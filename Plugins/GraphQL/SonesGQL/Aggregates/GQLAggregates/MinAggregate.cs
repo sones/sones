@@ -98,6 +98,11 @@ namespace sones.Plugins.SonesGQL.Aggregates
             get { return "min"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "The Aggregate Min"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

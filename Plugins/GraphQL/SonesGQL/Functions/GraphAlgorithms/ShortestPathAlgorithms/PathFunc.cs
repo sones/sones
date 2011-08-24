@@ -257,6 +257,11 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             get { return "path"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "This class provides a shortest path search algorithm."; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

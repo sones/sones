@@ -212,6 +212,11 @@ namespace sones.GraphDB.Manager.Security
             get { return "basicsecman"; }
         }
 
+        public String PluginDescription
+        {
+            get { return "A basis security manager that does not secure anything."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type> { { "vertexStore", typeof(IVertexStore) } }; }

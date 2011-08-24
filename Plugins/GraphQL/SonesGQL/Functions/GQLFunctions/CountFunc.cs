@@ -113,18 +113,17 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override string PluginName
         {
-            get
-            {
-                return "sones.count";
-            }
+            get { return "sones.count"; }
         }
 
         public override string PluginShortName
         {
-            get
-            {
-                return "count";
-            }
+            get { return "count"; }
+        }
+
+        public override string PluginDescription
+        {
+            get { return "This will count the elements of an edge and return them as UInt64 value."; }
         }
 
         public override PluginParameters<Type> SetableParameters

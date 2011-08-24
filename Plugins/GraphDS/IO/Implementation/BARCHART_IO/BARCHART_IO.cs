@@ -93,6 +93,11 @@ namespace sones.Plugins.GraphDS.IO
             get { return "barchart"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "This class realize an barchart output based on D3 framework."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

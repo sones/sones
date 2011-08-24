@@ -257,6 +257,11 @@ namespace sones.Plugins.Index
             }
         }
 
+        public String PluginDescription
+        {
+            get { return "This class realize a single value index."; }
+        }
+
         public IPluginable InitializePlugin(String myUniqueString, Dictionary<String, Object> myParameters)
         {
 

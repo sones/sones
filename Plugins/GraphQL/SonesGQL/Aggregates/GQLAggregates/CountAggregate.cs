@@ -78,6 +78,11 @@ namespace sones.Plugins.SonesGQL.Aggregates
             get { return "count"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "The Aggregate Count."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

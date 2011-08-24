@@ -246,6 +246,11 @@ namespace sones.GraphQL
             get { return "gql"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "The sones query language."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type> { { "GraphDB", typeof(IGraphDB) } }; }

@@ -639,6 +639,11 @@ namespace sones.GraphFS
             get { return "inmemnonrevfs"; }
         }
 
+        public String PluginDescription
+        {
+            get { return "The in-memory-store is a non persisitent vertex store without handling any revisions."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

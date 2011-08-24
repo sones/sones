@@ -401,6 +401,11 @@ namespace sones.Plugins.SonesGQL
             get { return "gqlimport"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "This class realizes GQL code import from a file."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

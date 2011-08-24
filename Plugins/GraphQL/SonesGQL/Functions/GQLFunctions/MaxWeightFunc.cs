@@ -110,6 +110,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "maxweight"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "This function is valid for weighted edges and will return the maximum weight."; }
+        }
+        
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

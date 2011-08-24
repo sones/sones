@@ -123,6 +123,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "insert"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "This function inserts one or more strings at the given position."; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

@@ -106,6 +106,11 @@ namespace sones.Plugins.SonesGQL.Aggregates
             get { return "sum"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "The Aggregate Sum"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
