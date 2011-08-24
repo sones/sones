@@ -24,6 +24,7 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using System.Linq;
+using System;
 
 namespace sones.GraphDB.Request
 {
@@ -56,7 +57,7 @@ namespace sones.GraphDB.Request
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
         public PipelineableCreateEdgeTypeRequest(RequestCreateEdgeType myRequestCreateEdgeType,
                                                     SecurityToken mySecurity, 
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myRequestCreateEdgeType;
@@ -72,7 +73,7 @@ namespace sones.GraphDB.Request
                 .EdgeTypeManager
                 .CheckManager
                 .AddTypes(new List<ATypePredefinition> { _request.EdgeTypePredefinition }, 
-                            TransactionToken, 
+                            Int64, 
                             SecurityToken);
         }
 
@@ -83,7 +84,7 @@ namespace sones.GraphDB.Request
                     .EdgeTypeManager
                     .ExecuteManager
                     .AddTypes(new List<ATypePredefinition> { _request.EdgeTypePredefinition },
-                                TransactionToken,
+                                Int64,
                                 SecurityToken).FirstOrDefault();
         }
 

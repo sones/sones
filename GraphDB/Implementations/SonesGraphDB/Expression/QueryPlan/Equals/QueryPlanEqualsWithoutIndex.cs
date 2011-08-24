@@ -46,7 +46,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myConstant">The constant value</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public QueryPlanEqualsWithoutIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, ILiteralExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning)
+        public QueryPlanEqualsWithoutIndex(SecurityToken mySecurityToken, Int64 myTransactionToken, QueryPlanProperty myProperty, ILiteralExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning)
             :base(myProperty, myConstant, myIsLongrunning, mySecurityToken, myTransactionToken, myVertexStore)
         {
         }

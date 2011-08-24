@@ -70,7 +70,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             _check.Initialize(myMetaManager);
         }
 
-        void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        void IManager.Load(Int64 myTransaction, SecurityToken mySecurity)
         {
             _execute.Load(myTransaction, mySecurity);
             _check.Load(myTransaction, mySecurity);

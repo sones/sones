@@ -79,11 +79,6 @@ namespace sones.GraphDB.Manager
         private SecurityToken _security = null;
 
         /// <summary>
-        /// The system transaction token.
-        /// </summary>
-        private TransactionToken _transaction = null;
-
-        /// <summary>
         /// The base type manager.
         /// </summary>
         private BaseTypeManager _baseTypeManager;
@@ -130,18 +125,20 @@ namespace sones.GraphDB.Manager
 
         #region IMetaManager Members
 
-        public static IMetaManager CreateMetaManager(IVertexStore myVertexStore, 
+        public static IMetaManager CreateMetaManager(   IVertexStore myVertexStore, 
                                                         IDManager myIDManager, 
                                                         GraphDBPlugins myPlugins, 
                                                         GraphDBPluginManager myPluginManager, 
                                                         GraphApplicationSettings myApplicationSettings, 
-                                                        TransactionToken myTransaction, 
+                                                        ITransactionable myTransactionManager, 
                                                         SecurityToken mySecurity)
         {
             var result = new MetaManager(myVertexStore, myIDManager, myPluginManager, myPlugins, myApplicationSettings);
-            
-            DBCreationManager creationManager = new DBCreationManager(result.SystemSecurityToken, 
-                                                                        result.SystemTransactionToken, 
+
+            var transactionID = myTransactionManager.BeginTransaction(mySecurity);
+
+            DBCreationManager creationManager = new DBCreationManager(  result.SystemSecurityToken,
+                                                                        transactionID, 
                                                                         result._baseGraphStorageManager);
             
             if (!creationManager.CheckBaseGraph(myVertexStore))
@@ -152,16 +149,18 @@ namespace sones.GraphDB.Manager
             creationManager.AddUserDefinedDataTypes(myVertexStore, myPluginManager);
             
             result.Initialize();
-            result.Load();
+            result.Load(transactionID);
 
-            SetMaxID(myVertexStore, myIDManager, myTransaction, mySecurity, result);            
+            SetMaxID(myVertexStore, myIDManager, transactionID, mySecurity, result);
+
+            myTransactionManager.CommitTransaction(mySecurity, transactionID);
 
             return result;
         }
 
         private static void SetMaxID(IVertexStore myVertexStore, 
                                         IDManager myIDManager, 
-                                        TransactionToken myTransaction, 
+                                        Int64 myTransaction, 
                                         SecurityToken mySecurity, 
                                         MetaManager result)
         {
@@ -182,15 +181,15 @@ namespace sones.GraphDB.Manager
             _indexManager.Initialize(this);            
         }
 
-        private void Load()
+        private void Load(Int64 myTransactionID)
         {
-            _baseGraphStorageManager.Load(SystemTransactionToken, SystemSecurityToken);
-            _vertexTypeManager.Load(SystemTransactionToken, SystemSecurityToken);
-            _edgeTypeManager.Load(SystemTransactionToken, SystemSecurityToken);
-            _vertexManager.Load(SystemTransactionToken, SystemSecurityToken);
-            _baseTypeManager.Load(SystemTransactionToken, SystemSecurityToken);
-            _queryPlanManager.Load(SystemTransactionToken, SystemSecurityToken);
-            _indexManager.Load(SystemTransactionToken, SystemSecurityToken);            
+            _baseGraphStorageManager.Load(myTransactionID, SystemSecurityToken);
+            _vertexTypeManager.Load(myTransactionID, SystemSecurityToken);
+            _edgeTypeManager.Load(myTransactionID, SystemSecurityToken);
+            _vertexManager.Load(myTransactionID, SystemSecurityToken);
+            _baseTypeManager.Load(myTransactionID, SystemSecurityToken);
+            _queryPlanManager.Load(myTransactionID, SystemSecurityToken);
+            _indexManager.Load(myTransactionID, SystemSecurityToken);            
         }
 
         public IIndexManager IndexManager
@@ -231,11 +230,6 @@ namespace sones.GraphDB.Manager
         public SecurityToken SystemSecurityToken
         {
             get { return _security; }
-        }
-
-        public TransactionToken SystemTransactionToken
-        {
-            get { return _transaction; }
         }
 
         public BaseGraphStorageManager BaseGraphStorageManager

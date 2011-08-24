@@ -50,7 +50,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         public abstract void GatherEdgeWeight(LevelKey StartLevel, LevelKey EndLevel);
 
-        public abstract IExpressionGraph GetNewInstance(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        public abstract IExpressionGraph GetNewInstance(IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         public abstract void AddNode(IVertex myVertex, LevelKey myIDNode, int backwardResolution);
 
@@ -105,7 +105,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         #region protected methods
 
-        protected EdgeKey GetBackwardEdgeKey(LevelKey myPath, int desiredBELevel, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        protected EdgeKey GetBackwardEdgeKey(LevelKey myPath, int desiredBELevel, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             #region data
 

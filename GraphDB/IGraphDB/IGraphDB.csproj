@@ -243,6 +243,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="Documentation\TypeInterfaces.cd" />
     <None Include="IGraphDB.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

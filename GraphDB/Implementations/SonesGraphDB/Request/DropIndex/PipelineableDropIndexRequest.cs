@@ -48,7 +48,7 @@ namespace sones.GraphDB.Request.DropIndex
         /// <param name="myTransactionToken">The transaction token</param>
         public PipelineableDropIndexRequest(RequestDropIndex myDropTypeRequest,
                                             SecurityToken mySecurity,
-                                            TransactionToken myTransactionToken)
+                                            Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myDropTypeRequest;
@@ -58,12 +58,12 @@ namespace sones.GraphDB.Request.DropIndex
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CheckManager.GetType(_request.TypeName, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.CheckManager.GetType(_request.TypeName, Int64, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            myMetaManager.IndexManager.DropIndex(_request, TransactionToken, SecurityToken);
+            myMetaManager.IndexManager.DropIndex(_request, Int64, SecurityToken);
         }
 
         public override IRequest GetRequest()

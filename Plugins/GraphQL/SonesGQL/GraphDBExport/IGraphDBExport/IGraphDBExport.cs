@@ -59,6 +59,6 @@ namespace sones.Plugins.SonesGQL.DBExport
 
         string ExporterName { get; }
 
-        QueryResult Export(String destination, IDumpable myGrammar, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IEnumerable<String> myTypes, DumpTypes myDumpType);
+        QueryResult Export(String destination, IDumpable myGrammar, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken, IEnumerable<String> myTypes, DumpTypes myDumpType);
     }
 }

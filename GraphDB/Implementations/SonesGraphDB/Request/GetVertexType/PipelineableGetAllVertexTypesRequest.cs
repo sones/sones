@@ -56,7 +56,7 @@ namespace sones.GraphDB.Request.GetType
         public PipelineableGetAllVertexTypesRequest(
                                                     RequestGetAllVertexTypes myGetAllVertexTypesRequest, 
                                                     SecurityToken mySecurity,
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myGetAllVertexTypesRequest;
@@ -72,7 +72,7 @@ namespace sones.GraphDB.Request.GetType
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _fetchedVertexTypes = myMetaManager.VertexTypeManager.ExecuteManager.GetAllTypes(TransactionToken, SecurityToken);   
+            _fetchedVertexTypes = myMetaManager.VertexTypeManager.ExecuteManager.GetAllTypes(Int64, SecurityToken);   
         }
 
         public override IRequest GetRequest()

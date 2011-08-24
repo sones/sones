@@ -62,7 +62,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
         #region public methods
 
-        public QueryResult ExecuteSelect(SecurityToken mySecurityToken, TransactionToken myTransactionToken, SelectDefinition selectDefinition, String myQuery)
+        public QueryResult ExecuteSelect(SecurityToken mySecurityToken, Int64 myTransactionToken, SelectDefinition selectDefinition, String myQuery)
         {
             #region Data
 
@@ -146,7 +146,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <summary>
         /// Resolves the TypeReferenceDefinition list to a dictionary of reference (coming from the FROM) and corresponding type
         /// </summary>
-        private Dictionary<String, IVertexType> ResolveTypes(List<TypeReferenceDefinition> myTypeList, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private Dictionary<String, IVertexType> ResolveTypes(List<TypeReferenceDefinition> myTypeList, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
 
             var typeList = new Dictionary<String, IVertexType>();
@@ -179,7 +179,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <summary>
         /// Creates the result manager and adds all selected elements
         /// </summary>
-        private SelectResultManager CreateResultManager(SecurityToken mySecurityToken, TransactionToken myTransactionToken, SelectDefinition selectDefinition, Dictionary<String, IVertexType> myTypeList)
+        private SelectResultManager CreateResultManager(SecurityToken mySecurityToken, Int64 myTransactionToken, SelectDefinition selectDefinition, Dictionary<String, IVertexType> myTypeList)
         {
 
             var _SelectResultManager = new SelectResultManager(_graphdb, _pluginManager);
@@ -348,7 +348,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <summary>
         /// Checks the where expression, optimize it and create an IExpressionGraph
         /// </summary>
-        private IExpressionGraph GetExpressionGraphFromWhere(BinaryExpressionDefinition myWhereExpressionDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private IExpressionGraph GetExpressionGraphFromWhere(BinaryExpressionDefinition myWhereExpressionDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             #region interesting where
 
@@ -374,7 +374,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// Creates all readouts of all types in the <paramref name="myTypeList"/>
         /// </summary>
         private List<IEnumerable<IVertexView>> CreateVertices(        SecurityToken mySecurityToken,
-                                                                      TransactionToken myTransactionToken,
+                                                                      Int64 myTransactionToken,
                                                                       Dictionary<String, IVertexType> myTypeList,
                                                                       SelectResultManager mySelectResultManager,
                                                                       BinaryExpressionDefinition myWhereExpressionDefinition,
@@ -420,7 +420,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// Creates the lazy readouts for the given <paramref name="myTypeReference"/>
         /// </summary>
         private IEnumerable<IVertexView> CreateVerticesForType(        SecurityToken mySecurityToken,
-                                                                       TransactionToken myTransactionToken,
+                                                                       Int64 myTransactionToken,
                                                                        KeyValuePair<String, IVertexType> myTypeReference,
                                                                        SelectResultManager mySelectResultManager,
                                                                        BinaryExpressionDefinition myWhereExpressionDefinition,
@@ -569,7 +569,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <summary>
         /// Orders the readouts
         /// </summary>
-        private void OrderVertices(SecurityToken mySecurityToken, TransactionToken myTransactionToken, OrderByDefinition myOrderByDefinition, ref IEnumerable<IVertexView> myVertices)
+        private void OrderVertices(SecurityToken mySecurityToken, Int64 myTransactionToken, OrderByDefinition myOrderByDefinition, ref IEnumerable<IVertexView> myVertices)
         {
 
             #region Set the as alias for all not set ones to the attribute name

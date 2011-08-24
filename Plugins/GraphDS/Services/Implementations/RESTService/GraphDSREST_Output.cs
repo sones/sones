@@ -154,16 +154,18 @@ namespace sones.GraphDS.Services.RESTService
 
 		#region ExecuteGQLQuery(myGQLStatement)
 
-        public QueryResult ExecuteGQL(String myQuery, Dictionary<String,String> myParams)
+        public void ExecuteGQL(String myQuery, Dictionary<String,String> myParams)
         {
             QueryResult _QueryResult = null;
             try
             {
-                _QueryResult = _GraphDS.Query(null, null, myQuery, "sones.gql");
+                var transactionID = _GraphDS.BeginTransaction(null);
+
+                _QueryResult = _GraphDS.Query(null, transactionID, myQuery, "sones.gql");
 
                 GenerateResultOutput(_QueryResult, myParams);
 
-                return _QueryResult;
+                _GraphDS.CommitTransaction(null, transactionID);
 
             }
             catch (Exception ex)
@@ -173,9 +175,6 @@ namespace sones.GraphDS.Services.RESTService
                 else
                     _ErrorMsg.Error400_BadRequest("Error from " + ex.Source + ex.StackTrace);
             }
-           
-
-            return _QueryResult;
         }
 
 		#endregion

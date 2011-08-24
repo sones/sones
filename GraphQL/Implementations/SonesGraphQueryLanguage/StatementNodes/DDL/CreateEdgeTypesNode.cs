@@ -126,7 +126,7 @@ namespace sones.GraphQL.StatementNodes.DDL
                                             GQLPluginManager myPluginManager,
                                             String myQuery,
                                             SecurityToken mySecurityToken,
-                                            TransactionToken myTransactionToken)
+                                            Int64 myTransactionToken)
         {
             _query = myQuery;
 

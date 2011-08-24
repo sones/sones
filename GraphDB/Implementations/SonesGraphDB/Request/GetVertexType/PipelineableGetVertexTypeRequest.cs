@@ -26,6 +26,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
+using System;
 
 namespace sones.GraphDB.Request
 {
@@ -59,7 +60,7 @@ namespace sones.GraphDB.Request
         public PipelineableGetVertexTypeRequest(
                                                 RequestGetVertexType myGetVertexTypeRequest, 
                                                 SecurityToken mySecurity,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myGetVertexTypeRequest;
@@ -77,11 +78,11 @@ namespace sones.GraphDB.Request
         {
             if (_request.VertexTypeName == null)
             {
-                _fetchedVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetType(_request.VertexTypeID, TransactionToken, SecurityToken);   
+                _fetchedVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetType(_request.VertexTypeID, Int64, SecurityToken);   
             }
             else
             {
-                _fetchedVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetType(_request.VertexTypeName, TransactionToken, SecurityToken);   
+                _fetchedVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetType(_request.VertexTypeName, Int64, SecurityToken);   
             }
         }
 

@@ -126,7 +126,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             _query = myQuery;
 

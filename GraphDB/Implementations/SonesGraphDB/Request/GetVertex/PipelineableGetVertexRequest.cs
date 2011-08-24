@@ -60,7 +60,7 @@ namespace sones.GraphDB.Request
         public PipelineableGetVertexRequest(
                                                 RequestGetVertex myGetVertexRequest, 
                                                 SecurityToken mySecurity,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myGetVertexRequest;
@@ -80,7 +80,7 @@ namespace sones.GraphDB.Request
                     _request.VertexID,
                     _request.Edition,
                     _request.Timespan,
-                    TransactionToken, SecurityToken);
+                    Int64, SecurityToken);
             }
             else
             {
@@ -90,7 +90,7 @@ namespace sones.GraphDB.Request
                     _request.VertexID,
                     _request.Edition,
                     _request.Timespan,
-                    TransactionToken, SecurityToken);
+                    Int64, SecurityToken);
             }
         }
 
@@ -104,7 +104,7 @@ namespace sones.GraphDB.Request
                     _request.VertexID,
                     _request.Edition,
                     _request.Timespan,
-                    TransactionToken, SecurityToken);
+                    Int64, SecurityToken);
             }
             else
             {
@@ -114,7 +114,7 @@ namespace sones.GraphDB.Request
                     _request.VertexID,
                     _request.Edition,
                     _request.Timespan,
-                    TransactionToken, SecurityToken);
+                    Int64, SecurityToken);
             }
         }
 

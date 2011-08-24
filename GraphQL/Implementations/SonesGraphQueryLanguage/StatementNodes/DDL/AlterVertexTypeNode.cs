@@ -110,7 +110,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             _query = myQuery;
 
@@ -125,7 +125,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         #region private helper
 
-        private RequestAlterVertexType CreateNewRequest(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private RequestAlterVertexType CreateNewRequest(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             RequestAlterVertexType result = new RequestAlterVertexType(_TypeName);
 

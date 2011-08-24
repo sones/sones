@@ -56,7 +56,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                     "Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used.";
         }
 
-        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if (myWorkingBase is IAttributeDefinition)
             {
@@ -82,7 +82,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                                                 IVertex myStartVertex,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,
-                                                TransactionToken myTransactionToken,
+                                                Int64 myTransactionToken,
                                                 params FuncParameter[] myParams)
         {
             #region initialize data
