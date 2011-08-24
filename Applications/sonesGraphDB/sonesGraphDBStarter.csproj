@@ -188,6 +188,14 @@
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
       <Name>IService</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphDS\UDC\Implementation\UsageDataCollectorClient\UsageDataCollectorClient.csproj">
+      <Project>{527BFF61-4A88-4F92-B7B1-2F718735EFC9}</Project>
+      <Name>UsageDataCollectorClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphDS\UDC\Interface\IUsageDataCollector\IUsageDataCollector.csproj">
+      <Project>{284AC56E-77A3-49E9-A2B7-23D015EE34FB}</Project>
+      <Name>IUsageDataCollector</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Aggregates\GQLAggregates\GQLAggregates.csproj">
       <Project>{817E142F-ECD9-4B18-A9AE-D399C7C49007}</Project>
       <Name>GQLAggregates</Name>

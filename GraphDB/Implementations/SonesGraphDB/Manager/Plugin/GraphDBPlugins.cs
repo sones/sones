@@ -35,7 +35,7 @@ namespace sones.GraphDB.Manager.Plugin
         public readonly PluginDefinition SecurityManagerPlugin;
         public readonly PluginDefinition LogicExpressionOptimizerPlugin;
         public readonly List<PluginDefinition> IndexPlugins;
-
+        
         #endregion
 
         #region constructor
