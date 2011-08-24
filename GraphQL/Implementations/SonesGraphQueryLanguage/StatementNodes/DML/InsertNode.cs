@@ -103,7 +103,7 @@ namespace sones.GraphQL.StatementNodes.DML
                                             GQLPluginManager myPluginManager, 
                                             String myQuery, 
                                             SecurityToken mySecurityToken, 
-                                            TransactionToken myTransactionToken)
+                                            Int64 myTransactionToken)
         {
             _queryString = myQuery;
 
@@ -163,7 +163,7 @@ namespace sones.GraphQL.StatementNodes.DML
         private RequestInsertVertex CreateRequest(GQLPluginManager myPluginManager, 
                                                     IGraphDB myGraphDB, 
                                                     SecurityToken mySecurityToken, 
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
         {
             #region data
 
@@ -197,7 +197,7 @@ namespace sones.GraphQL.StatementNodes.DML
         private static void ProcessAAttributeDefinition(GQLPluginManager myPluginManager, 
                                                         IGraphDB myGraphDB, 
                                                         SecurityToken mySecurityToken, 
-                                                        TransactionToken myTransactionToken, 
+                                                        Int64 myTransactionToken, 
                                                         IVertexType vertexType, 
                                                         AAttributeAssignOrUpdate aAttributeDefinition, 
                                                         ref RequestInsertVertex result)
@@ -223,7 +223,7 @@ namespace sones.GraphQL.StatementNodes.DML
         private static void ProcessStructuredProperty(GQLPluginManager myPluginManager, 
                                                         IGraphDB myGraphDB, 
                                                         SecurityToken mySecurityToken, 
-                                                        TransactionToken myTransactionToken, 
+                                                        Int64 myTransactionToken, 
                                                         IVertexType vertexType, 
                                                         AAttributeAssignOrUpdate aAttributeDefinition, 
                                                         ref RequestInsertVertex result)
@@ -487,7 +487,7 @@ namespace sones.GraphQL.StatementNodes.DML
                                                                     GQLPluginManager myPluginManager, 
                                                                     IGraphDB myGraphDB, 
                                                                     SecurityToken mySecurityToken, 
-                                                                    TransactionToken myTransactionToken, 
+                                                                    Int64 myTransactionToken, 
                                                                     IVertexType vertexType)
         {
             binExpression.Validate(myPluginManager, 

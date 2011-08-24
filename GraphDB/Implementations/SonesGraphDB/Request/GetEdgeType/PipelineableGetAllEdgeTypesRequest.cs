@@ -55,7 +55,7 @@ namespace sones.GraphDB.Request.GetEdgeType
         /// <param name="myTransactionToken">The transaction token</param>
         public PipelineableGetAllEdgeTypesRequest(RequestGetAllEdgeTypes myGetAllEdgeTypesRequest, 
                                                     SecurityToken mySecurity,
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myGetAllEdgeTypesRequest;
@@ -70,7 +70,7 @@ namespace sones.GraphDB.Request.GetEdgeType
             myMetaManager
                 .EdgeTypeManager
                 .CheckManager
-                .GetAllTypes(TransactionToken, 
+                .GetAllTypes(Int64, 
                                 SecurityToken);                
         }
 
@@ -79,7 +79,7 @@ namespace sones.GraphDB.Request.GetEdgeType
             _fetchedEdgeTypes = myMetaManager
                                     .EdgeTypeManager
                                     .ExecuteManager
-                                    .GetAllTypes(TransactionToken, 
+                                    .GetAllTypes(Int64, 
                                                     SecurityToken);                
         }
 

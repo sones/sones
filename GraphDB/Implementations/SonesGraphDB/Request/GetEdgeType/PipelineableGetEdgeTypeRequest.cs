@@ -27,6 +27,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Manager.TypeManagement;
+using System;
 
 namespace sones.GraphDB.Request
 {
@@ -59,7 +60,7 @@ namespace sones.GraphDB.Request
         /// <param name="myTransactionToken">The transaction token</param>
         public PipelineableGetEdgeTypeRequest(RequestGetEdgeType myGetEdgeTypeRequest, 
                                                 SecurityToken mySecurity,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myGetEdgeTypeRequest;
@@ -76,14 +77,14 @@ namespace sones.GraphDB.Request
                     .EdgeTypeManager
                     .CheckManager
                     .GetType(_request.EdgeTypeID, 
-                                TransactionToken, 
+                                Int64, 
                                 SecurityToken);
             else
                 myMetaManager
                     .EdgeTypeManager
                     .CheckManager
                     .GetType(_request.EdgeTypeName, 
-                                TransactionToken, 
+                                Int64, 
                                 SecurityToken);
         }
 
@@ -95,7 +96,7 @@ namespace sones.GraphDB.Request
                         .EdgeTypeManager
                         .ExecuteManager
                         .GetType(_request.EdgeTypeID, 
-                                    TransactionToken, 
+                                    Int64, 
                                     SecurityToken);
             else
                 _fetchedEdgeType =
@@ -103,7 +104,7 @@ namespace sones.GraphDB.Request
                         .EdgeTypeManager
                         .ExecuteManager
                         .GetType(_request.EdgeTypeName, 
-                                    TransactionToken, 
+                                    Int64, 
                                     SecurityToken);
         }
 

@@ -46,7 +46,7 @@ namespace sones.GraphDB.Request.Delete
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
         public PipelineableDeleteRequest(RequestDelete myDeleteRequest, SecurityToken mySecurity,
-                                        TransactionToken myTransactionToken)
+                                        Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myDeleteRequest;
@@ -56,12 +56,12 @@ namespace sones.GraphDB.Request.Delete
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexManager.CheckManager.Delete(_request, SecurityToken, TransactionToken);
+            myMetaManager.VertexManager.CheckManager.Delete(_request, SecurityToken, Int64);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexManager.ExecuteManager.Delete(_request, SecurityToken, TransactionToken);            
+            myMetaManager.VertexManager.ExecuteManager.Delete(_request, SecurityToken, Int64);            
         }
 
         public override IRequest GetRequest()

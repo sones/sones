@@ -2929,7 +2929,7 @@ namespace sones.GraphQL
         public IEnumerable<String> ExportGraphDML(DumpFormats myDumpFormat, 
                                                     IEnumerable<IVertexType> myTypesToDump,     
                                                     SecurityToken mySecurityToken, 
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
         {
             var queries = new List<String>();
 
@@ -3338,7 +3338,7 @@ namespace sones.GraphQL
 
         private IEnumerable<IVertex> GetAllVertices(IVertexType myVertexType, 
                                                     SecurityToken mySecurityToken, 
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
         {
             var request = new RequestGetVertices(myVertexType.ID);
 
@@ -3347,7 +3347,7 @@ namespace sones.GraphQL
 
         #region private helper
 
-        private void CreateVertexTypesDict(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void CreateVertexTypesDict(SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             _vertexTypes =
                 _iGraphDB.GetAllVertexTypes(mySecurityToken, myTransactionToken, new RequestGetAllVertexTypes(),

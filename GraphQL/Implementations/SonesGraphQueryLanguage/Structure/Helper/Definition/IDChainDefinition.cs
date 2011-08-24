@@ -66,7 +66,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
         public IGQLAggregate Aggregate { get; private set; }
 
-        public override void Validate(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override void Validate(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if (!myPluginManager.HasPlugin<IGQLAggregate>(FuncName))
             {
@@ -118,7 +118,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
             Parameters = new List<AExpressionDefinition>();
         }
 
-        public virtual void Validate(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public virtual void Validate(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if (myPluginManager.HasPlugin<IGQLFunction>(FuncName))
             {
@@ -151,7 +151,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
         }
 
 
-        public List<FuncParameter> Execute(IVertexType myTypeOfDBObject, IVertex myDBObject, String myReference, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public List<FuncParameter> Execute(IVertexType myTypeOfDBObject, IVertex myDBObject, String myReference, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
 
             List<FuncParameter> evaluatedParams = new List<FuncParameter>();
@@ -684,7 +684,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
         /// <summary>
         /// Validates the id chain if it is not already validated and returns all errors and warnings.
         /// </summary>
-        public void Validate(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, Boolean allowUndefinedAttributes, params IVertexType[] validationTypes)
+        public void Validate(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, Boolean allowUndefinedAttributes, params IVertexType[] validationTypes)
         {
 
             if (IsValidated)
@@ -720,7 +720,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
         /// <summary>
         /// Validates the id chain if it is not already validated and returns all errors and warnings.
         /// </summary>
-        public void Validate(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, Dictionary<String, IVertexType> myListOfReferences, Boolean allowUndefinedAttributes = false)
+        public void Validate(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, Dictionary<String, IVertexType> myListOfReferences, Boolean allowUndefinedAttributes = false)
         {
 
             IsValidated = true;

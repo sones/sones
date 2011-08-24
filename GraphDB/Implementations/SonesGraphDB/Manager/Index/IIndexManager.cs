@@ -41,7 +41,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myIndexID">The ID of the index.</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
-        void RemoveIndexInstance(long myIndexID, TransactionToken myTransaction, SecurityToken mySecurity);
+        void RemoveIndexInstance(long myIndexID, Int64 myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Creates an index corresponding to a definition
@@ -49,7 +49,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myIndexDefinition">The definition for the index</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
-        IIndexDefinition CreateIndex(IndexPredefinition myIndexDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myIsUserDefined = true);
+        IIndexDefinition CreateIndex(IndexPredefinition myIndexDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken, bool myIsUserDefined = true);
 
         /// <summary>
         /// Determines if there are one or more indices for a given property
@@ -58,7 +58,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <returns>True or false</returns>
-        bool HasIndex(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        bool HasIndex(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         /// <summary>
         /// 
@@ -68,7 +68,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken"></param>
         /// <param name="myTransactionToken"></param>
         /// <returns></returns>
-        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         /// <summary>
         /// 
@@ -78,7 +78,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken"></param>
         /// <param name="myTransactionToken"></param>
         /// <returns></returns>
-        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         /// <summary>
         /// Returns all indices
@@ -88,7 +88,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken"></param>
         /// <param name="myTransactionToken"></param>
         /// <returns></returns>
-        IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         /// <summary>
         /// Returns the name of the index type, that matches the requirements.
@@ -108,7 +108,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myTransactionToken"></param>
         /// <param name="mySecurityToken"></param>
         /// <returns></returns>
-        IEnumerable<IIndexDefinition> DescribeIndex(String myTypeName, String myIndexName, String myEdition, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+        IEnumerable<IIndexDefinition> DescribeIndex(String myTypeName, String myIndexName, String myEdition, Int64 myTransactionToken, SecurityToken mySecurityToken);
 
         /// <summary>
         /// Return all indices.
@@ -116,7 +116,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myTransactionToken">The transaction token.</param>
         /// <param name="mySecurityToken">The security token.</param>
         /// <returns></returns>
-        IEnumerable<IIndexDefinition> DescribeIndices(TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+        IEnumerable<IIndexDefinition> DescribeIndices(Int64 myTransactionToken, SecurityToken mySecurityToken);
 
         /// <summary>
         /// Rebuild the indices
@@ -124,7 +124,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myVertexTypeID">The corresponding vertex type id</param>
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
-        void RebuildIndices(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+        void RebuildIndices(long myVertexTypeID, Int64 myTransactionToken, SecurityToken mySecurityToken);
 
         /// <summary>
         /// 
@@ -138,8 +138,8 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myDropIndexRequest">The drop index request</param>
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
-        void DropIndex(RequestDropIndex myDropIndexRequest, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+        void DropIndex(RequestDropIndex myDropIndexRequest, Int64 myTransactionToken, SecurityToken mySecurityToken);
 
-        IIndex<IComparable, Int64> GetIndex(string myIndexName, SecurityToken mySecurity, TransactionToken myTransaction);
+        IIndex<IComparable, Int64> GetIndex(string myIndexName, SecurityToken mySecurity, Int64 myTransaction);
     }
 }

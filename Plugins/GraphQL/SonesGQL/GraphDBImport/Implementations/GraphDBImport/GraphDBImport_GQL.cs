@@ -59,7 +59,7 @@ namespace sones.Plugins.SonesGQL
 			IGraphDB myGraphDB,
 			IGraphQL myGraphQL,
 			SecurityToken mySecurityToken,
-			TransactionToken myTransactionToken,
+			Int64 myTransactionToken,
 			UInt32 myParallelTasks = 1U,
 			IEnumerable<string> myComments = null,
 			UInt64? myOffset = null,
@@ -120,7 +120,7 @@ namespace sones.Plugins.SonesGQL
             #endregion
         }
         
-        private QueryResult Import(Stream myInputStream, IGraphDB myIGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, ulong? myOffset = null, ulong? myLimit = null, VerbosityTypes myVerbosityType = VerbosityTypes.Silent)
+        private QueryResult Import(Stream myInputStream, IGraphDB myIGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, ulong? myOffset = null, ulong? myLimit = null, VerbosityTypes myVerbosityType = VerbosityTypes.Silent)
         {
             var lines = ReadLinesFromStream(myInputStream);
 
@@ -158,7 +158,7 @@ namespace sones.Plugins.SonesGQL
 
 
 
-        private QueryResult ExecuteAsParallel(IEnumerable<String> myLines, IGraphQL myIGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, VerbosityTypes myVerbosityType, UInt32 myParallelTasks = 1U, IEnumerable<String> comments = null)
+        private QueryResult ExecuteAsParallel(IEnumerable<String> myLines, IGraphQL myIGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken, VerbosityTypes myVerbosityType, UInt32 myParallelTasks = 1U, IEnumerable<String> comments = null)
         {
             #region data
             QueryResult queryResult = new QueryResult(myLines.ToString(), ImportFormat, 0L, ResultType.Successful);
@@ -238,7 +238,7 @@ namespace sones.Plugins.SonesGQL
 
         }
 
-        private QueryResult ExecuteAsSingleThread(IEnumerable<String> myLines, IGraphQL myIGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, VerbosityTypes myVerbosityType, IEnumerable<String> comments = null)
+        private QueryResult ExecuteAsSingleThread(IEnumerable<String> myLines, IGraphQL myIGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken, VerbosityTypes myVerbosityType, IEnumerable<String> comments = null)
         {
 
             #region data
@@ -337,7 +337,7 @@ namespace sones.Plugins.SonesGQL
             return comments.Any(c => myQuery.StartsWith(c));
         }
 
-        private QueryResult ExecuteQuery(String myQuery, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private QueryResult ExecuteQuery(String myQuery, IGraphQL myGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             return myGraphQL.Query(mySecurityToken, myTransactionToken, myQuery);
         }

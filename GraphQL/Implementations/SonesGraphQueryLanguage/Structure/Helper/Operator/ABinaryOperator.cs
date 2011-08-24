@@ -67,7 +67,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         public static AOperationDefinition GetValidTupleReloaded(TupleDefinition myTupleDefinition,
             IGraphDB myIGraphDB,
             SecurityToken mySecurityToken,
-            TransactionToken myTransactionToken)
+            Int64 myTransactionToken)
         {
             switch (myTupleDefinition.KindOfTuple)
             {

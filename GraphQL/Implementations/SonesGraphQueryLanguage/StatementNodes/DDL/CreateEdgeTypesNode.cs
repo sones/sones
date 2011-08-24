@@ -42,7 +42,7 @@ namespace sones.GraphQL.StatementNodes.DDL
     {
         #region Data
 
-        private List<ATypePredefinition> _TypePredefinitions
+        private List<ATypePredefinition> _TypePredefinitions 
                                             = new List<ATypePredefinition>();
         private String _query;
 
@@ -57,54 +57,86 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         #region IAstNodeInit Members
 
-        public void Init(ParsingContext context,
+        public void Init(ParsingContext context, 
                             ParseTreeNode myParseTreeNode)
         {
-            //createTypesStmt.Rule =    S_CREATE + S_EDGE + S_TYPE + bulkEdgeType
+            //createTypesStmt.Rule = S_CREATE + S_ABSTRACT + S_EDGE + S_TYPE + bulkEdgeType
+            //                        | S_CREATE + S_EDGE + S_TYPE + bulkEdgeType
             //                        | S_CREATE + S_EDGE + S_TYPES + bulkEdgeTypeList;
 
-            if (myParseTreeNode.ChildNodes[2].Token.KeyTerm ==
-                    ((SonesGQLGrammar)context.Language.Grammar).S_TYPES)
+            if (myParseTreeNode.ChildNodes[1].Token.KeyTerm == 
+                ((SonesGQLGrammar)context.Language.Grammar).S_ABSTRACT)
             {
-                #region multiple VertexTypes
+                #region Abstract & Single EdgeType
 
-                foreach (var _ParseTreeNode in myParseTreeNode.ChildNodes[3].ChildNodes)
-                {
-                    if (_ParseTreeNode.AstNode != null)
-                    {
-                        BulkEdgeTypeListMemberNode aTempNode = (BulkEdgeTypeListMemberNode)_ParseTreeNode.AstNode;
+                BulkEdgeTypeNode aTempNode = (BulkEdgeTypeNode)myParseTreeNode.ChildNodes[4].AstNode;
 
-                        var predef = new EdgeTypePredefinition(aTempNode.TypeName)
-                                            .SetSuperTypeName(aTempNode.Extends)
-                                            .SetComment(aTempNode.Comment);
+                Boolean isAbstract = true;
 
-                        foreach (var attr in aTempNode.Attributes)
-                            predef.AddProperty(GenerateProperty(attr));
+                var predef = 
+                    new EdgeTypePredefinition(aTempNode.TypeName)
+                        .SetSuperTypeName(aTempNode.Extends)
+                        .SetComment(aTempNode.Comment);
+       
+                if(isAbstract)
+                    predef.MarkAsAbstract();
 
-                        _TypePredefinitions.Add(predef);
-                    }
-                }
+                foreach(var attr in aTempNode.Attributes)
+                    predef.AddProperty(GenerateProperty(attr));
 
+                _TypePredefinitions.Add(predef);
+                
                 #endregion
             }
             else
             {
-                #region single vertex type
+                if (myParseTreeNode.ChildNodes[2].Token.KeyTerm == 
+                    ((SonesGQLGrammar)context.Language.Grammar).S_TYPES)
+                {
+                    #region multiple VertexTypes
 
-                BulkEdgeTypeNode aTempNode = (BulkEdgeTypeNode)myParseTreeNode.ChildNodes[3].AstNode;
+                    foreach (var _ParseTreeNode in myParseTreeNode.ChildNodes[3].ChildNodes)
+                    {
+                        if (_ParseTreeNode.AstNode != null)
+                        {
+                            BulkEdgeTypeListMemberNode aTempNode = (BulkEdgeTypeListMemberNode)_ParseTreeNode.AstNode;
 
-                var predef =
-                    new EdgeTypePredefinition(aTempNode.TypeName)
-                        .SetSuperTypeName(aTempNode.Extends)
-                        .SetComment(aTempNode.Comment);
+                            var predef = new EdgeTypePredefinition(aTempNode.TypeName)
+                                                .SetSuperTypeName(aTempNode.Extends)
+                                                .SetComment(aTempNode.Comment);
 
-                foreach (var attr in aTempNode.Attributes)
-                    predef.AddProperty(GenerateProperty(attr));
+                            if (aTempNode.IsAbstract)
+                                predef.MarkAsAbstract();
 
-                _TypePredefinitions.Add(predef);
+                            foreach (var attr in aTempNode.Attributes)
+                                predef.AddProperty(GenerateProperty(attr));
 
-                #endregion
+                            _TypePredefinitions.Add(predef);
+                        }
+                    }
+
+                    #endregion
+                }
+                else
+                {
+                    #region single vertex type
+
+                    BulkEdgeTypeNode aTempNode = (BulkEdgeTypeNode)myParseTreeNode.ChildNodes[3].AstNode;
+
+                    var predef =
+                        new EdgeTypePredefinition(aTempNode.TypeName)
+                            .SetSuperTypeName(aTempNode.Extends)
+                            .SetComment(aTempNode.Comment);
+
+                    foreach (var attr in aTempNode.Attributes)
+                        predef.AddProperty(GenerateProperty(attr));
+
+                    _TypePredefinitions.Add(predef);
+
+                    #endregion
+                }
             }
+
         }
 
         #endregion
@@ -121,12 +153,12 @@ namespace sones.GraphQL.StatementNodes.DDL
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB,
-                                            IGraphQL myGraphQL,
-                                            GQLPluginManager myPluginManager,
-                                            String myQuery,
-                                            SecurityToken mySecurityToken,
-                                            TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, 
+                                            IGraphQL myGraphQL, 
+                                            GQLPluginManager myPluginManager, 
+                                            String myQuery, 
+                                            SecurityToken mySecurityToken, 
+                                            Int64 myTransactionToken)
         {
             _query = myQuery;
 
@@ -142,11 +174,11 @@ namespace sones.GraphQL.StatementNodes.DDL
             }
             catch (ASonesException e)
             {
-                result = new QueryResult(_query,
-                                            SonesGQLConstants.GQL,
-                                            0,
-                                            ResultType.Failed,
-                                            null,
+                result = new QueryResult(_query, 
+                                            SonesGQLConstants.GQL, 
+                                            0, 
+                                            ResultType.Failed, 
+                                            null, 
                                             e);
             }
 
@@ -163,13 +195,13 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <param name="myStats">The statistics of the request</param>
         /// <param name="myCreatedVertexTypes">The created vertex types</param>
         /// <returns>A QueryResult</returns>
-        private QueryResult CreateQueryResult(IRequestStatistics myStats,
+        private QueryResult CreateQueryResult(IRequestStatistics myStats, 
                                                 IEnumerable<IEdgeType> myCreatedEdgeTypes)
         {
-            return new QueryResult(_query,
-                                    SonesGQLConstants.GQL,
-                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds),
-                                    ResultType.Successful,
+            return new QueryResult(_query, 
+                                    SonesGQLConstants.GQL, 
+                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), 
+                                    ResultType.Successful, 
                                     CreateVertexViews(myCreatedEdgeTypes));
         }
 
@@ -197,13 +229,13 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <returns>The resulting vertex view</returns>
         private IVertexView GenerateAVertexView(IEdgeType aCreatedEdge)
         {
-            return new VertexView(new Dictionary<string, object>
+            return new VertexView(new Dictionary<string,object>
                                         {
                                             {"EdgeType", aCreatedEdge.Name},
                                             {"EdgeTypeID", aCreatedEdge.ID}
                                         }, null);
         }
-
+        
         /// <summary>
         /// Generates a attribute definition
         /// </summary>
@@ -211,9 +243,9 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// <returns>A attribute predefinition</returns>
         private PropertyPredefinition GenerateProperty(KeyValuePair<AttributeDefinition, string> aAttribute)
         {
-            PropertyPredefinition result = new PropertyPredefinition(aAttribute.Key.AttributeName,
+            PropertyPredefinition result = new PropertyPredefinition(aAttribute.Key.AttributeName, 
                                                                         aAttribute.Value);
-
+            
             switch (aAttribute.Key.AttributeType.Type)
             {
                 case SonesGQLGrammar.TERMINAL_SET:
@@ -238,3 +270,4 @@ namespace sones.GraphQL.StatementNodes.DDL
 
     }
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     

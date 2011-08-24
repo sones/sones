@@ -125,7 +125,7 @@ namespace sones.GraphQL
         #region IGraphQL Members
 
         public QueryResult Query(SecurityToken mySecurityToken, 
-                                    TransactionToken myTransactionToken,
+                                    Int64 myTransactionToken,
                                     string myQueryString)
         {
             //tree-like representation of the query-string
@@ -227,7 +227,7 @@ namespace sones.GraphQL
         public IEnumerable<string> ExportGraphDML(DumpFormats myDumpFormat, 
                                                     IEnumerable<IVertexType> myTypesToDump, 
                                                     SecurityToken mySecurityToken, 
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
         {
             throw new NotImplementedException();
         }
