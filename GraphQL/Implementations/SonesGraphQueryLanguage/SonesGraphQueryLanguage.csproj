@@ -86,6 +86,7 @@
     <Compile Include="StatementNodes\DDL\CreateIndexNode.cs" />
     <Compile Include="StatementNodes\DDL\CreateVertexTypesNode.cs" />
     <Compile Include="StatementNodes\DML\SelectNode.cs" />
+    <Compile Include="StatementNodes\DML\UpdateEdgesNode.cs" />
     <Compile Include="StatementNodes\DML\UpdateNode.cs" />
     <Compile Include="StatementNodes\DML\InsertNode.cs" />
     <Compile Include="StatementNodes\DML\InsertOrUpdateNode.cs" />
@@ -207,7 +208,12 @@
     <Compile Include="Structure\Nodes\DML\AddToListAttrUpdateAddToNode.cs" />
     <Compile Include="Structure\Nodes\DML\AddToListAttrUpdateOperatorNode.cs" />
     <Compile Include="Structure\Nodes\DML\AttrDefaultValueNode.cs" />
+    <Compile Include="Structure\Nodes\DML\CollectionOfEdgesNode.cs" />
     <Compile Include="Structure\Nodes\DML\CommentsNode.cs" />
+    <Compile Include="Structure\Nodes\DML\EdgeAttributeUpdateListNode.cs" />
+    <Compile Include="Structure\Nodes\DML\EdgeAttributeUpdateNode.cs" />
+    <Compile Include="Structure\Nodes\DML\EdgeTypeEdgeElementNode.cs" />
+    <Compile Include="Structure\Nodes\DML\EdgeTypeEdgeIDCollectionNode.cs" />
     <Compile Include="Structure\Nodes\DML\VertexTypeVertexElementNode.cs" />
     <Compile Include="Structure\Nodes\DML\VertexTypeVertexIDCollectionNode.cs" />
     <Compile Include="Structure\Nodes\DML\VerbosityNode.cs" />
@@ -268,6 +274,8 @@
     <Compile Include="Structure\Nodes\Misc\AliasNode.cs" />
     <Compile Include="Structure\Nodes\Misc\ATypeNode.cs" />
     <Compile Include="Structure\Nodes\Misc\EdgeTypeNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\ExtKeyValueListNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\ExtKeyValuePairNode.cs" />
     <Compile Include="Structure\Nodes\Misc\OptionsNode.cs" />
     <Compile Include="Structure\Nodes\Misc\KeyValuePairNode.cs" />
     <Compile Include="Structure\Nodes\Misc\KeyValueListNode.cs" />
@@ -369,6 +377,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Documentation\ClassDiagram.cd" />
+    <Compile Include="Structure\Nodes\DML\CollectionOfBasicDBObjectsNode.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

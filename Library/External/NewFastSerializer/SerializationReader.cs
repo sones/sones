@@ -29,7 +29,6 @@ using System.IO;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
-using sones.Library.LanguageExtensions;
 
 #endregion
 
@@ -2302,6 +2301,22 @@ namespace sones.Library.NewFastSerializer
         }
         #endregion Debug
 
+    }
+
+    public static class StreamExtension
+    {
+        #region Stream
+
+        public static UInt64 ULength(this Stream myStream)
+        {
+
+            var _ReturnValue = myStream.Length;
+
+            return (_ReturnValue >= 0) ? (UInt64)_ReturnValue : 0;
+
+        }
+
+        #endregion
     }
 
 }

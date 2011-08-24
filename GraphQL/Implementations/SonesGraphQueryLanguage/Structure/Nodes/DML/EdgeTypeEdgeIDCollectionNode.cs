@@ -1,4 +1,4 @@
-/*
+﻿/*
 * sones GraphDB - Community Edition - http://www.sones.com
 * Copyright (C) 2007-2011 sones GmbH
 *
@@ -19,24 +19,34 @@
 */
 
 using System;
-using System.IO;
+using Irony.Ast;
+using Irony.Parsing;
+using sones.GraphQL.GQL.Structure.Helper.Definition;
+using sones.GraphQL.Structure.Nodes.Misc;
+using System.Collections.Generic;
 
-namespace sones.Library.LanguageExtensions
+namespace sones.GraphQL.Structure.Nodes.DML
 {
-    public static class StreamExtension
+    public sealed class EdgeTypeEdgeIDCollectionNode : AStructureNode, IAstNodeInit
     {
-        #region Stream
+        public List<EdgeTypeEdgeElementNode> Elements { get; private set; }
 
-        public static UInt64 ULength(this Stream myStream)
+        public EdgeTypeEdgeIDCollectionNode()
         {
+            Elements = new List<EdgeTypeEdgeElementNode>();
+        }
 
-            var _ReturnValue = myStream.Length;
+        #region IAstNodeInit Members
 
-            return (_ReturnValue >= 0) ? (UInt64)_ReturnValue : 0;
+        public void Init(ParsingContext context, ParseTreeNode parseNode)
+        {
+            foreach (var aChildnode in parseNode.ChildNodes)
+            {
+                Elements.Add((EdgeTypeEdgeElementNode)aChildnode.AstNode);
+            }
 
         }
 
         #endregion
     }
-
 }

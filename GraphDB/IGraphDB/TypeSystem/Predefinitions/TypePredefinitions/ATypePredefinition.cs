@@ -30,7 +30,7 @@ namespace sones.GraphDB.TypeSystem
     {
         #region Data
 
-        // The name of the vertex type that is going to be created
+        // The name of the type that is going to be created
         public readonly string TypeName;
         protected List<AAttributePredefinition> _attributes;
         
@@ -53,12 +53,12 @@ namespace sones.GraphDB.TypeSystem
         }
 
         /// <summary>
-        /// The name of the vertex type this vertex types inherites from.
+        /// The name of the type this types inherites from.
         /// </summary>
         public string SuperTypeName { get; protected set; }
 
         /// <summary>
-        /// The properties of the vertex type.
+        /// The properties of the type.
         /// </summary>
         public IEnumerable<PropertyPredefinition> Properties
         {
@@ -66,7 +66,7 @@ namespace sones.GraphDB.TypeSystem
         }
 
         /// <summary>
-        /// the unknown attributes of this edge type.
+        /// the unknown attributes of this type.
         /// </summary>
         public IEnumerable<UnknownAttributePredefinition> UnknownAttributes
         {
@@ -74,17 +74,12 @@ namespace sones.GraphDB.TypeSystem
         }
 
         /// <summary>
-        /// Gets if the vertex type will be sealed.
+        /// Gets if the type will be sealed.
         /// </summary>
         public bool IsSealed { get; protected set; }
 
         /// <summary>
-        /// Gets if the vertex type will be abstract.
-        /// </summary>
-        public bool IsAbstract { get; protected set; }
-
-        /// <summary>
-        /// Gets the comment for this vertex type.
+        /// Gets the comment for this type.
         /// </summary>
         public string Comment { get; protected set; }
 
@@ -93,9 +88,10 @@ namespace sones.GraphDB.TypeSystem
         #region Constructor
 
         /// <summary>
-        /// Creates a new vertex type definition.
+        /// Creates a new type definition.
         /// </summary>
-        /// <param name="myVertexTypeName">The name of the vertex type.</param>
+        /// <param name="myTypeName">The name of the type.</param>
+        /// <param name="mySuperTypeName">The name of the parent type.</param>
         public ATypePredefinition(String myTypeName, String mySuperTypeName)
         {
             if (string.IsNullOrEmpty(myTypeName))
@@ -104,7 +100,6 @@ namespace sones.GraphDB.TypeSystem
             TypeName = myTypeName;
             SuperTypeName = mySuperTypeName;
             IsSealed = false;
-            IsAbstract = false;
             Comment = String.Empty;
         }
 

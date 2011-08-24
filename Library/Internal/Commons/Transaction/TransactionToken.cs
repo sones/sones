@@ -30,17 +30,10 @@ namespace sones.Library.Commons.Transaction
     {
         #region Data
 
-        private TransactionID _iID;
         /// <summary>
-        /// The ID of the current transaction token
+        /// The id of the transaction
         /// </summary>
-        public TransactionID ID
-        {
-            set {}
-            get {
-                return _iID;
-                }
-        }
+        public readonly Int64 TransactionID;
 
         #endregion
 
@@ -52,7 +45,7 @@ namespace sones.Library.Commons.Transaction
         /// <param name="myTransactionID">The ID of the token</param>
         public TransactionToken(Int64 myTransactionID)
         {
-            _iID = new TransactionID(myTransactionID);
+            TransactionID = myTransactionID;
         }
 
         #endregion

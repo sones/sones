@@ -836,7 +836,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                      current.Value.TypeName,
                      current.Value.Comment,
                      myCreationDate,
-                     current.Value.IsAbstract,
+                     false,
                      current.Value.IsSealed,
                      true,
                      myTypeInfos[current.Value.SuperTypeName].VertexInfo,

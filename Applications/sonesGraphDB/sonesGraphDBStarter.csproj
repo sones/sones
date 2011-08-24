@@ -160,6 +160,10 @@
       <Project>{DB2FEFF5-230E-4E2F-8DF9-053DCD9BBAD9}</Project>
       <Name>BARCHART_IO</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementation\GRAPHVIS_IO\GRAPHVIS_IO.csproj">
+      <Project>{45EFCF07-AD1F-418E-BAC3-9569F903E011}</Project>
+      <Name>GRAPHVIS_IO</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementation\HTML_IO\HTML_IO.csproj">
       <Project>{80D5F893-014A-4FA4-AD9B-CADEDABF0874}</Project>
       <Name>HTML_IO</Name>
