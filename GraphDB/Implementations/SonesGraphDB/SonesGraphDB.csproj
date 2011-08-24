@@ -227,6 +227,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="Documentation\TypeImplementations.cd" />
     <None Include="Manager\ClassDiagram\TypeManagement.cd" />
     <None Include="SonesGraphDB.cd" />
   </ItemGroup>
