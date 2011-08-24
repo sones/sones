@@ -374,7 +374,19 @@ namespace sones.GraphDB.Manager
 
             #region Property vertices
 
-            _storageManager.StoreProperty(myStore, _OrderableEdgeDotOrder, "Order", "OrderComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _OrderableEdge, _BaseTypeUInt64, _security, _transaction);
+            _storageManager.StoreProperty(myStore, 
+                                            _OrderableEdgeDotOrder, 
+                                            "Order", 
+                                            "OrderComment", 
+                                            myCreationDate, 
+                                            true, 
+                                            PropertyMultiplicity.Single, 
+                                            null, 
+                                            false,
+                                            _OrderableEdge, 
+                                            _BaseTypeUInt64, 
+                                            _security, 
+                                            _transaction);
 
             #endregion
         }
@@ -387,7 +399,7 @@ namespace sones.GraphDB.Manager
                                             _WeightedEdge, 
                                             "Weighted", 
                                             "WeightedEdgeComment", 
-                                            myCreationDate, 
+                                            myCreationDate,
                                             true, 
                                             false, 
                                             false, 
@@ -399,7 +411,19 @@ namespace sones.GraphDB.Manager
 
             #region Property vertices
 
-            _storageManager.StoreProperty(myStore, _WeightedEdgeDotWeight, "Weight", "WeightedComment", myCreationDate, true, PropertyMultiplicity.Single, "0.0", false, _WeightedEdge, _BaseTypeDouble, _security, _transaction);
+            _storageManager.StoreProperty(myStore, 
+                                            _WeightedEdgeDotWeight, 
+                                            "Weight", 
+                                            "WeightedComment", 
+                                            myCreationDate,
+                                            true, 
+                                            PropertyMultiplicity.Single,
+                                            "0.0", 
+                                            false, 
+                                            _WeightedEdge, 
+                                            _BaseTypeDouble, 
+                                            _security, 
+                                            _transaction);
 
             #endregion
         }
