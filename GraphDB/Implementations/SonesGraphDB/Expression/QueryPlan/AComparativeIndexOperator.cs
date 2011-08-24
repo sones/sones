@@ -55,7 +55,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// The current transaction token
         /// </summary>
-        protected readonly TransactionToken _transactionToken;
+        protected readonly Int64 _transactionToken;
 
         /// <summary>
         /// The interesting property
@@ -86,7 +86,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myIndexManager">The index manager is needed to get the property related indices</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
-        protected AComparativeIndexOperator(QueryPlanProperty myProperty, ILiteralExpression myConstant, Boolean myIsLongrunning, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IIndexManager myIndexManager, IVertexStore myVertexStore)
+        protected AComparativeIndexOperator(QueryPlanProperty myProperty, ILiteralExpression myConstant, Boolean myIsLongrunning, SecurityToken mySecurityToken, Int64 myTransactionToken, IIndexManager myIndexManager, IVertexStore myVertexStore)
         {
             _property = myProperty;
             _constant = myConstant;

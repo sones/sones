@@ -95,7 +95,7 @@ namespace sones.GraphQL.StatementNodes.DDL
                                             GQLPluginManager myPluginManager, 
                                             String myQuery, 
                                             SecurityToken mySecurityToken, 
-                                            TransactionToken myTransactionToken)
+                                            Int64 myTransactionToken)
         {
             _query = myQuery;
 
@@ -116,7 +116,7 @@ namespace sones.GraphQL.StatementNodes.DDL
         private RequestAlterEdgeType CreateNewRequest(IGraphDB myGraphDB, 
                                                         GQLPluginManager myPluginManager, 
                                                         SecurityToken mySecurityToken, 
-                                                        TransactionToken myTransactionToken)
+                                                        Int64 myTransactionToken)
         {
             RequestAlterEdgeType result = new RequestAlterEdgeType(_TypeName);
 

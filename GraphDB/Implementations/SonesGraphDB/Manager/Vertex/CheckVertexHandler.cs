@@ -42,7 +42,7 @@ namespace sones.GraphDB.Manager.Vertex
     {
         #region IVertexHandler Members
 
-        public override IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken)
+        public override IEnumerable<IVertex> GetVertices(RequestGetVertices _request, Int64 Int64, SecurityToken SecurityToken)
         {
             #region case 1 - Expression
 
@@ -61,12 +61,12 @@ namespace sones.GraphDB.Manager.Vertex
             else if (_request.VertexTypeName != null)
             {
                 //2.1 typeName as string
-                _vertexTypeManager.CheckManager.GetType(_request.VertexTypeName, TransactionToken, SecurityToken);
+                _vertexTypeManager.CheckManager.GetType(_request.VertexTypeName, Int64, SecurityToken);
             }
             else
             {
                 //2.2 type as id
-                _vertexTypeManager.CheckManager.GetType(_request.VertexTypeID, TransactionToken, SecurityToken);
+                _vertexTypeManager.CheckManager.GetType(_request.VertexTypeID, Int64, SecurityToken);
             }
 
             #endregion
@@ -74,12 +74,12 @@ namespace sones.GraphDB.Manager.Vertex
             return null;
         }
 
-        public override IEnumerable<IVertex> GetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public override IEnumerable<IVertex> GetVertices(IExpression myExpression, bool myIsLongrunning, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             return null;
         }
 
-        public override IEnumerable<IVertex> GetVertices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
+        public override IEnumerable<IVertex> GetVertices(IVertexType myVertexType, Int64 myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
         {
             if (myVertexType == null)
             {
@@ -88,36 +88,36 @@ namespace sones.GraphDB.Manager.Vertex
             return null;
         }
 
-        public override IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
+        public override IEnumerable<IVertex> GetVertices(long myTypeID, Int64 myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
         {
             _vertexTypeManager.CheckManager.GetType(myTypeID, myTransaction, mySecurity);
             return null;
         }
 
-        public override IEnumerable<IVertex> GetVertices(string myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
+        public override IEnumerable<IVertex> GetVertices(string myVertexType, Int64 myTransaction, SecurityToken mySecurity, Boolean myIncludeSubtypes)
         {
             _vertexTypeManager.CheckManager.GetType(myVertexType, myTransaction, mySecurity);
             return null;
         }
 
-        public override IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, Int64 myTransaction, SecurityToken mySecurity)
         {
             _vertexTypeManager.CheckManager.GetType(myVertexTypeName, myTransaction, mySecurity);
             return null;
         }
 
-        public override IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, Int64 myTransaction, SecurityToken mySecurity)
         {
             _vertexTypeManager.CheckManager.GetType(myVertexTypeID, myTransaction, mySecurity);
             return null;
         }
 
-        public override IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IVertex GetSingleVertex(IExpression myExpression, Int64 myTransaction, SecurityToken mySecurity)
         {
             return null;
         }
 
-        public override IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IVertex AddVertex(RequestInsertVertex myInsertDefinition, Int64 myTransaction, SecurityToken mySecurity)
         {
             IVertexType vertexType = GetType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
 
@@ -227,12 +227,12 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        public override IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, Int64 myTransaction, SecurityToken mySecurity)
         {
             return null;
         }
 
-        public override void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             GetVertices(myDeleteRequest.ToBeDeletedVertices, myTransactionToken, mySecurityToken);
         }

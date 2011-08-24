@@ -64,7 +64,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region ACheckTypeManager member
 
-        public override IEnumerable<IVertexType> GetAllTypes(TransactionToken myTransaction,
+        public override IEnumerable<IVertexType> GetAllTypes(Int64 myTransaction,
                                                                 SecurityToken mySecurity)
         {
             var vertices = _vertexManager.ExecuteManager.GetVertices(BaseTypes.VertexType.ToString(),
@@ -77,7 +77,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         public override void TruncateType(long myTypeID,
-                                            TransactionToken myTransactionToken,
+                                            Int64 myTransactionToken,
                                             SecurityToken mySecurityToken)
         {
             var vertexType = GetType(myTypeID, myTransactionToken, mySecurityToken);
@@ -99,7 +99,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         public override void TruncateType(string myTypeName,
-                                            TransactionToken myTransactionToken,
+                                            Int64 myTransactionToken,
                                             SecurityToken mySecurityToken)
         {
             var vertexType = GetType(myTypeName, myTransactionToken, mySecurityToken);
@@ -152,7 +152,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
 
-        public override void Load(TransactionToken myTransaction,
+        public override void Load(Int64 myTransaction,
                                     SecurityToken mySecurity)
         {
             _idManager.VertexTypeID.SetToMaxID(GetMaxID((long)BaseTypes.VertexType,
@@ -206,12 +206,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Adds the specified properties to the given type and stores them.
         /// </summary>
         /// <param name="myToBeAddedProperties">The to be added properties.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         /// <returns>A dictionary with to be added attributes and default value</returns>returns>
         protected override Dictionary<long, IComparable> ProcessAddPropery(
             IEnumerable<PropertyPredefinition> myToBeAddedProperties, 
-            TransactionToken myTransactionToken, 
+            Int64 myTransactionToken, 
             SecurityToken mySecurityToken, 
             IVertexType myType)
         {
@@ -293,7 +293,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <returns>An IVertex instance, that represents the vertex type with the given ID or <c>NULL</c>, if not present.</returns>
         protected override IVertex Get(long myTypeId,
-                                        TransactionToken myTransaction,
+                                        Int64 myTransaction,
                                         SecurityToken mySecurity)
         {
             #region get the type from fs
@@ -315,7 +315,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <returns>An IVertex instance, that represents the vertex type with the given name or <c>NULL</c>, if not present.</returns>
         protected override IVertex Get(string myTypeName,
-                                        TransactionToken myTransaction,
+                                        Int64 myTransaction,
                                         SecurityToken mySecurity)
         {
             #region get the type from fs
@@ -340,7 +340,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// The predefinitions are checked one by one in topologically order. 
         protected override void CanAddCheckWithFS(LinkedList<ATypePredefinition> myDefsTopologically,
                                                     IDictionary<string, ATypePredefinition> myDefsByName,
-                                                    TransactionToken myTransaction, SecurityToken mySecurity)
+                                                    Int64 myTransaction, SecurityToken mySecurity)
         {
 
             //Contains the vertex type name to the attribute names of the vertex type.
@@ -370,7 +370,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         protected override void CanAddCheckAttributeNameUniquenessWithFS(LinkedListNode<ATypePredefinition> myTopologicallySortedPointer,
                                                                             IDictionary<string, HashSet<string>> myAttributes,
-                                                                            TransactionToken myTransaction,
+                                                                            Int64 myTransaction,
                                                                             SecurityToken mySecurity)
         {
             var parentPredef = GetParentPredefinitionOnTopologicallySortedList(myTopologicallySortedPointer);
@@ -426,7 +426,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                             LinkedList<ATypePredefinition> myDefsSortedTopologically,
                                                             IDictionary<string, ATypePredefinition> myDefsByName,
                                                             long myFirstID,
-                                                            TransactionToken myTransaction,
+                                                            Int64 myTransaction,
                                                             SecurityToken mySecurity)
         {
             var neededVertexTypes = new HashSet<string>();
@@ -496,14 +496,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTypeInfos">The created type infos.</param>
         /// <param name="myCreationDate">The creation date.</param>
         /// <param name="myResultPos">The result position.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         /// <param name="myResult">Ref on result array.</param>
         protected override IEnumerable<IVertexType> StoreTypeAndAttributes(LinkedList<ATypePredefinition> myDefsTopologically,
                                                                             Dictionary<String, TypeInfo> myTypeInfos,
                                                                             long myCreationDate,
                                                                             int myResultPos,
-                                                                            TransactionToken myTransactionToken,
+                                                                            Int64 myTransactionToken,
                                                                             SecurityToken mySecurityToken,
                                                                             ref IVertex[] myResult)
         {
@@ -674,7 +674,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myIgnoreReprimands">True means, that reprimands (IncomingEdges) on the types wich should be removed are ignored.</param>
         /// <returns>Set of deleted type IDs.</returns>
         protected override Dictionary<Int64, String> Remove(IEnumerable<IVertexType> myTypes,
-                                                            TransactionToken myTransaction,
+                                                            Int64 myTransaction,
                                                             SecurityToken mySecurity,
                                                             bool myIgnoreReprimands = false)
         {
@@ -859,12 +859,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myAlterTypeRequest">The alter type request.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         /// <param name="myUpdateRequest">A reference to an update request to update relevant vertices.</param>
         protected override void AlterType_Remove(IRequestAlterType myAlterTypeRequest,
                                                     IVertexType myType,
-                                                    TransactionToken myTransactionToken,
+                                                    Int64 myTransactionToken,
                                                     SecurityToken mySecurityToken,
                                                     ref RequestUpdate myUpdateRequest)
         {
@@ -905,11 +905,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myAlterTypeRequest">The alter type request.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="myUpdateRequest">A reference to an update request to update relevant vertices.</param>
         protected override void AlterType_Add(IRequestAlterType myAlterTypeRequest,
                                                 IVertexType myType,
-                                                TransactionToken myTransactionToken,
+                                                Int64 myTransactionToken,
                                                 SecurityToken mySecurityToken,
                                                 ref RequestUpdate myUpdateRequest)
         {
@@ -945,11 +945,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myToBeRenamedAttributes">The to be renamed attributes.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         protected override void RenameAttributes(Dictionary<string, string> myToBeRenamedAttributes,
                                                     IVertexType myType,
-                                                    TransactionToken myTransactionToken,
+                                                    Int64 myTransactionToken,
                                                     SecurityToken mySecurityToken)
         {
             if (!myToBeRenamedAttributes.IsNotNullOrEmpty())
@@ -1010,11 +1010,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myType">The to be altered type.</param>
         /// <param name="myNewComment">The new comment.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         protected override void ChangeCommentOnType(IVertexType myType,
                                                     string myNewComment,
-                                                    TransactionToken myTransactionToken,
+                                                    Int64 myTransactionToken,
                                                     SecurityToken mySecurityToken)
         {
             if (!String.IsNullOrWhiteSpace(myNewComment))
@@ -1034,11 +1034,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myType">The to be altered type.</param>
         /// <param name="myNewTypeName">The new type name.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         protected override void RenameType(IVertexType myType,
                                             string myNewTypeName,
-                                            TransactionToken myTransactionToken,
+                                            Int64 myTransactionToken,
                                             SecurityToken mySecurityToken)
         {
             if (!String.IsNullOrWhiteSpace(myNewTypeName))
@@ -1060,9 +1060,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// Calls the RebuildIndices method of the index manager.
         /// </summary>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
-        protected override void CallRebuildIndices(TransactionToken myTransactionToken,
+        protected override void CallRebuildIndices(Int64 myTransactionToken,
                                                     SecurityToken mySecurityToken)
         {
             _indexManager.RebuildIndices((long)BaseTypes.VertexType, 
@@ -1076,11 +1076,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Gets the max id of the given type id.
         /// </summary>
         /// <param name="myTypeID">The type id.</param>
-        /// <param name="myTransaction">TransactionToken</param>
+        /// <param name="myTransaction">Int64</param>
         /// <param name="mySecurity">SecurityToken</param>
         /// <returns>The max id.</returns>
         private long GetMaxID(long myTypeID,
-                                TransactionToken myTransaction,
+                                Int64 myTransaction,
                                 SecurityToken mySecurity)
         {
             var vertices = _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurity,
@@ -1098,10 +1098,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// Loads the base types.
         /// </summary>
-        /// <param name="myTransaction">TransactionToken</param>
+        /// <param name="myTransaction">Int64</param>
         /// <param name="mySecurity">SecurityToken</param>
         /// <param name="myBaseTypes">The base types.</param>
-        private void LoadBaseType(TransactionToken myTransaction,
+        private void LoadBaseType(Int64 myTransaction,
                                     SecurityToken mySecurity,
                                     params BaseTypes[] myBaseTypes)
         {
@@ -1131,7 +1131,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         private void CanAddCheckIncomingEdgeSources(VertexTypePredefinition myVertexTypePredefinition,
                                                     IDictionary<string, ATypePredefinition> myDefsByName,
-                                                    TransactionToken myTransaction,
+                                                    Int64 myTransaction,
                                                     SecurityToken mySecurity)
         {
             if (myVertexTypePredefinition.IncomingEdges == null)
@@ -1183,7 +1183,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         private void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition,
                                                     IDictionary<string, ATypePredefinition> myDefsByName,
-                                                    TransactionToken myTransaction,
+                                                    Int64 myTransaction,
                                                     SecurityToken mySecurity)
         {
             if (myVertexTypePredefinition.OutgoingEdges == null)
@@ -1221,7 +1221,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private VertexInformation GetOutgoingEdgeVertexInformation(string myVertexType,
                                                                     string myEdgeName,
-                                                                    TransactionToken myTransaction,
+                                                                    Int64 myTransaction,
                                                                     SecurityToken mySecurity)
         {
             var vertices = _vertexManager.ExecuteManager.GetVertices(
@@ -1253,7 +1253,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         private void ConnectVertexToUniqueIndex(TypeInfo myTypeInfo,
                                                 IEnumerable<IIndexDefinition> myIndexDefinitions,
                                                 SecurityToken mySecurity,
-                                                TransactionToken myTransaction)
+                                                Int64 myTransaction)
         {
             _vertexManager.ExecuteManager.VertexStore
                 .UpdateVertex(
@@ -1288,7 +1288,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                                         Dictionary<String, TypeInfo> myTypeInfos,
                                         long myCreationDate,
                                         int myResultPos,
-                                        TransactionToken myTransactionToken,
+                                        Int64 myTransactionToken,
                                         SecurityToken mySecurityToken,
                                         ref IVertex[] myResult)
         {
@@ -1321,7 +1321,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         private void StoreBinaryProperties(LinkedList<VertexTypePredefinition> myDefsTopologically,
                                             Dictionary<String, TypeInfo> myTypeInfos,
                                             long myCreationDate,
-                                            TransactionToken myTransactionToken,
+                                            Int64 myTransactionToken,
                                             SecurityToken mySecurityToken)
         {
             for (var current = myDefsTopologically.First; current != null; current = current.Next)
@@ -1356,7 +1356,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         private void StoreOutgoingEdges(LinkedList<VertexTypePredefinition> myDefsTopologically,
                                         Dictionary<String, TypeInfo> myTypeInfos,
                                         long myCreationDate,
-                                        TransactionToken myTransactionToken,
+                                        Int64 myTransactionToken,
                                         SecurityToken mySecurityToken)
         {
             for (var current = myDefsTopologically.First; current != null; current = current.Next)
@@ -1404,7 +1404,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         private void StoreIncomingEdges(LinkedList<VertexTypePredefinition> myDefsTopologically,
                                         Dictionary<String, TypeInfo> myTypeInfos,
                                         long myCreationDate,
-                                        TransactionToken myTransactionToken,
+                                        Int64 myTransactionToken,
                                         SecurityToken mySecurityToken)
         {
             for (var current = myDefsTopologically.First; current != null; current = current.Next)
@@ -1448,11 +1448,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myAlterTypeRequest">The alter type request.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private void CheckRemoveOutgoingEdges(RequestAlterVertexType myAlterTypeRequest, 
                                                 IVertexType myType, 
-                                                TransactionToken myTransactionToken,
+                                                Int64 myTransactionToken,
                                                 SecurityToken mySecurityToken)
         {
             if (myAlterTypeRequest.ToBeRemovedOutgoingEdges == null)
@@ -1495,11 +1495,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myToBeRemovedMandatories">The mandatory attribute names which mandatory constraints should be removed.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private void RemoveMandatoryConstraint(IEnumerable<string> myToBeRemovedMandatories, 
                                                 IVertexType myType, 
-                                                TransactionToken myTransactionToken, 
+                                                Int64 myTransactionToken, 
                                                 SecurityToken mySecurityToken)
         {
             if (myToBeRemovedMandatories.IsNotNullOrEmpty())
@@ -1526,11 +1526,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myUniqueConstraints">The names of the attributes which unique constraints should be removed.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private void RemoveUniqueConstraint(IEnumerable<string> myUniqueConstraints, 
                                             IVertexType myType, 
-                                            TransactionToken myTransactionToken, 
+                                            Int64 myTransactionToken, 
                                             SecurityToken mySecurityToken)
         {
             if (myUniqueConstraints.IsNotNullOrEmpty())
@@ -1558,11 +1558,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myToBeRemovedIndices">The attributes and index names which are to be deleted.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private void RemoveIndices(Dictionary<string, string> myToBeRemovedIndices, 
                                     IVertexType myType, 
-                                    TransactionToken myTransactionToken, 
+                                    Int64 myTransactionToken, 
                                     SecurityToken mySecurityToken)
         {
             if (myToBeRemovedIndices.IsNotNullOrEmpty())
@@ -1600,13 +1600,13 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myToBeRemovedOutgoingEdges">To be removed outgoing edges.</param>
         /// <param name="myToBeRemovedProperties">To be removed Proerties.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private void RemoveAttributes(IEnumerable<string> myToBeRemovedIncomingEdges, 
                                         IEnumerable<string> myToBeRemovedOutgoingEdges, 
                                         IEnumerable<string> myToBeRemovedProperties, 
                                         IVertexType myType, 
-                                        TransactionToken myTransactionToken, 
+                                        Int64 myTransactionToken, 
                                         SecurityToken mySecurityToken,
                                         ref RequestUpdate myUpdateRequest)
         {
@@ -1660,11 +1660,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myToBeRemovedIncomingEdges">The to be removed edges.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private void ProcessIncomingEdgeRemoval(IEnumerable<string> myToBeRemovedIncomingEdges, 
                                                 IVertexType myType, 
-                                                TransactionToken myTransactionToken, 
+                                                Int64 myTransactionToken, 
                                                 SecurityToken mySecurityToken)
         {
             foreach (var aIncomingEdge in myToBeRemovedIncomingEdges)
@@ -1683,11 +1683,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myToBeRemovedOutgoingEdges">The to be removed edges.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private void ProcessOutgoingEdgeRemoval(IEnumerable<string> myToBeRemovedOutgoingEdges, 
                                                 IVertexType myType, 
-                                                TransactionToken myTransactionToken, 
+                                                Int64 myTransactionToken, 
                                                 SecurityToken mySecurityToken)
         {
             foreach (var aOutgoingEdge in myToBeRemovedOutgoingEdges)
@@ -1709,14 +1709,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myToBeAddedOutgoingEdges">The to be added outgoing edges.</param>
         /// <param name="myToBeAddedProperties">The to be added properties.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private void AddAttributes(IEnumerable<BinaryPropertyPredefinition> myToBeAddedBinaryProperties,
                                     IEnumerable<IncomingEdgePredefinition> myToBeAddedIncomingEdges,
                                     IEnumerable<OutgoingEdgePredefinition> myToBeAddedOutgoingEdges,
                                     IEnumerable<PropertyPredefinition> myToBeAddedProperties,
                                     IVertexType myType, 
-                                    TransactionToken myTransactionToken, 
+                                    Int64 myTransactionToken, 
                                     SecurityToken mySecurityToken)
         {
 
@@ -1767,10 +1767,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myToBeAddedBinaryProperties">The to be added binary properties.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private void ProcessAddBinaryPropery(IEnumerable<BinaryPropertyPredefinition> myToBeAddedBinaryProperties, 
-                                                TransactionToken myTransactionToken, 
+                                                Int64 myTransactionToken, 
                                                 SecurityToken mySecurityToken, 
                                                 IVertexType myType)
         {
@@ -1797,10 +1797,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myToBeAddedOutgoingEdges">The to be added outgoing edges.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private void ProcessAddOutgoingEdges(IEnumerable<OutgoingEdgePredefinition> myToBeAddedOutgoingEdges, 
-                                                TransactionToken myTransactionToken, 
+                                                Int64 myTransactionToken, 
                                                 SecurityToken mySecurityToken, 
                                                 IVertexType myType)
         {
@@ -1844,10 +1844,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myToBeAddedIncomingEdges">The to be added incoming edges.</param>
         /// <param name="myType">The to be altered type.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private void ProcessAddIncomingEdges(IEnumerable<IncomingEdgePredefinition> myToBeAddedIncomingEdges, 
-                                                TransactionToken myTransactionToken, 
+                                                Int64 myTransactionToken, 
                                                 SecurityToken mySecurityToken, 
                                                 IVertexType myType)
         {
@@ -1881,11 +1881,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myToBeAddedMandatories">The attributes which should get the constraint.</param>
         /// <param name="myType"The to be altered type.></param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private void AddMandatoryConstraint(IEnumerable<MandatoryPredefinition> myToBeAddedMandatories, 
                                             IVertexType myType, 
-                                            TransactionToken myTransactionToken, 
+                                            Int64 myTransactionToken, 
                                             SecurityToken mySecurityToken)
         {
             if (myToBeAddedMandatories.IsNotNullOrEmpty())
@@ -1947,7 +1947,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransactionToken">The TransaktionToken.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         private IEnumerable<IIndexDefinition> AddUniqueConstraint(RequestAlterVertexType myAlterVertexTypeRequest, 
-                                                                    TransactionToken myTransactionToken, 
+                                                                    Int64 myTransactionToken, 
                                                                     SecurityToken mySecurityToken)
         {
             var indexDefs = new List<IIndexDefinition>();
@@ -1977,7 +1977,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurityToken"></param>
         private void AddIndices(IEnumerable<IndexPredefinition> myToBeAddedIndices, 
                                 IVertexType myType, 
-                                TransactionToken myTransactionToken, 
+                                Int64 myTransactionToken, 
                                 SecurityToken mySecurityToken)
         {
             if (!myToBeAddedIndices.IsNotNullOrEmpty())

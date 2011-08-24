@@ -57,7 +57,7 @@ namespace sones.GraphDB.Request
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
         public PipelineableInsertRequest(RequestInsertVertex myInsertVertexRequest, SecurityToken mySecurity,
-                                         TransactionToken myTransactionToken)
+                                         Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myInsertVertexRequest;
@@ -69,12 +69,12 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexManager.CheckManager.AddVertex(_request, TransactionToken, SecurityToken);
+            myMetaManager.VertexManager.CheckManager.AddVertex(_request, Int64, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _createdVertex = myMetaManager.VertexManager.ExecuteManager.AddVertex(_request, TransactionToken, SecurityToken);
+            _createdVertex = myMetaManager.VertexManager.ExecuteManager.AddVertex(_request, Int64, SecurityToken);
         }
 
         public override IRequest GetRequest()

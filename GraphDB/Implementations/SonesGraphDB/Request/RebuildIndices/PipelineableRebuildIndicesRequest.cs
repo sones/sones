@@ -24,6 +24,7 @@ using sones.Library.Commons.Transaction;
 using sones.Library.LanguageExtensions;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.ErrorHandling;
+using System;
 
 namespace sones.GraphDB.Request.RebuildIndices
 {
@@ -45,7 +46,7 @@ namespace sones.GraphDB.Request.RebuildIndices
         /// <param name="myTransactionToken">The transaction token</param>
         public PipelineableRebuildIndicesRequest(   RequestRebuildIndices myRebuildIndicesRequest,
                                                     SecurityToken mySecurity,
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myRebuildIndicesRequest;
@@ -64,7 +65,7 @@ namespace sones.GraphDB.Request.RebuildIndices
             
             if (_request.Types == null || !_request.Types.CountIsGreater(0))
             {
-                typesToRebuild = myMetaManager.VertexTypeManager.ExecuteManager.GetAllTypes(TransactionToken, SecurityToken);
+                typesToRebuild = myMetaManager.VertexTypeManager.ExecuteManager.GetAllTypes(Int64, SecurityToken);
             }
             else
             {
@@ -73,7 +74,7 @@ namespace sones.GraphDB.Request.RebuildIndices
 
                 foreach (var typeName in _request.Types)
                 {
-                    var type = myMetaManager.VertexTypeManager.ExecuteManager.GetType(typeName, TransactionToken, SecurityToken);
+                    var type = myMetaManager.VertexTypeManager.ExecuteManager.GetType(typeName, Int64, SecurityToken);
 
                     if (type == null)
                     {
@@ -91,7 +92,7 @@ namespace sones.GraphDB.Request.RebuildIndices
 
             foreach (var aType in typesToRebuild)
             {
-                myMetaManager.IndexManager.RebuildIndices(aType.ID, TransactionToken, SecurityToken);
+                myMetaManager.IndexManager.RebuildIndices(aType.ID, Int64, SecurityToken);
             }
         }
 

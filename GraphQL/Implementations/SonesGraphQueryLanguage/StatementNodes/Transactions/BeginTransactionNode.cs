@@ -93,42 +93,31 @@ namespace sones.GraphQL.StatementNodes.Transactions
         }
 
         /// <summary>
-        /// The returned QueryResult contains vertices which are null if no TransactionToken is created,
-        /// otherwise they contain a vertexview with a property dictionary, where in first position is the created TransactionToken
+        /// The returned QueryResult contains vertices which are null if no Int64 is created,
+        /// otherwise they contain a vertexview with a property dictionary, where in first position is the created Int64
         /// </summary>
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
 
-            var TransactionToken = myGraphDB.BeginTransaction(mySecurityToken, IsLongRunning, Isolation);
+            var myToken = myGraphDB.BeginTransaction(mySecurityToken, IsLongRunning, Isolation);
 
             VertexView view = null;
 
-            if (TransactionToken != null)
-            {
+            var readoutVals = new Dictionary<String, Object>();
 
-                var readoutVals = new Dictionary<String, Object>();
+            readoutVals.Add("TransactionID", myToken);
+            readoutVals.Add("Created", TimeStamp);
+            readoutVals.Add("Distributed", IsDistributed);
+            readoutVals.Add("IsolationLevel", Isolation);
+            readoutVals.Add("LongRunning", IsLongRunning);
+            readoutVals.Add("Name", Name);
 
-                readoutVals.Add("TransactionToken", TransactionToken);
-                readoutVals.Add("VertexID", TransactionToken.TransactionID);
-                readoutVals.Add("Created", TimeStamp);
-                readoutVals.Add("Distributed", IsDistributed);
-                readoutVals.Add("IsolationLevel", Isolation);
-                readoutVals.Add("LongRunning", IsLongRunning);
-                readoutVals.Add("Name", Name);
-                
-                view = new VertexView(readoutVals, null);
-
-                sw.Stop();
-
-                return new QueryResult(myQuery, "GQL", Convert.ToUInt64(sw.ElapsedMilliseconds), ResultType.Successful, new List<IVertexView> { view });
-            }
+            view = new VertexView(readoutVals, null);
 
             sw.Stop();
 
-            // DBTransaction is Exceptional
             return new QueryResult(myQuery, "GQL", Convert.ToUInt64(sw.ElapsedMilliseconds), ResultType.Successful, new List<IVertexView> { view });
-
         }
 
         #endregion

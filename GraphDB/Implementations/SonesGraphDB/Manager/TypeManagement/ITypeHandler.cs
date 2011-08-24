@@ -38,7 +38,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <returns>True or false</returns>
         bool HasType(string myTypeName, 
-                        TransactionToken myTransactionToken,
+                        Int64 myTransactionToken,
                         SecurityToken mySecurityToken);
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <returns>An instance of IType, that represents the  type.</returns>
         T GetType(long myTypeId, 
-                    TransactionToken myTransaction, 
+                    Int64 myTransaction, 
                     SecurityToken mySecurity);
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <returns>An instance of IType, that represents the  type.</returns>
         T GetType(string myTypeName, 
-                    TransactionToken myTransaction, 
+                    Int64 myTransaction, 
                     SecurityToken mySecurity);
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <returns>An instance of IType, that represents the  type.</returns>
-        IEnumerable<T> GetAllTypes(TransactionToken myTransaction, 
+        IEnumerable<T> GetAllTypes(Int64 myTransaction, 
                                     SecurityToken mySecurity);
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
         IEnumerable<T> AddTypes(IEnumerable<ATypePredefinition> myTypeDefinitions, 
-                                    TransactionToken myTransaction, 
+                                    Int64 myTransaction, 
                                     SecurityToken mySecurity);
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// If there is such an IncomingEdge, remove the IncomingEdge by altering the type that holds it or remove this type too.
         /// All types are removed simultaneously. This means that edges between the types are not need to be removed before.
         Dictionary<Int64, String> RemoveTypes(IEnumerable<T> myTypes, 
-                                                TransactionToken myTransaction, 
+                                                Int64 myTransaction, 
                                                 SecurityToken mySecurity, 
                                                 bool myIgnoreReprimands = false);
 
@@ -103,7 +103,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         /// All types will be removed.
         /// All types are removed simultaneously. This means that edges between the types are not need to be removed before.
-        IEnumerable<long> ClearTypes(TransactionToken myTransaction, 
+        IEnumerable<long> ClearTypes(Int64 myTransaction, 
                                         SecurityToken mySecurity);
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransactionToken">A transaction token for this operation.</param>
         /// <param name="mySecurityToken">A security token for this operation.</param>
         void TruncateType(long myTypeID, 
-                            TransactionToken myTransactionToken, 
+                            Int64 myTransactionToken, 
                             SecurityToken mySecurityToken);
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransactionToken">A transaction token for this operation.</param>
         /// <param name="mySecurityToken">A security token for this operation.</param>
         void TruncateType(string myTypeName, 
-                            TransactionToken TransactionToken, 
+                            Int64 Int64, 
                             SecurityToken SecurityToken);
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myUpdateRequest">A update request to update the vertices,
         /// which are affected of the alter request.</param>
         T AlterType(IRequestAlterType myAlterTypeRequest,
-                    TransactionToken myTransactionToken,
+                    Int64 myTransactionToken,
                     SecurityToken mySecurityToken,
                     out RequestUpdate myUpdateRequest);
 

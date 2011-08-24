@@ -61,7 +61,7 @@ namespace sones.GraphDB.Request
         public PipelineableGetVertexCountRequest(
                                                 RequestGetVertexCount myGetVertexTypeRequest, 
                                                 SecurityToken mySecurity,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myGetVertexTypeRequest;
@@ -75,11 +75,11 @@ namespace sones.GraphDB.Request
         {
             if (_request.VertexTypeName != null)
             {
-                myMetaManager.VertexTypeManager.CheckManager.GetType(_request.VertexTypeName, TransactionToken, SecurityToken);
+                myMetaManager.VertexTypeManager.CheckManager.GetType(_request.VertexTypeName, Int64, SecurityToken);
             }
             else
             {
-                myMetaManager.VertexTypeManager.CheckManager.GetType(_request.VertexTypeID, TransactionToken, SecurityToken);
+                myMetaManager.VertexTypeManager.CheckManager.GetType(_request.VertexTypeID, Int64, SecurityToken);
             }
         }
 
@@ -89,14 +89,14 @@ namespace sones.GraphDB.Request
 
             if (_request.VertexTypeName != null)
             {
-                vertexTypeID = myMetaManager.VertexTypeManager.ExecuteManager.GetType(_request.VertexTypeName, TransactionToken, SecurityToken).GetDescendantVertexTypesAndSelf().Select(_ => _.ID);
+                vertexTypeID = myMetaManager.VertexTypeManager.ExecuteManager.GetType(_request.VertexTypeName, Int64, SecurityToken).GetDescendantVertexTypesAndSelf().Select(_ => _.ID);
             }
             else
             {
-                vertexTypeID = myMetaManager.VertexTypeManager.ExecuteManager.GetType(_request.VertexTypeID, TransactionToken, SecurityToken).GetDescendantVertexTypesAndSelf().Select(_ => _.ID);
+                vertexTypeID = myMetaManager.VertexTypeManager.ExecuteManager.GetType(_request.VertexTypeID, Int64, SecurityToken).GetDescendantVertexTypesAndSelf().Select(_ => _.ID);
             }
 
-            foreach (var aCount in vertexTypeID.Select(_ => myMetaManager.VertexManager.ExecuteManager.VertexStore.GetVertexCount(SecurityToken, TransactionToken, _)))
+            foreach (var aCount in vertexTypeID.Select(_ => myMetaManager.VertexManager.ExecuteManager.VertexStore.GetVertexCount(SecurityToken, Int64, _)))
             {
                 _vertexCount += aCount;
             }

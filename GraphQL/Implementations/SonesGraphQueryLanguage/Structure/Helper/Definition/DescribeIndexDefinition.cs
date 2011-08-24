@@ -61,7 +61,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                                                 GQLPluginManager myPluginManager,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
         {
             IEnumerable<IVertexView> resultingVertices = new List<IVertexView>();
             ASonesException error = null;

@@ -31,11 +31,6 @@ namespace sones.Library.Commons.Transaction
         Running,
 
         /// <summary>
-        /// The transaction is nested within another one
-        /// </summary>
-        NestedTransaction,
-
-        /// <summary>
         /// The transaction commits currently
         /// </summary>
         Committing,

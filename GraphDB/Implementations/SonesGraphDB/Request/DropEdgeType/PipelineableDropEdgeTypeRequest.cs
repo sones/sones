@@ -54,7 +54,7 @@ namespace sones.GraphDB.Request
         /// <param name="myTransactionToken">The transaction token</param>
         public PipelineableDropEdgeTypeRequest(RequestDropEdgeType myDropEdgeTypeRequest, 
                                                 SecurityToken mySecurity,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myDropEdgeTypeRequest;
@@ -68,7 +68,7 @@ namespace sones.GraphDB.Request
                 .EdgeTypeManager
                 .CheckManager
                 .GetType(_request.TypeName, 
-                            TransactionToken, 
+                            Int64, 
                             SecurityToken);
 
             myMetaManager
@@ -78,9 +78,9 @@ namespace sones.GraphDB.Request
                                                         .EdgeTypeManager
                                                         .ExecuteManager
                                                         .GetType(_request.TypeName, 
-                                                                    TransactionToken, 
+                                                                    Int64, 
                                                                     SecurityToken) }, 
-                                TransactionToken, 
+                                Int64, 
                                 SecurityToken);
         }
 
@@ -90,7 +90,7 @@ namespace sones.GraphDB.Request
                                         .EdgeTypeManager
                                         .ExecuteManager
                                         .GetType(_request.TypeName, 
-                                                    TransactionToken, 
+                                                    Int64, 
                                                     SecurityToken);
 
             if (graphDBType == null)
@@ -100,7 +100,7 @@ namespace sones.GraphDB.Request
                                 .EdgeTypeManager
                                 .ExecuteManager
                                 .RemoveTypes(new List<IEdgeType> { graphDBType }, 
-                                                TransactionToken, 
+                                                Int64, 
                                                 SecurityToken);
         }
 

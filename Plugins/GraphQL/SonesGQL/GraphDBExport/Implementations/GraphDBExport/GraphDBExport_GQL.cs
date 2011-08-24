@@ -77,7 +77,7 @@ namespace sones.Plugins.SonesGQL.DBExport
             get { return "GQLEXPORT"; }
         }
 
-        public QueryResult Export(string destination, IDumpable myGrammar, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IEnumerable<String> myTypes, DumpTypes myDumpType)
+        public QueryResult Export(string destination, IDumpable myGrammar, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken, IEnumerable<String> myTypes, DumpTypes myDumpType)
         {
             _Destination = destination;
             ASonesException error = null;
@@ -122,7 +122,7 @@ namespace sones.Plugins.SonesGQL.DBExport
                 return new QueryResult("", ExportFormat, 0L, result.TypeOfResult, result.Vertices);
         }
 
-        private QueryResult Export(IDumpable myGrammar, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IEnumerable<IVertexType> myTypes, DumpTypes myDumpType)
+        private QueryResult Export(IDumpable myGrammar, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken, IEnumerable<IVertexType> myTypes, DumpTypes myDumpType)
         {
             var dumpReadout = new Dictionary<String, Object>();
             ASonesException error = null;
@@ -352,7 +352,7 @@ namespace sones.Plugins.SonesGQL.DBExport
 
         #region GetTypes to dump
 
-        private IEnumerable<IVertexType> GetTypes(ref IGraphDB myGraphDB, ref SecurityToken mySecurityToken, ref TransactionToken myTransactionToken, IEnumerable<String> myTypes)
+        private IEnumerable<IVertexType> GetTypes(ref IGraphDB myGraphDB, ref SecurityToken mySecurityToken, ref Int64 myTransactionToken, IEnumerable<String> myTypes)
         {
 
             #region GetTypeToDump
@@ -395,7 +395,7 @@ namespace sones.Plugins.SonesGQL.DBExport
 
         }
 
-        private void AddTypeAndAttributesRecursivly(ref IGraphDB myGraphDB, ref SecurityToken mySecurityToken, ref TransactionToken myTransactionToken, IVertexType type, ref HashSet<IVertexType> types)
+        private void AddTypeAndAttributesRecursivly(ref IGraphDB myGraphDB, ref SecurityToken mySecurityToken, ref Int64 myTransactionToken, IVertexType type, ref HashSet<IVertexType> types)
         {
             if (!type.IsUserDefined) return;
 

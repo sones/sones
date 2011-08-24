@@ -54,7 +54,7 @@ namespace sones.GraphDB.Request.AlterType
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
         public PipelineableAlterEdgeTypeRequest(RequestAlterEdgeType myRequest, 
                                                 SecurityToken mySecurityToken, 
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
             :base(mySecurityToken, myTransactionToken)
         {
             _request = myRequest;
@@ -75,7 +75,7 @@ namespace sones.GraphDB.Request.AlterType
                 .EdgeTypeManager
                 .CheckManager
                 .AlterType(_request, 
-                            TransactionToken, 
+                            Int64, 
                             SecurityToken,
                             out update);
         }
@@ -92,7 +92,7 @@ namespace sones.GraphDB.Request.AlterType
                     .EdgeTypeManager
                     .ExecuteManager
                     .AlterType(_request,
-                                TransactionToken,
+                                Int64,
                                 SecurityToken,
                                 out update);
 
@@ -110,7 +110,7 @@ namespace sones.GraphDB.Request.AlterType
             //            .VertexManager
             //            .ExecuteManager
             //            .UpdateVertices(update,
-            //                            TransactionToken,
+            //                            Int64,
             //                            SecurityToken);
             //    }
             //}
@@ -151,7 +151,7 @@ namespace sones.GraphDB.Request.AlterType
                 var userdefTypes = myMetaManager
                         .VertexTypeManager
                         .ExecuteManager
-                        .GetAllTypes(TransactionToken,
+                        .GetAllTypes(Int64,
                                         SecurityToken)
                             .Where(_ => _
                                         .IsUserDefined);

@@ -73,13 +73,13 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         }
 
-        public LevelKey(Int64 myVertexTypeID, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public LevelKey(Int64 myVertexTypeID, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
             : this(new List<EdgeKey> { new EdgeKey(myVertexTypeID) }, myGraphDB, mySecurityToken, myTransactionToken)
         {
 
         }
 
-        public LevelKey(IEnumerable<EdgeKey> myEdgeKey, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public LevelKey(IEnumerable<EdgeKey> myEdgeKey, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             Edges = new List<EdgeKey>();
 
@@ -226,7 +226,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         #region Operators
 
-        public LevelKey AddEdgeKey(EdgeKey myEdgeKey, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public LevelKey AddEdgeKey(EdgeKey myEdgeKey, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             // an empty level
             if (this.Edges == null)
@@ -259,7 +259,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             }
         }
 
-        public LevelKey AddLevelKey(LevelKey myLevelKey2, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public LevelKey AddLevelKey(LevelKey myLevelKey2, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if ((this.Edges == null || this.Edges.Count == 0) && (myLevelKey2.Edges == null || myLevelKey2.Edges.Count == 0))
                 return new LevelKey();
@@ -302,7 +302,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             return new LevelKey(edges, myGraphDB, mySecurityToken, myTransactionToken);
         }
 
-        public LevelKey RemoveEdgeKey(EdgeKey myEdgeKey, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public LevelKey RemoveEdgeKey(EdgeKey myEdgeKey, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             var edgeList = new List<EdgeKey>(this.Edges);
             //edgeList.Remove(myEdgeKey);
@@ -313,7 +313,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             return new LevelKey(edgeList.Take(edgeList.Count - 1), myGraphDB, mySecurityToken, myTransactionToken);
         }
 
-        public LevelKey RemoveLevelKey(LevelKey myOtherLevelKey, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public LevelKey RemoveLevelKey(LevelKey myOtherLevelKey, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if (this.Level < myOtherLevelKey.Level)
                 throw new ArgumentException("level of left (" + this.Level + ") operand is lower than right (" + myOtherLevelKey.Level + ") operand:", "myOtherLevelKey");
@@ -342,7 +342,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             }
         }
 
-        public LevelKey GetPredecessorLevel(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public LevelKey GetPredecessorLevel(IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             switch (Level)
             {

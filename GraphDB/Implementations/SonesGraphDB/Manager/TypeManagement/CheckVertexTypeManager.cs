@@ -37,7 +37,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region ACheckTypeManager member
 
         public override IVertexType AlterType(IRequestAlterType myAlterTypeRequest,
-                                                TransactionToken myTransactionToken,
+                                                Int64 myTransactionToken,
                                                 SecurityToken mySecurityToken,
                                                 out RequestUpdate myUpdateRequest)
         {
@@ -143,7 +143,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
 
-        public override void Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        public override void Load(Int64 myTransaction, SecurityToken mySecurity)
         { }
 
         #endregion
@@ -270,7 +270,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         protected override void CanRemove(IEnumerable<IVertexType> myTypes,
-                                            TransactionToken myTransaction,
+                                            Int64 myTransaction,
                                             SecurityToken mySecurity,
                                             bool myIgnoreReprimands)
         {
@@ -334,7 +334,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         protected override void CallCheckFunctions(IRequestAlterType myAlterTypeRequest,
                                                     IVertexType myType,
-                                                    TransactionToken myTransactionToken,
+                                                    Int64 myTransactionToken,
                                                     SecurityToken mySecurityToken)
         {
             var request = myAlterTypeRequest as RequestAlterVertexType;
@@ -355,10 +355,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Checks if the new vertex type name already exists
         /// </summary>
         /// <param name="myAlteredTypeName">The new name.</param>
-        /// <param name="mySecurityToken">TransactionToken.</param>
+        /// <param name="mySecurityToken">Int64.</param>
         /// <param name="myTransactionToken">SecurityToken.</param>
         protected override void CheckNewTypeName(String myAlteredTypeName,
-                                                    TransactionToken myTransactionToken,
+                                                    Int64 myTransactionToken,
                                                     SecurityToken mySecurityToken)
         {
             if (myAlteredTypeName != null &&

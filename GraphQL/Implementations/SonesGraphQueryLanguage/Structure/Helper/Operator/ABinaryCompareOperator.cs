@@ -65,7 +65,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// <param name="errors">The list of errors.</param>
         /// <param name="typeOfBinExpr">The kind of the binary expression</param>
         /// <returns>A data tuple.</returns>
-        private static DataContainer ExtractData(AExpressionDefinition myComplexValue, AExpressionDefinition mySimpleValue, ref TypesOfBinaryExpression typeOfBinExpr, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, Boolean aggregateAllowed)
+        private static DataContainer ExtractData(AExpressionDefinition myComplexValue, AExpressionDefinition mySimpleValue, ref TypesOfBinaryExpression typeOfBinExpr, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, Boolean aggregateAllowed)
         {
             #region data
 
@@ -251,7 +251,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         public static IExpressionGraph TypeOperation( 
             AExpressionDefinition myLeftValueObject, AExpressionDefinition myRightValueObject,
             GQLPluginManager myPluginManager,
-            IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken,
+            IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken,
             TypesOfBinaryExpression typeOfBinExpr, IExpressionGraph resultGr, TypesOfOperators mytypesOfOpertators, BinaryOperator myOperator, Boolean aggregateAllowed = true)
         {
             #region Data
@@ -432,7 +432,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             return result;
         }
 
-        private static void MatchData(DataContainer data, IExpressionGraph resultGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfOperators myTypeOfOperator, BinaryOperator myOperator)
+        private static void MatchData(DataContainer data, IExpressionGraph resultGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, TypesOfOperators myTypeOfOperator, BinaryOperator myOperator)
         {
             #region data
 
@@ -486,7 +486,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             }
         }
 
-        private static void CleanLowerLevel(LevelKey myLevelKey, IExpressionGraph myGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private static void CleanLowerLevel(LevelKey myLevelKey, IExpressionGraph myGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if (myLevelKey.Level > 0)
             {
@@ -520,7 +520,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             }
         }
 
-        private static LevelKey CreateLevelKey(IDChainDefinition myIDChainDefinition, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private static LevelKey CreateLevelKey(IDChainDefinition myIDChainDefinition, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if (myIDChainDefinition.Level == 0)
             {

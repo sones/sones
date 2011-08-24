@@ -50,7 +50,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// The current transaction token
         /// </summary>
-        protected readonly TransactionToken _transactionToken;
+        protected readonly Int64 _transactionToken;
 
         /// <summary>
         /// The interesting property
@@ -80,7 +80,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
-        protected AComparativeOperator(QueryPlanProperty myProperty, ILiteralExpression myConstant, Boolean myIsLongrunning, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexStore myVertexStore)
+        protected AComparativeOperator(QueryPlanProperty myProperty, ILiteralExpression myConstant, Boolean myIsLongrunning, SecurityToken mySecurityToken, Int64 myTransactionToken, IVertexStore myVertexStore)
         {
             _property = myProperty;
             _constant = myConstant;

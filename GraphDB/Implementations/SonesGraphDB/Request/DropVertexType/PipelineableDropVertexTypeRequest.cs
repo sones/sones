@@ -54,7 +54,7 @@ namespace sones.GraphDB.Request.DropType
         /// <param name="myTransactionToken">The transaction token</param>
         public PipelineableDropVertexTypeRequest( RequestDropVertexType myDropVertexTypeRequest, 
                                                     SecurityToken mySecurity,
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myDropVertexTypeRequest;
@@ -68,7 +68,7 @@ namespace sones.GraphDB.Request.DropType
                 .VertexTypeManager
                 .CheckManager
                 .GetType(_request.TypeName, 
-                            TransactionToken, 
+                            Int64, 
                             SecurityToken);
 
             myMetaManager
@@ -78,9 +78,9 @@ namespace sones.GraphDB.Request.DropType
                                                         .VertexTypeManager
                                                         .ExecuteManager
                                                         .GetType(_request.TypeName, 
-                                                                    TransactionToken, 
+                                                                    Int64, 
                                                                     SecurityToken) }, 
-                                TransactionToken, 
+                                Int64, 
                                 SecurityToken);
         }
 
@@ -90,7 +90,7 @@ namespace sones.GraphDB.Request.DropType
                                         .VertexTypeManager
                                         .ExecuteManager
                                         .GetType(_request.TypeName, 
-                                                    TransactionToken, 
+                                                    Int64, 
                                                     SecurityToken);
 
             if (graphDBType == null)
@@ -98,7 +98,7 @@ namespace sones.GraphDB.Request.DropType
                 throw new TypeDoesNotExistException<IVertexType>(_request.TypeName);
             }
 
-            _deletedTypeIDs = myMetaManager.VertexTypeManager.ExecuteManager.RemoveTypes(new List<IVertexType> {graphDBType}, TransactionToken, SecurityToken);
+            _deletedTypeIDs = myMetaManager.VertexTypeManager.ExecuteManager.RemoveTypes(new List<IVertexType> {graphDBType}, Int64, SecurityToken);
         }
 
         public override IRequest GetRequest()

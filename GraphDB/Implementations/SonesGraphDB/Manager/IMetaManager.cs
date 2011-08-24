@@ -89,10 +89,5 @@ namespace sones.GraphDB.Manager
         /// The security token for graph db intern usage.
         /// </summary>
         SecurityToken SystemSecurityToken { get; }
-
-        /// <summary>
-        /// The transaction token for graph db intern usage.
-        /// </summary>
-        TransactionToken SystemTransactionToken { get; }
     }
 }

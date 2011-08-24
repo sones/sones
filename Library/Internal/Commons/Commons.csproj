@@ -56,7 +56,7 @@
     <Compile Include="Transaction\ITransactionable.cs" />
     <Compile Include="Transaction\ITransactionManager.cs" />
     <Compile Include="Transaction\TransactionState.cs" />
-    <Compile Include="Transaction\TransactionToken.cs" />
+    <Compile Include="Transaction\ITransactionToken.cs" />
     <Compile Include="VertexStore\ConstantsVertexStore.cs" />
     <Compile Include="VertexStore\Definitions\IncomingEdgeAddDefinition.cs" />
     <Compile Include="VertexStore\Definitions\HyperEdgeAddDefinition.cs" />

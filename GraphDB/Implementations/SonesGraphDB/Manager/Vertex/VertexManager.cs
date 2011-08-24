@@ -90,7 +90,7 @@ namespace sones.GraphDB.Manager.Vertex
             _execute.Initialize(myMetaManager);
         }
 
-        void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        void IManager.Load(Int64 myTransaction, SecurityToken mySecurity)
         {
             _check.Load(myTransaction, mySecurity);
         }

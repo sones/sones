@@ -47,7 +47,7 @@ namespace sones.GraphDB.Manager
         //private readonly Dictionary<AttributeDefinitions, VertexInformation> _infos;
 
         private readonly SecurityToken _security;
-        private readonly TransactionToken _transaction;
+        private readonly Int64 _transaction;
         private readonly BaseGraphStorageManager _storageManager;
 
         #region Vertex information
@@ -222,7 +222,7 @@ namespace sones.GraphDB.Manager
         /// </summary>
         /// <param name="mySecurityToken">The root security token... can be left out</param>
         /// <param name="myTransactionToken">The root transaction token... can be left out</param>
-        public DBCreationManager(SecurityToken mySecurityToken, TransactionToken myTransactionToken, BaseGraphStorageManager myStorageManager)
+        public DBCreationManager(SecurityToken mySecurityToken, Int64 myTransactionToken, BaseGraphStorageManager myStorageManager)
         {
             _security = mySecurityToken;
             _transaction = myTransactionToken;

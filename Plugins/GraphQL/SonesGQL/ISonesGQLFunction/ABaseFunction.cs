@@ -61,7 +61,7 @@ namespace sones.Plugins.SonesGQL.Functions
         /// <param name="workingBase">The working base. Might be null for type independent function calls like CURRENTDATE().</param>
         /// <param name="typeManager"></param>
         /// <returns></returns>
-        public abstract bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        public abstract bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         #endregion
 
@@ -129,7 +129,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return param;
         }
 
-        public virtual FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public virtual FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, params FuncParameter[] myParams)
         {
             Boolean containsVariableNumOfParams = Parameters.Exists(p => p.VariableNumOfParams);
 
