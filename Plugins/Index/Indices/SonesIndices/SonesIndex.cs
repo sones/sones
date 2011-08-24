@@ -29,6 +29,15 @@ namespace sones.Plugins.Index
 
         #endregion
 
+        #region Helper
+
+        /// <summary>
+        /// used for some thread safe actions
+        /// </summary>
+        private object _Lock;
+
+        #endregion
+
         #region PropertyID
 
         /// <summary>
@@ -47,6 +56,7 @@ namespace sones.Plugins.Index
             _Index      = new ConcurrentDictionary<IComparable, HashSet<Int64>>();
 
             _ValueCount = 0;
+            _Lock       = new object();
         }
 
         #endregion
@@ -55,7 +65,7 @@ namespace sones.Plugins.Index
 
         public string IndexName
         {
-            get { return "sonesindex"; }
+            get { return "sones.sonesindex"; }
         }
 
         /// <summary>
@@ -119,6 +129,12 @@ namespace sones.Plugins.Index
                 // and add it to the index
                 Add(prop, myVertex.VertexID, myIndexAddStrategy);
             }
+            else
+            {
+                throw new IndexAddFailedException(String.Format("Vertex {0} has no indexable property with ID {1}",
+                    myVertex.VertexID,
+                    _PropertyID));
+            }
         }
 
         /// <summary>
@@ -144,24 +160,40 @@ namespace sones.Plugins.Index
             HashSet<Int64> values;
             HashSet<Int64> newValues = new HashSet<long>() { myVertexID };
 
-            if (_Index.TryGetValue(myKey, out values))
-            {
-                switch (myIndexAddStrategy)
+            lock (_Lock)
+            {                
+                int valueCountDiff = 0;
+
+                if (_Index.TryGetValue(myKey, out values))
                 {
-                    case IndexAddStrategy.MERGE: 
-                        values.UnionWith(newValues);
-                        break;
-                    case IndexAddStrategy.REPLACE:
-                        values = newValues;
-                        break;
-                    case IndexAddStrategy.UNIQUE:
-                        throw new IndexKeyExistsException(String.Format("Index key {0} already exist.", myKey.ToString()));
+                    // subtract number of old values
+                    valueCountDiff -= values.Count;
+
+                    switch (myIndexAddStrategy)
+                    {
+                        case IndexAddStrategy.MERGE:
+                            values.UnionWith(newValues);
+                            valueCountDiff += values.Count;
+                            break;
+                        case IndexAddStrategy.REPLACE:
+                            values = newValues;
+                            valueCountDiff++;
+                            break;
+                        case IndexAddStrategy.UNIQUE:
+                            throw new IndexKeyExistsException(String.Format("Index key {0} already exist.", myKey.ToString()));
+                    }
                 }
-            }
-            // add it to the index
-            if (!_Index.TryAdd(myKey, values))
-            {
-                throw new IndexAddFailedException(String.Format("Index key {0} could not be added.", myKey.ToString()));
+                else
+                {
+                    values = newValues;
+                    valueCountDiff += newValues.Count;
+                }
+                
+                // add it to the index
+                _Index.AddOrUpdate(myKey, values, (k, v) => values);
+                
+                // update the value count
+                _ValueCount += valueCountDiff;
             }
         }
 
@@ -234,6 +266,14 @@ namespace sones.Plugins.Index
             {
                 throw new IndexRemoveFailedException(String.Format("Index key {0} could not be removed.", myKey.ToString()));
             }
+            else
+            {
+                lock (_Lock)
+                {
+                    // update value count
+                    _ValueCount -= values.Count;
+                }
+            }
         }
 
         /// <summary>
@@ -290,6 +330,19 @@ namespace sones.Plugins.Index
 
         public void Dispose()
         {}
+
+        #endregion
+
+        #region Clear
+
+        /// <summary>
+        /// Clears internal index
+        /// </summary>
+        public void Clear()
+        {
+            _Index.Clear();
+            _ValueCount = 0;
+        }
 
         #endregion
     }

@@ -243,5 +243,13 @@ namespace sones.Plugins.Index
 
         #endregion
 
+        #region Clear
+
+        /// <summary>
+        /// Removes all data from index
+        /// </summary>
+        void Clear();
+
+        #endregion
     }
 }
