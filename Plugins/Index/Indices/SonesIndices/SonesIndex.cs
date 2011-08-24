@@ -65,7 +65,7 @@ namespace sones.Plugins.Index
 
         public string IndexName
         {
-            get { return "sones.sonesindex"; }
+            get { return "sonesindex"; }
         }
 
         /// <summary>
@@ -304,7 +304,7 @@ namespace sones.Plugins.Index
 
         public string PluginShortName
         {
-            get { return "simpleidx"; }
+            get { return "sonesidx"; }
         }
 
         public PluginParameters<Type> SetableParameters
