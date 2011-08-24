@@ -94,7 +94,7 @@ namespace sones.GraphDS.UDC
 
         public Library.VersionedPluginManager.IPluginable InitializePlugin(string UniqueString, Dictionary<string, object> myParameters = null)
         {
-            Console.WriteLine("UDC");
+            //Console.WriteLine("UDC");
             var result = new UDC_Client(UniqueString, myParameters);
             return (IPluginable)result;
 

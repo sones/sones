@@ -52,10 +52,9 @@ namespace sones.GraphDS.UDC
         public void Run()
         {
             Int32 Waited = 0;
-
+			
             while (!Stop)
             {
-                //Console.WriteLine("....");
                 Thread.Sleep(1000); // wait the time which was pre-configured
                 Waited += 1000;
 
