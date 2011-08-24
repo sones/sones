@@ -1,4 +1,4 @@
-/*
+﻿/*
 * sones GraphDB - Community Edition - http://www.sones.com
 * Copyright (C) 2007-2011 sones GmbH
 *
@@ -22,22 +22,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.ErrorHandling;
+using sones.Library.VersionedPluginManager;
 
-namespace sones.GraphDSServer.ErrorHandling
+namespace sones.GraphDS.UDC
 {
+    #region IUsageDataCompatibility
+
     /// <summary>
-    /// This exception will be thrown if the REST service could not be startet.
+    /// A static implementation of the compatible IDrainPipe plugin versions. 
+    /// Defines the min and max version for all IDrainPipe implementations which will be activated used this IDrainPipe.
     /// </summary>
-    public class RESTServiceCouldNotBeStartedException : AGraphDSException
+    public static class IUsageDataCompatibility
     {
-        /// <summary>
-        /// The constructor for the exception.
-        /// </summary>
-        /// <param name="myMessage">The exception message.</param>
-        public RESTServiceCouldNotBeStartedException(String myMessage)
+        public static Version MinVersion
         {
-            _msg = myMessage;
+            get { return new Version("2.0.0.0"); }
         }
+
+        public static Version MaxVersion
+        {
+            get { return new Version("2.0.0.0"); }
+        }
+    }
+    #endregion
+
+    public interface IUsageDataCollector : IPluginable
+    {
+        void Shutdown();
+
     }
 }

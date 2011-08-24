@@ -118,5 +118,41 @@ namespace sones.sonesGraphDBStarter.Properties {
                 this["BufferSizeInPages"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60000")]
+        public int UDCWaitUpfront {
+            get {
+                return ((int)(this["UDCWaitUpfront"]));
+            }
+            set {
+                this["UDCWaitUpfront"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1800000")]
+        public int UDCUpdateInterval {
+            get {
+                return ((int)(this["UDCUpdateInterval"]));
+            }
+            set {
+                this["UDCUpdateInterval"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UDCEnabled {
+            get {
+                return ((bool)(this["UDCEnabled"]));
+            }
+            set {
+                this["UDCEnabled"] = value;
+            }
+        }
     }
 }
