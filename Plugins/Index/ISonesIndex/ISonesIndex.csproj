@@ -64,6 +64,7 @@
     <Compile Include="Interfaces\ISingleValueRangeVersionedIndex.cs" />
     <Compile Include="Interfaces\ISingleValueVersionedIndex.cs" />
     <Compile Include="Interfaces\IVersionedIndex.cs" />
+    <Compile Include="Interfaces\Persistent\ISonesPersistentIndex.cs" />
     <Compile Include="Interfaces\Range\ISonesRangeIndex.cs" />
     <Compile Include="Interfaces\Spatial\Geometries\ICircle.cs" />
     <Compile Include="Interfaces\Spatial\Geometries\IGeometry.cs" />
