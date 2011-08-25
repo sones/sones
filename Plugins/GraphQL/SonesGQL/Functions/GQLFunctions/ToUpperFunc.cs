@@ -33,7 +33,7 @@ using sones.Plugins.SonesGQL.Function.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class ToUpperFunc : ABaseFunction, IPluginable
+    public sealed class ToUpperFunc : ABaseFunction
     {
         #region constructor
         
@@ -42,11 +42,6 @@ namespace sones.Plugins.SonesGQL.Functions
         
         #endregion
         
-        public override string GetDescribeOutput()
-        {
-            return "Returns a copy of this attribute value converted to uppercase.";
-        }
-
         public override bool ValidateWorkingBase(Object myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
         {
             if (myWorkingBase != null)
@@ -99,13 +94,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new ToUpperFunc();
         }
 
-        public void Dispose()
+        public override void Dispose()
         { }
-
-        public override string FunctionName
-        {
-            get { return "toupper"; }
-        }
 
         #endregion
 

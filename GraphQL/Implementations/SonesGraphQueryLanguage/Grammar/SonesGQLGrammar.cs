@@ -3375,8 +3375,8 @@ namespace sones.GraphQL
                 {
                     //BNF_AggregateName + S_BRACKET_LEFT + aggregateArg + S_BRACKET_RIGHT;
 
-                    var aggrRule = new NonTerminal("aggr_" + aggr.AggregateName, CreateAggregateNode);
-                    aggrRule.Rule = aggr.AggregateName + S_BRACKET_LEFT + NT_AggregateArg + S_BRACKET_RIGHT;
+                    var aggrRule = new NonTerminal("aggr_" + aggr.PluginShortName, CreateAggregateNode);
+                    aggrRule.Rule = aggr.PluginShortName + S_BRACKET_LEFT + NT_AggregateArg + S_BRACKET_RIGHT;
 
                     if (NT_Aggregate.Rule == null)
                     {
@@ -3408,12 +3408,12 @@ namespace sones.GraphQL
 
                     #region Create funcNonTerminal
 
-                    var funcNonTerminal = new NonTerminal("func" + func.FunctionName, CreateFunctionCallNode);
+                    var funcNonTerminal = new NonTerminal("func" + func.PluginShortName, CreateFunctionCallNode);
 
                     var funcParams = func.GetParameters();
                     if (funcParams == null || funcParams.Count() == 0)
                     {
-                        funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + S_BRACKET_RIGHT;
+                        funcNonTerminal.Rule = func.PluginShortName + S_BRACKET_LEFT + S_BRACKET_RIGHT;
 
                     }
                     else
@@ -3440,7 +3440,7 @@ namespace sones.GraphQL
 
                         #endregion
 
-                        funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + NT_FunArgs + S_BRACKET_RIGHT;
+                        funcNonTerminal.Rule = func.PluginShortName + S_BRACKET_LEFT + NT_FunArgs + S_BRACKET_RIGHT;
                     }
 
                     #endregion
@@ -3507,11 +3507,11 @@ namespace sones.GraphQL
                 {
                     if (NT_ImportFormat.Rule == null)
                     {
-                        NT_ImportFormat.Rule = ToTerm(importer.ImportFormat);
+                        NT_ImportFormat.Rule = ToTerm(importer.PluginShortName);
                     }
                     else
                     {
-                        NT_ImportFormat.Rule |= ToTerm(importer.ImportFormat);
+                        NT_ImportFormat.Rule |= ToTerm(importer.PluginShortName);
                     }
                 }
             }
@@ -3535,11 +3535,11 @@ namespace sones.GraphQL
                 {
                     if (NT_ImportFormat.Rule == null)
                     {
-                        NT_ImportFormat.Rule = ToTerm(importer.ExportFormat);
+                        NT_ImportFormat.Rule = ToTerm(importer.PluginShortName);
                     }
                     else
                     {
-                        NT_ImportFormat.Rule |= ToTerm(importer.ExportFormat);
+                        NT_ImportFormat.Rule |= ToTerm(importer.PluginShortName);
                     }
                 }
             }

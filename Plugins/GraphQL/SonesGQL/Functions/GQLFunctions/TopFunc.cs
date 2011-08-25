@@ -34,7 +34,7 @@ using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class TopFunc : ABaseFunction, IPluginable
+    public sealed class TopFunc : ABaseFunction
     {
         #region constructor
 
@@ -44,11 +44,6 @@ namespace sones.Plugins.SonesGQL.Functions
         }
 
         #endregion
-
-        public override string GetDescribeOutput()
-        {
-            return "Will return the top elements of an edge.";
-        }
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
@@ -100,7 +95,7 @@ namespace sones.Plugins.SonesGQL.Functions
             throw new InvalidTypeException(myCallingObject.GetType().ToString(), "IHyperEdge");
         }
 
-        #region IPLuginbable
+        #region IPluginbable
 
         public override string PluginName
         {
@@ -127,13 +122,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new TopFunc();
         }
 
-        public void Dispose()
+        public override void Dispose()
         { }
-
-        public override string FunctionName
-        {
-            get { return "top"; }
-        }
 
         #endregion
 

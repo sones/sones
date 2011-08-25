@@ -33,22 +33,13 @@ using sones.GraphFS.Element.Edge;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class CountFunc : ABaseFunction, IPluginable
+    public sealed class CountFunc : ABaseFunction
     {
         #region constructor
 
         public CountFunc()
         { }
 
-        #endregion
-
-        #region GetDescribeOutput
-        
-        public override string GetDescribeOutput()
-        {
-            return "This will count the elements of an edge and return them as UInt64 value.";
-        }
-        
         #endregion
 
         #region validate
@@ -109,7 +100,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         #endregion
 
-        #region interface member
+        #region IPluginable
 
         public override string PluginName
         {
@@ -136,13 +127,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new CountFunc();
         }
 
-        public void Dispose()
+        public override void Dispose()
         { }
-
-        public override string FunctionName
-        {
-            get { return "count"; }
-        }
 
         #endregion
 

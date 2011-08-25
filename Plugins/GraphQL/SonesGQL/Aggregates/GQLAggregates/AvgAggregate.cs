@@ -37,7 +37,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
     /// <summary>
     /// The aggregate Avg
     /// </summary>
-    public sealed class AvgAggregate : IGQLAggregate, IPluginable
+    public sealed class AvgAggregate : IGQLAggregate
     {
         #region constructor
 
@@ -51,17 +51,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         #endregion
 
-        #region describe
-        /// <summary>
-        /// Returns the description of the aggregate.
-        /// </summary>
-        public string GetDescribeOutput()
-        {
-            return "This aggregate will calculate the average of the given operands. This aggregate is type dependent and will only operate on numbers.";
-        } 
-        #endregion
-
-        #region IGQLAggregate Members
+        #region IGQLAggregate
 
         /// <summary>
         /// Calculates the average
@@ -93,7 +83,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         #endregion
 
-        #region IPluginable Members
+        #region IPluginable
 
         public string PluginName
         {
@@ -107,7 +97,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         public string PluginDescription
         {
-            get { return "The Aggregate Avg"; }
+            get { return "This aggregate will calculate the average of the given operands. This aggregate is type dependent and will only operate on numbers."; }
         }
         
         public PluginParameters<Type> SetableParameters
@@ -122,15 +112,6 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         public void Dispose()
         { }
-
-        #endregion
-
-        #region IGQLAggregate Members
-
-        public string AggregateName
-        {
-            get { return "avg"; }
-        }
 
         #endregion
     }

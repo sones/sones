@@ -34,7 +34,7 @@ using sones.Library.VersionedPluginManager;
 namespace sones.Plugins.SonesGQL.Functions
 {
     /// <summary>
-    /// This is the base function class. Each function mus derive this class and implement at least:
+    /// This is the base function class. Each function must derive this class and implement at least:
     /// FunctionName: The name of the function used in the query itself
     /// TypeOfResult: The result type of the evaluated function
     /// SubstringFunc(): The constructor fills the _Parameters dictionary which defines the function parameters
@@ -48,12 +48,6 @@ namespace sones.Plugins.SonesGQL.Functions
 
 
         #region Abstract methods
-
-        /// <summary>
-        /// The ouput of a describe.
-        /// </summary>
-        /// <returns></returns>
-        public abstract String GetDescribeOutput();
 
         /// <summary>
         /// This will validate the function to a working base.
@@ -166,7 +160,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         #endregion
 
-        #region IPluginable Members
+        #region IPluginable
 
         public abstract string PluginName { get; }
 
@@ -178,11 +172,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public abstract IPluginable InitializePlugin(String myUniqueString, Dictionary<String,Object> myParameters = null);
 
-        #endregion
-
-        #region IGQLFunction Members
-
-        public abstract string FunctionName { get; }
+        public abstract void Dispose();
 
         #endregion
     }

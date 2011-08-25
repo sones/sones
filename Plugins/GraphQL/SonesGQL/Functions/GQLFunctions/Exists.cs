@@ -32,7 +32,7 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class Exists : ABaseFunction, IPluginable
+    public sealed class Exists : ABaseFunction
     {
         #region constructors
 
@@ -40,11 +40,6 @@ namespace sones.Plugins.SonesGQL.Functions
         { }
 
         #endregion
-
-        public override string GetDescribeOutput()
-        {
-            return "Return true if an DBObject contains this attribute.";
-        }
 
         public override bool ValidateWorkingBase(Object myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
         {
@@ -70,7 +65,7 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        #region IPLuginable
+        #region IPluginable
 
         public override string PluginName
         {
@@ -97,13 +92,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new Exists();
         }
 
-        public void Dispose()
+        public override void Dispose()
         { }
-
-        public override string FunctionName
-        {
-            get { return "exists"; }
-        }
 
         #endregion
 

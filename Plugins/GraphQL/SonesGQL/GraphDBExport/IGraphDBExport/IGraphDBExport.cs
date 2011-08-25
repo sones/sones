@@ -26,6 +26,7 @@ using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.DataStructures;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.SonesGQL.DBExport
 {
@@ -53,10 +54,8 @@ namespace sones.Plugins.SonesGQL.DBExport
     /// <summary>
     /// The interface for a GraphDBExporter
     /// </summary>
-    public interface IGraphDBExport
+    public interface IGraphDBExport : IPluginable
     {
-        string ExportFormat { get; }
-
         string ExporterName { get; }
 
         QueryResult Export(String destination, IDumpable myGrammar, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IEnumerable<String> myTypes, DumpTypes myDumpType);

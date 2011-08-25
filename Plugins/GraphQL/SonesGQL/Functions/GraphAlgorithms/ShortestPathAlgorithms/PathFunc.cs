@@ -35,7 +35,7 @@ using sones.Library.CollectionWrapper;
 
 namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 {
-    public sealed class PathFunc : ABaseFunction, IPluginable
+    public sealed class PathFunc : ABaseFunction
     {
         #region constructor
 
@@ -49,13 +49,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
         }
 
         #endregion
-
-        public override string GetDescribeOutput()
-        {
-            return "A path algorithm. This algorithm searches the shortest, all shortest or all paths up to a given depth an path length." +
-                    "Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used.";
-        }
-
+        
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             if (myWorkingBase is IAttributeDefinition)
@@ -245,7 +239,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             return current;
         }
 
-        #region IPluginable member
+        #region IPluginable
 
         public override string PluginName
         {
@@ -259,7 +253,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
         public override string PluginDescription
         {
-            get { return "This class provides a shortest path search algorithm."; }
+            get { return "A path algorithm. This algorithm searches the shortest, all shortest or all paths up to a given depth an path length. Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used."; }
         }
 
         public override PluginParameters<Type> SetableParameters
@@ -272,17 +266,12 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             return new PathFunc();
         }
 
-        public override string FunctionName
-        {
-            get { return "path"; }
-        }
-
-        public void Dispose()
+        public override void Dispose()
         { }
 
         #endregion
 
-        #region IGQLFunction member
+        #region IGQLFunction
 
         public override Type GetReturnType()
         {
