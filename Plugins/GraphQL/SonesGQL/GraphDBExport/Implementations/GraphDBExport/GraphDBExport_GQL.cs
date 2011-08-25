@@ -187,7 +187,7 @@ namespace sones.Plugins.SonesGQL.DBExport
 
         public string PluginShortName
         {
-            get { return "GQL"; }
+            get { return "sones.gql"; }
         }
 
         public string PluginDescription
