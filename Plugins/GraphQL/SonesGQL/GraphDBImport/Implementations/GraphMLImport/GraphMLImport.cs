@@ -82,7 +82,7 @@ namespace sones.Plugins.SonesGQL
     /// author:         Martin Junghanns (martin@sones.com)
     /// copyright (C):  2007-2011 sones GmbH (www.sones.com)
     /// </summary>
-	public class GraphMLImport : IGraphDBImport, IPluginable
+	public class GraphMLImport : IGraphDBImport
 	{
 		#region private members
 		
@@ -230,8 +230,8 @@ namespace sones.Plugins.SonesGQL
 			
 			if (myGraphDB == null)
 			{
-				return new QueryResult("", 
-						ImportFormat, 
+				return new QueryResult("",
+                        PluginShortName, 
 						0, 
 						ResultType.Failed, 
 						null, 
@@ -240,8 +240,8 @@ namespace sones.Plugins.SonesGQL
 			
 			if(myLocation == null)
 			{
-				return new QueryResult("", 
-						ImportFormat, 
+				return new QueryResult("",
+                        PluginShortName, 
 						0, 
 						ResultType.Failed, 
 						null, 
@@ -269,8 +269,8 @@ namespace sones.Plugins.SonesGQL
 			
 			if(myOptions == null)
 			{
-				return new QueryResult("", 
-						ImportFormat, 
+				return new QueryResult("",
+                        PluginShortName, 
 						0, 
 						ResultType.Failed, 
 						null, 
@@ -358,8 +358,8 @@ namespace sones.Plugins.SonesGQL
 					// drop vertex type in case of exception
 					DropVertexType();
 					
-	                return new QueryResult("VertexType has been removed", 
-						ImportFormat, 
+	                return new QueryResult("VertexType has been removed",
+                        PluginShortName, 
 						(ulong)sw.ElapsedMilliseconds, 
 						ResultType.Failed, 
 						null, 
@@ -375,23 +375,12 @@ namespace sones.Plugins.SonesGQL
 			
 			#endregion
 			
-			return new QueryResult("", 
-				ImportFormat, 
+			return new QueryResult("",
+                PluginShortName, 
 				(ulong)sw.ElapsedMilliseconds, 
 				ResultType.Successful,
 				null, 
 				null);
-		}
-		
-		/// <summary>
-		/// Returns the import format.
-		/// </summary>
-		/// <value>
-		/// The import format.
-		/// </value>
-		public string ImportFormat 
-		{
-			get { return "GRAPHML"; }
 		}
 		
 		#endregion
@@ -431,7 +420,7 @@ namespace sones.Plugins.SonesGQL
 
         public string PluginShortName
         {
-            get { return "graphmlimport"; }
+            get { return "GRAPHML"; }
         }
 
         public string PluginDescription

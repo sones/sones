@@ -35,7 +35,7 @@ using sones.Library.CollectionWrapper;
 
 namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 {
-    public sealed class PathFunc : ABaseFunction
+    public sealed class PathFunc : ABaseFunction, IPluginable
     {
         #region constructor
 
@@ -49,19 +49,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
         }
 
         #endregion
-<<<<<<< HEAD
-        
-        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
-=======
-
-        public override string GetDescribeOutput()
-        {
-            return "A path algorithm. This algorithm searches the shortest, all shortest or all paths up to a given depth an path length." +
-                    "Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used.";
-        }
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
->>>>>>> c18174100dd22130e37f0f04b6723ee1539b73b9
         {
             if (myWorkingBase is IAttributeDefinition)
             {
@@ -250,7 +239,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             return current;
         }
 
-        #region IPluginable
+        #region IPluginable member
 
         public override string PluginName
         {
@@ -262,10 +251,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             get { return "path"; }
         }
 
-        public override string PluginDescription
+		public override string PluginDescription
         {
-            get { return "A path algorithm. This algorithm searches the shortest, all shortest or all paths up to a given depth an path length. Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used."; }
-        }
+			get { return "A path algorithm. This algorithm searches the shortest, all shortest or all paths up to a given depth an path length. Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used."; }
+		}
 
         public override PluginParameters<Type> SetableParameters
         {
@@ -282,7 +271,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
         #endregion
 
-        #region IGQLFunction
+        #region IGQLFunction member
 
         public override Type GetReturnType()
         {

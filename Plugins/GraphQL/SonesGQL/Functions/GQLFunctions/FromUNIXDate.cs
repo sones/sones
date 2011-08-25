@@ -41,16 +41,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         #endregion
 
-<<<<<<< HEAD
-        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
-=======
-        public override string GetDescribeOutput()
-        {
-            return "Convert from unix datime format to DBDateTime format.";
-        }
-
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
->>>>>>> c18174100dd22130e37f0f04b6723ee1539b73b9
         {
             if ((myWorkingBase as Type) == typeof(Int64) || (myWorkingBase as Type) == typeof(UInt64))
             {
