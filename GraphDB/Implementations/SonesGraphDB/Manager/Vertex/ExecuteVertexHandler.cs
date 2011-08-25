@@ -444,7 +444,15 @@ namespace sones.GraphDB.Manager.Vertex
             if (contained == null)
                 return null;
 
-            return new HyperEdgeAddDefinition(attrDef.ID, attrDef.EdgeType.ID, source, contained, edgeDef.Comment, date, date, ConvertStructuredProperties(edgeDef, attrDef.EdgeType), edgeDef.UnstructuredProperties);
+            return new HyperEdgeAddDefinition(attrDef.ID, 
+                                                attrDef.EdgeType.ID, 
+                                                source, 
+                                                contained, 
+                                                edgeDef.Comment, 
+                                                date, 
+                                                date, 
+                                                ConvertStructuredProperties(edgeDef, attrDef.EdgeType), 
+                                                edgeDef.UnstructuredProperties);
         }
 
         private IEnumerable<SingleEdgeAddDefinition> CreateContainedEdges(
@@ -466,8 +474,23 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     //single edges from VertexIDs or expression does not have user properties
                     //TODO they can have default values
-                    CheckMandatoryConstraint(null, attrDef.InnerEdgeType);
-                    result.Add(new SingleEdgeAddDefinition(Int64.MinValue, attrDef.InnerEdgeType.ID, mySource, vertex, null, myDate, myDate, null, null));
+                    var edgePredef = new EdgePredefinition()
+                                            .AddStructuredProperty("CreationDate", null)
+                                            .AddStructuredProperty("ModificationDate", null)
+                                            .AddStructuredProperty("Comment", null)
+                                            .AddStructuredProperty("EdgeTypeName", null)
+                                            .AddStructuredProperty("EdgeTypeID", null);
+
+                    CheckMandatoryConstraint(edgePredef, attrDef.InnerEdgeType);
+                    result.Add(new SingleEdgeAddDefinition(Int64.MinValue, 
+                                                            attrDef.InnerEdgeType.ID, 
+                                                            mySource, 
+                                                            vertex, 
+                                                            edgeDef.Comment, 
+                                                            myDate, 
+                                                            myDate, 
+                                                            null,
+                                                            null));
                 }
             }
 
