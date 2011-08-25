@@ -22,6 +22,7 @@ using sones.GraphDB.Expression;
 using sones.GraphDB.Expression.QueryPlan;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using System;
 
 namespace sones.GraphDB.Manager.QueryPlan
 {
@@ -39,7 +40,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransaction">The current transaction token</param>
         /// <param name="mySecurity">The current transaction token</param>
         /// <returns>A queryplan</returns>
-        IQueryPlan CreateQueryPlan(IExpression myExpression, bool myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity);
+        IQueryPlan CreateQueryPlan(IExpression myExpression, bool myIsLongRunning, Int64 myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Is the expression valid

@@ -99,7 +99,7 @@ namespace sones.Plugins.SonesGQL
 		/// <summary>
 		/// The transaction token.
 		/// </summary>
-		private TransactionToken _TransactionToken;
+		private Int64 _TransactionToken;
 		
 		/// <summary>
 		/// The vertexType which shall be used for storing the vertex data.
@@ -218,7 +218,7 @@ namespace sones.Plugins.SonesGQL
 			IGraphDB myGraphDB,
 			IGraphQL myGraphQL,
 			SecurityToken mySecurityToken,
-			TransactionToken myTransactionToken,
+			Int64 myTransactionToken,
 			UInt32 myParallelTasks = 1U,
 			IEnumerable<string> myComments = null,
 			UInt64? myOffset = null,

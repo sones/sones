@@ -43,12 +43,6 @@ namespace sones.GraphDB.Manager.Transaction
         /// </summary>
         private IVertexStore _vertexStore;
 
-        /// <summary>
-        /// A simple transaction counter...
-        /// also used to generate transaction ids
-        /// </summary>
-        private Int64 _transactionCounter;
-
         #endregion
 
         #region Constructor
@@ -76,17 +70,17 @@ namespace sones.GraphDB.Manager.Transaction
 
         #region ITransactionable Members
 
-        public TransactionToken BeginTransaction(SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
+        public Int64 BeginTransaction(SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
         {
-            return new TransactionToken(Interlocked.Increment(ref _transactionCounter));
+            return 0L;
         }
 
-        public void CommitTransaction(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public void CommitTransaction(SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             //do nothing
         }
 
-        public void RollbackTransaction(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public void RollbackTransaction(SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             //do nothing
         }
@@ -96,98 +90,98 @@ namespace sones.GraphDB.Manager.Transaction
         #region IVertexStore Members
         //redirect everything to the underlying vertex store
 
-        public bool VertexExists(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexID, long myVertexTypeID, string myEdition = null, Int64 myVertexRevisionID = 0L)
+        public bool VertexExists(SecurityToken mySecurityToken, Int64 myTransactionToken, long myVertexID, long myVertexTypeID, string myEdition = null, Int64 myVertexRevisionID = 0L)
         {
             return _vertexStore.VertexExists(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID, myEdition, myVertexRevisionID);
         }
 
-        public IVertex GetVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexID, long myVertexTypeID, string myEdition = null, Int64 myVertexRevisionID = 0L)
+        public IVertex GetVertex(SecurityToken mySecurityToken, Int64 myTransactionToken, long myVertexID, long myVertexTypeID, string myEdition = null, Int64 myVertexRevisionID = 0L)
         {
             return _vertexStore.GetVertex(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID, myEdition, myVertexRevisionID);
         }
 
-        public IVertex GetVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexID, long myVertexTypeID, VertexStoreFilter.EditionFilter myEditionsFilterFunc = null, VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
+        public IVertex GetVertex(SecurityToken mySecurityToken, Int64 myTransactionToken, long myVertexID, long myVertexTypeID, VertexStoreFilter.EditionFilter myEditionsFilterFunc = null, VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
         {
             return _vertexStore.GetVertex(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID, myEditionsFilterFunc, myInterestingRevisionIDFilterFunc);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myTypeID, IEnumerable<long> myInterestingVertexIDs, IEnumerable<string> myInterestingEditionNames, IEnumerable<Int64> myInterestingRevisionIDs)
+        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, Int64 myTransactionToken, long myTypeID, IEnumerable<long> myInterestingVertexIDs, IEnumerable<string> myInterestingEditionNames, IEnumerable<Int64> myInterestingRevisionIDs)
         {
             return _vertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID, myInterestingVertexIDs, myInterestingEditionNames, myInterestingRevisionIDs);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myTypeID, IEnumerable<long> myInterestingVertexIDs)
+        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, Int64 myTransactionToken, long myTypeID, IEnumerable<long> myInterestingVertexIDs)
         {
             return _vertexStore.GetVerticesByTypeIDAndRevisions(mySecurityToken, myTransactionToken, myTypeID, myInterestingVertexIDs);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myTypeID)
+        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, Int64 myTransactionToken, long myTypeID)
         {
             return _vertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeIDAndRevisions(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myTypeID, IEnumerable<Int64> myInterestingRevisions)
+        public IEnumerable<IVertex> GetVerticesByTypeIDAndRevisions(SecurityToken mySecurityToken, Int64 myTransactionToken, long myTypeID, IEnumerable<Int64> myInterestingRevisions)
         {
             return _vertexStore.GetVerticesByTypeIDAndRevisions(mySecurityToken, myTransactionToken, myTypeID, myInterestingRevisions);
         }
 
-        public IEnumerable<string> GetVertexEditions(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexID, long myVertexTypeID)
+        public IEnumerable<string> GetVertexEditions(SecurityToken mySecurityToken, Int64 myTransactionToken, long myVertexID, long myVertexTypeID)
         {
             return _vertexStore.GetVertexEditions(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
         }
 
-        public IEnumerable<Int64> GetVertexRevisionIDs(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexID, long myVertexTypeID, IEnumerable<string> myInterestingEditions = null)
+        public IEnumerable<Int64> GetVertexRevisionIDs(SecurityToken mySecurityToken, Int64 myTransactionToken, long myVertexID, long myVertexTypeID, IEnumerable<string> myInterestingEditions = null)
         {
             return _vertexStore.GetVertexRevisionIDs(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID, myInterestingEditions);
         }
 
-        public bool RemoveVertexRevision(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexID, long myVertexTypeID, string myInterestingEdition, Int64 myToBeRemovedRevisionID)
+        public bool RemoveVertexRevision(SecurityToken mySecurityToken, Int64 myTransactionToken, long myVertexID, long myVertexTypeID, string myInterestingEdition, Int64 myToBeRemovedRevisionID)
         {
             return _vertexStore.RemoveVertexRevision(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID, myInterestingEdition, myToBeRemovedRevisionID);
         }
 
-        public bool RemoveVertexEdition(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexID, long myVertexTypeID, string myToBeRemovedEdition)
+        public bool RemoveVertexEdition(SecurityToken mySecurityToken, Int64 myTransactionToken, long myVertexID, long myVertexTypeID, string myToBeRemovedEdition)
         {
             return _vertexStore.RemoveVertexEdition(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID, myToBeRemovedEdition);
         }
 
-        public bool RemoveVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexID, long myVertexTypeID)
+        public bool RemoveVertex(SecurityToken mySecurityToken, Int64 myTransactionToken, long myVertexID, long myVertexTypeID)
         {
             return _vertexStore.RemoveVertex(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
         }
 
-        public IVertex AddVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, VertexAddDefinition myVertexDefinition, Int64 myVertexRevisionID = 0L, bool myCreateIncomingEdges = true)
+        public IVertex AddVertex(SecurityToken mySecurityToken, Int64 myTransactionToken, VertexAddDefinition myVertexDefinition, Int64 myVertexRevisionID = 0L, bool myCreateIncomingEdges = true)
         {
             return _vertexStore.AddVertex(mySecurityToken, myTransactionToken, myVertexDefinition, myVertexRevisionID, myCreateIncomingEdges);
         }
 
-        public IVertex UpdateVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID, VertexUpdateDefinition myVertexUpdate, Boolean myCreateIncomingEdges = true, string myToBeUpdatedEditions = null, Int64 myToBeUpdatedRevisionIDs = 0L, bool myCreateNewRevision = false)
+        public IVertex UpdateVertex(SecurityToken mySecurityToken, Int64 myTransactionToken, long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID, VertexUpdateDefinition myVertexUpdate, Boolean myCreateIncomingEdges = true, string myToBeUpdatedEditions = null, Int64 myToBeUpdatedRevisionIDs = 0L, bool myCreateNewRevision = false)
         {
             return _vertexStore.UpdateVertex(mySecurityToken, myTransactionToken, myToBeUpdatedVertexID, myCorrespondingVertexTypeID, myVertexUpdate, myCreateIncomingEdges, myToBeUpdatedEditions, myToBeUpdatedRevisionIDs, myCreateNewRevision);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myTypeID, IEnumerable<long> myInterestingVertexIDs, VertexStoreFilter.EditionFilter myEditionsFilterFunc, VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc)
+        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, Int64 myTransactionToken, long myTypeID, IEnumerable<long> myInterestingVertexIDs, VertexStoreFilter.EditionFilter myEditionsFilterFunc, VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc)
         {
             return _vertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID, myInterestingVertexIDs, myEditionsFilterFunc,
                                              myInterestingRevisionIDFilterFunc);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myTypeID, string myEdition, VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc)
+        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, Int64 myTransactionToken, long myTypeID, string myEdition, VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc)
         {
             return _vertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID, myEdition, myInterestingRevisionIDFilterFunc);
         }
 
-        public void RemoveVertices(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID, IEnumerable<long> myToBeDeltedVertices = null)
+        public void RemoveVertices(SecurityToken mySecurityToken, Int64 myTransactionToken, long myVertexTypeID, IEnumerable<long> myToBeDeltedVertices = null)
         {
             _vertexStore.RemoveVertices(mySecurityToken, myTransactionToken, myVertexTypeID, myToBeDeltedVertices);
         }
 
-        public ulong GetVertexCount(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID)
+        public ulong GetVertexCount(SecurityToken mySecurityToken, Int64 myTransactionToken, long myVertexTypeID)
         {
             return _vertexStore.GetVertexCount(mySecurityToken, myTransactionToken, myVertexTypeID);
         }
 
-        public long GetHighestVertexID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID)
+        public long GetHighestVertexID(SecurityToken mySecurityToken, Int64 myTransactionToken, long myVertexTypeID)
         {
             return _vertexStore.GetHighestVertexID(mySecurityToken, myTransactionToken, myVertexTypeID);
         }

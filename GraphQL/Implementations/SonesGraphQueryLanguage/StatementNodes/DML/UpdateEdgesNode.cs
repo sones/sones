@@ -141,7 +141,7 @@ namespace sones.GraphQL.StatementNodes.DML
                                             GQLPluginManager myPluginManager, 
                                             String myQuery, 
                                             SecurityToken mySecurityToken, 
-                                            TransactionToken myTransactionToken)
+                                            Int64 myTransactionToken)
         {
             Query = myQuery;
 
@@ -163,7 +163,7 @@ namespace sones.GraphQL.StatementNodes.DML
                                                 GQLPluginManager myPluginManager, 
                                                 IGraphDB myGraphDB, 
                                                 SecurityToken mySecurityToken, 
-                                                TransactionToken myTransactionToken, 
+                                                Int64 myTransactionToken, 
                                                 IVertexType vertexType)
         {
             //validate
@@ -197,7 +197,7 @@ namespace sones.GraphQL.StatementNodes.DML
         private RequestUpdate GenerateUpdateRequest(IGraphDB myGraphDB, 
                                                     GQLPluginManager myPluginManager, 
                                                     SecurityToken mySecurityToken, 
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
         {
             IEnumerable<IVertex> toBeupdatedVertices = null;
             //prepare
@@ -271,7 +271,7 @@ namespace sones.GraphQL.StatementNodes.DML
                                             GQLPluginManager myPluginManager, 
                                             IGraphDB myGraphDB, 
                                             SecurityToken mySecurityToken, 
-                                            TransactionToken myTransactionToken, 
+                                            Int64 myTransactionToken, 
                                             ref RequestUpdate result)
         {
             foreach (var aUpdate in _listOfUpdates)
@@ -290,7 +290,7 @@ namespace sones.GraphQL.StatementNodes.DML
                                     GQLPluginManager myPluginManager, 
                                     IGraphDB myGraphDB, 
                                     SecurityToken mySecurityToken, 
-                                    TransactionToken myTransactionToken, 
+                                    Int64 myTransactionToken, 
                                     AAttributeAssignOrUpdateOrRemove aUpdate, 
                                     ref RequestUpdate result)
         {
@@ -336,7 +336,7 @@ namespace sones.GraphQL.StatementNodes.DML
                                                 GQLPluginManager myPluginManager, 
                                                 IGraphDB myGraphDB, 
                                                 SecurityToken mySecurityToken, 
-                                                TransactionToken myTransactionToken, 
+                                                Int64 myTransactionToken, 
                                                 AttributeRemoveList attributeRemoveList, 
                                                 ref RequestUpdate result)
         {
@@ -477,7 +477,7 @@ namespace sones.GraphQL.StatementNodes.DML
                                                         GQLPluginManager myPluginManager, 
                                                         IGraphDB myGraphDB, 
                                                         SecurityToken mySecurityToken, 
-                                                        TransactionToken myTransactionToken, 
+                                                        Int64 myTransactionToken, 
                                                         AttributeAssignOrUpdateList attributeAssignOrUpdateList, 
                                                         ref RequestUpdate result)
         {

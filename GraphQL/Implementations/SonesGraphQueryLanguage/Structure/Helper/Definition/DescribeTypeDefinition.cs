@@ -62,7 +62,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         public override QueryResult GetResult(GQLPluginManager myPluginManager,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
         {
             var resultingVertices = new List<IVertexView>();
             ASonesException error = null;

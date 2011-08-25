@@ -56,7 +56,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// The current transaction token
         /// </summary>
-        private readonly TransactionToken _transactionToken;
+        private readonly Int64 _transactionToken;
 
         /// <summary>
         /// The interesting property
@@ -86,7 +86,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myConstant">The constant value</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public QueryPlanInRangeWithIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, RangeLiteralExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning, IIndexManager myIndexManager)
+        public QueryPlanInRangeWithIndex(SecurityToken mySecurityToken, Int64 myTransactionToken, QueryPlanProperty myProperty, RangeLiteralExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning, IIndexManager myIndexManager)
         {
             _securityToken = mySecurityToken;
             _transactionToken = myTransactionToken;

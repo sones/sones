@@ -100,7 +100,7 @@ namespace sones.GraphDB.Manager.Index
 
         #region IIndexManager Members
 
-        public IIndexDefinition CreateIndex(IndexPredefinition myIndexDefinition, SecurityToken mySecurity, TransactionToken myTransaction, bool myIsUserDefined = true)
+        public IIndexDefinition CreateIndex(IndexPredefinition myIndexDefinition, SecurityToken mySecurity, Int64 myTransaction, bool myIsUserDefined = true)
         {
             myIndexDefinition.CheckNull("myIndexDefinition");
 
@@ -260,17 +260,17 @@ namespace sones.GraphDB.Manager.Index
             return result;
         }
 
-        public bool HasIndex(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public bool HasIndex(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             return myPropertyDefinition.InIndices.CountIsGreater(0);
         }
 
-        public IEnumerable<IIndex<IComparable, long>> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IEnumerable<IIndex<IComparable, long>> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             return myPropertyDefinition.InIndices.Select(_ => _indices[_.ID]);
         }
 
-        public IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             myVertexType.CheckNull("myVertexType");
             myPropertyDefinition.CheckNull("myPropertyDefinition");
@@ -314,7 +314,7 @@ namespace sones.GraphDB.Manager.Index
             }
         }
 
-        public IEnumerable<IIndexDefinition> DescribeIndices(TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public IEnumerable<IIndexDefinition> DescribeIndices(Int64 myTransactionToken, SecurityToken mySecurityToken)
         {   
             var vertexTypes = _vertexTypeManager.ExecuteManager.GetAllTypes(myTransactionToken, mySecurityToken);
 
@@ -329,7 +329,7 @@ namespace sones.GraphDB.Manager.Index
             yield break;
         }
 
-        public IEnumerable<IIndexDefinition> DescribeIndex(String myTypeName, String myIndexName, String myEdition, TransactionToken myTransaction, SecurityToken mySecurity)
+        public IEnumerable<IIndexDefinition> DescribeIndex(String myTypeName, String myIndexName, String myEdition, Int64 myTransaction, SecurityToken mySecurity)
         {
             var vertextype = _vertexTypeManager.ExecuteManager.GetType(myTypeName, myTransaction, mySecurity);
 
@@ -343,7 +343,7 @@ namespace sones.GraphDB.Manager.Index
             return indices;
         }
 
-        public void RemoveIndexInstance(long myIndexID, TransactionToken myTransaction, SecurityToken mySecurity)
+        public void RemoveIndexInstance(long myIndexID, Int64 myTransaction, SecurityToken mySecurity)
         {
             var vertex = _vertexStore.GetVertex(mySecurity, myTransaction, myIndexID, (long)BaseTypes.Index, String.Empty);
             if (_vertexStore.RemoveVertex(mySecurity, myTransaction, myIndexID, (long)BaseTypes.Index))
@@ -359,19 +359,19 @@ namespace sones.GraphDB.Manager.Index
         }
 
 
-        public void RebuildIndices(long myVertexTypeID, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public void RebuildIndices(long myVertexTypeID, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             var vertexType = _vertexTypeManager.ExecuteManager.GetType(myVertexTypeID, myTransactionToken, mySecurityToken);
 
             RebuildIndices(vertexType, myTransactionToken, mySecurityToken, false);
         }
 
-        public void RebuildIndices(IVertexType myVertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public void RebuildIndices(IVertexType myVertexType, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             RebuildIndices(myVertexType, myTransactionToken, mySecurityToken, false);
         }
 
-        private void RebuildIndices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, bool myOnlyNonPersistent )
+        private void RebuildIndices(IVertexType myVertexType, Int64 myTransaction, SecurityToken mySecurity, bool myOnlyNonPersistent )
         {
             Dictionary<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, Int64>>> toRebuild = new Dictionary<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, long>>>();
             foreach (var indexDef in myVertexType.GetIndexDefinitions(false))
@@ -456,7 +456,7 @@ namespace sones.GraphDB.Manager.Index
             _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
 
-        public void Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        public void Load(Int64 myTransaction, SecurityToken mySecurity)
         {
             var maxID = Int64.MinValue;
 
@@ -541,7 +541,7 @@ namespace sones.GraphDB.Manager.Index
         #region IIndexManager Members
 
 
-        public IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             myVertexType.CheckNull("myVertexType");
             return myVertexType.GetIndexDefinitions(false).Where(_=>_.IndexedProperties.Count == 1 && _.IndexedProperties.Contains(myPropertyDefinition)).Select(_ => _indices[_.ID]);
@@ -549,7 +549,7 @@ namespace sones.GraphDB.Manager.Index
             
         }
 
-        public void DropIndex(RequestDropIndex myDropIndexRequest, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public void DropIndex(RequestDropIndex myDropIndexRequest, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             var vertexType = _vertexTypeManager.ExecuteManager.GetType(myDropIndexRequest.TypeName, myTransactionToken, mySecurityToken);
 
@@ -577,7 +577,7 @@ namespace sones.GraphDB.Manager.Index
             }
         }
 
-        private void ProcessDropIndex(IEnumerable<IIndexDefinition> myToBeDroppedIndices, IVertexType vertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void ProcessDropIndex(IEnumerable<IIndexDefinition> myToBeDroppedIndices, IVertexType vertexType, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             foreach (var aVertexType in vertexType.GetDescendantVertexTypesAndSelf())
             {
@@ -596,7 +596,7 @@ namespace sones.GraphDB.Manager.Index
         #endregion
 
 
-        public IIndex<IComparable, long> GetIndex(string myIndexName, SecurityToken mySecurity, TransactionToken myTransaction)
+        public IIndex<IComparable, long> GetIndex(string myIndexName, SecurityToken mySecurity, Int64 myTransaction)
         {
             if (_ownIndex.ContainsKey(myIndexName))
             {

@@ -52,16 +52,16 @@ namespace sones.GraphDB.Manager.Vertex
         /// <param name="myTransaction">The current transaction token</param>
         /// <param name="mySecurity">The current security token</param>
         /// <returns>An enumerable of all vertices</returns>
-        public abstract IEnumerable<IVertex> GetVertices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes = true);
+        public abstract IEnumerable<IVertex> GetVertices(IVertexType myVertexType, Int64 myTransaction, SecurityToken mySecurity, Boolean includeSubtypes = true);
 
         /// <summary>
         /// Gets all vertices depending to a request
         /// </summary>
         /// <param name="myRequest">The request</param>
-        /// <param name="TransactionToken">The current transaction token</param>
+        /// <param name="Int64">The current transaction token</param>
         /// <param name="SecurityToken">The current security token</param>
         /// <returns>An enumerable of all vertices</returns>
-        public abstract IEnumerable<IVertex> GetVertices(RequestGetVertices myRequest, TransactionToken TransactionToken, SecurityToken SecurityToken);
+        public abstract IEnumerable<IVertex> GetVertices(RequestGetVertices myRequest, Int64 Int64, SecurityToken SecurityToken);
 
         /// <summary>
         /// Gets all vertices for one vertex type.
@@ -72,7 +72,7 @@ namespace sones.GraphDB.Manager.Vertex
         /// <returns>
         /// All vertices of the interesting vertex type.
         /// </returns>
-        public abstract IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes = true);
+        public abstract IEnumerable<IVertex> GetVertices(String myVertexType, Int64 myTransaction, SecurityToken mySecurity, Boolean includeSubtypes = true);
 
         /// <summary>
         /// Gets all vertices for one vertex type ID.
@@ -83,7 +83,7 @@ namespace sones.GraphDB.Manager.Vertex
         /// <returns>
         /// All vertices of the interesting vertex type.
         /// </returns>
-        public abstract IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes = true);
+        public abstract IEnumerable<IVertex> GetVertices(long myTypeID, Int64 myTransaction, SecurityToken mySecurity, Boolean includeSubtypes = true);
 
         /// <summary>
         /// Returns the list of vertices that matches the expression.
@@ -96,7 +96,7 @@ namespace sones.GraphDB.Manager.Vertex
         /// A possible emtpy list of vertices that matches the expression. The myResult is never <c>NULL</c>.
         /// Any implementation should try to optimize the way the underlying parentVertex store and indices are used to get the myResult.
         /// </returns>
-        public abstract IEnumerable<IVertex> GetVertices(IExpression myExpression, Boolean myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+        public abstract IEnumerable<IVertex> GetVertices(IExpression myExpression, Boolean myIsLongrunning, Int64 myTransactionToken, SecurityToken mySecurityToken);
 
         #endregion
 
@@ -112,7 +112,7 @@ namespace sones.GraphDB.Manager.Vertex
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation</param>
         /// <returns>The requested vertex</returns>
-        public abstract IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity);
+        public abstract IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, Int64 myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Execution of the request
@@ -124,9 +124,9 @@ namespace sones.GraphDB.Manager.Vertex
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation</param>
         /// <returns>The requested vertex</returns>
-        public abstract IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransaction, SecurityToken mySecurity);
+        public abstract IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, Int64 myTransaction, SecurityToken mySecurity);
 
-        public abstract IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity);
+        public abstract IVertex GetSingleVertex(IExpression myExpression, Int64 myTransaction, SecurityToken mySecurity);
 
         #endregion
 
@@ -134,20 +134,20 @@ namespace sones.GraphDB.Manager.Vertex
         /// Adds a vertex to the FS.
         /// </summary>
         /// <param name="myInsertDefinition">The insert request.</param>
-        /// <param name="TransactionToken">A transaction token for this operation.</param>
+        /// <param name="Int64">A transaction token for this operation.</param>
         /// <param name="SecurityToken">A security token for this operation.</param>
         /// <returns>The added vertex.</returns>
-        public abstract IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity);
+        public abstract IVertex AddVertex(RequestInsertVertex myInsertDefinition, Int64 myTransaction, SecurityToken mySecurity);
 
 
         /// <summary>
         /// Updates a set of vertices and returns them.
         /// </summary>
         /// <param name="myUpdate">The request that represents the update.</param>
-        /// <param name="TransactionToken">A transaction token for this operation.</param>
+        /// <param name="Int64">A transaction token for this operation.</param>
         /// <param name="SecurityToken">A security token for this operation.</param>
         /// <returns>The updated vertivess.</returns>
-        public abstract IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, TransactionToken myTransaction, SecurityToken mySecurity);
+        public abstract IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate, Int64 myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Gets the vertex store this vertex manager is acting on.
@@ -160,7 +160,7 @@ namespace sones.GraphDB.Manager.Vertex
         /// <param name="myDeleteRequest">The request that represents the delete operation</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
-        public abstract void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        public abstract void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         #endregion
 
@@ -168,7 +168,7 @@ namespace sones.GraphDB.Manager.Vertex
         protected IQueryPlanManager _queryPlanManager;
 
 
-        protected IVertexType GetType(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
+        protected IVertexType GetType(String myVertexTypeName, Int64 myTransaction, SecurityToken mySecurity)
         {
             try
             {
@@ -301,7 +301,7 @@ namespace sones.GraphDB.Manager.Vertex
             _queryPlanManager = myMetaManager.QueryPlanManager;
         }
 
-        public virtual void Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        public virtual void Load(Int64 myTransaction, SecurityToken mySecurity)
         {
         }
 

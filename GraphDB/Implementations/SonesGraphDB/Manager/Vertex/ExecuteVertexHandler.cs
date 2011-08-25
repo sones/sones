@@ -76,14 +76,14 @@ namespace sones.GraphDB.Manager.Vertex
 
         #region GetVertices
 
-        public override IEnumerable<IVertex> GetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public override IEnumerable<IVertex> GetVertices(IExpression myExpression, bool myIsLongrunning, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             var queryPlan = _queryPlanManager.CreateQueryPlan(myExpression, myIsLongrunning, myTransactionToken, mySecurityToken);
 
             return queryPlan.Execute();
         }
 
-        public override IEnumerable<IVertex> GetVertices(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
+        public override IEnumerable<IVertex> GetVertices(IVertexType myVertexType, Int64 myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
         {
             if (includeSubtypes)
             {
@@ -96,24 +96,24 @@ namespace sones.GraphDB.Manager.Vertex
 
         }
 
-        public override IEnumerable<IVertex> GetVertices(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
+        public override IEnumerable<IVertex> GetVertices(String myVertexTypeName, Int64 myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
         {
             return GetVertices(_vertexTypeManager.ExecuteManager.GetType(myVertexTypeName, myTransaction, mySecurity), myTransaction, mySecurity, includeSubtypes);
         }
 
-        public override IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
+        public override IEnumerable<IVertex> GetVertices(long myTypeID, Int64 myTransaction, SecurityToken mySecurity, Boolean includeSubtypes)
         {
             return GetVertices(_vertexTypeManager.ExecuteManager.GetType(myTypeID, myTransaction, mySecurity), myTransaction, mySecurity, includeSubtypes);
         }
 
-        public override IEnumerable<IVertex> GetVertices(RequestGetVertices _request, TransactionToken TransactionToken, SecurityToken SecurityToken)
+        public override IEnumerable<IVertex> GetVertices(RequestGetVertices _request, Int64 Int64, SecurityToken SecurityToken)
         {
             IEnumerable<IVertex> result;
             #region case 1 - Expression
 
             if (_request.Expression != null)
             {
-                result = GetVertices(_request.Expression, _request.IsLongrunning, TransactionToken, SecurityToken);
+                result = GetVertices(_request.Expression, _request.IsLongrunning, Int64, SecurityToken);
             }
 
             #endregion
@@ -130,7 +130,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                     foreach (var item in _request.VertexIDs)
                     {
-                        fetchedVertices.Add(GetVertex(_request.VertexTypeName, item, null, null, TransactionToken, SecurityToken));
+                        fetchedVertices.Add(GetVertex(_request.VertexTypeName, item, null, null, Int64, SecurityToken));
                     }
 
                     result = fetchedVertices;
@@ -138,7 +138,7 @@ namespace sones.GraphDB.Manager.Vertex
                 else
                 {
                     //2.1.2 no vertex ids ... take all
-                    result = GetVertices(_request.VertexTypeName, TransactionToken, SecurityToken, true);
+                    result = GetVertices(_request.VertexTypeName, Int64, SecurityToken, true);
                 }
             }
             else
@@ -151,7 +151,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                     foreach (var item in _request.VertexIDs)
                     {
-                        fetchedVertices.Add(GetVertex(_request.VertexTypeID, item, null, null, TransactionToken, SecurityToken));
+                        fetchedVertices.Add(GetVertex(_request.VertexTypeID, item, null, null, Int64, SecurityToken));
                     }
 
                     result = fetchedVertices;
@@ -159,7 +159,7 @@ namespace sones.GraphDB.Manager.Vertex
                 else
                 {
                     //2.2.2 no vertex ids ... take all
-                    result = GetVertices(_request.VertexTypeID, TransactionToken, SecurityToken, true);
+                    result = GetVertices(_request.VertexTypeID, Int64, SecurityToken, true);
                 }
             }
 
@@ -172,17 +172,17 @@ namespace sones.GraphDB.Manager.Vertex
 
         #region GetVertex
 
-        public override IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public override IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             return _vertexStore.GetVertex(mySecurityToken, myTransactionToken, myVertexID, _vertexTypeManager.ExecuteManager.GetType(myVertexTypeName, myTransactionToken, mySecurityToken).ID, (aEdition) => myEdition == aEdition, (aVertexRevisionID) => myTimespan.IsWithinTimeStamp(aVertexRevisionID));
         }
 
-        public override IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken)
+        public override IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, Int64 Int64, SecurityToken SecurityToken)
         {
-            return _vertexStore.GetVertex(SecurityToken, TransactionToken, myVertexID, myVertexTypeID, (aEdition) => myEdition == aEdition, (aVertexRevisionID) => myTimespan.IsWithinTimeStamp(aVertexRevisionID));
+            return _vertexStore.GetVertex(SecurityToken, Int64, myVertexID, myVertexTypeID, (aEdition) => myEdition == aEdition, (aVertexRevisionID) => myTimespan.IsWithinTimeStamp(aVertexRevisionID));
         }
 
-        public override IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public override IVertex GetSingleVertex(IExpression myExpression, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             return GetVertices(myExpression, false, myTransactionToken, mySecurityToken).FirstOrDefault();
         }
@@ -190,7 +190,7 @@ namespace sones.GraphDB.Manager.Vertex
         #endregion
 
 
-        public override IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
+        public override IVertex AddVertex(RequestInsertVertex myInsertDefinition, Int64 myTransaction, SecurityToken mySecurity)
         {
             IVertexType vertexType = GetType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
 
@@ -255,7 +255,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         private Tuple<long?, VertexAddDefinition> RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition,
                                                                                             IVertexType myVertexType,
-                                                                                            TransactionToken myTransaction,
+                                                                                            Int64 myTransaction,
                                                                                             SecurityToken mySecurity)
         {
             long vertexID = (myInsertDefinition.VertexUUID.HasValue)
@@ -382,7 +382,7 @@ namespace sones.GraphDB.Manager.Vertex
         private void CreateEdgeAddDefinitions(
             IEnumerable<EdgePredefinition> myOutgoingEdges,
             IVertexType myVertexType,
-            TransactionToken myTransaction,
+            Int64 myTransaction,
             SecurityToken mySecurity,
             VertexInformation source,
             long date,
@@ -431,7 +431,7 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         private HyperEdgeAddDefinition? CreateMultiEdgeAddDefinition(
-            TransactionToken myTransaction,
+            Int64 myTransaction,
             SecurityToken mySecurity,
             VertexInformation source,
             long date,
@@ -448,7 +448,7 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         private IEnumerable<SingleEdgeAddDefinition> CreateContainedEdges(
-            TransactionToken myTransaction,
+            Int64 myTransaction,
             SecurityToken mySecurity,
             long myDate,
             IEnumerable<VertexInformation> vertexIDs,
@@ -489,7 +489,7 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         private SingleEdgeAddDefinition? CreateSingleEdgeAddDefinition(
-            TransactionToken myTransaction,
+            Int64 myTransaction,
             SecurityToken mySecurity,
             long date,
             long myAttributeID,
@@ -544,7 +544,7 @@ namespace sones.GraphDB.Manager.Vertex
                 throw new Exception("A target vertex has a type, that is not assignable to the target vertex type of the edge.");
         }
 
-        private IEnumerable<VertexInformation> GetResultingVertexIDs(TransactionToken myTransaction, SecurityToken mySecurity, EdgePredefinition myEdgeDef, IVertexType myTargetType = null)
+        private IEnumerable<VertexInformation> GetResultingVertexIDs(Int64 myTransaction, SecurityToken mySecurity, EdgePredefinition myEdgeDef, IVertexType myTargetType = null)
         {
             if (myEdgeDef.VertexIDsByVertexTypeID != null || myEdgeDef.VertexIDsByVertexTypeName != null)
             {
@@ -728,7 +728,7 @@ namespace sones.GraphDB.Manager.Vertex
         }
         #endregion
 
-        public override void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override void Delete(RequestDelete myDeleteRequest, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             var toBeProcessedVertices = GetVertices(myDeleteRequest.ToBeDeletedVertices, myTransactionToken, mySecurityToken);
 
@@ -904,14 +904,14 @@ namespace sones.GraphDB.Manager.Vertex
 
         #endregion
 
-        private void RemoveVertex(IVertex aVertex, IVertexType myVertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void RemoveVertex(IVertex aVertex, IVertexType myVertexType, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             RemoveVertexFromIndices(aVertex, myVertexType, mySecurityToken, myTransactionToken);
 
             _vertexStore.RemoveVertex(mySecurityToken, myTransactionToken, aVertex.VertexID, aVertex.VertexTypeID);
         }
 
-        private void RemoveVertexFromIndices(IVertex aVertex, IVertexType myVertexType, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void RemoveVertexFromIndices(IVertex aVertex, IVertexType myVertexType, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             foreach (var aStructuredProperty in myVertexType.GetPropertyDefinitions(true))
             {
@@ -929,7 +929,7 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        private void RemoveVertexPropertyFromIndex(IVertex aVertex, IIndexDefinition aIndexDefinition, IEnumerable<IIndex<IComparable, long>> myIndices, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void RemoveVertexPropertyFromIndex(IVertex aVertex, IIndexDefinition aIndexDefinition, IEnumerable<IIndex<IComparable, long>> myIndices, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             var entry = CreateIndexEntry(aIndexDefinition.IndexedProperties, aVertex.GetAllProperties().ToDictionary(key => key.Item1, value => value.Item2));
 
@@ -962,7 +962,7 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         public override IEnumerable<IVertex> UpdateVertices(RequestUpdate myUpdate,
-                                                            TransactionToken myTransaction,
+                                                            Int64 myTransaction,
                                                             SecurityToken mySecurity)
         {
             var toBeUpdated = GetVertices(myUpdate.GetVerticesRequest, myTransaction, mySecurity);
@@ -1031,7 +1031,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         private IEnumerable<IVertex> ExecuteUpdates(IEnumerable<IGrouping<long, IVertex>> groups,
                                                     Dictionary<IVertex, Tuple<long?, string, VertexUpdateDefinition>> updates,
-                                                    TransactionToken myTransaction,
+                                                    Int64 myTransaction,
                                                     SecurityToken mySecurity)
         {
             List<IVertex> result = new List<IVertex>();
@@ -1119,7 +1119,7 @@ namespace sones.GraphDB.Manager.Vertex
                                 long id,
                                 IVertexType vertexType,
                                 IDictionary<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, long>>> indices,
-                                TransactionToken myTransaction,
+                                Int64 myTransaction,
                                 SecurityToken mySecurity)
         {
             foreach (var indexGroup in indices)
@@ -1151,7 +1151,7 @@ namespace sones.GraphDB.Manager.Vertex
             IDictionary<string, IComparable> structured,
             IVertexType vertexType,
             IEnumerable<KeyValuePair<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, long>>>> indices,
-            TransactionToken myTransaction,
+            Int64 myTransaction,
             SecurityToken mySecurity)
         {
             foreach (var indexGroup in indices)
@@ -1208,7 +1208,7 @@ namespace sones.GraphDB.Manager.Vertex
                                                                 IVertexType myVertexType,
                                                                 RequestUpdate myUpdate,
                                                                 IPropertyProvider myPropertyCopy,
-                                                                TransactionToken myTransaction,
+                                                                Int64 myTransaction,
                                                                 SecurityToken mySecurity)
         {
 
@@ -1854,7 +1854,7 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
 
-        private IEnumerable<SingleEdgeDeleteDefinition> CreateSingleEdgeDeleteDefinitions(VertexInformation mySource, TransactionToken myTransaction, SecurityToken mySecurity, EdgePredefinition myEdge, IOutgoingEdgeDefinition edgeDef)
+        private IEnumerable<SingleEdgeDeleteDefinition> CreateSingleEdgeDeleteDefinitions(VertexInformation mySource, Int64 myTransaction, SecurityToken mySecurity, EdgePredefinition myEdge, IOutgoingEdgeDefinition edgeDef)
         {
             List<SingleEdgeDeleteDefinition> result = new List<SingleEdgeDeleteDefinition>();
 
@@ -1887,7 +1887,7 @@ namespace sones.GraphDB.Manager.Vertex
             return result;
         }
 
-        private void CreateSingleEdgeUpdateDefinitions(VertexInformation mySource, TransactionToken myTransaction, SecurityToken mySecurity, EdgePredefinition myEdge, IOutgoingEdgeDefinition edgeDef, out StructuredPropertiesUpdate outStructuredUpdate, out UnstructuredPropertiesUpdate outUnstructuredUpdate, out IEnumerable<SingleEdgeUpdateDefinition> outSingleUpdate)
+        private void CreateSingleEdgeUpdateDefinitions(VertexInformation mySource, Int64 myTransaction, SecurityToken mySecurity, EdgePredefinition myEdge, IOutgoingEdgeDefinition edgeDef, out StructuredPropertiesUpdate outStructuredUpdate, out UnstructuredPropertiesUpdate outUnstructuredUpdate, out IEnumerable<SingleEdgeUpdateDefinition> outSingleUpdate)
         {
             #region predefine
             List<SingleEdgeUpdateDefinition> singleUpdate = new List<SingleEdgeUpdateDefinition>();

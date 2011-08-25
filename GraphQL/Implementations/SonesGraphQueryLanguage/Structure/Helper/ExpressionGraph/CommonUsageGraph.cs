@@ -54,7 +54,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// <summary>
         /// The current transaction token
         /// </summary>
-        private readonly TransactionToken _transactionToken;
+        private readonly Int64 _transactionToken;
 
         /// <summary>
         /// The levels of the expression graph
@@ -74,7 +74,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// <summary>
         /// Constructor
         /// </summary>
-        public CommonUsageGraph(IGraphDB myIGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public CommonUsageGraph(IGraphDB myIGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
             : this()
         {
             _iGraphDB = myIGraphDB;
@@ -451,7 +451,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             return false;
         }
 
-        public override IExpressionGraph GetNewInstance(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override IExpressionGraph GetNewInstance(IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             return new ExpressionGraph.CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken);
         }

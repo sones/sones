@@ -49,8 +49,19 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
         }
 
         #endregion
+<<<<<<< HEAD
         
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+=======
+
+        public override string GetDescribeOutput()
+        {
+            return "A path algorithm. This algorithm searches the shortest, all shortest or all paths up to a given depth an path length." +
+                    "Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used.";
+        }
+
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
+>>>>>>> c18174100dd22130e37f0f04b6723ee1539b73b9
         {
             if (myWorkingBase is IAttributeDefinition)
             {
@@ -76,7 +87,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                                                 IVertex myStartVertex,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,
-                                                TransactionToken myTransactionToken,
+                                                Int64 myTransactionToken,
                                                 params FuncParameter[] myParams)
         {
             #region initialize data

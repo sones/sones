@@ -170,7 +170,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             VertexInformation? myInnerEdgeType, //not mandatory, might be null
             VertexInformation myTarget,
             SecurityToken mySecurity,
-            TransactionToken myTransaction)
+            Int64 myTransaction)
         {
             var singleEdges = new Dictionary<Tuple<long, long>, VertexInformation>
                 {
@@ -242,7 +242,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             VertexInformation myDefiningType,
             VertexInformation myRelatedIncomingEdge,
             SecurityToken mySecurity,
-            TransactionToken myTransaction)
+            Int64 myTransaction)
         {
             Store(
                 myStore,
@@ -313,7 +313,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             VertexInformation myDefiningType,
             VertexInformation myBasicType,
             SecurityToken mySecurity,
-            TransactionToken myTransaction)
+            Int64 myTransaction)
         {
             var props = new Dictionary<long, IComparable>
                 {
@@ -378,7 +378,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             Int64 myCreationDate,
             VertexInformation myDefiningType,
             SecurityToken mySecurity,
-            TransactionToken myTransaction)
+            Int64 myTransaction)
         {
             Store(
                 myStore,
@@ -412,7 +412,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             String myComment,
             Int64 myCreationDate,
             SecurityToken mySecurity,
-            TransactionToken myTransaction)
+            Int64 myTransaction)
         {
             return Store(
                 myStore,
@@ -451,7 +451,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             VertexInformation? myParent,
             IEnumerable<VertexInformation> myUniques,
             SecurityToken mySecurity,
-            TransactionToken myTransaction)
+            Int64 myTransaction)
         {
             return StoreVertexType(myStore, myVertex, myType.ToString(), myComment, myCreationDate, myIsAbstract, myIsSealed, myIsUserDefined, myParent, myUniques, mySecurity, myTransaction);
         }
@@ -468,7 +468,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             VertexInformation? myParent,
             IEnumerable<VertexInformation> myUniques,
             SecurityToken mySecurity,
-            TransactionToken myTransaction)
+            Int64 myTransaction)
         {
             return Store(
                 myStore,
@@ -516,7 +516,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             bool myIsUserDefined,
             VertexInformation? myParent,
             SecurityToken mySecurity,
-            TransactionToken myTransaction)
+            Int64 myTransaction)
         {
             return Store(myStore,
                             myVertex,
@@ -605,7 +605,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             VertexInformation? mySourceIndex, 
             IList<VertexInformation> myIndexedProperties,
             SecurityToken mySecurity,
-            TransactionToken myTransaction)
+            Int64 myTransaction)
         {
             var props = new Dictionary<long, IComparable>
                 {
@@ -668,7 +668,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             IDictionary<Int64, IComparable> myStructuredProperties,
             IDictionary<String, Object> myUnstructuredProperties,
             SecurityToken mySecurity,
-            TransactionToken myTransaction)
+            Int64 myTransaction)
         {
             VertexAddDefinition def = new VertexAddDefinition(
                 mySource.VertexID,
@@ -1022,7 +1022,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             _metaManager = myMetaManager;            
         }
 
-        public void Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        public void Load(Int64 myTransaction, SecurityToken mySecurity)
         {
             _baseTypeManager = _metaManager.BaseTypeManager;
         }

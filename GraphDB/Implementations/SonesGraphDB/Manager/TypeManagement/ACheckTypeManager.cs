@@ -49,14 +49,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region ATypeManager member
 
         public override T GetType(long myTypeId,
-                                    TransactionToken myTransaction,
+                                    Int64 myTransaction,
                                     SecurityToken mySecurity)
         {
             return default(T);
         }
 
         public override T GetType(string myTypeName,
-                                    TransactionToken myTransaction,
+                                    Int64 myTransaction,
                                     SecurityToken mySecurity)
         {
             if (String.IsNullOrWhiteSpace(myTypeName))
@@ -65,14 +65,14 @@ namespace sones.GraphDB.Manager.TypeManagement
             return default(T);
         }
 
-        public override IEnumerable<T> GetAllTypes(TransactionToken myTransaction,
+        public override IEnumerable<T> GetAllTypes(Int64 myTransaction,
                                                     SecurityToken mySecurity)
         {
             return default(IEnumerable<T>);
         }
 
         public override IEnumerable<T> AddTypes(IEnumerable<ATypePredefinition> myTypePredefinitions,
-                                                    TransactionToken myTransaction,
+                                                    Int64 myTransaction,
                                                     SecurityToken mySecurity)
         {
             #region check arguments
@@ -87,7 +87,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         public override Dictionary<long, string> RemoveTypes(IEnumerable<T> myTypes,
-                                                                TransactionToken myTransaction,
+                                                                Int64 myTransaction,
                                                                 SecurityToken mySecurity,
                                                                 bool myIgnoreReprimands = false)
         {
@@ -104,7 +104,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             return null;
         }
 
-        public override IEnumerable<long> ClearTypes(TransactionToken myTransaction,
+        public override IEnumerable<long> ClearTypes(Int64 myTransaction,
                                                         SecurityToken mySecurity)
         {
             return null;
@@ -112,7 +112,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
 
         public override void TruncateType(long myTypeID,
-                                            TransactionToken myTransactionToken,
+                                            Int64 myTransactionToken,
                                             SecurityToken mySecurityToken)
         {
             GetType(myTypeID, myTransactionToken, mySecurityToken);
@@ -122,7 +122,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         public override void TruncateType(string myTypeName,
-                                            TransactionToken myTransactionToken,
+                                            Int64 myTransactionToken,
                                             SecurityToken mySecurityToken)
         {
             GetType(myTypeName, myTransactionToken, mySecurityToken);
@@ -132,7 +132,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         public override bool HasType(string myTypeName,
-                                        TransactionToken myTransactionToken,
+                                        Int64 myTransactionToken,
                                         SecurityToken mySecurityToken)
         {
             GetType(myTypeName, myTransactionToken, mySecurityToken);
@@ -144,13 +144,13 @@ namespace sones.GraphDB.Manager.TypeManagement
         { }
 
         public override abstract T AlterType(IRequestAlterType myAlterTypeRequest,
-                                                TransactionToken myTransactionToken,
+                                                Int64 myTransactionToken,
                                                 SecurityToken mySecurityToken,
                                                 out RequestUpdate myUpdateRequest);
 
         public override abstract void Initialize(IMetaManager myMetaManager);
 
-        public override abstract void Load(TransactionToken myTransaction,
+        public override abstract void Load(Int64 myTransaction,
                                             SecurityToken mySecurity);
 
         /// <summary>
@@ -210,11 +210,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Checks if the specified type can be removed.
         /// </summary>
         /// <param name="myTypes">The types which should be removed.</param>
-        /// <param name="myTransaction">TransactionToken</param>
+        /// <param name="myTransaction">Int64</param>
         /// <param name="mySecurity">SecurityToken</param>
         /// <param name="myIgnoreReprimands">Marks if reprimands are ignored on the types which should be removed.</param>
         protected abstract void CanRemove(IEnumerable<T> myTypes,
-                                            TransactionToken myTransaction,
+                                            Int64 myTransaction,
                                             SecurityToken mySecurity,
                                             bool myIgnoreReprimands);
 
@@ -223,11 +223,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myAlterTypeRequest">The alter type request.</param>
         /// <param name="myType">The type which is going to be altered.</param>
-        /// <param name="myTransactionToken">TransactionToken</param>
+        /// <param name="myTransactionToken">Int64</param>
         /// <param name="mySecurityToken">SecurityToken</param>
         protected abstract void CallCheckFunctions(IRequestAlterType myAlterTypeRequest,
                                                     T myType,
-                                                    TransactionToken myTransactionToken,
+                                                    Int64 myTransactionToken,
                                                     SecurityToken mySecurityToken);
 
         /// <summary>
@@ -250,10 +250,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Checks if the new type name is valid.
         /// </summary>
         /// <param name="myAlteredTypeName">The new type name.</param>
-        /// <param name="myTransactionToken">TransactionToken</param>
+        /// <param name="myTransactionToken">Int64</param>
         /// <param name="mySecurityToken">SecurityToken</param>
         protected abstract void CheckNewTypeName(string myAlteredTypeName,
-                                                    TransactionToken myTransactionToken,
+                                                    Int64 myTransactionToken,
                                                     SecurityToken mySecurityToken);
 
         /// <summary>
@@ -275,7 +275,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myTypePredefinitions">The type predefinintions.</param>
         protected void CheckAdd(IEnumerable<ATypePredefinition> myTypePredefinitions,
-                                TransactionToken myTransactionToken,
+                                Int64 myTransactionToken,
                                 SecurityToken mySecurityToken)
         {
             #region prolog
@@ -332,7 +332,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinitions">The list of vertex type predefinitions to be checked.</param>
         protected void CanAddCheckBasics(IEnumerable<ATypePredefinition> myTypePredefinitions,
-                                            TransactionToken myTransactionToken,
+                                            Int64 myTransactionToken,
                                             SecurityToken mySecurityToken)
         {
             foreach (var typePredefinition in myTypePredefinitions)

@@ -50,7 +50,7 @@ namespace sones.GraphDB.Request
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
         public PipelineableClearRequest(RequestClear myClearRequest, 
                                         SecurityToken mySecurity,
-                                        TransactionToken myTransactionToken)
+                                        Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myClearRequest;
@@ -68,7 +68,7 @@ namespace sones.GraphDB.Request
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _deletedVertexTypeIDs = myMetaManager.VertexTypeManager.ExecuteManager.ClearTypes(TransactionToken, SecurityToken);
+            _deletedVertexTypeIDs = myMetaManager.VertexTypeManager.ExecuteManager.ClearTypes(Int64, SecurityToken);
         }
 
         public override IRequest GetRequest()

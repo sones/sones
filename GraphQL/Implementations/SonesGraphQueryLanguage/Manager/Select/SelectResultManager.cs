@@ -378,7 +378,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="myAStructureNode"></param>
         /// <param name="myGraphType"></param>
         public void AddAggregateElementToSelection(SecurityToken mySecurityToken, 
-                                                    TransactionToken myTransactionToken, 
+                                                    Int64 myTransactionToken, 
                                                     string myAlias, 
                                                     string myReference, 
                                                     SelectionElementAggregate mySelectionPartAggregate)
@@ -617,7 +617,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                                 Boolean myUsingGraph,
                                 ref IEnumerable<IVertexView> myVertices,
                                 SecurityToken mySecurityToken,
-                                TransactionToken myTransactionToken)
+                                Int64 myTransactionToken)
         {
 
             if ((!_Selections.ContainsKey(myReference) || !_Selections[myReference].ContainsKey(new EdgeList(myReferencedDBType.ID))) && _Aggregates.IsNullOrEmpty())
@@ -688,7 +688,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                                                         EdgeList myLevelKey, 
                                                         bool myUsingGraph, 
                                                         SecurityToken mySecurityToken, 
-                                                        TransactionToken myTransactionToken)
+                                                        Int64 myTransactionToken)
         {
 
             #region Get all selections and aggregates for this reference, type and level
@@ -794,7 +794,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         }
 
         public IEnumerable<IVertexView> GetTypeIndependendResult(SecurityToken mySecurityToken, 
-                                                                    TransactionToken myTransactionToken)
+                                                                    Int64 myTransactionToken)
         {
 
             //_DBOs = new IEnumerable<Vertex>();
@@ -859,7 +859,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <returns></returns>
         public Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> 
                 GetAllSelectedAttributesFromVertex(SecurityToken mySecurityToken, 
-                                                    TransactionToken myTransactionToken, 
+                                                    Int64 myTransactionToken, 
                                                     IVertex myDBObject, 
                                                     IVertexType myDBType, 
                                                     Int64 myDepth, 
@@ -1272,7 +1272,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         ///
         /// <returns>   true if it succeeds, false if the DBO does not have the attribute. </returns>
         private Boolean GetAttributeValueAndResolve(SecurityToken mySecurityToken,
-                                                    TransactionToken myTransactionToken,
+                                                    Int64 myTransactionToken,
                                                     IVertexType myType,
                                                     SelectionElement mySelectionelement,
                                                     IVertex myDBObject,
@@ -1393,7 +1393,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                                                 EdgeList myLevelKey, 
                                                 Boolean myUsingGraph, 
                                                 SecurityToken mySecurityToken, 
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
         {
 
             #region Function
@@ -1451,7 +1451,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// </summary>
         private void AddAttributesByDBO(
             SecurityToken mySecurityToken,
-            TransactionToken myTransactionToken,
+            Int64 myTransactionToken,
             ref Tuple<IDictionary<String, Object>, IDictionary<String, IEdgeView>> myAttributes,
             IVertexType myType,
             IVertex myDBObject,
@@ -1581,7 +1581,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                                                     String reference, 
                                                     Boolean myUsingGraph, 
                                                     SecurityToken mySecurityToken, 
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
         {
             #region Get levelKey and UsingGraph
 
@@ -1646,7 +1646,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// </summary>
 
         private IEnumerable<IVertexView> GetVertices(SecurityToken mySecurityToken, 
-                                                        TransactionToken myTransactionToken, 
+                                                        Int64 myTransactionToken, 
                                                         IVertexType myTypeOfAttribute, 
                                                         IEnumerable<IVertex> myObjectUUIDs, 
                                                         Int64 myDepth, 
@@ -1684,7 +1684,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                                                 String reference, 
                                                 Boolean myUsingGraph, 
                                                 SecurityToken mySecurityToken, 
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
         {
             #region Get levelKey and UsingGraph
 
@@ -1779,7 +1779,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         }
 
         private IEnumerable<SingleEdgeView> GenerateSingleEdgeViews(SecurityToken mySecurityToken, 
-                                                                    TransactionToken myTransactionToken, 
+                                                                    Int64 myTransactionToken, 
                                                                     IEnumerable<ISingleEdge> mySingleEdges, 
                                                                     IVertexType myVertexType, 
                                                                     long myDepth, 
@@ -1805,7 +1805,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         }
 
         private SingleEdgeView GenerateASingleEdgeView(SecurityToken mySecurityToken, 
-                                                        TransactionToken myTransactionToken, 
+                                                        Int64 myTransactionToken, 
                                                         ISingleEdge aSingleEdge, 
                                                         IVertexType myVertexType, 
                                                         long myDepth, 
@@ -1876,7 +1876,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                                                 String reference, 
                                                 Boolean myUsingGraph, 
                                                 SecurityToken mySecurityToken, 
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
         {
             #region Get levelKey and UsingGraph
 
@@ -1968,7 +1968,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// This will load the vertex (check for load errors) and get all selected attributes of this vertex
         /// </summary>
         private VertexView LoadAndResolveVertex(SecurityToken mySecurityToken, 
-                                                TransactionToken myTransactionToken, 
+                                                Int64 myTransactionToken, 
                                                 IVertex myObjectUUID, 
                                                 IVertexType myTypeOfAttribute, 
                                                 Int64 myDepth, 
@@ -2071,7 +2071,7 @@ namespace sones.GraphQL.GQL.Manager.Select
         /// <param name="myDBOs"></param>
         /// <param name="myReferencedDBType"></param>
         /// <returns></returns>
-        private IEnumerable<IVertexView> ExamineDBO_Aggregates(TransactionToken myTransactionToken, 
+        private IEnumerable<IVertexView> ExamineDBO_Aggregates(Int64 myTransactionToken, 
                                                                 SecurityToken mySecurityToken, 
                                                                 IEnumerable<IVertex> myDBOs, 
                                                                 List<SelectionElementAggregate> myAggregates, 

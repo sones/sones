@@ -60,7 +60,7 @@ namespace sones.Plugins.SonesGQL.DBImport
 			IGraphDB myGraphDB, 
 			IGraphQL myGraphQL, 
 			SecurityToken mySecurityToken, 
-			TransactionToken myTransactionToken, 
+			Int64 myTransactionToken, 
 			UInt32 myParallelTasks = 1U, 
 			IEnumerable<string> myComments = null, 
 			UInt64? myOffset = null, 

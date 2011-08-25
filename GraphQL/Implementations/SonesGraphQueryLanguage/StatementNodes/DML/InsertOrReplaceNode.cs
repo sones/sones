@@ -105,7 +105,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             Stopwatch sw = Stopwatch.StartNew();
 
@@ -167,7 +167,7 @@ namespace sones.GraphQL.StatementNodes.DML
             return GenerateResult(sw.ElapsedMilliseconds, result, myAction);
         }
 
-        private QueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private QueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             InsertNode insert = new InsertNode();
 
@@ -176,7 +176,7 @@ namespace sones.GraphQL.StatementNodes.DML
             return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
-        private void ProcessDelete(IVertex toBeDeletedVertexID, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void ProcessDelete(IVertex toBeDeletedVertexID, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             //TODO: new RequestDelete(new RequestGetVertices( --> change to sth that uses the IVertex directly
             var stat = myGraphDB.Delete(mySecurityToken,

@@ -23,6 +23,7 @@ using sones.GraphDB.Manager;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using System;
 
 namespace sones.GraphDB.Request.DecribeIndex
 {
@@ -53,7 +54,7 @@ namespace sones.GraphDB.Request.DecribeIndex
         public PipelineableDescribeIndexRequest(
                                                 RequestDescribeIndex myDescribeIndexRequest, 
                                                 SecurityToken mySecurity,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myDescribeIndexRequest;
@@ -65,12 +66,12 @@ namespace sones.GraphDB.Request.DecribeIndex
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CheckManager.GetType(_request.TypeName, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.CheckManager.GetType(_request.TypeName, Int64, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _IndexDefinitions = myMetaManager.IndexManager.DescribeIndex(_request.TypeName, _request.IndexName, _request.Edition, TransactionToken, SecurityToken);                
+            _IndexDefinitions = myMetaManager.IndexManager.DescribeIndex(_request.TypeName, _request.IndexName, _request.Edition, Int64, SecurityToken);                
         }
 
         public override IRequest GetRequest()

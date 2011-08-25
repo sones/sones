@@ -49,7 +49,7 @@ namespace sones.GraphDB.Request.DecribeIndex
 
         public PipelineableDescribeIndicesRequest(RequestDescribeIndex myDescribeIndexRequest,
                                                   SecurityToken mySecurity,
-                                                  TransactionToken myTransactionToken) 
+                                                  Int64 myTransactionToken) 
                                                   : base(mySecurity, myTransactionToken)
         {
             _request = myDescribeIndexRequest;
@@ -66,7 +66,7 @@ namespace sones.GraphDB.Request.DecribeIndex
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _IndexDefinitions = myMetaManager.IndexManager.DescribeIndices(TransactionToken, SecurityToken);
+            _IndexDefinitions = myMetaManager.IndexManager.DescribeIndices(Int64, SecurityToken);
         }
 
         public override IRequest GetRequest()

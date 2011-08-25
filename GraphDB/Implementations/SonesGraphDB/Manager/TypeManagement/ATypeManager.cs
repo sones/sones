@@ -52,43 +52,43 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region ITypeManager Members
 
         public abstract T GetType(long myTypeId, 
-                                    TransactionToken myTransaction, 
+                                    Int64 myTransaction, 
                                     SecurityToken mySecurity);
 
         public abstract T GetType(string myTypeName, 
-                                    TransactionToken myTransaction, 
+                                    Int64 myTransaction, 
                                     SecurityToken mySecurity);
 
-        public abstract IEnumerable<T> GetAllTypes(TransactionToken myTransaction, 
+        public abstract IEnumerable<T> GetAllTypes(Int64 myTransaction, 
                                                     SecurityToken mySecurity);
         
         public abstract IEnumerable<T> AddTypes(IEnumerable<ATypePredefinition> myTypePredefinitions, 
-                                                    TransactionToken myTransaction, 
+                                                    Int64 myTransaction, 
                                                     SecurityToken mySecurity);
 
         public abstract Dictionary<Int64, String> RemoveTypes(IEnumerable<T> myTypes, 
-                                                                TransactionToken myTransaction, 
+                                                                Int64 myTransaction, 
                                                                 SecurityToken mySecurity, 
                                                                 bool myIgnoreReprimands = false);
 
-        public abstract IEnumerable<long> ClearTypes(TransactionToken myTransaction, 
+        public abstract IEnumerable<long> ClearTypes(Int64 myTransaction, 
                                                         SecurityToken mySecurity);
 
         public abstract void TruncateType(long myTypeID, 
-                                            TransactionToken myTransactionToken, 
+                                            Int64 myTransactionToken, 
                                             SecurityToken mySecurityToken);
 
         public abstract void TruncateType(String myTypeName, 
-                                            TransactionToken myTransactionToken, 
+                                            Int64 myTransactionToken, 
                                             SecurityToken mySecurityToken);
 
         public abstract T AlterType(IRequestAlterType myAlterTypeRequest,
-                                        TransactionToken myTransactionToken,
+                                        Int64 myTransactionToken,
                                         SecurityToken mySecurityToken,
                                         out RequestUpdate myUpdateRequest);
 
         public abstract bool HasType(string myTypeName,
-                                        TransactionToken myTransactionToken,
+                                        Int64 myTransactionToken,
                                         SecurityToken mySecurityToken);
 
         public abstract void CleanUpTypes();
@@ -99,7 +99,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public abstract void Initialize(IMetaManager myMetaManager);
 
-        public abstract void Load(TransactionToken myTransaction, 
+        public abstract void Load(Int64 myTransaction, 
                                     SecurityToken mySecurity);
 
         #endregion

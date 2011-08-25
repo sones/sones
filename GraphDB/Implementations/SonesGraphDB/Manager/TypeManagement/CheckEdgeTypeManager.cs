@@ -37,7 +37,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region ACheckTypeManager member
 
         public override IEdgeType AlterType(IRequestAlterType myAlterTypeRequest,
-                                            TransactionToken myTransactionToken,
+                                            Int64 myTransactionToken,
                                             SecurityToken mySecurityToken,
                                             out RequestUpdate myUpdateRequest)
         {
@@ -128,7 +128,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
 
-        public override void Load(TransactionToken myTransaction, 
+        public override void Load(Int64 myTransaction, 
                                     SecurityToken mySecurity)
         { }
 
@@ -239,11 +239,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Checks if tje given types can be removed.
         /// </summary>
         /// <param name="myTypes">The to be removed types.</param>
-        /// <param name="myTransaction">TransactionToken</param>
+        /// <param name="myTransaction">Int64</param>
         /// <param name="mySecurity">SecurityToken</param>
         /// <param name="myIgnoreReprimands">Marks if reprimands are ignored on the to be removed types.</param>
         protected override void CanRemove(IEnumerable<IEdgeType> myTypes,
-                                            TransactionToken myTransaction,
+                                            Int64 myTransaction,
                                             SecurityToken mySecurity,
                                             bool myIgnoreReprimands)
         {
@@ -288,11 +288,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myAlterTypeRequest">The request which contains the to be checked member.</param>
         /// <param name="myType">The Type which is returned.</param>
-        /// <param name="myTransactionToken">The TransactionToken.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
         /// <param name="mySecurityToken">The SecurityToken.</param>
         protected override void CallCheckFunctions(IRequestAlterType myAlterTypeRequest,
                                                     IEdgeType myType,
-                                                    TransactionToken myTransactionToken,
+                                                    Int64 myTransactionToken,
                                                     SecurityToken mySecurityToken)
         {
             CheckAttributesNameAndType(myAlterTypeRequest);
@@ -320,10 +320,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Checks if the new vertex type name already exists
         /// </summary>
         /// <param name="myAlteredTypeName">The new name.</param>
-        /// <param name="mySecurityToken">TransactionToken.</param>
+        /// <param name="mySecurityToken">Int64.</param>
         /// <param name="myTransactionToken">SecurityToken.</param>
         protected override void CheckNewTypeName(String myAlteredTypeName, 
-                                                    TransactionToken myTransactionToken, 
+                                                    Int64 myTransactionToken, 
                                                     SecurityToken mySecurityToken)
         {
             if (myAlteredTypeName != null && _TypeManager.HasType(myAlteredTypeName, myTransactionToken, mySecurityToken))

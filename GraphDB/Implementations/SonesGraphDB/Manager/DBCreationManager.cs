@@ -47,7 +47,7 @@ namespace sones.GraphDB.Manager
         //private readonly Dictionary<AttributeDefinitions, VertexInformation> _infos;
 
         private readonly SecurityToken _security;
-        private readonly TransactionToken _transaction;
+        private readonly Int64 _transaction;
         private readonly BaseGraphStorageManager _storageManager;
 
         #region Vertex information
@@ -222,7 +222,7 @@ namespace sones.GraphDB.Manager
         /// </summary>
         /// <param name="mySecurityToken">The root security token... can be left out</param>
         /// <param name="myTransactionToken">The root transaction token... can be left out</param>
-        public DBCreationManager(SecurityToken mySecurityToken, TransactionToken myTransactionToken, BaseGraphStorageManager myStorageManager)
+        public DBCreationManager(SecurityToken mySecurityToken, Int64 myTransactionToken, BaseGraphStorageManager myStorageManager)
         {
             _security = mySecurityToken;
             _transaction = myTransactionToken;
@@ -374,7 +374,19 @@ namespace sones.GraphDB.Manager
 
             #region Property vertices
 
-            _storageManager.StoreProperty(myStore, _OrderableEdgeDotOrder, "Order", "OrderComment", myCreationDate, true, PropertyMultiplicity.Single, null, false, _OrderableEdge, _BaseTypeUInt64, _security, _transaction);
+            _storageManager.StoreProperty(myStore, 
+                                            _OrderableEdgeDotOrder, 
+                                            "Order", 
+                                            "OrderComment", 
+                                            myCreationDate, 
+                                            true, 
+                                            PropertyMultiplicity.Single, 
+                                            null, 
+                                            false,
+                                            _OrderableEdge, 
+                                            _BaseTypeUInt64, 
+                                            _security, 
+                                            _transaction);
 
             #endregion
         }
@@ -387,7 +399,7 @@ namespace sones.GraphDB.Manager
                                             _WeightedEdge, 
                                             "Weighted", 
                                             "WeightedEdgeComment", 
-                                            myCreationDate, 
+                                            myCreationDate,
                                             true, 
                                             false, 
                                             false, 
@@ -399,7 +411,19 @@ namespace sones.GraphDB.Manager
 
             #region Property vertices
 
-            _storageManager.StoreProperty(myStore, _WeightedEdgeDotWeight, "Weight", "WeightedComment", myCreationDate, true, PropertyMultiplicity.Single, "0.0", false, _WeightedEdge, _BaseTypeDouble, _security, _transaction);
+            _storageManager.StoreProperty(myStore, 
+                                            _WeightedEdgeDotWeight, 
+                                            "Weight", 
+                                            "WeightedComment", 
+                                            myCreationDate,
+                                            true, 
+                                            PropertyMultiplicity.Single,
+                                            "0.0", 
+                                            false, 
+                                            _WeightedEdge, 
+                                            _BaseTypeDouble, 
+                                            _security, 
+                                            _transaction);
 
             #endregion
         }
