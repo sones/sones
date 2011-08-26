@@ -28,6 +28,8 @@ namespace sones.Library.Commons.Security
     [Serializable]
     public sealed class SecurityToken
     {
+		public static readonly SecurityToken Empty = new SecurityToken(Guid.Empty);
+
         #region data
 
         private readonly Guid _id;
@@ -36,12 +38,15 @@ namespace sones.Library.Commons.Security
 
         #region constructor
 
-        public SecurityToken()
-        {
-            _id = Guid.NewGuid();
-        }
+        public SecurityToken() : this(Guid.NewGuid())
+        {}
 
-        #endregion
+		private SecurityToken(Guid guid)
+		{
+			_id = guid;
+		}
+
+		#endregion
 
     }
 }
