@@ -52,18 +52,7 @@
     <Compile Include="Interfaces\Fulltext\ISonesFulltextIndex.cs" />
     <Compile Include="Interfaces\Fulltext\ISonesFulltextResult.cs" />
     <Compile Include="Interfaces\Fulltext\ISonesFulltextResultEntry.cs" />
-    <Compile Include="Interfaces\IIndex.cs" />
     <Compile Include="Interfaces\ISonesIndex.cs" />
-    <Compile Include="Interfaces\IMultipleValueIndex.cs" />
-    <Compile Include="Interfaces\IMultipleValueRangeIndex.cs" />
-    <Compile Include="Interfaces\IMultipleValueRangeVersionedIndex.cs" />
-    <Compile Include="Interfaces\IMultipleValueVersionedIndex.cs" />
-    <Compile Include="Interfaces\IRangeIndex.cs" />
-    <Compile Include="Interfaces\ISingleValueIndex.cs" />
-    <Compile Include="Interfaces\ISingleValueRangeIndex.cs" />
-    <Compile Include="Interfaces\ISingleValueRangeVersionedIndex.cs" />
-    <Compile Include="Interfaces\ISingleValueVersionedIndex.cs" />
-    <Compile Include="Interfaces\IVersionedIndex.cs" />
     <Compile Include="Interfaces\Persistent\ISonesPersistentIndex.cs" />
     <Compile Include="Interfaces\Range\ISonesRangeIndex.cs" />
     <Compile Include="Interfaces\Spatial\Geometries\ICircle.cs" />
@@ -88,9 +77,6 @@
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Interfaces\IndexInterfaces.cd" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

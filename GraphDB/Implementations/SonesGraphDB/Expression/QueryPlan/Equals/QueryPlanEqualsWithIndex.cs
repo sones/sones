@@ -18,17 +18,14 @@
 * 
 */
 
-using System.Collections.Generic;
-using sones.Library.PropertyHyperGraph;
 using System;
-using sones.Library.Commons.VertexStore;
-using sones.GraphDB.TypeSystem;
-using sones.GraphDB.Manager.Index;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using sones.Plugins.Index.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.Expression.Tree.Literals;
+using sones.GraphDB.Manager.Index;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.VertexStore;
+using sones.Library.PropertyHyperGraph;
 using sones.Plugins.Index;
 
 namespace sones.GraphDB.Expression.QueryPlan
@@ -81,28 +78,6 @@ namespace sones.GraphDB.Expression.QueryPlan
 
             return values;
         }
-        
-        //public override IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, long> mySingleValueIndex, IComparable myIComparable)
-        //{
-        //    if (mySingleValueIndex.ContainsKey(myIComparable))
-        //    {
-        //        yield return mySingleValueIndex[myIComparable];
-
-        //    }
-
-        //    yield break;
-
-        //}
-
-        //public override IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, long> myMultipleValueIndex, IComparable myIComparable)
-        //{
-        //    if (myMultipleValueIndex.ContainsKey(myIComparable))
-        //    {
-        //        return myMultipleValueIndex[myIComparable];                 
-        //    }
-
-        //    return Enumerable.Empty<long>();
-        //}
 
         #endregion
     }

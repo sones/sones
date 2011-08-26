@@ -18,32 +18,30 @@
 * 
 */
 
-using sones.GraphDB.TypeSystem;
-using sones.GraphDB.Manager.Plugin;
-using System.Collections.Generic;
-using sones.Library.VersionedPluginManager;
-using System.Linq;
 using System;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using sones.Library.Commons.VertexStore;
-using sones.Plugins.Index.Interfaces;
-using sones.GraphDB.Manager.BaseGraph;
-using sones.GraphDB.Manager.TypeManagement;
-using sones.Library.LanguageExtensions;
-using sones.GraphDB.TypeManagement.Base;
-using sones.Library.Commons.VertexStore.Definitions;
-using sones.Library.PropertyHyperGraph;
-using sones.GraphDB.Extensions;
-using sones.GraphDB.Request;
-using sones.Library.CollectionWrapper;
+using System.Collections.Generic;
+using System.Linq;
 using sones.GraphDB.ErrorHandling;
+using sones.GraphDB.Extensions;
+using sones.GraphDB.Manager.BaseGraph;
+using sones.GraphDB.Manager.Plugin;
+using sones.GraphDB.Manager.TypeManagement;
+using sones.GraphDB.Request;
 using sones.GraphDB.Settings;
+using sones.GraphDB.TypeManagement.Base;
+using sones.GraphDB.TypeSystem;
+using sones.Library.CollectionWrapper;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.VertexStore;
+using sones.Library.Commons.VertexStore.Definitions;
+using sones.Library.LanguageExtensions;
+using sones.Library.PropertyHyperGraph;
 using sones.Library.Settings;
+using sones.Library.VersionedPluginManager;
 using sones.Plugins.Index;
+using sones.Plugins.Index.Persistent;
 using sones.Plugins.Index.Range;
 using sones.Plugins.Index.Versioned;
-using sones.Plugins.Index.Persistent;
 
 
 namespace sones.GraphDB.Manager.Index
@@ -133,7 +131,7 @@ namespace sones.GraphDB.Manager.Index
             var indexID = _idManager.GetVertexTypeUniqeID((long)BaseTypes.Index).GetNextID();
             var info = new VertexInformation((long)BaseTypes.Index, indexID, 0, myIndexDefinition.Edition);
 
-            var typeClass = myIndexDefinition.TypeName ?? GetBestMatchingIndexName(false, false, false);
+            var typeClass = myIndexDefinition.TypeName ?? GetBestMatchingIndexName(false, false);
             var parameter = (_indexPluginParameter.ContainsKey(typeClass))
                     ? _indexPluginParameter[typeClass].PluginParameter
                     : null;
@@ -300,22 +298,14 @@ namespace sones.GraphDB.Manager.Index
 
         }
 
-        public string GetBestMatchingIndexName(bool myIsSingleValue, bool myIsRange, bool myIsVersioned)
+        public string GetBestMatchingIndexName(bool myIsRange, bool myIsVersioned)
         {
             if (myIsRange || myIsVersioned)
             {
                 throw new NotImplementedException("It's currently not supported to use ranged or versioned indices");
             }
 
-            //IEnumerable<String> result;
-            if (myIsSingleValue)
-            {
-                return _applicationSettings.Get<DefaultSingleValueIndexImplementation>();
-            }
-            else 
-            {
-                return _applicationSettings.Get<DefaultMultipleValueIndexImplementation>();
-            }
+            return _applicationSettings.Get<DefaultIndexImplementation>();
         }
 
         public IEnumerable<IIndexDefinition> DescribeIndices(Int64 myTransactionToken, SecurityToken mySecurityToken)
@@ -406,22 +396,6 @@ namespace sones.GraphDB.Manager.Index
                             if (key != null)
                             {
                                 index.Add(key, vertex.VertexID);
-
-                                //if (index is ISingleValueIndex<IComparable, Int64>)
-                                //{
-                                //    (index as ISingleValueIndex<IComparable, Int64>).Add(key, vertex.VertexID);
-                                //}
-                                //else if (index is IMultipleValueIndex<IComparable, Int64>)
-                                //{
-                                //    //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
-                                //    //TODO: Refactor IIndex structure
-                                //    (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> { vertex.VertexID });
-                                //}
-                                //else
-                                //{
-                                //    throw new NotImplementedException(
-                                //        "Indices other than single or multiple value indices are not supported yet.");
-                                //}
                             }
                         }
                     }
@@ -473,7 +447,7 @@ namespace sones.GraphDB.Manager.Index
                 var vertexType = def.VertexType;
                 var indexID = def.ID;
                 maxID = Math.Max(maxID, def.ID);
-                var typeClass = def.IndexTypeName ?? GetBestMatchingIndexName(def.IsSingle, def.IsRange, def.IsVersioned);
+                var typeClass = def.IndexTypeName ?? GetBestMatchingIndexName(def.IsRange, def.IsVersioned);
                 var parameter = (_indexPluginParameter.ContainsKey(typeClass))
                         ? _indexPluginParameter[typeClass].PluginParameter
                         : null;

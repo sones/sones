@@ -119,7 +119,7 @@ namespace sones.Plugins.Index
         }
 
         public void Add(IVertex myVertex, 
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
+            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             // check if vertex has property
             if (myVertex.HasProperty(_PropertyID))
@@ -143,7 +143,7 @@ namespace sones.Plugins.Index
         /// <param name="myVertices">A collection of indexes</param>
         /// <param name="myIndexAddStrategy">Define what happens when a key already exists.</param>
         public void AddRange(IEnumerable<IVertex> myVertices, 
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
+            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             Parallel.ForEach(myVertices, v => Add(v, myIndexAddStrategy));
         }
@@ -155,7 +155,7 @@ namespace sones.Plugins.Index
         /// <param name="myVertexID">Associated vertexID</param>
         /// <param name="myIndexAddStrategy">Define what happens if key exists</param>
         public void Add(IComparable myKey, long myVertexID, 
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
+            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             HashSet<Int64> values;
             HashSet<Int64> newValues = new HashSet<long>() { myVertexID };
@@ -203,7 +203,7 @@ namespace sones.Plugins.Index
         /// <param name="myKeyValuePairs"></param>
         /// <param name="myIndexAddStrategy"></param>
         public void AddRange(IEnumerable<KeyValuePair<IComparable, long>> myKeyValuePairs, 
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
+            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             Parallel.ForEach(myKeyValuePairs, kvp => Add(kvp.Key, kvp.Value, myIndexAddStrategy));
         }
@@ -259,12 +259,12 @@ namespace sones.Plugins.Index
         /// Removes a key from the index.
         /// </summary>
         /// <param name="myKey"></param>
-        public void Remove(IComparable myKey)
+        public bool Remove(IComparable myKey)
         {
             HashSet<Int64> values;
             if (!_Index.TryRemove(myKey, out values))
             {
-                throw new IndexRemoveFailedException(String.Format("Index key {0} could not be removed.", myKey.ToString()));
+                return false;
             }
             else
             {
@@ -273,6 +273,7 @@ namespace sones.Plugins.Index
                     // update value count
                     _ValueCount -= values.Count;
                 }
+                return true;
             }
         }
 

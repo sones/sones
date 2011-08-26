@@ -20,16 +20,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Plugins.Index.Interfaces;
-using sones.Library.Commons.VertexStore;
-using sones.GraphDB.Manager.Index;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using sones.Library.PropertyHyperGraph;
-using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Expression.Tree.Literals;
+using sones.GraphDB.Manager.Index;
+using sones.GraphDB.TypeSystem;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.VertexStore;
+using sones.Library.PropertyHyperGraph;
 using sones.Plugins.Index;
 
 namespace sones.GraphDB.Expression.QueryPlan
@@ -102,24 +98,6 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         #region abstract definitions
 
-        ///// <summary>
-        ///// Extract values from a single value index
-        ///// </summary>
-        ///// <param name="mySingleValueIndex">The interesting index</param>
-        ///// <param name="myIComparable">The interesting key</param>
-        ///// <returns>An enumerable of vertexIDs</returns>
-        //public abstract IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, Int64> mySingleValueIndex,
-        //                                     IComparable myIComparable);
-
-        ///// <summary>
-        ///// Extract values from a multiple value index
-        ///// </summary>
-        ///// <param name="mySingleValueIndex">The interesting index</param>
-        ///// <param name="myIComparable">The interesting key</param>
-        ///// <returns>An enumerable of vertexIDs</returns>
-        //public abstract IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, Int64> mySingleValueIndex,
-        //                                     IComparable myIComparable);
-
         /// <summary>
         /// Get the best matching index corresponding to the property
         /// </summary>
@@ -139,37 +117,6 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myIComparable">The interesting key</param>
         /// <returns>An enumerable of VertexIDs</returns>
         protected abstract IEnumerable<long> GetValues(ISonesIndex myIndex, IComparable myIComparable);
-
-        //protected IEnumerable<long> GetValues(ISonesIndex myIndex, IComparable myIComparable)
-        //{
-        //    IEnumerable<long> values;
-
-        //    myIndex.TryGetValues(myIComparable, out values);
-
-        //    return values;
-
-        //    //if (myIndex is ISingleValueIndex<IComparable, Int64>)
-        //    //{
-        //    //    foreach (var aVertexID in GetSingleIndexValues((ISingleValueIndex<IComparable, Int64>)myIndex, myIComparable))
-        //    //    {
-        //    //        yield return aVertexID;
-        //    //    }
-        //    //}
-        //    //else
-        //    //{
-        //    //    if (myIndex is IMultipleValueIndex<IComparable, Int64>)
-        //    //    {
-        //    //        foreach (var aVertexID in GetMultipleIndexValues((IMultipleValueIndex<IComparable, Int64>)myIndex, myIComparable))
-        //    //        {
-        //    //            yield return aVertexID;
-        //    //        }
-        //    //    }
-        //    //    else
-        //    //    {
-        //    //        //there might be a little more interfaces... sth versioned
-        //    //    }
-        //    //}
-        //}
 
         /// <summary>
         /// Checks the revision of a vertex
@@ -206,10 +153,15 @@ namespace sones.GraphDB.Expression.QueryPlan
             {
                 var idx = GetBestMatchingIdx(_indexManager.GetIndices(myVertexType, _property.Property, _securityToken, _transactionToken));
 
-                foreach (var aVertexID in GetValues(idx, _constant.Value))
+                var values = GetValues(idx, _constant.Value);
+
+                if (values != null)
                 {
-                    vertices.Add(_vertexStore.GetVertex(_securityToken, _transactionToken, aVertexID, myVertexType.ID, VertexEditionFilter, VertexRevisionFilter));
-                }    
+                    foreach (var aVertexID in values)
+                    {
+                        vertices.Add(_vertexStore.GetVertex(_securityToken, _transactionToken, aVertexID, myVertexType.ID, VertexEditionFilter, VertexRevisionFilter));
+                    }
+                }
             }
 
             #endregion

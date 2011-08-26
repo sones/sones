@@ -18,15 +18,12 @@
 * 
 */
 
+using System;
+using System.Collections.Generic;
+using sones.GraphDB.Request;
+using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using System.Collections;
-using System;
-using sones.Plugins.Index.Interfaces;
-using System.Collections.Generic;
-using sones.GraphDB.TypeManagement.Base;
-using sones.GraphDB.Request;
 using sones.Plugins.Index;
 
 namespace sones.GraphDB.Manager.Index
@@ -94,11 +91,10 @@ namespace sones.GraphDB.Manager.Index
         /// <summary>
         /// Returns the name of the index type, that matches the requirements.
         /// </summary>
-        /// <param name="myIsSingleValue">If true, the index type must be a single value index otherwise a multi value index.</param>
         /// <param name="myIsRange">If true, the index type must support range queries otherwise not.</param>
         /// <param name="myIsVersioned">If true, the index type must support versioning otherwise not.</param>
         /// <returns></returns>
-        String GetBestMatchingIndexName(bool myIsSingleValue, bool myIsRange, bool myIsVersioned);
+        String GetBestMatchingIndexName(bool myIsRange, bool myIsVersioned);
 
         /// <summary>
         /// 

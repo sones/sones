@@ -26,7 +26,6 @@ using sones.GraphDB.Expression;
 using sones.GraphDB.Expression.Tree;
 using sones.GraphDB.Extensions;
 using sones.GraphDB.Manager.Index;
-using sones.GraphDB.Manager.QueryPlan;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Request;
 using sones.GraphDB.Request.Insert;
@@ -34,15 +33,13 @@ using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.TypeSystem;
 using sones.Library.CollectionWrapper;
 using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
 using sones.Library.Commons.VertexStore;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.VertexStore.Definitions.Update;
 using sones.Library.LanguageExtensions;
 using sones.Library.PropertyHyperGraph;
-using sones.Plugins.Index.Helper;
-using sones.Plugins.Index.Interfaces;
 using sones.Plugins.Index;
+using sones.Plugins.Index.Helper;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -226,27 +223,8 @@ namespace sones.GraphDB.Manager.Vertex
                 var key = CreateIndexEntry(indexDef.IndexedProperties, myInsertDefinition.StructuredProperties);
                 if (key != null)
                 {
-                    //do sth if there is a value corresponding to the index definition
-
                     var index = _indexManager.GetIndex(indexDef.Name, mySecurity, myTransaction);
-
                     index.Add(key, result.VertexID);
-
-                    //if (index is ISingleValueIndex<IComparable, Int64>)
-                    //{
-                    //    (index as ISingleValueIndex<IComparable, Int64>).Add(key, result.VertexID);
-                    //}
-                    //else if (index is IMultipleValueIndex<IComparable, Int64>)
-                    //{
-                    //    //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
-                    //    //TODO: Refactor IIndex structure
-                    //    (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> { result.VertexID });
-                    //}
-                    //else
-                    //{
-                    //    throw new NotImplementedException(
-                    //        "Indices other than single or multiple value indices are not supported yet.");
-                    //}
                 }
             }
 
@@ -1024,7 +1002,7 @@ namespace sones.GraphDB.Manager.Vertex
                                 //the list of property names, that can make an update of multiple vertices on unique properties unique again.
 
                                 var uniquemaker = uniqueIndex.UniquePropertyDefinitions.Select(_ => _.Name).Except(toBeUpdatedStructuredNames);
-                                if (!uniquemaker.CountIsGreater(0) && group.CountIsGreater(1))
+                                if (!uniquemaker.CountIsGreater(0) && group.CountIsGreater(0))
                                     throw new IndexUniqueConstrainViolationException(vertexType.Name, String.Join(", ", uniquemaker));
                             }
                         }
@@ -1157,18 +1135,6 @@ namespace sones.GraphDB.Manager.Vertex
                         continue;
 
                     index.Add(entry, id);
-
-                    //if (index is ISingleValueIndex<IComparable, long>)
-                    //{
-                    //    (index as ISingleValueIndex<IComparable, long>).Add(entry, id);
-                    //}
-                    //else if (index is IMultipleValueIndex<IComparable, long>)
-                    //{
-                    //    //Ask: Why do I need to create a hashset for a single value??? *aaarghhh*
-                    //    (index as IMultipleValueIndex<IComparable, long>).Add(entry, new HashSet<long>(new[] { id }));
-                    //}
-                    //else
-                    //    thrcow new NotImplementedException("Other index types are not known.");
                 }
             }
         }
@@ -1210,25 +1176,6 @@ namespace sones.GraphDB.Manager.Vertex
                                 
                             }
                         }
-                        //if (index is IMultipleValueIndex<IComparable, long>)
-                        //{
-                        //    lock (index)
-                        //    {
-                        //        if (index.ContainsKey(entry))
-                        //        {
-                        //            var toBeUpdatedIndex = (IMultipleValueIndex<IComparable, long>)index;
-
-                        //            var payLoad = toBeUpdatedIndex[entry];
-                        //            payLoad.Remove(myVertexID);
-
-                        //            toBeUpdatedIndex.Add(entry, payLoad, IndexAddStrategy.REPLACE);
-                        //        }
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    index.Remove(entry);
-                        //}
                     }
 
                 }

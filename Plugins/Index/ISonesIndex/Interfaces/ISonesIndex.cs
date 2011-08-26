@@ -127,7 +127,7 @@ namespace sones.Plugins.Index
         /// Defines what happens if a key already exists.
         /// </param>
         void Add(IVertex myVertex,
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
+            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
 
         /// <summary>
         /// Adds a collection of vertexIDs to the index
@@ -139,7 +139,7 @@ namespace sones.Plugins.Index
         /// <param name="myIndexAddStrategy">
         /// Defines what happens if a key already exists.
         /// </param>
-        void AddRange(IEnumerable<IVertex> myVertices, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
+        void AddRange(IEnumerable<IVertex> myVertices, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
 
         /// <summary>
         /// Adds a Key-Value Pair to the index.
@@ -148,7 +148,7 @@ namespace sones.Plugins.Index
         /// <param name="myVertexID">VertexID</param>
         /// <param name="myIndexAddStrategy">Define what happens, if the key already exists.</param>
         void Add(IComparable myKey, Int64 myVertexID,
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
+            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
 
         /// <summary>
         /// Adds a collection of Key-Value Pairs to the index.
@@ -156,7 +156,7 @@ namespace sones.Plugins.Index
         /// <param name="myKeyValuePairs">Key-Value-Pairs</param>
         /// <param name="myIndexAddStrategy">Define what happens, if the key already exists.</param>
         void AddRange(IEnumerable<KeyValuePair<IComparable, Int64>> myKeyValuePairs,
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
+            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
 
         #endregion
 
@@ -222,10 +222,13 @@ namespace sones.Plugins.Index
         /// <param name="myKey">
         /// The key to remove.
         /// </param>
-        void Remove(IComparable myKey);
+        /// <returns>True, if the key has been removed.</returns>
+        bool Remove(IComparable myKey);
 
         /// <summary>
         /// Removes the range of keys from the index.
+        /// 
+        /// Note, that there is no acknowledgement of deletion.
         /// </summary>
         /// <param name="myKeys">
         /// The keys to be removed.
