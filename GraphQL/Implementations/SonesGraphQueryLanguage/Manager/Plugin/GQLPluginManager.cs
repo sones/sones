@@ -31,6 +31,7 @@ using sones.Plugins.SonesGQL.Aggregates;
 using sones.Plugins.SonesGQL.DBImport;
 using sones.Plugins.SonesGQL.DBExport;
 using sones.Plugins.SonesGQL.Statements;
+using sones.Plugins.Index.Versioned;
 
 namespace sones.GraphQL.GQL.Manager.Plugin
 {
@@ -78,9 +79,9 @@ namespace sones.GraphQL.GQL.Manager.Plugin
 
             #region indices
 
-                .Register<ISingleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
-                .Register<IVersionedIndex<IComparable, Int64, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
-                .Register<IMultipleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
+                .Register<ISonesIndex>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
+                .Register<ISonesVersionedIndex>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
+                //.Register<IMultipleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
 
             #endregion
 

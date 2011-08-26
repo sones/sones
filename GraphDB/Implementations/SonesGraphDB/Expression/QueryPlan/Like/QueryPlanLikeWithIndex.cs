@@ -30,6 +30,7 @@ using sones.Plugins.Index.Interfaces;
 using System.Linq;
 using sones.GraphDB.Expression.Tree.Literals;
 using System.Text.RegularExpressions;
+using sones.Plugins.Index;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -67,41 +68,57 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         #region overrides
 
-        public override IIndex<IComparable, long> GetBestMatchingIdx(IEnumerable<IIndex<IComparable, long>> myIndexCollection)
+        public override ISonesIndex GetBestMatchingIdx(IEnumerable<ISonesIndex> myIndexCollection)
         {
             return myIndexCollection.First();
         }
 
-        public override IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, long> mySingleValueIndex, IComparable myIComparable)
-        {
-            var regexpression = new Regex((String)myIComparable);
-
-            foreach (var aKV in mySingleValueIndex)
-            {
-                if (regexpression.IsMatch((String)aKV.Key))
-                {
-                    yield return aKV.Value;
-                }
-            }
-
-            yield break;
-        }
-
-        public override IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, long> myMultipleValueIndex, IComparable myIComparable)
+        protected override IEnumerable<long> GetValues(ISonesIndex myIndex, IComparable myIComparable)
         {
             var regexpression = new Regex((String)myIComparable);
             List<long> ids = new List<long>();
 
-            foreach (var aKV in myMultipleValueIndex)
+            foreach (var key in myIndex.Keys())
             {
-                if (regexpression.IsMatch((String)aKV.Key))
+                if (regexpression.IsMatch((String)key))
                 {
-                    ids.AddRange(aKV.Value);
+                    ids.AddRange(myIndex[key]);
                 }
             }
 
             return ids;
         }
+
+        //public override IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, long> mySingleValueIndex, IComparable myIComparable)
+        //{
+        //    var regexpression = new Regex((String)myIComparable);
+
+        //    foreach (var aKV in mySingleValueIndex)
+        //    {
+        //        if (regexpression.IsMatch((String)aKV.Key))
+        //        {
+        //            yield return aKV.Value;
+        //        }
+        //    }
+
+        //    yield break;
+        //}
+
+        //public override IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, long> myMultipleValueIndex, IComparable myIComparable)
+        //{
+        //    var regexpression = new Regex((String)myIComparable);
+        //    List<long> ids = new List<long>();
+
+        //    foreach (var aKV in myMultipleValueIndex)
+        //    {
+        //        if (regexpression.IsMatch((String)aKV.Key))
+        //        {
+        //            ids.AddRange(aKV.Value);
+        //        }
+        //    }
+
+        //    return ids;
+        //}
 
         #endregion
     }

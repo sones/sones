@@ -42,6 +42,7 @@ using sones.Library.LanguageExtensions;
 using sones.Library.PropertyHyperGraph;
 using sones.Plugins.Index.Helper;
 using sones.Plugins.Index.Interfaces;
+using sones.Plugins.Index;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -229,22 +230,23 @@ namespace sones.GraphDB.Manager.Vertex
 
                     var index = _indexManager.GetIndex(indexDef.Name, mySecurity, myTransaction);
 
-                    if (index is ISingleValueIndex<IComparable, Int64>)
-                    {
-                        (index as ISingleValueIndex<IComparable, Int64>).Add(key, result.VertexID);
-                    }
-                    else if (index is IMultipleValueIndex<IComparable, Int64>)
-                    {
-                        //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
-                        //TODO: Refactor IIndex structure
-                        (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> { result.VertexID });
-                    }
-                    else
-                    {
-                        throw new NotImplementedException(
-                            "Indices other than single or multiple value indices are not supported yet.");
-                    }
+                    index.Add(key, result.VertexID);
 
+                    //if (index is ISingleValueIndex<IComparable, Int64>)
+                    //{
+                    //    (index as ISingleValueIndex<IComparable, Int64>).Add(key, result.VertexID);
+                    //}
+                    //else if (index is IMultipleValueIndex<IComparable, Int64>)
+                    //{
+                    //    //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
+                    //    //TODO: Refactor IIndex structure
+                    //    (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> { result.VertexID });
+                    //}
+                    //else
+                    //{
+                    //    throw new NotImplementedException(
+                    //        "Indices other than single or multiple value indices are not supported yet.");
+                    //}
                 }
             }
 
@@ -444,14 +446,14 @@ namespace sones.GraphDB.Manager.Vertex
             if (contained == null)
                 return null;
 
-            return new HyperEdgeAddDefinition(attrDef.ID, 
-                                                attrDef.EdgeType.ID, 
-                                                source, 
-                                                contained, 
-                                                edgeDef.Comment, 
-                                                date, 
-                                                date, 
-                                                ConvertStructuredProperties(edgeDef, attrDef.EdgeType), 
+            return new HyperEdgeAddDefinition(attrDef.ID,
+                                                attrDef.EdgeType.ID,
+                                                source,
+                                                contained,
+                                                edgeDef.Comment,
+                                                date,
+                                                date,
+                                                ConvertStructuredProperties(edgeDef, attrDef.EdgeType),
                                                 edgeDef.UnstructuredProperties);
         }
 
@@ -482,13 +484,13 @@ namespace sones.GraphDB.Manager.Vertex
                                             .AddStructuredProperty("EdgeTypeID", null);
 
                     CheckMandatoryConstraint(edgePredef, attrDef.InnerEdgeType);
-                    result.Add(new SingleEdgeAddDefinition(Int64.MinValue, 
-                                                            attrDef.InnerEdgeType.ID, 
-                                                            mySource, 
-                                                            vertex, 
-                                                            edgeDef.Comment, 
-                                                            myDate, 
-                                                            myDate, 
+                    result.Add(new SingleEdgeAddDefinition(Int64.MinValue,
+                                                            attrDef.InnerEdgeType.ID,
+                                                            mySource,
+                                                            vertex,
+                                                            edgeDef.Comment,
+                                                            myDate,
+                                                            myDate,
                                                             null,
                                                             null));
                 }
@@ -952,35 +954,35 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        private void RemoveVertexPropertyFromIndex(IVertex aVertex, IIndexDefinition aIndexDefinition, IEnumerable<IIndex<IComparable, long>> myIndices, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        private void RemoveVertexPropertyFromIndex(IVertex aVertex, IIndexDefinition aIndexDefinition, IEnumerable<ISonesIndex> myIndices, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             var entry = CreateIndexEntry(aIndexDefinition.IndexedProperties, aVertex.GetAllProperties().ToDictionary(key => key.Item1, value => value.Item2));
 
             if (entry == null)
                 return;
 
-            foreach (var iIndex in myIndices)
+            foreach (var index in myIndices)
             {
-                if (iIndex is IMultipleValueIndex<IComparable, long>)
+                lock (index)
                 {
-                    lock (iIndex)
+                    IEnumerable<long> values;
+
+                    if (index.TryGetValues(entry, out values))
                     {
-                        if (iIndex.ContainsKey(entry))
+                        var set = new HashSet<long>(values);
+                        set.Remove(aVertex.VertexID);
+                        index.Remove(entry);
+                        if (set.Count > 0)
                         {
-                            var toBeUpdatedIndex = (IMultipleValueIndex<IComparable, long>)iIndex;
-
-                            var payLoad = toBeUpdatedIndex[entry];
-                            payLoad.Remove(aVertex.VertexID);
-
-                            toBeUpdatedIndex.Add(entry, payLoad, IndexAddStrategy.REPLACE);
+                            index.Remove(entry);
+                            // remaining values have to be readded to index
+                            foreach (var vertexID in set)
+                            {
+                                index.Add(entry, vertexID, IndexAddStrategy.MERGE);
+                            }
                         }
                     }
                 }
-                else
-                {
-                    iIndex.Remove(entry);
-                }
-
             }
         }
 
@@ -1141,7 +1143,7 @@ namespace sones.GraphDB.Manager.Vertex
         private void AddToIndex(IDictionary<string, IComparable> structured,
                                 long id,
                                 IVertexType vertexType,
-                                IDictionary<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, long>>> indices,
+                                IDictionary<IList<IPropertyDefinition>, IEnumerable<ISonesIndex>> indices,
                                 Int64 myTransaction,
                                 SecurityToken mySecurity)
         {
@@ -1154,17 +1156,19 @@ namespace sones.GraphDB.Manager.Vertex
                     if (entry == null)
                         continue;
 
-                    if (index is ISingleValueIndex<IComparable, long>)
-                    {
-                        (index as ISingleValueIndex<IComparable, long>).Add(entry, id);
-                    }
-                    else if (index is IMultipleValueIndex<IComparable, long>)
-                    {
-                        //Ask: Why do I need to create a hashset for a single value??? *aaarghhh*
-                        (index as IMultipleValueIndex<IComparable, long>).Add(entry, new HashSet<long>(new[] { id }));
-                    }
-                    else
-                        throw new NotImplementedException("Other index types are not known.");
+                    index.Add(entry, id);
+
+                    //if (index is ISingleValueIndex<IComparable, long>)
+                    //{
+                    //    (index as ISingleValueIndex<IComparable, long>).Add(entry, id);
+                    //}
+                    //else if (index is IMultipleValueIndex<IComparable, long>)
+                    //{
+                    //    //Ask: Why do I need to create a hashset for a single value??? *aaarghhh*
+                    //    (index as IMultipleValueIndex<IComparable, long>).Add(entry, new HashSet<long>(new[] { id }));
+                    //}
+                    //else
+                    //    thrcow new NotImplementedException("Other index types are not known.");
                 }
             }
         }
@@ -1173,7 +1177,7 @@ namespace sones.GraphDB.Manager.Vertex
             long myVertexID,
             IDictionary<string, IComparable> structured,
             IVertexType vertexType,
-            IEnumerable<KeyValuePair<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, long>>>> indices,
+            IEnumerable<KeyValuePair<IList<IPropertyDefinition>, IEnumerable<ISonesIndex>>> indices,
             Int64 myTransaction,
             SecurityToken mySecurity)
         {
@@ -1185,25 +1189,46 @@ namespace sones.GraphDB.Manager.Vertex
 
                     if (entry != null)
                     {
-                        if (index is IMultipleValueIndex<IComparable, long>)
+                        lock (index)
                         {
-                            lock (index)
+                            IEnumerable<long> values;
+
+                            if (index.TryGetValues(entry, out values))
                             {
-                                if (index.ContainsKey(entry))
+                                var set = new HashSet<long>(values);
+                                set.Remove(myVertexID);
+                                index.Remove(entry);
+                                if (set.Count > 0)
                                 {
-                                    var toBeUpdatedIndex = (IMultipleValueIndex<IComparable, long>)index;
-
-                                    var payLoad = toBeUpdatedIndex[entry];
-                                    payLoad.Remove(myVertexID);
-
-                                    toBeUpdatedIndex.Add(entry, payLoad, IndexAddStrategy.REPLACE);
+                                    index.Remove(entry);
+                                    // remaining values have to be readded to index
+                                    foreach (var vertexID in set)
+                                    {
+                                        index.Add(entry, vertexID, IndexAddStrategy.MERGE);
+                                    }
                                 }
+                                
                             }
                         }
-                        else
-                        {
-                            index.Remove(entry);
-                        }
+                        //if (index is IMultipleValueIndex<IComparable, long>)
+                        //{
+                        //    lock (index)
+                        //    {
+                        //        if (index.ContainsKey(entry))
+                        //        {
+                        //            var toBeUpdatedIndex = (IMultipleValueIndex<IComparable, long>)index;
+
+                        //            var payLoad = toBeUpdatedIndex[entry];
+                        //            payLoad.Remove(myVertexID);
+
+                        //            toBeUpdatedIndex.Add(entry, payLoad, IndexAddStrategy.REPLACE);
+                        //        }
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    index.Remove(entry);
+                        //}
                     }
 
                 }
@@ -1738,15 +1763,15 @@ namespace sones.GraphDB.Manager.Vertex
                                         }
                                     }
 
-                                    toBeUpdatedHyper = toBeUpdatedHyper ?? 
+                                    toBeUpdatedHyper = toBeUpdatedHyper ??
                                                         new Dictionary<long, HyperEdgeUpdateDefinition>();
 
                                     if (toBeUpdatedHyper.ContainsKey(edgeDef.ID))
                                     {
                                         var temp = toBeUpdatedHyper[edgeDef.ID];
                                         toBeUpdatedHyper.Remove(edgeDef.ID);
-                                        toBeUpdatedHyper.Add(edgeDef.ID, 
-                                                            MergeToBeAddedHyperEdgeUpdates(temp, 
+                                        toBeUpdatedHyper.Add(edgeDef.ID,
+                                                            MergeToBeAddedHyperEdgeUpdates(temp,
                                                                                             internSingleUpdate));
                                     }
                                     else
@@ -1995,7 +2020,7 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         private HyperEdgeUpdateDefinition MergeToBeAddedHyperEdgeUpdates(
-                HyperEdgeUpdateDefinition myExisting, 
+                HyperEdgeUpdateDefinition myExisting,
                 IEnumerable<SingleEdgeUpdateDefinition> myToBeAdded)
         {
             IEnumerable<SingleEdgeDeleteDefinition> del = null;
@@ -2017,6 +2042,6 @@ namespace sones.GraphDB.Manager.Vertex
                                                     update);
         }
 
-        #endregion
+            #endregion
     }
 }

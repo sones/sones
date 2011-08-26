@@ -27,6 +27,7 @@ using sones.Plugins.Index.Interfaces;
 using System.Collections.Generic;
 using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.Request;
+using sones.Plugins.Index;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -68,7 +69,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken"></param>
         /// <param name="myTransactionToken"></param>
         /// <returns></returns>
-        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
+        IEnumerable<ISonesIndex> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         /// <summary>
         /// 
@@ -78,7 +79,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken"></param>
         /// <param name="myTransactionToken"></param>
         /// <returns></returns>
-        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
+        IEnumerable<ISonesIndex> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         /// <summary>
         /// Returns all indices
@@ -88,7 +89,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken"></param>
         /// <param name="myTransactionToken"></param>
         /// <returns></returns>
-        IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
+        IEnumerable<ISonesIndex> GetIndices(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         /// <summary>
         /// Returns the name of the index type, that matches the requirements.
@@ -130,7 +131,7 @@ namespace sones.GraphDB.Manager.Index
         /// 
         /// </summary>
         /// <param name="myIndexID"></param>
-        ISingleValueIndex<IComparable, Int64> GetIndex(BaseUniqueIndex myIndex);
+        ISonesIndex GetIndex(BaseUniqueIndex myIndex);
 
         /// <summary>
         /// Drops indices
@@ -140,6 +141,6 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken">The current security token</param>
         void DropIndex(RequestDropIndex myDropIndexRequest, Int64 myTransactionToken, SecurityToken mySecurityToken);
 
-        IIndex<IComparable, Int64> GetIndex(string myIndexName, SecurityToken mySecurity, Int64 myTransaction);
+        ISonesIndex GetIndex(string myIndexName, SecurityToken mySecurity, Int64 myTransaction);
     }
 }

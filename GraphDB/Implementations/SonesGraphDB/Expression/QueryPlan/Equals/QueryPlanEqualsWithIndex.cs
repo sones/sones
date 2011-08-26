@@ -29,6 +29,7 @@ using sones.Library.Commons.Transaction;
 using sones.Plugins.Index.Interfaces;
 using System.Linq;
 using sones.GraphDB.Expression.Tree.Literals;
+using sones.Plugins.Index;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -67,32 +68,41 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         #region overrides
 
-        public override IIndex<IComparable, long> GetBestMatchingIdx(IEnumerable<IIndex<IComparable, long>> myIndexCollection)
+        public override ISonesIndex GetBestMatchingIdx(IEnumerable<ISonesIndex> myIndexCollection)
         {
             return myIndexCollection.First();
         }
+
+        protected override IEnumerable<long> GetValues(ISonesIndex myIndex, IComparable myIComparable)
+        {
+            IEnumerable<long> values;
+
+            myIndex.TryGetValues(myIComparable, out values);
+
+            return values;
+        }
         
-        public override IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, long> mySingleValueIndex, IComparable myIComparable)
-        {
-            if (mySingleValueIndex.ContainsKey(myIComparable))
-            {
-                yield return mySingleValueIndex[myIComparable];
+        //public override IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, long> mySingleValueIndex, IComparable myIComparable)
+        //{
+        //    if (mySingleValueIndex.ContainsKey(myIComparable))
+        //    {
+        //        yield return mySingleValueIndex[myIComparable];
 
-            }
+        //    }
 
-            yield break;
+        //    yield break;
 
-        }
+        //}
 
-        public override IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, long> myMultipleValueIndex, IComparable myIComparable)
-        {
-            if (myMultipleValueIndex.ContainsKey(myIComparable))
-            {
-                return myMultipleValueIndex[myIComparable];                 
-            }
+        //public override IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, long> myMultipleValueIndex, IComparable myIComparable)
+        //{
+        //    if (myMultipleValueIndex.ContainsKey(myIComparable))
+        //    {
+        //        return myMultipleValueIndex[myIComparable];                 
+        //    }
 
-            return Enumerable.Empty<long>();
-        }
+        //    return Enumerable.Empty<long>();
+        //}
 
         #endregion
     }

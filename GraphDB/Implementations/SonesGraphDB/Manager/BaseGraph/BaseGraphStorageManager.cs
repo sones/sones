@@ -554,7 +554,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             var edition = myIndexVertex.EditionName;
             var isUserDefined = GetIndexDotIsUserDefined(myIndexVertex);
             var name = GetIndexDotName(myIndexVertex);
-            var single = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsSingleValue);
+            //var single = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsSingleValue);
             var range = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsRange);
             var version = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsVersioned);
             var sourceIndex = (myIndexVertex.HasOutgoingEdge((long)AttributeDefinitions.IndexDotSourceIndex))
@@ -572,7 +572,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 IsUserdefined = isUserDefined,
                 Name = name,
                 VertexType = myDefiningVertexType,
-                IsSingle = single,
+                //IsSingle = single,
                 IsRange = range,
                 IsVersioned = version,
                 SourceIndex = sourceIndex,
@@ -596,7 +596,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             String myComment,
             Int64 myCreationDate,
             String myIndexClass,
-            bool myIsSingleValue,
+            //bool myIsSingleValue,
             bool myIsRange,
             bool myIsVersioned,
             bool myIsUserDefined,
@@ -611,7 +611,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 {
                     { (long) AttributeDefinitions.IndexDotName, myName },
                     { (long) AttributeDefinitions.IndexDotIsUserDefined, myIsUserDefined },
-                    { (long) AttributeDefinitions.IndexDotIsSingleValue, myIsSingleValue},
+                    //{ (long) AttributeDefinitions.IndexDotIsSingleValue, myIsSingleValue},
                     { (long) AttributeDefinitions.IndexDotIsRange, myIsRange },
                     { (long) AttributeDefinitions.IndexDotIsVersioned, myIsVersioned },
                 };

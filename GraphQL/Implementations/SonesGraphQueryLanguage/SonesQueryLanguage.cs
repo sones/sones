@@ -41,6 +41,8 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.DataStructures;
 using sones.Plugins.SonesGQL.DBExport;
 using sones.Plugins.SonesGQL.Statements;
+using sones.Plugins.Index;
+using sones.Plugins.Index.Versioned;
 
 namespace sones.GraphQL
 {
@@ -316,13 +318,13 @@ namespace sones.GraphQL
 
             List<String> indices = new List<string>();
 
-            indices.AddRange(_GQLPluginManager.GetPluginNameForType<IVersionedIndex<IComparable, Int64, Int64>>());
-            indices.AddRange(_GQLPluginManager.GetPluginNameForType<ISingleValueIndex<IComparable, Int64>>());
-            indices.AddRange(_GQLPluginManager.GetPluginNameForType<IMultipleValueIndex<IComparable, Int64>>());
+            indices.AddRange(_GQLPluginManager.GetPluginNameForType<ISonesVersionedIndex>());
+            indices.AddRange(_GQLPluginManager.GetPluginNameForType<ISonesIndex>());
+            //indices.AddRange(_GQLPluginManager.GetPluginNameForType<IMultipleValueIndex<IComparable, Int64>>());
 
             if (indices.Count < 1)
             {
-                throw new GQLGrammarSetExtandableMemberException(typeof(IIndex<IComparable, Int64>), 
+                throw new GQLGrammarSetExtandableMemberException(typeof(ISonesIndex), 
                             @"There is no valid index plugin found to set in GQL grammar. 
                             Expected at least SingleValueIndex or MultiValueIndex");
             }

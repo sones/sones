@@ -30,6 +30,7 @@ using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Expression.Tree.Literals;
+using sones.Plugins.Index;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -101,31 +102,31 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         #region abstract definitions
 
-        /// <summary>
-        /// Extract values from a single value index
-        /// </summary>
-        /// <param name="mySingleValueIndex">The interesting index</param>
-        /// <param name="myIComparable">The interesting key</param>
-        /// <returns>An enumerable of vertexIDs</returns>
-        public abstract IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, Int64> mySingleValueIndex,
-                                             IComparable myIComparable);
+        ///// <summary>
+        ///// Extract values from a single value index
+        ///// </summary>
+        ///// <param name="mySingleValueIndex">The interesting index</param>
+        ///// <param name="myIComparable">The interesting key</param>
+        ///// <returns>An enumerable of vertexIDs</returns>
+        //public abstract IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, Int64> mySingleValueIndex,
+        //                                     IComparable myIComparable);
 
-        /// <summary>
-        /// Extract values from a multiple value index
-        /// </summary>
-        /// <param name="mySingleValueIndex">The interesting index</param>
-        /// <param name="myIComparable">The interesting key</param>
-        /// <returns>An enumerable of vertexIDs</returns>
-        public abstract IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, Int64> mySingleValueIndex,
-                                             IComparable myIComparable);
+        ///// <summary>
+        ///// Extract values from a multiple value index
+        ///// </summary>
+        ///// <param name="mySingleValueIndex">The interesting index</param>
+        ///// <param name="myIComparable">The interesting key</param>
+        ///// <returns>An enumerable of vertexIDs</returns>
+        //public abstract IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, Int64> mySingleValueIndex,
+        //                                     IComparable myIComparable);
 
         /// <summary>
         /// Get the best matching index corresponding to the property
         /// </summary>
         /// <param name="myIndexCollection">An enumerable of possible indices</param>
         /// <returns>The chosen one</returns>
-        public abstract IIndex<IComparable, long> GetBestMatchingIdx(
-            IEnumerable<IIndex<IComparable, long>> myIndexCollection);
+        public abstract ISonesIndex GetBestMatchingIdx(
+            IEnumerable<ISonesIndex> myIndexCollection);
 
         #endregion
 
@@ -137,32 +138,38 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myIndex">The interesting index</param>
         /// <param name="myIComparable">The interesting key</param>
         /// <returns>An enumerable of VertexIDs</returns>
-        protected IEnumerable<long> GetValues(IIndex<IComparable, long> myIndex, IComparable myIComparable)
-        {
-            if (myIndex is ISingleValueIndex<IComparable, Int64>)
-            {
-                foreach (var aVertexID in GetSingleIndexValues((ISingleValueIndex<IComparable, Int64>) myIndex, myIComparable))
-                {
-                    yield return aVertexID; 
-                }
-            }
-            else
-            {
-                if (myIndex is IMultipleValueIndex<IComparable, Int64>)
-                {
-                    foreach (var aVertexID in GetMultipleIndexValues((IMultipleValueIndex<IComparable, Int64>)myIndex, myIComparable))
-                    {
-                        yield return aVertexID;
-                    }
-                }
-                else
-                {
-                    //there might be a little more interfaces... sth versioned
-                }
-            }
+        protected abstract IEnumerable<long> GetValues(ISonesIndex myIndex, IComparable myIComparable);
 
-            yield break;
-        }
+        //protected IEnumerable<long> GetValues(ISonesIndex myIndex, IComparable myIComparable)
+        //{
+        //    IEnumerable<long> values;
+
+        //    myIndex.TryGetValues(myIComparable, out values);
+
+        //    return values;
+
+        //    //if (myIndex is ISingleValueIndex<IComparable, Int64>)
+        //    //{
+        //    //    foreach (var aVertexID in GetSingleIndexValues((ISingleValueIndex<IComparable, Int64>)myIndex, myIComparable))
+        //    //    {
+        //    //        yield return aVertexID;
+        //    //    }
+        //    //}
+        //    //else
+        //    //{
+        //    //    if (myIndex is IMultipleValueIndex<IComparable, Int64>)
+        //    //    {
+        //    //        foreach (var aVertexID in GetMultipleIndexValues((IMultipleValueIndex<IComparable, Int64>)myIndex, myIComparable))
+        //    //        {
+        //    //            yield return aVertexID;
+        //    //        }
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        //there might be a little more interfaces... sth versioned
+        //    //    }
+        //    //}
+        //}
 
         /// <summary>
         /// Checks the revision of a vertex
