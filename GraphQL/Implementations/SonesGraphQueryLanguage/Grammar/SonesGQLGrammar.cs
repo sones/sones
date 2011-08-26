@@ -1233,8 +1233,8 @@ namespace sones.GraphQL
                             | S_RENAME + S_ATTRIBUTE + Id_simple + S_TO + Id_simple
                             | S_RENAME + S_INCOMINGEDGE + Id_simple + S_TO + Id_simple
                             | S_RENAME + S_TO + Id_simple
-                //| S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + VertexTypeAttributeList + S_BRACKET_RIGHT
-                //| S_UNDEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
+                            | S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + VertexTypeAttributeList + S_BRACKET_RIGHT
+                            | S_UNDEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
                             | S_DROP + S_UNIQUE + S_ON + Id_simple
                             | S_DROP + S_MANDATORY + S_ON + Id_simple
                             | S_COMMENT + "=" + string_literal;

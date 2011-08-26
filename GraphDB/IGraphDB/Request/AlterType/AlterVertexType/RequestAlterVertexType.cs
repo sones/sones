@@ -385,11 +385,28 @@ namespace sones.GraphDB.Request
         #region add
 
         /// <summary>
-        /// Adds an unknown property to the vertex type definition
+        /// Adds an unknown attribute to the vertex type definition
         /// </summary>
         /// <param name="myUnknownPredefinition">The unknwown property definition that is going to be added</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestAlterVertexType AddUnknownAttribute(UnknownAttributePredefinition myUnknownPredefinition)
+        {
+            if (myUnknownPredefinition != null)
+            {
+                _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AAttributePredefinition>();
+                _toBeAddedAttributes.Add(myUnknownPredefinition);
+                AddUnknownPropertyCount++;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Defines an attribute
+        /// </summary>
+        /// <param name="myUnknownPredefinition">The unknwown property definition that is going to be added</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestAlterVertexType DefineAttribute(UnknownAttributePredefinition myUnknownPredefinition)
         {
             if (myUnknownPredefinition != null)
             {
