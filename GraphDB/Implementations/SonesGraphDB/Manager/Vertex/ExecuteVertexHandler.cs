@@ -451,7 +451,7 @@ namespace sones.GraphDB.Manager.Vertex
                                                 edgeDef.Comment, 
                                                 date, 
                                                 date, 
-                                                ConvertStructuredProperties(edgeDef, attrDef.EdgeType), 
+                                                ConvertStructuredProperties(edgeDef, attrDef.InnerEdgeType), 
                                                 edgeDef.UnstructuredProperties);
         }
 
