@@ -455,6 +455,17 @@ namespace sones.GraphDB.Manager.Vertex
                                                 edgeDef.UnstructuredProperties);
         }
 
+        /// <summary>
+        /// Creates SingleEdgeAddDefintions to create single edges.
+        /// </summary>
+        /// <param name="myTransaction">TransactionID</param>
+        /// <param name="mySecurity">SecurityToken</param>
+        /// <param name="myDate">Actual DateTime in long.</param>
+        /// <param name="vertexIDs"></param>
+        /// <param name="edgeDef">The EdgePredefnintion.</param>
+        /// <param name="attrDef">The attribute defintion of the outgoing egde.</param>
+        /// <param name="mySource">The source of the edge.</param>
+        /// <returns></returns>
         private IEnumerable<SingleEdgeAddDefinition> CreateContainedEdges(
             Int64 myTransaction,
             SecurityToken mySecurity,
@@ -464,33 +475,29 @@ namespace sones.GraphDB.Manager.Vertex
             IOutgoingEdgeDefinition attrDef,
             VertexInformation mySource)
         {
-            if ((vertexIDs == null || vertexIDs.Count() == 0) && (edgeDef.ContainedEdges == null || edgeDef.ContainedEdges.Count() == 0))
+            if ((vertexIDs == null || vertexIDs.Count() == 0) && 
+                (edgeDef.ContainedEdges == null || edgeDef.ContainedEdges.Count() == 0))
                 return null;
 
             List<SingleEdgeAddDefinition> result = new List<SingleEdgeAddDefinition>();
+
             if (vertexIDs != null)
             {
                 foreach (var vertex in vertexIDs)
                 {
-                    //single edges from VertexIDs or expression does not have user properties
-                    //TODO they can have default values
-                    var edgePredef = new EdgePredefinition()
-                                            .AddStructuredProperty("CreationDate", null)
-                                            .AddStructuredProperty("ModificationDate", null)
-                                            .AddStructuredProperty("Comment", null)
-                                            .AddStructuredProperty("EdgeTypeName", null)
-                                            .AddStructuredProperty("EdgeTypeID", null);
+                    AddDefaultPropertiesToEdgePredefinition(ref edgeDef, attrDef, myDate);
 
-                    CheckMandatoryConstraint(edgePredef, attrDef.InnerEdgeType);
-                    result.Add(new SingleEdgeAddDefinition(Int64.MinValue, 
-                                                            attrDef.InnerEdgeType.ID, 
-                                                            mySource, 
-                                                            vertex, 
-                                                            edgeDef.Comment, 
-                                                            myDate, 
-                                                            myDate, 
-                                                            null,
-                                                            null));
+                    var toAdd = CreateSingleEdgeAddDefinition(myTransaction, 
+                                                                mySecurity, 
+                                                                myDate, 
+                                                                Int64.MinValue,
+                                                                edgeDef, 
+                                                                attrDef.InnerEdgeType, 
+                                                                mySource, 
+                                                                attrDef.TargetVertexType);
+
+                    if (toAdd.HasValue)
+                        result.Add(toAdd.Value);
                 }
             }
 
@@ -502,13 +509,42 @@ namespace sones.GraphDB.Manager.Vertex
                         //TODO a better exception here
                         throw new Exception("An edge within a multi edge cannot have contained edges.");
 
-                    var toAdd = CreateSingleEdgeAddDefinition(myTransaction, mySecurity, myDate, Int64.MinValue, edge, attrDef.InnerEdgeType, mySource, attrDef.TargetVertexType);
+                    var toAdd = CreateSingleEdgeAddDefinition(myTransaction, 
+                                                                mySecurity, 
+                                                                myDate, 
+                                                                Int64.MinValue, 
+                                                                edge, 
+                                                                attrDef.InnerEdgeType, 
+                                                                mySource, 
+                                                                attrDef.TargetVertexType);
 
                     if (toAdd.HasValue)
                         result.Add(toAdd.Value);
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// Adds edge default properties like CreationDate, ModifactionDate sao. to the predefinition if not already existing
+        /// </summary>
+        /// <param name="myPredef">The to be chaged Predefinition</param>
+        /// <param name="myAttrDef">The outgoing edge definition</param>
+        /// <param name="myDate">actual date long</param>
+        private void AddDefaultPropertiesToEdgePredefinition(ref EdgePredefinition myPredef, 
+                                                                IOutgoingEdgeDefinition myAttrDef, 
+                                                                long myDate)
+        {
+            foreach (var item in new Dictionary<String, IComparable>
+                                        { { "CreationDate", myDate },
+                                          { "ModificationDate", myDate },
+                                          { "EdgeTypeName", myAttrDef.InnerEdgeType.Name },
+                                          { "EdgeTypeID", myAttrDef.InnerEdgeType.ID } })
+            {
+                if (myPredef.StructuredProperties == null || 
+                    !myPredef.StructuredProperties.ContainsKey(item.Key))
+                    myPredef.AddStructuredProperty(item.Key, item.Value );
+            }
         }
 
         private SingleEdgeAddDefinition? CreateSingleEdgeAddDefinition(
@@ -529,13 +565,10 @@ namespace sones.GraphDB.Manager.Vertex
             if (vertexIDs == null)
                 return null;
 
-            //checks if the mandatorie attributes are set, also the basic attributes like CreationDate, ModificationDate ... 
-            //CheckMandatoryConstraint(edgeDef, myEdgeType);
-
             CheckTargetVertices(myTargetType, vertexIDs);
 
             //adds the basic attributes like CreationDate, ModificationDate ... to the structured properties
-            //AddDefaultValues(edgeDef, myEdgeType);
+            AddDefaultValues(ref edgeDef, myEdgeType);
 
             return new SingleEdgeAddDefinition(myAttributeID,
                                                 myEdgeType.ID,
@@ -548,7 +581,7 @@ namespace sones.GraphDB.Manager.Vertex
                                                 edgeDef.UnstructuredProperties);
         }
 
-        private void AddDefaultValues(EdgePredefinition edgeDef, IEdgeType myEdgeType)
+        private void AddDefaultValues(ref EdgePredefinition edgeDef, IEdgeType myEdgeType)
         {
             var mandatoryProps = myEdgeType.GetPropertyDefinitions(true).Where(_ => _.IsMandatory);
             foreach (var propertyDefinition in mandatoryProps)
