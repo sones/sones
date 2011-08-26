@@ -39,9 +39,8 @@ namespace TagExample
     {
         #region public DATA
 
-        //GraphDB instance
-        IGraphDB GraphDB;
-        IGraphDS GraphDSServer;
+        //GraphDS server instance
+        IGraphDSServer GraphDSServer;
 
         //Security- and TransactionToken
         SecurityToken SecToken;
@@ -54,16 +53,16 @@ namespace TagExample
         public TagExample()
         {
             //Make a new GraphDB instance
-            GraphDB = new SonesGraphDB();
+            var graphDB = new SonesGraphDB();
             
             var credentials = new UserPasswordCredentials("User", "test");
 
             //GraphDSServer = new GraphDS_Server(GraphDB, (ushort)9975, "User", "test", IPAddress.Any, PluginsAndParameters);
-            GraphDSServer = new GraphDS_Server(GraphDB, null);
+            GraphDSServer = new GraphDS_Server(graphDB, null);
             GraphDSServer.LogOn(credentials);
             //GraphDSServer.StartRESTService("", Properties.Settings.Default.ListeningPort, IPAddress.Any);
 
-            //get a Security- and TransactionToken
+            //get a SecurityToken and an TransactionID
             SecToken = GraphDSServer.LogOn(credentials);
             TransationID = GraphDSServer.BeginTransaction(SecToken);
         }
