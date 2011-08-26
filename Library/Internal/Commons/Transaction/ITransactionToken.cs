@@ -23,21 +23,26 @@ using System;
 namespace sones.Library.Commons.Transaction
 {
     /// <summary>
-    /// A class that contains informations concerning the current Transaction
+    /// Provides information concerning the current Transaction
     /// </summary>
     public interface ITransactionToken
     {
         #region Data
 
         /// <summary>
-        /// The id of the transaction
+        /// gets the id of the transaction.
         /// </summary>
         Int64 ID { get; }
 
         /// <summary>
-        /// The state of the transaction
+        /// Gets the state of the transaction.
         /// </summary>
         TransactionState State { get; }
+
+		/// <summary>
+		/// Gets the isolation lavel of the transaction.
+		/// </summary>
+		IsolationLevel IsolationLevel { get; }
 
         #endregion
     }
