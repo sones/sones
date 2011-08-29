@@ -19,30 +19,27 @@
 */
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.IdentityModel.Selectors;
 using System.IdentityModel.Tokens;
 using System.Net;
-using System.Collections.Generic;
-using System.ServiceModel;
-using System.IdentityModel.Selectors;
 using sones.GraphDB;
 using sones.GraphDB.Request;
+using sones.GraphDS.PluginManager;
+using sones.GraphDS.PluginManager.GraphDSPluginManager;
 using sones.GraphDSServer.ErrorHandling;
+using sones.GraphQL;
 using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphDS.PluginManager.GraphDSPluginManager;
-using sones.GraphQL;
-using sones.GraphDB.Request.GetVertexType;
-using sones.GraphDB.Request.GetEdgeType;
-using sones.GraphDB.Request.GetIndex;
-using sones.Plugins.GraphDS;
-using sones.Library.VersionedPluginManager;
-using sones.GraphDS.PluginManager;
 using sones.Library.Network.HttpServer;
 using sones.Library.Network.HttpServer.Security;
-using System.Net.Sockets;
+using sones.Library.VersionedPluginManager;
 using sones.Plugins.GraphDS.Services;
 using sones.GraphDS;
+using sones.Plugins.GraphDS;
+using sones.GraphDS.UDC;
 
 namespace sones.GraphDSServer
 {
@@ -73,9 +70,10 @@ namespace sones.GraphDSServer
         /// <summary>
         /// The list of supported graph ql type instances
         /// </summary>
-        private readonly Dictionary<String, IGraphQL>   _QueryLanguages;            // dictionary because we can only have one query language instance per name
-        public readonly Dictionary<String, IService>    GraphDSServices;                   // dictionary because only one name per service
-        private readonly List<KeyValuePair<String,IDrainPipe>> _DrainPipes;         // you could have multiple drainpipes with different parameters sporting the same name
+        private readonly Dictionary<String, IGraphQL>   _QueryLanguages;     // dictionary because we can only have one query language instance per name
+        private readonly Dictionary<String, IService>   _graphDSServices;    // dictionary because only one name per service
+        private readonly Dictionary<String, IDrainPipe> _DrainPipes;         // you could have multiple drainpipes with different parameters sporting the same name
+        private readonly Dictionary<String, IUsageDataCollector> _usagedatacollectors; // Usage Data Collector
 
         #endregion
 
@@ -94,8 +92,9 @@ namespace sones.GraphDSServer
             _pluginManager = new GraphDSPluginManager();
             _ID = new Guid();
             _QueryLanguages = new Dictionary<string, IGraphQL>();
-            _DrainPipes = new List<KeyValuePair<String, IDrainPipe>>();
-            GraphDSServices = new Dictionary<String, IService>();
+            _DrainPipes = new Dictionary<string, IDrainPipe>();
+            _graphDSServices = new Dictionary<String, IService>();
+            _usagedatacollectors = new Dictionary<string, IUsageDataCollector>();
             _plugins = Plugins;
 
             #region Load Configured Plugins
@@ -138,7 +137,6 @@ namespace sones.GraphDSServer
                 }
             }
             #endregion
-
            
             #region IDrainPipe Plugins
             if (_plugins.IDrainPipePlugins != null)
@@ -151,11 +149,28 @@ namespace sones.GraphDSServer
                     // add!
                     if (loaded != null)
                     {
-                        _DrainPipes.Add(new KeyValuePair<string,IDrainPipe>(_pd.NameOfPlugin, loaded));
+                        _DrainPipes.Add(_pd.NameOfPlugin, loaded);
                     }
                     //                    else
                     //                        System.Diagnostics.Debug.WriteLine("Could not load plugin " + _pd.NameOfPlugin);
 
+                }
+            }
+            #endregion
+
+            #region IUsageDataCollector Plugins
+            if (_plugins.IUsageDataCollectorPlugIns!= null)
+            {
+                // we got IUsageDataCollector
+                foreach (PluginDefinition _pd in _plugins.IUsageDataCollectorPlugIns)
+                {
+                    // load!
+                    IUsageDataCollector loaded = LoadIUsageDataCollector(_pd);
+                    // add!
+                    if (loaded != null)
+                    {
+                        _usagedatacollectors.Add(_pd.NameOfPlugin, loaded);
+                    }
                 }
             }
             #endregion
@@ -168,6 +183,13 @@ namespace sones.GraphDSServer
         #endregion
 
         #region Plugin Loading Helpers
+        /// <summary>
+        /// Load the IUsageDateCollector plugins
+        /// </summary>
+        private IUsageDataCollector LoadIUsageDataCollector(PluginDefinition myIUsageDataCollector)
+        {
+            return _pluginManager.GetAndInitializePlugin<IUsageDataCollector>(myIUsageDataCollector.NameOfPlugin, myParameter: myIUsageDataCollector.PluginParameter);
+        }
         /// <summary>
         /// Load the IDrainPipes plugins
         /// </summary>
@@ -194,7 +216,7 @@ namespace sones.GraphDSServer
         {
             IService Service = null;
 
-            if (!GraphDSServices.TryGetValue(myServiceName, out Service))
+            if (!_graphDSServices.TryGetValue(myServiceName, out Service))
             {
                 try
                 {
@@ -207,7 +229,7 @@ namespace sones.GraphDSServer
                 {
                     throw new ServiceException("An error occured when trying to initialize " + myServiceName + "!" + Environment.NewLine + "See inner exception for details.", Ex);
                 }
-                GraphDSServices.Add(Service.PluginName, Service);
+                _graphDSServices.Add(Service.PluginName, Service);
             }
             try
             {
@@ -227,7 +249,7 @@ namespace sones.GraphDSServer
         public void StopService(String myServiceName)
         {
             IService Service = null;
-            if (GraphDSServices.TryGetValue(myServiceName, out Service))
+            if (_graphDSServices.TryGetValue(myServiceName, out Service))
             {
                 try
                 {
@@ -249,10 +271,10 @@ namespace sones.GraphDSServer
 
         #region Status
 
-        public AServiceStatus GetServiceStatus(String myServiceName)
+        public ServiceStatus GetServiceStatus(String myServiceName)
         {
             IService Service = null;
-            if (GraphDSServices.TryGetValue(myServiceName, out Service))
+            if (_graphDSServices.TryGetValue(myServiceName, out Service))
             {
                 try
                 {
@@ -271,17 +293,42 @@ namespace sones.GraphDSServer
         }
 
         #endregion
-        
+
+        #region Available Services
+
+        public IEnumerable<IService> AvailableServices
+        {
+            get { return _graphDSServices.Select(_ => _.Value); }
+        }
+
         #endregion
-         
+
+        #endregion
+
         #region IGraphDS Members
 
         public void Shutdown(sones.Library.Commons.Security.SecurityToken mySecurityToken)
-        {
+         {
             _iGraphDB.Shutdown(mySecurityToken);
+
+            foreach (var aDrainPipe in _DrainPipes)
+            {
+                aDrainPipe.Value.Shutdown(mySecurityToken);
+            }
+
+            foreach (var aUsageDataCollector in _usagedatacollectors)
+            {
+                aUsageDataCollector.Value.Shutdown();
+                
+            }
+
+            foreach (var aService in _graphDSServices)
+            {
+                aService.Value.Stop();
+            }
         }
 
-        public QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)
+        public QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
             IGraphQL queryLanguage;
 
@@ -313,88 +360,127 @@ namespace sones.GraphDSServer
 
         #region IGraphDB Members
 
-        public TResult CreateVertexTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexTypes myRequestCreateVertexType, Converter.CreateVertexTypesResultConverter<TResult> myOutputconverter)
+        public TResult CreateVertexTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestCreateVertexTypes myRequestCreateVertexType, Converter.CreateVertexTypesResultConverter<TResult> myOutputconverter)
         {
-            return _iGraphDB.CreateVertexTypes<TResult>(mySecurityToken, myTransactionToken, myRequestCreateVertexType, myOutputconverter);
-        }
-
-        public TResult Clear<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestClear myRequestClear, Converter.ClearResultConverter<TResult> myOutputconverter)
-        {
-            return _iGraphDB.Clear<TResult>(mySecurityToken, myTransactionToken, myRequestClear, myOutputconverter);
-        }
-
-        public TResult Delete<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDelete myRequestDelete, Converter.DeleteResultConverter<TResult> myOutputconverter)
-        {
-            return _iGraphDB.Delete<TResult>(mySecurityToken, myTransactionToken, myRequestDelete, myOutputconverter);
-        }
-
-        public TResult Insert<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestInsertVertex myRequestInsert, Converter.InsertResultConverter<TResult> myOutputconverter)
-        {
-            return _iGraphDB.Insert<TResult>(mySecurityToken, myTransactionToken, myRequestInsert, myOutputconverter);
-        }
-
-        public TResult GetVertices<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertices myRequestGetVertices, Converter.GetVerticesResultConverter<TResult> myOutputconverter)
-        {
-            return _iGraphDB.GetVertices<TResult>(mySecurityToken, myTransactionToken, myRequestGetVertices, myOutputconverter);
-        }
-
-        public TResult TraverseVertex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurity, TransactionToken myTransactionToken, RequestTraverseVertex myRequestTraverseVertex, Converter.TraverseVertexResultConverter<TResult> myOutputconverter)
-        {
-            return _iGraphDB.TraverseVertex<TResult>(mySecurity, myTransactionToken, myRequestTraverseVertex, myOutputconverter);
-        }
-
-        public TResult GetVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexType myRequestGetVertexType, Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
-        {
-            return _iGraphDB.GetVertexType<TResult>(mySecurityToken, myTransactionToken, myRequestGetVertexType, myOutputconverter);
-        }
-
-        public TResult GetAllVertexTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllVertexTypes myRequestGetAllVertexTypes, Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter)
-        {
-            return _iGraphDB.GetAllVertexTypes<TResult>(mySecurityToken, myTransactionToken, myRequestGetAllVertexTypes, 
+            return _iGraphDB.CreateVertexTypes<TResult>(mySecurityToken, 
+                                                        myTransactionToken, 
+                                                        myRequestCreateVertexType, 
                                                         myOutputconverter);
         }
 
-        public TResult GetEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetEdgeType myRequestGetEdgeType, Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
+        public TResult Clear<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestClear myRequestClear, Converter.ClearResultConverter<TResult> myOutputconverter)
         {
-            return _iGraphDB.GetEdgeType<TResult>(mySecurityToken, myTransactionToken, myRequestGetEdgeType,
-                                                  myOutputconverter);
+            return _iGraphDB.Clear<TResult>(mySecurityToken, 
+                                            myTransactionToken, 
+                                            myRequestClear, 
+                                            myOutputconverter);
         }
 
-        public TResult GetAllEdgeTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllEdgeTypes myRequestGetAllEdgeTypes, Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter)
+        public TResult Delete<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestDelete myRequestDelete, Converter.DeleteResultConverter<TResult> myOutputconverter)
         {
-            return _iGraphDB.GetAllEdgeTypes<TResult>(mySecurityToken, myTransactionToken, myRequestGetAllEdgeTypes,
-                                                  myOutputconverter);
-        }
-
-        public TResult GetVertex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertex myRequestGetVertex, Converter.GetVertexResultConverter<TResult> myOutputconverter)
-        {
-            return _iGraphDB.GetVertex<TResult>(mySecurityToken, myTransactionToken, myRequestGetVertex,
+            return _iGraphDB.Delete<TResult>(mySecurityToken, 
+                                                myTransactionToken, 
+                                                myRequestDelete, 
                                                 myOutputconverter);
         }
 
-        public TResult Truncate<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
+        public TResult Insert<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestInsertVertex myRequestInsert, Converter.InsertResultConverter<TResult> myOutputconverter)
         {
-            return _iGraphDB.Truncate<TResult>(mySecurityToken, myTransactionToken, myRequestTruncate, 
+            return _iGraphDB.Insert<TResult>(mySecurityToken, 
+                                                myTransactionToken, 
+                                                myRequestInsert, 
                                                 myOutputconverter);
         }
 
-        public TResult DescribeIndex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndexResultConverter<TResult> myOutputconverter)
+        public TResult GetVertices<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestGetVertices myRequestGetVertices, Converter.GetVerticesResultConverter<TResult> myOutputconverter)
         {
-            return _iGraphDB.DescribeIndex<TResult>(mySecurityToken, myTransactionToken, myRequestDescribeIndex, 
+            return _iGraphDB.GetVertices<TResult>(mySecurityToken, 
+                                                    myTransactionToken, 
+                                                    myRequestGetVertices, 
                                                     myOutputconverter);
         }
 
-        public TResult DescribeIndices<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndicesResultConverter<TResult> myOutputconverter)
+        public TResult TraverseVertex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurity, Int64 myTransactionToken, RequestTraverseVertex myRequestTraverseVertex, Converter.TraverseVertexResultConverter<TResult> myOutputconverter)
         {
-            return _iGraphDB.DescribeIndices<TResult>(mySecurityToken, myTransactionToken, myRequestDescribeIndex, myOutputconverter);
+            return _iGraphDB.TraverseVertex<TResult>(mySecurity, 
+                                                        myTransactionToken, 
+                                                        myRequestTraverseVertex, 
+                                                        myOutputconverter);
         }
 
-        public TResult CreateVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexType myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
+        public TResult GetVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestGetVertexType myRequestGetVertexType, Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            return _iGraphDB.CreateVertexType<TResult>(mySecurityToken, myTransactionToken, myRequestCreateVertexType, myOutputconverter);
+            return _iGraphDB.GetVertexType<TResult>(mySecurityToken, 
+                                                    myTransactionToken, 
+                                                    myRequestGetVertexType, 
+                                                    myOutputconverter);
         }
 
-        public TResult Update<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestUpdate myRequestUpdate, Converter.UpdateResultConverter<TResult> myOutputconverter)
+        public TResult GetAllVertexTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestGetAllVertexTypes myRequestGetAllVertexTypes, Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.GetAllVertexTypes<TResult>(mySecurityToken, 
+                                                        myTransactionToken, 
+                                                        myRequestGetAllVertexTypes, 
+                                                        myOutputconverter);
+        }
+
+        public TResult GetEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestGetEdgeType myRequestGetEdgeType, Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.GetEdgeType<TResult>(mySecurityToken,
+                                                    myTransactionToken, 
+                                                    myRequestGetEdgeType,
+                                                    myOutputconverter);
+        }
+
+        public TResult GetAllEdgeTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestGetAllEdgeTypes myRequestGetAllEdgeTypes, Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.GetAllEdgeTypes<TResult>(mySecurityToken, 
+                                                        myTransactionToken, 
+                                                        myRequestGetAllEdgeTypes,
+                                                        myOutputconverter);
+        }
+
+        public TResult GetVertex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestGetVertex myRequestGetVertex, Converter.GetVertexResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.GetVertex<TResult>(mySecurityToken, 
+                                                myTransactionToken, 
+                                                myRequestGetVertex,
+                                                myOutputconverter);
+        }
+
+        public TResult Truncate<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.Truncate<TResult>(mySecurityToken, 
+                                                myTransactionToken, 
+                                                myRequestTruncate, 
+                                                myOutputconverter);
+        }
+
+        public TResult DescribeIndex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndexResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.DescribeIndex<TResult>(mySecurityToken, 
+                                                    myTransactionToken, 
+                                                    myRequestDescribeIndex, 
+                                                    myOutputconverter);
+        }
+
+        public TResult DescribeIndices<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndicesResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.DescribeIndices<TResult>(mySecurityToken, 
+                                                        myTransactionToken, 
+                                                        myRequestDescribeIndex, 
+                                                        myOutputconverter);
+        }
+
+        public TResult CreateVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestCreateVertexType myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.CreateVertexType<TResult>(mySecurityToken, 
+                                                        myTransactionToken, 
+                                                        myRequestCreateVertexType, 
+                                                        myOutputconverter);
+        }
+
+        public TResult Update<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestUpdate myRequestUpdate, Converter.UpdateResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.Update<TResult>(mySecurityToken, 
                                                 myTransactionToken,     
@@ -402,15 +488,22 @@ namespace sones.GraphDSServer
                                                 myOutputconverter);
         }
 
-        public TResult DropType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropVertexType myRequestDropType, Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
+        public TResult DropVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestDropVertexType myRequestDropType, Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            return _iGraphDB.DropType<TResult>(mySecurityToken, 
-                                                myTransactionToken, 
-                                                myRequestDropType, 
-                                                myOutputconverter);
+            return _iGraphDB.DropVertexType<TResult>(mySecurityToken, 
+                                                        myTransactionToken, 
+                                                        myRequestDropType, 
+                                                        myOutputconverter);
         }
 
-        public TResult DropIndex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDropIndex myRequestDropIndex, Converter.DropIndexResultConverter<TResult> myOutputconverter)
+        public TResult DropEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestDropEdgeType myRequestDropType, Converter.DropEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.DropEdgeType<TResult>(mySecurityToken,
+                                                    myTransactionToken,
+                                                    myRequestDropType,
+                                                    myOutputconverter);
+        }
+        public TResult DropIndex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestDropIndex myRequestDropIndex, Converter.DropIndexResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.DropIndex<TResult>(mySecurityToken, 
                                                 myTransactionToken, 
@@ -418,7 +511,7 @@ namespace sones.GraphDSServer
                                                 myOutputconverter);
         }
 
-        public TResult CreateIndex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateIndex myRequestCreateIndex, Converter.CreateIndexResultConverter<TResult> myOutputconverter)
+        public TResult CreateIndex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestCreateIndex myRequestCreateIndex, Converter.CreateIndexResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.CreateIndex<TResult>(mySecurityToken, 
                                                     myTransactionToken, 
@@ -426,7 +519,7 @@ namespace sones.GraphDSServer
                                                     myOutputconverter);
         }
 
-        public TResult RebuildIndices<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestRebuildIndices myRequestRebuildIndices, Converter.RebuildIndicesResultConverter<TResult> myOutputconverter)
+        public TResult RebuildIndices<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestRebuildIndices myRequestRebuildIndices, Converter.RebuildIndicesResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.RebuildIndices<TResult>(mySecurityToken,
                                                     myTransactionToken,
@@ -434,7 +527,7 @@ namespace sones.GraphDSServer
                                                     myOutputconverter);
         }
 
-        public TResult AlterVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestAlterVertexType myRequestAlterVertexType, Converter.AlterVertexTypeResultConverter<TResult> myOutputconverter)
+        public TResult AlterVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestAlterVertexType myRequestAlterVertexType, Converter.AlterVertexTypeResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.AlterVertexType<TResult>(
                 mySecurityToken,
@@ -443,16 +536,25 @@ namespace sones.GraphDSServer
                 myOutputconverter);
         }
 
-        public TResult CreateEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateVertexType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
+        public TResult CreateEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestCreateEdgeType myRequestCreateEdgeType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.CreateEdgeType<TResult>(
                 mySecurityToken,
                 myTransactionToken,
-                myRequestCreateVertexType,
+                myRequestCreateEdgeType,
                 myOutputconverter);
         }
 
-        public TResult AlterEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestAlterEdgeType myRequestAlterEdgeType, Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter)
+        public TResult CreateEdgeTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestCreateEdgeTypes myRequestCreateEdgeTypes, Converter.CreateEdgeTypesResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.CreateEdgeTypes<TResult>(
+                mySecurityToken,
+                myTransactionToken,
+                myRequestCreateEdgeTypes,
+                myOutputconverter);
+        }
+
+        public TResult AlterEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestAlterEdgeType myRequestAlterEdgeType, Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.AlterEdgeType<TResult>(
                 mySecurityToken,
@@ -466,7 +568,7 @@ namespace sones.GraphDSServer
             get { return _ID; }
         }
 
-        public TResult GetVertexCount<TResult>(Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexCount myRequestGetVertexCount, Converter.GetVertexCountResultConverter<TResult> myOutputconverter)
+        public TResult GetVertexCount<TResult>(Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, RequestGetVertexCount myRequestGetVertexCount, Converter.GetVertexCountResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.GetVertexCount<TResult>(
                 mySecurityToken,
@@ -479,17 +581,17 @@ namespace sones.GraphDSServer
 
         #region ITransactionable Members
 
-        public TransactionToken BeginTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
+        public Int64 BeginTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
         {
             return _iGraphDB.BeginTransaction(mySecurityToken, myLongrunning, myIsolationLevel);
         }
 
-        public void CommitTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public void CommitTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             _iGraphDB.CommitTransaction(mySecurityToken, myTransactionToken);
         }
 
-        public void RollbackTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public void RollbackTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             _iGraphDB.RollbackTransaction(mySecurityToken, myTransactionToken);
         }

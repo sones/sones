@@ -25,6 +25,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphDB.Request;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 {
@@ -64,7 +65,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 
         public PropertyPredefinition ToPropertyPredefinition()
         {
-            var property =  new PropertyPredefinition(this.AttributeName);
+            var property =  new PropertyPredefinition(this.AttributeName,""); //Todo insert attribute type
             property.SetAttributeType(this.AttributeType != null ? this.AttributeType : null);
             property.SetComment(this.Comment != null ? this.Comment : null);
                         

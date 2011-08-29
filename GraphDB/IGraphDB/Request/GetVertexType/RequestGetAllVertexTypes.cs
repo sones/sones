@@ -24,7 +24,7 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.Expression.Tree;
 
-namespace sones.GraphDB.Request.GetVertexType
+namespace sones.GraphDB.Request
 {
     public sealed class RequestGetAllVertexTypes : IRequest
     {

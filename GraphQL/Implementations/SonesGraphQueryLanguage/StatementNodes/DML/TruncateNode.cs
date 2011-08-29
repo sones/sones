@@ -61,7 +61,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             QueryResult result = new QueryResult(myQuery, SonesGQLConstants.GQL, 0L, ResultType.Failed);
             

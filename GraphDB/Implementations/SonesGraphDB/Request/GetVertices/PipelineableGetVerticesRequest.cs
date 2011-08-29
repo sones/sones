@@ -26,6 +26,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.Expression.QueryPlan;
+using System;
 
 namespace sones.GraphDB.Request
 {
@@ -60,7 +61,7 @@ namespace sones.GraphDB.Request
         public PipelineableGetVerticesRequest(
                                                 RequestGetVertices myGetVerticesRequest, 
                                                 SecurityToken mySecurity,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myGetVerticesRequest;
@@ -72,12 +73,12 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-             myMetaManager.VertexManager.CheckManager.GetVertices(_request, TransactionToken, SecurityToken);
+             myMetaManager.VertexManager.CheckManager.GetVertices(_request, Int64, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _fetchedIVertices = myMetaManager.VertexManager.ExecuteManager.GetVertices(_request, TransactionToken, SecurityToken);
+            _fetchedIVertices = myMetaManager.VertexManager.ExecuteManager.GetVertices(_request, Int64, SecurityToken);
 
         }
 

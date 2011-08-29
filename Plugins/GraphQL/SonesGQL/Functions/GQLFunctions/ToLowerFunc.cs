@@ -47,7 +47,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return "Returns a copy of this attribute value converted to lowercase.";
         }
 
-        public override bool ValidateWorkingBase(Object myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if (myWorkingBase != null)
             {
@@ -70,7 +70,7 @@ namespace sones.Plugins.SonesGQL.Functions
             throw new NotImplementedException();
         }
 
-        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, params FuncParameter[] myParams)
         {
             if (myCallingObject is String)
             {
@@ -87,6 +87,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override string PluginName
         {
             get { return"sones.tolower"; }
+        }
+
+        public override string PluginShortName
+        {
+            get { return "tolower"; }
         }
 
         public override PluginParameters<Type> SetableParameters

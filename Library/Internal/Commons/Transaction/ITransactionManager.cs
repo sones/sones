@@ -59,6 +59,6 @@ namespace sones.Library.Commons.Transaction
     /// </summary>
     public interface ITransactionManager : ITransactionable, IVertexStore, IPluginable
     {
-        //hab keine ahnung was hier rein muss
+        //TODO
     }
 }

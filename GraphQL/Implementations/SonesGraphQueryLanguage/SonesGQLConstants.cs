@@ -37,6 +37,11 @@ namespace sones.GraphQL
         public static String BaseVertexTypeName = "Vertex";
 
         /// <summary>
+        /// The name of the base edge type name which carries attributes like creation date, modification date, comment...
+        /// </summary>
+        public static String BaseEdgeTypeName = "Edge";
+
+        /// <summary>
         /// The name of the sones query language
         /// </summary>
         public static String GQL = "sones.gql";
@@ -68,8 +73,8 @@ namespace sones.GraphQL
 
         public const String BracketLeft                         = "bracketLeft";
         public const String BracketRight                        = "bracketRight";
-        public const String VertexType                         = "VertexType";
-
+        public const String VertexType                          = "VertexType";
+        public const String EdgeType                            = "EdgeType";
 
         public const String INCOMINGEDGE                         = "INCOMINGEDGE";
         public const String INCOMINGEDGES                        = "INCOMINGEDGES";

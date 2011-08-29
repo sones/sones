@@ -26,31 +26,48 @@ namespace sones.GraphDB.Manager.TypeManagement
     public class IDManager
     {
         private readonly Dictionary<Int64, UniqueID> _vertexIDs;
-
+        private readonly Dictionary<Int64, UniqueID> _edgeIDs;
 
         public IDManager()
         {
             VertexTypeID = new UniqueID();
+            EdgeTypeID = new UniqueID();
+
             _vertexIDs = new Dictionary<long, UniqueID>();
+            _edgeIDs = new Dictionary<long, UniqueID>();
         }
 
         public UniqueID VertexTypeID { get; private set; }
-        
-        public UniqueID this[long myVertexTypeID]
+        public UniqueID EdgeTypeID { get; private set; }
+
+        public UniqueID GetVertexTypeUniqeID(long myVertexTypeID)
         {
-            get 
-            {
-                
-                if (!_vertexIDs.ContainsKey(myVertexTypeID))
-                    lock (_vertexIDs)
+            if (!_vertexIDs.ContainsKey(myVertexTypeID))
+
+                lock (_vertexIDs)
+                {
+                    if (!_vertexIDs.ContainsKey(myVertexTypeID))
                     {
-                        if (!_vertexIDs.ContainsKey(myVertexTypeID))
-                        {
-                            _vertexIDs[myVertexTypeID] = new UniqueID();
-                        }
+                        _vertexIDs[myVertexTypeID] = new UniqueID();
                     }
-                return _vertexIDs[myVertexTypeID];
-            }
+                }
+
+            return _vertexIDs[myVertexTypeID];
+        }
+
+        public UniqueID GetEdgeTypeUniqeID(long myEdgeTypeID)
+        {
+            if (!_edgeIDs.ContainsKey(myEdgeTypeID))
+
+                lock (_edgeIDs)
+                {
+                    if (!_edgeIDs.ContainsKey(myEdgeTypeID))
+                    {
+                        _edgeIDs[myEdgeTypeID] = new UniqueID();
+                    }
+                }
+
+            return _edgeIDs[myEdgeTypeID];
         }
     }
 }

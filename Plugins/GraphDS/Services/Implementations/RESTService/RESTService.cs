@@ -29,7 +29,6 @@ using System.IdentityModel.Tokens;
 using sones.Library.Commons.Security;
 using sones.GraphDS.Services.RESTService.Networking;
 using System.Net;
-using sones.GraphDS.Services.RESTService.ServiceStatus;
 using System.Diagnostics;
 using sones.GraphDS.Services.RESTService.ErrorHandling;
 
@@ -47,7 +46,9 @@ namespace sones.GraphDS.Services.RESTService
 
         private HttpServer _HttpServer;
 
-        private Stopwatch _RunningTime;
+        private Stopwatch _LifeTime;
+
+        private String _description;
 
         #endregion
 
@@ -60,34 +61,42 @@ namespace sones.GraphDS.Services.RESTService
         public RESTService(IGraphDS myGraphDS)
         {
             _GraphDS = myGraphDS;
-            _RunningTime = new Stopwatch();
+            _LifeTime = new Stopwatch();
         }
 
 
         #endregion
             
-        public void Start(IDictionary<String, Object> myParameters = null)
+        public void Start(IDictionary<String, Object> my_Parameters = null)
         {
             try
             {
                 if(_HttpServer != null && _HttpServer.IsRunning)
                     _HttpServer.Stop();
-                                 
+                
+                // iterate through input dictionary and upper case it
+                Dictionary<string, object> myParameters = new Dictionary<string, object>();
+                foreach (String Key in my_Parameters.Keys)
+                {
+                    myParameters.Add(Key.ToUpper(), my_Parameters[Key]);
+                }
+                
+
                 String Username = "test";
-                if (myParameters != null && myParameters.ContainsKey("Username"))
-                    Username = (String)Convert.ChangeType(myParameters["Username"], typeof(String));
+                if (myParameters != null && myParameters.ContainsKey("USERNAME"))
+                    Username = (String)Convert.ChangeType(myParameters["USERNAME"], typeof(String));
 
                 String Password = "test";
-                if (myParameters != null && myParameters.ContainsKey("Password"))
-                    Password = (String)Convert.ChangeType(myParameters["Password"], typeof(String));
+                if (myParameters != null && myParameters.ContainsKey("PASSWORD"))
+                    Password = (String)Convert.ChangeType(myParameters["PASSWORD"], typeof(String));
 
                 IPAddress Address = IPAddress.Any;
-                if (myParameters != null && myParameters.ContainsKey("IPAddress"))
-                    Address = (IPAddress)Convert.ChangeType(myParameters["IPAddress"], typeof(IPAddress));
+                if (myParameters != null && myParameters.ContainsKey("IPADDRESS"))
+                    Address = (IPAddress)Convert.ChangeType(myParameters["IPADDRESS"], typeof(IPAddress));
 
                 ushort Port = 9975;
-                if (myParameters != null && myParameters.ContainsKey("Port"))
-                    Port = (ushort)Convert.ChangeType(myParameters["Port"], typeof(ushort));
+                if (myParameters != null && myParameters.ContainsKey("PORT"))
+                    Port = (ushort)Convert.ChangeType(myParameters["PORT"], typeof(ushort));
 
                 _Security = new BasicServerSecurity(new PasswordValidator(null, Username, Password));
                 _RESTService = new GraphDSREST_Service();
@@ -99,8 +108,24 @@ namespace sones.GraphDS.Services.RESTService
                         mySecurity: _Security,
                         myAutoStart: false);
 
-                _RunningTime.Start();
+                _LifeTime.Start();
                 _HttpServer.Start();
+
+
+                String MyIPAdressString = Address.ToString();
+
+                if (MyIPAdressString == "0.0.0.0")
+                    MyIPAdressString = "localhost";
+
+               _description =        "   * REST Service is started at http://" + MyIPAdressString + ":" + Port + Environment.NewLine +
+                                     "      * access it directly by passing the GraphQL query using the" + Environment.NewLine +
+                                     "        REST interface or a client library. (see documentation)" + Environment.NewLine +
+                                     "      * if you want JSON Output add ACCEPT: application/json " + Environment.NewLine +
+                                     "        to the client request header (or application/xml or" + Environment.NewLine +
+                                     "        application/text)" + Environment.NewLine +
+                                     "   * for first steps we recommend to use the AJAX WebShell. " + Environment.NewLine +
+                                     "     Browse to http://" + MyIPAdressString + ":" + Port + "/WebShell" + Environment.NewLine +
+                                     "     (default username and passwort: test / test)";
             }
             catch (Exception Ex)
             {
@@ -111,12 +136,17 @@ namespace sones.GraphDS.Services.RESTService
         public void Stop()
         {
             _HttpServer.Stop();
-            _RunningTime.Reset();
+            _LifeTime.Reset();
         }
 
-        public AServiceStatus GetCurrentStatus()
+        public ServiceStatus GetCurrentStatus()
         {
-            return new RESTServiceStatus(_HttpServer.ListeningAddress,_HttpServer.ListeningPort,_HttpServer.IsRunning, _RunningTime.Elapsed);
+            return new ServiceStatus(_HttpServer.ListeningAddress, _HttpServer.ListeningPort, _HttpServer.IsRunning, _LifeTime.Elapsed, true);
+        }
+
+        public string Description
+        {
+            get { return _description; }
         }
 
         public string PluginName
@@ -131,11 +161,11 @@ namespace sones.GraphDS.Services.RESTService
             get
             {
                 PluginParameters<Type> Parameters = new PluginParameters<Type>();
-                Parameters.Add("GraphDS", typeof(IGraphDS));
-                Parameters.Add("Username", typeof(String));
-                Parameters.Add("Password", typeof(String));
-                Parameters.Add("IPAddress", typeof(IPAddress));
-                Parameters.Add("Port", typeof(ushort));
+                Parameters.Add("GRAPHDS", typeof(IGraphDS));
+                Parameters.Add("USERNAME", typeof(String));
+                Parameters.Add("PASSWORD", typeof(String));
+                Parameters.Add("IPADDRESS", typeof(IPAddress));
+                Parameters.Add("PORT", typeof(ushort));
                 return Parameters;
             }
         }
@@ -153,9 +183,11 @@ namespace sones.GraphDS.Services.RESTService
         {
             Stop();
         }
-
+        public string PluginShortName
+        {
+            get { return "RESTSVC"; }
+        }
         #endregion
-        
     }
 
 

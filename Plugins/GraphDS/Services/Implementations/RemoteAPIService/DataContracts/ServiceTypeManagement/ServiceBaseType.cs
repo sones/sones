@@ -35,7 +35,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
             this.ID = myBaseType.ID;
             this.Comment = myBaseType.Comment;
             this.Name = myBaseType.Name;
-            this.IsAbstract = myBaseType.IsAbstract;
+          
             this.IsUserDefined = myBaseType.IsUserDefined;
             this.IsSealed = myBaseType.IsSealed;
             this.HasChildTypes = myBaseType.HasChildTypes;
@@ -48,8 +48,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
         public String Name;
         [DataMember]
         public String Comment;
-        [DataMember]
-        public Boolean IsAbstract;
         [DataMember]
         public Boolean IsUserDefined;
 

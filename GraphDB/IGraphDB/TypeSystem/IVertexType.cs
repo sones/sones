@@ -29,7 +29,14 @@ namespace sones.GraphDB.TypeSystem
     /// </summary>
     public interface IVertexType: IBaseType
     {
-
+        /// <summary>
+        /// Defines whether this type is abstract. 
+        /// </summary>
+        /// <value>
+        /// If true, this type can not have vertices.
+        /// </value>
+        Boolean IsAbstract { get; }
+        
         #region Inheritance
 
         /// <summary>
@@ -119,7 +126,6 @@ namespace sones.GraphDB.TypeSystem
         IEnumerable<IBinaryPropertyDefinition> GetBinaryProperties(bool myIncludeAncestorDefinitions);
 
         #endregion
-
 
         #region Edges
 
@@ -214,7 +220,5 @@ namespace sones.GraphDB.TypeSystem
         IEnumerable<IIndexDefinition> GetIndexDefinitions(bool myIncludeAncestorDefinitions);
 
         #endregion
-
-
     }
 }

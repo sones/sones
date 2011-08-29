@@ -39,10 +39,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
         public abstract TypesOfAlterCmd AlterType { get; }
 
         /// <summary>
-        /// Creates the result of altering a vertex type
+        /// Creates the result of altering a type
         /// </summary>
-        /// <param name="myAlteredVertexType">The vertex type that has been altered</param>
+        /// <param name="myAlteredVertexType">The type that has been altered</param>
         /// <returns>A vertex view</returns>
-        public abstract IVertexView CreateResult(IVertexType myAlteredVertexType);
+        public abstract IVertexView CreateResult(IBaseType myAlteredType);
     }
 }

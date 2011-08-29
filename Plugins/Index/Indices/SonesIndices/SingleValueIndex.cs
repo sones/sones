@@ -242,6 +242,11 @@ namespace sones.Plugins.Index
             get { return "sones.singlevalueindex"; }
         }
 
+        public String PluginShortName
+        {
+            get { return "singlevalidx"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get

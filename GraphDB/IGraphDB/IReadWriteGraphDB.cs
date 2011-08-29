@@ -40,12 +40,12 @@ namespace sones.GraphDB
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="myRequestCreateVertexTypes">The create vertex types request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult CreateVertexTypes<TResult>(SecurityToken mySecurityToken,
-                                          TransactionToken myTransactionToken,
+                                          Int64 myTransactionID,
                                           RequestCreateVertexTypes myRequestCreateVertexTypes,
                                           Converter.CreateVertexTypesResultConverter<TResult> myOutputconverter);
 
@@ -54,12 +54,12 @@ namespace sones.GraphDB
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="myRequestCreateVertexType">The create vertex type request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult CreateVertexType<TResult>(SecurityToken mySecurityToken,
-                                          TransactionToken myTransactionToken,
+                                          Int64 myTransactionID,
                                           RequestCreateVertexType myRequestCreateVertexType,
                                           Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter);
 
@@ -68,12 +68,12 @@ namespace sones.GraphDB
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="myRequestCreateVertexType">The alter vertex type request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult AlterVertexType<TResult>( SecurityToken mySecurityToken,
-                                          TransactionToken myTransactionToken,
+                                          Int64 myTransactionID,
                                           RequestAlterVertexType myRequestAlterVertexType,
                                           Converter.AlterVertexTypeResultConverter<TResult> myOutputconverter);
 
@@ -82,26 +82,40 @@ namespace sones.GraphDB
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="myRequestCreateVertexType">The create edge type request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult CreateEdgeType<TResult>(  SecurityToken mySecurityToken,
-                                          TransactionToken myTransactionToken,
-                                          RequestCreateEdgeType myRequestCreateVertexType,
+                                          Int64 myTransactionID,
+                                          RequestCreateEdgeType myRequestCreateEdgeType,
                                           Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Creates new edge types
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionID">The current transaction id</param>
+        /// <param name="myRequestCreateVertexType">The create edge types request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired types</param>
+        /// <returns>A generic result</returns>
+        TResult CreateEdgeTypes<TResult>(SecurityToken mySecurityToken,
+                                          Int64 myTransactionID,
+                                          RequestCreateEdgeTypes myRequestCreateEdgeTypes,
+                                          Converter.CreateEdgeTypesResultConverter<TResult> myOutputconverter);
 
         /// <summary>
         /// Alteres a edge type
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="myRequestCreateVertexType">The alter edge type request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult AlterEdgeType<TResult>( SecurityToken mySecurityToken,
-                                        TransactionToken myTransactionToken,
+                                        Int64 myTransactionID,
                                         RequestAlterEdgeType myRequestAlterEdgeType,
                                         Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter);
 
@@ -111,12 +125,12 @@ namespace sones.GraphDB
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="myRequestClear">The clear request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic Result</returns>
         TResult Clear<TResult>(SecurityToken mySecurityToken,
-                               TransactionToken myTransactionToken,
+                               Int64 myTransactionID,
                                RequestClear myRequestClear,
                                Converter.ClearResultConverter<TResult> myOutputconverter);
 
@@ -126,12 +140,12 @@ namespace sones.GraphDB
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="myRequestDelete">The delete request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic Result</returns>
         TResult Delete<TResult>(SecurityToken mySecurityToken,
-                                TransactionToken myTransactionToken,
+                                Int64 myTransactionID,
                                 RequestDelete myRequestDelete,
                                 Converter.DeleteResultConverter<TResult> myOutputconverter);
 
@@ -140,12 +154,12 @@ namespace sones.GraphDB
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="myRequestInsert">The insert vertex request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult Insert<TResult>(SecurityToken mySecurityToken,
-                                TransactionToken myTransactionToken,
+                                Int64 myTransactionID,
                                 RequestInsertVertex myRequestInsert,
                                 Converter.InsertResultConverter<TResult> myOutputconverter);
 
@@ -154,12 +168,12 @@ namespace sones.GraphDB
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="myRequestTruncate">The truncate vertex request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult Truncate<TResult>(SecurityToken mySecurityToken,
-                                    TransactionToken myTransactionToken,
+                                    Int64 myTransactionID,
                                     RequestTruncate myRequestTruncate,
                                     Converter.TruncateResultConverter<TResult> myOutputconverter);
 
@@ -168,12 +182,12 @@ namespace sones.GraphDB
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="myRequestUpdate">The update request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult Update<TResult>(SecurityToken mySecurityToken,
-                                TransactionToken myTransactionToken,
+                                Int64 myTransactionID,
                                 RequestUpdate myRequestUpdate,
                                 Converter.UpdateResultConverter<TResult> myOutputconverter);
 
@@ -182,26 +196,40 @@ namespace sones.GraphDB
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="RequestDropType">The drop vertex type request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
-        TResult DropType<TResult>(  SecurityToken mySecurityToken,
-                                    TransactionToken myTransactionToken,
-                                    RequestDropVertexType myRequestDropType,
-                                    Converter.DropVertexTypeResultConverter<TResult> myOutputconverter);
+        TResult DropVertexType<TResult>(SecurityToken mySecurityToken,
+                                        Int64 myTransactionID,
+                                        RequestDropVertexType myRequestDropType,
+                                        Converter.DropVertexTypeResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Drops a type and all dbobjects of this type
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionID">The current transaction id</param>
+        /// <param name="RequestDropType">The drop vertex type request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult DropEdgeType<TResult>(SecurityToken mySecurityToken,
+                                        Int64 myTransactionID,
+                                        RequestDropEdgeType myRequestDropType,
+                                        Converter.DropEdgeTypeResultConverter<TResult> myOutputconverter);
 
         /// <summary>
         /// Drops a index on type
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="RequestDropIndex">The drop index request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult DropIndex<TResult>(SecurityToken mySecurityToken,
-                                    TransactionToken myTransactionToken,
+                                    Int64 myTransactionID,
                                     RequestDropIndex myRequestDropIndex,
                                     Converter.DropIndexResultConverter<TResult> myOutputconverter);
 
@@ -210,26 +238,26 @@ namespace sones.GraphDB
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="myRequestCreateIndex">The create index request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult CreateIndex<TResult>(SecurityToken mySecurityToken,
-                                        TransactionToken myTransactionToken,
+                                        Int64 myTransactionID,
                                         RequestCreateIndex myRequestCreateIndex,
                                         Converter.CreateIndexResultConverter<TResult> myOutputconverter);
 
         /// <summary>
-        /// Rebuilds indeces of given types
+        /// Rebuilds indices of given types
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myTransactionID">The current transaction id</param>
         /// <param name="myRequestRebuildIndices">The create index request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
         TResult RebuildIndices<TResult>(SecurityToken mySecurityToken,
-                                        TransactionToken myTransactionToken,
+                                        Int64 myTransactionID,
                                         RequestRebuildIndices myRequestRebuildIndices,
                                         Converter.RebuildIndicesResultConverter<TResult> myOutputconverter);
 

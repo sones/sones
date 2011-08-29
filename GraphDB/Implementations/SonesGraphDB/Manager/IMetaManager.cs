@@ -31,6 +31,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.Manager.BaseGraph;
 using sones.Library.VersionedPluginManager;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Manager
 {
@@ -52,8 +53,14 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// The interface to the vertex types
         /// </summary>
-        IManagerOf<IVertexTypeHandler> VertexTypeManager { get; }
+        IManagerOf<ITypeHandler<IVertexType>> VertexTypeManager { get; }
 
+        /// <summary>
+        /// The interface to the edge types
+        /// </summary>
+        IManagerOf<ITypeHandler<IEdgeType>> EdgeTypeManager { get; }
+
+        /// <summary>
         /// <summary>
         /// The managed interface to the vertices
         /// </summary>
@@ -69,12 +76,6 @@ namespace sones.GraphDB.Manager
         /// </summary>
         BaseGraphStorageManager BaseGraphStorageManager { get; }
 
-        /// <summary>
-        /// The interface to the edge types
-        /// </summary>
-        IManagerOf<IEdgeTypeHandler> EdgeTypeManager { get; }
-
-        /// <summary>
         /// The plugin manager.
         /// </summary>
         AComponentPluginManager PluginManager { get; }
@@ -88,10 +89,5 @@ namespace sones.GraphDB.Manager
         /// The security token for graph db intern usage.
         /// </summary>
         SecurityToken SystemSecurityToken { get; }
-
-        /// <summary>
-        /// The transaction token for graph db intern usage.
-        /// </summary>
-        TransactionToken SystemTransactionToken { get; }
     }
 }

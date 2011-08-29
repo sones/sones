@@ -63,7 +63,9 @@ namespace sones.sonesGraphDBStarter
     public class sonesGraphDBStartup
     {
         private bool quiet = false;
-        private GraphDS_Server _dsServer;
+        private bool shutdown = false;
+        private IGraphDSServer _dsServer;
+        private bool _ctrlCPressed;
 
         public sonesGraphDBStartup(String[] myArgs)
         {
@@ -158,7 +160,6 @@ namespace sones.sonesGraphDBStarter
 
                 #region GraphDS Service Plugins
                 List<PluginDefinition> GraphDSServices = new List<PluginDefinition>();
-                // not yet used
                 #endregion
 
                 #region Drain Pipes            
@@ -192,24 +193,32 @@ namespace sones.sonesGraphDBStarter
                 //DrainPipes.Add(new PluginDefinition("sones.drainpipelog", DrainPipeLog_Parameters));
                 //DrainPipes.Add(new PluginDefinition("sones.drainpipelog", DrainPipeLog2_Parameters));
                 #endregion
+                List<PluginDefinition> UsageDataCollector = new List<PluginDefinition>();
+
+                #region UsageDataCollector
+                if (Properties.Settings.Default.UDCEnabled)
+                {
+                    Dictionary<string, object> UDC_parameters = new Dictionary<string, object>();
+                    UDC_parameters.Add("UDCWaitUpfrontTime", (Int32)Properties.Settings.Default.UDCWaitUpfront);  // do the work in a separate thread to not slow down queries
+                    UDC_parameters.Add("UDCUpdateInterval", (Int32)Properties.Settings.Default.UDCUpdateInterval); // 10
+                    UsageDataCollector.Add(new PluginDefinition("sones.GraphDS.UsageDataCollectorClient",UDC_parameters));
+                }                
+                #endregion
 
             #endregion
 
-            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(QueryLanguages,DrainPipes);
+            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(QueryLanguages, DrainPipes,UsageDataCollector);
             _dsServer = new GraphDS_Server(GraphDB, PluginsAndParameters);
 
             #region Start GraphDS Services
 
-            #region REST Service
-
+            #region pre-configure REST Service
             Dictionary<string, object> RestParameter = new Dictionary<string, object>();
             RestParameter.Add("IPAddress", IPAddress.Any);
             RestParameter.Add("Port", Properties.Settings.Default.ListeningPort);
             RestParameter.Add("Username", Properties.Settings.Default.Username);
             RestParameter.Add("Password", Properties.Settings.Default.Password);
-
-            _dsServer.StartService("sones.RESTService",RestParameter);
-             
+            _dsServer.StartService("sones.RESTService", RestParameter);
             #endregion
 
             #region Remote API Service
@@ -225,43 +234,79 @@ namespace sones.sonesGraphDBStarter
             #endregion
 
             _dsServer.LogOn(new UserPasswordCredentials(Properties.Settings.Default.Username,Properties.Settings.Default.Password));
-
-            
-
-            
-
+                        
             #endregion
 
             #region Some helping lines...
             if (!quiet)
             {
-                Console.WriteLine("The following GraphDS Service Plugins are initialized and started: " + Environment.NewLine);
-                
-                foreach (var Service in _dsServer.GraphDSServices)
+                Console.WriteLine("This GraphDB Instance offers the following options:");
+                Console.WriteLine("   * If you want to suppress console output add --Q as a");
+                Console.WriteLine("     parameter.");
+                Console.WriteLine();
+                Console.WriteLine("   * the following GraphDS Service Plugins are initialized and started: ");
+
+                foreach (var Service in _dsServer.AvailableServices)
                 {
-                    Console.WriteLine(Service.Key+ ":");
-                    Console.WriteLine(_dsServer.GetServiceStatus(Service.Key).OtherStatistically["Description"].ToString());
-                    Console.WriteLine(Environment.NewLine);
+                    Console.WriteLine("      * "+Service.PluginName);
+                    Console.WriteLine(Service.Description);
+                    
                 }
-              
+                Console.WriteLine();
                 Console.WriteLine("Enter 'shutdown' to initiate the shutdown of this instance.");
             }
 
-            bool shutdown = false;
+            Console.CancelKeyPress += OnCancelKeyPress;
+            
             while (!shutdown)
             {
                 String command = Console.ReadLine();
-
-                if (command.ToUpper() == "SHUTDOWN")
-                    shutdown = true;
+                
+                if (!_ctrlCPressed)
+                {
+                    if (command != null)
+                    {
+                        if (command.ToUpper() == "SHUTDOWN")
+                            shutdown = true;
+                    }
+                }
             }
 
+            Console.WriteLine("Shutting down GraphDS Server");
             _dsServer.Shutdown(null);
-
-            //GraphDB.Shutdown(null);
-
+            Console.WriteLine("Shutdown complete");
             #endregion
         }
+
+        #region
+        /// <summary>
+        ///  Cancel KeyPress
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public virtual void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            e.Cancel = true; //do not abort Console here.
+            _ctrlCPressed = true;
+            Console.Write("Shutdown GraphDB (y/n)?");
+            string input;
+                do
+                {
+                    input = Console.ReadLine();
+                } while (input == null);
+
+                switch (input.ToUpper())
+                {
+                    case "Y":
+                        shutdown = true;
+                        return;
+                    default:
+                        shutdown = false;
+                        return;
+                }
+        }//method
+        #endregion
+
     }
     #endregion
 
@@ -284,34 +329,23 @@ namespace sones.sonesGraphDBStarter
             {
                 DiscordianDate ddate = new DiscordianDate();
 
-
-                
-                
-                Console.WriteLine("                    #####   ####    #         #####    #####");
-                Console.WriteLine("                   #       #    #   # ####   #     #  #");
-                Console.WriteLine("                    ####  #      #  ##    #  ######    ####");
-                Console.WriteLine("                        #  #    #   #     #  #             #");
-                Console.WriteLine("                   #####    ####    #     #   #####   #####");
-                Console.WriteLine("                                        GraphDB version 2.0");
-                Console.WriteLine("                  ------------------------------------------");
-                Console.WriteLine("                        (C)2007-2011 - http://www.sones.com");
-                //Console.WriteLine(ddate.ToString());
+                Console.WriteLine("sones GraphDB version 2.0 - " + ddate.ToString());
+                Console.WriteLine("(C) sones GmbH 2007-2011 - http://www.sones.com");
+                Console.WriteLine("-----------------------------------------------");
                 Console.WriteLine();
-                //Console.WriteLine("Starting up GraphDB..." + Environment.NewLine);
-
+                Console.WriteLine("Starting up GraphDB...");
             }
-
 
             try
             {
-                var sonesGraphDBStartup = new sonesGraphDBStartup(args);
+                var sonesGraphDBStartup = new sonesGraphDBStartup(args);                
             }
-            catch (ServiceException ex)
+            catch (ServiceException e)
             {
                 if (!quiet)
                 { 
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("InnerException: "+ ex.InnerException.ToString());
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("InnerException: " + e.InnerException.ToString());
                     Console.WriteLine();
                     Console.WriteLine("Press <return> to exit.");
                     Console.ReadLine();

@@ -19,9 +19,10 @@
 */
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using sones.GraphDB.Request.Insert;
+using sones.GraphDB.TypeSystem;
 
 
 namespace sones.GraphDB.Request

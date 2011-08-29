@@ -1,5 +1,5 @@
-sones GraphDB Community Edition version 2.0
-Last updated on 23rd of June 2011
+sones GraphDB Community Edition version 2.1-prerelease
+Last updated on 23rd of August 2011
 (C) sones GmbH 2007 - 2011
 
 sones is an object-orientated graph data storage for a large amount of highly connected semi-structured data
@@ -31,7 +31,10 @@ Additional parameters can be configured using the .config file in the sonesGraph
 
 2. Comments and Notes
 
-If you want to leave us a comment or question please send an eMail to info@sones.com. Additional ways to
-contact us are listet on our homepage: http://www.sones.com
+If you want to leave us a comment, question or bug-report please use the following tools:
+
+Forum: http://forum.sones.de
+Bugtracker: http://jira.sones.de
+Wiki and Documentation: http://developers.sones.de
 
 

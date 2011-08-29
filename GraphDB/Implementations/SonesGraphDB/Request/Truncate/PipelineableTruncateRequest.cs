@@ -43,7 +43,7 @@ namespace sones.GraphDB.Request
         /// <param name="myTransactionToken">The transaction token</param>
         public PipelineableTruncateRequest(RequestTruncate myTruncateRequest, 
                                             SecurityToken mySecurityToken,
-                                            TransactionToken myTransactionToken)
+                                            Int64 myTransactionToken)
             : base(mySecurityToken, myTransactionToken)
         {
             _request = myTruncateRequest;
@@ -53,14 +53,14 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CheckManager.TruncateVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.CheckManager.TruncateType(_request.VertexTypeName, Int64, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            var vertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);
+            var vertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetType(_request.VertexTypeName, Int64, SecurityToken);
 
-            myMetaManager.VertexTypeManager.ExecuteManager.TruncateVertexType(vertexType.ID, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.ExecuteManager.TruncateType(vertexType.ID, Int64, SecurityToken);
         }
 
         public override IRequest GetRequest()

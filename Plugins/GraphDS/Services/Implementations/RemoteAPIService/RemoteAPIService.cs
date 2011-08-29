@@ -24,7 +24,6 @@ using System.Linq;
 using System.Text;
 using sones.Plugins.GraphDS.Services;
 using sones.Library.VersionedPluginManager;
-using sones.GraphDS.Services.RemoteAPIService.ServiceStatus;
 using System.Diagnostics;
 using System.Net;
 
@@ -108,10 +107,10 @@ namespace sones.GraphDS.Services.RemoteAPIService
             _RPCServer.StopServiceHost();
         }
 
-        public AServiceStatus GetCurrentStatus()
+        public ServiceStatus GetCurrentStatus()
         {
-            return new RemoteAPIServiceStatus(_RPCServer.URI, _RPCServer.ListeningIPAdress, _RPCServer.ListeningPort, _RPCServer.IsSecure, _RPCServer.IsRunning,
-                _RunningTime.Elapsed);
+            return new ServiceStatus(_RPCServer.ListeningIPAdress, _RPCServer.ListeningPort,_RPCServer.IsRunning,
+                _RunningTime.Elapsed,true);
         }
 
         #region IPluginable
@@ -144,7 +143,18 @@ namespace sones.GraphDS.Services.RemoteAPIService
         
         }
 
-        #endregion
         
+        public string Description
+        {
+            get { return "Provides an API for remote procedure calls on top of the GraphDB API"; }
+        }
+
+
+        public string PluginShortName
+        {
+            get { return "sones.RemoteAPIService"; }
+        }
+        
+        #endregion
     }
 }

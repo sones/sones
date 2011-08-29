@@ -44,7 +44,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return "This will concatenate some strings. This function can be used as type independent to concatenate string values or as type dependent to concatenate an attribute output with other strings.";
         }
 
-        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if (myWorkingBase == typeof(String) || 
                 ((myWorkingBase is IAttributeDefinition) && (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && (myWorkingBase as IPropertyDefinition).BaseType.Name.Equals("String")))
@@ -61,7 +61,7 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, params FuncParameter[] myParams)
         {
             StringBuilder resString = new StringBuilder();
 
@@ -89,6 +89,11 @@ namespace sones.Plugins.SonesGQL.Functions
             {
                 return "sones.concat";
             }
+        }
+
+        public override string PluginShortName
+        {
+            get { return "concat"; }
         }
 
         public override PluginParameters<Type> SetableParameters

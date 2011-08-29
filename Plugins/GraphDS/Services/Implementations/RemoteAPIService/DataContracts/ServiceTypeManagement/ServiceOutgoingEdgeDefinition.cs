@@ -24,7 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphDB.TypeSystem;
-using sones.GraphDS.Services.RemoteAPIService.DataContracts.VertexType;
+
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
 {

@@ -39,13 +39,12 @@ namespace TagExample
     {
         #region public DATA
 
-        //GraphDB instance
-        IGraphDB GraphDB;
-        IGraphDS GraphDSServer;
+        //GraphDS server instance
+        IGraphDSServer GraphDSServer;
 
         //Security- and TransactionToken
         SecurityToken SecToken;
-        TransactionToken TransToken;
+        Int64 TransationID;
 
         #endregion
 
@@ -54,18 +53,18 @@ namespace TagExample
         public TagExample()
         {
             //Make a new GraphDB instance
-            GraphDB = new SonesGraphDB();
+            var graphDB = new SonesGraphDB();
             
             var credentials = new UserPasswordCredentials("User", "test");
 
             //GraphDSServer = new GraphDS_Server(GraphDB, (ushort)9975, "User", "test", IPAddress.Any, PluginsAndParameters);
-            GraphDSServer = new GraphDS_Server(GraphDB, null);
+            GraphDSServer = new GraphDS_Server(graphDB, null);
             GraphDSServer.LogOn(credentials);
             //GraphDSServer.StartRESTService("", Properties.Settings.Default.ListeningPort, IPAddress.Any);
 
-            //get a Security- and TransactionToken
+            //get a SecurityToken and an TransactionID
             SecToken = GraphDSServer.LogOn(credentials);
-            TransToken = GraphDSServer.BeginTransaction(SecToken);
+            TransationID = GraphDSServer.BeginTransaction(SecToken);
         }
 
         #endregion
@@ -78,8 +77,17 @@ namespace TagExample
             //call the Run() method
             MyTagExample.Run();
 
-            //shutdown the GraphDB
-            MyTagExample.GraphDSServer.Shutdown(MyTagExample.SecToken);
+            //Shutdown
+            MyTagExample.Shutdown();
+        }
+
+        /// <summary>
+        /// Shutdown of the TagExample
+        /// </summary>
+        public void Shutdown()
+        {
+            GraphDSServer.CommitTransaction(SecToken, TransationID);
+            GraphDSServer.Shutdown(SecToken);
         }
 
         /// <summary>
@@ -94,7 +102,7 @@ namespace TagExample
             #endregion
             
             //clear the DB (delete all created types) to create them again using the QueryLanguage
-            GraphDSServer.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
+            GraphDSServer.Clear<IRequestStatistics>(SecToken, TransationID, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
 
             #region create some types and insert values using the SonesQueryLanguage
 
@@ -124,18 +132,16 @@ namespace TagExample
 
             //create a VertexTypePredefinition
             var Tag_VertexTypePredefinition = new VertexTypePredefinition("Tag");
-
+            
             //create property
-            var PropertyName = new PropertyPredefinition("Name")
-                                           .SetAttributeType("String")
+            var PropertyName = new PropertyPredefinition("Name", "String")
                                            .SetComment("This is a property on type 'Tag' named 'Name' and is of type 'String'");
 
             //add property
             Tag_VertexTypePredefinition.AddProperty(PropertyName);
 
             //create outgoing edge to "Website"
-            var OutgoingEdgesTaggedWebsites = new OutgoingEdgePredefinition("TaggedWebsites")
-                                                          .SetAttributeType("Website")
+            var OutgoingEdgesTaggedWebsites = new OutgoingEdgePredefinition("TaggedWebsites", "Website")
                                                           .SetMultiplicityAsMultiEdge()
                                                           .SetComment(@"This is an outgoing edge on type 'Tag' wich points to the type 'Website' (the AttributeType) 
                                                                             and is defined as 'MultiEdge', which means that this edge can contain multiple single edges");
@@ -151,12 +157,10 @@ namespace TagExample
             var Website_VertexTypePredefinition = new VertexTypePredefinition("Website");
 
             //create properties
-            PropertyName = new PropertyPredefinition("Name")
-                                       .SetAttributeType("String")
+            PropertyName = new PropertyPredefinition("Name", "String")
                                        .SetComment("This is a property on type 'Website' named 'Name' and is of type 'String'");
 
-            var PropertyUrl = new PropertyPredefinition("URL")
-                                         .SetAttributeType("String")
+            var PropertyUrl = new PropertyPredefinition("URL", "String")
                                          .SetAsMandatory();
 
             //add properties
@@ -191,8 +195,9 @@ namespace TagExample
             #endregion
 
             //add IncomingEdge "Tags", the related OutgoingEdge is "TaggedWebsites" on type "Tag"
-            Website_VertexTypePredefinition.AddIncomingEdge(new IncomingEdgePredefinition("Tags")
-                                                                        .SetOutgoingEdge("Tag", "TaggedWebsites"));
+            Website_VertexTypePredefinition.AddIncomingEdge(new IncomingEdgePredefinition("Tags",
+                                                                                            "Tag", 
+                                                                                            "TaggedWebsites"));
 
             #endregion
 
@@ -200,7 +205,7 @@ namespace TagExample
 
             //create the types "Tag" and "Website"
             var DBTypes = GraphDSServer.CreateVertexTypes<IEnumerable<IVertexType>>(SecToken,
-                                                                                    TransToken,
+                                                                                    TransationID,
                                                                                     new RequestCreateVertexTypes(
                                                                                         new List<VertexTypePredefinition> { Tag_VertexTypePredefinition, 
                                                                                                                             Website_VertexTypePredefinition }),
@@ -233,23 +238,23 @@ namespace TagExample
 
             #region insert some Websites by sending requests
 
-            var cnn = GraphDSServer.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
+            var cnn = GraphDSServer.Insert<IVertex>(SecToken, TransationID, new RequestInsertVertex("Website")
                                                                                     .AddStructuredProperty("Name", "CNN")
                                                                                     .AddStructuredProperty("URL", "http://cnn.com/"),
                                                                                     (Statistics, Result) => Result);
 
-            var xkcd = GraphDSServer.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
+            var xkcd = GraphDSServer.Insert<IVertex>(SecToken, TransationID, new RequestInsertVertex("Website")
                                                                                     .AddStructuredProperty("Name", "xkcd")
                                                                                     .AddStructuredProperty("URL", "http://xkcd.com/"),
                                                                                     (Statistics, Result) => Result);
 
-            var onion = GraphDSServer.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
+            var onion = GraphDSServer.Insert<IVertex>(SecToken, TransationID, new RequestInsertVertex("Website")
                                                                                     .AddStructuredProperty("Name", "onion")
                                                                                     .AddStructuredProperty("URL", "http://theonion.com/"),
                                                                                     (Statistics, Result) => Result);
 
             //adding an unknown property means the property isn't defined before
-            var test = GraphDSServer.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
+            var test = GraphDSServer.Insert<IVertex>(SecToken, TransationID, new RequestInsertVertex("Website")
                                                                                     .AddStructuredProperty("Name", "Test")
                                                                                     .AddStructuredProperty("URL", "")
                                                                                     .AddUnknownProperty("Unknown", "unknown property"),
@@ -261,14 +266,14 @@ namespace TagExample
 
             //insert a "Tag" with an OutgoingEdge to a "Website" include that the GraphDB creates an IncomingEdge on the given Website instances
             //(because we created an IncomingEdge on type "Website") --> as a consequence we never have to set any IncomingEdge
-            var good = GraphDSServer.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Tag")
+            var good = GraphDSServer.Insert<IVertex>(SecToken, TransationID, new RequestInsertVertex("Tag")
                                                                                     .AddStructuredProperty("Name", "good")
                                                                                     .AddEdge(new EdgePredefinition("TaggedWebsites")
                                                                                         .AddVertexID(Website.ID, cnn.VertexID)
                                                                                         .AddVertexID(Website.ID, xkcd.VertexID)),
                                                                                     (Statistics, Result) => Result);
 
-            var funny = GraphDSServer.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Tag")
+            var funny = GraphDSServer.Insert<IVertex>(SecToken, TransationID, new RequestInsertVertex("Tag")
                                                                                     .AddStructuredProperty("Name", "funny")
                                                                                     .AddEdge(new EdgePredefinition("TaggedWebsites")
                                                                                         .AddVertexID(Website.ID, xkcd.VertexID)
@@ -280,7 +285,7 @@ namespace TagExample
             #region how to get a type from the DB, properties of the type, instances of a specific type and read out property values
 
             //how to get a type from the DB
-            var TagDBType = GraphDSServer.GetVertexType<IVertexType>(SecToken, TransToken, new RequestGetVertexType(Tag.ID), (Statistics, Type) => Type);
+            var TagDBType = GraphDSServer.GetVertexType<IVertexType>(SecToken, TransationID, new RequestGetVertexType(Tag.ID), (Statistics, Type) => Type);
 
             //read informations from type
             var typeName = TagDBType.Name;
@@ -290,7 +295,7 @@ namespace TagExample
             var propName = TagDBType.GetPropertyDefinition("Name");
 
             //how to get all instances of a type from the DB
-            var TagInstances = GraphDSServer.GetVertices(SecToken, TransToken, new RequestGetVertices(TagDBType.ID), (Statistics, Vertices) => Vertices);
+            var TagInstances = GraphDSServer.GetVertices(SecToken, TransationID, new RequestGetVertices(TagDBType.ID), (Statistics, Vertices) => Vertices);
 
             foreach (var item in TagInstances)
             {
@@ -311,7 +316,7 @@ namespace TagExample
             //create types at the same time, because of the circular dependencies (Tag has OutgoingEdge to Website, Website has IncomingEdge from Tag)
             //like shown before, using the GraphQL there are also three different ways to create create an index on property "Name" of type "Website"
             //1. create an index definition and specifie the property name and index type
-            var Types = GraphDSServer.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+            var Types = GraphDSServer.Query(SecToken, TransationID, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
                                                                                 Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags) 
                                                                                     INDICES (MyIndex INDEXTYPE MultipleValueIndex ON ATTRIBUTES Name)", SonesGQLConstants.GQL);
 
@@ -328,27 +333,27 @@ namespace TagExample
 
             #region create instances of type "Website"
 
-            var cnnResult = GraphDSServer.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'CNN', URL = 'http://cnn.com/')", SonesGQLConstants.GQL);
+            var cnnResult = GraphDSServer.Query(SecToken, TransationID, "INSERT INTO Website VALUES (Name = 'CNN', URL = 'http://cnn.com/')", SonesGQLConstants.GQL);
             CheckResult(cnnResult);
 
-            var xkcdResult = GraphDSServer.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'xkcd', URL = 'http://xkcd.com/')", SonesGQLConstants.GQL);
+            var xkcdResult = GraphDSServer.Query(SecToken, TransationID, "INSERT INTO Website VALUES (Name = 'xkcd', URL = 'http://xkcd.com/')", SonesGQLConstants.GQL);
             CheckResult(xkcdResult);
 
-            var onionResult = GraphDSServer.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'onion', URL = 'http://theonion.com/')", SonesGQLConstants.GQL);
+            var onionResult = GraphDSServer.Query(SecToken, TransationID, "INSERT INTO Website VALUES (Name = 'onion', URL = 'http://theonion.com/')", SonesGQLConstants.GQL);
             CheckResult(onionResult);
 
             //adding an unknown property ("Unknown") means the property isn't defined before
-            var unknown = GraphDSServer.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'Test', URL = '', Unknown = 'unknown property')", SonesGQLConstants.GQL);
+            var unknown = GraphDSServer.Query(SecToken, TransationID, "INSERT INTO Website VALUES (Name = 'Test', URL = '', Unknown = 'unknown property')", SonesGQLConstants.GQL);
             CheckResult(onionResult);
 
             #endregion
 
             #region create instances of type "Tag"
 
-            var goodResult = GraphDSServer.Query(SecToken, TransToken, "INSERT INTO Tag VALUES (Name = 'good', TaggedWebsites = SETOF(Name = 'CNN', Name = 'xkcd'))", SonesGQLConstants.GQL);
+            var goodResult = GraphDSServer.Query(SecToken, TransationID, "INSERT INTO Tag VALUES (Name = 'good', TaggedWebsites = SETOF(Name = 'CNN', Name = 'xkcd'))", SonesGQLConstants.GQL);
             CheckResult(goodResult);
 
-            var funnyResult = GraphDSServer.Query(SecToken, TransToken, "INSERT INTO Tag VALUES (Name = 'funny', TaggedWebsites = SETOF(Name = 'xkcd', Name = 'onion'))", SonesGQLConstants.GQL);
+            var funnyResult = GraphDSServer.Query(SecToken, TransationID, "INSERT INTO Tag VALUES (Name = 'funny', TaggedWebsites = SETOF(Name = 'xkcd', Name = 'onion'))", SonesGQLConstants.GQL);
             CheckResult(funnyResult);
 
             #endregion
@@ -360,7 +365,7 @@ namespace TagExample
         private void SELECTS()
         {
             // find out which tags xkcd is tagged with
-            var _xkcdtags = GraphDSServer.Query(SecToken, TransToken, "FROM Website w SELECT w.Tags WHERE w.Name = 'xkcd' DEPTH 1", SonesGQLConstants.GQL);
+            var _xkcdtags = GraphDSServer.Query(SecToken, TransationID, "FROM Website w SELECT w.Tags WHERE w.Name = 'xkcd' DEPTH 1", SonesGQLConstants.GQL);
 
             CheckResult(_xkcdtags);
 
@@ -369,7 +374,7 @@ namespace TagExample
                     Console.WriteLine(edge.GetTargetVertex().GetPropertyAsString("Name"));
 
             // List tagged sites names and the count of there tags
-            var _taggedsites = GraphDSServer.Query(SecToken, TransToken, "FROM Website w SELECT w.Name, w.Tags.Count() AS Counter", SonesGQLConstants.GQL);
+            var _taggedsites = GraphDSServer.Query(SecToken, TransationID, "FROM Website w SELECT w.Name, w.Tags.Count() AS Counter", SonesGQLConstants.GQL);
 
             CheckResult(_taggedsites);
 
@@ -377,7 +382,7 @@ namespace TagExample
                 Console.WriteLine("{0} => {1}", _sites.GetPropertyAsString("Name"), _sites.GetPropertyAsString("Counter"));
 
             // find out the URL's of the website of each Tag
-            var _urls = GraphDSServer.Query(SecToken, TransToken, "FROM Tag t SELECT t.Name, t.TaggedWebsites.URL", SonesGQLConstants.GQL);
+            var _urls = GraphDSServer.Query(SecToken, TransationID, "FROM Tag t SELECT t.Name, t.TaggedWebsites.URL", SonesGQLConstants.GQL);
 
             CheckResult(_urls);
 

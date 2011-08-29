@@ -55,12 +55,6 @@
     <Compile Include="SerializedType.cs" />
     <Compile Include="UniqueStringList.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Internal\Extensions\LanguageExtensions\LanguageExtensions.csproj">
-      <Project>{E4A4B5FF-2203-48AA-99A9-41A52407452E}</Project>
-      <Name>LanguageExtensions</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

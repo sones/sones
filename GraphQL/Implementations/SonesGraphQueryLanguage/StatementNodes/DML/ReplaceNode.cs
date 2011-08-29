@@ -85,7 +85,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             _query = myQuery;
 
@@ -124,14 +124,14 @@ namespace sones.GraphQL.StatementNodes.DML
             }
         }
 
-        private QueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private QueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             InsertNode insert = new InsertNode();
             insert.Init(_TypeName, _AttributeAssignList);
             return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
-        private void ProcessDelete(IVertex toBeDeletedVertexID, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void ProcessDelete(IVertex toBeDeletedVertexID, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             myGraphDB.Delete<bool>(
                 mySecurityToken,

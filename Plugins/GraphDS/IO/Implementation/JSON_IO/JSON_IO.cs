@@ -63,6 +63,11 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             get { return "sones.json_io"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "json"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -84,7 +89,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
 
         #region Generate Output from Query Result
 
-        public string GenerateOutputResult(QueryResult myQueryResult)
+        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             // root element...
             var _Query = new JObject();
@@ -144,6 +149,11 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             }
 
             return SB.ToString();
+        }
+
+        public String ListAvailParams()
+        {
+            throw new NotImplementedException();
         }
 
         #region private toJSON Extensions
@@ -226,35 +236,36 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
 
             #region Edge Properties
 
+            JObject _properties = new JObject();
+
             foreach (var _property in aEdge.GetAllProperties())
             {
-                JProperty _newEdge = null;
-
                 if (_property.Item2 == null)
                 {
-                    _newEdge = new JProperty(_property.Item1, "");
+                    _properties.Add(new JProperty(_property.Item1, ""));
                 }
                 else
                 {
                     if (_property.Item2 is Stream)
                     {
-                        _newEdge = new JProperty(_property.Item1, "BinaryProperty");
+                        _properties.Add(new JProperty(_property.Item1, "BinaryProperty"));
                     }
                     else
                     {
                         if (_property.Item2 is ICollectionWrapper)
                         {
-                            _newEdge = new JProperty(_property.Item1, HandleListProperties((ICollectionWrapper)_property.Item2));
+                            _properties.Add(new JProperty(_property.Item1, HandleListProperties((ICollectionWrapper)_property.Item2)));
                         }
                         else
                         {
-                            _newEdge = new JProperty(_property.Item1, _property.Item2.ToString());
+                            _properties.Add(new JProperty(_property.Item1, _property.Item2.ToString()));
                         }                        
                     }
                 }
-
-                Output.Add(new JObject(new JProperty("Properties", new JObject(_newEdge))));
             }
+
+            Output.Add(new JObject(new JProperty("Properties", new JObject(_properties))));
+
             #endregion
 
             if (aEdge is IHyperEdgeView)
@@ -263,20 +274,24 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
 
                 foreach (var singleEdge in ((IHyperEdgeView)aEdge).GetAllEdges())
                 {
+                    JObject _singleEdgeProperties = new JObject();
+
                     foreach (var singleEdgeProp in singleEdge.GetAllProperties())
                     {
                         if (singleEdgeProp.Item2 is ICollectionWrapper)
                         {
-                            edgeProperties.Add(new JObject(new JProperty(singleEdgeProp.Item1, HandleListProperties((ICollectionWrapper)singleEdgeProp.Item2))));
+                            _singleEdgeProperties.Add(new JProperty(singleEdgeProp.Item1, HandleListProperties((ICollectionWrapper)singleEdgeProp.Item2)));
+                            //edgeProperties.Add(new JObject(new JProperty(singleEdgeProp.Item1, HandleListProperties((ICollectionWrapper)singleEdgeProp.Item2))));
                         }
                         else
                         {
-                            edgeProperties.Add(new JObject(new JProperty(singleEdgeProp.Item1, singleEdgeProp.Item2.ToString())));
+                            _singleEdgeProperties.Add(new JProperty(singleEdgeProp.Item1, singleEdgeProp.Item2.ToString()));
+                            //edgeProperties.Add(new JObject(new JProperty(singleEdgeProp.Item1, singleEdgeProp.Item2.ToString())));
                         }
                     }
 
-                    Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Properties", new JArray(edgeProperties))), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(singleEdge.GetTargetVertex()))))));
-                    
+                    //Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Properties", new JArray(edgeProperties))), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(singleEdge.GetTargetVertex()))))));
+                    Output.Add(new JObject(new JProperty("SingleEdge", new JObject(new JProperty("Properties", new JObject(_singleEdgeProperties))), new JObject(new JProperty("TargetVertex", GenerateVertexViewJSON(singleEdge.GetTargetVertex()))))));
                     edgeProperties.Clear();                    
                 }                
                 

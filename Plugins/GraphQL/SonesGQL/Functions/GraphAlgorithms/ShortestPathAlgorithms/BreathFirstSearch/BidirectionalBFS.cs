@@ -42,18 +42,18 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         HashSet<Tuple<long, long>> _VisitedVerticesRight;
 
         //current depth
-        byte _DepthLeft;
-        byte _DepthRight;
+        UInt64 _DepthLeft;
+        UInt64 _DepthRight;
 
         //maximum depth
-        byte _MaxDepthLeft;
-        byte _MaxDepthRight;
+        UInt64 _MaxDepthLeft;
+        UInt64 _MaxDepthRight;
 
         //shortest path length
-        byte _ShortestPathLength;
+        UInt64 _ShortestPathLength;
 
         //the maximum path length
-        byte _MaxPathLength;
+        UInt64 _MaxPathLength;
 
         Node _Target;
         Node _Root;
@@ -96,6 +96,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         /// Please look at the class documentation for detailed description how this algorithm works.
         /// </summary>
         /// <param name="myTypeAttribute">The Attribute representing the edge to follow (p.e. "Friends")</param>
+        /// <param name="myVertexType">The type of the start node.</param>
         /// <param name="myStart">The start node</param>
         /// <param name="myEnd">The end node</param>
         /// <param name="shortestOnly">true, if only shortest path shall be found</param>
@@ -109,8 +110,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                                                         IVertex myEnd,
                                                         bool shortestOnly,
                                                         bool findAll,
-                                                        byte myMaxDepth,
-                                                        byte myMaxPathLength)
+                                                        UInt64 myMaxDepth,
+                                                        UInt64 myMaxPathLength)
         {
             #region declarations
 
@@ -133,7 +134,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                 _MaxPathLength = myMaxDepth;
 
             //set depth for left side
-            _MaxDepthLeft = Convert.ToByte(myMaxDepth / 2 + 1);
+            _MaxDepthLeft = Convert.ToUInt64(myMaxDepth / 2 + 1);
 
             //if myMaxDepth is 1 _MaxDepthRight keeps 0, just one side is searching
             if (myMaxDepth > 1)
@@ -145,7 +146,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             //if myMaxDepth is even, one side has to search in a greater depth
             if ((myMaxDepth % 2) == 0)
             {
-                _MaxDepthRight = Convert.ToByte(_MaxDepthLeft - 1);
+                _MaxDepthRight = Convert.ToUInt64(_MaxDepthLeft - 1);
             }
 
             #endregion
@@ -387,7 +388,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                                 }
                                 else
                                 {
-                                    _ShortestPathLength = Convert.ToByte(_DepthLeft + _DepthRight + 1);
+                                    _ShortestPathLength = Convert.ToUInt64(_DepthLeft + _DepthRight + 1);
                                 }
 
                                 return new TargetAnalyzer(_Root, _Target, _ShortestPathLength, _ShortestOnly, _FindAll).GetPaths();
@@ -405,7 +406,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                                 }
                                 else if (_ShortestPathLength == 0)
                                 {
-                                    _ShortestPathLength = Convert.ToByte(_DepthLeft + _DepthRight + 1);
+                                    _ShortestPathLength = Convert.ToUInt64(_DepthLeft + _DepthRight + 1);
                                 }
 
                             }
@@ -673,7 +674,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                     }
                     else
                     {
-                        _ShortestPathLength = Convert.ToByte(_DepthLeft + _DepthRight + 1);
+                        _ShortestPathLength = Convert.ToUInt64(_DepthLeft + _DepthRight + 1);
                     }
 
                     return true;
@@ -691,7 +692,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                     }
                     else
                     {
-                        _ShortestPathLength = Convert.ToByte(_DepthLeft + _DepthRight);
+                        _ShortestPathLength = Convert.ToUInt64(_DepthLeft + _DepthRight);
                     }
                 }
 
@@ -740,7 +741,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                 }
                 else
                 {
-                    _ShortestPathLength = Convert.ToByte(_DepthLeft + _DepthRight + 1);
+                    _ShortestPathLength = Convert.ToUInt64(_DepthLeft + _DepthRight + 1);
                 }
 
                 return true;
@@ -758,7 +759,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                 }
                 else
                 {
-                    _ShortestPathLength = Convert.ToByte(_DepthLeft + _DepthRight);
+                    _ShortestPathLength = Convert.ToUInt64(_DepthLeft + _DepthRight);
                 }
             }
             #endregion check how much paths are searched
@@ -840,7 +841,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                 }
                 else
                 {
-                    _ShortestPathLength = Convert.ToByte(_DepthLeft + _DepthRight + 1);
+                    _ShortestPathLength = Convert.ToUInt64(_DepthLeft + _DepthRight + 1);
                 }
 
                 return true;
@@ -849,7 +850,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             {
                 _MaxDepthRight = _DepthRight;
 
-                _ShortestPathLength = Convert.ToByte(_MaxDepthLeft + _MaxDepthRight);
+                _ShortestPathLength = Convert.ToUInt64(_MaxDepthLeft + _MaxDepthRight);
             }
 
             return false;
@@ -880,7 +881,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                 }
                 else
                 {
-                    _ShortestPathLength = Convert.ToByte(_DepthLeft + _DepthRight + 1);
+                    _ShortestPathLength = Convert.ToUInt64(_DepthLeft + _DepthRight + 1);
                 }
 
                 return true;
@@ -889,7 +890,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             {
                 _MaxDepthLeft = _DepthLeft;
 
-                _ShortestPathLength = Convert.ToByte(_MaxDepthLeft + _MaxDepthRight);
+                _ShortestPathLength = Convert.ToUInt64(_MaxDepthLeft + _MaxDepthRight);
             }
 
             return false;

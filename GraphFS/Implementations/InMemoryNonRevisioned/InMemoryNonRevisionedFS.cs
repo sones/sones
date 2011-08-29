@@ -153,13 +153,13 @@ namespace sones.GraphFS
                                                                                      new ConcurrentDictionary<long, InMemoryVertex>());
                                                           }
 
-                                                          tempVertexStore[aVertex.VertexTypeID].TryAdd(aVertex.VertexID,TransferToInMemoryVertex(aVertex));
+                                                          tempVertexStore[aVertex.VertexTypeID].TryAdd(aVertex.VertexID, TransferToInMemoryVertex(aVertex));
                                                       });
 
             _vertexStore = tempVertexStore;
         }
 
-        public bool VertexExists(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+        public bool VertexExists(SecurityToken mySecurityToken, Int64 myTransactionID,
                                  long myVertexID, long myVertexTypeID, string myEdition = null,
                                  Int64 myVertexRevisionID = 0L)
         {
@@ -173,7 +173,7 @@ namespace sones.GraphFS
             return false;
         }
 
-        public long GetHighestVertexID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID)
+        public long GetHighestVertexID(SecurityToken mySecurityToken, Int64 myTransactionID, long myVertexTypeID)
         {
             ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 
@@ -185,7 +185,7 @@ namespace sones.GraphFS
             return Int64.MinValue;
         }
 
-        public ulong GetVertexCount(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID)
+        public ulong GetVertexCount(SecurityToken mySecurityToken, Int64 myTransactionID, long myVertexTypeID)
         {
             ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 
@@ -197,62 +197,62 @@ namespace sones.GraphFS
             return 0UL;
         }
 
-        public IVertex GetVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+        public IVertex GetVertex(SecurityToken mySecurityToken, Int64 myTransactionID,
                                  long myVertexID, long myVertexTypeID, string myEdition = null,
                                  Int64 myVertexRevisionID = 0L)
         {
-            return GetVertex_private(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
+            return GetVertex_private(mySecurityToken, myTransactionID, myVertexID, myVertexTypeID);
         }
 
         public IVertex GetVertex(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
-            long myVertexID, long myVertexTypeID, 
-            VertexStoreFilter.EditionFilter myEditionsFilterFunc = null, 
+            SecurityToken mySecurityToken, Int64 myTransactionID,
+            long myVertexID, long myVertexTypeID,
+            VertexStoreFilter.EditionFilter myEditionsFilterFunc = null,
             VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
         {
-            return GetVertex_private(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
+            return GetVertex_private(mySecurityToken, myTransactionID, myVertexID, myVertexTypeID);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, Int64 myTransactionID,
                                                         long myTypeID, IEnumerable<long> myInterestingVertexIDs,
                                                         IEnumerable<string> myInterestingEditionNames,
                                                         IEnumerable<Int64> myInterestingRevisionID)
         {
             return myInterestingVertexIDs != null
-                       ? GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID, myInterestingVertexIDs)
-                       : GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID);
+                       ? GetVerticesByTypeID(mySecurityToken, myTransactionID, myTypeID, myInterestingVertexIDs)
+                       : GetVerticesByTypeID(mySecurityToken, myTransactionID, myTypeID);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, Int64 myTransactionID,
                                                         long myTypeID, IEnumerable<long> myInterestingVertexIDs)
         {
             var interestingVertices = new HashSet<long>(myInterestingVertexIDs);
 
-            return GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID).Where(aVertex => interestingVertices.Contains(aVertex.VertexID));
+            return GetVerticesByTypeID(mySecurityToken, myTransactionID, myTypeID).Where(aVertex => interestingVertices.Contains(aVertex.VertexID));
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
-            long myTypeID, 
-            IEnumerable<long> myInterestingVertexIDs, 
-            VertexStoreFilter.EditionFilter myEditionsFilterFunc, 
+            SecurityToken mySecurityToken, Int64 myTransactionID,
+            long myTypeID,
+            IEnumerable<long> myInterestingVertexIDs,
+            VertexStoreFilter.EditionFilter myEditionsFilterFunc,
             VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc)
         {
             return myInterestingVertexIDs != null
-                       ? GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID, myInterestingVertexIDs)
-                       : GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID);
+                       ? GetVerticesByTypeID(mySecurityToken, myTransactionID, myTypeID, myInterestingVertexIDs)
+                       : GetVerticesByTypeID(mySecurityToken, myTransactionID, myTypeID);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
-            long myTypeID, 
-            string myEdition, 
+            SecurityToken mySecurityToken, Int64 myTransactionID,
+            long myTypeID,
+            string myEdition,
             VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc)
         {
-            return GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID);
+            return GetVerticesByTypeID(mySecurityToken, myTransactionID, myTypeID);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, Int64 myTransactionID,
                                                         long myVertexTypeID)
         {
             ConcurrentDictionary<Int64, InMemoryVertex> vertices;
@@ -263,7 +263,7 @@ namespace sones.GraphFS
                 {
                     if (!aVertex.Value.IsBulkVertex && aVertex.Value.VertexTypeID == myVertexTypeID)
                     {
-                        yield return aVertex.Value;                        
+                        yield return aVertex.Value;
                     }
                 }
             }
@@ -273,35 +273,35 @@ namespace sones.GraphFS
 
 
         public IEnumerable<IVertex> GetVerticesByTypeIDAndRevisions(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            SecurityToken mySecurityToken, Int64 myTransactionID,
             long myTypeID,
             IEnumerable<Int64> myInterestingRevisions)
         {
-            return GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID);
+            return GetVerticesByTypeID(mySecurityToken, myTransactionID, myTypeID);
         }
 
         public IEnumerable<string> GetVertexEditions(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            SecurityToken mySecurityToken, Int64 myTransactionID,
             long myVertexID, long myVertexTypeID)
         {
-            var vertex = GetVertex_private(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
+            var vertex = GetVertex_private(mySecurityToken, myTransactionID, myVertexID, myVertexTypeID);
 
             if (vertex == null)
             {
                 throw new VertexDoesNotExistException(myVertexTypeID, myVertexID);
             }
 
-            var result = new List<string> {vertex.EditionName};
+            var result = new List<string> { vertex.EditionName };
 
             return result;
         }
 
         public IEnumerable<Int64> GetVertexRevisionIDs(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            SecurityToken mySecurityToken, Int64 myTransactionID,
             long myVertexID, long myVertexTypeID,
             IEnumerable<string> myInterestingEditions = null)
         {
-            var vertex = GetVertex_private(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
+            var vertex = GetVertex_private(mySecurityToken, myTransactionID, myVertexID, myVertexTypeID);
 
             if (vertex == null)
             {
@@ -327,7 +327,7 @@ namespace sones.GraphFS
         }
 
         public bool RemoveVertexRevision(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            SecurityToken mySecurityToken, Int64 myTransactionID,
             long myVertexID, long myVertexTypeID, string myInterestingEdition,
             Int64 myToBeRemovedRevisionID)
         {
@@ -353,7 +353,7 @@ namespace sones.GraphFS
         }
 
         public bool RemoveVertexEdition(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            SecurityToken mySecurityToken, Int64 myTransactionID,
             long myVertexID, long myVertexTypeID, string myToBeRemovedEdition)
         {
             var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
@@ -378,7 +378,7 @@ namespace sones.GraphFS
         }
 
         public bool RemoveVertex(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken,
+            SecurityToken mySecurityToken, Int64 myTransactionID,
             long myVertexID, long myVertexTypeID)
         {
 
@@ -405,11 +405,11 @@ namespace sones.GraphFS
                                     if (edge is IHyperEdge)
                                     {
                                         var hyperEdge = edge as HyperEdge;
-                                        
+
                                         lock (hyperEdge.ContainedSingleEdges)
                                         {
-                                           hyperEdge.ContainedSingleEdges.RemoveWhere(item => item.TargetVertex.VertexID == myVertexID &&
-                                                item.TargetVertex.VertexTypeID == myVertexTypeID);
+                                            hyperEdge.ContainedSingleEdges.RemoveWhere(item => item.TargetVertex.VertexID == myVertexID &&
+                                                 item.TargetVertex.VertexTypeID == myVertexTypeID);
                                         }
                                     }
                                     else
@@ -423,7 +423,7 @@ namespace sones.GraphFS
                         #endregion
 
                         #region outgoing edges
-                        
+
                         foreach (var aOutgoingEdge in vertex.GetAllOutgoingEdges())
                         {
 
@@ -432,7 +432,7 @@ namespace sones.GraphFS
                                 lock (aTargetVertex)
                                 {
                                     aTargetVertex.IncomingEdges[vertex.VertexTypeID][aOutgoingEdge.Item1].RemoveVertex(vertex);
-                                    
+
                                     if (aTargetVertex.IncomingEdges[vertex.VertexTypeID][aOutgoingEdge.Item1].Count() == 0)
                                     {
                                         aTargetVertex.IncomingEdges[vertex.VertexTypeID].Remove(aOutgoingEdge.Item1);
@@ -457,13 +457,13 @@ namespace sones.GraphFS
             return false;
         }
 
-        public void RemoveVertices(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexTypeID, IEnumerable<long> myToBeDeltedVertices = null)
+        public void RemoveVertices(SecurityToken mySecurityToken, Int64 myTransactionID, long myVertexTypeID, IEnumerable<long> myToBeDeltedVertices = null)
         {
-            HashSet<Int64> toBeDeletedVertices = (myToBeDeltedVertices != null) ? new HashSet<Int64>(myToBeDeltedVertices) : new HashSet<Int64>(GetVerticesByTypeID(mySecurityToken, myTransactionToken, myVertexTypeID).Select(aVertex => aVertex.VertexID));
-            
+            HashSet<Int64> toBeDeletedVertices = (myToBeDeltedVertices != null) ? new HashSet<Int64>(myToBeDeltedVertices) : new HashSet<Int64>(GetVerticesByTypeID(mySecurityToken, myTransactionID, myVertexTypeID).Select(aVertex => aVertex.VertexID));
+
             foreach (var aToBeDeletedVertex in toBeDeletedVertices)
             {
-                RemoveVertex(mySecurityToken, myTransactionToken, aToBeDeletedVertex, myVertexTypeID);
+                RemoveVertex(mySecurityToken, myTransactionID, aToBeDeletedVertex, myVertexTypeID);
             }
 
             ConcurrentDictionary<Int64, InMemoryVertex> outValue;
@@ -478,7 +478,7 @@ namespace sones.GraphFS
         }
 
         public IVertex AddVertex(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken,
+            SecurityToken mySecurityToken, Int64 myTransactionID,
             VertexAddDefinition myVertexDefinition,
             Int64 myVertexRevisionID = 0L,
             Boolean myCreateIncomingEdges = true)
@@ -550,38 +550,38 @@ namespace sones.GraphFS
                     createdVertex = toBeAddedVertex;
 
                     return toBeAddedVertex;
-                },
-                            (id, oldVertex) =>
-                            {
-                                if (!oldVertex.IsBulkVertex)
-                                {
-                                    throw new VertexAlreadyExistException(myVertexDefinition.VertexTypeID, myVertexDefinition.VertexID);
-                                }
+                }, 
+                (id, oldVertex) =>
+                {
+                    if (!oldVertex.IsBulkVertex)
+                    {
+                        throw new VertexAlreadyExistException(myVertexDefinition.VertexTypeID, myVertexDefinition.VertexID);
+                    }
 
-                                Dictionary<long, IEdge> oldEdge = null;
-                                if (addEdges)
-                                {
-                                    oldEdge = new Dictionary<long, IEdge>();
-                                }
+                    Dictionary<long, IEdge> oldEdge = null;
+                    if (addEdges)
+                    {
+                        oldEdge = new Dictionary<long, IEdge>();
+                    }
 
-                                oldVertex.Activate(
-                                   binaryProperties,
-                                   oldEdge,
-                                   myVertexDefinition.Comment,
-                                   myVertexDefinition.CreationDate,
-                                   myVertexDefinition.ModificationDate,
-                                   myVertexDefinition.StructuredProperties,
-                                   myVertexDefinition.UnstructuredProperties);
+                    oldVertex.Activate(
+                        binaryProperties,
+                        oldEdge,
+                        myVertexDefinition.Comment,
+                        myVertexDefinition.CreationDate,
+                        myVertexDefinition.ModificationDate,
+                        myVertexDefinition.StructuredProperties,
+                        myVertexDefinition.UnstructuredProperties);
 
-                                if (addEdges)
-                                {
-                                    AddEdgesToVertex(myVertexDefinition, oldVertex, oldEdge);
-                                }
+                    if (addEdges)
+                    {
+                        AddEdgesToVertex(myVertexDefinition, oldVertex, oldEdge);
+                    }
 
-                                createdVertex = oldVertex;
+                    createdVertex = oldVertex;
 
-                                return oldVertex;
-                            });
+                    return oldVertex;
+                });
 
             #endregion
 
@@ -589,7 +589,7 @@ namespace sones.GraphFS
         }
 
         public IVertex UpdateVertex(
-            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            SecurityToken mySecurityToken, Int64 myTransactionID,
             long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID,
             VertexUpdateDefinition myVertexUpdate, Boolean myCreateIncomingEdges = true,
             string myToBeUpdatedEditions = null, Int64 myToBeUpdatedRevisionIDs = 0L, bool myCreateNewRevision = false)
@@ -600,7 +600,7 @@ namespace sones.GraphFS
             {
                 throw new VertexDoesNotExistException(myCorrespondingVertexTypeID, myToBeUpdatedVertexID);
             }
-            
+
             var updatedVertex = UpdateVertex_private(toBeUpdatedVertex, myVertexUpdate);
 
             ConcurrentDictionary<Int64, InMemoryVertex> outValue;
@@ -612,7 +612,7 @@ namespace sones.GraphFS
                     lock (oldValue)
                     {
                         oldValue = updatedVertex;
-                        return oldValue;    
+                        return oldValue;
                     }
                 });
             }
@@ -634,6 +634,11 @@ namespace sones.GraphFS
             get { return "sones.inmemorynonrevisionedfs"; }
         }
 
+        public String PluginShortName
+        {
+            get { return "inmemnonrevfs"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -650,8 +655,10 @@ namespace sones.GraphFS
         #endregion
 
         #region private helper
-        
-        private void AddEdgesToVertex(VertexAddDefinition myVertexDefinition, InMemoryVertex myVertex, Dictionary<Int64, IEdge> myEdges)
+
+        private void AddEdgesToVertex(VertexAddDefinition myVertexDefinition, 
+                                        InMemoryVertex myVertex, 
+                                        Dictionary<Int64, IEdge> myEdges)
         {
             SingleEdge singleEdge;
             InMemoryVertex targetVertex;
@@ -669,8 +676,11 @@ namespace sones.GraphFS
                                                 aSingleEdgeDefinition.TargetVertexInformation.VertexID);
 
                     //create the new Edge
-                    singleEdge = new SingleEdge(aSingleEdgeDefinition.PropertyID, myVertex, targetVertex,
-                                                aSingleEdgeDefinition.Comment, aSingleEdgeDefinition.CreationDate,
+                    singleEdge = new SingleEdge(aSingleEdgeDefinition.PropertyID, 
+                                                myVertex, 
+                                                targetVertex,
+                                                aSingleEdgeDefinition.Comment, 
+                                                aSingleEdgeDefinition.CreationDate,
                                                 aSingleEdgeDefinition.ModificationDate,
                                                 aSingleEdgeDefinition.StructuredProperties,
                                                 aSingleEdgeDefinition.UnstructuredProperties);
@@ -701,7 +711,9 @@ namespace sones.GraphFS
                             GetOrCreateTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID,
                                                     aSingleEdgeDefinition.TargetVertexInformation.VertexID);
 
-                        singleEdge = new SingleEdge(aSingleEdgeDefinition.PropertyID, myVertex, targetVertex,
+                        singleEdge = new SingleEdge(aSingleEdgeDefinition.EdgeTypeID, 
+                                                    myVertex, 
+                                                    targetVertex,
                                                     aSingleEdgeDefinition.Comment,
                                                     aSingleEdgeDefinition.CreationDate,
                                                     aSingleEdgeDefinition.ModificationDate,
@@ -778,7 +790,7 @@ namespace sones.GraphFS
                 {
                     myTargetVertex.IncomingEdges = new Dictionary<long, Dictionary<long, IncomingEdgeCollection>>();
 
-                    var payload = new IncomingEdgeCollection( myIncomingVertex );
+                    var payload = new IncomingEdgeCollection(myIncomingVertex);
 
                     var innerDict = new Dictionary<Int64, IncomingEdgeCollection> { { myIncomingEdgeID, payload } };
 
@@ -794,7 +806,7 @@ namespace sones.GraphFS
                         }
                         else
                         {
-                            myTargetVertex.IncomingEdges[myIncomingVertexTypeID][myIncomingEdgeID] = new IncomingEdgeCollection( myIncomingVertex );
+                            myTargetVertex.IncomingEdges[myIncomingVertexTypeID][myIncomingEdgeID] = new IncomingEdgeCollection(myIncomingVertex);
                         }
                     }
                     else
@@ -816,7 +828,7 @@ namespace sones.GraphFS
         {
             _vertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
         }
-        
+
         /// <summary>
         /// Removes the incomming edge from a target vertex.
         /// </summary>
@@ -826,7 +838,7 @@ namespace sones.GraphFS
         /// <param name="myIncommingVertex">The vertex which is to be updated.</param>
         private void RemoveIncommingEdgeFromTargetVertex(InMemoryVertex myTargetVertex, Int64 myIncommingVertexTypeID, Int64 myIncommingEdgePropID, IVertex myIncommingVertex)
         {
-            if(myTargetVertex.IncomingEdges != null)
+            if (myTargetVertex.IncomingEdges != null)
             {
                 lock (myTargetVertex.IncomingEdges)
                 {
@@ -839,7 +851,7 @@ namespace sones.GraphFS
                         if (iEdgeCollection.TryGetValue(myIncommingEdgePropID, out edgeCollection))
                         {
                             edgeCollection.RemoveVertex((InMemoryVertex)myIncommingVertex);
-                            
+
                             if (edgeCollection.Count() == 0)
                             {
                                 iEdgeCollection.Remove(myIncommingEdgePropID);
@@ -874,7 +886,7 @@ namespace sones.GraphFS
             #endregion
 
             #region update binary properties
-            
+
             if (myVertexUpdate.UpdatedBinaryProperties != null)
             {
                 toBeUpdatedVertex.UpdateBinaryProperties(myVertexUpdate.UpdatedBinaryProperties.Updated,
@@ -884,7 +896,7 @@ namespace sones.GraphFS
             #endregion
 
             #region udpate single edges
-            
+
             if (myVertexUpdate.UpdatedSingleEdges != null)
             {
                 if (toBeUpdatedVertex.OutgoingEdges == null)
@@ -899,7 +911,7 @@ namespace sones.GraphFS
                 {
 
                     #region delete edges
-                    
+
                     if (myVertexUpdate.UpdatedSingleEdges.Deleted != null)
                     {
                         foreach (var item in myVertexUpdate.UpdatedSingleEdges.Deleted)
@@ -913,7 +925,7 @@ namespace sones.GraphFS
                                     var targetVertex = edge.GetTargetVertices().First();
 
                                     RemoveIncommingEdgeFromTargetVertex((InMemoryVertex)targetVertex, targetVertex.VertexTypeID, item, toBeUpdatedVertex);
-                                    
+
                                     toBeUpdatedVertex.OutgoingEdges.Remove(item);
                                 }
                             }
@@ -923,7 +935,7 @@ namespace sones.GraphFS
                     #endregion
 
                     #region update edges
-                    
+
                     if (myVertexUpdate.UpdatedSingleEdges.Updated != null)
                     {
                         foreach (var item in myVertexUpdate.UpdatedSingleEdges.Updated)
@@ -935,7 +947,7 @@ namespace sones.GraphFS
                             {
                                 if (edge is SingleEdge)
                                 {
-                                    var singleEdge = (SingleEdge) edge;
+                                    var singleEdge = (SingleEdge)edge;
 
                                     if (edge.Comment != null)
                                     {
@@ -978,7 +990,7 @@ namespace sones.GraphFS
                                                 RemoveIncommingEdgeFromTargetVertex(singleEdge.TargetVertex, toBeUpdatedVertex.VertexTypeID, item.Key, toBeUpdatedVertex);
                                             }
 
-                                            singleEdge.TargetVertex = targetVertex;                                           
+                                            singleEdge.TargetVertex = targetVertex;
                                         }
                                     }
                                 }
@@ -1005,7 +1017,7 @@ namespace sones.GraphFS
             #endregion
 
             #region update hyper edges
-            
+
             if (myVertexUpdate.UpdateHyperEdges != null)
             {
                 if (toBeUpdatedVertex.OutgoingEdges == null)
@@ -1019,7 +1031,7 @@ namespace sones.GraphFS
                 lock (toBeUpdatedVertex.OutgoingEdges)
                 {
                     #region delete edges
-                    
+
 
                     if (myVertexUpdate.UpdateHyperEdges.Deleted != null)
                     {
@@ -1035,7 +1047,7 @@ namespace sones.GraphFS
                                     {
                                         RemoveIncommingEdgeFromTargetVertex((InMemoryVertex)targetVertex, targetVertex.VertexTypeID, item, toBeUpdatedVertex);
                                     }
-                                    
+
                                     toBeUpdatedVertex.OutgoingEdges.Remove(item);
                                 }
                             }
@@ -1045,7 +1057,7 @@ namespace sones.GraphFS
                     #endregion
 
                     #region update edges
-                    
+
                     if (myVertexUpdate.UpdateHyperEdges.Updated != null)
                     {
                         foreach (var item in myVertexUpdate.UpdateHyperEdges.Updated)
@@ -1056,7 +1068,7 @@ namespace sones.GraphFS
                             {
                                 if (edge is HyperEdge)
                                 {
-                                    var hyperEdge = (HyperEdge) edge;
+                                    var hyperEdge = (HyperEdge)edge;
 
                                     if (edge.Comment != null)
                                     {
@@ -1076,7 +1088,7 @@ namespace sones.GraphFS
                                     if (item.Value.UpdatedStructuredProperties != null)
                                         hyperEdge.UpdateStructuredProperties(
                                             item.Value.UpdatedStructuredProperties.Updated,
-                                        item    .Value.UpdatedStructuredProperties.Deleted);
+                                            item.Value.UpdatedStructuredProperties.Deleted);
 
                                     #region update the containing single edges
 
@@ -1140,7 +1152,7 @@ namespace sones.GraphFS
                                                         }
 
                                                         if (contEdge.TargetVertex != null)
-                                                        {                                                            
+                                                        {
                                                             lock (singleEdgeItem)
                                                             {
                                                                 if (singleEdgeItem.TargetVertex != null)
@@ -1235,10 +1247,10 @@ namespace sones.GraphFS
                                                                                       0, 0,
                                                                                       item.Value.UpdatedStructuredProperties == null ? null : item.Value.UpdatedStructuredProperties.Updated,
                                                                                           item.Value.UpdatedUnstructuredProperties == null ? null : item.Value.UpdatedUnstructuredProperties.Updated));
-                                    
+
                                 }
                             }
-                            
+
                         }
                     }
 
@@ -1249,7 +1261,7 @@ namespace sones.GraphFS
             #endregion
 
             #region update unstructured properties
-            
+
             if (myVertexUpdate.UpdatedUnstructuredProperties != null)
             {
                 toBeUpdatedVertex.UpdateUnstructuredProperties(myVertexUpdate.UpdatedUnstructuredProperties);
@@ -1258,7 +1270,7 @@ namespace sones.GraphFS
             #endregion
 
             #region update structured properties
-            
+
             if (myVertexUpdate.UpdatedStructuredProperties != null)
             {
                 toBeUpdatedVertex.UpdateStructuredProperties(myVertexUpdate.UpdatedStructuredProperties);
@@ -1302,7 +1314,7 @@ namespace sones.GraphFS
             return null;
         }
 
-        private IVertex GetVertex_private(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexID, long myVertexTypeID)
+        private IVertex GetVertex_private(SecurityToken mySecurityToken, Int64 myTransactionID, long myVertexID, long myVertexTypeID)
         {
             var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
 

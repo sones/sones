@@ -27,7 +27,6 @@ using System.ServiceModel.Description;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
 using sones.GraphDS.Services.RemoteAPIService.API_Services;
-using sones.GraphDS.Services.RemoteAPIService.DataContracts.VertexType;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
 
@@ -42,7 +41,82 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         public ServiceVertexType CreateVertexType(ServiceVertexTypePredefinition myVertexTypePreDef)
         {
             VertexTypePredefinition Predefinition = myVertexTypePreDef.ToVertexTypePredefinition();
-            return new ServiceVertexType(GraphDS.CreateVertexType<IVertexType>(null, null, new RequestCreateVertexType(Predefinition), (Statistics, VertexType) => VertexType));
+            return new ServiceVertexType(null);
+        }
+
+        public ServiceVertexType AlterVertexType(ServiceVertexTypePredefinition myVertexTypePreDef)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ServiceIndexDefinition CreateIndex(ServiceIndexPredefinition myVertexTypePreDef)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ServiceVertexType> CreateVertexTypes(List<ServiceVertexTypePredefinition> myVertexTypePreDef)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(ServiceVertexTypePredefinition myVertexTypePreDef)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ServiceIndexDefinition DescribeIndex(ServiceIndexPredefinition myVertexTypePreDef)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DropIndex(ServiceIndexPredefinition myVertexTypePreDef)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ServiceIndexDefinition DropType(ServiceIndexPredefinition myVertexTypePreDef)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ServiceEdgeType> GetAllEdgeTypes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ServiceVertexType> GetAllVertexTypes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ServiceEdgeType> GetEdgeType()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ServiceEdgeType> GetVertex()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ServiceEdgeType> GetVertexCount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ServiceEdgeType> GetVertices()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ServiceVertexType Insert()
+        {
+            throw new NotImplementedException();
         }
     }
 }

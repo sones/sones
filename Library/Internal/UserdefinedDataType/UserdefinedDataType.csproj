@@ -48,6 +48,10 @@
       <Project>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</Project>
       <Name>NewFastSerializer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IPluginable\IPluginable.csproj">
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>

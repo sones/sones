@@ -35,12 +35,11 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 
         public IncomingEdgePredefinition ToIncomingEdgePredefinition()
         {
-            IncomingEdgePredefinition IncomingEdgePredef = new IncomingEdgePredefinition(this.AttributeName);
+            IncomingEdgePredefinition IncomingEdgePredef = new IncomingEdgePredefinition(this.AttributeName,"",""); //todo
             var VertexTypeName = this.AttributeType.Substring(0,this.AttributeType.IndexOf('.'));
             var OutgoingEdgeName = this.AttributeType.Substring(this.AttributeType.IndexOf('.'),this.AttributeType.Length - 1);
 
-            IncomingEdgePredef.SetOutgoingEdge(VertexTypeName,OutgoingEdgeName);
-            
+                      
 
             if(this.Comment != null)
                 IncomingEdgePredef.SetComment(this.Comment);

@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using sones.GraphDB;
-using sones.GraphDB.Request.GetIndex;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.GQL.ErrorHandling;
 using sones.GraphQL.GQL.Manager.Plugin;
@@ -31,6 +30,7 @@ using sones.Library.Commons.Transaction;
 using System.Linq;
 using sones.Library.ErrorHandling;
 using sones.Library.CollectionWrapper;
+using sones.GraphDB.Request;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition
 {
@@ -61,7 +61,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                                                 GQLPluginManager myPluginManager,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
         {
             IEnumerable<IVertexView> resultingVertices = new List<IVertexView>();
             ASonesException error = null;

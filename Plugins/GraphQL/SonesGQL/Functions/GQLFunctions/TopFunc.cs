@@ -50,7 +50,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return "Will return the top elements of an edge.";
         }
 
-        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if ((myWorkingBase is IAttributeDefinition) && (myWorkingBase as IAttributeDefinition).Kind == AttributeType.OutgoingEdge)
             {
@@ -62,7 +62,7 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, params FuncParameter[] myParams)
         {
             var currentInnerEdgeType = ((IOutgoingEdgeDefinition)myAttributeDefinition).InnerEdgeType;
             bool orderByWeight = false;
@@ -105,6 +105,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override string PluginName
         {
             get { return"sones.top"; }
+        }
+
+        public override string PluginShortName
+        {
+            get { return "top"; }
         }
 
         public override PluginParameters<Type> SetableParameters

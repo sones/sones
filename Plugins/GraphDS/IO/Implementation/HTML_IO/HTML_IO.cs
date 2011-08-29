@@ -58,6 +58,11 @@ namespace sones.Plugins.GraphDS.IO
             get { return "sones.html_io"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "html"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -87,7 +92,7 @@ namespace sones.Plugins.GraphDS.IO
             return myString;
         }
 
-        public string GenerateOutputResult(QueryResult myQueryResult)
+        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             StringBuilder Output = new StringBuilder();
 
@@ -130,6 +135,11 @@ namespace sones.Plugins.GraphDS.IO
                 SB.Append(" InnerException: " + queryresult.Error.InnerException.Message);
 
             return SB.ToString();
+        }
+
+        public String ListAvailParams()
+        {
+            throw new NotImplementedException();
         }
 
         #region private toHTML

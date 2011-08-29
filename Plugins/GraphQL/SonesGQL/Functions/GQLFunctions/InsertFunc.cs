@@ -51,7 +51,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return "This function inserts one or more strings at the given position.";
         }
 
-        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if (myWorkingBase != null)
             {
@@ -78,7 +78,7 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, params FuncParameter[] myParams)
         {
             if (!(myCallingObject is String))
             {
@@ -116,6 +116,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override string PluginName
         {
             get { return"sones.insert"; }
+        }
+
+        public override string PluginShortName
+        {
+            get { return "insert"; }
         }
 
         public override PluginParameters<Type> SetableParameters

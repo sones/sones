@@ -42,7 +42,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 
         public static RequestInsertVertex MakeRequestInsertVertex(ServiceInsertDefinition myInsertDefinition)
         {
-            RequestInsertVertex Request = new RequestInsertVertex(myInsertDefinition.VertexTypeName)
+            RequestInsertVertex Request = new RequestInsertVertex(myInsertDefinition.VertexTypeName);
 
             //Todo implement MakeRequestInsertVertex converter
 

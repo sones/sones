@@ -47,7 +47,7 @@ namespace sones.GraphDB.Request
 
         private readonly SecurityToken _securityToken;
 
-        private readonly TransactionToken _transactionToken;
+        private readonly Int64 _transactionToken;
 
         /// <summary>
         /// The verticies which are fetched by the Traverser
@@ -72,7 +72,7 @@ namespace sones.GraphDB.Request
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
         public PipelineableTraverseVertexRequest(RequestTraverseVertex myTraverseVertexRequest,
                                                   SecurityToken mySecurityToken,
-                                                  TransactionToken myTransactionToken)
+                                                  Int64 myTransactionToken)
             : base(mySecurityToken, myTransactionToken)
         {
             _request = myTraverseVertexRequest;
@@ -233,7 +233,7 @@ namespace sones.GraphDB.Request
 
             if (myMatchEvaluator != null)
                 //there is a match evaluator... use it
-                match = myMatchEvaluator(myCurrentVertex, myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken));
+                match = myMatchEvaluator(myCurrentVertex, myMetaManager.VertexTypeManager.ExecuteManager.GetType(myCurrentVertex.VertexTypeID, Int64, SecurityToken));
 
             #endregion
 
@@ -277,7 +277,7 @@ namespace sones.GraphDB.Request
             //first do recursive search by using the outgoing edges
 
             //get vertex type of myCurrentVetex
-            var currVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken);
+            var currVertexType = myMetaManager.VertexTypeManager.ExecuteManager.GetType(myCurrentVertex.VertexTypeID, Int64, SecurityToken);
 
             foreach (var _OutEdgeDef in currVertexType.GetOutgoingEdgeDefinitions(true))
             {
@@ -308,7 +308,7 @@ namespace sones.GraphDB.Request
                 if (myFollowThisEdge != null)
                 {
                     if (!myFollowThisEdge(myCurrentVertex,
-                                            myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
+                                            myMetaManager.VertexTypeManager.ExecuteManager.GetType(myCurrentVertex.VertexTypeID, Int64, SecurityToken),
                                             outEdge,
                                             _OutEdgeDef))
                     {

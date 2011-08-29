@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-using sones.GraphDS.Services.RemoteAPIService.DataContracts.VertexType;
 using sones.GraphDB.TypeSystem;
 
 

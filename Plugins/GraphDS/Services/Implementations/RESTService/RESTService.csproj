@@ -63,7 +63,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RESTService.cs" />
     <Compile Include="RESTServicePluginManager\RESTServicePluginManager.cs" />
-    <Compile Include="ServiceStatus\RESTServiceStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
@@ -123,61 +122,34 @@
       <Name>IService</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="resources\ClientAccessPolicy.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="resources\errorpages\Error404.html" />
+    <EmbeddedResource Include="resources\favicon.ico" />
+    <EmbeddedResource Include="resources\libs\jQuery\jquery.base64.js" />
+    <EmbeddedResource Include="resources\libs\jQuery\jquery.url.js" />
+    <EmbeddedResource Include="resources\libs\jQuery\jquery.url.parser.js" />
+    <EmbeddedResource Include="resources\libs\jQuery\jquery.urlencode.js" />
+    <EmbeddedResource Include="resources\soneslogo.gif" />
+    <EmbeddedResource Include="resources\WebShell\goosh.js" />
+    <EmbeddedResource Include="resources\WebShell\gql.css" />
+    <EmbeddedResource Include="resources\WebShell\waitingimg.gif" />
+    <EmbeddedResource Include="resources\WebShell\WebShell.css" />
+    <EmbeddedResource Include="resources\WebShell\WebShell.html" />
+    <EmbeddedResource Include="resources\WebShell\WebShell.js" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="resources\CrossDomain.xml" />
-    <Content Include="resources\libs\jQuery\jquery.license.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="resources\d3\d3.js" />
+    <EmbeddedResource Include="resources\libs\jQuery\jquery-1.6.2.min.js" />
+    <EmbeddedResource Include="resources\libs\jQuery\jquery.license.txt" />
+    <EmbeddedResource Include="resources\d3\license.txt" />
+    <EmbeddedResource Include="resources\d3\d3.layout.js" />
+    <EmbeddedResource Include="resources\d3\d3.geom.js" />
     <Content Include="resources\robots.txt" />
-    <Content Include="resources\wadl.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <EmbeddedResource Include="resources\WebShell\WebShell.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\WebShell\WebShell.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\WebShell\WebShell.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\WebShell\waitingimg.gif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\WebShell\gql.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\WebShell\goosh.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\soneslogo.gif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\libs\jQuery\jquery.urlencode.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\libs\jQuery\jquery.url.parser.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\libs\jQuery\jquery.url.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\libs\jQuery\jquery.base64.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\libs\jQuery\jquery-1.4.2.min.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\favicon.ico" />
-    <EmbeddedResource Include="resources\errorpages\Error404.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <Content Include="resources\wadl.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

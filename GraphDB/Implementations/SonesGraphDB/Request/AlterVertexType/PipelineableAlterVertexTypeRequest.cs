@@ -47,7 +47,9 @@ namespace sones.GraphDB.Request.AlterType
         /// <param name="myRequest">The alter type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableAlterVertexTypeRequest(RequestAlterVertexType myRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public PipelineableAlterVertexTypeRequest(RequestAlterVertexType myRequest, 
+                                                    SecurityToken mySecurityToken, 
+                                                    Int64 myTransactionToken)
             :base(mySecurityToken, myTransactionToken)
         {
             _request = myRequest;
@@ -62,7 +64,15 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CheckManager.AlterVertexType(_request, SecurityToken, TransactionToken);
+            RequestUpdate update;
+
+            myMetaManager
+                .VertexTypeManager
+                .CheckManager
+                .AlterType(_request, 
+                            Int64, 
+                            SecurityToken,
+                            out update);
         }
 
         /// <summary>
@@ -70,7 +80,27 @@ namespace sones.GraphDB.Request.AlterType
         /// </summary>
         public override void Execute(IMetaManager myMetaManager)
         {
-            _alteredVertexType = myMetaManager.VertexTypeManager.ExecuteManager.AlterVertexType(_request, SecurityToken, TransactionToken);
+            RequestUpdate update;
+
+            _alteredVertexType = 
+                myMetaManager
+                .VertexTypeManager
+                .ExecuteManager
+                .AlterType(_request,
+                            Int64,
+                            SecurityToken,
+                            out update);
+
+            #region update vertices
+
+            //myMetaManager
+            //    .VertexManager
+            //    .ExecuteManager
+            //    .UpdateVertices(update,
+            //                    Int64,
+            //                    SecurityToken);
+
+            #endregion
         }
 
         /// <summary>

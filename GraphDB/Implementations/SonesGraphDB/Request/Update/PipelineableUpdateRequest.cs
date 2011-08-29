@@ -53,7 +53,7 @@ namespace sones.GraphDB.Request.Update
         /// <param name="myTransaction">The transaction token</param>
         public PipelineableUpdateRequest(   RequestUpdate myUpdateRequest, 
                                             SecurityToken mySecurity,
-                                            TransactionToken myTransaction)
+                                            Int64 myTransaction)
             : base(mySecurity, myTransaction)
         {
             _request = myUpdateRequest;
@@ -66,7 +66,7 @@ namespace sones.GraphDB.Request.Update
         /// </summary>
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexManager.CheckManager.UpdateVertices(_request, TransactionToken, SecurityToken);
+            myMetaManager.VertexManager.CheckManager.UpdateVertices(_request, Int64, SecurityToken);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace sones.GraphDB.Request.Update
         /// </summary>
         public override void Execute(IMetaManager myMetaManager)
         {
-            updatedVertices = myMetaManager.VertexManager.ExecuteManager.UpdateVertices(_request, TransactionToken, SecurityToken);
+            updatedVertices = myMetaManager.VertexManager.ExecuteManager.UpdateVertices(_request, Int64, SecurityToken);
         }
 
         /// <summary>

@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using sones.GraphDB;
 using System.Linq;
 using sones.GraphDB.Request;
-using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.GQL.ErrorHandling;
 using sones.GraphQL.GQL.Manager.Plugin;
@@ -63,7 +62,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         public override QueryResult GetResult(GQLPluginManager myPluginManager,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
         {
             var resultingVertices = new List<IVertexView>();
             ASonesException error = null;

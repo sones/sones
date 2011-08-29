@@ -23,6 +23,7 @@ using sones.GraphDB.Manager;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using System;
 
 namespace sones.GraphDB.Request
 {
@@ -54,7 +55,7 @@ namespace sones.GraphDB.Request
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
         public PipelineableCreateVertexTypesRequest(RequestCreateVertexTypes myCreateVertexTypeRequest,
-                                                   SecurityToken mySecurity, TransactionToken myTransactionToken)
+                                                   SecurityToken mySecurity, Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myCreateVertexTypeRequest;
@@ -66,12 +67,12 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CheckManager.AddVertexTypes(_request.VertexTypeDefinitions, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.CheckManager.AddTypes(_request.VertexTypeDefinitions, Int64, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _createdVertexType = myMetaManager.VertexTypeManager.ExecuteManager.AddVertexTypes(_request.VertexTypeDefinitions, TransactionToken, SecurityToken);
+            _createdVertexType = myMetaManager.VertexTypeManager.ExecuteManager.AddTypes(_request.VertexTypeDefinitions, Int64, SecurityToken);
         }
 
         public override IRequest GetRequest()

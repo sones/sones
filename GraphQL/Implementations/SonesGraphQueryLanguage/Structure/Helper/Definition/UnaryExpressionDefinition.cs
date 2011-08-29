@@ -42,7 +42,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
             _Expression = myExpression;
         }
 
-        public BinaryExpressionDefinition GetBinaryExpression(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public BinaryExpressionDefinition GetBinaryExpression(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
 
             AExpressionDefinition right;

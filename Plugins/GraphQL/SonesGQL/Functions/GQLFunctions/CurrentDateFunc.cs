@@ -46,12 +46,12 @@ namespace sones.Plugins.SonesGQL.Functions
             return "Returns the current date and time.";
         }
 
-        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             return myWorkingBase == null;
         }
 
-        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, params FuncParameter[] myParams)
         {
             return new FuncParameter(DateTime.Now);
         }
@@ -61,6 +61,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override string PluginName
         {
             get { return "sones.currentdate"; }
+        }
+
+        public override string PluginShortName
+        {
+            get { return "currentdate"; }
         }
 
         public override PluginParameters<Type> SetableParameters

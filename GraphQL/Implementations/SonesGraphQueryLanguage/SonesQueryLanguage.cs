@@ -124,14 +124,18 @@ namespace sones.GraphQL
 
         #region IGraphQL Members
 
-        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
-                                 string myQueryString)
+        public QueryResult Query(SecurityToken mySecurityToken, 
+                                    Int64 myTransactionToken,
+                                    string myQueryString)
         {
             //tree-like representation of the query-string
             ParseTree aTree;
             //executeable statement
             AStatement statement;   
-            QueryResult queryResult = new QueryResult(myQueryString, "sones.gql", 0L, ResultType.Failed);
+            QueryResult queryResult = new QueryResult(myQueryString, 
+                                                        SonesGQLConstants.GQL, 
+                                                        0L, 
+                                                        ResultType.Failed);
 
             #region Input exceptions - null or empty query
 
@@ -191,7 +195,12 @@ namespace sones.GraphQL
 
             try
             {
-                queryResult = statement.Execute(_IGraphDBInstance, this, _GQLPluginManager,  myQueryString, mySecurityToken, myTransactionToken);
+                queryResult = statement.Execute(_IGraphDBInstance, 
+                                                this, 
+                                                _GQLPluginManager,  
+                                                myQueryString, 
+                                                mySecurityToken, 
+                                                myTransactionToken);
             }
             catch (ASonesException ee)
             {
@@ -209,12 +218,16 @@ namespace sones.GraphQL
             return queryResult;
         }
 
-        public IEnumerable<string> ExportGraphDDL(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump)
+        public IEnumerable<string> ExportGraphDDL(DumpFormats myDumpFormat, 
+                                                    IEnumerable<IVertexType> myTypesToDump)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDML(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IEnumerable<string> ExportGraphDML(DumpFormats myDumpFormat, 
+                                                    IEnumerable<IVertexType> myTypesToDump, 
+                                                    SecurityToken mySecurityToken, 
+                                                    Int64 myTransactionToken)
         {
             throw new NotImplementedException();
         }
@@ -228,12 +241,18 @@ namespace sones.GraphQL
             get { return "sones.gql"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "gql"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type> { { "GraphDB", typeof(IGraphDB) } }; }
         }
 
-        public IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
+        public IPluginable InitializePlugin(String myUniqueString, 
+                                            Dictionary<string, object> myParameters = null)
         {
             IGraphDB dbInstance = null;
 
@@ -269,7 +288,8 @@ namespace sones.GraphQL
 
             if (aggregates.Count == 0)
             {
-                throw new GQLGrammarSetExtandableMemberException(typeof(IGQLAggregate), "There is no plugin found to set in GQL grammar.");
+                throw new GQLGrammarSetExtandableMemberException(typeof(IGQLAggregate), 
+                            "There is no plugin found to set in GQL grammar.");
             }
             myGQLGrammar.SetAggregates(aggregates);
 
@@ -285,7 +305,8 @@ namespace sones.GraphQL
 
             if (functions.Count == 0)
             {
-                throw new GQLGrammarSetExtandableMemberException(typeof(IGQLFunction), "There is no plugin found to set in GQL grammar.");
+                throw new GQLGrammarSetExtandableMemberException(typeof(IGQLFunction), 
+                            "There is no plugin found to set in GQL grammar.");
             }
             myGQLGrammar.SetFunctions(functions);
 
@@ -301,7 +322,9 @@ namespace sones.GraphQL
 
             if (indices.Count < 1)
             {
-                throw new GQLGrammarSetExtandableMemberException(typeof(IIndex<IComparable, Int64>), "There is no valid index plugin found to set in GQL grammar. Expected at least SingleValueIndex or MultiValueIndex");
+                throw new GQLGrammarSetExtandableMemberException(typeof(IIndex<IComparable, Int64>), 
+                            @"There is no valid index plugin found to set in GQL grammar. 
+                            Expected at least SingleValueIndex or MultiValueIndex");
             }
 
             myGQLGrammar.SetIndices(indices);
@@ -318,7 +341,8 @@ namespace sones.GraphQL
 
             if (importer.Count == 0)
             {
-                throw new GQLGrammarSetExtandableMemberException(typeof(IGraphDBImport), "There is no plugin found to set in GQL grammar.");
+                throw new GQLGrammarSetExtandableMemberException(typeof(IGraphDBImport), 
+                            "There is no plugin found to set in GQL grammar.");
             }
             myGQLGrammar.SetGraphDBImporter(importer);
 
@@ -334,7 +358,8 @@ namespace sones.GraphQL
 
             if (exporter.Count == 0)
             {
-                throw new GQLGrammarSetExtandableMemberException(typeof(IGraphDBExport), "There is no plugin found to set in GQL grammar.");
+                throw new GQLGrammarSetExtandableMemberException(typeof(IGraphDBExport), 
+                            "There is no plugin found to set in GQL grammar.");
             }
             myGQLGrammar.SetGraphDBExporter(exporter);
 

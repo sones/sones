@@ -28,6 +28,8 @@ using sones.Library.Commons.VertexStore;
 using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Expression.Tree.Literals;
 using sones.GraphDB.ErrorHandling.Expression;
+using sones.GraphDB.TypeSystem;
+using sones.Constants;
 
 namespace sones.GraphDB.Manager.QueryPlan
 {
@@ -41,7 +43,11 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <summary>
         /// A vertex type manager is needed to create certain query-plan structures
         /// </summary>
-        private IManagerOf<IVertexTypeHandler> _vertexTypeManager;
+        private IManagerOf<ITypeHandler<IVertexType>> _vertexTypeManager;
+        /// <summary>
+        /// A vertex type manager is needed to create certain query-plan structures
+        /// </summary>
+        private IManagerOf<ITypeHandler<IEdgeType>> _edgeTypeManager;
 
         /// <summary>
         /// A vertex store
@@ -65,7 +71,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransaction">The current transaction token</param>
         /// <param name="mySecurity">The current security token</param>
         /// <returns>A query plan</returns>
-        public IQueryPlan CreateQueryPlan(IExpression myExpression, Boolean myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
+        public IQueryPlan CreateQueryPlan(IExpression myExpression, Boolean myIsLongRunning, Int64 myTransaction, SecurityToken mySecurity)
         {
             IQueryPlan result;
 
@@ -201,9 +207,9 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransaction">The current transaction token</param>
         /// <param name="mySecurity">The current security token</param>
         /// <returns>A property query plan</returns>
-        private IQueryPlan GenerateFromPropertyExpression(PropertyExpression myPropertyExpression, TransactionToken myTransaction, SecurityToken mySecurity)
+        private IQueryPlan GenerateFromPropertyExpression(PropertyExpression myPropertyExpression, Int64 myTransaction, SecurityToken mySecurity)
         {
-            var type = _vertexTypeManager.ExecuteManager.GetVertexType(myPropertyExpression.NameOfVertexType, myTransaction, mySecurity);
+            var type = _vertexTypeManager.ExecuteManager.GetType(myPropertyExpression.NameOfVertexType, myTransaction, mySecurity);
 
             return new QueryPlanProperty(type, type.GetPropertyDefinition(myPropertyExpression.NameOfProperty),
                                          myPropertyExpression.Edition, myPropertyExpression.Timespan);
@@ -216,7 +222,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransaction">The current transaction token</param>
         /// <param name="mySecurity">The current security token</param>
         /// <returns>A query plan</returns>
-        private static IQueryPlan GenerateFromUnaryExpression(UnaryExpression unaryExpression, TransactionToken myTransaction, SecurityToken mySecurity)
+        private static IQueryPlan GenerateFromUnaryExpression(UnaryExpression unaryExpression, Int64 myTransaction, SecurityToken mySecurity)
         {
             throw new NotImplementedException();
         }
@@ -229,7 +235,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <returns>A query plan</returns>
-        private IQueryPlan GenerateFromBinaryExpression(BinaryExpression binaryExpression, Boolean myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        private IQueryPlan GenerateFromBinaryExpression(BinaryExpression binaryExpression, Boolean myIsLongRunning, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             switch (binaryExpression.Operator)
             {
@@ -286,7 +292,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <returns>An AND query plan</returns>
-        private IQueryPlan GenerateANDPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
+        private IQueryPlan GenerateANDPlan(BinaryExpression binaryExpression, bool myIsLongRunning, Int64 myTransaction, SecurityToken mySecurity)
         {
             var left = CreateQueryPlan(binaryExpression.Left, myIsLongRunning, myTransaction, mySecurity);
             var right = CreateQueryPlan(binaryExpression.Right, myIsLongRunning, myTransaction, mySecurity);
@@ -302,7 +308,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <returns>An OR query plan</returns>
-        private IQueryPlan GenerateORPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
+        private IQueryPlan GenerateORPlan(BinaryExpression binaryExpression, bool myIsLongRunning, Int64 myTransaction, SecurityToken mySecurity)
         {
             var left = CreateQueryPlan(binaryExpression.Left, myIsLongRunning, myTransaction, mySecurity);
             var right = CreateQueryPlan(binaryExpression.Right, myIsLongRunning, myTransaction, mySecurity);
@@ -318,7 +324,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <returns>An equals query plan</returns>
-        private IQueryPlan GenerateEqualsPlan(BinaryExpression binaryExpression, Boolean myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        private IQueryPlan GenerateEqualsPlan(BinaryExpression binaryExpression, Boolean myIsLongRunning, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             //it is not possible to have something complex (User.Age = Car.HorsePower) here --> filtered by validate of IExpression
 
@@ -344,7 +350,7 @@ namespace sones.GraphDB.Manager.QueryPlan
 
         }
 
-        private IQueryPlan GenerateInRangePlan(BinaryExpression myBinaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        private IQueryPlan GenerateInRangePlan(BinaryExpression myBinaryExpression, bool myIsLongRunning, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             QueryPlanProperty property;
             RangeLiteralExpression constant;
@@ -381,7 +387,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <returns>A like query plan</returns>
-        private IQueryPlan GenerateLikePlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        private IQueryPlan GenerateLikePlan(BinaryExpression binaryExpression, bool myIsLongRunning, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             QueryPlanProperty property;
             ILiteralExpression constant;
@@ -419,7 +425,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <returns>A not equals query plan</returns>
-        private IQueryPlan GenerateNotEqualsPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        private IQueryPlan GenerateNotEqualsPlan(BinaryExpression binaryExpression, bool myIsLongRunning, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             QueryPlanProperty property;
             ILiteralExpression constant;
@@ -445,7 +451,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <returns>A less than query plan</returns>
-        private IQueryPlan GenerateLessThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        private IQueryPlan GenerateLessThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             QueryPlanProperty property;
             ILiteralExpression constant;
@@ -471,7 +477,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <returns>A less or equal than query plan</returns>
-        private IQueryPlan GenerateLessOrEqualsThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        private IQueryPlan GenerateLessOrEqualsThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             QueryPlanProperty property;
             ILiteralExpression constant;
@@ -497,7 +503,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <returns>A greater than query plan</returns>
-        private IQueryPlan GenerateGreaterThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        private IQueryPlan GenerateGreaterThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             QueryPlanProperty property;
             ILiteralExpression constant;
@@ -523,7 +529,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myProperty">The property out parameter</param>
         /// <param name="myConstant">The constant out parameter</param>
-        private void FindPropertyAndConstant(BinaryExpression myBinaryExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken, out QueryPlanProperty myProperty, out ILiteralExpression myConstant)
+        private void FindPropertyAndConstant(BinaryExpression myBinaryExpression, Int64 myTransactionToken, SecurityToken mySecurityToken, out QueryPlanProperty myProperty, out ILiteralExpression myConstant)
         {
             if (myBinaryExpression.Left is PropertyExpression)
             {
@@ -547,7 +553,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <returns>An greater or equals query plan</returns>
-        private IQueryPlan GenerateGreaterOrEqualsThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        private IQueryPlan GenerateGreaterOrEqualsThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, Int64 myTransactionToken, SecurityToken mySecurityToken)
         {
             //sth like User/Age = 10
             QueryPlanProperty property;
@@ -572,12 +578,15 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="propertyExpression">The property expression that is going to be transfered</param>
         /// <returns>A Property query plan</returns>
-        private QueryPlanProperty GenerateQueryPlanProperty(PropertyExpression propertyExpression, TransactionToken myTransaction, SecurityToken mySecurity)
+        private QueryPlanProperty GenerateQueryPlanProperty(PropertyExpression propertyExpression, Int64 myTransaction, SecurityToken mySecurity)
         {
-            var vertexType = _vertexTypeManager.ExecuteManager.GetVertexType(propertyExpression.NameOfVertexType, myTransaction, mySecurity);
-            var property = vertexType.GetPropertyDefinition(propertyExpression.NameOfProperty);
+            IVertexType type = null;
 
-            return new QueryPlanProperty(vertexType, property, propertyExpression.Edition, propertyExpression.Timespan);
+            type = _vertexTypeManager.ExecuteManager.GetType(propertyExpression.NameOfVertexType, myTransaction, mySecurity);
+
+            var property = type.GetPropertyDefinition(propertyExpression.NameOfProperty);
+
+            return new QueryPlanProperty(type, property, propertyExpression.Edition, propertyExpression.Timespan);
         }
 
         #endregion
@@ -587,11 +596,12 @@ namespace sones.GraphDB.Manager.QueryPlan
         void IManager.Initialize(IMetaManager myMetaManager)
         {
             _vertexTypeManager = myMetaManager.VertexTypeManager;
+            _edgeTypeManager = myMetaManager.EdgeTypeManager;
             _vertexStore = myMetaManager.VertexStore;
             _indexManager = myMetaManager.IndexManager;
         }
 
-        void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity) { }
+        void IManager.Load(Int64 myTransaction, SecurityToken mySecurity) { }
 
         #endregion
     }

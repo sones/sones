@@ -69,7 +69,10 @@
     <Compile Include="SonesQueryLanguage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatementNodes\AStatement.cs" />
+    <Compile Include="StatementNodes\DDL\AlterEdgeTypeNode.cs" />
     <Compile Include="StatementNodes\DDL\AlterVertexTypeNode.cs" />
+    <Compile Include="StatementNodes\DDL\CreateEdgeTypesNode.cs" />
+    <Compile Include="StatementNodes\DDL\DropEdgeTypeNode.cs" />
     <Compile Include="StatementNodes\DML\UnlinkNode.cs" />
     <Compile Include="StatementNodes\DML\LinkNode.cs" />
     <Compile Include="StatementNodes\DML\ImportNode.cs" />
@@ -79,10 +82,11 @@
     <Compile Include="StatementNodes\DML\DeleteNode.cs" />
     <Compile Include="StatementNodes\DML\TruncateNode.cs" />
     <Compile Include="StatementNodes\DDL\DropIndexNode.cs" />
-    <Compile Include="StatementNodes\DDL\DropTypeNode.cs" />
+    <Compile Include="StatementNodes\DDL\DropVertexTypeNode.cs" />
     <Compile Include="StatementNodes\DDL\CreateIndexNode.cs" />
     <Compile Include="StatementNodes\DDL\CreateVertexTypesNode.cs" />
     <Compile Include="StatementNodes\DML\SelectNode.cs" />
+    <Compile Include="StatementNodes\DML\UpdateEdgesNode.cs" />
     <Compile Include="StatementNodes\DML\UpdateNode.cs" />
     <Compile Include="StatementNodes\DML\InsertNode.cs" />
     <Compile Include="StatementNodes\DML\InsertOrUpdateNode.cs" />
@@ -93,7 +97,8 @@
     <Compile Include="StatementNodes\Transactions\CommitRollbackTransactionNode.cs" />
     <Compile Include="Structure\Helper\Definition\ADescribeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\AlterType\AAlterTypeCommand.cs" />
-    <Compile Include="Structure\Helper\Definition\AlterType\AlterType_AddAttributes.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterEdgeType_AddAttributes.cs" />
+    <Compile Include="Structure\Helper\Definition\AlterType\AlterVertexType_AddAttributes.cs" />
     <Compile Include="Structure\Helper\Definition\AlterType\AlterType_AddIndices.cs" />
     <Compile Include="Structure\Helper\Definition\AlterType\AlterType_ChangeComment.cs" />
     <Compile Include="Structure\Helper\Definition\AlterType\AlterType_DefineAttributes.cs" />
@@ -165,9 +170,13 @@
     <Compile Include="Structure\Helper\ExpressionGraph\Helper\LevelKey.cs" />
     <Compile Include="Structure\Helper\Operator\ABinaryCompareOperator.cs" />
     <Compile Include="Structure\Nodes\AStructureNode.cs" />
-    <Compile Include="Structure\Nodes\DDL\BulkTypeListMemberNode.cs" />
-    <Compile Include="Structure\Nodes\DDL\BulkTypeNode.cs" />
-    <Compile Include="Structure\Nodes\DDL\AttributeDefinitionNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\AlterEdgeTypeCommandNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\BulkVertexTypeListMemberNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\BulkVertexTypeNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\EdgeTypeAttributeDefinitionNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\VertexTypeAttributeDefinitionNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\BulkEdgeTypeNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\BulkEdgeTypeListMemberNode.cs" />
     <Compile Include="Structure\Nodes\DDL\IncomingEdgesNode.cs" />
     <Compile Include="Structure\Nodes\DDL\IncomingEdgeNode.cs" />
     <Compile Include="Structure\Nodes\DDL\SingleEdgeTypeDefNode.cs" />
@@ -182,7 +191,7 @@
     <Compile Include="Structure\Nodes\DDL\MandatoryOptNode.cs" />
     <Compile Include="Structure\Nodes\DDL\UniqueAttributesOptNode.cs" />
     <Compile Include="Structure\Nodes\DDL\ShardsNode.cs" />
-    <Compile Include="Structure\Nodes\DDL\AlterCommandNode.cs" />
+    <Compile Include="Structure\Nodes\DDL\AlterVertexTypeCommandNode.cs" />
     <Compile Include="Structure\Nodes\DDL\EditionOptNode.cs" />
     <Compile Include="Structure\Nodes\DDL\IndexNameOptNode.cs" />
     <Compile Include="Structure\Nodes\DDL\IndexTypeOptNode.cs" />
@@ -199,7 +208,12 @@
     <Compile Include="Structure\Nodes\DML\AddToListAttrUpdateAddToNode.cs" />
     <Compile Include="Structure\Nodes\DML\AddToListAttrUpdateOperatorNode.cs" />
     <Compile Include="Structure\Nodes\DML\AttrDefaultValueNode.cs" />
+    <Compile Include="Structure\Nodes\DML\CollectionOfEdgesNode.cs" />
     <Compile Include="Structure\Nodes\DML\CommentsNode.cs" />
+    <Compile Include="Structure\Nodes\DML\EdgeAttributeUpdateListNode.cs" />
+    <Compile Include="Structure\Nodes\DML\EdgeAttributeUpdateNode.cs" />
+    <Compile Include="Structure\Nodes\DML\EdgeTypeEdgeElementNode.cs" />
+    <Compile Include="Structure\Nodes\DML\EdgeTypeEdgeIDCollectionNode.cs" />
     <Compile Include="Structure\Nodes\DML\VertexTypeVertexElementNode.cs" />
     <Compile Include="Structure\Nodes\DML\VertexTypeVertexIDCollectionNode.cs" />
     <Compile Include="Structure\Nodes\DML\VerbosityNode.cs" />
@@ -259,13 +273,16 @@
     <Compile Include="Structure\Nodes\Expressions\UnaryExpressionNode.cs" />
     <Compile Include="Structure\Nodes\Misc\AliasNode.cs" />
     <Compile Include="Structure\Nodes\Misc\ATypeNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\EdgeTypeNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\ExtKeyValueListNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\ExtKeyValuePairNode.cs" />
     <Compile Include="Structure\Nodes\Misc\OptionsNode.cs" />
     <Compile Include="Structure\Nodes\Misc\KeyValuePairNode.cs" />
     <Compile Include="Structure\Nodes\Misc\KeyValueListNode.cs" />
-    <Compile Include="Structure\Nodes\Misc\GraphDBTypeNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\VertexTypeNode.cs" />
     <Compile Include="Structure\Helper\Definition\IDChainDefinition.cs" />
     <Compile Include="Structure\Nodes\Misc\IDNode.cs" />
-    <Compile Include="Structure\Nodes\Misc\TypeListNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\VertexTypeListNode.cs" />
     <Compile Include="Structure\Nodes\Misc\UnstructuredProperty.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -360,6 +377,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Documentation\ClassDiagram.cd" />
+    <Compile Include="Structure\Nodes\DML\CollectionOfBasicDBObjectsNode.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

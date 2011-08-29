@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests

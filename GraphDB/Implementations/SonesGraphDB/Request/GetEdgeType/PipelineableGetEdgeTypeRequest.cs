@@ -27,6 +27,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Manager.TypeManagement;
+using System;
 
 namespace sones.GraphDB.Request
 {
@@ -57,10 +58,9 @@ namespace sones.GraphDB.Request
         /// <param name="myGetEdgeTypeRequest">The get edge type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The transaction token</param>
-        public PipelineableGetEdgeTypeRequest(
-                                                RequestGetEdgeType myGetEdgeTypeRequest, 
+        public PipelineableGetEdgeTypeRequest(RequestGetEdgeType myGetEdgeTypeRequest, 
                                                 SecurityToken mySecurity,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myGetEdgeTypeRequest;
@@ -72,24 +72,40 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            DoExecute(myMetaManager.EdgeTypeManager.CheckManager);
+            if (_request.EdgeTypeName == null)
+                myMetaManager
+                    .EdgeTypeManager
+                    .CheckManager
+                    .GetType(_request.EdgeTypeID, 
+                                Int64, 
+                                SecurityToken);
+            else
+                myMetaManager
+                    .EdgeTypeManager
+                    .CheckManager
+                    .GetType(_request.EdgeTypeName, 
+                                Int64, 
+                                SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _fetchedEdgeType = DoExecute(myMetaManager.EdgeTypeManager.ExecuteManager);
-        }
-
-        private IEdgeType DoExecute(IEdgeTypeHandler myManager)
-        {
             if (_request.EdgeTypeName == null)
-            {
-                return myManager.GetEdgeType(_request.EdgeTypeID, TransactionToken, SecurityToken);
-            }
+                _fetchedEdgeType =
+                    myMetaManager
+                        .EdgeTypeManager
+                        .ExecuteManager
+                        .GetType(_request.EdgeTypeID, 
+                                    Int64, 
+                                    SecurityToken);
             else
-            {
-                return myManager.GetEdgeType(_request.EdgeTypeName, TransactionToken, SecurityToken);
-            }
+                _fetchedEdgeType =
+                    myMetaManager
+                        .EdgeTypeManager
+                        .ExecuteManager
+                        .GetType(_request.EdgeTypeName, 
+                                    Int64, 
+                                    SecurityToken);
         }
 
         public override IRequest GetRequest()

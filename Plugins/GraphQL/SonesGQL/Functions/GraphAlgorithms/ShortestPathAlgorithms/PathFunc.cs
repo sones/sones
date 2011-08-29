@@ -56,7 +56,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                     "Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used.";
         }
 
-        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if (myWorkingBase is IAttributeDefinition)
             {
@@ -82,10 +82,13 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                                                 IVertex myStartVertex,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,
-                                                TransactionToken myTransactionToken,
+                                                Int64 myTransactionToken,
                                                 params FuncParameter[] myParams)
         {
             #region initialize data
+
+            var graph = myGraphDB;
+            
 
             // The edge we starting of (e.g. Friends)
             var typeAttribute = myAttributeDefinition;
@@ -101,12 +104,13 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
             //set the target node
             var targetNode = (myParams[0].Value as IEnumerable<IVertex>).First();
+            
 
             //set the maximum depth 
-            byte maxDepth = Convert.ToByte(myParams[1].Value);
+            UInt64 maxDepth = Convert.ToUInt64(myParams[1].Value);
 
             //set the maximum path length
-            byte maxPathLength = Convert.ToByte(myParams[2].Value);
+            UInt64 maxPathLength = Convert.ToUInt64(myParams[2].Value);
 
             //mark if only the shortest path should be searched
             bool onlyShortestPath = Convert.ToBoolean(myParams[3].Value);
@@ -246,6 +250,11 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
         public override string PluginName
         {
             get { return "sones.path"; }
+        }
+
+        public override string PluginShortName
+        {
+            get { return "path"; }
         }
 
         public override PluginParameters<Type> SetableParameters

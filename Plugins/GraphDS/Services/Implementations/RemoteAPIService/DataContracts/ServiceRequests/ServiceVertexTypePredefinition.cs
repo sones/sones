@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 {
@@ -99,7 +100,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
                 VertexTypePreDef.MarkAsSealed();
 
             VertexTypePreDef.SetComment(this.Comment);
-            VertexTypePreDef.SetSuperVertexTypeName(this.SuperVertexTypeName);
+            VertexTypePreDef.SetSuperTypeName(this.SuperVertexTypeName);
 
             if (this.Properties != null)
             {

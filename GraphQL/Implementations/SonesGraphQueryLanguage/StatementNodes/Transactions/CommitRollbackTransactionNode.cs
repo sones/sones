@@ -92,7 +92,7 @@ namespace sones.GraphQL.StatementNodes.Transactions
             get { return TypesOfStatements.Readonly; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
 
@@ -108,7 +108,7 @@ namespace sones.GraphQL.StatementNodes.Transactions
                 myGraphDB.RollbackTransaction(mySecurityToken, myTransactionToken);
             }
 
-            _ReturnValues.Add("VertexID", myTransactionToken.ID);
+            _ReturnValues.Add("TransactionID", myTransactionToken);
             _ReturnValues.Add("ExecutedCommand", Command_Type);
             _ReturnValues.Add("Name", Name == null ? "" : Name);
             _ReturnValues.Add("ASync", ASync);

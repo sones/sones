@@ -20,29 +20,28 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using sones.GraphDB.Manager;
 using sones.GraphDB.Manager.Plugin;
+using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Request;
+using sones.GraphDB.Request.AlterType;
+using sones.GraphDB.Request.CreateIndex;
+using sones.GraphDB.Request.DecribeIndex;
+using sones.GraphDB.Request.Delete;
+using sones.GraphDB.Request.DropIndex;
+using sones.GraphDB.Request.DropType;
+using sones.GraphDB.Request.GetEdgeType;
+using sones.GraphDB.Request.GetType;
+using sones.GraphDB.Request.RebuildIndices;
+using sones.GraphDB.Request.Update;
 using sones.GraphDB.Settings;
 using sones.GraphFS;
 using sones.Library.Commons.Security;
-using sones.Library.Settings;
 using sones.Library.Commons.Transaction;
+using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
-using sones.GraphDB.Request.GetEdgeType;
-using sones.GraphDB.Request.GetVertexType;
-using sones.GraphDB.Request.GetIndex;
-using sones.GraphDB.Request.DecribeIndex;
-using sones.GraphDB.Request.Delete;
-using sones.GraphDB.Request.Update;
-using sones.GraphDB.Request.DropType;
-using sones.GraphDB.Request.DropIndex;
-using sones.GraphDB.Request.CreateIndex;
-using sones.GraphDB.Request.RebuildIndices;
-using sones.GraphDB.Manager.TypeManagement;
-using sones.GraphDB.Request.AlterType;
-using System.Globalization;
 
 namespace sones.GraphDB
 {
@@ -98,9 +97,6 @@ namespace sones.GraphDB
         /// </summary>
         private readonly CancellationTokenSource _cts;
 
-        private readonly SecurityToken _security = null;
-
-        private readonly TransactionToken _transaction = null;
         private IDManager _idManager;
 
         #endregion
@@ -172,7 +168,7 @@ namespace sones.GraphDB
 
             #region requests
 
-            _requestManager = LoadRequestManager(CreateMetamanager(myPlugins));
+            _requestManager = LoadRequestManager(CreateMetamanager(myPlugins, _transactionManager));
 
             #endregion
         }
@@ -187,7 +183,7 @@ namespace sones.GraphDB
 
         public TResult CreateVertexTypes<TResult>(
             SecurityToken mySecurity, 
-            TransactionToken myTransactionToken,
+            Int64 myTransactionToken,
             RequestCreateVertexTypes myRequestCreateVertexType,
             Converter.CreateVertexTypesResultConverter<TResult> myOutputconverter)
         {
@@ -198,7 +194,7 @@ namespace sones.GraphDB
             return ((PipelineableCreateVertexTypesRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
-        public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexType myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
+        public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, Int64 myTransactionToken, RequestCreateVertexType myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
         {
             var executedRequest = _requestManager.SynchronExecution(new PipelineableCreateVertexTypeRequest(myRequestCreateVertexType,
                                                                                         mySecurityToken,
@@ -209,11 +205,49 @@ namespace sones.GraphDB
 
         #endregion
 
+        #region create EdgeType(s)
+
+        public TResult CreateEdgeType<TResult>(
+            SecurityToken mySecurity,
+            Int64 myTransactionToken,
+            RequestCreateEdgeType myRequestCreateEdgeType,
+            Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            var executedRequest = 
+                _requestManager
+                    .SynchronExecution(
+                        new PipelineableCreateEdgeTypeRequest(myRequestCreateEdgeType,
+                                                                mySecurity,
+                                                                myTransactionToken));
+
+            return ((PipelineableCreateEdgeTypeRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
+        }
+
+        public TResult CreateEdgeTypes<TResult>(
+            SecurityToken mySecurity,
+            Int64 myTransactionToken,
+            RequestCreateEdgeTypes myRequestCreateEdgeTypes,
+            Converter.CreateEdgeTypesResultConverter<TResult> myOutputconverter)
+        {
+            var executedRequest =
+                _requestManager
+                    .SynchronExecution(
+                        new PipelineableCreateEdgeTypesRequest(myRequestCreateEdgeTypes,
+                                                                mySecurity,
+                                                                myTransactionToken));
+
+            return ((PipelineableCreateEdgeTypesRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
         #region clear
 
         public TResult Clear<TResult>(
             SecurityToken mySecurity, 
-            TransactionToken myTransactionToken,                  
+            Int64 myTransactionToken,                  
             RequestClear myRequestClear, 
             Converter.ClearResultConverter<TResult> myOutputconverter)
         {
@@ -230,7 +264,7 @@ namespace sones.GraphDB
 
         public TResult Delete<TResult>(
             SecurityToken mySecurity,
-            TransactionToken myTransactionToken,
+            Int64 myTransactionToken,
             RequestDelete myRequestDelete,
             Converter.DeleteResultConverter<TResult> myOutputconverter)
         {
@@ -243,19 +277,42 @@ namespace sones.GraphDB
 
         #endregion
 
-        #region drop type
+        #region drop VertexType
 
-        public TResult DropType<TResult>(
+        public TResult DropVertexType<TResult>(
             SecurityToken mySecurity,
-            TransactionToken myTransactionToken,
+            Int64 myTransactionToken,
             RequestDropVertexType myRequestDropType,
             Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableDropVertexTypeRequest(myRequestDropType,
-                                                                                        mySecurity,
-                                                                                        myTransactionToken));
+            var executedRequest = 
+                _requestManager
+                .SynchronExecution(new PipelineableDropVertexTypeRequest(myRequestDropType,
+                                                                            mySecurity,
+                                                                            myTransactionToken));
 
-            return ((PipelineableDropVertexTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableDropVertexTypeRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
+        #region drop EdgeType
+
+        public TResult DropEdgeType<TResult>(
+            SecurityToken mySecurity,
+            Int64 myTransactionToken,
+            RequestDropEdgeType myRequestDropType,
+            Converter.DropEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            var executedRequest = 
+                _requestManager
+                .SynchronExecution(new PipelineableDropEdgeTypeRequest(myRequestDropType,
+                                                                        mySecurity,
+                                                                        myTransactionToken));
+
+            return ((PipelineableDropEdgeTypeRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
@@ -264,7 +321,7 @@ namespace sones.GraphDB
 
         public TResult CreateIndex<TResult>(
             SecurityToken mySecurity,
-            TransactionToken myTransactionToken,
+            Int64 myTransactionToken,
             RequestCreateIndex myRequestCreateIndex,
             Converter.CreateIndexResultConverter<TResult> myOutputconverter)
         {
@@ -281,7 +338,7 @@ namespace sones.GraphDB
 
         public TResult DropIndex<TResult>(
             SecurityToken mySecurity,
-            TransactionToken myTransactionToken,
+            Int64 myTransactionToken,
             RequestDropIndex myRequestDropIndex,
             Converter.DropIndexResultConverter<TResult> myOutputconverter)
         {
@@ -298,7 +355,7 @@ namespace sones.GraphDB
 
         public TResult RebuildIndices<TResult>(
             SecurityToken mySecurity,
-            TransactionToken myTransactionToken,
+            Int64 myTransactionToken,
             RequestRebuildIndices myRequestRebuildIndices,
             Converter.RebuildIndicesResultConverter<TResult> myOutputconverter)
         {
@@ -315,7 +372,7 @@ namespace sones.GraphDB
 
         public TResult Insert<TResult>(
             SecurityToken mySecurity, 
-            TransactionToken myTransactionToken,
+            Int64 myTransactionToken,
             RequestInsertVertex myRequestInsert,
             Converter.InsertResultConverter<TResult> myOutputconverter)
         {
@@ -333,7 +390,7 @@ namespace sones.GraphDB
 
         public TResult GetVertices<TResult>(
             SecurityToken mySecurity,
-            TransactionToken myTransactionToken,
+            Int64 myTransactionToken,
             RequestGetVertices myRequestGetVertices,
             Converter.GetVerticesResultConverter<TResult> myOutputconverter)
         {
@@ -350,7 +407,7 @@ namespace sones.GraphDB
 
         public TResult TraverseVertex<TResult>(
             SecurityToken mySecurity,
-            TransactionToken myTransactionToken,
+            Int64 myTransactionToken,
             RequestTraverseVertex myRequestTraverseVertex,
             Converter.TraverseVertexResultConverter<TResult> myOutputconverter)
         {
@@ -363,9 +420,12 @@ namespace sones.GraphDB
 
         #endregion
 
-        #region GetVertexType
+        #region GetVertexType / GetAllVertexTypes
 
-        public TResult GetVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexType myRequestGetVertexType, Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
+        public TResult GetVertexType<TResult>(SecurityToken mySecurityToken, 
+                                                Int64 myTransactionToken, 
+                                                RequestGetVertexType myRequestGetVertexType, 
+                                                Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
         {
             var executedRequest = _requestManager.SynchronExecution(new PipelineableGetVertexTypeRequest(myRequestGetVertexType,
                                                                                         mySecurityToken,
@@ -374,7 +434,10 @@ namespace sones.GraphDB
             return ((PipelineableGetVertexTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
         }
 
-        public TResult GetAllVertexTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllVertexTypes myRequestGetVertexType, Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter)
+        public TResult GetAllVertexTypes<TResult>(SecurityToken mySecurityToken, 
+                                                    Int64 myTransactionToken, 
+                                                    RequestGetAllVertexTypes myRequestGetVertexType, 
+                                                    Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter)
         {
             var executedRequest = _requestManager.SynchronExecution(new PipelineableGetAllVertexTypesRequest(myRequestGetVertexType,
                                                                                         mySecurityToken,
@@ -385,31 +448,45 @@ namespace sones.GraphDB
 
         #endregion
 
-        #region GetEdgeType
+        #region GetEdgeType / GetAllEdgeTypes
 
-        public TResult GetEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetEdgeType myRequestGetEdgeType, Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
+        public TResult GetEdgeType<TResult>(SecurityToken mySecurityToken, 
+                                            Int64 myTransactionToken, 
+                                            RequestGetEdgeType myRequestGetEdgeType, 
+                                            Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
         {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableGetEdgeTypeRequest(myRequestGetEdgeType,
-                                                                                        mySecurityToken,
-                                                                                        myTransactionToken));
+            var executedRequest = 
+                _requestManager
+                    .SynchronExecution(
+                        new PipelineableGetEdgeTypeRequest(myRequestGetEdgeType,
+                                                            mySecurityToken,
+                                                            myTransactionToken));
 
-            return ((PipelineableGetEdgeTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableGetEdgeTypeRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
         }
 
-        public TResult GetAllEdgeTypes<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetAllEdgeTypes myRequestGetEdgeType, Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter)
+        public TResult GetAllEdgeTypes<TResult>(SecurityToken mySecurityToken, 
+                                                Int64 myTransactionToken, 
+                                                RequestGetAllEdgeTypes myRequestGetEdgeType, 
+                                                Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter)
         {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableGetAllEdgeTypesRequest(myRequestGetEdgeType,
-                                                                                        mySecurityToken,
-                                                                                        myTransactionToken));
+            var executedRequest = 
+                _requestManager
+                    .SynchronExecution(
+                        new PipelineableGetAllEdgeTypesRequest(myRequestGetEdgeType,
+                                                                mySecurityToken,
+                                                                myTransactionToken));
 
-            return ((PipelineableGetAllEdgeTypesRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableGetAllEdgeTypesRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
 
         #region GetVertex
 
-        public TResult GetVertex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertex myRequestGetVertex, Converter.GetVertexResultConverter<TResult> myOutputconverter)
+        public TResult GetVertex<TResult>(SecurityToken mySecurityToken, Int64 myTransactionToken, RequestGetVertex myRequestGetVertex, Converter.GetVertexResultConverter<TResult> myOutputconverter)
         {
             var executedRequest = _requestManager.SynchronExecution(new PipelineableGetVertexRequest(myRequestGetVertex,
                                                                                         mySecurityToken,
@@ -422,7 +499,7 @@ namespace sones.GraphDB
 
         #region Truncate
 
-        public TResult Truncate<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
+        public TResult Truncate<TResult>(SecurityToken mySecurityToken, Int64 myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
         {
             var executedRequest = _requestManager.SynchronExecution(new PipelineableTruncateRequest(myRequestTruncate,
                                                                                         mySecurityToken,
@@ -435,7 +512,7 @@ namespace sones.GraphDB
 
         #region Describe Index
 
-        public TResult DescribeIndex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndexResultConverter<TResult> myOutputconverter)
+        public TResult DescribeIndex<TResult>(SecurityToken mySecurityToken, Int64 myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndexResultConverter<TResult> myOutputconverter)
         {
             var executedRequest = _requestManager.SynchronExecution(new PipelineableDescribeIndexRequest(myRequestDescribeIndex,
                                                                                         mySecurityToken,
@@ -448,7 +525,7 @@ namespace sones.GraphDB
 
         #region Describe Indices
 
-        public TResult DescribeIndices<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndicesResultConverter<TResult> myOutputconverter)
+        public TResult DescribeIndices<TResult>(SecurityToken mySecurityToken, Int64 myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndicesResultConverter<TResult> myOutputconverter)
         {
             var executedRequest = _requestManager.SynchronExecution(new PipelineableDescribeIndicesRequest(myRequestDescribeIndex,
                                                                                         mySecurityToken,
@@ -462,20 +539,26 @@ namespace sones.GraphDB
 
         #region Update
 
-        public TResult Update<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestUpdate myRequestUpdate, Converter.UpdateResultConverter<TResult> myOutputconverter)
+        public TResult Update<TResult>(SecurityToken mySecurityToken, 
+                                        Int64 myTransactionToken, 
+                                        RequestUpdate myRequestUpdate, 
+                                        Converter.UpdateResultConverter<TResult> myOutputconverter)
         {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableUpdateRequest(myRequestUpdate,
-                                                                                        mySecurityToken,
-                                                                                        myTransactionToken));
+            var executedRequest = 
+                _requestManager
+                .SynchronExecution(new PipelineableUpdateRequest(myRequestUpdate,
+                                                                    mySecurityToken,
+                                                                    myTransactionToken));
 
-            return ((PipelineableUpdateRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableUpdateRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
 
         #region AlterVertexType
 
-        public TResult AlterVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestAlterVertexType myRequestAlterVertexType, Converter.AlterVertexTypeResultConverter<TResult> myOutputconverter)
+        public TResult AlterVertexType<TResult>(SecurityToken mySecurityToken, Int64 myTransactionToken, RequestAlterVertexType myRequestAlterVertexType, Converter.AlterVertexTypeResultConverter<TResult> myOutputconverter)
         {
             var executedRequest = _requestManager.SynchronExecution(new PipelineableAlterVertexTypeRequest(myRequestAlterVertexType,
                                                                                         mySecurityToken,
@@ -486,35 +569,29 @@ namespace sones.GraphDB
 
         #endregion
 
-        #region CreateEdgeType
-
-        public TResult CreateEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateEdgeType myRequestCreateVertexType, Converter.CreateEdgeTypeResultConverter<TResult> myOutputconverter)
-        {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableCreateEdgeTypeRequest(myRequestCreateVertexType,
-                                                                                        mySecurityToken,
-                                                                                        myTransactionToken));
-
-            return ((PipelineableCreateEdgeTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
-        }
-
-        #endregion
-
         #region AlterEdgeType
 
-        public TResult AlterEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestAlterEdgeType myRequestAlterEdgeType, Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter)
+        public TResult AlterEdgeType<TResult>(SecurityToken mySecurityToken, 
+                                                Int64 myTransactionToken, 
+                                                RequestAlterEdgeType myRequestAlterEdgeType, 
+                                                Converter.AlterEdgeTypeResultConverter<TResult> myOutputconverter)
         {
-            var executedRequest = _requestManager.SynchronExecution(new PipelineableAlterEdgeTypeRequest(myRequestAlterEdgeType,
-                                                                                        mySecurityToken,
-                                                                                        myTransactionToken));
+            var executedRequest = 
+                _requestManager
+                    .SynchronExecution(
+                        new PipelineableAlterEdgeTypeRequest(myRequestAlterEdgeType,
+                                                                mySecurityToken,
+                                                                myTransactionToken));
 
-            return ((PipelineableAlterEdgeTypeRequest)executedRequest).GenerateRequestResult(myOutputconverter);
+            return ((PipelineableAlterEdgeTypeRequest)executedRequest)
+                    .GenerateRequestResult(myOutputconverter);
         }
 
         #endregion
 
         #region GetVertexCount
 
-        public TResult GetVertexCount<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexCount myRequestGetVertexCount, Converter.GetVertexCountResultConverter<TResult> myOutputconverter)
+        public TResult GetVertexCount<TResult>(SecurityToken mySecurityToken, Int64 myTransactionToken, RequestGetVertexCount myRequestGetVertexCount, Converter.GetVertexCountResultConverter<TResult> myOutputconverter)
         {
             var executedRequest = _requestManager.SynchronExecution(new PipelineableGetVertexCountRequest(myRequestGetVertexCount,
                                                                                         mySecurityToken,
@@ -548,17 +625,17 @@ namespace sones.GraphDB
 
         #region Transaction
 
-        public TransactionToken BeginTransaction(SecurityToken mySecurity, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
+        public Int64 BeginTransaction(SecurityToken mySecurity, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
         {
             return _transactionManager.BeginTransaction(mySecurity, myLongrunning, myIsolationLevel);
         }
 
-        public void CommitTransaction(SecurityToken mySecurity, TransactionToken myTransactionToken)
+        public void CommitTransaction(SecurityToken mySecurity, Int64 myTransactionToken)
         {
             _transactionManager.CommitTransaction(mySecurity, myTransactionToken);
         }
 
-        public void RollbackTransaction(SecurityToken mySecurity, TransactionToken myTransactionToken)
+        public void RollbackTransaction(SecurityToken mySecurity, Int64 myTransactionToken)
         {
             _transactionManager.RollbackTransaction(mySecurity, myTransactionToken);
         }
@@ -597,9 +674,9 @@ namespace sones.GraphDB
         /// </summary>
         /// <param name="myPlugins">The plugin definitions</param>
         /// <returns>A meta manager</returns>
-        private IMetaManager CreateMetamanager(GraphDBPlugins myPlugins)
+        private IMetaManager CreateMetamanager(GraphDBPlugins myPlugins, ITransactionable myTransactionManager)
         {
-            return MetaManager.CreateMetaManager(_securityManager, _idManager, myPlugins, _graphDBPluginManager, _applicationSettings, _transaction, _security);
+            return MetaManager.CreateMetaManager(_securityManager, _idManager, myPlugins, _graphDBPluginManager, _applicationSettings, myTransactionManager, null);
         }
         
         /// <summary>

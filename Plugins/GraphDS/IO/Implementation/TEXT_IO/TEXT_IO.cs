@@ -65,6 +65,11 @@ namespace sones.Plugins.GraphDS.IO
             get { return "sones.text_io"; }
         }
 
+        public string PluginShortName
+        {
+            get { return "text"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -86,7 +91,7 @@ namespace sones.Plugins.GraphDS.IO
 
         #region Generate Output from Query Result
         
-        public string GenerateOutputResult(QueryResult myQueryResult)
+        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             StringBuilder Output = new StringBuilder();
             Output.AppendLine("Query:\t\t"+myQueryResult.Query);
@@ -125,6 +130,11 @@ namespace sones.Plugins.GraphDS.IO
                 SB.Append(" InnerException: " + queryresult.Error.InnerException.Message);
 
             return SB.ToString();
+        }
+
+        public String ListAvailParams()
+        {
+            throw new NotImplementedException();
         }
 
         #region private to text

@@ -31,6 +31,6 @@ namespace sones.GraphDB.Manager
     {
         void Initialize(IMetaManager myMetaManager);
 
-        void Load(TransactionToken myTransaction, SecurityToken mySecurity);
+        void Load(Int64 myTransaction, SecurityToken mySecurity);
     }
 }

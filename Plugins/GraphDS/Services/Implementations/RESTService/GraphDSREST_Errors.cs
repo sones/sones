@@ -96,7 +96,7 @@ namespace sones.GraphDS.Services.RESTService
 
             if (myCustom404Error != null && myCustom404Error.Length > 0)
             {
-                response.SetContentType(GraphDSREST_Constants._HTML);
+                response.SetContentType(GraphDSREST_Constants._HTML_UTF8);
             }
 
             #endregion

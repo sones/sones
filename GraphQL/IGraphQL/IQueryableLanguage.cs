@@ -34,7 +34,7 @@ namespace sones.GraphQL
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myQueryString">The query string that should be executed</param>
         /// <returns>A query result</returns>
-        QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken
+        QueryResult Query(SecurityToken mySecurityToken, Int64 myTransactionToken
                           , String myQueryString);
     }
 }

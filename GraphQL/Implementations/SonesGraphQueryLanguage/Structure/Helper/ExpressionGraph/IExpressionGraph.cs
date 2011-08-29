@@ -67,7 +67,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// <param name="myTypeManager">The TypeManager of the database.</param>
         /// <param name="myDBObjectCache">The current query cache.</param>
         /// <returns>An IExpressionGraph instance.</returns>
-        IExpressionGraph GetNewInstance(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        IExpressionGraph GetNewInstance(IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         /// <summary>
         /// This method integrates a IVertex in the expression graph.

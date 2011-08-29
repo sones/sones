@@ -19,6 +19,7 @@
 */
 
 using System.Collections.Generic;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Request
 {

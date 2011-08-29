@@ -25,6 +25,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphDB.Request;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 {
@@ -76,7 +77,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 
         public OutgoingEdgePredefinition ToOutgoingEdgePredefinition()
         {
-            OutgoingEdgePredefinition OutgoingEdgePreDef = new OutgoingEdgePredefinition(this.AttributeName);
+            OutgoingEdgePredefinition OutgoingEdgePreDef = new OutgoingEdgePredefinition(this.AttributeName,"");
 
             OutgoingEdgePreDef.SetAttributeType(this.AttributeType);
             OutgoingEdgePreDef.SetComment(this.Comment);

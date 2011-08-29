@@ -201,7 +201,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             _metaManager = myMetaManager;
         }
 
-        public void Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        public void Load(Int64 myTransaction, SecurityToken mySecurity)
         {
             var baseTypes = _metaManager.VertexStore.GetVerticesByTypeID(mySecurity, myTransaction, (long)BaseTypes.BaseType);
             _userdefinedPlugins = _metaManager.PluginManager.GetPluginsForType<AUserdefinedDataType>().Cast<AUserdefinedDataType>();

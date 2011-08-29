@@ -151,7 +151,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
         #endregion
 
-        internal void ConvertToAttributeType(GQLPluginManager myPluginManager, IAttributeDefinition typeAttribute, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        internal void ConvertToAttributeType(GQLPluginManager myPluginManager, IAttributeDefinition typeAttribute, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             var newTuple = new List<TupleElement>();
 
@@ -223,7 +223,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         /// <param name="tupleElementList">List of tuple elements</param>
         /// <param name="myAttributes">myAttributes of the type</param>
         /// <returns>True if valid or otherwise false</returns>
-        internal bool IsValidTupleNode(List<TupleElement> tupleElementList, IVertexType myGraphType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        internal bool IsValidTupleNode(List<TupleElement> tupleElementList, IVertexType myGraphType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             foreach (TupleElement aTupleElement in tupleElementList)
             {
@@ -244,7 +244,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         /// <summary>
         /// returns a list of guids which match the tupleNode of the ListOfDBObjects object.
         /// </summary>
-        public IEnumerable<Tuple<IVertex, Dictionary<String, object>>> GetCorrespondigDBObjectUUIDAsList(IVertexType myType, IVertexType validationType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IEnumerable<Tuple<IVertex, Dictionary<String, object>>> GetCorrespondigDBObjectUUIDAsList(IVertexType myType, IVertexType validationType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             #region Evaluate tuple
 
@@ -312,7 +312,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
         #region ValidateBinaryExpression
 
-        protected void ValidateBinaryExpression(BinaryExpressionDefinition aUniqueExpr, IVertexType validationType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        protected void ValidateBinaryExpression(BinaryExpressionDefinition aUniqueExpr, IVertexType validationType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             switch (aUniqueExpr.TypeOfBinaryExpression)
             {
@@ -339,7 +339,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
             }
         }
 
-        private void ValidateBinaryExpressionInternal(AExpressionDefinition aUniqueExpr, IVertexType validationType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        private void ValidateBinaryExpressionInternal(AExpressionDefinition aUniqueExpr, IVertexType validationType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if (aUniqueExpr is BinaryExpressionDefinition)
             {

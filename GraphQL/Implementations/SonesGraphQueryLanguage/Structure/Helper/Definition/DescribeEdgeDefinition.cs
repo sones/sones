@@ -22,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using sones.GraphDB;
 using sones.GraphDB.Request;
-using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.GQL.ErrorHandling;
 using sones.GraphQL.GQL.Manager.Plugin;
@@ -54,11 +53,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
         #endregion
 
-        public override QueryResult GetResult(
-                                                GQLPluginManager myPluginManager,
+        public override QueryResult GetResult(  GQLPluginManager myPluginManager,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,
-                                                TransactionToken myTransactionToken)
+                                                Int64 myTransactionToken)
         {
             var resultingVertices = new List<IVertexView>();
             ASonesException error = null;
@@ -69,7 +67,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 #region Specific edge
 
                 var request = new RequestGetEdgeType(_EdgeName);
-                var edge = myGraphDB.GetEdgeType<IEdgeType>(mySecurityToken, myTransactionToken, request, (stats, edgeType) => edgeType);
+                var edge = myGraphDB.GetEdgeType<IEdgeType>(mySecurityToken, 
+                                                            myTransactionToken, 
+                                                            request, 
+                                                            (stats, edgeType) => edgeType);
 
                 if (edge != null)
                 {
@@ -77,7 +78,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 }
                 else
                 {
-                    error = new EdgeTypeDoesNotExistException(_EdgeName, "");
+                    error = new EdgeTypeDoesNotExistException(_EdgeName);
                 }
 
                 #endregion
@@ -91,7 +92,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 var resultingReadouts = new List<IVertexView>();
 
                 var request = new RequestGetAllEdgeTypes();
-                foreach (var edge in myGraphDB.GetAllEdgeTypes<IEnumerable<IEdgeType>>(mySecurityToken, myTransactionToken, request, (stats, edgeTypes) => edgeTypes))
+
+                foreach (var edge in myGraphDB.GetAllEdgeTypes<IEnumerable<IEdgeType>>(mySecurityToken,     
+                                                                                        myTransactionToken, 
+                                                                                        request, 
+                                                                                        (stats, edgeTypes) => edgeTypes))
                 {
                     resultingReadouts.Add(GenerateOutput(edge, edge.Name));
                 }
@@ -123,7 +128,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             Edge.Add("ID", myEdge.ID);
             Edge.Add("Type", myEdge.GetType().Name);
             Edge.Add("Name", myEdge.Name);
-            Edge.Add("IsAbstract", myEdge.IsAbstract);
             Edge.Add("IsUserDefined", myEdge.IsUserDefined);
             Edge.Add("IsSealed", myEdge.IsSealed);
             Edge.Add("ParentEdgeType", myEdge.ParentEdgeType.Name);

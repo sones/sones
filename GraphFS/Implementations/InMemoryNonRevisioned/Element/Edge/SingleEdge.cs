@@ -37,6 +37,11 @@ namespace sones.GraphFS.Element.Edge
         private readonly object _lockobject = new object();
 
         /// <summary>
+        /// Used to calculated the hashcode once
+        /// </summary>
+        private readonly int _hashcode = 0;
+
+        /// <summary>
         /// The edge type id
         /// </summary>
         private Int64 _edgeTypeID;
@@ -82,6 +87,8 @@ namespace sones.GraphFS.Element.Edge
             SourceVertex = mySourceVertex;
 
             TargetVertex = myTargetVertex;
+
+            _hashcode = SourceVertex.GetHashCode() ^ TargetVertex.GetHashCode();
         }
 
         #endregion
@@ -272,7 +279,7 @@ namespace sones.GraphFS.Element.Edge
                 {
                     if (_structuredProperties != null)
                     {
-                        foreach (var item in _structuredProperties)
+                        foreach (var item in myUpdatedProperties)
                         {
                             if (_structuredProperties.ContainsKey(item.Key))
                             {
@@ -398,7 +405,7 @@ namespace sones.GraphFS.Element.Edge
 
         public override int GetHashCode()
         {
-            return SourceVertex.GetHashCode() ^ TargetVertex.GetHashCode();
+            return _hashcode;
         }
 
         #endregion

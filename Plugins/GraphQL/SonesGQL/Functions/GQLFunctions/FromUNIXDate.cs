@@ -46,7 +46,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return "Convert from unix datime format to DBDateTime format.";
         }
 
-        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if ((myWorkingBase as Type) == typeof(Int64) || (myWorkingBase as Type) == typeof(UInt64))
             {
@@ -64,7 +64,7 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, params FuncParameter[] myParams)
         {
             if (myCallingObject != null)
             {
@@ -88,6 +88,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override string PluginName
         {
             get { return "sones.fromunixdate"; }
+        }
+
+        public override string PluginShortName
+        {
+            get { return "fromunixdate"; }
         }
 
         public override PluginParameters<Type> SetableParameters

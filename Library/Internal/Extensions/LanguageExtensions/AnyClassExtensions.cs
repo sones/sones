@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
+using sones.Library.CollectionWrapper;
 
 #endregion
 
@@ -48,14 +49,45 @@ namespace sones.Library.LanguageExtensions
             if (myObject == null)
                 throw new NullReferenceException();
 
+            Object item = null;
+
+            if (myObject is IEnumerable<object>)
+            {
+                if ((myObject as IEnumerable<object>).CountIsGreater(1))
+                    throw new InvalidCastException("Cannot cast from List to IComparable.");
+                else
+                    item = (myObject as IEnumerable<object>).First();
+            }
+            else
+                item = myObject;
+
             #region some special magic
 
-            if (typeof(DateTime).Equals(myConvertType) && typeof(long).Equals(myObject.GetType()))
-                return DateTime.FromBinary((long) myObject);
+            if (typeof(DateTime).Equals(myConvertType) && typeof(long).Equals(item.GetType()))
+                return DateTime.FromBinary((long)item);
 
             #endregion
 
-            return (IComparable) Convert.ChangeType(myObject, myConvertType, CultureInfo.GetCultureInfo("en-us"));
+            return (IComparable)Convert.ChangeType(item, myConvertType, CultureInfo.GetCultureInfo("en-us"));
+        }
+
+        public static ICollectionWrapper ConvertToIComparableList(this Object myObject, Type myConvertType)
+        {
+            if (myObject == null)
+                throw new NullReferenceException();
+
+            #region some special magic
+
+            if (typeof(DateTime).Equals(myConvertType) && typeof(long).Equals(myObject.GetType()))
+                return new ListCollectionWrapper(new List<IComparable> { DateTime.FromBinary((long)myObject) });
+
+            #endregion
+
+            return new ListCollectionWrapper((myObject as IEnumerable<object>)
+                                                .Select(_ => (IComparable)Convert
+                                                                .ChangeType(_, 
+                                                                            myConvertType, 
+                                                                            CultureInfo.GetCultureInfo("en-us"))));
         }
 
     }

@@ -105,9 +105,18 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <typeparam name="TResult">The type of the result</typeparam>
         /// <param name="myRequestStatistics">The statistics of the request</param>
-        /// <param name="myCreatedVertexType">The edge type that has been created</param>
+        /// <param name="myCreatedEdgeType">The edge type that has been created</param>
         /// <returns>A TResult</returns>
-        public delegate TResult CreateEdgeTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEdgeType myCreatedVertexType);
+        public delegate TResult CreateEdgeTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEdgeType myCreatedEdgeType);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myCreatedEdgeTypes">The edge types that has been created</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult CreateEdgeTypesResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IEdgeType> myCreatedEdgeTypes);
 
         /// <summary>
         /// A converter delegate that produces a generic result
@@ -215,6 +224,14 @@ namespace sones.GraphDB.Request
         /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <returns>A TResult</returns>
         public delegate TResult DropVertexTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, Dictionary<Int64, String> myDeletedTypeIDs);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult DropEdgeTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, Dictionary<Int64, String> myDeletedTypeIDs);
 
         /// <summary>
         /// A converter delegate that produces a generic result

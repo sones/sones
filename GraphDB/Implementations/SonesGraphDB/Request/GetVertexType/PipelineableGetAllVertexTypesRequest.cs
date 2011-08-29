@@ -27,7 +27,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.Manager;
 
-namespace sones.GraphDB.Request.GetVertexType
+namespace sones.GraphDB.Request.GetType
 {
     public sealed class PipelineableGetAllVertexTypesRequest : APipelinableRequest
     {
@@ -56,7 +56,7 @@ namespace sones.GraphDB.Request.GetVertexType
         public PipelineableGetAllVertexTypesRequest(
                                                     RequestGetAllVertexTypes myGetAllVertexTypesRequest, 
                                                     SecurityToken mySecurity,
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myGetAllVertexTypesRequest;
@@ -72,7 +72,7 @@ namespace sones.GraphDB.Request.GetVertexType
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _fetchedVertexTypes = myMetaManager.VertexTypeManager.ExecuteManager.GetAllVertexTypes(TransactionToken, SecurityToken);   
+            _fetchedVertexTypes = myMetaManager.VertexTypeManager.ExecuteManager.GetAllTypes(Int64, SecurityToken);   
         }
 
         public override IRequest GetRequest()

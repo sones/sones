@@ -44,9 +44,9 @@ namespace sones.GraphDB.Request
         protected SecurityToken SecurityToken { get; private set; }
 
         /// <summary>
-        /// The myOutgoingEdgeVertex transaction token
+        /// The transaction token of the request initiator
         /// </summary>
-        protected TransactionToken TransactionToken { get; private set; }
+        protected Int64 Int64 { get; private set; }
 
         /// <summary>
         /// The request statistics
@@ -67,11 +67,11 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="mySecurity">The security token</param>
         /// <param name="myTransaction">The transaction token</param>
-        protected APipelinableRequest(SecurityToken mySecurity, TransactionToken myTransaction)
+        protected APipelinableRequest(SecurityToken mySecurity, Int64 myTransaction)
         {
             ID = Guid.NewGuid();
             SecurityToken = mySecurity;
-            TransactionToken = myTransaction;
+            Int64 = myTransaction;
         }
 
         #endregion

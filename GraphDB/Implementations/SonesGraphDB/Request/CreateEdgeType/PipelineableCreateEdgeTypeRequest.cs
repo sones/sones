@@ -24,6 +24,7 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using System.Linq;
+using System;
 
 namespace sones.GraphDB.Request
 {
@@ -51,14 +52,15 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Creates a new pipelineable create edge type request
         /// </summary>
-        /// <param name="myCreateEdgeTypeRequest">The create edge type request</param>
+        /// <param name="myRequestCreateEdgeType">The create edge type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableCreateEdgeTypeRequest(RequestCreateEdgeType myCreateEdgeTypeRequest,
-                                                   SecurityToken mySecurity, TransactionToken myTransactionToken)
+        public PipelineableCreateEdgeTypeRequest(RequestCreateEdgeType myRequestCreateEdgeType,
+                                                    SecurityToken mySecurity, 
+                                                    Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
-            _request = myCreateEdgeTypeRequest;
+            _request = myRequestCreateEdgeType;
         }
 
         #endregion
@@ -67,10 +69,23 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
+            myMetaManager
+                .EdgeTypeManager
+                .CheckManager
+                .AddTypes(new List<ATypePredefinition> { _request.EdgeTypePredefinition }, 
+                            Int64, 
+                            SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
+            _createdEdgeType = 
+                myMetaManager
+                    .EdgeTypeManager
+                    .ExecuteManager
+                    .AddTypes(new List<ATypePredefinition> { _request.EdgeTypePredefinition },
+                                Int64,
+                                SecurityToken).FirstOrDefault();
         }
 
         public override IRequest GetRequest()

@@ -1,4 +1,4 @@
-/*
+﻿/*
 * sones GraphDB - Community Edition - http://www.sones.com
 * Copyright (C) 2007-2011 sones GmbH
 *
@@ -19,12 +19,16 @@
 */
 
 using System;
-using sones.Library.Commons.Security;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using sones.Library.Commons.Transaction;
+using sones.Library.Commons.Security;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    public sealed class EdgeTypeManager : IManagerOf<IEdgeTypeHandler>
+    public sealed class EdgeTypeManager: IManagerOf<ITypeHandler<IEdgeType>>
     {
         #region Data
 
@@ -33,41 +37,43 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #endregion
 
+        #region c'tor
+
         public EdgeTypeManager(IDManager myIDManager)
         {
             _check = new CheckEdgeTypeManager();
             _execute = new ExecuteEdgeTypeManager(myIDManager);
         }
 
-        #region IManagerOf<IEdgeTypeManager> Members
+        #endregion
 
-        public IEdgeTypeHandler CheckManager
+        #region IManagerOf<IVertexTypeManager> Members
+
+        public ITypeHandler<IEdgeType> CheckManager
         {
-            get { return _check; }
+            get {  return _check; }
         }
 
-        public IEdgeTypeHandler ExecuteManager
+        public ITypeHandler<IEdgeType> ExecuteManager
         {
             get { return _execute; }
         }
 
-        public IEdgeTypeHandler UndoManager
+        public ITypeHandler<IEdgeType> UndoManager
         {
             get { throw new NotImplementedException(); }
         }
 
-        #endregion
-
-        #region IManager Members
-
         void IManager.Initialize(IMetaManager myMetaManager)
         {
             _execute.Initialize(myMetaManager);
+            _check.Initialize(myMetaManager);
         }
 
-        void IManager.Load(TransactionToken myTransaction, SecurityToken mySecurity)
+        void IManager.Load(Int64 myTransaction, SecurityToken mySecurity)
         {
             _execute.Load(myTransaction, mySecurity);
+            _check.Load(myTransaction, mySecurity);
         }
 
         #endregion

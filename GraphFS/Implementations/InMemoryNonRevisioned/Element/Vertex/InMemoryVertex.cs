@@ -40,6 +40,14 @@ namespace sones.GraphFS.Element.Vertex
 
         private readonly object _lockobject = new object();
 
+        /// <summary>
+        /// Used to calculated the hashcode once
+        /// </summary>
+        private readonly Int32 _hashcode = 0;
+
+        /// <summary>
+        /// determines whether this vertex is a bulk vertex
+        /// </summary>
         public Boolean IsBulkVertex = true;
 
         /// <summary>
@@ -128,6 +136,8 @@ namespace sones.GraphFS.Element.Vertex
             OutgoingEdges = (Dictionary<long, IEdge>)myOutgoingEdges;
             
             IsBulkVertex = false;
+
+            _hashcode = (_vertexID ^ _vertexTypeID).GetHashCode();
         }
 
         #endregion
@@ -147,6 +157,8 @@ namespace sones.GraphFS.Element.Vertex
             _vertexTypeID = myVertexTypeID;
 
             IsBulkVertex = true;
+
+            _hashcode = (_vertexID ^ _vertexTypeID).GetHashCode();
         }
 
         /// <summary>
@@ -742,7 +754,7 @@ namespace sones.GraphFS.Element.Vertex
 		/// </returns>
         public override int GetHashCode()
         {
-            return (_vertexID + ":" + _vertexTypeID).GetHashCode();
+            return _hashcode;
         }
 
         #endregion

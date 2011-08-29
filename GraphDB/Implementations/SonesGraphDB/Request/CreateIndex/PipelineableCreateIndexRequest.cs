@@ -44,7 +44,7 @@ namespace sones.GraphDB.Request.CreateIndex
         /// <param name="myClearRequest">The clear request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableCreateIndexRequest(RequestCreateIndex myCreateIndexRequest, SecurityToken mySecurity, TransactionToken myTransactionToken)
+        public PipelineableCreateIndexRequest(RequestCreateIndex myCreateIndexRequest, SecurityToken mySecurity, Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myCreateIndexRequest;
@@ -70,7 +70,7 @@ namespace sones.GraphDB.Request.CreateIndex
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            IndexDef = myMetaManager.IndexManager.CreateIndex(_request.IndexDefinition, SecurityToken, TransactionToken);
+            IndexDef = myMetaManager.IndexManager.CreateIndex(_request.IndexDefinition, SecurityToken, Int64);
 
             if (IndexDef == null)
             {

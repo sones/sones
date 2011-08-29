@@ -25,7 +25,6 @@ using System.Text;
 using System.ServiceModel;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphDS.Services.RemoteAPIService.DataContracts.VertexType;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
 

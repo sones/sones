@@ -77,7 +77,6 @@
     <Compile Include="ServiceContracts\IRPCServiceContract.cs" />
     <Compile Include="ServiceContracts\VertexTypeServices\IVertexTypeService.cs" />
     <Compile Include="ServiceConverter\ServiceRequestMaker.cs" />
-    <Compile Include="ServiceStatus\RemoteAPIServiceStatus.cs" />
     <Compile Include="sonesRPCServer.cs" />
     <Compile Include="WCFExtra\Utils\CodeDomUtils.cs" />
     <Compile Include="WCFExtra\Utils\Extensions.cs" />
@@ -97,6 +96,10 @@
     <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\GraphDB\Implementations\SonesGraphDB\SonesGraphDB.csproj">
+      <Project>{1FC72801-4046-4CC7-BF83-8082FFD593BC}</Project>
+      <Name>SonesGraphDB</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\GraphDS\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
@@ -125,6 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ErrorHandling\" />
+    <Folder Include="ServiceStatus\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

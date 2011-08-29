@@ -27,7 +27,6 @@ using System.ServiceModel.Description;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeServices;
-using sones.GraphDS.Services.RemoteAPIService.DataContracts.VertexType;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
 
 

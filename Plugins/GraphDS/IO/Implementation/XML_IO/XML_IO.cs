@@ -66,7 +66,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
         #region IOInterface
 
-        public string GenerateOutputResult(QueryResult myQueryResult)
+        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             var result = new SchemaToClassesGenerator.Result();
 
@@ -89,6 +89,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             writer.Serialize(stream, result);
 
             return System.Text.Encoding.UTF8.GetString(stream.ToArray());
+        }
+
+        public String ListAvailParams()
+        {
+            throw new NotImplementedException();
         }
 
         #region private output result helpers
@@ -888,6 +893,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
         public string PluginName
         {
             get { return "sones.xml_io"; }
+        }
+
+        public string PluginShortName
+        {
+            get { return "xml"; }
         }
 
         public PluginParameters<Type> SetableParameters

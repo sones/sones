@@ -61,6 +61,11 @@ namespace sones.GraphDB.Manager
             get { return "BasicLogicExpressionOptimizer"; }
         }
 
+        public String PluginShortName
+        {
+            get { return "BLEOpt"; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

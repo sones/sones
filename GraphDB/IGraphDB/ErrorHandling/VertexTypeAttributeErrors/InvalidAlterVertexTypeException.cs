@@ -23,9 +23,9 @@ using System;
 namespace sones.GraphDB.ErrorHandling
 {
 
-    public sealed class InvalidAlterVertexTypeException : AGraphDBVertexAttributeException
+    public sealed class InvalidAlterTypeException : AGraphDBVertexAttributeException
     {
-        public InvalidAlterVertexTypeException(String myInfo)
+        public InvalidAlterTypeException(String myInfo)
         {
             _msg = myInfo;
         }

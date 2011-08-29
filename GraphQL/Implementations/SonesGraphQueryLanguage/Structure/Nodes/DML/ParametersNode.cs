@@ -22,6 +22,7 @@ using System;
 using Irony.Ast;
 using Irony.Parsing;
 using System.Collections.Generic;
+using sones.GraphQL.Structure.Nodes.Misc;
 
 namespace sones.GraphQL.Structure.Nodes.DML
 {
@@ -45,7 +46,11 @@ namespace sones.GraphQL.Structure.Nodes.DML
             {
                 foreach (var child in parseNode.ChildNodes[1].ChildNodes)
                 {
-                    _ParameterValues.Add(child.FirstChild.Token.ValueString, child.LastChild.Token.Value);
+                    if (child.AstNode is ExtKeyValuePairNode)
+                        _ParameterValues.Add((child.AstNode as ExtKeyValuePairNode).KeyValue.Key, 
+                                                (child.AstNode as ExtKeyValuePairNode).KeyValue.Value);
+                    else
+                        _ParameterValues.Add(child.FirstChild.Token.ValueString, child.LastChild.Token.Value);
                 }
             }
         }

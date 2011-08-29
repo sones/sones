@@ -50,7 +50,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
             _ListOfAttributes = listOfAttributes;
         }
 
-        public override IVertexView CreateResult(IVertexType myAlteredVertexType)
+        public override IVertexView CreateResult(IBaseType myAlteredType)
         {
             throw new NotImplementedException();
         }

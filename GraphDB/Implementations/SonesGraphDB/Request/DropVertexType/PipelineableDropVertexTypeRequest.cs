@@ -54,7 +54,7 @@ namespace sones.GraphDB.Request.DropType
         /// <param name="myTransactionToken">The transaction token</param>
         public PipelineableDropVertexTypeRequest( RequestDropVertexType myDropVertexTypeRequest, 
                                                     SecurityToken mySecurity,
-                                                    TransactionToken myTransactionToken)
+                                                    Int64 myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
             _request = myDropVertexTypeRequest;
@@ -64,23 +64,41 @@ namespace sones.GraphDB.Request.DropType
         
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CheckManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
+            myMetaManager
+                .VertexTypeManager
+                .CheckManager
+                .GetType(_request.TypeName, 
+                            Int64, 
+                            SecurityToken);
 
-            myMetaManager.VertexTypeManager.CheckManager.RemoveVertexTypes(new List<IVertexType> { myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken) }, 
-                                                                            TransactionToken, 
-                                                                            SecurityToken);
+            myMetaManager
+                .VertexTypeManager
+                .CheckManager
+                .RemoveTypes(new List<IVertexType> { myMetaManager
+                                                        .VertexTypeManager
+                                                        .ExecuteManager
+                                                        .GetType(_request.TypeName, 
+                                                                    Int64, 
+                                                                    SecurityToken) }, 
+                                Int64, 
+                                SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            IVertexType graphDBType = myMetaManager.VertexTypeManager.ExecuteManager.GetVertexType(_request.TypeName, TransactionToken, SecurityToken);
+            IVertexType graphDBType = myMetaManager
+                                        .VertexTypeManager
+                                        .ExecuteManager
+                                        .GetType(_request.TypeName, 
+                                                    Int64, 
+                                                    SecurityToken);
 
             if (graphDBType == null)
             {
-                throw new VertexTypeDoesNotExistException(_request.TypeName);
+                throw new TypeDoesNotExistException<IVertexType>(_request.TypeName);
             }
 
-            _deletedTypeIDs = myMetaManager.VertexTypeManager.ExecuteManager.RemoveVertexTypes(new List<IVertexType> {graphDBType}, TransactionToken, SecurityToken);
+            _deletedTypeIDs = myMetaManager.VertexTypeManager.ExecuteManager.RemoveTypes(new List<IVertexType> {graphDBType}, Int64, SecurityToken);
         }
 
         public override IRequest GetRequest()

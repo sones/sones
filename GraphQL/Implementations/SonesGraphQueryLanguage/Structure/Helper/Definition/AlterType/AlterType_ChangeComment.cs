@@ -29,13 +29,13 @@ using sones.GraphDB.TypeSystem;
 namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
 {
     /// <summary>
-    /// Change the comment on a vertex
+    /// Change the comment on a vertex / edge
     /// </summary>
     public sealed class AlterType_ChangeComment : AAlterTypeCommand
     {
 
         /// <summary>
-        /// The new comment on a vertex
+        /// The new comment on a vertex / edge
         /// </summary>
         public String NewComment { get; set; }
 
@@ -47,7 +47,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
             get { return TypesOfAlterCmd.ChangeComment; }
         }
 
-        public override IVertexView CreateResult(IVertexType myAlteredVertexType)
+        public override IVertexView CreateResult(IBaseType myAlteredType)
         {
             throw new NotImplementedException();
         }

@@ -88,7 +88,7 @@ namespace sones.GraphQL.StatementNodes.DML
 			GQLPluginManager myPluginManager,
 			String myQuery,
 			SecurityToken mySecurityToken,
-			TransactionToken myTransactionToken)
+			Int64 myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
 
