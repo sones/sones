@@ -554,7 +554,6 @@ namespace sones.GraphDB.Manager.BaseGraph
             var edition = myIndexVertex.EditionName;
             var isUserDefined = GetIndexDotIsUserDefined(myIndexVertex);
             var name = GetIndexDotName(myIndexVertex);
-            //var single = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsSingleValue);
             var range = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsRange);
             var version = myIndexVertex.GetProperty<bool>((long)AttributeDefinitions.IndexDotIsVersioned);
             var sourceIndex = (myIndexVertex.HasOutgoingEdge((long)AttributeDefinitions.IndexDotSourceIndex))
@@ -572,7 +571,6 @@ namespace sones.GraphDB.Manager.BaseGraph
                 IsUserdefined = isUserDefined,
                 Name = name,
                 VertexType = myDefiningVertexType,
-                //IsSingle = single,
                 IsRange = range,
                 IsVersioned = version,
                 SourceIndex = sourceIndex,

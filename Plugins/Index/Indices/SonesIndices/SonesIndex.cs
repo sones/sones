@@ -72,6 +72,11 @@ namespace sones.Plugins.Index
             _Lock       = new object();
         }
 
+        public SonesIndex(IList<Int64> myPropertyIDs) : this()
+        {
+            _PropertyID = myPropertyIDs.FirstOrDefault();
+        }
+
         #endregion
 
         #region ISonesIndex Members
@@ -404,7 +409,16 @@ namespace sones.Plugins.Index
         /// <returns>A new instance of SonesIndex</returns>
         public IPluginable InitializePlugin(string UniqueString, Dictionary<string, object> myParameters = null)
         {
-            return new SonesIndex();
+            object propertyIDs;
+
+            if (myParameters.TryGetValue(IndexConstants.PROPERTY_IDS_OPTIONS_KEY, out propertyIDs))
+            {
+                return new SonesIndex((IList<Int64>) propertyIDs);
+            }
+            else
+            {
+                return new SonesIndex();
+            }
         }
 
         /// <summary>

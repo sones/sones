@@ -42,6 +42,7 @@ using sones.Plugins.Index;
 using sones.Plugins.Index.Persistent;
 using sones.Plugins.Index.Range;
 using sones.Plugins.Index.Versioned;
+using sones.Plugins.Index.Helper;
 
 
 namespace sones.GraphDB.Manager.Index
@@ -134,15 +135,21 @@ namespace sones.GraphDB.Manager.Index
             var typeClass = myIndexDefinition.TypeName ?? GetBestMatchingIndexName(false, false);
             var parameter = (_indexPluginParameter.ContainsKey(typeClass))
                     ? _indexPluginParameter[typeClass].PluginParameter
-                    : null;
+                    : new Dictionary<string, object>();
             var options = ValidateOptions(myIndexDefinition.IndexOptions, typeClass);
 
+            // load propertyIDs for indexed properties
+            var propertyIDs = myIndexDefinition.Properties.Select(prop => vertexType.GetPropertyDefinition(prop).ID).ToList();
+            // add propertyIDs for indexing
+            parameter.Add(IndexConstants.PROPERTY_IDS_OPTIONS_KEY, propertyIDs);
+            
             parameter = FillOptions(parameter, options);
-
+            
+            // initialize the index
             var index = _pluginManager.GetAndInitializePlugin<ISonesIndex>(typeClass, parameter, indexID);
 
             var props = myIndexDefinition.Properties.Select(prop => new VertexInformation((long)BaseTypes.Property, vertexType.GetPropertyDefinition(prop).ID)).ToList();
-            
+
             var date = DateTime.UtcNow.ToBinary();
 
 
@@ -450,12 +457,14 @@ namespace sones.GraphDB.Manager.Index
                 var typeClass = def.IndexTypeName ?? GetBestMatchingIndexName(def.IsRange, def.IsVersioned);
                 var parameter = (_indexPluginParameter.ContainsKey(typeClass))
                         ? _indexPluginParameter[typeClass].PluginParameter
-                        : null;
+                        : new Dictionary<string, object>();
                 
                 var options = (indexVertex.GetAllUnstructuredProperties() == null)
                                 ? null
                                 : indexVertex.GetAllUnstructuredProperties().Select(_ => new KeyValuePair<String, object>(_.Item1, _.Item2));
 
+                // add propertyIDs for indexing
+                parameter.Add(IndexConstants.PROPERTY_IDS_OPTIONS_KEY, def.IndexedProperties.Select(propDef => propDef.ID).ToList());
                 parameter = FillOptions(parameter, options);
 
                 var index = _pluginManager.GetAndInitializePlugin<ISonesIndex>(typeClass, parameter, indexID);

@@ -47,6 +47,7 @@
     <Compile Include="ErrorHandling\IndexRemoveFailedException.cs" />
     <Compile Include="ErrorHandling\UnknownIndexException.cs" />
     <Compile Include="Helper\IndexAddStrategy.cs" />
+    <Compile Include="Helper\IndexConstants.cs" />
     <Compile Include="Interfaces\Compound\ICompoundIndexKey.cs" />
     <Compile Include="Interfaces\Compound\ISonesCompoundIndex.cs" />
     <Compile Include="Interfaces\Fulltext\ISonesFulltextIndex.cs" />
