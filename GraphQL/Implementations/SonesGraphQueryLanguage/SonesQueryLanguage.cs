@@ -219,13 +219,14 @@ namespace sones.GraphQL
         }
 
         public IEnumerable<string> ExportGraphDDL(DumpFormats myDumpFormat, 
-                                                    IEnumerable<IVertexType> myTypesToDump)
+                                                    IEnumerable<IVertexType> myVertexTypesToDump,
+                                                    IEnumerable<IEdgeType> myEdgeTypesToDump)
         {
             throw new NotImplementedException();
         }
 
         public IEnumerable<string> ExportGraphDML(DumpFormats myDumpFormat, 
-                                                    IEnumerable<IVertexType> myTypesToDump, 
+                                                    IEnumerable<IVertexType> myVertexTypesToDump,
                                                     SecurityToken mySecurityToken, 
                                                     Int64 myTransactionToken)
         {

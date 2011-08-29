@@ -35,15 +35,21 @@ namespace sones.GraphQL
         /// <summary>
         /// Export as GDDL (data definition language)
         /// </summary>
-        /// <param name="myTypesToDump">The types to dump</param>
+        /// <param name="myVertexTypesToDump">The vertex types to dump</param>
+        /// <param name="myEdgeTypesToDump">The edge types to dump</param>
         /// <returns>A list of strings, containing the GDDL statements</returns>        
-        IEnumerable<String> ExportGraphDDL(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump);
+        IEnumerable<String> ExportGraphDDL(DumpFormats myDumpFormat, 
+                                            IEnumerable<IVertexType> myVertexTypesToDump,
+                                            IEnumerable<IEdgeType> myEdgeTypesToDump);
 
         /// <summary>
         /// Exports as GDML (data manipulation language)
         /// </summary>
-        /// <param name="myTypesToDump">The types to dump</param>
+        /// <param name="myVertexTypesToDump">The vertex types to dump</param>
         /// <returns>A list of strings, containing the GDML statments</returns>
-        IEnumerable<String> ExportGraphDML(DumpFormats myDumpFormat, IEnumerable<IVertexType> myTypesToDump, SecurityToken mySecurityToken, Int64 myTransactionToken);
+        IEnumerable<String> ExportGraphDML(DumpFormats myDumpFormat,
+                                            IEnumerable<IVertexType> myVertexTypesToDump,
+                                            SecurityToken mySecurityToken, 
+                                            Int64 myTransactionToken);
     }
 }
