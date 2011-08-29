@@ -261,7 +261,6 @@ namespace sones.Plugins.SonesGQL.DBExport
 
             switch (_TypeOfOutputDestination)
             {
-
                 case TypeOfOutputDestination.QueryResult:
                     _DumpReadout.Add(myDumpType.ToString(), lines);
 
@@ -272,7 +271,8 @@ namespace sones.Plugins.SonesGQL.DBExport
 
                     foreach (var line in lines)
                     {
-                        _Stream.WriteLine(line);
+                        if(!line.IsNullOrEmpty())
+                            _Stream.WriteLine(line);
                     }
                     break;
             }
