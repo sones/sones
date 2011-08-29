@@ -49,6 +49,13 @@ namespace sones.Plugins.Index
 
     #endregion
 
+    /// <summary>
+    /// This interface represents the default index
+    /// usage in the sones GraphDB. It contains all 
+    /// necessary index operations and is designed 
+    /// for managing multiple value indices (there
+    /// are 1 - n values assigned to a search key).
+    /// </summary>
     public interface ISonesIndex
     {
         #region Name
@@ -65,12 +72,13 @@ namespace sones.Plugins.Index
         /// <summary>
         /// Returns the number of stored keys
         /// </summary>
+        /// <returns>Number of stored keys</returns>
         Int64 KeyCount();
 
         /// <summary>
         /// Returns the number of values
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Number of stored values</returns>
         Int64 ValueCount();
 
         #endregion
@@ -80,7 +88,7 @@ namespace sones.Plugins.Index
         /// <summary>
         /// Returns all stored keys.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>All stored keys</returns>
         IEnumerable<IComparable> Keys();
 
         #endregion
