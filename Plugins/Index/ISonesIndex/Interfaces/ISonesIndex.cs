@@ -243,6 +243,15 @@ namespace sones.Plugins.Index
         /// </param>
         void RemoveRange(IEnumerable<IComparable> myKeys);
 
+        /// <summary>
+        /// Removes a value associated with the given key 
+        /// from the index.
+        /// </summary>
+        /// <param name="myKey">Search key</param>
+        /// <param name="myValue">Value to be removed.</param>
+        /// <returns>True, if the value has been removed.</returns>
+        bool TryRemoveValue(IComparable myKey, Int64 myValue);
+
         #endregion
 
         #region Optimize

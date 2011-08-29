@@ -976,23 +976,7 @@ namespace sones.GraphDB.Manager.Vertex
             {
                 lock (index)
                 {
-                    IEnumerable<long> values;
-
-                    if (index.TryGetValues(entry, out values))
-                    {
-                        var set = new HashSet<long>(values);
-                        set.Remove(aVertex.VertexID);
-                        index.Remove(entry);
-                        if (set.Count > 0)
-                        {
-                            index.Remove(entry);
-                            // remaining values have to be readded to index
-                            foreach (var vertexID in set)
-                            {
-                                index.Add(entry, vertexID, IndexAddStrategy.MERGE);
-                            }
-                        }
-                    }
+                    index.TryRemoveValue(entry, aVertex.VertexID);
                 }
             }
         }
@@ -1190,29 +1174,10 @@ namespace sones.GraphDB.Manager.Vertex
                     {
                         lock (index)
                         {
-                            IEnumerable<long> values;
-
-                            if (index.TryGetValues(entry, out values))
-                            {
-                                var set = new HashSet<long>(values);
-                                set.Remove(myVertexID);
-                                index.Remove(entry);
-                                if (set.Count > 0)
-                                {
-                                    index.Remove(entry);
-                                    // remaining values have to be readded to index
-                                    foreach (var vertexID in set)
-                                    {
-                                        index.Add(entry, vertexID, IndexAddStrategy.MERGE);
-                                    }
-                                }
-                                
-                            }
+                            index.TryRemoveValue(entry, myVertexID);
                         }
                     }
-
                 }
-
             }
 
         }

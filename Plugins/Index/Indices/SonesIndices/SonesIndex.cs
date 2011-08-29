@@ -306,6 +306,47 @@ namespace sones.Plugins.Index
         }
 
         /// <summary>
+        /// Removes a value associated with the given key 
+        /// from the index.
+        /// </summary>
+        /// <param name="myKey">Search key</param>
+        /// <param name="myValue">Value to be removed.</param>
+        /// <returns>True, if the value has been removed.</returns>
+        public bool TryRemoveValue(IComparable myKey, Int64 myValue)
+        {
+            HashSet<Int64> values;
+
+            lock (_Lock)
+            {
+                // get values from internal index
+                if (_Index.TryGetValue(myKey, out values))
+                {
+                    // if the defined value is stored
+                    if (values.Contains(myValue))
+                    {
+                        // then remove it
+                        values.Remove(myValue);
+                        // decrement the value counter
+                        _ValueCount--;
+                        // and if there are still values associated with the key
+                        if (values.Count > 0)
+                        {
+                            // update the value set
+                            _Index.AddOrUpdate(myKey, values, (key, vals) => vals = values);
+                        }
+                        else
+                        {
+                            // or remove the key
+                            return Remove(myKey);
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Removes all given key from the index.
         /// </summary>
         /// <param name="myKeys">Search keys to be removed</param>
