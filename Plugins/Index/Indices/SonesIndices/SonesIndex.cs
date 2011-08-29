@@ -8,9 +8,19 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using sones.Plugins.Index.ErrorHandling;
 using sones.Library.VersionedPluginManager;
+using System.Threading;
 
 namespace sones.Plugins.Index
 {
+    /// <summary>
+    /// This index is the default implementation of
+    /// a sones GraphDB index.
+    /// 
+    /// This in-memory index wraps a .NET Concurrent
+    /// Dictionary to fulfill the methods.
+    /// It represents a multiple-value index where
+    /// 1-n values can be associated with a search key.
+    /// </summary>
     public class SonesIndex : ISonesIndex, IPluginable
     {
         #region Private Members
@@ -51,6 +61,9 @@ namespace sones.Plugins.Index
 
         #region Constructor
 
+        /// <summary>
+        /// Creates an instance of the SonesIndex
+        /// </summary>
         public SonesIndex()
         {
             _Index      = new ConcurrentDictionary<IComparable, HashSet<Int64>>();
@@ -63,6 +76,9 @@ namespace sones.Plugins.Index
 
         #region ISonesIndex Members
 
+        /// <summary>
+        /// Returns the name of the index
+        /// </summary>
         public string IndexName
         {
             get { return "sonesindex"; }
@@ -89,7 +105,7 @@ namespace sones.Plugins.Index
         /// <summary>
         /// Returns all keys currently stored in the index
         /// </summary>
-        /// <returns></returns>
+        /// <returns>All stored keys</returns>
         public IEnumerable<IComparable> Keys()
         {
             return _Index.Keys;
@@ -108,7 +124,10 @@ namespace sones.Plugins.Index
         /// Returns the type of the stored keys or <code>IComparable</code>
         /// if the index is empty.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The type of the stored keys or <code>IComparable</code>
+        /// if the index is empty.
+        /// </returns>
         public Type GetKeyType()
         {
             if (!_Index.IsEmpty)
@@ -118,6 +137,15 @@ namespace sones.Plugins.Index
             return typeof(IComparable);
         }
 
+        /// <summary>
+        /// Adds the vertexID of the given vertex to the index based
+        /// on the indexed property.
+        /// 
+        /// Throws <code>IndexAddFailedException</code> if the given vertex
+        /// doesn't have the indexed property.
+        /// </summary>
+        /// <param name="myVertex">Vertex to add (vertexID)</param>
+        /// <param name="myIndexAddStrategy">Define what happens if the key already exists.</param>
         public void Add(IVertex myVertex, 
             IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
@@ -200,8 +228,8 @@ namespace sones.Plugins.Index
         /// <summary>
         /// Adds a given collection of key-value-pairs to the index.
         /// </summary>
-        /// <param name="myKeyValuePairs"></param>
-        /// <param name="myIndexAddStrategy"></param>
+        /// <param name="myKeyValuePairs">Key-Value-Pairs</param>
+        /// <param name="myIndexAddStrategy">Define what happes if a key already exists.</param>
         public void AddRange(IEnumerable<KeyValuePair<IComparable, long>> myKeyValuePairs, 
             IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
@@ -280,7 +308,7 @@ namespace sones.Plugins.Index
         /// <summary>
         /// Removes all given key from the index.
         /// </summary>
-        /// <param name="myKeys"></param>
+        /// <param name="myKeys">Search keys to be removed</param>
         public void RemoveRange(IEnumerable<IComparable> myKeys)
         {
             Parallel.ForEach(myKeys, k => Remove(k));
@@ -298,16 +326,25 @@ namespace sones.Plugins.Index
 
         #region IPluginable Members
 
+        /// <summary>
+        /// Plugin name of this index.
+        /// </summary>
         public string PluginName
         {
             get { return "sones.sonesindex"; }
         }
 
+        /// <summary>
+        /// Plugin short name of this index.
+        /// </summary>
         public string PluginShortName
         {
             get { return "sonesidx"; }
         }
 
+        /// <summary>
+        /// Paramters which can be set for that index.
+        /// </summary>
         public PluginParameters<Type> SetableParameters
         {
             get
@@ -323,12 +360,15 @@ namespace sones.Plugins.Index
         /// </summary>
         /// <param name="UniqueString"></param>
         /// <param name="myParameters"></param>
-        /// <returns></returns>
+        /// <returns>A new instance of SonesIndex</returns>
         public IPluginable InitializePlugin(string UniqueString, Dictionary<string, object> myParameters = null)
         {
             return new SonesIndex();
         }
 
+        /// <summary>
+        /// Frees all ressources used by the index
+        /// </summary>
         public void Dispose()
         {}
 
@@ -342,7 +382,8 @@ namespace sones.Plugins.Index
         public void Clear()
         {
             _Index.Clear();
-            _ValueCount = 0;
+
+            Interlocked.Exchange(ref _ValueCount, 0L);            
         }
 
         #endregion
