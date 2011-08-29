@@ -59,6 +59,18 @@ namespace sones.Plugins.Index
 
         #endregion
 
+        #region Properties
+
+        public bool SupportsNullableKeys
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
         #region Constructor
 
         /// <summary>

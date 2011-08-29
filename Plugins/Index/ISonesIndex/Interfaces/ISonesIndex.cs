@@ -279,5 +279,14 @@ namespace sones.Plugins.Index
         void Clear();
 
         #endregion
+
+        #region Additional Properties
+
+        /// <summary>
+        /// True, if <code>null</code> can be added as key.
+        /// </summary>
+        bool SupportsNullableKeys { get; }
+
+        #endregion
     }
 }
