@@ -39,7 +39,7 @@ using sones.Library.LanguageExtensions;
 
 namespace sones.GraphDB.Manager.Vertex
 {
-    internal abstract class AVertexHandler: IVertexHandler
+    internal abstract class AVertexHandler : IVertexHandler
     {
         #region IVertexTypeHandler member
 
@@ -191,7 +191,7 @@ namespace sones.GraphDB.Manager.Vertex
 
             foreach (var mand in mandatories)
             {
-                if ( myPropertyProvider == null || myPropertyProvider.StructuredProperties == null || 
+                if (myPropertyProvider == null || myPropertyProvider.StructuredProperties == null ||
                     !myPropertyProvider.StructuredProperties.Any(x => mand.Name.Equals(x.Key)))
                 {
                     throw new MandatoryConstraintViolationException(mand.Name);
@@ -199,13 +199,13 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        protected static void ConvertUnknownProperties(IPropertyProvider myPropertyProvider, 
+        protected static void ConvertUnknownProperties(IPropertyProvider myPropertyProvider,
                                                         IBaseType myBaseType)
         {
             if (myPropertyProvider.UnknownProperties != null)
             {
                 foreach (var unknownProp in myPropertyProvider.UnknownProperties)
-                {   
+                {
                     //ASK: What's about binary properties?
                     if (myBaseType.HasProperty(unknownProp.Key))
                     {
@@ -215,7 +215,7 @@ namespace sones.GraphDB.Manager.Vertex
                         {
                             IComparable converted = null;
 
-                            if(propDef.Multiplicity == PropertyMultiplicity.List ||
+                            if (propDef.Multiplicity == PropertyMultiplicity.List ||
                                 propDef.Multiplicity == PropertyMultiplicity.Set)
                                 converted = unknownProp.Value.ConvertToIComparableList(propDef.BaseType);
                             else
@@ -223,7 +223,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                             myPropertyProvider.AddStructuredProperty(unknownProp.Key, converted);
                         }
-                        catch (InvalidCastException)                 
+                        catch (InvalidCastException)
                         {
                             //TODO: better exception
                             throw new Exception("Type of property does not match.");
@@ -231,7 +231,24 @@ namespace sones.GraphDB.Manager.Vertex
                     }
                     else
                     {
-                        myPropertyProvider.AddUnstructuredProperty(unknownProp.Key, unknownProp.Value);
+                        IComparable converted = null;
+
+                        try
+                        {
+                            if (unknownProp.Value is IEnumerable<Object>)
+                                if (((IEnumerable<Object>)unknownProp.Value).Count() > 1)
+                                    converted = unknownProp.Value.ConvertToIComparableList(typeof(object));
+                                else
+                                    converted = unknownProp.Value.ConvertToIComparable(typeof(object));
+                            else
+                                converted = unknownProp.Value.ConvertToIComparable(typeof(object));
+
+                            myPropertyProvider.AddUnstructuredProperty(unknownProp.Key, converted);
+                        }
+                        catch (InvalidCastException)
+                        {
+                            myPropertyProvider.AddUnstructuredProperty(unknownProp.Key, unknownProp.Value);
+                        }
                     }
                 }
                 myPropertyProvider.ClearUnknown();
@@ -266,15 +283,15 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        protected static void CheckPropertyType(String myVertexTypeName, 
-                                                IComparable myValue, 
+        protected static void CheckPropertyType(String myVertexTypeName,
+                                                IComparable myValue,
                                                 IPropertyDefinition propertyDef)
         {
             //Assign safty should be suffice.
             if (!propertyDef.BaseType.IsAssignableFrom(myValue.GetType()))
-                throw new PropertyHasWrongTypeException(myVertexTypeName, 
-                                                        propertyDef.Name, 
-                                                        propertyDef.BaseType.Name, 
+                throw new PropertyHasWrongTypeException(myVertexTypeName,
+                                                        propertyDef.Name,
+                                                        propertyDef.BaseType.Name,
                                                         myValue.GetType().Name);
         }
 
