@@ -252,6 +252,14 @@ namespace sones.Plugins.Index
         /// <returns>True, if the value has been removed.</returns>
         bool TryRemoveValue(IComparable myKey, Int64 myValue);
 
+        /// <summary>
+        /// Checks if the given vertex is indexed and if yes, removes
+        /// the vertex id from the index.
+        /// </summary>
+        /// <param name="myVertex">Vertex which ID shall be removed</param>
+        /// <returns>True, if the vertexID has been removed from the index.</returns>
+        bool Remove(IVertex myVertex);
+
         #endregion
 
         #region Optimize

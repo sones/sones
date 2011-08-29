@@ -119,7 +119,7 @@ namespace sones.Plugins.Index
         /// <summary>
         /// Sets the propertyID for internal processing
         /// </summary>
-        /// <param name="myPropertyID"></param>
+        /// <param name="myPropertyID">ID of the indexed property</param>
         public void Init(long myPropertyID)
         {
             _PropertyID = myPropertyID;
@@ -288,6 +288,8 @@ namespace sones.Plugins.Index
             return _Index.ContainsKey(myKey);
         }
 
+        #region Remove / RemoveRange / TryRemoveValue
+
         /// <summary>
         /// Removes a key from the index.
         /// </summary>
@@ -359,6 +361,32 @@ namespace sones.Plugins.Index
         {
             Parallel.ForEach(myKeys, k => Remove(k));
         }
+
+        /// <summary>
+        /// Checks if the given vertex is indexed and if yes, removes
+        /// the vertex id from the index.
+        /// </summary>
+        /// <param name="myVertex">Vertex which ID shall be removed</param>
+        /// <returns>True, if the vertexID has been removed from the index.</returns>
+        public bool Remove(IVertex myVertex)
+        {
+            // check if vertex has property
+            if (myVertex.HasProperty(_PropertyID))
+            {
+                // get property
+                var prop = myVertex.GetProperty(_PropertyID);
+                // and try to remove if from the index
+                return TryRemoveValue(prop, myVertex.VertexID);
+            }
+            else
+            {
+                throw new IndexRemoveFailedException(String.Format("Vertex {0} has no indexable property with ID {1}",
+                    myVertex.VertexID,
+                    _PropertyID));
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Internal index structure doesn't support optimizations.
