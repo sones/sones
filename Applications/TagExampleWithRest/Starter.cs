@@ -1,94 +1,210 @@
-﻿using System;
+/*
+* sones GraphDB - Community Edition - http://www.sones.com
+* Copyright (C) 2007-2011 sones GmbH
+*
+* This file is part of sones GraphDB Community Edition.
+*
+* sones GraphDB is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IdentityModel.Selectors;
+using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using sones.GraphDB;
+using sones.GraphDS.PluginManager;
+using sones.GraphDSServer;
+using sones.GraphDSServer.ErrorHandling;
+using sones.Library.Commons.Security;
+using sones.Library.DiscordianDate;
+using sones.Library.VersionedPluginManager;
 using sones.GraphDB.Request;
 using sones.GraphDB.TypeSystem;
-using sones.GraphDS;
-using sones.GraphDSServer;
 using sones.GraphQL;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using sones.Library.PropertyHyperGraph;
 using sones.GraphQL.Result;
+using sones.Library.PropertyHyperGraph;
 
-/// <summary>
-/// This is an Example wich describes and shows the simplicity of setting up a GraphDB by using the sones GraphDB CommunityEdition.
-/// It shows you how to create your own Database by using the sones GraphDB C# API (using GraphDB Requests and the SonesQueryLanguage).
-/// 
-/// Please note the wiki Tutorial for further infomrations and descriptions under 
-///     --> http://developers.sones.de/wiki/doku.php?id=tutorials:tagexample
-/// 
-/// If you are using the SonesQueryLanguage please read our GQL CheatSheet 
-///     --> https://github.com/downloads/sones/sones/GQL_cheatsheet_latest.pdf
-/// there you can find the description of all available statements and some additional examples.
-/// 
-/// In this Example we show how to:
-///     - create user defined types, add structured properties, add unknown properties
-///     - create outgoing and incoming edges on a type
-///     - create an index on a specified property in 3 different ways
-///     - set constraints on properties (like "unique" and "mandatory")
-///     
-///     - set up queries and analyse them
-///     - use Function and Aggregates in a query
-/// </summary>
-namespace TagExample
+namespace sones.TagExampleWithRest
 {
-    public class TagExample
+    #region PassValidator
+    public class PassValidator : UserNamePasswordValidator
     {
-        #region public DATA
-
-        //GraphDS server instance
-        IGraphDSServer GraphDSServer;
-
-        //Security- and TransactionToken
-        SecurityToken SecToken;
-        Int64 TransationID;
-
-        #endregion
-
-        #region constructor
-
-        public TagExample()
+        public override void Validate(String myUserName, String myPassword)
         {
-            //Make a new GraphDB instance
-            var graphDB = new SonesGraphDB();
-            
-            var credentials = new UserPasswordCredentials("User", "test");
 
-            //GraphDSServer = new GraphDS_Server(GraphDB, (ushort)9975, "User", "test", IPAddress.Any, PluginsAndParameters);
-            GraphDSServer = new GraphDS_Server(graphDB, null);
-            GraphDSServer.LogOn(credentials);
-            //GraphDSServer.StartRESTService("", Properties.Settings.Default.ListeningPort, IPAddress.Any);
+            Debug.WriteLine(String.Format("Authenticate {0} and {1}", myUserName, myPassword));
 
-            //get a SecurityToken and an TransactionID
-            SecToken = GraphDSServer.LogOn(credentials);
-            TransationID = GraphDSServer.BeginTransaction(SecToken);
+            if (!(myUserName == "test" && myPassword == "test"))
+            {
+                throw new SecurityTokenException("Unknown Username or Password");
+            }
+
+        }
+    }
+    #endregion
+
+    #region sones GraphDB Startup
+    public class TagExampleWithRest
+    {
+        private bool quiet = false;
+        private bool shutdown = false;
+        private IGraphDSServer _dsServer;
+        private bool _ctrlCPressed;
+        sones.Library.Commons.Security.SecurityToken SecToken;
+        Int64 TransactionID;
+
+        public TagExampleWithRest(String[] myArgs)
+        {
+            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en-us");
+
+            if (myArgs.Count() > 0)
+            {
+                foreach (String parameter in myArgs)
+                {
+                    if (parameter.ToUpper() == "--Q")
+                        quiet = true;
+                }
+            }
+            #region Start REST, WebDAV and WebAdmin services, send GraphDS notification
+
+            IGraphDB GraphDB;
+
+            GraphDB = new SonesGraphDB(null, true, new CultureInfo("en-us"));
+
+            #region Configure PlugIns
+            // Plugins are loaded by the GraphDS with their according PluginDefinition and only if they are listed
+            // below - there is no auto-discovery for plugin types in GraphDS (!)
+
+            #region Query Languages
+            // the GQL Query Language Plugin needs the GraphDB instance as a parameter
+            List<PluginDefinition> QueryLanguages = new List<PluginDefinition>();
+            Dictionary<string, object> GQL_Parameters = new Dictionary<string, object>();
+            GQL_Parameters.Add("GraphDB", GraphDB);
+
+            QueryLanguages.Add(new PluginDefinition("sones.gql", GQL_Parameters));
+            #endregion
+
+            #region REST Service Plugins
+            List<PluginDefinition> SonesRESTServices = new List<PluginDefinition>();
+            // not yet used
+            #endregion
+
+            #region GraphDS Service Plugins
+            List<PluginDefinition> GraphDSServices = new List<PluginDefinition>();
+            #endregion
+
+            List<PluginDefinition> UsageDataCollector = new List<PluginDefinition>();
+
+            #endregion
+
+            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(QueryLanguages);
+            _dsServer = new GraphDS_Server(GraphDB, PluginsAndParameters);
+
+            #region Start GraphDS Services
+
+            #region pre-configure REST Service
+            Dictionary<string, object> RestParameter = new Dictionary<string, object>();
+            RestParameter.Add("IPAddress", IPAddress.Any);
+            RestParameter.Add("Port", 9975);
+            RestParameter.Add("Username", "test");
+            RestParameter.Add("Password", "test");
+            _dsServer.StartService("sones.RESTService", RestParameter);
+            #endregion
+
+            #endregion
+
+            SecToken = _dsServer.LogOn(new UserPasswordCredentials("test", "test"));
+            TransactionID = _dsServer.BeginTransaction(SecToken);
+
+            #endregion
+
+            Run();
+
+            #region Some helping lines...
+            if (!quiet)
+            {
+                Console.WriteLine("This GraphDB Instance offers the following options:");
+                Console.WriteLine("   * If you want to suppress console output add --Q as a");
+                Console.WriteLine("     parameter.");
+                Console.WriteLine();
+                Console.WriteLine("   * the following GraphDS Service Plugins are initialized and started: ");
+
+                foreach (var Service in _dsServer.AvailableServices)
+                {
+                    Console.WriteLine("      * " + Service.PluginName);
+                    Console.WriteLine(Service.Description);
+
+                }
+                Console.WriteLine();
+                Console.WriteLine("Enter 'shutdown' to initiate the shutdown of this instance.");
+            }
+
+            Console.CancelKeyPress += OnCancelKeyPress;
+
+            while (!shutdown)
+            {
+                String command = Console.ReadLine();
+
+                if (!_ctrlCPressed)
+                {
+                    if (command != null)
+                    {
+                        if (command.ToUpper() == "SHUTDOWN")
+                            shutdown = true;
+                    }
+                }
+            }
+
+            Console.WriteLine("Shutting down GraphDS Server");
+            _dsServer.Shutdown(null);
+            Console.WriteLine("Shutdown complete");
+            #endregion
         }
 
-        #endregion
-
-        static void Main(string[] args)
-        {
-            //creating a new example instance
-            var MyTagExample = new TagExample();
-
-            //call the Run() method
-            MyTagExample.Run();
-
-            //Shutdown
-            MyTagExample.Shutdown();
-        }
-
+        #region OnCancelKeyPress
         /// <summary>
-        /// Shutdown of the TagExample
+        ///  Cancel KeyPress
         /// </summary>
-        public void Shutdown()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public virtual void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            GraphDSServer.CommitTransaction(SecToken, TransationID);
-            GraphDSServer.Shutdown(SecToken);
-        }
+            e.Cancel = true; //do not abort Console here.
+            _ctrlCPressed = true;
+            Console.Write("Shutdown GraphDB (y/n)?");
+            string input;
+            do
+            {
+                input = Console.ReadLine();
+            } while (input == null);
+
+            switch (input.ToUpper())
+            {
+                case "Y":
+                    shutdown = true;
+                    return;
+                default:
+                    shutdown = false;
+                    return;
+            }
+        }//method
+        #endregion
 
         /// <summary>
         /// Starts the example, including creation of types "Tag" and "Website", insert some data and make some selects
@@ -100,9 +216,9 @@ namespace TagExample
             GraphDBRequests();
 
             #endregion
-            
+
             //clear the DB (delete all created types) to create them again using the QueryLanguage
-            GraphDSServer.Clear<IRequestStatistics>(SecToken, TransationID, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
+            _dsServer.Clear<IRequestStatistics>(SecToken, TransactionID, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
 
             #region create some types and insert values using the SonesQueryLanguage
 
@@ -117,11 +233,11 @@ namespace TagExample
             #endregion
 
             Console.WriteLine();
-            Console.WriteLine("Finished Example. Type a key to finish!");
-            Console.ReadKey();
+            Console.WriteLine("Finished Example!");
+            Console.WriteLine("Starting REST Service!");
         }
 
-        #region private helper
+        #region private methods
 
         /// <summary>
         /// Describes how to define a type with user defined properties and indices and create some instances by using GraphDB requests.
@@ -132,7 +248,7 @@ namespace TagExample
 
             //create a VertexTypePredefinition
             var Tag_VertexTypePredefinition = new VertexTypePredefinition("Tag");
-            
+
             //create property
             var PropertyName = new PropertyPredefinition("Name", "String")
                                            .SetComment("This is a property on type 'Tag' named 'Name' and is of type 'String'");
@@ -196,7 +312,7 @@ namespace TagExample
 
             //add IncomingEdge "Tags", the related OutgoingEdge is "TaggedWebsites" on type "Tag"
             Website_VertexTypePredefinition.AddIncomingEdge(new IncomingEdgePredefinition("Tags",
-                                                                                            "Tag", 
+                                                                                            "Tag",
                                                                                             "TaggedWebsites"));
 
             #endregion
@@ -204,8 +320,8 @@ namespace TagExample
             #region create types by sending requests
 
             //create the types "Tag" and "Website"
-            var DBTypes = GraphDSServer.CreateVertexTypes<IEnumerable<IVertexType>>(SecToken,
-                                                                                    TransationID,
+            var DBTypes = _dsServer.CreateVertexTypes<IEnumerable<IVertexType>>(SecToken,
+                                                                                    TransactionID,
                                                                                     new RequestCreateVertexTypes(
                                                                                         new List<VertexTypePredefinition> { Tag_VertexTypePredefinition, 
                                                                                                                             Website_VertexTypePredefinition }),
@@ -238,23 +354,23 @@ namespace TagExample
 
             #region insert some Websites by sending requests
 
-            var cnn = GraphDSServer.Insert<IVertex>(SecToken, TransationID, new RequestInsertVertex("Website")
+            var cnn = _dsServer.Insert<IVertex>(SecToken, TransactionID, new RequestInsertVertex("Website")
                                                                                     .AddStructuredProperty("Name", "CNN")
                                                                                     .AddStructuredProperty("URL", "http://cnn.com/"),
                                                                                     (Statistics, Result) => Result);
 
-            var xkcd = GraphDSServer.Insert<IVertex>(SecToken, TransationID, new RequestInsertVertex("Website")
+            var xkcd = _dsServer.Insert<IVertex>(SecToken, TransactionID, new RequestInsertVertex("Website")
                                                                                     .AddStructuredProperty("Name", "xkcd")
                                                                                     .AddStructuredProperty("URL", "http://xkcd.com/"),
                                                                                     (Statistics, Result) => Result);
 
-            var onion = GraphDSServer.Insert<IVertex>(SecToken, TransationID, new RequestInsertVertex("Website")
+            var onion = _dsServer.Insert<IVertex>(SecToken, TransactionID, new RequestInsertVertex("Website")
                                                                                     .AddStructuredProperty("Name", "onion")
                                                                                     .AddStructuredProperty("URL", "http://theonion.com/"),
                                                                                     (Statistics, Result) => Result);
 
             //adding an unknown property means the property isn't defined before
-            var test = GraphDSServer.Insert<IVertex>(SecToken, TransationID, new RequestInsertVertex("Website")
+            var test = _dsServer.Insert<IVertex>(SecToken, TransactionID, new RequestInsertVertex("Website")
                                                                                     .AddStructuredProperty("Name", "Test")
                                                                                     .AddStructuredProperty("URL", "")
                                                                                     .AddUnknownProperty("Unknown", "unknown property"),
@@ -266,14 +382,14 @@ namespace TagExample
 
             //insert a "Tag" with an OutgoingEdge to a "Website" include that the GraphDB creates an IncomingEdge on the given Website instances
             //(because we created an IncomingEdge on type "Website") --> as a consequence we never have to set any IncomingEdge
-            var good = GraphDSServer.Insert<IVertex>(SecToken, TransationID, new RequestInsertVertex("Tag")
+            var good = _dsServer.Insert<IVertex>(SecToken, TransactionID, new RequestInsertVertex("Tag")
                                                                                     .AddStructuredProperty("Name", "good")
                                                                                     .AddEdge(new EdgePredefinition("TaggedWebsites")
                                                                                         .AddVertexID(Website.ID, cnn.VertexID)
                                                                                         .AddVertexID(Website.ID, xkcd.VertexID)),
                                                                                     (Statistics, Result) => Result);
 
-            var funny = GraphDSServer.Insert<IVertex>(SecToken, TransationID, new RequestInsertVertex("Tag")
+            var funny = _dsServer.Insert<IVertex>(SecToken, TransactionID, new RequestInsertVertex("Tag")
                                                                                     .AddStructuredProperty("Name", "funny")
                                                                                     .AddEdge(new EdgePredefinition("TaggedWebsites")
                                                                                         .AddVertexID(Website.ID, xkcd.VertexID)
@@ -285,7 +401,7 @@ namespace TagExample
             #region how to get a type from the DB, properties of the type, instances of a specific type and read out property values
 
             //how to get a type from the DB
-            var TagDBType = GraphDSServer.GetVertexType<IVertexType>(SecToken, TransationID, new RequestGetVertexType(Tag.ID), (Statistics, Type) => Type);
+            var TagDBType = _dsServer.GetVertexType<IVertexType>(SecToken, TransactionID, new RequestGetVertexType(Tag.ID), (Statistics, Type) => Type);
 
             //read informations from type
             var typeName = TagDBType.Name;
@@ -295,7 +411,7 @@ namespace TagExample
             var propName = TagDBType.GetPropertyDefinition("Name");
 
             //how to get all instances of a type from the DB
-            var TagInstances = GraphDSServer.GetVertices(SecToken, TransationID, new RequestGetVertices(TagDBType.ID), (Statistics, Vertices) => Vertices);
+            var TagInstances = _dsServer.GetVertices(SecToken, TransactionID, new RequestGetVertices(TagDBType.ID), (Statistics, Vertices) => Vertices);
 
             foreach (var item in TagInstances)
             {
@@ -316,7 +432,7 @@ namespace TagExample
             //create types at the same time, because of the circular dependencies (Tag has OutgoingEdge to Website, Website has IncomingEdge from Tag)
             //like shown before, using the GraphQL there are also three different ways to create create an index on property "Name" of type "Website"
             //1. create an index definition and specifie the property name and index type
-            var Types = GraphDSServer.Query(SecToken, TransationID, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+            var Types = _dsServer.Query(SecToken, TransactionID, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
                                                                                 Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags) 
                                                                                     INDICES (MyIndex INDEXTYPE MultipleValueIndex ON ATTRIBUTES Name)", SonesGQLConstants.GQL);
 
@@ -333,27 +449,27 @@ namespace TagExample
 
             #region create instances of type "Website"
 
-            var cnnResult = GraphDSServer.Query(SecToken, TransationID, "INSERT INTO Website VALUES (Name = 'CNN', URL = 'http://cnn.com/')", SonesGQLConstants.GQL);
+            var cnnResult = _dsServer.Query(SecToken, TransactionID, "INSERT INTO Website VALUES (Name = 'CNN', URL = 'http://cnn.com/')", SonesGQLConstants.GQL);
             CheckResult(cnnResult);
 
-            var xkcdResult = GraphDSServer.Query(SecToken, TransationID, "INSERT INTO Website VALUES (Name = 'xkcd', URL = 'http://xkcd.com/')", SonesGQLConstants.GQL);
+            var xkcdResult = _dsServer.Query(SecToken, TransactionID, "INSERT INTO Website VALUES (Name = 'xkcd', URL = 'http://xkcd.com/')", SonesGQLConstants.GQL);
             CheckResult(xkcdResult);
 
-            var onionResult = GraphDSServer.Query(SecToken, TransationID, "INSERT INTO Website VALUES (Name = 'onion', URL = 'http://theonion.com/')", SonesGQLConstants.GQL);
+            var onionResult = _dsServer.Query(SecToken, TransactionID, "INSERT INTO Website VALUES (Name = 'onion', URL = 'http://theonion.com/')", SonesGQLConstants.GQL);
             CheckResult(onionResult);
 
             //adding an unknown property ("Unknown") means the property isn't defined before
-            var unknown = GraphDSServer.Query(SecToken, TransationID, "INSERT INTO Website VALUES (Name = 'Test', URL = '', Unknown = 'unknown property')", SonesGQLConstants.GQL);
+            var unknown = _dsServer.Query(SecToken, TransactionID, "INSERT INTO Website VALUES (Name = 'Test', URL = '', Unknown = 'unknown property')", SonesGQLConstants.GQL);
             CheckResult(onionResult);
 
             #endregion
 
             #region create instances of type "Tag"
 
-            var goodResult = GraphDSServer.Query(SecToken, TransationID, "INSERT INTO Tag VALUES (Name = 'good', TaggedWebsites = SETOF(Name = 'CNN', Name = 'xkcd'))", SonesGQLConstants.GQL);
+            var goodResult = _dsServer.Query(SecToken, TransactionID, "INSERT INTO Tag VALUES (Name = 'good', TaggedWebsites = SETOF(Name = 'CNN', Name = 'xkcd'))", SonesGQLConstants.GQL);
             CheckResult(goodResult);
 
-            var funnyResult = GraphDSServer.Query(SecToken, TransationID, "INSERT INTO Tag VALUES (Name = 'funny', TaggedWebsites = SETOF(Name = 'xkcd', Name = 'onion'))", SonesGQLConstants.GQL);
+            var funnyResult = _dsServer.Query(SecToken, TransactionID, "INSERT INTO Tag VALUES (Name = 'funny', TaggedWebsites = SETOF(Name = 'xkcd', Name = 'onion'))", SonesGQLConstants.GQL);
             CheckResult(funnyResult);
 
             #endregion
@@ -365,7 +481,7 @@ namespace TagExample
         private void SELECTS()
         {
             // find out which tags xkcd is tagged with
-            var _xkcdtags = GraphDSServer.Query(SecToken, TransationID, "FROM Website w SELECT w.Tags WHERE w.Name = 'xkcd' DEPTH 1", SonesGQLConstants.GQL);
+            var _xkcdtags = _dsServer.Query(SecToken, TransactionID, "FROM Website w SELECT w.Tags WHERE w.Name = 'xkcd' DEPTH 1", SonesGQLConstants.GQL);
 
             CheckResult(_xkcdtags);
 
@@ -374,7 +490,7 @@ namespace TagExample
                     Console.WriteLine(edge.GetTargetVertex().GetPropertyAsString("Name"));
 
             // List tagged sites names and the count of there tags
-            var _taggedsites = GraphDSServer.Query(SecToken, TransationID, "FROM Website w SELECT w.Name, w.Tags.Count() AS Counter", SonesGQLConstants.GQL);
+            var _taggedsites = _dsServer.Query(SecToken, TransactionID, "FROM Website w SELECT w.Name, w.Tags.Count() AS Counter", SonesGQLConstants.GQL);
 
             CheckResult(_taggedsites);
 
@@ -382,7 +498,7 @@ namespace TagExample
                 Console.WriteLine("{0} => {1}", _sites.GetPropertyAsString("Name"), _sites.GetPropertyAsString("Counter"));
 
             // find out the URL's of the website of each Tag
-            var _urls = GraphDSServer.Query(SecToken, TransationID, "FROM Tag t SELECT t.Name, t.TaggedWebsites.URL", SonesGQLConstants.GQL);
+            var _urls = _dsServer.Query(SecToken, TransactionID, "FROM Tag t SELECT t.Name, t.TaggedWebsites.URL", SonesGQLConstants.GQL);
 
             CheckResult(_urls);
 
@@ -413,7 +529,51 @@ namespace TagExample
                 return true;
             }
         }
-
         #endregion
+    }
+    #endregion
+
+    public class Starter
+    {
+        static void Main(string[] args)
+        {
+            bool quiet = false;
+
+            if (args.Count() > 0)
+            {
+                foreach (String parameter in args)
+                {
+                    if (parameter.ToUpper() == "--Q")
+                        quiet = true;
+                }
+            }
+
+            if (!quiet)
+            {
+                DiscordianDate ddate = new DiscordianDate();
+
+                Console.WriteLine("sones GraphDB version 2.0 - " + ddate.ToString());
+                Console.WriteLine("(C) sones GmbH 2007-2011 - http://www.sones.com");
+                Console.WriteLine("-----------------------------------------------");
+                Console.WriteLine();
+                Console.WriteLine("Starting up GraphDB...");
+            }
+
+            try
+            {
+                var TagExampleWithRest = new TagExampleWithRest(args);
+            }
+            catch (ServiceException e)
+            {
+                if (!quiet)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("InnerException: " + e.InnerException.ToString());
+                    Console.WriteLine();
+                    Console.WriteLine("Press <return> to exit.");
+                    Console.ReadLine();
+                }
+            }
+        }
     }
 }

@@ -72,7 +72,15 @@ namespace sones.Plugins.SonesGQL.DBExport
             get { return "GQLEXPORT"; }
         }
 
-        public QueryResult Export(string destination, IDumpable myGrammar, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken, IEnumerable<String> myTypes, DumpTypes myDumpType)
+        public QueryResult Export(string destination, 
+                                    IDumpable myGrammar, 
+                                    IGraphDB myGraphDB, 
+                                    IGraphQL myGraphQL, 
+                                    SecurityToken mySecurityToken, 
+                                    Int64 myTransactionToken, 
+                                    IEnumerable<String> myVertexTypes,
+                                    IEnumerable<String> myEdgeTypes,
+                                    DumpTypes myDumpType)
         {
             _Destination = destination;
             ASonesException error = null;
@@ -82,8 +90,6 @@ namespace sones.Plugins.SonesGQL.DBExport
             try
             {
                 OpenStream(destination);
-
-
             }
             catch (ASonesException e)
             {
@@ -94,7 +100,20 @@ namespace sones.Plugins.SonesGQL.DBExport
 
             #region Start export using the AGraphDBExport implementation
 
-            var result = Export(myGrammar, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, GetTypes(ref myGraphDB, ref mySecurityToken, ref myTransactionToken, myTypes), myDumpType);
+            var result = Export(myGrammar, 
+                                myGraphDB, 
+                                myGraphQL, 
+                                mySecurityToken, 
+                                myTransactionToken, 
+                                GetVertexTypes(myGraphDB, 
+                                                mySecurityToken, 
+                                                myTransactionToken, 
+                                                myVertexTypes),
+                                GetEdgeTypes(myGraphDB,
+                                                mySecurityToken,
+                                                myTransactionToken,
+                                                myEdgeTypes),
+                                myDumpType);
 
             #endregion
 
@@ -117,7 +136,14 @@ namespace sones.Plugins.SonesGQL.DBExport
                 return new QueryResult("", PluginShortName, 0L, result.TypeOfResult, result.Vertices);
         }
 
-        private QueryResult Export(IDumpable myGrammar, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken, IEnumerable<IVertexType> myTypes, DumpTypes myDumpType)
+        private QueryResult Export(IDumpable myGrammar, 
+                                    IGraphDB myGraphDB, 
+                                    IGraphQL myGraphQL, 
+                                    SecurityToken mySecurityToken, 
+                                    Int64 myTransactionToken, 
+                                    IEnumerable<IVertexType> myVertexTypes,
+                                    IEnumerable<IEdgeType> myEdgeTypes, 
+                                    DumpTypes myDumpType)
         {
             var dumpReadout = new Dictionary<String, Object>();
             ASonesException error = null;
@@ -126,7 +152,9 @@ namespace sones.Plugins.SonesGQL.DBExport
             if ((myDumpType & DumpTypes.GDDL) == DumpTypes.GDDL)
             {
 
-                var graphDDL = myGrammar.ExportGraphDDL(DumpFormats.GQL, myTypes);
+                var graphDDL = myGrammar.ExportGraphDDL(DumpFormats.GQL, 
+                                                        myVertexTypes,
+                                                        myEdgeTypes);
 
                 if (graphDDL == null)
                 {
@@ -152,7 +180,10 @@ namespace sones.Plugins.SonesGQL.DBExport
             if ((myDumpType & DumpTypes.GDML) == DumpTypes.GDML)
             {
 
-                var graphDML = myGrammar.ExportGraphDML(DumpFormats.GQL, myTypes, mySecurityToken, myTransactionToken);
+                var graphDML = myGrammar.ExportGraphDML(DumpFormats.GQL, 
+                                                        myVertexTypes,
+                                                        mySecurityToken, 
+                                                        myTransactionToken);
 
                 if (graphDML == null)
                 {
@@ -173,7 +204,11 @@ namespace sones.Plugins.SonesGQL.DBExport
             } 
             #endregion
 
-            return new QueryResult("", PluginShortName, 0L, ResultType.Successful, new List<IVertexView> { new VertexView(dumpReadout, null) }, error);
+            return new QueryResult("", 
+                                    PluginShortName,
+                                    0L,
+                                    ResultType.Successful, 
+                                    new List<IVertexView> { new VertexView(dumpReadout, null) }, error);
         }
 
         #endregion
@@ -226,7 +261,6 @@ namespace sones.Plugins.SonesGQL.DBExport
 
             switch (_TypeOfOutputDestination)
             {
-
                 case TypeOfOutputDestination.QueryResult:
                     _DumpReadout.Add(myDumpType.ToString(), lines);
 
@@ -237,7 +271,8 @@ namespace sones.Plugins.SonesGQL.DBExport
 
                     foreach (var line in lines)
                     {
-                        _Stream.WriteLine(line);
+                        if(!line.IsNullOrEmpty())
+                            _Stream.WriteLine(line);
                     }
                     break;
             }
@@ -352,38 +387,42 @@ namespace sones.Plugins.SonesGQL.DBExport
 
         #region GetTypes to dump
 
-        private IEnumerable<IVertexType> GetTypes(ref IGraphDB myGraphDB, ref SecurityToken mySecurityToken, ref Int64 myTransactionToken, IEnumerable<String> myTypes)
+        private IEnumerable<IVertexType> GetVertexTypes(IGraphDB myGraphDB, 
+                                                        SecurityToken mySecurityToken, 
+                                                        Int64 myTransactionToken, 
+                                                        IEnumerable<String> myTypes)
         {
 
             #region GetTypeToDump
 
-            List<IVertexType> typesToDump = new List<IVertexType>();
+            IEnumerable<IVertexType> typesToDump = new List<IVertexType>();
 
             if (myTypes.IsNullOrEmpty())
-            {
-                foreach (var type in myGraphDB.GetAllVertexTypes(mySecurityToken, myTransactionToken, new RequestGetAllVertexTypes(), (stats, vertexTypes) => vertexTypes))
-                { 
-                    if(type.IsUserDefined)
-                    {
-                        typesToDump.Add(type);
-                    }
-                }
-            }
+                typesToDump = myGraphDB.GetAllVertexTypes(mySecurityToken,
+                                                            myTransactionToken,
+                                                            new RequestGetAllVertexTypes(),
+                                                            (stats, vertexTypes) => vertexTypes)
+                                        .Where(_ => _.IsUserDefined);
             else
             {
                 var typesToDumpHash = new HashSet<IVertexType>();
+
                 foreach (var stringType in myTypes)
                 {
-                    var type = myGraphDB.GetVertexType(mySecurityToken, myTransactionToken, new RequestGetVertexType(stringType), (stats, vertexType) => vertexType);
+                    var type = myGraphDB.GetVertexType(mySecurityToken, 
+                                                        myTransactionToken, 
+                                                        new RequestGetVertexType(stringType), 
+                                                        (stats, vertexType) => vertexType);
                     
                     if (type == null)
-                    {
                         throw new TypeDoesNotExistException(stringType, "");
-                    }
 
                     //typesToDumpHash.UnionWith(myDBContext.DBTypeManager.GetAllParentTypes(type, true, false));
-                    AddTypeAndAttributesRecursivly(ref myGraphDB, ref mySecurityToken, ref myTransactionToken, type, ref typesToDumpHash);
-
+                    AddVertexTypeAndAttributesRecursivly(myGraphDB, 
+                                                            mySecurityToken, 
+                                                            myTransactionToken, 
+                                                            type, 
+                                                            ref typesToDumpHash);
                 }
 
                 typesToDump = typesToDumpHash.ToList();
@@ -392,10 +431,58 @@ namespace sones.Plugins.SonesGQL.DBExport
             #endregion
 
             return typesToDump;
-
         }
 
-        private void AddTypeAndAttributesRecursivly(ref IGraphDB myGraphDB, ref SecurityToken mySecurityToken, ref Int64 myTransactionToken, IVertexType type, ref HashSet<IVertexType> types)
+        private IEnumerable<IEdgeType> GetEdgeTypes(IGraphDB myGraphDB,
+                                                        SecurityToken mySecurityToken,
+                                                        Int64 myTransactionToken,
+                                                        IEnumerable<String> myTypes)
+        {
+            #region GetTypeToDump
+
+            IEnumerable<IEdgeType> typesToDump = new List<IEdgeType>();
+
+            if (myTypes.IsNullOrEmpty())
+                typesToDump = myGraphDB.GetAllEdgeTypes(mySecurityToken,
+                                                            myTransactionToken,
+                                                            new RequestGetAllEdgeTypes(),
+                                                            (stats, edgeTypes) => edgeTypes)
+                                        .Where(_ => _.IsUserDefined);
+            else
+            {
+                var typesToDumpHash = new HashSet<IEdgeType>();
+
+                foreach (var stringType in myTypes)
+                {
+                    var type = myGraphDB.GetEdgeType(mySecurityToken,
+                                                        myTransactionToken,
+                                                        new RequestGetEdgeType(stringType),
+                                                        (stats, edgeType) => edgeType);
+
+                    if (type == null)
+                        throw new TypeDoesNotExistException(stringType, "");
+
+                    //typesToDumpHash.UnionWith(myDBContext.DBTypeManager.GetAllParentTypes(type, true, false));
+                    AddEdgeTypeAndAttributesRecursivly(myGraphDB, 
+                                                        mySecurityToken, 
+                                                        myTransactionToken, 
+                                                        type, 
+                                                        ref typesToDumpHash);
+                }
+
+                typesToDump = typesToDumpHash.ToList();
+            }
+
+            #endregion
+
+            return typesToDump;
+        }
+
+        private void AddVertexTypeAndAttributesRecursivly(IGraphDB myGraphDB, 
+                                                            SecurityToken mySecurityToken, 
+                                                            Int64 myTransactionToken, 
+                                                            IVertexType type, 
+                                                            ref HashSet<IVertexType> types)
         {
             if (!type.IsUserDefined) return;
 
@@ -404,16 +491,53 @@ namespace sones.Plugins.SonesGQL.DBExport
                 if (!types.Contains(type.ParentVertexType))
                 {
                     types.Add(type.ParentVertexType);
+
                     foreach (var attr in (type.GetAttributeDefinitions(false)).Where(attrDef => attrDef.Kind == AttributeType.Property))
                     {
-                        var attrType = myGraphDB.GetVertexType<IVertexType>(mySecurityToken, myTransactionToken, new RequestGetVertexType(attr.ID), (stats, vertex) => vertex);
-                        AddTypeAndAttributesRecursivly(ref myGraphDB, ref mySecurityToken, ref myTransactionToken, attrType, ref types);
+                        var attrType = myGraphDB.GetVertexType<IVertexType>(mySecurityToken, 
+                                                                            myTransactionToken, 
+                                                                            new RequestGetVertexType(attr.ID), 
+                                                                            (stats, vertex) => vertex);
+
+                        AddVertexTypeAndAttributesRecursivly(myGraphDB, 
+                                                                mySecurityToken, 
+                                                                myTransactionToken, 
+                                                                attrType, 
+                                                                ref types);
                     }
                 }
-
-                //types.UnionWith(myDBContext.DBTypeManager.GetAllParentTypes(type, true, false));
             }
+        }
 
+        private void AddEdgeTypeAndAttributesRecursivly(IGraphDB myGraphDB,
+                                                            SecurityToken mySecurityToken,
+                                                            Int64 myTransactionToken,
+                                                            IEdgeType type,
+                                                            ref HashSet<IEdgeType> types)
+        {
+            if (!type.IsUserDefined) return;
+
+            if (type.HasParentType)
+            {
+                if (!types.Contains(type.ParentEdgeType))
+                {
+                    types.Add(type.ParentEdgeType);
+
+                    foreach (var attr in (type.GetAttributeDefinitions(false)).Where(attrDef => attrDef.Kind == AttributeType.Property))
+                    {
+                        var attrType = myGraphDB.GetEdgeType<IEdgeType>(mySecurityToken,
+                                                                            myTransactionToken,
+                                                                            new RequestGetEdgeType(attr.ID),
+                                                                            (stats, edge) => edge);
+
+                        AddEdgeTypeAndAttributesRecursivly(myGraphDB,
+                                                                mySecurityToken,
+                                                                myTransactionToken,
+                                                                attrType,
+                                                                ref types);
+                    }
+                }
+            }
         }
 
         #endregion

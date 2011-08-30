@@ -93,12 +93,12 @@ namespace sones.GraphDB.Request.AlterType
 
             #region update vertices
 
-            myMetaManager
-                .VertexManager
-                .ExecuteManager
-                .UpdateVertices(update,
-                                Int64,
-                                SecurityToken);
+            //myMetaManager
+            //    .VertexManager
+            //    .ExecuteManager
+            //    .UpdateVertices(update,
+            //                    Int64,
+            //                    SecurityToken);
 
             #endregion
         }
