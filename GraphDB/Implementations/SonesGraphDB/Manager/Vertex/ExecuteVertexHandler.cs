@@ -1114,9 +1114,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                     if (neededPropNames.CountIsGreater(0))
                     {
-                        var structured = GetStructuredFromVertex(vertex, vertexType, neededPropNames);
-
-                        RemoveFromIndex(vertex.VertexID, structured, vertexType, indices, myTransaction, mySecurity);
+                        RemoveFromIndex(vertex, indices);
                     }
 
                     var updatedVertex =
@@ -1143,8 +1141,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                     if (neededPropNames.CountIsGreater(0))
                     {
-                        var structured = GetStructuredFromVertex(updatedVertex, vertexType, neededPropNames);
-                        AddToIndex(structured, updatedVertex.VertexID, vertexType, indices, myTransaction, mySecurity);
+                        AddToIndex(updatedVertex, indices);
                     }
 
                 }
@@ -1152,65 +1149,28 @@ namespace sones.GraphDB.Manager.Vertex
             return result;
         }
 
-        private void AddToIndex(IDictionary<string, IComparable> structured,
-                                long id,
-                                IVertexType vertexType,
-                                IDictionary<IList<IPropertyDefinition>, IEnumerable<ISonesIndex>> indices,
-                                Int64 myTransaction,
-                                SecurityToken mySecurity)
+        private void AddToIndex(IVertex myVertex,
+            IDictionary<IList<IPropertyDefinition>, IEnumerable<ISonesIndex>> indices)
         {
             foreach (var indexGroup in indices)
             {
                 foreach (var index in indexGroup.Value)
                 {
-                    var entry = CreateIndexEntry(indexGroup.Key, structured);
-
-                    if (entry == null)
-                        continue;
-
-                    index.Add(entry, id);
+                    index.Add(myVertex);
                 }
             }
         }
 
-        private void RemoveFromIndex(
-            long myVertexID,
-            IDictionary<string, IComparable> structured,
-            IVertexType vertexType,
-            IEnumerable<KeyValuePair<IList<IPropertyDefinition>, IEnumerable<ISonesIndex>>> indices,
-            Int64 myTransaction,
-            SecurityToken mySecurity)
+        private void RemoveFromIndex(IVertex myVertex,
+            IEnumerable<KeyValuePair<IList<IPropertyDefinition>, IEnumerable<ISonesIndex>>> indices)
         {
             foreach (var indexGroup in indices)
             {
                 foreach (var index in indexGroup.Value)
                 {
-                    var entry = CreateIndexEntry(indexGroup.Key, structured);
-
-                    if (entry != null)
-                    {
-                        lock (index)
-                        {
-                            index.TryRemoveValue(entry, myVertexID);
-                        }
-                    }
+                    index.Remove(myVertex);
                 }
             }
-
-        }
-
-        private IDictionary<String, IComparable> GetStructuredFromVertex(IVertex vertex, IVertexType vertexType, IEnumerable<string> neededPropNames)
-        {
-            var result = new Dictionary<String, IComparable>();
-            foreach (var propName in neededPropNames)
-            {
-                var propDef = vertexType.GetPropertyDefinition(propName);
-
-                if (propDef.HasValue(vertex))
-                    result.Add(propName, propDef.GetValue(vertex));
-            }
-
-            return result;
         }
 
         private Tuple<long?, String, VertexUpdateDefinition> CreateVertexUpdateDefinition(
