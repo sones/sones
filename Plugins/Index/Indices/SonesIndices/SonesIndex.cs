@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using sones.Plugins.Index.ErrorHandling;
 using sones.Library.VersionedPluginManager;
 using System.Threading;
+using sones.Plugins.Index.Abstract;
 
 namespace sones.Plugins.Index
 {
@@ -21,7 +22,7 @@ namespace sones.Plugins.Index
     /// It represents a multiple-value index where
     /// 1-n values can be associated with a search key.
     /// </summary>
-    public class SonesIndex : ISonesIndex, IPluginable
+    public class SonesIndex : ASonesIndex, IPluginable
     {
         #region Private Members
 
@@ -48,20 +49,20 @@ namespace sones.Plugins.Index
 
         #endregion
 
-        #region PropertyID
+        //#region PropertyID
 
-        /// <summary>
-        /// The ID of the indexed property
-        /// </summary>
-        private Int64 _PropertyID;
+        ///// <summary>
+        ///// The ID of the indexed property
+        ///// </summary>
+        //private Int64 _PropertyID;
 
-        #endregion
+        //#endregion
 
         #endregion
 
         #region Properties
 
-        public bool SupportsNullableKeys
+        public override bool SupportsNullableKeys
         {
             get
             {
@@ -86,7 +87,8 @@ namespace sones.Plugins.Index
 
         public SonesIndex(IList<Int64> myPropertyIDs) : this()
         {
-            _PropertyID = myPropertyIDs.FirstOrDefault();
+            //_PropertyID = myPropertyIDs.FirstOrDefault();
+            _PropertyIDs = myPropertyIDs;
         }
 
         #endregion
@@ -96,7 +98,7 @@ namespace sones.Plugins.Index
         /// <summary>
         /// Returns the name of the index
         /// </summary>
-        public string IndexName
+        public override string IndexName
         {
             get { return "sonesindex"; }
         }
@@ -105,7 +107,7 @@ namespace sones.Plugins.Index
         /// Returns the number of keys in the index.
         /// </summary>
         /// <returns>Number of keys</returns>
-        public long KeyCount()
+        public override long KeyCount()
         {
             return _Index.Keys.LongCount();
         }
@@ -114,7 +116,7 @@ namespace sones.Plugins.Index
         /// Returns the number of values in the index.
         /// </summary>
         /// <returns>Number of values</returns>
-        public long ValueCount()
+        public override long ValueCount()
         {
             return _ValueCount;
         }
@@ -123,18 +125,9 @@ namespace sones.Plugins.Index
         /// Returns all keys currently stored in the index
         /// </summary>
         /// <returns>All stored keys</returns>
-        public IEnumerable<IComparable> Keys()
+        public override IEnumerable<IComparable> Keys()
         {
             return _Index.Keys;
-        }
-
-        /// <summary>
-        /// Sets the propertyID for internal processing
-        /// </summary>
-        /// <param name="myPropertyID">ID of the indexed property</param>
-        public void Init(long myPropertyID)
-        {
-            _PropertyID = myPropertyID;
         }
 
         /// <summary>
@@ -145,7 +138,7 @@ namespace sones.Plugins.Index
         /// The type of the stored keys or <code>IComparable</code>
         /// if the index is empty.
         /// </returns>
-        public Type GetKeyType()
+        public override Type GetKeyType()
         {
             if (!_Index.IsEmpty)
             {
@@ -155,51 +148,12 @@ namespace sones.Plugins.Index
         }
 
         /// <summary>
-        /// Adds the vertexID of the given vertex to the index based
-        /// on the indexed property.
-        /// 
-        /// Throws <code>IndexAddFailedException</code> if the given vertex
-        /// doesn't have the indexed property.
-        /// </summary>
-        /// <param name="myVertex">Vertex to add (vertexID)</param>
-        /// <param name="myIndexAddStrategy">Define what happens if the key already exists.</param>
-        public void Add(IVertex myVertex, 
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
-        {
-            // check if vertex has property
-            if (myVertex.HasProperty(_PropertyID))
-            {
-                // get property
-                var prop = myVertex.GetProperty(_PropertyID);
-                // and add it to the index
-                Add(prop, myVertex.VertexID, myIndexAddStrategy);
-            }
-            else
-            {
-                throw new IndexAddFailedException(String.Format("Vertex {0} has no indexable property with ID {1}",
-                    myVertex.VertexID,
-                    _PropertyID));
-            }
-        }
-
-        /// <summary>
-        /// Adds given vertices to the index.
-        /// </summary>
-        /// <param name="myVertices">A collection of indexes</param>
-        /// <param name="myIndexAddStrategy">Define what happens when a key already exists.</param>
-        public void AddRange(IEnumerable<IVertex> myVertices, 
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
-        {
-            Parallel.ForEach(myVertices, v => Add(v, myIndexAddStrategy));
-        }
-
-        /// <summary>
         /// Adds a given key and a vertexID to the index.
         /// </summary>
         /// <param name="myKey">Search key</param>
         /// <param name="myVertexID">Associated vertexID</param>
         /// <param name="myIndexAddStrategy">Define what happens if key exists</param>
-        public void Add(IComparable myKey, long myVertexID, 
+        public override void Add(IComparable myKey, long myVertexID, 
             IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             HashSet<Int64> values;
@@ -243,23 +197,12 @@ namespace sones.Plugins.Index
         }
 
         /// <summary>
-        /// Adds a given collection of key-value-pairs to the index.
-        /// </summary>
-        /// <param name="myKeyValuePairs">Key-Value-Pairs</param>
-        /// <param name="myIndexAddStrategy">Define what happes if a key already exists.</param>
-        public void AddRange(IEnumerable<KeyValuePair<IComparable, long>> myKeyValuePairs, 
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
-        {
-            Parallel.ForEach(myKeyValuePairs, kvp => Add(kvp.Key, kvp.Value, myIndexAddStrategy));
-        }
-
-        /// <summary>
         /// Returns all values associated with given key, if it exists.
         /// </summary>
         /// <param name="myKey">Search key</param>
         /// <param name="myVertexIDs">Associated values</param>
         /// <returns>True, if the key exists</returns>
-        public bool TryGetValues(IComparable myKey, out IEnumerable<long> myVertexIDs)
+        public override bool TryGetValues(IComparable myKey, out IEnumerable<long> myVertexIDs)
         {
             var values = new HashSet<long>();
             var done = _Index.TryGetValue(myKey, out values);
@@ -274,7 +217,7 @@ namespace sones.Plugins.Index
         /// </summary>
         /// <param name="myKey">Search key</param>
         /// <returns>All values associated to the key.</returns>
-        public IEnumerable<long> this[IComparable myKey]
+        public override IEnumerable<long> this[IComparable myKey]
         {
             get 
             {
@@ -295,7 +238,7 @@ namespace sones.Plugins.Index
         /// </summary>
         /// <param name="myKey"></param>
         /// <returns></returns>
-        public bool ContainsKey(IComparable myKey)
+        public override bool ContainsKey(IComparable myKey)
         {
             return _Index.ContainsKey(myKey);
         }
@@ -306,7 +249,7 @@ namespace sones.Plugins.Index
         /// Removes a key from the index.
         /// </summary>
         /// <param name="myKey"></param>
-        public bool Remove(IComparable myKey)
+        public override bool Remove(IComparable myKey)
         {
             HashSet<Int64> values;
             if (!_Index.TryRemove(myKey, out values))
@@ -331,7 +274,7 @@ namespace sones.Plugins.Index
         /// <param name="myKey">Search key</param>
         /// <param name="myValue">Value to be removed.</param>
         /// <returns>True, if the value has been removed.</returns>
-        public bool TryRemoveValue(IComparable myKey, Int64 myValue)
+        public override bool TryRemoveValue(IComparable myKey, Int64 myValue)
         {
             HashSet<Int64> values;
 
@@ -369,33 +312,9 @@ namespace sones.Plugins.Index
         /// Removes all given key from the index.
         /// </summary>
         /// <param name="myKeys">Search keys to be removed</param>
-        public void RemoveRange(IEnumerable<IComparable> myKeys)
+        public override void RemoveRange(IEnumerable<IComparable> myKeys)
         {
             Parallel.ForEach(myKeys, k => Remove(k));
-        }
-
-        /// <summary>
-        /// Checks if the given vertex is indexed and if yes, removes
-        /// the vertex id from the index.
-        /// </summary>
-        /// <param name="myVertex">Vertex which ID shall be removed</param>
-        /// <returns>True, if the vertexID has been removed from the index.</returns>
-        public bool Remove(IVertex myVertex)
-        {
-            // check if vertex has property
-            if (myVertex.HasProperty(_PropertyID))
-            {
-                // get property
-                var prop = myVertex.GetProperty(_PropertyID);
-                // and try to remove if from the index
-                return TryRemoveValue(prop, myVertex.VertexID);
-            }
-            else
-            {
-                throw new IndexRemoveFailedException(String.Format("Vertex {0} has no indexable property with ID {1}",
-                    myVertex.VertexID,
-                    _PropertyID));
-            }
         }
 
         #endregion
@@ -403,7 +322,7 @@ namespace sones.Plugins.Index
         /// <summary>
         /// Internal index structure doesn't support optimizations.
         /// </summary>
-        public void Optimize()
+        public override void Optimize()
         {
             // silence is golden
         }
@@ -474,7 +393,7 @@ namespace sones.Plugins.Index
         /// <summary>
         /// Clears internal index
         /// </summary>
-        public void Clear()
+        public override void Clear()
         {
             _Index.Clear();
 

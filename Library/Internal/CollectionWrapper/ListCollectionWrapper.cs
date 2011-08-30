@@ -19,12 +19,10 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections;
-using sones.Library.NewFastSerializer;
+using System.Collections.Generic;
 using sones.Library.CollectionWrapper.ErrorHandling;
+using sones.Library.NewFastSerializer;
 
 
 namespace sones.Library.CollectionWrapper

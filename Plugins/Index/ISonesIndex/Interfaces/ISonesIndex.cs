@@ -103,7 +103,7 @@ namespace sones.Plugins.Index
         /// <param name="myPropertyID">
         /// The propertyID of the index-key.
         /// </param>
-        void Init(Int64 myPropertyID);
+        // void Init(Int64 myPropertyID);
 
         #endregion
 
