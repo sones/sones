@@ -40,6 +40,7 @@ using sones.Library.LanguageExtensions;
 using sones.Library.PropertyHyperGraph;
 using sones.Plugins.Index;
 using sones.Plugins.Index.Helper;
+using sones.Plugins.Index.ErrorHandling;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -220,12 +221,8 @@ namespace sones.GraphDB.Manager.Vertex
 
             foreach (var indexDef in vertexType.GetIndexDefinitions(false))
             {
-                var key = CreateIndexEntry(indexDef.IndexedProperties, myInsertDefinition.StructuredProperties);
-                if (key != null)
-                {
-                    var index = _indexManager.GetIndex(indexDef.Name, mySecurity, myTransaction);
-                    index.Add(key, result.VertexID);
-                }
+                var index = _indexManager.GetIndex(indexDef.Name, mySecurity, myTransaction);
+                index.Add(result);
             }
 
             return result;

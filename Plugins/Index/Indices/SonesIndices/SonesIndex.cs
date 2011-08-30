@@ -156,43 +156,46 @@ namespace sones.Plugins.Index
         public override void Add(IComparable myKey, long myVertexID, 
             IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
-            HashSet<Int64> values;
-            HashSet<Int64> newValues = new HashSet<long>() { myVertexID };
+            if (myKey != null)
+            {
+                HashSet<Int64> values;
+                HashSet<Int64> newValues = new HashSet<long>() { myVertexID };
 
-            lock (_Lock)
-            {                
-                int valueCountDiff = 0;
-
-                if (_Index.TryGetValue(myKey, out values))
+                lock (_Lock)
                 {
-                    // subtract number of old values
-                    valueCountDiff -= values.Count;
+                    int valueCountDiff = 0;
 
-                    switch (myIndexAddStrategy)
+                    if (_Index.TryGetValue(myKey, out values))
                     {
-                        case IndexAddStrategy.MERGE:
-                            values.UnionWith(newValues);
-                            valueCountDiff += values.Count;
-                            break;
-                        case IndexAddStrategy.REPLACE:
-                            values = newValues;
-                            valueCountDiff++;
-                            break;
-                        case IndexAddStrategy.UNIQUE:
-                            throw new IndexKeyExistsException(String.Format("Index key {0} already exist.", myKey.ToString()));
+                        // subtract number of old values
+                        valueCountDiff -= values.Count;
+
+                        switch (myIndexAddStrategy)
+                        {
+                            case IndexAddStrategy.MERGE:
+                                values.UnionWith(newValues);
+                                valueCountDiff += values.Count;
+                                break;
+                            case IndexAddStrategy.REPLACE:
+                                values = newValues;
+                                valueCountDiff++;
+                                break;
+                            case IndexAddStrategy.UNIQUE:
+                                throw new IndexKeyExistsException(String.Format("Index key {0} already exist.", myKey.ToString()));
+                        }
                     }
+                    else
+                    {
+                        values = newValues;
+                        valueCountDiff += newValues.Count;
+                    }
+
+                    // add it to the index
+                    _Index.AddOrUpdate(myKey, values, (k, v) => values);
+
+                    // update the value count
+                    _ValueCount += valueCountDiff;
                 }
-                else
-                {
-                    values = newValues;
-                    valueCountDiff += newValues.Count;
-                }
-                
-                // add it to the index
-                _Index.AddOrUpdate(myKey, values, (k, v) => values);
-                
-                // update the value count
-                _ValueCount += valueCountDiff;
             }
         }
 
@@ -204,6 +207,12 @@ namespace sones.Plugins.Index
         /// <returns>True, if the key exists</returns>
         public override bool TryGetValues(IComparable myKey, out IEnumerable<long> myVertexIDs)
         {
+            if (myKey == null)
+            {
+                myVertexIDs = null;
+                return false;
+            }
+
             var values = new HashSet<long>();
             var done = _Index.TryGetValue(myKey, out values);
             myVertexIDs = values;
@@ -214,13 +223,19 @@ namespace sones.Plugins.Index
         /// Returns all values for the given key or throws a
         /// <code>IndexKeyNotFoundException</code> if the key
         /// is not stored in the index.
+        /// If the key is null, null will be returned.
         /// </summary>
         /// <param name="myKey">Search key</param>
         /// <returns>All values associated to the key.</returns>
         public override IEnumerable<long> this[IComparable myKey]
         {
-            get 
+            get
             {
+                if (myKey == null)
+                {
+                    return null;
+                }
+
                 HashSet<Int64> values;
                 if (_Index.TryGetValue(myKey, out values))
                 {
@@ -240,6 +255,11 @@ namespace sones.Plugins.Index
         /// <returns></returns>
         public override bool ContainsKey(IComparable myKey)
         {
+            if (myKey == null)
+            {
+                return false;
+            }
+
             return _Index.ContainsKey(myKey);
         }
 
@@ -251,6 +271,11 @@ namespace sones.Plugins.Index
         /// <param name="myKey"></param>
         public override bool Remove(IComparable myKey)
         {
+            if (myKey == null)
+            {
+                return false;
+            }
+
             HashSet<Int64> values;
             if (!_Index.TryRemove(myKey, out values))
             {
@@ -276,6 +301,11 @@ namespace sones.Plugins.Index
         /// <returns>True, if the value has been removed.</returns>
         public override bool TryRemoveValue(IComparable myKey, Int64 myValue)
         {
+            if (myKey == null)
+            {
+                return false;
+            }
+
             HashSet<Int64> values;
 
             lock (_Lock)

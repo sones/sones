@@ -55,6 +55,17 @@ namespace sones.Plugins.Index
     /// necessary index operations and is designed 
     /// for managing multiple value indices (there
     /// are 1 - n values assigned to a search key).
+    /// 
+    /// Notes:
+    /// 
+    /// 1) If an implementing index does not support
+    /// null as index key and null is being used in
+    /// any of the index methods, an
+    /// <code>NullKeysNotSupportedException</code>
+    /// will be thrown.
+    /// You can check the null-key Support by looking
+    /// at the <code>SupportsNullableKeys</code>
+    /// 
     /// </summary>
     public interface ISonesIndex
     {
@@ -96,14 +107,14 @@ namespace sones.Plugins.Index
         #region Init
 
         /// <summary>
-        /// Inits the index and use property
-        /// referenced by the given propertyID
-        /// for indexing.
+        /// Used to tell the index which propertyIDs
+        /// are indexed. These propertyIDs are used
+        /// when adding / removing vertices.
         /// </summary>
-        /// <param name="myPropertyID">
-        /// The propertyID of the index-key.
+        /// <param name="myPropertyIDs">
+        /// A list of indexed propertyIDs
         /// </param>
-        // void Init(Int64 myPropertyID);
+        void Init(IList<Int64> myPropertyIDs);
 
         #endregion
 

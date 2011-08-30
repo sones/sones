@@ -71,7 +71,8 @@ namespace sones.Plugins.Index.Abstract
         /// on the indexed property.
         /// 
         /// Throws <code>IndexAddFailedException</code> if the given vertex
-        /// doesn't have the indexed property.
+        /// doesn't have the indexed property and the index does not support
+        /// null-value keys.
         /// </summary>
         /// <param name="myVertex">Vertex to add (vertexID)</param>
         /// <param name="myIndexAddStrategy">Define what happens if the key already exists.</param>
@@ -80,12 +81,8 @@ namespace sones.Plugins.Index.Abstract
         {
             var key = CreateIndexEntry(_PropertyIDs, myVertex);
 
-            if (key == null)
+            if (KeyNullSupportCheck(key))
             {
-                throw new IndexAddFailedException(String.Format("Vertex {0} has no indexable properties", myVertex.VertexID));
-            }
-            else
-            { 
                 Add(key, myVertex.VertexID, myIndexAddStrategy);
             }
         }
@@ -127,14 +124,12 @@ namespace sones.Plugins.Index.Abstract
         {
             var key = CreateIndexEntry(_PropertyIDs, myVertex);
 
-            if (key == null)
+            if (!KeyNullSupportCheck(key))
             {
-                throw new IndexRemoveFailedException(String.Format("Vertex {0} has no indexable properties", myVertex.VertexID));
+                return false;
             }
-            else
-            {
-                return TryRemoveValue(key, myVertex.VertexID);
-            }
+
+            return TryRemoveValue(key, myVertex.VertexID);
         }
 
         #endregion
@@ -170,6 +165,28 @@ namespace sones.Plugins.Index.Abstract
                 return null;
             }
             throw new ArgumentException("A unique definition must contain at least one element.");
+        }
+
+        
+
+        #endregion
+
+        #region Protected Members
+
+        /// <summary>
+        /// Method checks if the given key is null and if the index supports null as key.
+        /// </summary>
+        /// <param name="myKey">The key to be checked</param>
+        protected bool KeyNullSupportCheck(IComparable myKey)
+        {
+            if (myKey == null)
+            {
+                return SupportsNullableKeys;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         #endregion
