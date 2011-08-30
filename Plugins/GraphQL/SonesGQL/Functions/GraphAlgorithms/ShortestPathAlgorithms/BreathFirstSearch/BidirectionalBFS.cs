@@ -100,7 +100,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         /// <param name="myStart">The start node</param>
         /// <param name="myEnd">The end node</param>
         /// <param name="shortestOnly">true, if only shortest path shall be found</param>
-        /// <param name="findAll">if true and shortestOnly is true, all shortest paths will be found. if true, and shortest only is false, all paths will be searched</param>
+        /// <param name="findAll">if true and shortestOnly is true, all shortest paths will be found. 
+        /// If true, and shortest only is false, all paths will be searched</param>
         /// <param name="myMaxDepth">The maximum depth to search</param>
         /// <param name="myMaxPathLength">The maximum path length which shall be analyzed</param>
         /// <returns>A HashSet which contains all found paths. Every path is represented by a List of ObjectUUIDs</returns>m>
@@ -531,6 +532,11 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
                 #endregion abort loop
             }
+
+            #region nothing found
+            if (_ShortestOnly && !_FindAll)
+                return null;
+            #endregion
 
             //get result paths
             #region start TargetAnalyzer

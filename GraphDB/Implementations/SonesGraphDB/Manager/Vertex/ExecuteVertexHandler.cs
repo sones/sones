@@ -42,6 +42,7 @@ using sones.Library.LanguageExtensions;
 using sones.Library.PropertyHyperGraph;
 using sones.Plugins.Index.Helper;
 using sones.Plugins.Index.Interfaces;
+using sones.GraphFS.ErrorHandling;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -214,11 +215,10 @@ namespace sones.GraphDB.Manager.Vertex
             }
 
             var addDefinition = RequestInsertVertexToVertexAddDefinition(myInsertDefinition, vertexType, myTransaction, mySecurity);
+
             var result = (addDefinition.Item1.HasValue)
                             ? _vertexStore.AddVertex(mySecurity, myTransaction, addDefinition.Item2, addDefinition.Item1.Value)
                             : _vertexStore.AddVertex(mySecurity, myTransaction, addDefinition.Item2);
-
-
 
             foreach (var indexDef in vertexType.GetIndexDefinitions(false))
             {
@@ -1847,6 +1847,12 @@ namespace sones.GraphDB.Manager.Vertex
                         UnstructuredPropertiesUpdate unstructuredUpdate;
                         IEnumerable<SingleEdgeUpdateDefinition> singleUpdate;
 
+                        CheckIfToBeAddedElementAlreadyExist(myVertex, 
+                                                            edgeDef, 
+                                                            hyperEdge.Value,
+                                                            myTransaction,
+                                                            mySecurity);
+
                         CreateSingleEdgeUpdateDefinitions(source,
                                                             myTransaction,
                                                             mySecurity,
@@ -1929,6 +1935,47 @@ namespace sones.GraphDB.Manager.Vertex
                                                             updateHyper));
         }
 
+        private void CheckIfToBeAddedElementAlreadyExist(IVertex myVertex,
+                                                            IOutgoingEdgeDefinition myEdgeDef,
+                                                            EdgePredefinition myEdgePredef,
+                                                            Int64 myTransaction,
+                                                            SecurityToken mySecurityToken)
+        {
+            switch (myEdgeDef.Multiplicity)
+            {
+                case EdgeMultiplicity.HyperEdge:
+                    break;
+                case EdgeMultiplicity.MultiEdge:
+                    var newTargets = GetResultingVertexIDs(myTransaction, mySecurityToken, myEdgePredef, myEdgeDef.TargetVertexType);
+                    var existTargets = myVertex.GetOutgoingHyperEdge(myEdgeDef.ID) == null
+                                        ? new List<IVertex>()
+                                        : myVertex.GetOutgoingHyperEdge(myEdgeDef.ID).GetTargetVertices();
+
+                    if (newTargets == null)
+                    {
+                        if (myEdgePredef.ContainedEdges != null)
+                        {
+                            foreach (var innerEdge in myEdgePredef.ContainedEdges)
+                            {
+                                newTargets = GetResultingVertexIDs(myTransaction, mySecurityToken, innerEdge, myEdgeDef.TargetVertexType);
+                                
+                                foreach (var target in newTargets)
+                                    if (existTargets.Any(item => item.VertexID.Equals(target.VertexID) && 
+                                            item.VertexTypeID.Equals(target.VertexTypeID)))
+                                        throw new VertexAlreadyExistException(target.VertexTypeID, target.VertexID);
+                            }
+                        }
+                    }
+                    else
+                        foreach (var target in newTargets)
+                            if (existTargets.Any(item => item.VertexID.Equals(target.VertexID) &&
+                                        item.VertexTypeID.Equals(target.VertexTypeID)))
+                                throw new VertexAlreadyExistException(target.VertexTypeID, target.VertexID);
+
+                    break;
+                default: throw new Exception("The EdgeMultiplicity enumeration was changed, but not this switch statement.");
+            }
+        }
 
         private IEnumerable<SingleEdgeDeleteDefinition> CreateSingleEdgeDeleteDefinitions(VertexInformation mySource, Int64 myTransaction, SecurityToken mySecurity, EdgePredefinition myEdge, IOutgoingEdgeDefinition edgeDef)
         {
