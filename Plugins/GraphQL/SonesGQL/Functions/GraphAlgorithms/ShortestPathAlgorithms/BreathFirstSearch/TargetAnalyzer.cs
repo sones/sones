@@ -156,23 +156,19 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                     _Paths.Add(temp);
                 }
 
-                foreach (Node parent in myCurrent.Parents)
-                {
-                    //if parent node not already in actual path
-                    if (!parent.AlreadyInPath)
+                //MaxPathLength is not reached
+                if (_TempList.Count <= _MaxPathLength)
+                    //for all parent nodes which are not already in actual path
+                    foreach (Node parent in myCurrent.Parents.Where(_ => !_.AlreadyInPath))
                     {
-                        //and MaxPathLength is not reached
-                        if (_TempList.Count <= _MaxPathLength)
-                        {
-                            getPath(parent);
-                        }
+                        getPath(parent);
                     }
-                }
 
                 if (_TempList.Count != 0)
                 {
                     //remove last node from actual path
                     _TempList.Remove(_TempList.Last<Tuple<long, long>>());
+
                     //myCurrent isn't in actual path
                     myCurrent.AlreadyInPath = false;
                 }
