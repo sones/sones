@@ -41,6 +41,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.Plugins.Index;
 using sones.Plugins.Index.Helper;
 using sones.Plugins.Index.ErrorHandling;
+using System.Threading.Tasks;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -219,6 +220,7 @@ namespace sones.GraphDB.Manager.Vertex
 
 
 
+            // add vertex to the indices of the corresponding vertextype
             foreach (var indexDef in vertexType.GetIndexDefinitions(false))
             {
                 var index = _indexManager.GetIndex(indexDef.Name, mySecurity, myTransaction);
@@ -866,19 +868,12 @@ namespace sones.GraphDB.Manager.Vertex
 
                         foreach (var aToBeDeletedProperty in toBeDeletedProperties)
                         {
-                            if (aVertex.HasProperty(aToBeDeletedProperty.Key))
+                            foreach (var aIndexDefinition in aToBeDeletedProperty.Value.InIndices)
                             {
-                                foreach (var aIndexDefinition in aToBeDeletedProperty.Value.InIndices)
-                                {
-                                    RemoveVertexPropertyFromIndex(
-                                        aVertex,
-                                        aIndexDefinition,
-                                        _indexManager.GetIndices(vertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken)
-                                        , mySecurityToken, myTransactionToken);
-                                }
-
-                                toBeDeletedStructuredPropertiesUpdate.Add(aToBeDeletedProperty.Key);
+                                RemoveFromIndices(aVertex, 
+                                    _indexManager.GetIndices(vertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken));
                             }
+                            toBeDeletedStructuredPropertiesUpdate.Add(aToBeDeletedProperty.Key);
                         }
 
                         #endregion
@@ -972,28 +967,9 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     foreach (var aIndexDefinition in aStructuredProperty.InIndices)
                     {
-                        RemoveVertexPropertyFromIndex(
-                            aVertex,
-                            aIndexDefinition,
-                            _indexManager.GetIndices(myVertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken)
-                            , mySecurityToken, myTransactionToken);
+                        RemoveFromIndices(aVertex,
+                            _indexManager.GetIndices(myVertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken));
                     }
-                }
-            }
-        }
-
-        private void RemoveVertexPropertyFromIndex(IVertex aVertex, IIndexDefinition aIndexDefinition, IEnumerable<ISonesIndex> myIndices, SecurityToken mySecurityToken, Int64 myTransactionToken)
-        {
-            var entry = CreateIndexEntry(aIndexDefinition.IndexedProperties, aVertex.GetAllProperties().ToDictionary(key => key.Item1, value => value.Item2));
-
-            if (entry == null)
-                return;
-
-            foreach (var index in myIndices)
-            {
-                lock (index)
-                {
-                    index.TryRemoveValue(entry, aVertex.VertexID);
                 }
             }
         }
@@ -1114,7 +1090,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                     if (neededPropNames.CountIsGreater(0))
                     {
-                        RemoveFromIndex(vertex, indices);
+                        RemoveFromIndices(vertex, indices);
                     }
 
                     var updatedVertex =
@@ -1141,7 +1117,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                     if (neededPropNames.CountIsGreater(0))
                     {
-                        AddToIndex(updatedVertex, indices);
+                        AddToIndices(updatedVertex, indices);
                     }
 
                 }
@@ -1149,28 +1125,59 @@ namespace sones.GraphDB.Manager.Vertex
             return result;
         }
 
-        private void AddToIndex(IVertex myVertex,
-            IDictionary<IList<IPropertyDefinition>, IEnumerable<ISonesIndex>> indices)
+        /// <summary>
+        /// Adds a given vertex to the defined indices.
+        /// The indices are mapped to the properties.
+        /// </summary>
+        /// <param name="myVertex">Vertex which shall be indexed</param>
+        /// <param name="myIndices">Indices which are mapped to a list of indexed properties.</param>
+        private void AddToIndices(IVertex myVertex,
+            IDictionary<IList<IPropertyDefinition>, IEnumerable<ISonesIndex>> myIndices)
         {
-            foreach (var indexGroup in indices)
+            foreach (var indexGroup in myIndices)
             {
-                foreach (var index in indexGroup.Value)
-                {
-                    index.Add(myVertex);
-                }
+                AddToIndices(myVertex, indexGroup.Value);
             }
         }
 
-        private void RemoveFromIndex(IVertex myVertex,
-            IEnumerable<KeyValuePair<IList<IPropertyDefinition>, IEnumerable<ISonesIndex>>> indices)
+        /// <summary>
+        /// Adds a given vertex to a collection of indices.
+        /// 
+        /// Adding is done in parallel.
+        /// </summary>
+        /// <param name="myVertex">Vertex which shall be indexed</param>
+        /// <param name="myIndices">A collection of indices</param>
+        private void AddToIndices(IVertex myVertex, IEnumerable<ISonesIndex> myIndices)
         {
-            foreach (var indexGroup in indices)
+            Parallel.ForEach<ISonesIndex>(myIndices, idx => idx.Add(myVertex));
+        }
+
+        /// <summary>
+        /// Removes a given vertex from all given indices.
+        /// The indices are mapped to the properties.
+        /// </summary>
+        /// <param name="myVertex">Vertex which shall be removed</param>
+        /// <param name="myIndexGroups">Indices which are mapped to a list of indexed properties.</param>
+        private void RemoveFromIndices(IVertex myVertex,
+            IEnumerable<KeyValuePair<IList<IPropertyDefinition>, IEnumerable<ISonesIndex>>> myIndexGroups)
+        {
+            foreach (var indexGroup in myIndexGroups)
             {
-                foreach (var index in indexGroup.Value)
-                {
-                    index.Remove(myVertex);
-                }
+                RemoveFromIndices(myVertex, indexGroup.Value);
             }
+        }
+
+        /// <summary>
+        /// Removes a given vertex from all indices in a given collection.
+        /// 
+        /// Removing is done in parallel.
+        /// </summary>
+        /// <param name="myVertex">Vertex which shall be removed</param>
+        /// <param name="myIndices">A collection of indices</param>
+        private void RemoveFromIndices(IVertex myVertex,
+            IEnumerable<ISonesIndex> myIndices)
+        {
+            Parallel.ForEach<ISonesIndex>(myIndices, idx => idx.Remove(myVertex));
         }
 
         private Tuple<long?, String, VertexUpdateDefinition> CreateVertexUpdateDefinition(
