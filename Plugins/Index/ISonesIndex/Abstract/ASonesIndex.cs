@@ -132,6 +132,18 @@ namespace sones.Plugins.Index.Abstract
             return TryRemoveValue(key, myVertex.VertexID);
         }
 
+        /// <summary>
+        /// Removes a collection of vertices from the index.
+        /// </summary>
+        /// <param name="myVertices">The vertices to be removed</param>
+        public virtual void RemoveRange(IEnumerable<IVertex> myVertices)
+        {
+            foreach (var vertex in myVertices)
+            {
+                Remove(vertex);
+            }
+        }
+
         #endregion
 
         #region Private Static Members

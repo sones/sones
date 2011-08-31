@@ -156,47 +156,50 @@ namespace sones.Plugins.Index
         public override void Add(IComparable myKey, long myVertexID, 
             IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
-            if (myKey != null)
+            if (!KeyNullSupportCheck(myKey))
             {
-                HashSet<Int64> values;
-                HashSet<Int64> newValues = new HashSet<long>() { myVertexID };
-
-                lock (_Lock)
-                {
-                    int valueCountDiff = 0;
-
-                    if (_Index.TryGetValue(myKey, out values))
-                    {
-                        // subtract number of old values
-                        valueCountDiff -= values.Count;
-
-                        switch (myIndexAddStrategy)
-                        {
-                            case IndexAddStrategy.MERGE:
-                                values.UnionWith(newValues);
-                                valueCountDiff += values.Count;
-                                break;
-                            case IndexAddStrategy.REPLACE:
-                                values = newValues;
-                                valueCountDiff++;
-                                break;
-                            case IndexAddStrategy.UNIQUE:
-                                throw new IndexKeyExistsException(String.Format("Index key {0} already exist.", myKey.ToString()));
-                        }
-                    }
-                    else
-                    {
-                        values = newValues;
-                        valueCountDiff += newValues.Count;
-                    }
-
-                    // add it to the index
-                    _Index.AddOrUpdate(myKey, values, (k, v) => values);
-
-                    // update the value count
-                    _ValueCount += valueCountDiff;
-                }
+                throw new NullKeysNotSupportedException("This index does not support >null< as key.");
             }
+            
+            HashSet<Int64> values;
+            HashSet<Int64> newValues = new HashSet<long>() { myVertexID };
+
+            lock (_Lock)
+            {
+                int valueCountDiff = 0;
+
+                if (_Index.TryGetValue(myKey, out values))
+                {
+                    // subtract number of old values
+                    valueCountDiff -= values.Count;
+
+                    switch (myIndexAddStrategy)
+                    {
+                        case IndexAddStrategy.MERGE:
+                            values.UnionWith(newValues);
+                            valueCountDiff += values.Count;
+                            break;
+                        case IndexAddStrategy.REPLACE:
+                            values = newValues;
+                            valueCountDiff++;
+                            break;
+                        case IndexAddStrategy.UNIQUE:
+                            throw new IndexKeyExistsException(String.Format("Index key {0} already exist.", myKey.ToString()));
+                    }
+                }
+                else
+                {
+                    values = newValues;
+                    valueCountDiff += newValues.Count;
+                }
+
+                // add it to the index
+                _Index.AddOrUpdate(myKey, values, (k, v) => values);
+
+                // update the value count
+                _ValueCount += valueCountDiff;
+            }
+            
         }
 
         /// <summary>
@@ -207,10 +210,9 @@ namespace sones.Plugins.Index
         /// <returns>True, if the key exists</returns>
         public override bool TryGetValues(IComparable myKey, out IEnumerable<long> myVertexIDs)
         {
-            if (myKey == null)
+            if (!KeyNullSupportCheck(myKey))
             {
-                myVertexIDs = null;
-                return false;
+                throw new NullKeysNotSupportedException("This index does not support >null< as key.");
             }
 
             var values = new HashSet<long>();
@@ -231,9 +233,9 @@ namespace sones.Plugins.Index
         {
             get
             {
-                if (myKey == null)
+                if (!KeyNullSupportCheck(myKey))
                 {
-                    return null;
+                    throw new NullKeysNotSupportedException("This index does not support >null< as key.");
                 }
 
                 HashSet<Int64> values;
@@ -255,9 +257,9 @@ namespace sones.Plugins.Index
         /// <returns></returns>
         public override bool ContainsKey(IComparable myKey)
         {
-            if (myKey == null)
+            if (!KeyNullSupportCheck(myKey))
             {
-                return false;
+                throw new NullKeysNotSupportedException("This index does not support >null< as key.");
             }
 
             return _Index.ContainsKey(myKey);
@@ -271,9 +273,9 @@ namespace sones.Plugins.Index
         /// <param name="myKey"></param>
         public override bool Remove(IComparable myKey)
         {
-            if (myKey == null)
+            if (!KeyNullSupportCheck(myKey))
             {
-                return false;
+                throw new NullKeysNotSupportedException("This index does not support >null< as key.");
             }
 
             HashSet<Int64> values;
@@ -301,9 +303,9 @@ namespace sones.Plugins.Index
         /// <returns>True, if the value has been removed.</returns>
         public override bool TryRemoveValue(IComparable myKey, Int64 myValue)
         {
-            if (myKey == null)
+            if (!KeyNullSupportCheck(myKey))
             {
-                return false;
+                throw new NullKeysNotSupportedException("This index does not support >null< as key.");
             }
 
             HashSet<Int64> values;

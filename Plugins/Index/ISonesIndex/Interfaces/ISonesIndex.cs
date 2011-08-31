@@ -271,6 +271,12 @@ namespace sones.Plugins.Index
         /// <returns>True, if the vertexID has been removed from the index.</returns>
         bool Remove(IVertex myVertex);
 
+        /// <summary>
+        /// Removes a collection of vertices from the index.
+        /// </summary>
+        /// <param name="myVertices">The vertices to be removed</param>
+        void RemoveRange(IEnumerable<IVertex> myVertices);
+
         #endregion
 
         #region Optimize

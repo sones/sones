@@ -11,7 +11,7 @@ namespace sones.Plugins.Index.Persistent
     /// 
     /// It supports disposing and shutdown of an index.
     /// </summary>
-    public interface ISonesPersistentIndex : ISonesIndex
+    public interface ISonesPersistentIndex : ISonesIndex, IDisposable
     {
         /// <summary>
         /// Frees ressources used by the index.
