@@ -60,14 +60,14 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
             _End = myEnd;
 
-            if (myMaxPathLength != 0)
-            {
-                _MaxPathLength = Convert.ToInt16(myMaxPathLength - 1);
-            }
-            else
-            {
+            //if (myMaxPathLength != 0)
+            //{
+            //    _MaxPathLength = Convert.ToInt16(myMaxPathLength);
+            //}
+            //else
+            //{
                 _MaxPathLength = Convert.ToInt16(myMaxPathLength);
-            }
+            //}
         }
 
         public TargetAnalyzer(Node myStart, Node myEnd, UInt64 myMaxPathLength, bool myShortestOnly, bool myFindAll)
@@ -157,7 +157,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                 }
 
                 //MaxPathLength is not reached
-                if (_TempList.Count <= _MaxPathLength)
+                if (_TempList.Count < _MaxPathLength)
                     //for all parent nodes which are not already in actual path
                     foreach (Node parent in myCurrent.Parents.Where(_ => !_.AlreadyInPath))
                     {
