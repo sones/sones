@@ -44,14 +44,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataContracts\ChangesetObjects\ServiceAlterEdgeChangeset.cs" />
+    <Compile Include="DataContracts\ChangesetObjects\ServiceAlterVertexChangeset.cs" />
+    <Compile Include="DataContracts\PayloadObjects\ServiceDeletePayload.cs" />
+    <Compile Include="DataContracts\PayloadObjects\UnstructuredProperty.cs" />
+    <Compile Include="DataContracts\PayloadObjects\StructuredProperty.cs" />
+    <Compile Include="DataContracts\QueryResult\ServiceQueryResult.cs" />
+    <Compile Include="DataContracts\PayloadObjects\ServiceInsertPayload.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceEdgeTypePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceAttributePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceIncomingEdgePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceIndexPredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceInsertDefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceMandatoryPredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceOutgoingEdgePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServicePropertyPredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceUniquePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceVertexTypePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceSecurityToken.cs" />
+    <Compile Include="DataContracts\ServiceTransactionToken.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeType.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceBaseType.cs" />
@@ -63,9 +74,11 @@
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceOutgoingEdgeDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServicePropertyDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServicePropertyMultiplicity.cs" />
+    <Compile Include="DataContracts\ServiceVertexInstance.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceVertexType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteAPIService.cs" />
+    <Compile Include="SecurityCache.cs" />
     <Compile Include="ServiceContractImplementation\AbstractBaseTypeService.cs" />
     <Compile Include="ServiceContractImplementation\GraphDS_API.cs" />
     <Compile Include="ServiceContractImplementation\IncomingEdgeTypeService.cs" />
@@ -76,7 +89,8 @@
     <Compile Include="ServiceContracts\IBaseTypeService.cs" />
     <Compile Include="ServiceContracts\IRPCServiceContract.cs" />
     <Compile Include="ServiceContracts\VertexTypeServices\IVertexTypeService.cs" />
-    <Compile Include="ServiceConverter\ServiceRequestMaker.cs" />
+    <Compile Include="ServiceConverter\ServiceRequestFactory.cs" />
+    <Compile Include="ServiceConverter\ServiceReturnConverter.cs" />
     <Compile Include="sonesRPCServer.cs" />
     <Compile Include="WCFExtra\Utils\CodeDomUtils.cs" />
     <Compile Include="WCFExtra\Utils\Extensions.cs" />
@@ -120,6 +134,10 @@
     <ProjectReference Include="..\..\..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Interface\IService.csproj">
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>

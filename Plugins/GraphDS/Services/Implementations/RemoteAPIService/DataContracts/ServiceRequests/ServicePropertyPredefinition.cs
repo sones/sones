@@ -63,9 +63,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
         [DataMember]
         public ServicePropertyMultiplicity Multiplicity;
 
+        
         public PropertyPredefinition ToPropertyPredefinition()
         {
-            var property =  new PropertyPredefinition(this.AttributeName,""); //Todo insert attribute type
+            var property =  new PropertyPredefinition(this.AttributeName,this.AttributeType); //Todo insert attribute type
             property.SetAttributeType(this.AttributeType != null ? this.AttributeType : null);
             property.SetComment(this.Comment != null ? this.Comment : null);
                         

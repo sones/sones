@@ -27,6 +27,11 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.InsertPayload;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.PayloadObjects;
 
 
 namespace sones.GraphDS.Services.RemoteAPIService.API_Services
@@ -34,62 +39,102 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
     [ServiceContract(Namespace = "http://www.sones.com", Name = "IGraphDS")]
     public interface IGraphDS_API
     {
-        //[OperationContract]
-        //ServiceEdgeType AlterEdgeType(ServiceEdgeTypePredefinition myEdgeTypePreDef);
+        [OperationContract]
+        ServiceVertexType CreateVertexType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            ServiceVertexTypePredefinition myVertexTypePreDef);
         
         [OperationContract]
-        ServiceVertexType AlterVertexType(ServiceVertexTypePredefinition myVertexTypePreDef);
+        ServiceVertexType AlterVertexType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            ServiceVertexType myVertexType, ServiceAlterVertexChangeset myChangeset);
         
         [OperationContract]
-        void Clear();
-
-        //[OperationContract]
-        //ServiceEdgeType CreateEdgeType(ServiceEdgeTypePredefinition myVertexTypePreDef);
-
-        [OperationContract]
-        ServiceIndexDefinition CreateIndex(ServiceIndexPredefinition myVertexTypePreDef);
+        ServiceEdgeType AlterEdgeType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            ServiceEdgeType myEdgeType, ServiceAlterEdgeChangeset myChangeset);  
+               
 
         [OperationContract]
-        ServiceVertexType CreateVertexType(ServiceVertexTypePredefinition myVertexTypePreDef);
+        ServiceTransactionToken BeginTransaction(SecurityToken mySecurityToken);
+        
+        [OperationContract]
+        List<Int64> Clear(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken);
 
         [OperationContract]
-        List<ServiceVertexType> CreateVertexTypes(List<ServiceVertexTypePredefinition> myVertexTypePreDef);
+        ServiceEdgeType CreateEdgeType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            ServiceEdgeTypePredefinition myEdgeTypePreDef);
+
+        [OperationContract]
+        List<ServiceEdgeType> CreateEdgeTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            IEnumerable<ServiceEdgeTypePredefinition> myEdgeTypePreDef);
+
+        [OperationContract]
+        ServiceIndexDefinition CreateIndex(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceIndexPredefinition myVertexTypePreDef);
+
+        [OperationContract]
+        List<ServiceVertexType> CreateVertexTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, 
+            List<ServiceVertexTypePredefinition> myVertexTypePreDef);
                 
         [OperationContract]
-        void Delete(ServiceVertexTypePredefinition myVertexTypePreDef);
+        List<Int64> Delete(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null); 
 
         [OperationContract]
-        ServiceIndexDefinition DescribeIndex(ServiceIndexPredefinition myVertexTypePreDef);
-
-        //[OperationContract]
-        //ServiceIndexDefinition DescribeIndices(ServiceIndexPredefinition myVertexTypePreDef);
+        ServiceIndexDefinition DescribeIndex(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            ServiceVertexType myVertexType, String myIndexName);
 
         [OperationContract]
-        void DropIndex(ServiceIndexPredefinition myVertexTypePreDef);
+        List<ServiceIndexDefinition> DescribeIndices(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            ServiceVertexType myVertexType);
 
         [OperationContract]
-        ServiceIndexDefinition DropType(ServiceIndexPredefinition myVertexTypePreDef);
+        Dictionary<Int64, String> DropEdgeType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, 
+            ServiceEdgeType myEdgeType);
+                
+        [OperationContract]
+        void DropIndex(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            ServiceVertexType myVertexType, String myIndexName, String myEdition);
 
         [OperationContract]
-        List<ServiceEdgeType> GetAllEdgeTypes();
+        Dictionary<Int64, String> DropVertexType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            ServiceVertexType myVertexType);
 
         [OperationContract]
-        List<ServiceVertexType> GetAllVertexTypes();
+        List<ServiceEdgeType> GetAllEdgeTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            String myEdition);
 
         [OperationContract]
-        List<ServiceEdgeType> GetEdgeType();
+        List<ServiceVertexType> GetAllVertexTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            String myEdition);
 
         [OperationContract]
-        List<ServiceEdgeType> GetVertex();
+        ServiceEdgeType GetEdgeType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            Int64 myEdgeTypeID, String myEdition = null);
 
         [OperationContract]
-        List<ServiceEdgeType> GetVertexCount();
+        ServiceVertexInstance GetVertex(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            ServiceVertexType myVertexType, Int64 myVertexID);
 
         [OperationContract]
-        List<ServiceEdgeType> GetVertices();
+        UInt64 GetVertexCount(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myVertexType);
 
         [OperationContract]
-        ServiceVertexType Insert();
+        List<ServiceVertexInstance> GetVertices(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myVertexType);
+
+        [OperationContract]
+        ServiceVertexInstance Insert(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, String myVertexTypeName,
+            ServiceInsertPayload myPayload);
+
+        [OperationContract]
+        void LogOff(SecurityToken mySecurityToken);
+
+        [OperationContract]
+        SecurityToken LogOn(String myLogin, String myPassword);
+
+        [OperationContract]
+        ServiceQueryResult Query(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, String myQueryString, String myLanguage); 
+
+        //Traverse Vertex
+
+        //Update 
       
                    
                                                  

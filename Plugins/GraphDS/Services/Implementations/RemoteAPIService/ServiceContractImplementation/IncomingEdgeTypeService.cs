@@ -32,7 +32,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         public const char TypeSeparator = '.';
 
         
-        public DataContracts.ServiceRequests.ServiceIncomingEdgePredefinition SetOutgoingEdge(ServiceIncomingEdgePredefinition myPreDef, ServiceVertexTypePredefinition myVertexType, ServiceOutgoingEdgePredefinition myOutgoingEdge)
+        public ServiceIncomingEdgePredefinition SetOutgoingEdge(ServiceIncomingEdgePredefinition myPreDef, ServiceVertexTypePredefinition myVertexType, ServiceOutgoingEdgePredefinition myOutgoingEdge)
         {
             if (myVertexType != null && myOutgoingEdge != null)
                 myPreDef.AttributeType = Combine(myVertexType.VertexTypeName, myOutgoingEdge.AttributeName);

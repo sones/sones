@@ -229,11 +229,11 @@ namespace TagExample
              *                                                       new RequestCreateVertexType(Tag_VertexTypePredefinition), 
              *                                                       (Statistics, VertexType) => VertexType);
              */
-
+            
             var Tag = DBTypes.Where(type => type.Name == "Tag").FirstOrDefault();
 
             var Website = DBTypes.Where(type => type.Name == "Website").FirstOrDefault();
-
+           
             #endregion
 
             #region insert some Websites by sending requests
@@ -281,7 +281,7 @@ namespace TagExample
                                                                                     (Statistics, Result) => Result);
 
             #endregion
-
+            
             #region how to get a type from the DB, properties of the type, instances of a specific type and read out property values
 
             //how to get a type from the DB

@@ -40,6 +40,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 
         private IGraphDS GraphDS;
 
+        private SecurityCache ServiceSecurityToken;
+
         #endregion
 
         #region C'tor
@@ -48,7 +50,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             : base(myGraphDSServer)
         {
             this.GraphDS = myGraphDSServer;
-            
+            this.ServiceSecurityToken = new SecurityCache();
         }
 
         #endregion

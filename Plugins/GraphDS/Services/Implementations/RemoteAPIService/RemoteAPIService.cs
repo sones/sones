@@ -50,6 +50,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
         public RemoteAPIService(IGraphDS myGraphDS)
         {
             _RunningTime = new Stopwatch();
+            _GraphDS = myGraphDS;
         }
 
         #endregion

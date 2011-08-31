@@ -119,13 +119,14 @@ namespace sones.GraphDS.Services.RemoteAPIService
                 BasicBinding.Security.Mode = BasicHttpSecurityMode.Transport;
             }
              
+            
                      
 
             RPCServiceContract ContractInstance = new RPCServiceContract(_GraphDS);
 
 
-            // Create a ServiceHost for the CalculatorService type and provide the base address.
-            _ServiceHost = new ServiceHost(ContractInstance, URI);
+           
+            _ServiceHost = new ServiceHost(ContractInstance, this.URI);
             _ServiceHost.Description.Namespace = this.Namespace;
 
 
@@ -133,7 +134,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
             ContractDescription RPCServiceContract = ContractDescription.GetContract(typeof(IRPCServiceContract));
             RPCServiceContract.Namespace = this.Namespace;
-            ServiceEndpoint RPCServiceService = new ServiceEndpoint(RPCServiceContract, BasicBinding, new EndpointAddress(URI.ToString()));
+            ServiceEndpoint RPCServiceService = new ServiceEndpoint(RPCServiceContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
             _ServiceHost.AddServiceEndpoint(RPCServiceService);
 
             #endregion
@@ -142,7 +143,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
             ContractDescription APIContract = ContractDescription.GetContract(typeof(IGraphDS_API));
             APIContract.Namespace = this.Namespace;
-            ServiceEndpoint APIService = new ServiceEndpoint(APIContract, BasicBinding, new EndpointAddress(URI.ToString()));
+            ServiceEndpoint APIService = new ServiceEndpoint(APIContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
             _ServiceHost.AddServiceEndpoint(APIService);
 
             #endregion
@@ -153,7 +154,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
             ContractDescription VertexTypeContract = ContractDescription.GetContract(typeof(IVertexTypeService));
             VertexTypeContract.Namespace = this.Namespace;
-            ServiceEndpoint VertexTypeService = new ServiceEndpoint(VertexTypeContract, BasicBinding, new EndpointAddress(URI.ToString()));
+            ServiceEndpoint VertexTypeService = new ServiceEndpoint(VertexTypeContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
             _ServiceHost.AddServiceEndpoint(VertexTypeService);
 
             #endregion
@@ -164,7 +165,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
             ContractDescription IncomingEdgeContract = ContractDescription.GetContract(typeof(IIncominEdgeService));
             IncomingEdgeContract.Namespace = this.Namespace;
-            ServiceEndpoint IncomingEdgeService = new ServiceEndpoint(IncomingEdgeContract, BasicBinding, new EndpointAddress(URI.ToString()));
+            ServiceEndpoint IncomingEdgeService = new ServiceEndpoint(IncomingEdgeContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
             _ServiceHost.AddServiceEndpoint(IncomingEdgeService);
 
             #endregion
