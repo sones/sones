@@ -399,11 +399,7 @@ namespace sones.GraphDB.Manager.Index
                     {
                         foreach (var index in indexGroup.Value)
                         {
-                            var key = CreateIndexKey(indexGroup.Key, vertex);
-                            if (key != null)
-                            {
-                                index.Add(key, vertex.VertexID);
-                            }
+                            index.Add(vertex);
                         }
                     }
                 }
