@@ -28,6 +28,7 @@ using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeServices;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
+using sones.GraphDS.Services.RemoteAPIService.ServiceConverter;
 
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
@@ -35,7 +36,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
     
     public partial class RPCServiceContract : AbstractBaseTypeService, IVertexTypeService
     {
-        
+                
         public bool HasBinaryProperty(ServiceVertexType myServiceVertexType, string myEdgeName)
         {
             throw new NotImplementedException();
@@ -102,6 +103,56 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         }
 
         public IEnumerable<ServiceIndexDefinition> GetIndexDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ServiceVertexType> GetDescendantVertexTypes(ServiceVertexType myServiceVertexType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ServiceVertexType> GetDescendantVertexTypesAndSelf(ServiceVertexType myServiceVertexType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ServiceVertexType> GetAncestorVertexTypes(ServiceVertexType myServiceVertexType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ServiceVertexType> GetAncestorVertexTypesAndSelf(ServiceVertexType myServiceVertexType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ServiceVertexType> GetKinsmenVertexTypes(ServiceVertexType myServiceVertexType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ServiceVertexType> GetKinsmenVertexTypesAndSelf(ServiceVertexType myServiceVertexType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ServiceVertexType> ChildrenVertexTypes(ServiceVertexType myServiceVertexType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ServiceVertexType ParentVertexType(ServiceVertexType myServiceVertexType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool HasUniqueDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ServiceUniqueDefinition> GetUniqueDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
         {
             throw new NotImplementedException();
         }

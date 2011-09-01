@@ -28,18 +28,83 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagemen
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeServices
 {
-    [ServiceContract(Namespace = "http://www.sones.com", Name = "VertexTypeService")]
+    [ServiceContract(Namespace = sonesRPCServer.Namespace, Name = "VertexTypeService")]
     interface IVertexTypeService :  IBaseTypeService
     {
-        
-        #region BinaryProperties
+
+        #region Inheritance
+
+        /// <summary>
+        /// Returns the descendant of this IVertexType.
+        /// </summary>
+        /// <returns>An enumeration of IVertexType that are descendant of this IVertexType.</returns>
+        /// <seealso cref="IBaseType.GetDescendantTypes"/>
+        [OperationContract]
+        IEnumerable<ServiceVertexType> GetDescendantVertexTypes(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Returns the descendant of this IVertexType and this IVertexType in one enumeration.
+        /// </summary>
+        /// <returns>An enumeration of IVertexType that are descendant of this IVertexType and this IVertexType itself.</returns>
+        /// <seealso cref="IBaseType.GetDescendantTypesAndSelf"/>
+        [OperationContract]
+        IEnumerable<ServiceVertexType> GetDescendantVertexTypesAndSelf(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Returns the ancestor of this IVertexType.
+        /// </summary>
+        /// <returns>An enumeration of IVertexType that are ancestors of this IVertexType.</returns>
+        /// <seealso cref="IBaseType.GetAncestorTypes"/>
+        [OperationContract]
+        IEnumerable<ServiceVertexType> GetAncestorVertexTypes(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Returns the ancestor of this IVertexType and this IVertexType in one enumeration.
+        /// </summary>
+        /// <returns>An enumeration of IVertexType that are ancestors of this IVertexType and this IVertexType itself.</returns>
+        /// <seealso cref="IBaseType.GetAncestorTypesAndSelf"/>
+        [OperationContract]
+        IEnumerable<ServiceVertexType> GetAncestorVertexTypesAndSelf(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Returns all descendant and ancestors of this IVertexType.
+        /// </summary>
+        /// <returns>An enumeration of all IVertexType that are ancestors or descendant of this IVertexType.</returns>
+        /// <seealso cref="IBaseType.GetKinsmenTypes"/>
+        [OperationContract]
+        IEnumerable<ServiceVertexType> GetKinsmenVertexTypes(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Returns all descendant and ancestors of this IVertexType and this IVertexType in one enumeration. 
+        /// </summary>
+        /// <returns>An enumeration of all IVertexType that are ancestors or descendant of this IVertexType and this IVertexType itself.</returns>
+        /// <seealso cref="IBaseType.GetKinsmenTypesAndSelf"/>
+        [OperationContract]
+        IEnumerable<ServiceVertexType> GetKinsmenVertexTypesAndSelf(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Returns the direct children of this IVertexType.
+        /// </summary>
+        /// <seealso cref="IBaseType.ChildrenTypes"/>
+        [OperationContract]
+        IEnumerable<ServiceVertexType> ChildrenVertexTypes(ServiceVertexType myServiceVertexType);
+ 
+        /// <summary>
+        /// Gets the parent of this IVertexType.
+        /// </summary>
+        /// <seealso cref="IBaseType.ParentType"/>
+        [OperationContract]
+        ServiceVertexType ParentVertexType(ServiceVertexType myServiceVertexType);
+
+        #endregion
+
+        #region Incoming
 
         /// <summary>
         /// Has this vertex type a certain binary property?
         /// </summary>
         /// <param name="myEdgeName">The name of the binary property.</param>
         /// <returns>True, if a binary property with the given name exists, otherwise false.</returns>
-        [OperationContract]
         bool HasBinaryProperty(ServiceVertexType myServiceVertexType, String myEdgeName);
 
         /// <summary>
@@ -47,7 +112,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// </summary>
         /// <param name="myAttributeName">The name of the interesting binary property.</param>
         /// <returns>A binary property definition, if existing otherwise <c>NULL</c>.</returns>
-        [OperationContract]
         ServiceBinaryPropertyDefinition GetBinaryPropertyDefinition(ServiceVertexType myServiceVertexType, String myEdgeName);
 
         /// <summary>
@@ -55,7 +119,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// </summary>
         /// <param name="myIncludeAncestorDefinitions">If true, the ancestor vertex types are included, otherwise false.</param>
         /// <returns>True if a binary property exists, otherwise false.</returns>
-        [OperationContract]
         bool HasBinaryProperties(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         /// <summary>
@@ -63,8 +126,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s).</param>
         /// <returns>An enumerable of binary property definitions.</returns>
-        [OperationContract]
-        IEnumerable<ServiceBinaryPropertyDefinition> GetBinaryProperties(ServiceVertexType myServiceVertexType,bool myIncludeAncestorDefinitions);
+        IEnumerable<ServiceBinaryPropertyDefinition> GetBinaryProperties(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         #endregion
 
@@ -139,6 +201,25 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         IEnumerable<ServiceOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         #endregion
+
+        #endregion
+
+        #region Uniques
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="myIncludeAncestorDefinitions"></param>
+        /// <returns></returns>
+        [OperationContract]
+        bool HasUniqueDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+
+        /// <summary>
+        /// A set of uniqueness definitions.
+        /// </summary>
+        /// <returns>An enumerable of uniqueness definitions. Never <c>NULL</c>.</returns>
+        [OperationContract]
+        IEnumerable<ServiceUniqueDefinition> GetUniqueDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         #endregion
 

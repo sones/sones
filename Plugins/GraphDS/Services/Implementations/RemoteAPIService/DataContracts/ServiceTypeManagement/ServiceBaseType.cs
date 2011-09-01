@@ -27,36 +27,26 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
 {
-    [DataContract(Namespace = "http://www.sones.com")]
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceBaseType
     {
         public ServiceBaseType(IBaseType myBaseType)
         {
-            this.ID = myBaseType.ID;
+            this.BaseType = myBaseType.ID;
             this.Comment = myBaseType.Comment;
             this.Name = myBaseType.Name;
-          
             this.IsUserDefined = myBaseType.IsUserDefined;
-            this.IsSealed = myBaseType.IsSealed;
-            this.HasChildTypes = myBaseType.HasChildTypes;
-            this.HasParentType = myBaseType.HasParentType;
+                     
         }
 
         [DataMember]
-        public long ID;
+        public long BaseType;
         [DataMember]
         public String Name;
         [DataMember]
         public String Comment;
         [DataMember]
         public Boolean IsUserDefined;
-
-        [DataMember]
-        public Boolean IsSealed;
-        [DataMember]
-        public Boolean HasChildTypes;
-        [DataMember]
-        public Boolean HasParentType;
-
+        
     }
 }

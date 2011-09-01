@@ -28,7 +28,7 @@ using System.ServiceModel;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
 {
-    [ServiceContract(Namespace = "http://www.sones.com")]
+    [ServiceContract(Namespace = sonesRPCServer.Namespace)]
     public interface IRPCServiceContract
     {
         [OperationContract]

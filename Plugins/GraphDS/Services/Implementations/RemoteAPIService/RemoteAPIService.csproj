@@ -74,11 +74,11 @@
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceOutgoingEdgeDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServicePropertyDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServicePropertyMultiplicity.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceUniqueDefinition.cs" />
     <Compile Include="DataContracts\ServiceVertexInstance.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceVertexType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteAPIService.cs" />
-    <Compile Include="SecurityCache.cs" />
     <Compile Include="ServiceContractImplementation\AbstractBaseTypeService.cs" />
     <Compile Include="ServiceContractImplementation\GraphDS_API.cs" />
     <Compile Include="ServiceContractImplementation\IncomingEdgeTypeService.cs" />
@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ErrorHandling\" />
+    <Folder Include="ServiceContracts\VertexInstanceService\" />
     <Folder Include="ServiceStatus\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

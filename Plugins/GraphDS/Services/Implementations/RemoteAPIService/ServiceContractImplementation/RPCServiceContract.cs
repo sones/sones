@@ -40,17 +40,15 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 
         private IGraphDS GraphDS;
 
-        private SecurityCache ServiceSecurityToken;
-
+        
         #endregion
 
         #region C'tor
 
-        public RPCServiceContract(IGraphDS myGraphDSServer)
-            : base(myGraphDSServer)
+        public RPCServiceContract(IGraphDS myGraphDS)
+            : base(myGraphDS)
         {
-            this.GraphDS = myGraphDSServer;
-            this.ServiceSecurityToken = new SecurityCache();
+            this.GraphDS = myGraphDS;
         }
 
         #endregion

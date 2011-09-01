@@ -66,7 +66,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
         /// <summary>
         /// The current used Namespace
         /// </summary>
-        public String Namespace { get; private set; }
+        public static String Namespace { get; private set; }
 
         /// <summary>
         /// The complete URI of the service
@@ -88,7 +88,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
             this.IsSecure = myIsSecure;
             this.ListeningIPAdress = myIPAdress;
             this.ListeningPort = myPort;
-            this.Namespace = myNamespace;
+            Namespace = myNamespace;
             String CompleteUri = (myIsSecure == true ? "https://" : "http://") + myIPAdress.ToString() + ":" + myPort + "/" + myURI;
             this.URI = new Uri(CompleteUri);
 
@@ -110,7 +110,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
         {
             BasicHttpBinding BasicBinding = new BasicHttpBinding();
             BasicBinding.Name = "sonesBasic";
-            BasicBinding.Namespace = this.Namespace;
+            BasicBinding.Namespace = Namespace;
             BasicBinding.MessageEncoding = WSMessageEncoding.Text;
             BasicBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
 
@@ -127,13 +127,13 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
            
             _ServiceHost = new ServiceHost(ContractInstance, this.URI);
-            _ServiceHost.Description.Namespace = this.Namespace;
+            _ServiceHost.Description.Namespace = Namespace;
 
 
             #region Global Service Interface
 
             ContractDescription RPCServiceContract = ContractDescription.GetContract(typeof(IRPCServiceContract));
-            RPCServiceContract.Namespace = this.Namespace;
+            RPCServiceContract.Namespace = Namespace;
             ServiceEndpoint RPCServiceService = new ServiceEndpoint(RPCServiceContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
             _ServiceHost.AddServiceEndpoint(RPCServiceService);
 
@@ -142,7 +142,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
             #region GraphDS API Contract
 
             ContractDescription APIContract = ContractDescription.GetContract(typeof(IGraphDS_API));
-            APIContract.Namespace = this.Namespace;
+            APIContract.Namespace = Namespace;
             ServiceEndpoint APIService = new ServiceEndpoint(APIContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
             _ServiceHost.AddServiceEndpoint(APIService);
 
@@ -153,7 +153,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
             #region VertexTypeService
 
             ContractDescription VertexTypeContract = ContractDescription.GetContract(typeof(IVertexTypeService));
-            VertexTypeContract.Namespace = this.Namespace;
+            VertexTypeContract.Namespace = Namespace;
             ServiceEndpoint VertexTypeService = new ServiceEndpoint(VertexTypeContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
             _ServiceHost.AddServiceEndpoint(VertexTypeService);
 
@@ -164,7 +164,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
             #region IncomingEdgeService
 
             ContractDescription IncomingEdgeContract = ContractDescription.GetContract(typeof(IIncominEdgeService));
-            IncomingEdgeContract.Namespace = this.Namespace;
+            IncomingEdgeContract.Namespace = Namespace;
             ServiceEndpoint IncomingEdgeService = new ServiceEndpoint(IncomingEdgeContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
             _ServiceHost.AddServiceEndpoint(IncomingEdgeService);
 
@@ -182,16 +182,17 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
             ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
             smb.HttpGetEnabled = true;
+            
             //smb.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
             _ServiceHost.Description.Behaviors.Add(smb);
             // Add MEX endpoint
 
             _ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
-            foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
-            {
-                endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
+            //foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
+            //{
+            //    endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
 
-            }
+            //}
 
 
             #endregion

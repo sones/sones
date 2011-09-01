@@ -7,7 +7,7 @@ using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts
 {
-    [DataContract(Namespace = "http://www.sones.com")]
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceVertexInstance
     {
         public ServiceVertexInstance(IVertex myVertex)
@@ -15,14 +15,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts
             this.VertexID = myVertex.VertexID;
             this.VertexTypeID = myVertex.VertexTypeID;
             this.Edition =  myVertex.EditionName;
-            this.myModificationDate = myVertex.ModificationDate;
-            this.myCreationDate = myVertex.CreationDate;
-            this.Comment = myVertex.Comment;
         }
-
-        [DataMember]
-        public String VertexTypeName;
-
+        
         [DataMember]
         public Int64 VertexTypeID;
 
@@ -31,15 +25,5 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts
         
         [DataMember]
         public String Edition;
-
-        [DataMember]
-        public String Comment;
-        
-        [DataMember]
-        public Int64 myCreationDate;
-
-        [DataMember]
-        public Int64 myModificationDate;
-
     }
 }

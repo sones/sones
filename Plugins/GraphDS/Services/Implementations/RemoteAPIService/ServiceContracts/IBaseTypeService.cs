@@ -28,9 +28,128 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagemen
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeServices
 {
-    [ServiceContract(Namespace = "http://www.sones.com")]
+    [ServiceContract(Namespace = sonesRPCServer.Namespace)]
     interface IBaseTypeService
     {
+
+        #region Inheritance
+
+        /// <summary>
+        /// Defines whether this type can be used as parent type.
+        /// </summary>
+        /// <value>
+        /// If true, this vertex type must not be used as a parent vertex type.
+        /// </value>
+        [OperationContract]
+        Boolean IsSealed(ServiceBaseType myServiceType);
+
+        /// <summary>
+        /// Has this type a parent type?
+        /// </summary>
+        /// <returns>True, if this type has a parent type, otherwise false.</returns>
+        [OperationContract]
+        bool HasParentType(ServiceBaseType myServiceType);
+
+        /// <summary>
+        /// Has this type child types?
+        /// </summary>
+        /// <returns>False, if this type has no child types, otherwise true.</returns>
+        [OperationContract]
+        bool HasChildTypes(ServiceBaseType myServiceType);
+
+        /// <summary>
+        /// Returns if the given type is an ancestor of the current type.
+        /// </summary>
+        /// <param name="myOtherType">The given type.</param>
+        /// <returns>True, if the given type is an ancestor of the current type, otherwise false.</returns>
+        [OperationContract]
+        bool IsAncestor(ServiceBaseType myServiceType, ServiceBaseType myOtherType);
+
+        /// <summary>
+        /// Returns if the given type is an ancestor of or the current itself.
+        /// </summary>
+        /// <param name="myOtherType">The given type.</param>
+        /// <returns>True, if the given type is an ancestor of the current type or the current type itself, otherwise false.</returns>
+        [OperationContract]
+        bool IsAncestorOrSelf(ServiceBaseType myServiceType, ServiceBaseType myOtherType);
+
+        /// <summary>
+        /// Returns if the given type is a descendant of the current type.
+        /// </summary>
+        /// <param name="myOtherType">The given type.</param>
+        /// <returns>True, if the given type is a descendant of the current type, otherwise false.</returns>
+        [OperationContract]
+        bool IsDescendant(ServiceBaseType myServiceType, ServiceBaseType myOtherType);
+
+        /// <summary>
+        /// Returns if the given type is a descendant of or the current type itself.
+        /// </summary>
+        /// <param name="myOtherType">The given type.</param>
+        /// <returns>True, if the given type is a descendant of the current type or the current type itself, otherwise false.</returns>
+        [OperationContract]
+        bool IsDescendantOrSelf(ServiceBaseType myServiceType, ServiceBaseType myOtherType);
+
+        #endregion
+
+        #region Inheritance
+
+        /// <summary>
+        /// Returns the descendantr of this IBaseType.
+        /// </summary>
+        /// <returns>An enumeration of IBaseTypes that are descendant of this IBaseType.</returns>
+        [OperationContract]
+        IEnumerable<ServiceBaseType> GetDescendantTypes(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Returns the descendantr of this IBaseType and this IBaseType in one enumeration.
+        /// </summary>
+        /// <returns>An enumeration of IBaseTypes that are descendant of this IBaseType and this IBaseType itself.</returns>
+        [OperationContract]
+        IEnumerable<ServiceBaseType> GetDescendantTypesAndSelf(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Returns the ancestor of this IBaseType.
+        /// </summary>
+        /// <returns>An enumeration of IBaseTypes that are ancestors of this IBaseType.</returns>
+        [OperationContract]
+        IEnumerable<ServiceBaseType> GetAncestorTypes(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Returns the ancestor of this IBaseType and this IBaseType in one enumeration.
+        /// </summary>
+        /// <returns>An enumeration of IBaseTypes that are ancestors of this IBaseType and this IBaseType itself.</returns>
+        [OperationContract]
+        IEnumerable<ServiceBaseType> GetAncestorTypesAndSelf(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Returns all descendant and ancestors of this IBaseType.
+        /// </summary>
+        /// <returns>An enumeration of all IBaseType that are ancestors or descendant of this IBaseType.</returns>
+        [OperationContract]
+        IEnumerable<ServiceBaseType> GetKinsmenTypes(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Returns all descendant and ancestors of this IBaseType and this IBaseType in one enumeration. 
+        /// </summary>
+        /// <returns>An enumeration of all IBaseType that are ancestors or descendant of this IBaseType and this IBaseType itself.</returns>
+        [OperationContract]
+        IEnumerable<ServiceBaseType> GetKinsmenTypesAndSelf(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Returns the direct children of this IBaseType.
+        /// </summary>
+        /// <returns>An enumeration of all direct children of this IBaseType.</returns>
+        [OperationContract]
+        IEnumerable<ServiceBaseType> ChildrenTypes(ServiceVertexType myServiceVertexType);
+
+        /// <summary>
+        /// Gets the parent of this IBaseType.
+        /// </summary>
+        [OperationContract]
+        ServiceBaseType ParentType(ServiceVertexType myServiceVertexType);
+
+        #endregion
+
 
         #region Attributes
 
@@ -124,6 +243,5 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
 
         #endregion
 
-        
     }
 }
