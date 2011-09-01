@@ -31,8 +31,16 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         //list of paths which will be returned
         private HashSet<List<Tuple<long, long>>> _Paths;
 
+        private HashSet<Tuple<long, long>> _Uninteresting;
+
+        private HashSet<List<Tuple<long, long>>> _PathsLeft;
+        private HashSet<List<Tuple<long, long>>> _PathsRight;
+
         //an actual path
         private List<Tuple<long, long>> _TempList;
+
+        private List<Tuple<long, long>> _TempListLeft;
+        private List<Tuple<long, long>> _TempListRight;
 
         //end is the root or start of the select
         private Node _Start;
@@ -41,6 +49,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         private Node _End;
 
         private int _MaxPathLength;
+        private int _MaxPartLengthLeft;
+        private int _MaxPartLengthRight;
 
         private bool _ShortestOnly = true;
 
@@ -54,20 +64,23 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         {
             _Paths = new HashSet<List<Tuple<long, long>>>();
 
+            _Uninteresting = new HashSet<Tuple<long, long>>();
+
+            _PathsLeft = new HashSet<List<Tuple<long, long>>>();
+            _PathsRight = new HashSet<List<Tuple<long, long>>>();
+
             _TempList = new List<Tuple<long, long>>();
+
+            _TempListLeft = new List<Tuple<long, long>>();
+            _TempListRight = new List<Tuple<long, long>>();
 
             _Start = myStart;
 
             _End = myEnd;
 
-            //if (myMaxPathLength != 0)
-            //{
-            //    _MaxPathLength = Convert.ToInt16(myMaxPathLength);
-            //}
-            //else
-            //{
-                _MaxPathLength = Convert.ToInt16(myMaxPathLength);
-            //}
+            _MaxPathLength = Convert.ToInt16(myMaxPathLength);
+            _MaxPartLengthLeft = 0;
+            _MaxPartLengthRight = 0;
         }
 
         public TargetAnalyzer(Node myStart, Node myEnd, UInt64 myMaxPathLength, bool myShortestOnly, bool myFindAll)
@@ -129,13 +142,79 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             #endregion
         }
 
+        public HashSet<List<Tuple<long, long>>> GetShortestPath(HashSet<Node> myIntersectNodes)
+        {
+            //set maximum part lengths
+            _MaxPartLengthLeft = _MaxPartLengthRight = (_MaxPathLength / 2);
+
+            //if the max path length is odd add one
+            if (_MaxPathLength % 2 != 0)
+            {
+                _MaxPartLengthLeft += 1;
+                _MaxPartLengthRight += 1;
+            }
+
+            var enumerator = myIntersectNodes.GetEnumerator();
+
+            while (enumerator.MoveNext() && _Paths.Count == 0)
+            {
+                //calculate parts from intersect node to end
+                getShortestPathDownwards(enumerator.Current);
+
+                ///recalculate the max part length...
+                ///it could happen that the intersect node is not in the middle,
+                ///so the max part length left could be less than calculated, 
+                ///if this happens the right part length must be adapted
+                _MaxPartLengthRight = _MaxPathLength - _MaxPartLengthLeft;
+
+                //check if max path length is odd
+                if (_MaxPathLength % 2 != 0)
+                {
+                    _MaxPartLengthRight += 1;
+                }
+
+                //calculate parts from intersect node to start
+                getShortestPathUpwards(enumerator.Current);
+
+                //calculate full path
+                if (_PathsLeft.Count > 0 && _PathsRight.Count > 0)
+                {
+                    //forach part from left
+                    foreach (var leftPath in _PathsLeft)
+                    {
+                        var first = leftPath.First();
+
+                        //foreach part from right
+                        foreach (var rightPath in _PathsRight)
+                            //if there starts are the same (the intersect node)
+                            if (rightPath.First().Equals(first) && 
+                                ((rightPath.Count + leftPath.Count - 1) <= _MaxPathLength))
+                            {
+                                var temp = new List<Tuple<long, long>>(rightPath);
+                                temp.Reverse();
+                                leftPath.RemoveAt(0);
+                                temp.InsertRange(temp.Count, leftPath);
+
+                                _Paths.Add(temp);
+
+                                return _Paths;
+                            }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         #endregion public methods
 
         #region private methods
 
-        private void getPath(Node myCurrent)
+        private bool getPath(Node myCurrent)
         {
-            if (!_TempList.Contains(myCurrent.Key))
+            bool currentIsInteresting = false;
+
+            if (!_TempList.Contains(myCurrent.Key) && !_Uninteresting.Contains(myCurrent.Key))
             {
                 //add myCurrent to actual path
                 _TempList.Add(myCurrent.Key);
@@ -146,6 +225,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                 //abort recursion when myCurrent is the root node
                 if (_Start.Key.Equals(myCurrent.Key))
                 {
+                    currentIsInteresting = true;
+
                     //duplicate list
                     var temp = new List<Tuple<long, long>>(_TempList);
 
@@ -155,19 +236,111 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                     //add completed path to result list
                     _Paths.Add(temp);
                 }
-
                 //MaxPathLength is not reached
-                if (_TempList.Count < _MaxPathLength)
+                else if (_TempList.Count < _MaxPathLength)
                     //for all parent nodes which are not already in actual path
                     foreach (Node parent in myCurrent.Parents.Where(_ => !_.AlreadyInPath))
                     {
-                        getPath(parent);
+                        //if currentIsInteresting already true doen't set to false
+                        var temp = getPath(parent);
+
+                        if (!currentIsInteresting)
+                            currentIsInteresting = temp;
                     }
 
                 if (_TempList.Count != 0)
                 {
                     //remove last node from actual path
                     _TempList.Remove(_TempList.Last<Tuple<long, long>>());
+
+                    //myCurrent isn't in actual path
+                    myCurrent.AlreadyInPath = false;
+                }
+            }
+
+            if (!currentIsInteresting)
+                _Uninteresting.Add(myCurrent.Key);
+
+            return currentIsInteresting;
+        }
+
+        private void getShortestPathDownwards(Node myCurrent)
+        {
+            if (!_TempListLeft.Contains(myCurrent.Key))
+            {
+                //add myCurrent to actual path
+                _TempListLeft.Add(myCurrent.Key);
+
+                //set flag to mark that myCurrent is in actual path
+                myCurrent.AlreadyInPath = true;
+
+                //abort recursion when myCurrent is the root node
+                if (_End.Key.Equals(myCurrent.Key) && 
+                    _TempListLeft.Count <= _MaxPartLengthLeft)
+                {
+                    var temp = new List<Tuple<long, long>>(_TempListLeft);
+
+                    //actualize the max part length
+                    _MaxPartLengthLeft = temp.Count;
+
+                    _PathsLeft.Add(temp);
+                }
+
+                //MaxPathLength is not reached
+                if (_TempListLeft.Count <= _MaxPartLengthLeft)
+                    //for all parent nodes which are not already in actual path
+                    foreach (Node child in myCurrent.Children.Where(_ => !_.AlreadyInPath))
+                    {
+                        getShortestPathDownwards(child);
+                    }
+
+                if (_TempListLeft.Count != 0)
+                {
+                    //remove last node from actual path
+                    _TempListLeft.Remove(_TempListLeft.Last<Tuple<long, long>>());
+
+                    //myCurrent isn't in actual path
+                    myCurrent.AlreadyInPath = false;
+                }
+            }
+            return;
+        }
+
+        private void getShortestPathUpwards(Node myCurrent)
+        {
+            if (!_TempListRight.Contains(myCurrent.Key))
+            {
+                //add myCurrent to actual path
+                _TempListRight.Add(myCurrent.Key);
+
+                //set flag to mark that myCurrent is in actual path
+                myCurrent.AlreadyInPath = true;
+
+                //abort recursion when myCurrent is the root node
+                if (_Start.Key.Equals(myCurrent.Key) &&
+                    _TempListRight.Count <= _MaxPartLengthRight)
+                {
+                    //duplicate list
+                    var temp = new List<Tuple<long, long>>(_TempListRight);
+
+                    //actualize the max part length
+                    _MaxPartLengthRight = temp.Count;
+
+                    _PathsRight.Add(temp);
+                }
+
+                //MaxPathLength is not reached
+                if (_TempListRight.Count <= _MaxPartLengthRight)
+                    //for all parent nodes which are not already in actual path
+                    foreach (Node parent in myCurrent.Parents.Where(_ => !_.AlreadyInPath))
+                    {
+                        getShortestPathUpwards(parent);
+                    }
+
+                if (_TempListRight.Count != 0)
+                {
+                    //remove last node from actual path
+                    _TempListRight.Remove(_TempListRight.Last<Tuple<long, long>>());
 
                     //myCurrent isn't in actual path
                     myCurrent.AlreadyInPath = false;
