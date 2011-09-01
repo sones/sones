@@ -29,7 +29,7 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 {
-    [DataContract(Namespace = "http://www.sones.com")]
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceUniquePredefinition
     {
        
@@ -37,7 +37,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
         /// The set of properties that will be unique together.
         /// </summary>
         [DataMember]
-        public IEnumerable<String> Properties;
+        public List<String> Properties;
 
         public UniquePredefinition ToUniquePredefinition()
         {

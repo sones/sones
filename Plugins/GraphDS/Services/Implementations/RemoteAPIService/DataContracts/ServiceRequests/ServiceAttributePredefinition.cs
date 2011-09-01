@@ -27,7 +27,7 @@ using System.Runtime.Serialization;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 {
-    [DataContract(Namespace = "http://www.sones.com")]
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
     public abstract class ServiceAttributePredefinition
     {
         [DataMember]

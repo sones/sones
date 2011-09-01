@@ -33,7 +33,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 
 namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
 {
-    [ServiceContract(Namespace = sonesRPCServer.Namespace)]
+    [ServiceContract(Namespace = sonesRPCServer.Namespace, Name = "EdgeTypeService")]
     public interface IEdgeTypeService : IBaseTypeService
     {
         #region Inheritance

@@ -12,8 +12,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
     {
         public ServiceUniqueDefinition(IUniqueDefinition myUniqueDefinition)
         {
-            throw new NotImplementedException();
+            this.DefiningVertexType = new ServiceVertexType(myUniqueDefinition.DefiningVertexType);
+            this.UniquePropertyDefinition = myUniqueDefinition.UniquePropertyDefinitions.Select(x => new ServicePropertyDefinition(x)).ToList();
         }
-        //todo IMplement these data contract
+
+        [DataMember]
+        public ServiceVertexType DefiningVertexType;
+
+        [DataMember]
+        public List<ServicePropertyDefinition> UniquePropertyDefinition;
     }
 }
