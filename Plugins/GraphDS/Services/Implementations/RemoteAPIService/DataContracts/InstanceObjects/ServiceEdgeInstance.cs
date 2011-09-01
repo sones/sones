@@ -16,7 +16,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
             var SourceVertex = myEdge.GetSourceVertex();
             this.SourceVertexID = SourceVertex.VertexID;
             this.SourceVertexTypeID = SourceVertex.VertexRevisionID;
-            this.TargetVertices = myEdge.GetTargetVertices().Select(x => new ServiceVertexInstance(x)).ToList();
         }
        
         [DataMember]
@@ -27,10 +26,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
 
         [DataMember]
         public Int64 SourceVertexID;
-
-        [DataMember]
-        public List<ServiceVertexInstance> TargetVertices;
-
+        
         [DataMember]
         public String Comment;
         
