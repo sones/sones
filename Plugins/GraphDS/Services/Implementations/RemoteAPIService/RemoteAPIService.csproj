@@ -83,13 +83,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteAPIService.cs" />
     <Compile Include="ServiceContractImplementation\AbstractBaseTypeService.cs" />
+    <Compile Include="ServiceContractImplementation\EdgeTypeService.cs" />
     <Compile Include="ServiceContractImplementation\GraphDS_API.cs" />
     <Compile Include="ServiceContractImplementation\IncomingEdgeTypeService.cs" />
     <Compile Include="ServiceContractImplementation\RPCServiceContract.cs" />
     <Compile Include="ServiceContractImplementation\VertexService.cs" />
     <Compile Include="ServiceContractImplementation\VertexTypeService.cs" />
     <Compile Include="ServiceContracts\API Services\IGraphDS_API.cs" />
-    <Compile Include="ServiceContracts\EdgeTypeServices\IIncominEdgeService.cs" />
+    <Compile Include="ServiceContracts\EdgeTypeServices\IEdgeTypeService.cs" />
     <Compile Include="ServiceContracts\IBaseTypeService.cs" />
     <Compile Include="ServiceContracts\IGraphElementService.cs" />
     <Compile Include="ServiceContracts\IRPCServiceContract.cs" />

@@ -32,6 +32,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InsertPayload;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.PayloadObjects;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 
 
 namespace sones.GraphDS.Services.RemoteAPIService.API_Services
