@@ -29,6 +29,7 @@ namespace sones.Library.PropertyHyperGraph
 	/// </summary>
 	public interface IVertex : IGraphElement, IVertexProperties
 	{
+
 		#region Edges
 
 		#region Incoming
