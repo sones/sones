@@ -29,8 +29,9 @@ using System.ServiceModel.Description;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeServices;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts;
 using sones.GraphDS.Services.RemoteAPIService.API_Services;
-using sones.GraphDS.Services.RemoteAPIService.IncomingEdgeService;
 using WCFExtras.Wsdl;
+using sones.GraphDS.Services.RemoteAPIService.EdgeTypeService;
+using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanceService;
 
 namespace sones.GraphDS.Services.RemoteAPIService
 {
@@ -152,20 +153,27 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
             #region VertexTypeService
 
-            ContractDescription VertexTypeContract = ContractDescription.GetContract(typeof(IVertexTypeService));
-            VertexTypeContract.Namespace = Namespace;
-            ServiceEndpoint VertexTypeService = new ServiceEndpoint(VertexTypeContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
+            ContractDescription VertexTypeServiceContract = ContractDescription.GetContract(typeof(IVertexTypeService));
+            VertexTypeServiceContract.Namespace = Namespace;
+            ServiceEndpoint VertexTypeService = new ServiceEndpoint(VertexTypeServiceContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
             _ServiceHost.AddServiceEndpoint(VertexTypeService);
 
             #endregion
 
+            #region VertexInstanceService
 
+            ContractDescription VertexServiceContract = ContractDescription.GetContract(typeof(IVertexService));
+            VertexServiceContract.Namespace = Namespace;
+            ServiceEndpoint VertexService = new ServiceEndpoint(VertexServiceContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
+            _ServiceHost.AddServiceEndpoint(VertexTypeService);
 
-            #region IncomingEdgeService
+            #endregion
+            
+            #region EdgeTypeService
 
-            ContractDescription IncomingEdgeContract = ContractDescription.GetContract(typeof(IIncominEdgeService));
-            IncomingEdgeContract.Namespace = Namespace;
-            ServiceEndpoint IncomingEdgeService = new ServiceEndpoint(IncomingEdgeContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
+            ContractDescription EdgeTypeServiceContract = ContractDescription.GetContract(typeof(IEdgeTypeService));
+            EdgeTypeServiceContract.Namespace = Namespace;
+            ServiceEndpoint IncomingEdgeService = new ServiceEndpoint(EdgeTypeServiceContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
             _ServiceHost.AddServiceEndpoint(IncomingEdgeService);
 
             #endregion

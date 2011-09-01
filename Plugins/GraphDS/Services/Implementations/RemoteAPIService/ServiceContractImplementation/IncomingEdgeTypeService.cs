@@ -22,12 +22,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDS.Services.RemoteAPIService.IncomingEdgeService;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
+using sones.GraphDS.Services.RemoteAPIService.EdgeTypeService;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
-    public partial class RPCServiceContract : IIncominEdgeService
+    public partial class RPCServiceContract : IEdgeTypeService
     {
         public const char TypeSeparator = '.';
 
