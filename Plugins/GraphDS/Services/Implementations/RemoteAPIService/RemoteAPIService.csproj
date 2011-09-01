@@ -91,6 +91,7 @@
     <Compile Include="ServiceContractImplementation\VertexService.cs" />
     <Compile Include="ServiceContractImplementation\VertexTypeService.cs" />
     <Compile Include="ServiceContracts\API Services\IGraphDS_API.cs" />
+    <Compile Include="ServiceContracts\EdgeInstanceService\IEdgeService.cs" />
     <Compile Include="ServiceContracts\EdgeTypeServices\IEdgeTypeService.cs" />
     <Compile Include="ServiceContracts\IBaseTypeService.cs" />
     <Compile Include="ServiceContracts\IGraphElementService.cs" />
