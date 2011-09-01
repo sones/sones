@@ -271,6 +271,11 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             return new RequestGetVertex(myVertexType.Name, myVertexID, myEdition);
         }
 
+        public static RequestGetVertex MakeRequestGetVertex(Int64 myVertexTypeID, Int64 myVertexID, String myEdition = null)
+        {
+            return new RequestGetVertex(myVertexTypeID, myVertexID, myEdition);
+        }
+
         public static RequestGetVertexCount MakeRequestGetVertexCount(ServiceVertexType myVertexTypeName)
         {
             return new RequestGetVertexCount(myVertexTypeName.Name);

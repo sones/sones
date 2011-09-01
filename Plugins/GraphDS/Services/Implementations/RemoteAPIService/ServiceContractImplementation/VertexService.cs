@@ -2,17 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.GraphDB.TypeSystem;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanceService;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
+using sones.GraphDS.Services.RemoteAPIService.ServiceConverter;
+using sones.Library.PropertyHyperGraph;
+using sones.Library.Commons.Security;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
     public partial class RPCServiceContract : IVertexService
     {
 
-        public bool HasIncomingVertices(ServiceVertexInstance myVertex, long myVertexTypeID, long myEdgePropertyID)
+        public bool HasIncomingVertices(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, long myVertexTypeID, ServiceVertexInstance myVertex, long myEdgePropertyID)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertexTypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransactionToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.HasIncomingVertices(myVertexTypeID, myEdgePropertyID);
         }
 
         public List<Tuple<long, long, List<ServiceVertexInstance>>> GetAllIncomingVertices(ServiceVertexInstance myVertex)
@@ -20,7 +27,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             throw new NotImplementedException();
         }
 
-        public List<ServiceVertexInstance> GetIncomingVertices(ServiceVertexInstance myVertex, long myVertexTypeID, long myEdgePropertyID)
+        public List<ServiceVertexInstance> GetIncomingVertices(long myVertexTypeID, ServiceVertexInstance myVertex, long myEdgePropertyID)
         {
             throw new NotImplementedException();
         }

@@ -32,11 +32,12 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InsertPayload;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.PayloadObjects;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 
 
 namespace sones.GraphDS.Services.RemoteAPIService.API_Services
 {
-    [ServiceContract(Namespace = "http://www.sones.com", Name = "IGraphDS")]
+    [ServiceContract(Namespace = sonesRPCServer.Namespace, Name = "IGraphDS")]
     public interface IGraphDS_API
     {
         [OperationContract]
@@ -64,7 +65,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
 
         [OperationContract]
         List<ServiceEdgeType> CreateEdgeTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
-            IEnumerable<ServiceEdgeTypePredefinition> myEdgeTypePreDef);
+            List<ServiceEdgeTypePredefinition> myEdgeTypePreDef);
 
         [OperationContract]
         ServiceIndexDefinition CreateIndex(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceIndexPredefinition myVertexTypePreDef);
@@ -75,7 +76,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
                 
         [OperationContract]
         List<Int64> Delete(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
-            ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null); 
+            ServiceVertexType myVertexType, List<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null); 
 
         [OperationContract]
         ServiceIndexDefinition DescribeIndex(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,

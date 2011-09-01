@@ -24,16 +24,18 @@ using System.Linq;
 using System.Text;
 using System.ServiceModel;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
+using sones.Library.Commons.Security;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts;
 
 
 namespace sones.GraphDS.Services.RemoteAPIService.IncomingEdgeService
 {
-    [ServiceContract(Namespace = "http://www.sones.com")]
+    [ServiceContract(Namespace = sonesRPCServer.Namespace)]
     public interface IIncominEdgeService
     {
 
         [OperationContract]
-        ServiceIncomingEdgePredefinition SetOutgoingEdge(ServiceIncomingEdgePredefinition myPreDef, ServiceVertexTypePredefinition myVertexType, ServiceOutgoingEdgePredefinition myOutgoingEdge);
+        ServiceIncomingEdgePredefinition SetOutgoingEdge(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceIncomingEdgePredefinition myPreDef, ServiceVertexTypePredefinition myVertexType, ServiceOutgoingEdgePredefinition myOutgoingEdge);
         
     }
 }
