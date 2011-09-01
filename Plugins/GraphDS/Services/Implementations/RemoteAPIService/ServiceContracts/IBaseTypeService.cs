@@ -29,7 +29,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagemen
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeServices
 {
     [ServiceContract(Namespace = sonesRPCServer.Namespace)]
-    interface IBaseTypeService
+    public interface IBaseTypeService
     {
 
         #region Inheritance
@@ -149,8 +149,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         ServiceBaseType ParentType(ServiceVertexType myServiceVertexType);
 
         #endregion
-
-
+        
         #region Attributes
 
         /// <summary>

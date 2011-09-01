@@ -42,7 +42,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
         /// <param name="myPropertyID">The ID of the interesing property</param>
         /// <returns>A Property</returns>
         [OperationContract]
-        object GetProperty(ServiceVertexInstance myVertex, Int64 myPropertyID);
+        object GetProperty(AGraphElement myGraphElement, Int64 myPropertyID);
                 
 
         /// <summary>
@@ -51,14 +51,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
         /// <param name="myPropertyID">The ID of the property</param>
         /// <returns>True if the property exists, otherwise false</returns>
         [OperationContract]
-        bool HasProperty(ServiceVertexInstance myVertex, Int64 myPropertyID);
+        bool HasProperty(AGraphElement myGraphElement, Int64 myPropertyID);
 
         /// <summary>
         /// Returns the count of the vertex properties
         /// </summary>
         /// <returns>An unsigned value</returns>
         [OperationContract]
-        int GetCountOfProperties(ServiceVertexInstance myVertex);
+        int GetCountOfProperties(AGraphElement myGraphElement);
 
         /// <summary>
         /// Returns all properties
@@ -66,7 +66,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
         /// <param name="myFilter">A function to filter properties</param>
         /// <returns>An IEnumerable of Property/Value</returns>
         [OperationContract]
-        List<Tuple<Int64, object>> GetAllProperties(ServiceVertexInstance myVertex);
+        List<Tuple<Int64, object>> GetAllProperties(AGraphElement myGraphElement);
 
         /// <summary>
         /// Returns a property as string
@@ -74,7 +74,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
         /// <param name="myPropertyID">The id of the property</param>
         /// <returns>The string representation of the property</returns>
         [OperationContract]
-        String GetPropertyAsString(ServiceVertexInstance myVertex, Int64 myPropertyID);
+        String GetPropertyAsString(AGraphElement myGraphElement, Int64 myPropertyID);
 
         #endregion
 
@@ -87,7 +87,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
         /// <param name="myPropertyName">The name of the interesting unstructured property</param>
         /// <returns>The value of an unstructured property</returns>
         [OperationContract]
-        object GetUnstructuredProperty(ServiceVertexInstance myVertex, string myPropertyName);
+        object GetUnstructuredProperty(AGraphElement myGraphElement, string myPropertyName);
 
         /// <summary>
         /// Checks whether the graph element is in possession of a certain unstructered property
@@ -95,14 +95,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
         /// <param name="myPropertyName">The name of the unstructured property</param>
         /// <returns>True if the property exists, otherwise false</returns>
         [OperationContract]
-        bool HasUnstructuredProperty(ServiceVertexInstance myVertex, String myPropertyName);
+        bool HasUnstructuredProperty(AGraphElement myGraphElement, String myPropertyName);
 
         /// <summary>
         /// Returns the count of the unstructured vertex properties
         /// </summary>
         /// <returns>An unsigned value</returns>
         [OperationContract]
-        int GetCountOfUnstructuredProperties(ServiceVertexInstance myVertex);
+        int GetCountOfUnstructuredProperties(AGraphElement myGraphElement);
 
         /// <summary>
         /// Returns all unstructured properties
@@ -110,7 +110,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
         /// <param name="myFilter">A function to filter properties</param>
         /// <returns>An IEnumerable of NameOfProperty/Value</returns>
         [OperationContract]
-        List<Tuple<String, Object>> GetAllUnstructuredProperties(ServiceVertexInstance myVertex);
+        List<Tuple<String, Object>> GetAllUnstructuredProperties(AGraphElement myGraphElement);
 
         /// <summary>
         /// Returns an unstructured property as string
@@ -118,7 +118,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
         /// <param name="myPropertyName">The name of the unstructured property</param>
         /// <returns>The string representation of the property</returns>
         [OperationContract]
-        String GetUnstructuredPropertyAsString(ServiceVertexInstance myVertex, String myPropertyName);
+        String GetUnstructuredPropertyAsString(AGraphElement myGraphElement, String myPropertyName);
 
         #endregion
 
@@ -128,7 +128,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
         /// Gets the comment of this graph element
         /// </summary>
         [OperationContract]
-        String Comment(ServiceVertexInstance myVertex);
+        String Comment(AGraphElement myGraphElement);
 
         #endregion
 
@@ -138,7 +138,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
         /// The date the graph element has been created
         /// </summary>
         [OperationContract]
-        long CreationDate(ServiceVertexInstance myVertex);
+        long CreationDate(AGraphElement myGraphElement);
 
         #endregion
 
@@ -148,7 +148,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
         /// The date the graph element has been modified the last time
         /// </summary>
         [OperationContract]
-        long ModificationDate(ServiceVertexInstance myVertex);
+        long ModificationDate(AGraphElement myGraphElement);
 
         #endregion
     }
