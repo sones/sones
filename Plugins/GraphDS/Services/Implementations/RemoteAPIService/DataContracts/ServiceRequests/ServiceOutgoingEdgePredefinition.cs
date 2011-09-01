@@ -29,7 +29,7 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 {
-    [DataContract(Namespace = "http://www.sones.com")]
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceOutgoingEdgePredefinition : ServiceAttributePredefinition
     {
         #region Constant
