@@ -200,7 +200,8 @@ namespace TagExample
                                                                                             "TaggedWebsites"));
 
             #endregion
-
+            IHyperEdge edge;
+            
             #region create types by sending requests
 
             //create the types "Tag" and "Website"

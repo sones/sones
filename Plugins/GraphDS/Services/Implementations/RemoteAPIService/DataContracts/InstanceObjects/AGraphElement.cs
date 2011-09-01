@@ -8,19 +8,16 @@ using sones.Library.PropertyHyperGraph;
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
-    public class ServiceVertexInstance : AGraphElement
+    [KnownType(typeof(ServiceEdgeInstance))]
+    [KnownType(typeof(ServiceVertexInstance))]
+    public class AGraphElement
     {
-        public ServiceVertexInstance(IVertex myVertex) : base(myVertex.VertexTypeID)
+        public AGraphElement(Int64 myTypeID)
         {
-            this.VertexID = myVertex.VertexID;
-            this.Edition =  myVertex.EditionName;
+            this.TypeID = myTypeID;
         }
-            
 
         [DataMember]
-        public Int64 VertexID;
-        
-        [DataMember]
-        public String Edition;
+        public Int64 TypeID; 
     }
 }

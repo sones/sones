@@ -151,8 +151,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         ServiceBaseType ParentType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType);
 
         #endregion
-
-
+        
         #region Attributes
 
         /// <summary>
