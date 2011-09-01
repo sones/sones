@@ -38,9 +38,6 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         Dictionary<Tuple<long, long>, Node> _VisitedNodesLeft;
         Dictionary<Tuple<long, long>, Node> _VisitedNodesRight;
 
-        HashSet<Tuple<long, long>> _VisitedVerticesLeft;
-        HashSet<Tuple<long, long>> _VisitedVerticesRight;
-
         //current depth
         UInt64 _DepthLeft;
         UInt64 _DepthRight;
@@ -83,9 +80,6 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
             _VisitedNodesLeft = new Dictionary<Tuple<long, long>, Node>();
             _VisitedNodesRight = new Dictionary<Tuple<long, long>, Node>();
-
-            _VisitedVerticesLeft = new HashSet<Tuple<long, long>>();
-            _VisitedVerticesRight = new HashSet<Tuple<long, long>>();
 
             _Types = new List<IVertexType>();
         }
@@ -139,16 +133,12 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
             //if myMaxDepth is 1 _MaxDepthRight keeps 0, just one side is searching
             if (myMaxDepth > 1)
-            {
                 //both sides have the same depth
                 _MaxDepthRight = _MaxDepthLeft;
-            }
 
             //if myMaxDepth is even, one side has to search in a greater depth
             if ((myMaxDepth % 2) == 0)
-            {
                 _MaxDepthRight = Convert.ToUInt64(_MaxDepthLeft - 1);
-            }
 
             #endregion
 
@@ -255,30 +245,18 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
                     //get the first Object of the queue
                     currentVertexLeft = _QueueLeft.Dequeue();
-                    currentLeft = new Tuple<long, long>(currentVertexLeft.VertexTypeID, currentVertexLeft.VertexID);
-
-                    if (_VisitedVerticesLeft.Contains(currentLeft))
-                        continue;
-
-                    //get the first Object of the queue
-                    currentVertexRight = _QueueRight.Dequeue();
-                    currentRight = new Tuple<long, long>(currentVertexRight.VertexTypeID, currentVertexRight.VertexID);
-
-                    if (_VisitedVerticesRight.Contains(currentRight))
-                    {
-                        //enqueue already dequeued vertex
-                        _QueueLeft.Enqueue(currentVertexLeft);
-
-                        continue;
-                    }
-
-                    _VisitedVerticesLeft.Add(currentLeft);
-                    _VisitedVerticesRight.Add(currentRight);
+                    currentLeft = new Tuple<long, long>(currentVertexLeft.VertexTypeID,
+                                                        currentVertexLeft.VertexID);
 
                     if (_VisitedNodesLeft.ContainsKey(currentLeft))
                         currentNodeLeft = _VisitedNodesLeft[currentLeft];
                     else
                         currentNodeLeft = new Node(currentLeft);
+
+                    //get the first Object of the queue
+                    currentVertexRight = _QueueRight.Dequeue();
+                    currentRight = new Tuple<long, long>(currentVertexRight.VertexTypeID,
+                                                            currentVertexRight.VertexID);
 
                     if (_VisitedNodesRight.ContainsKey(currentRight))
                         currentNodeRight = _VisitedNodesRight[currentRight];
@@ -455,10 +433,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                     currentVertexLeft = _QueueLeft.Dequeue();
                     Tuple<long, long> currentLeft = new Tuple<long, long>(currentVertexLeft.VertexTypeID, currentVertexLeft.VertexID);
 
-                    if (_VisitedVerticesLeft.Contains(currentLeft))
+                    if (_VisitedNodesLeft.ContainsKey(currentLeft))
                         continue;
-
-                    _VisitedVerticesLeft.Add(currentLeft);
 
                     if (_VisitedNodesLeft.ContainsKey(currentLeft))
                         currentNodeLeft = _VisitedNodesLeft[currentLeft];
@@ -500,10 +476,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                     currentVertexRight = _QueueRight.Dequeue();
                     Tuple<long, long> currentRight = new Tuple<long, long>(currentVertexRight.VertexTypeID, currentVertexRight.VertexID);
 
-                    if (_VisitedVerticesRight.Contains(currentRight))
+                    if (_VisitedNodesRight.ContainsKey(currentRight))
                         continue;
-
-                    _VisitedVerticesRight.Add(currentRight);
 
                     if (_VisitedNodesRight.ContainsKey(currentRight))
                         currentNodeRight = _VisitedNodesRight[currentRight];
@@ -581,14 +555,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
                 //if left queue is empty continue
                 if (_QueueLeft.Count == 0)
-                {
                     return true;
-                }
                 //enqueue dummy
                 else
-                {
                     _QueueLeft.Enqueue(_DummyLeft);
-                }
             }
 
             return false;
@@ -615,14 +585,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
                 //if right queue is empty continue
                 if (_QueueRight.Count == 0)
-                {
                     return true;
-                }
                 //enqueue dummy
                 else
-                {
                     _QueueRight.Enqueue(_DummyRight);
-                }
             }
 
             return false;
@@ -638,7 +604,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         /// <returns>True, if the target is found AND the BFS could be finished. False, if the BFS should be continued.</returns>
         private bool TargetFoundCheckAbort(Tuple<long, long> myTuple, ref Node myCurrentNode, ref Node myNextNode, IVertex myVertex)
         {
-            if (myVertex.VertexID.Equals(_Target.Key))
+            if (myTuple.Equals(_Target.Key))
             {
                 //set currentLeft as parent of _Target
                 _Target.addParent(myCurrentNode);
@@ -784,10 +750,10 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
         private void SetAsVisitedLeft(Tuple<long, long> myTuple, ref Node myCurrentNode, ref Node myNextNode, IVertex myVertex)
         {
-            //create a new node and set currentLeft = parent
+            //create a new node
             myNextNode = new Node(myTuple, myCurrentNode);
 
-            //set currentNodeLeft as child of currentLeft
+            //set currentNode
             myCurrentNode.addChild(myNextNode);
 
             //never seen before
@@ -998,7 +964,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
             return false;
         }
-        
+
         private IEnumerable<IVertex> GetIncomingVertices(IVertex myVertex)
         {
             List<IVertex> temp = new List<IVertex>();

@@ -1005,9 +1005,15 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        private void RemoveVertexPropertyFromIndex(IVertex aVertex, IIndexDefinition aIndexDefinition, IEnumerable<IIndex<IComparable, long>> myIndices, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        private void RemoveVertexPropertyFromIndex(IVertex aVertex, 
+                                                    IIndexDefinition aIndexDefinition, 
+                                                    IEnumerable<IIndex<IComparable, long>> myIndices, 
+                                                    SecurityToken mySecurityToken, 
+                                                    Int64 myTransactionToken)
         {
-            var entry = CreateIndexEntry(aIndexDefinition.IndexedProperties, aVertex.GetAllProperties().ToDictionary(key => key.Item1, value => value.Item2));
+            var entry = CreateIndexEntry(aIndexDefinition.IndexedProperties, 
+                                            aVertex.GetAllProperties()
+                                                    .ToDictionary(key => key.Item1, value => value.Item2));
 
             if (entry == null)
                 return;
@@ -1935,6 +1941,15 @@ namespace sones.GraphDB.Manager.Vertex
                                                             updateHyper));
         }
 
+        /// <summary>
+        /// This method checks if a element inside the to be updated edge already exist,
+        /// if it exist an exception is thrown.
+        /// </summary>
+        /// <param name="myVertex">the to be updated vertex.</param>
+        /// <param name="myEdgeDef">The edge definition.</param>
+        /// <param name="myEdgePredef">The update edge predefinition.</param>
+        /// <param name="myTransaction">TransactionID</param>
+        /// <param name="mySecurityToken">SecurityToken</param>
         private void CheckIfToBeAddedElementAlreadyExist(IVertex myVertex,
                                                             IOutgoingEdgeDefinition myEdgeDef,
                                                             EdgePredefinition myEdgePredef,
