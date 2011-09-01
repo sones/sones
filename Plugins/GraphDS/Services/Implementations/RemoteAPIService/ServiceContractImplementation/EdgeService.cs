@@ -16,7 +16,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
     public partial class RPCServiceContract : IEdgeService
     {
         
-
         #region IGraphElementService
                         
         public object GetProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, AGraphElement myGraphElement, long myPropertyID)

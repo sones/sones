@@ -8,14 +8,15 @@ using sones.Library.PropertyHyperGraph;
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
-    public class ServiceSingleEdge : ServiceEdgeInstance
+    public class ServiceHyperEdgeInstance : ServiceEdgeInstance
     {
-        public ServiceSingleEdge(ISingleEdge mySingleEdge): base(mySingleEdge as IEdge)
+        public ServiceHyperEdgeInstance(IHyperEdge myHyperEdge)
+            : base(myHyperEdge as IEdge)
         {
-           this.TargetVertex = new ServiceVertexInstance(mySingleEdge.GetTargetVertex());
+            this.TargetVertices = myHyperEdge.GetTargetVertices().Select(x => new ServiceVertexInstance(x)).ToList();
         }
 
         [DataMember]
-        public ServiceVertexInstance TargetVertex;
+        public List<ServiceVertexInstance> TargetVertices;
     }
 }
