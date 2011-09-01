@@ -33,7 +33,8 @@ using sones.GraphDS.Services.RemoteAPIService.ServiceContracts;
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
     
-    [ServiceBehavior(Namespace = "http://www.sones.com", InstanceContextMode = InstanceContextMode.Single, IncludeExceptionDetailInFaults = true)]
+    
+    [ServiceBehavior(Namespace = sonesRPCServer.Namespace, InstanceContextMode = InstanceContextMode.Single, IncludeExceptionDetailInFaults = true)]
     public partial class RPCServiceContract : IRPCServiceContract
     {
         #region Data

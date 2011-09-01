@@ -44,48 +44,48 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         /// <returns>An enumeration of IVertexType that are descendant of this IVertexType.</returns>
         /// <seealso cref="IBaseType.GetDescendantTypes"/>
-        IEnumerable<IVertexType> GetDescendantVertexTypes();
+        List<IVertexType> GetDescendantVertexTypes();
 
         /// <summary>
         /// Returns the descendant of this IVertexType and this IVertexType in one enumeration.
         /// </summary>
         /// <returns>An enumeration of IVertexType that are descendant of this IVertexType and this IVertexType itself.</returns>
         /// <seealso cref="IBaseType.GetDescendantTypesAndSelf"/>
-        IEnumerable<IVertexType> GetDescendantVertexTypesAndSelf();
+        List<IVertexType> GetDescendantVertexTypesAndSelf();
 
         /// <summary>
         /// Returns the ancestor of this IVertexType.
         /// </summary>
         /// <returns>An enumeration of IVertexType that are ancestors of this IVertexType.</returns>
         /// <seealso cref="IBaseType.GetAncestorTypes"/>
-        IEnumerable<IVertexType> GetAncestorVertexTypes();
+        List<IVertexType> GetAncestorVertexTypes();
 
         /// <summary>
         /// Returns the ancestor of this IVertexType and this IVertexType in one enumeration.
         /// </summary>
         /// <returns>An enumeration of IVertexType that are ancestors of this IVertexType and this IVertexType itself.</returns>
         /// <seealso cref="IBaseType.GetAncestorTypesAndSelf"/>
-        IEnumerable<IVertexType> GetAncestorVertexTypesAndSelf();
+        List<IVertexType> GetAncestorVertexTypesAndSelf();
 
         /// <summary>
         /// Returns all descendant and ancestors of this IVertexType.
         /// </summary>
         /// <returns>An enumeration of all IVertexType that are ancestors or descendant of this IVertexType.</returns>
         /// <seealso cref="IBaseType.GetKinsmenTypes"/>
-        IEnumerable<IVertexType> GetKinsmenVertexTypes();
+        List<IVertexType> GetKinsmenVertexTypes();
 
         /// <summary>
         /// Returns all descendant and ancestors of this IVertexType and this IVertexType in one enumeration. 
         /// </summary>
         /// <returns>An enumeration of all IVertexType that are ancestors or descendant of this IVertexType and this IVertexType itself.</returns>
         /// <seealso cref="IBaseType.GetKinsmenTypesAndSelf"/>
-        IEnumerable<IVertexType> GetKinsmenVertexTypesAndSelf();
+        List<IVertexType> GetKinsmenVertexTypesAndSelf();
 
         /// <summary>
         /// Returns the direct children of this IVertexType.
         /// </summary>
         /// <seealso cref="IBaseType.ChildrenTypes"/>
-        IEnumerable<IVertexType> ChildrenVertexTypes { get; }
+        List<IVertexType> ChildrenVertexTypes { get; }
 
         /// <summary>
         /// Gets the parent of this IVertexType.
@@ -123,7 +123,7 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s).</param>
         /// <returns>An enumerable of binary property definitions.</returns>
-        IEnumerable<IBinaryPropertyDefinition> GetBinaryProperties(bool myIncludeAncestorDefinitions);
+        List<IBinaryPropertyDefinition> GetBinaryProperties(bool myIncludeAncestorDefinitions);
 
         #endregion
 
@@ -155,7 +155,7 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of incoming IncomingEdge attributes</returns>
-        IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions(bool myIncludeAncestorDefinitions);
+        List<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions(bool myIncludeAncestorDefinitions);
 
 
         #endregion
@@ -186,7 +186,7 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of outgoing IncomingEdge attributes</returns>
-        IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(bool myIncludeAncestorDefinitions);
+        List<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(bool myIncludeAncestorDefinitions);
 
         #endregion
 
@@ -205,7 +205,7 @@ namespace sones.GraphDB.TypeSystem
         /// A set of uniqueness definitions.
         /// </summary>
         /// <returns>An enumerable of uniqueness definitions. Never <c>NULL</c>.</returns>
-        IEnumerable<IUniqueDefinition> GetUniqueDefinitions(bool myIncludeAncestorDefinitions);
+        List<IUniqueDefinition> GetUniqueDefinitions(bool myIncludeAncestorDefinitions);
 
         #endregion
 
@@ -217,7 +217,7 @@ namespace sones.GraphDB.TypeSystem
         /// A set of index definitions.
         /// </summary>
         /// <returns>An enumerable of index definitions. Never <c>NULL</c>.</returns>
-        IEnumerable<IIndexDefinition> GetIndexDefinitions(bool myIncludeAncestorDefinitions);
+        List<IIndexDefinition> GetIndexDefinitions(bool myIncludeAncestorDefinitions);
 
         #endregion
     }

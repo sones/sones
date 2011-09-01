@@ -39,122 +39,170 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 
         public bool HasBinaryProperty(ServiceVertexType myServiceVertexType, string myEdgeName)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.HasBinaryProperty(myEdgeName);
         }
 
         public ServiceBinaryPropertyDefinition GetBinaryPropertyDefinition(ServiceVertexType myServiceVertexType, string myEdgeName)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return new ServiceBinaryPropertyDefinition(Response.GetBinaryPropertyDefinition(myEdgeName));
         }
 
         public bool HasBinaryProperties(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.HasBinaryProperties(myIncludeAncestorDefinitions);
         }
 
-        public IEnumerable<ServiceBinaryPropertyDefinition> GetBinaryProperties(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
+        public List<ServiceBinaryPropertyDefinition> GetBinaryProperties(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetBinaryProperties(myIncludeAncestorDefinitions).Select(x => new ServiceBinaryPropertyDefinition(x)).ToList();
         }
 
         public bool HasIncomingEdge(ServiceVertexType myServiceVertexType, string myEdgeName)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.HasIncomingEdge(myEdgeName);
         }
 
         public ServiceIncomingEdgeDefinition GetIncomingEdgeDefinition(ServiceVertexType myServiceVertexType, string myEdgeName)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return new ServiceIncomingEdgeDefinition(Response.GetIncomingEdgeDefinition(myEdgeName));
         }
 
         public bool HasIncomingEdges(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.HasIncomingEdges(myIncludeAncestorDefinitions);
         }
 
-        public IEnumerable<ServiceIncomingEdgeDefinition> GetIncomingEdgeDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
+        public List<ServiceIncomingEdgeDefinition> GetIncomingEdgeDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetIncomingEdgeDefinitions(myIncludeAncestorDefinitions).Select(x => new ServiceIncomingEdgeDefinition(x)).ToList();
         }
 
         public bool HasOutgoingEdge(ServiceVertexType myServiceVertexType, string myEdgeName)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.HasOutgoingEdge(myEdgeName);
         }
 
         public ServiceOutgoingEdgeDefinition GetOutgoingEdgeDefinition(ServiceVertexType myServiceVertexType, string myEdgeName)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return new ServiceOutgoingEdgeDefinition(Response.GetOutgoingEdgeDefinition(myEdgeName));
         }
 
         public bool HasOutgoingEdges(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.HasOutgoingEdges(myIncludeAncestorDefinitions);
         }
 
-        public IEnumerable<ServiceOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
+        public List<ServiceOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetOutgoingEdgeDefinitions(myIncludeAncestorDefinitions).Select(x => new ServiceOutgoingEdgeDefinition(x)).ToList();
         }
 
         public bool HasIndexDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.HasIndexDefinitions(myIncludeAncestorDefinitions);
         }
 
-        public IEnumerable<ServiceIndexDefinition> GetIndexDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
+        public List<ServiceIndexDefinition> GetIndexDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetIndexDefinitions(myIncludeAncestorDefinitions).Select(x => new ServiceIndexDefinition(x)).ToList();
         }
 
-        public IEnumerable<ServiceVertexType> GetDescendantVertexTypes(ServiceVertexType myServiceVertexType)
+        public List<ServiceVertexType> GetDescendantVertexTypes(ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetDescendantVertexTypes().Select(x => new ServiceVertexType(x)).ToList();
         }
 
-        public IEnumerable<ServiceVertexType> GetDescendantVertexTypesAndSelf(ServiceVertexType myServiceVertexType)
+        public List<ServiceVertexType> GetDescendantVertexTypesAndSelf(ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetDescendantVertexTypesAndSelf().Select(x => new ServiceVertexType(x)).ToList();
         }
 
-        public IEnumerable<ServiceVertexType> GetAncestorVertexTypes(ServiceVertexType myServiceVertexType)
+        public List<ServiceVertexType> GetAncestorVertexTypes(ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetAncestorVertexTypes().Select(x => new ServiceVertexType(x)).ToList();
         }
 
-        public IEnumerable<ServiceVertexType> GetAncestorVertexTypesAndSelf(ServiceVertexType myServiceVertexType)
+        public List<ServiceVertexType> GetAncestorVertexTypesAndSelf(ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetAncestorVertexTypesAndSelf().Select(x => new ServiceVertexType(x)).ToList();
         }
 
-        public IEnumerable<ServiceVertexType> GetKinsmenVertexTypes(ServiceVertexType myServiceVertexType)
+        public List<ServiceVertexType> GetKinsmenVertexTypes(ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetKinsmenVertexTypes().Select(x => new ServiceVertexType(x)).ToList();
         }
 
-        public IEnumerable<ServiceVertexType> GetKinsmenVertexTypesAndSelf(ServiceVertexType myServiceVertexType)
+        public List<ServiceVertexType> GetKinsmenVertexTypesAndSelf(ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetKinsmenVertexTypesAndSelf().Select(x => new ServiceVertexType(x)).ToList();
         }
 
-        public IEnumerable<ServiceVertexType> ChildrenVertexTypes(ServiceVertexType myServiceVertexType)
+        public List<ServiceVertexType> ChildrenVertexTypes(ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.ChildrenVertexTypes.Select(x => new ServiceVertexType(x)).ToList();
         }
 
         public ServiceVertexType ParentVertexType(ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return new ServiceVertexType(Response.ParentVertexType);
         }
 
         public bool HasUniqueDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.HasUniqueDefinitions(myIncludeAncestorDefinitions);
         }
 
-        public IEnumerable<ServiceUniqueDefinition> GetUniqueDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
+        public List<ServiceUniqueDefinition> GetUniqueDefinitions(ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(null, 0, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetUniqueDefinitions(myIncludeAncestorDefinitions).Select(x => new ServiceUniqueDefinition(x)).ToList();
         }
     }
 }
