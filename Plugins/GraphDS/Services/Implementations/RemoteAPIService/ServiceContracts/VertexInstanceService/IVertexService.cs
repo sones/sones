@@ -32,7 +32,7 @@ using sones.Library.Commons.Security;
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanceService
 {
     [ServiceContract(Namespace = sonesRPCServer.Namespace, Name = "VertexInstanceService")]
-    public interface IVertexService : IGraphElementService
+    public interface IVertexService
     {
 
         #region Edges
