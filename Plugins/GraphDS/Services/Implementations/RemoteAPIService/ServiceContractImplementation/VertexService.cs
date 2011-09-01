@@ -27,7 +27,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         public List<Tuple<long, long, List<ServiceVertexInstance>>> GetAllIncomingVertices(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
             ServiceVertexInstance myVertex)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.VertexTypeID, myVertex.VertexID);
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetAllIncomingVertices().Select(x => new Tuple<long, long, List<ServiceVertexInstance>>(x.Item1, x.Item2, x.Item3.Select(y => new ServiceVertexInstance(y)).ToList())).ToList();
         }
@@ -35,7 +35,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         public List<ServiceVertexInstance> GetIncomingVertices(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
             long myVertexTypeID, ServiceVertexInstance myVertex, long myEdgePropertyID)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.VertexTypeID, myVertex.VertexID);
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetIncomingVertices(myVertexTypeID, myEdgePropertyID).Select(x => new ServiceVertexInstance(x)).ToList();
         }
@@ -43,7 +43,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         public bool HasOutgoingEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
             ServiceVertexInstance myVertex, long myEdgePropertyID)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.VertexTypeID, myVertex.VertexID);
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.HasOutgoingEdge(myEdgePropertyID);
         }
@@ -51,14 +51,17 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         public List<Tuple<long, ServiceEdgeInstance>> GetAllOutgoingEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
             ServiceVertexInstance myVertex)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.VertexTypeID, myVertex.VertexID);
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetAllOutgoingEdges().Select(x => new Tuple<long, ServiceEdgeInstance>(x.Item1, new ServiceEdgeInstance(x.Item2))).ToList();
         }
 
-        public List<Tuple<long, ServiceHyperEdgeInstance>> GetAllOutgoingHyperEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex)
+        public List<Tuple<long, ServiceHyperEdgeInstance>> GetAllOutgoingHyperEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.GetAllOutgoingHyperEdges
         }
 
         public List<Tuple<long, ServiceSingleEdgeInstance>> GetAllOutgoingSingleEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex)

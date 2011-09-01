@@ -10,7 +10,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
     [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceEdgeInstance : AGraphElement
     {
-        public ServiceEdgeInstance(ISingleEdge myEdge) : base(myEdge.EdgeTypeID)
+        public ServiceEdgeInstance(IEdge myEdge) : base(myEdge.EdgeTypeID)
         {
             this.Comment = myEdge.Comment;
             var SourceVertex = myEdge.GetSourceVertex();
