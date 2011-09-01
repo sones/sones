@@ -61,35 +61,49 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
-            return Response.GetAllOutgoingHyperEdges
+            return Response.GetAllOutgoingHyperEdges().Select(x => new Tuple<long, ServiceHyperEdgeInstance>(x.Item1, new ServiceHyperEdgeInstance(x.Item2))).ToList();
         }
 
-        public List<Tuple<long, ServiceSingleEdgeInstance>> GetAllOutgoingSingleEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex)
+        public List<Tuple<long, ServiceSingleEdgeInstance>> GetAllOutgoingSingleEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.GetAllOutgoingSingleEdges().Select(x => new Tuple<long, ServiceSingleEdgeInstance>(x.Item1, new ServiceSingleEdgeInstance(x.Item2))).ToList();
+        }
+
+        public ServiceEdgeInstance GetOutgoingEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex, long myEdgePropertyID)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return new ServiceEdgeInstance(Response.GetOutgoingEdge(myEdgePropertyID));
+        }
+
+        public ServiceHyperEdgeInstance GetOutgoingHyperEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex, long myEdgePropertyID)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return new ServiceHyperEdgeInstance(Response.GetOutgoingHyperEdge(myEdgePropertyID));
+        }
+
+        public ServiceSingleEdgeInstance GetOutgoingSingleEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex, long myEdgePropertyID)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return new ServiceSingleEdgeInstance(Response.GetOutgoingSingleEdge(myEdgePropertyID));
+        }
+
+        public System.IO.Stream GetBinaryProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex, long myPropertyID)
         {
             throw new NotImplementedException();
         }
 
-        public ServiceEdgeInstance GetOutgoingEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, long myEdgePropertyID)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ServiceEdgeInstance GetOutgoingHyperEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, long myEdgePropertyID)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ServiceEdgeInstance GetOutgoingSingleEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, long myEdgePropertyID)
-        {
-            throw new NotImplementedException();
-        }
-
-        public System.IO.Stream GetBinaryProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, long myPropertyID)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<Tuple<long, System.IO.Stream>> GetAllBinaryProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex)
+        public List<Tuple<long, System.IO.Stream>> GetAllBinaryProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex)
         {
             throw new NotImplementedException();
         }
@@ -98,69 +112,102 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 
         #region IGraphElementService
 
-        public object GetProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, long myPropertyID)
+        public object GetProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex, long myPropertyID)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.GetProperty(myPropertyID);
         }
 
-        public bool HasProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, long myPropertyID)
+        public bool HasProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex, long myPropertyID)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.HasProperty(myPropertyID);
         }
 
-        public int GetCountOfProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex)
+        public int GetCountOfProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.GetCountOfProperties();
         }
 
-        public List<Tuple<long, object>> GetAllProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex)
+        public List<Tuple<long, object>> GetAllProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.GetAllProperties().Select(x => new Tuple<long, object>(x.Item1, (object)x.Item2)).ToList();
         }
 
-        public string GetPropertyAsString(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, long myPropertyID)
+        public string GetPropertyAsString(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex, long myPropertyID)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.GetPropertyAsString(myPropertyID);
         }
 
-        public object GetUnstructuredProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, string myPropertyName)
+        public object GetUnstructuredProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex, string myPropertyName)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.GetUnstructuredProperty<object>(myPropertyName);
         }
 
-        public bool HasUnstructuredProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, string myPropertyName)
+        public bool HasUnstructuredProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexInstance myVertex, string myPropertyName)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.HasUnstructuredProperty(myPropertyName);
         }
 
         public int GetCountOfUnstructuredProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.GetCountOfUnstructuredProperties();
         }
 
         public List<Tuple<string, object>> GetAllUnstructuredProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.GetAllUnstructuredProperties().ToList();
         }
 
         public string GetUnstructuredPropertyAsString(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, string myPropertyName)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.GetUnstructuredPropertyAsString(myPropertyName);
         }
 
         public string Comment(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.Comment;
         }
 
         public long CreationDate(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.CreationDate;
         }
 
         public long ModificationDate(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.ModificationDate;
         }
 
         #endregion

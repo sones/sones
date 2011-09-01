@@ -115,7 +115,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myEdgePropertyID">The property id of the specified edge</param>
         /// <returns>A hyper edge</returns>
         [OperationContract]
-        ServiceEdgeInstance GetOutgoingHyperEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+        ServiceHyperEdgeInstance GetOutgoingHyperEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
 
         /// <summary>
         /// Get a specified single edge
@@ -123,7 +123,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myEdgePropertyID">The property id of the specified edge</param>
         /// <returns>A single edge</returns>
         [OperationContract]
-        ServiceEdgeInstance GetOutgoingSingleEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+        ServiceSingleEdgeInstance GetOutgoingSingleEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
 
         #endregion
 

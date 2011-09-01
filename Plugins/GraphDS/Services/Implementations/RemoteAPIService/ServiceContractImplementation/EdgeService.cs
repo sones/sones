@@ -18,12 +18,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         
         #region IGraphElementService
                         
-        public object GetProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, AGraphElement myGraphElement, long myPropertyID)
+        public object GetProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myEdge, long myPropertyID)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            return Response.GetProperty(myPropertyID);
         }
 
-        public bool HasProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, AGraphElement myGraphElement, long myPropertyID)
+        public bool HasProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myEdge long myPropertyID)
         {
             throw new NotImplementedException();
         }
@@ -38,17 +40,17 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             throw new NotImplementedException();
         }
 
-        public string GetPropertyAsString(SecurityToken mySecToken, ServiceTransactionToken myTransToken, AGraphElement myGraphElement, long myPropertyID)
+        public string GetPropertyAsString(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myEdge long myPropertyID)
         {
             throw new NotImplementedException();
         }
 
-        public object GetUnstructuredProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, AGraphElement myGraphElement, string myPropertyName)
+        public object GetUnstructuredProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myEdge string myPropertyName)
         {
             throw new NotImplementedException();
         }
 
-        public bool HasUnstructuredProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, AGraphElement myGraphElement, string myPropertyName)
+        public bool HasUnstructuredProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myEdge string myPropertyName)
         {
             throw new NotImplementedException();
         }
@@ -63,7 +65,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             throw new NotImplementedException();
         }
 
-        public string GetUnstructuredPropertyAsString(SecurityToken mySecToken, ServiceTransactionToken myTransToken, AGraphElement myGraphElement, string myPropertyName)
+        public string GetUnstructuredPropertyAsString(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myEdge string myPropertyName)
         {
             throw new NotImplementedException();
         }
