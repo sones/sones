@@ -24,6 +24,8 @@ using System.Linq;
 using System.Text;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
 using sones.GraphDS.Services.RemoteAPIService.EdgeTypeService;
+using sones.Library.Commons.Security;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
@@ -31,7 +33,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
     {
         public const char TypeSeparator = '.';
 
-        
+
         public ServiceIncomingEdgePredefinition SetOutgoingEdge(ServiceIncomingEdgePredefinition myPreDef, ServiceVertexTypePredefinition myVertexType, ServiceOutgoingEdgePredefinition myOutgoingEdge)
         {
             if (myVertexType != null && myOutgoingEdge != null)

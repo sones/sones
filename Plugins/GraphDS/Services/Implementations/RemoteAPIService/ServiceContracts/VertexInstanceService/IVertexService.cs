@@ -46,7 +46,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
         /// <returns>True if there are incoming vertices, otherwise false</returns>
         [OperationContract]
-        Boolean HasIncomingVertices(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, Int64 myVertexTypeID, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+        Boolean HasIncomingVertices(SecurityToken mySecToken, ServiceTransactionToken myTransToken, Int64 myVertexTypeID, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
 
         /// <summary>
         /// Returns all incoming vertices
@@ -54,7 +54,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myFilter">A function to filter those incoming edges (VertexTypeID, EdgeID, ISingleEdges, Bool)</param>
         /// <returns>An IEnumerable of incoming edges</returns>
         [OperationContract]
-        List<Tuple<Int64, Int64, List<ServiceVertexInstance>>> GetAllIncomingVertices(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexInstance myVertex);
+        List<Tuple<Int64, Int64, List<ServiceVertexInstance>>> GetAllIncomingVertices(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex);
 
         /// <summary>
         /// Return all incoming vertices
@@ -63,7 +63,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myEdgePropertyID">The edge property id that points to this vertex</param>
         /// <returns>All incoming vertices</returns>
         [OperationContract]
-        List<ServiceVertexInstance> GetIncomingVertices(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, Int64 myVertexTypeID, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+        List<ServiceVertexInstance> GetIncomingVertices(SecurityToken mySecToken, ServiceTransactionToken myTransToken, Int64 myVertexTypeID, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
 
         #endregion
 
@@ -75,7 +75,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
         /// <returns>True if there is a specified edge, otherwise false</returns>
         [OperationContract]
-        Boolean HasOutgoingEdge(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+        Boolean HasOutgoingEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
 
         /// <summary>
         /// Returns all outgoing edges
@@ -83,7 +83,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myFilter">A function to filter those edges (EdgeID, IEdge, Bool)</param>
         /// <returns>An IEnumerable of all outgoing edges</returns>
         [OperationContract]
-        List<Tuple<Int64, ServiceEdgeInstance>> GetAllOutgoingEdges(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexInstance myVertex);
+        List<Tuple<Int64, ServiceEdgeInstance>> GetAllOutgoingEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex);
 
         /// <summary>
         /// Returns all outgoing hyper edges
@@ -91,7 +91,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myFilter">A function to filter those edges (EdgeID, IHyperEdge, Bool)</param>
         /// <returns>An IEnumerable of propertyID/hyper edge KVP</returns>
         [OperationContract]
-        List<Tuple<Int64, ServiceHyperEdgeInstance>> GetAllOutgoingHyperEdges(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexInstance myVertex);
+        List<Tuple<Int64, ServiceHyperEdgeInstance>> GetAllOutgoingHyperEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex);
 
         /// <summary>
         /// Returns all outgoing single edges
@@ -99,7 +99,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myFilter">A function to filter those edges (EdgeID, ISingleEdge, Bool)</param>
         /// <returns>An IEnumerable of all single edges</returns>
         [OperationContract]
-        List<Tuple<Int64, ServiceSingleEdgeInstance>> GetAllOutgoingSingleEdges(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexInstance myVertex);
+        List<Tuple<Int64, ServiceSingleEdgeInstance>> GetAllOutgoingSingleEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex);
 
         /// <summary>
         /// Returns a specified edge
@@ -107,7 +107,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myEdgePropertyID">The property id of the specified edge</param>
         /// <returns>An IEdge</returns>
         [OperationContract]
-        ServiceEdgeInstance GetOutgoingEdge(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+        ServiceEdgeInstance GetOutgoingEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
 
         /// <summary>
         /// Returns a specified hyper edge
@@ -115,7 +115,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myEdgePropertyID">The property id of the specified edge</param>
         /// <returns>A hyper edge</returns>
         [OperationContract]
-        ServiceEdgeInstance GetOutgoingHyperEdge(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+        ServiceEdgeInstance GetOutgoingHyperEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
 
         /// <summary>
         /// Get a specified single edge
@@ -123,7 +123,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myEdgePropertyID">The property id of the specified edge</param>
         /// <returns>A single edge</returns>
         [OperationContract]
-        ServiceEdgeInstance GetOutgoingSingleEdge(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+        ServiceEdgeInstance GetOutgoingSingleEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
 
         #endregion
 
@@ -141,7 +141,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// The requested binary property does not exist on this vertex.
         /// </exception>
         [OperationContract]
-        Stream GetBinaryProperty(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexInstance myVertex, Int64 myPropertyID);
+        Stream GetBinaryProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, Int64 myPropertyID);
 
         /// <summary>
         /// Returns all binary properties
@@ -149,7 +149,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myFilter">A function to filter the binary properties</param> 
         /// <returns>An IEnumerable of PropertyID/stream KVP</returns>
         [OperationContract]
-        List<Tuple<Int64, Stream>> GetAllBinaryProperties(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexInstance myVertex);
+        List<Tuple<Int64, Stream>> GetAllBinaryProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex);
 
         #endregion
 

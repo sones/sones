@@ -298,7 +298,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             return new RequestGetVertices(myVertexType.Name);
         }
 
-
         public static RequestInsertVertex MakeRequestInsertVertex(String myVertexTypeName, ServiceInsertPayload myPayload)
         {
             RequestInsertVertex Request = new RequestInsertVertex(myVertexTypeName);

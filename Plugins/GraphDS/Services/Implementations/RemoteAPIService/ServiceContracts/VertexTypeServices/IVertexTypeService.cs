@@ -42,7 +42,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// <returns>An enumeration of IVertexType that are descendant of this IVertexType.</returns>
         /// <seealso cref="IBaseType.GetDescendantTypes"/>
         [OperationContract]
-        List<ServiceVertexType> GetDescendantVertexTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType);
+        List<ServiceVertexType> GetDescendantVertexTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType);
 
         /// <summary>
         /// Returns the descendant of this IVertexType and this IVertexType in one enumeration.
@@ -50,7 +50,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// <returns>An enumeration of IVertexType that are descendant of this IVertexType and this IVertexType itself.</returns>
         /// <seealso cref="IBaseType.GetDescendantTypesAndSelf"/>
         [OperationContract]
-        List<ServiceVertexType> GetDescendantVertexTypesAndSelf(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType);
+        List<ServiceVertexType> GetDescendantVertexTypesAndSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType);
 
         /// <summary>
         /// Returns the ancestor of this IVertexType.
@@ -58,7 +58,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// <returns>An enumeration of IVertexType that are ancestors of this IVertexType.</returns>
         /// <seealso cref="IBaseType.GetAncestorTypes"/>
         [OperationContract]
-        List<ServiceVertexType> GetAncestorVertexTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType);
+        List<ServiceVertexType> GetAncestorVertexTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType);
 
         /// <summary>
         /// Returns the ancestor of this IVertexType and this IVertexType in one enumeration.
@@ -66,7 +66,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// <returns>An enumeration of IVertexType that are ancestors of this IVertexType and this IVertexType itself.</returns>
         /// <seealso cref="IBaseType.GetAncestorTypesAndSelf"/>
         [OperationContract]
-        List<ServiceVertexType> GetAncestorVertexTypesAndSelf(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType);
+        List<ServiceVertexType> GetAncestorVertexTypesAndSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType);
 
         /// <summary>
         /// Returns all descendant and ancestors of this IVertexType.
@@ -74,7 +74,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// <returns>An enumeration of all IVertexType that are ancestors or descendant of this IVertexType.</returns>
         /// <seealso cref="IBaseType.GetKinsmenTypes"/>
         [OperationContract]
-        List<ServiceVertexType> GetKinsmenVertexTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType);
+        List<ServiceVertexType> GetKinsmenVertexTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType);
 
         /// <summary>
         /// Returns all descendant and ancestors of this IVertexType and this IVertexType in one enumeration. 
@@ -82,21 +82,21 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// <returns>An enumeration of all IVertexType that are ancestors or descendant of this IVertexType and this IVertexType itself.</returns>
         /// <seealso cref="IBaseType.GetKinsmenTypesAndSelf"/>
         [OperationContract]
-        List<ServiceVertexType> GetKinsmenVertexTypesAndSelf(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType);
+        List<ServiceVertexType> GetKinsmenVertexTypesAndSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType);
 
         /// <summary>
         /// Returns the direct children of this IVertexType.
         /// </summary>
         /// <seealso cref="IBaseType.ChildrenTypes"/>
         [OperationContract]
-        List<ServiceVertexType> ChildrenVertexTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType);
+        List<ServiceVertexType> ChildrenVertexTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType);
  
         /// <summary>
         /// Gets the parent of this IVertexType.
         /// </summary>
         /// <seealso cref="IBaseType.ParentType"/>
         [OperationContract]
-        ServiceVertexType ParentVertexType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType);
+        ServiceVertexType ParentVertexType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType);
 
         #endregion
 
@@ -107,28 +107,28 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// </summary>
         /// <param name="myEdgeName">The name of the binary property.</param>
         /// <returns>True, if a binary property with the given name exists, otherwise false.</returns>
-        bool HasBinaryProperty(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, String myEdgeName);
+        bool HasBinaryProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, String myEdgeName);
 
         /// <summary>
         /// Gets a certain binary property definition.
         /// </summary>
         /// <param name="myAttributeName">The name of the interesting binary property.</param>
         /// <returns>A binary property definition, if existing otherwise <c>NULL</c>.</returns>
-        ServiceBinaryPropertyDefinition GetBinaryPropertyDefinition(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, String myEdgeName);
+        ServiceBinaryPropertyDefinition GetBinaryPropertyDefinition(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, String myEdgeName);
 
         /// <summary>
         /// Has this vertex type any binary property.
         /// </summary>
         /// <param name="myIncludeAncestorDefinitions">If true, the ancestor vertex types are included, otherwise false.</param>
         /// <returns>True if a binary property exists, otherwise false.</returns>
-        bool HasBinaryProperties(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+        bool HasBinaryProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         /// <summary>
         /// Get all binary properties.
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s).</param>
         /// <returns>An enumerable of binary property definitions.</returns>
-        List<ServiceBinaryPropertyDefinition> GetBinaryProperties(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+        List<ServiceBinaryPropertyDefinition> GetBinaryProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         #endregion
 
@@ -141,7 +141,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// </summary>
         /// <returns>True or false</returns>
         [OperationContract]
-        bool HasIncomingEdge(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, String myEdgeName);
+        bool HasIncomingEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, String myEdgeName);
 
 
         /// <summary>
@@ -150,14 +150,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// <param name="myAttributeName">The name of the interesting incoming IncomingEdge</param>
         /// <returns>An incoming IncomingEdge definition</returns>
         [OperationContract]
-        ServiceIncomingEdgeDefinition GetIncomingEdgeDefinition(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, String myEdgeName);
+        ServiceIncomingEdgeDefinition GetIncomingEdgeDefinition(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, String myEdgeName);
 
         /// <summary>
         /// Has this vertex type any visible incoming edges?
         /// </summary>
         /// <returns>True or false</returns>
         [OperationContract]
-        bool HasIncomingEdges(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+        bool HasIncomingEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         /// <summary>
         /// Get all incoming edges
@@ -165,7 +165,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of incoming IncomingEdge attributes</returns>
         [OperationContract]
-        List<ServiceIncomingEdgeDefinition> GetIncomingEdgeDefinitions(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+        List<ServiceIncomingEdgeDefinition> GetIncomingEdgeDefinitions(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
 
         #endregion
@@ -177,7 +177,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// </summary>
         /// <returns>True or false</returns>
         [OperationContract]
-        bool HasOutgoingEdge(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, String myEdgeName);
+        bool HasOutgoingEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, String myEdgeName);
 
         /// <summary>
         /// Gets a certain outgoing IncomingEdge definition
@@ -185,14 +185,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// <param name="myAttributeName">The name of the interesting outgoing IncomingEdge</param>
         /// <returns>An outgoing IncomingEdge definition</returns>
         [OperationContract]
-        ServiceOutgoingEdgeDefinition GetOutgoingEdgeDefinition(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, String myEdgeName);
+        ServiceOutgoingEdgeDefinition GetOutgoingEdgeDefinition(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, String myEdgeName);
 
         /// <summary>
         /// Has this vertex type any outgoing edges?
         /// </summary>
         /// <returns>True or false</returns>
         [OperationContract]
-        bool HasOutgoingEdges(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+        bool HasOutgoingEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         /// <summary>
         /// Get all outgoing edges
@@ -200,7 +200,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of outgoing IncomingEdge attributes</returns>
         [OperationContract]
-        List<ServiceOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+        List<ServiceOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         #endregion
 
@@ -214,28 +214,28 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// <param name="myIncludeAncestorDefinitions"></param>
         /// <returns></returns>
         [OperationContract]
-        bool HasUniqueDefinitions(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+        bool HasUniqueDefinitions(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         /// <summary>
         /// A set of uniqueness definitions.
         /// </summary>
         /// <returns>An enumerable of uniqueness definitions. Never <c>NULL</c>.</returns>
         [OperationContract]
-        List<ServiceUniqueDefinition> GetUniqueDefinitions(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+        List<ServiceUniqueDefinition> GetUniqueDefinitions(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         #endregion
 
         #region Indices
 
         [OperationContract]
-        bool HasIndexDefinitions(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+        bool HasIndexDefinitions(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         /// <summary>
         /// A set of index definitions.
         /// </summary>
         /// <returns>An enumerable of index definitions. Never <c>NULL</c>.</returns>
         [OperationContract]
-        List<ServiceIndexDefinition> GetIndexDefinitions(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+        List<ServiceIndexDefinition> GetIndexDefinitions(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         #endregion
 
