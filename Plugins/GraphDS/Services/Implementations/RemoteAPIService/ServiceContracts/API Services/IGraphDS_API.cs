@@ -60,12 +60,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         List<Int64> Clear(SecurityToken mySecToken, ServiceTransactionToken myTransToken);
 
         [OperationContract]
-        ServiceEdgeType CreateEdgeType(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        ServiceEdgeType CreateEdgeType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
             ServiceEdgeTypePredefinition myEdgeTypePreDef);
-
-        [OperationContract]
-        List<ServiceEdgeType> CreateEdgeTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
-            List<ServiceEdgeTypePredefinition> myEdgeTypePreDef);
 
         [OperationContract]
         ServiceIndexDefinition CreateIndex(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceIndexPredefinition myVertexTypePreDef);
@@ -74,9 +70,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         List<ServiceVertexType> CreateVertexTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, 
             List<ServiceVertexTypePredefinition> myVertexTypePreDef);
                 
-        [OperationContract]
-        List<Int64> Delete(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
-            ServiceVertexType myVertexType, List<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null); 
+        //[OperationContract]
+        //List<Int64> Delete(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        //    ServiceVertexType myVertexType, List<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null); 
 
         [OperationContract]
         ServiceIndexDefinition DescribeIndex(SecurityToken mySecToken, ServiceTransactionToken myTransToken,

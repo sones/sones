@@ -37,6 +37,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
             this.TypeID = myTypeID;
         }
 
+        public AGraphElement() { }
+
         [DataMember]
         public Int64 TypeID; 
     }

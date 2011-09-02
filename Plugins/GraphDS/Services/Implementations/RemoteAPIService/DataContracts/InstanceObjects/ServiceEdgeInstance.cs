@@ -39,6 +39,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
             this.SourceVertexID = SourceVertex.VertexID;
             this.SourceVertexTypeID = SourceVertex.VertexRevisionID;
         }
+
+        public ServiceEdgeInstance() { }
+
        
         [DataMember]
         public Nullable<Int64> EdgePropertyID;

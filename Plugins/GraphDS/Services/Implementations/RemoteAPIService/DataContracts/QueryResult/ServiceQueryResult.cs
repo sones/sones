@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphQL.Result;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
-    [DataContract(Namespace = "http://www.sones.com")]
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceQueryResult
     {
         public ServiceQueryResult(sones.GraphQL.Result.QueryResult myQueryResult)
@@ -40,5 +41,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 
         [DataMember]
         public String NameOfQueryLanguage;
+
+        [DataMember]
+        public List<ServiceVertexInstance> Vertices;
     }
 }

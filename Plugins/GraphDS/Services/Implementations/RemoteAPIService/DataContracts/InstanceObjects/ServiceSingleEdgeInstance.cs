@@ -37,6 +37,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
             this.HyperEdgeSourceVertex = myHyperEdgeSourceVertex;
         }
 
+        public ServiceSingleEdgeInstance() { }
+
         [DataMember]
         public ServiceVertexInstance TargetVertex;
 

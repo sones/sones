@@ -47,7 +47,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         #region C'tor
 
         public RPCServiceContract(IGraphDS myGraphDS)
-            : base(myGraphDS)
         {
             this.GraphDS = myGraphDS;
         }

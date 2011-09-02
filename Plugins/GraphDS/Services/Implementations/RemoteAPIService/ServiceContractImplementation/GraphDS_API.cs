@@ -250,5 +250,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             return new ServiceQueryResult(this.GraphDS.Query(mySecurityToken, myTransactionToken.TransactionID, myQueryString, myLanguage));
         }
+
+
+
+       
     }
 }

@@ -37,7 +37,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts;
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
     
-    public partial class RPCServiceContract : AbstractBaseTypeService, IEdgeTypeService
+    public partial class RPCServiceContract : IEdgeTypeService
     {
 
         public List<ServiceEdgeType> GetDescendantEdgeTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myEdgeType)
@@ -95,5 +95,46 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServiceEdgeType(Response.ParentEdgeType);
         }
+
+        #region IBaseTypeServices
+
+        
+
+        public bool IsSealed(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool HasParentType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool HasChildTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsAncestor(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType, ServiceEdgeType myOtherType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsAncestorOrSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType, ServiceEdgeType myOtherType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsDescendant(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType, ServiceEdgeType myOtherType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsDescendantOrSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType, ServiceEdgeType myOtherType)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

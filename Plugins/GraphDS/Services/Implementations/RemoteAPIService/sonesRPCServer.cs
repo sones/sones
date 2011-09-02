@@ -32,6 +32,7 @@ using sones.GraphDS.Services.RemoteAPIService.API_Services;
 using WCFExtras.Wsdl;
 using sones.GraphDS.Services.RemoteAPIService.EdgeTypeService;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanceService;
+using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceService;
 
 namespace sones.GraphDS.Services.RemoteAPIService
 {
@@ -119,14 +120,11 @@ namespace sones.GraphDS.Services.RemoteAPIService
             {
                 BasicBinding.Security.Mode = BasicHttpSecurityMode.Transport;
             }
-             
             
-                     
-
+            
             RPCServiceContract ContractInstance = new RPCServiceContract(_GraphDS);
-
-
-           
+            
+          
             _ServiceHost = new ServiceHost(ContractInstance, this.URI);
             _ServiceHost.Description.Namespace = Namespace;
 
@@ -173,14 +171,20 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
             ContractDescription EdgeTypeServiceContract = ContractDescription.GetContract(typeof(IEdgeTypeService));
             EdgeTypeServiceContract.Namespace = Namespace;
-            ServiceEndpoint IncomingEdgeService = new ServiceEndpoint(EdgeTypeServiceContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
-            _ServiceHost.AddServiceEndpoint(IncomingEdgeService);
+            ServiceEndpoint EdgeTypeService = new ServiceEndpoint(EdgeTypeServiceContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
+            _ServiceHost.AddServiceEndpoint(EdgeTypeService);
 
             #endregion
 
+            #region EdgeInstanceService
 
+            ContractDescription EdgeInstanceServiceContract = ContractDescription.GetContract(typeof(IEdgeService));
+            EdgeInstanceServiceContract.Namespace = Namespace;
+            ServiceEndpoint EdgeInstanceService = new ServiceEndpoint(EdgeInstanceServiceContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
+            _ServiceHost.AddServiceEndpoint(EdgeInstanceService);
 
-
+            #endregion
+            
             #endregion
 
 

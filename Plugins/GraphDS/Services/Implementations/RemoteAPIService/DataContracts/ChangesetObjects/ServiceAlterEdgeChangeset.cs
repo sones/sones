@@ -7,7 +7,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects
 {
-    [DataContract(Namespace = "http://www.sones.com")]
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceAlterEdgeChangeset
     {
         [DataMember]

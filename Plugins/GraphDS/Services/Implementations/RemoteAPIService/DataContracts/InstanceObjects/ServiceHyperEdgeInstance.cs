@@ -38,6 +38,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
             ).ToList();
         }
 
+        public ServiceHyperEdgeInstance() { }
+
         [DataMember]
         public List<ServiceSingleEdgeInstance> SingleEdges;
     }
