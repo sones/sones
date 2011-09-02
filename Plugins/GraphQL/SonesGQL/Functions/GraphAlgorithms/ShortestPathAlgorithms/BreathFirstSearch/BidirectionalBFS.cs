@@ -69,6 +69,9 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
         //this list contains each type in an inheritance hirarchy, beginning on the reference type (of the select) up to the type on which the outgoing edge is defined
         List<IVertexType> _Types;
 
+        //saves the nodes which are found on intersection
+        HashSet<Node> _IntersectNodes;
+
         #endregion
 
         #region constructor
@@ -82,6 +85,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             _VisitedNodesRight = new Dictionary<Tuple<long, long>, Node>();
 
             _Types = new List<IVertexType>();
+
+            _IntersectNodes = new HashSet<Node>();
         }
 
         #endregion
@@ -347,6 +352,8 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                                 _VisitedNodesRight[node.Key].addChildren(node.Value.Children);
                                 _VisitedNodesRight[node.Key].addParents(node.Value.Parents);
 
+                                _IntersectNodes.Add(_VisitedNodesRight[node.Key]);
+
                                 foundIntersect = true;
                             }
                         }
@@ -359,8 +366,6 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                             //only shortest path
                             if (_ShortestOnly && !_FindAll)
                             {
-                                //_Logger.Info("found shortest path..starting analyzer");
-
                                 if ((_DepthLeft + _DepthRight + 1) > _MaxPathLength)
                                 {
                                     _ShortestPathLength = _MaxPathLength;
@@ -370,7 +375,9 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
                                     _ShortestPathLength = Convert.ToUInt64(_DepthLeft + _DepthRight + 1);
                                 }
 
-                                return new TargetAnalyzer(_Root, _Target, _ShortestPathLength, _ShortestOnly, _FindAll).GetPaths();
+                                //return new TargetAnalyzer(_Root, _Target, _ShortestPathLength, _ShortestOnly, _FindAll).GetPaths();
+                                return new TargetAnalyzer(_Root, _Target, _ShortestPathLength, _ShortestOnly, _FindAll)
+                                            .GetPaths();
                             }
                             //if find all shortest paths
                             else if (_ShortestOnly && _FindAll)
