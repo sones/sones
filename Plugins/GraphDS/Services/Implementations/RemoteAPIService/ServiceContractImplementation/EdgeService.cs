@@ -41,11 +41,13 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         public object GetProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myEdge, long myPropertyID)
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
-            var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+            var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
+        
+
             return Response.GetProperty(myPropertyID);
         }
 
-        public bool HasProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myEdge long myPropertyID)
+        public bool HasProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myEdge, long myPropertyID)
         {
             throw new NotImplementedException();
         }

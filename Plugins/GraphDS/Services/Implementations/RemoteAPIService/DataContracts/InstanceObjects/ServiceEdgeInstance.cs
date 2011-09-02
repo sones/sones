@@ -28,10 +28,12 @@ using sones.Library.PropertyHyperGraph;
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
-    public class ServiceEdgeInstance : AGraphElement
+    public abstract class ServiceEdgeInstance : AGraphElement
     {
-        public ServiceEdgeInstance(IEdge myEdge) : base(myEdge.EdgeTypeID)
+        public ServiceEdgeInstance(IEdge myEdge, Nullable<Int64> myEdgePropertyID)
+            : base(myEdge.EdgeTypeID)
         {
+            this.EdgePropertyID = myEdgePropertyID;
             this.Comment = myEdge.Comment;
             var SourceVertex = myEdge.GetSourceVertex();
             this.SourceVertexID = SourceVertex.VertexID;
@@ -39,7 +41,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
         }
        
         [DataMember]
-        public Int64 EdgeID;
+        public Nullable<Int64> EdgePropertyID;
 
         [DataMember]
         public Int64 SourceVertexTypeID;

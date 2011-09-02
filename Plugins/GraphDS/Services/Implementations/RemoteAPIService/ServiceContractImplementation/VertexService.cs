@@ -14,8 +14,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
     public partial class RPCServiceContract : IVertexService
     {
-        #region IVertexService
-
         public bool HasIncomingVertices(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
             long myVertexTypeID, ServiceVertexInstance myVertex, long myEdgePropertyID)
         {
@@ -53,7 +51,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
-            return Response.GetAllOutgoingEdges().Select(x => new Tuple<long, ServiceEdgeInstance>(x.Item1, new ServiceEdgeInstance(x.Item2))).ToList();
+            return Response.GetAllOutgoingEdges().Select(x => new Tuple<long, ServiceEdgeInstance>(
+                x.Item1, x.Item2 is ISingleEdge ? new ServiceSingleEdgeInstance(x.Item2 as ISingleEdge, x.Item1) : new ServiceHyperEdgeInstance(x.Item2 as IHyperEdge, x.Item1)
+            ).ToList();
         }
 
         public List<Tuple<long, ServiceHyperEdgeInstance>> GetAllOutgoingHyperEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
@@ -77,7 +77,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
-            return new ServiceEdgeInstance(Response.GetOutgoingEdge(myEdgePropertyID));
+            return new ServiceEdgeInstance(Response.GetOutgoingEdge(myEdgePropertyID), myEdgePropertyID);
         }
 
         public ServiceHyperEdgeInstance GetOutgoingHyperEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
@@ -107,10 +107,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             throw new NotImplementedException();
         }
-
-        #endregion
-
-        #region IGraphElementService
 
         public object GetProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
             ServiceVertexInstance myVertex, long myPropertyID)
@@ -209,7 +205,5 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.ModificationDate;
         }
-
-        #endregion
     }
 }
