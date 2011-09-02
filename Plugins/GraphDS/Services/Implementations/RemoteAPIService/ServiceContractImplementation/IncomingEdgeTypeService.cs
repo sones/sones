@@ -45,8 +45,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         public string Combine(string myTargetType, string myTargetEdgeName)
         {
             return String.Join(TypeSeparator.ToString(), myTargetType, myTargetEdgeName);
-        }
-
-        
+        }       
     }
 }
