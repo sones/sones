@@ -19,27 +19,8 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using sones.Library.Commons.VertexStore;
-using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Manager.TypeManagement;
-using sones.Library.PropertyHyperGraph;
-using sones.GraphDB.Expression;
-using sones.Library.Commons.Transaction;
 using sones.Library.Commons.Security;
-using sones.GraphDB.ErrorHandling.Expression;
-using sones.GraphDB.Manager.QueryPlan;
-using sones.GraphDB.Expression.Tree;
-using sones.Library.Commons.VertexStore.Definitions;
-using sones.GraphDB.Request;
-using sones.GraphDB.ErrorHandling;
-using sones.GraphDB.TypeSystem;
-using sones.Plugins.Index.Interfaces;
-using sones.Library.LanguageExtensions;
-using sones.GraphDB.Expression.Tree.Literals;
-using System.Collections;
-using sones.GraphDB.Request.Insert;
 
 namespace sones.GraphDB.Manager.Vertex
 {

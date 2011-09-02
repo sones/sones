@@ -288,7 +288,7 @@ namespace sones.TagExampleWithRest
             //Beware: Use just one of them!
 
             //1. create an index definition and specifie the property- and type name
-            var MyIndex = new IndexPredefinition("MyIndex").SetIndexType("MultipleValueIndex").AddProperty("Name").SetVertexType("Website");
+            var MyIndex = new IndexPredefinition("MyIndex").SetIndexType("SonesIndex").AddProperty("Name").SetVertexType("Website");
             //add index
             Website_VertexTypePredefinition.AddIndex((IndexPredefinition)MyIndex);
 
@@ -304,7 +304,7 @@ namespace sones.TagExampleWithRest
             //                                                          TransToken,
             //                                                          new RequestCreateIndex(
             //                                                          new IndexPredefinition("MyIndex")
-            //                                                                   .SetIndexType("MultipleValueIndex")
+            //                                                                   .SetIndexType("SonesIndex")
             //                                                                   .AddProperty("Name")
             //                                                                   .SetVertexType("Website")), (Statistics, Index) => Index);
 
@@ -443,7 +443,7 @@ namespace sones.TagExampleWithRest
             //3. make a create index query
             //var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
             //                                                                    Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags)");
-            //var MyIndex = GraphQL.Query(SecToken, TransToken, "CREATE INDEX MyIndex ON VERTEX TYPE Website (Name) INDEXTYPE MultipleValueIndex");            
+            //var MyIndex = GraphQL.Query(SecToken, TransToken, "CREATE INDEX MyIndex ON VERTEX TYPE Website (Name) INDEXTYPE SonesIndex");            
             CheckResult(Types);
             #endregion
 
