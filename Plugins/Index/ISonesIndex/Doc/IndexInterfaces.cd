@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="sones.Plugins.Index.ErrorHandling.ASonesIndexException" Collapsed="true">
+    <Position X="5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ErrorHandling\ASonesIndexException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Plugins.Index.ErrorHandling.IndexAddFailedException" Collapsed="true">
+    <Position X="2.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>ErrorHandling\IndexAddFailedException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Plugins.Index.ErrorHandling.IndexKeyExistsException" Collapsed="true">
+    <Position X="5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>ErrorHandling\IndexKeyExistsException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Plugins.Index.ErrorHandling.IndexKeyNotFoundException" Collapsed="true">
+    <Position X="7.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>ErrorHandling\IndexKeyNotFoundException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Plugins.Index.ErrorHandling.IndexRemoveFailedException" Collapsed="true">
+    <Position X="9.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>ErrorHandling\IndexRemoveFailedException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Plugins.Index.ErrorHandling.UnknownIndexException" Collapsed="true">
+    <Position X="0.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>ErrorHandling\UnknownIndexException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Plugins.Index.Helper.IndexConstants" Collapsed="true">
+    <Position X="14.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Helper\IndexConstants.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Plugins.Index.ISonesIndexVersionCompatibility" Collapsed="true">
+    <Position X="16.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\ISonesIndex.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="sones.Plugins.Index.Compound.ICompoundIndexKey" Collapsed="true">
+    <Position X="14.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\Compound\ICompoundIndexKey.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Compound.ISonesCompoundIndex" Collapsed="true">
+    <Position X="12" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAJAAAAAAAAAAAAACAAIAAAAAAAAAAAACAACAAAEAAA=</HashCode>
+      <FileName>Interfaces\Compound\ISonesCompoundIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Fulltext.ISonesFulltextIndex" Collapsed="true">
+    <Position X="12" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\Fulltext\ISonesFulltextIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Fulltext.ISonesFulltextResult" Collapsed="true">
+    <Position X="16.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAYAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\Fulltext\ISonesFulltextResult.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Fulltext.ISonesFulltextResultEntry" Collapsed="true">
+    <Position X="14.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAgAAAAAAAAAAAAAAAwCAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\Fulltext\ISonesFulltextResultEntry.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.ISonesIndex" Collapsed="true">
+    <Position X="6.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAJAABQEABAEAAAACIAABAAAAIAAAAAAAAACAIBEAAA=</HashCode>
+      <FileName>Interfaces\ISonesIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Persistent.ISonesPersistentIndex" Collapsed="true">
+    <Position X="0.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\Persistent\ISonesPersistentIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Range.ISonesRangeIndex" Collapsed="true">
+    <Position X="3" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>Interfaces\Range\ISonesRangeIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Spatial.ICircle" Collapsed="true">
+    <Position X="2.75" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Interfaces\Spatial\Geometries\ICircle.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Spatial.IGeometry" Collapsed="true">
+    <Position X="2.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\Spatial\Geometries\IGeometry.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Spatial.IPoint" Collapsed="true">
+    <Position X="5" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAAAIAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\Spatial\Geometries\IPoint.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Spatial.IRectangle" Collapsed="true">
+    <Position X="0.5" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAEAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>Interfaces\Spatial\Geometries\IRectangle.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Spatial.ISonesSpatialIndex">
+    <Position X="5.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\Spatial\ISonesSpatialIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Transactional.ISonesTransactionalIndex" Collapsed="true">
+    <Position X="7.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\Transactional\ISonesTransactionalIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Versioned.ISonesVersionedIndex" Collapsed="true">
+    <Position X="9.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CABAAAAAAAAEAAAACAAAAAgAAIAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Interfaces\Versioned\ISonesVersionedIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="sones.Plugins.Index.Helper.IndexAddStrategy" Collapsed="true">
+    <Position X="14.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEIAAAAAACAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Helper\IndexAddStrategy.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -40,25 +40,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\ASonesIndex.cs" />
     <Compile Include="ErrorHandling\ASonesIndexException.cs" />
-    <Compile Include="ErrorHandling\UniqueIndexConstraintException.cs" />
+    <Compile Include="ErrorHandling\IndexAddFailedException.cs" />
+    <Compile Include="ErrorHandling\IndexKeyNotFoundException.cs" />
+    <Compile Include="ErrorHandling\IndexKeyExistsException.cs" />
+    <Compile Include="ErrorHandling\IndexRemoveFailedException.cs" />
+    <Compile Include="ErrorHandling\NullKeysNotSupportedException.cs" />
     <Compile Include="ErrorHandling\UnknownIndexException.cs" />
     <Compile Include="Helper\IndexAddStrategy.cs" />
-    <Compile Include="Interfaces\IIndex.cs" />
+    <Compile Include="Helper\IndexConstants.cs" />
+    <Compile Include="Interfaces\Compound\ICompoundIndexKey.cs" />
+    <Compile Include="Interfaces\Compound\ISonesCompoundIndex.cs" />
+    <Compile Include="Interfaces\Fulltext\ISonesFulltextIndex.cs" />
+    <Compile Include="Interfaces\Fulltext\ISonesFulltextResult.cs" />
+    <Compile Include="Interfaces\Fulltext\ISonesFulltextResultEntry.cs" />
     <Compile Include="Interfaces\ISonesIndex.cs" />
-    <Compile Include="Interfaces\IMultipleValueIndex.cs" />
-    <Compile Include="Interfaces\IMultipleValueRangeIndex.cs" />
-    <Compile Include="Interfaces\IMultipleValueRangeVersionedIndex.cs" />
-    <Compile Include="Interfaces\IMultipleValueVersionedIndex.cs" />
-    <Compile Include="Interfaces\IRangeIndex.cs" />
-    <Compile Include="Interfaces\ISingleValueIndex.cs" />
-    <Compile Include="Interfaces\ISingleValueRangeIndex.cs" />
-    <Compile Include="Interfaces\ISingleValueRangeVersionedIndex.cs" />
-    <Compile Include="Interfaces\ISingleValueVersionedIndex.cs" />
-    <Compile Include="Interfaces\IVersionedIndex.cs" />
+    <Compile Include="Interfaces\Persistent\ISonesPersistentIndex.cs" />
+    <Compile Include="Interfaces\Range\ISonesRangeIndex.cs" />
+    <Compile Include="Interfaces\Spatial\Geometries\ICircle.cs" />
+    <Compile Include="Interfaces\Spatial\Geometries\IGeometry.cs" />
+    <Compile Include="Interfaces\Spatial\Geometries\IPoint.cs" />
+    <Compile Include="Interfaces\Spatial\Geometries\IRectangle.cs" />
+    <Compile Include="Interfaces\Spatial\ISonesSpatialIndex.cs" />
+    <Compile Include="Interfaces\Transactional\ISonesTransactionalIndex.cs" />
+    <Compile Include="Interfaces\Versioned\ISonesVersionedIndex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Library\External\NewFastSerializer\NewFastSerializer.csproj">
+      <Project>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</Project>
+      <Name>NewFastSerializer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\CollectionWrapper\CollectionWrapper.csproj">
+      <Project>{7748D9BA-FB40-42F9-9F51-F636F9F1DA8E}</Project>
+      <Name>CollectionWrapper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
@@ -67,9 +84,13 @@
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Interfaces\IndexInterfaces.cd" />
+    <None Include="Doc\IndexInterfaces.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
