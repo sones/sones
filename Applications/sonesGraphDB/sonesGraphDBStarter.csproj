@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -211,6 +211,10 @@
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\GraphMLImport\GraphMLImport.csproj">
       <Project>{DFC1BC4B-F865-48C6-B8E1-64644D410748}</Project>
       <Name>GraphMLImport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleImportBenchmark\SimpleImportBenchmark.csproj">
+      <Project>{A1862AB4-A337-4E4C-A5FB-42816CFC04D2}</Project>
+      <Name>SimpleImportBenchmark</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
