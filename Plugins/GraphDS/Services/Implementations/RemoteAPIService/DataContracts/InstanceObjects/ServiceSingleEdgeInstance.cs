@@ -30,12 +30,17 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
     [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceSingleEdgeInstance : ServiceEdgeInstance
     {
-        public ServiceSingleEdgeInstance(ISingleEdge mySingleEdge, Nullable<Int64> myEdgePropertyID = null): base(mySingleEdge as IEdge, myEdgePropertyID)
+        public ServiceSingleEdgeInstance(ISingleEdge mySingleEdge, Nullable<Int64> myEdgePropertyID = null, ServiceVertexInstance myHyperEdgeSourceVertex = null)
+            : base(mySingleEdge as IEdge, myEdgePropertyID)
         {
-           this.TargetVertex = new ServiceVertexInstance(mySingleEdge.GetTargetVertex());
+            this.TargetVertex = new ServiceVertexInstance(mySingleEdge.GetTargetVertex());
+            this.HyperEdgeSourceVertex = myHyperEdgeSourceVertex;
         }
 
         [DataMember]
         public ServiceVertexInstance TargetVertex;
+
+        [DataMember]
+        public ServiceVertexInstance HyperEdgeSourceVertex;
     }
 }

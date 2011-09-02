@@ -33,7 +33,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
         public ServiceHyperEdgeInstance(IHyperEdge myHyperEdge, Nullable<Int64> myEdgePropertyID)
             : base(myHyperEdge as IEdge, myEdgePropertyID)
         {
-            this.SingleEdges = myHyperEdge.GetAllEdges().Select(x => new ServiceSingleEdgeInstance(x, null)).ToList();
+            this.SingleEdges = myHyperEdge.GetAllEdges().Select(
+                x => new ServiceSingleEdgeInstance(x, null, new ServiceVertexInstance(myHyperEdge.GetSourceVertex()))
+            ).ToList();
         }
 
         [DataMember]
