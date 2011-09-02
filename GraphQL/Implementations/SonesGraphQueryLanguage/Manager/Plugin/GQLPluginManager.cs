@@ -19,17 +19,13 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.Library.VersionedPluginManager;
-using sones.Plugins.Index.Interfaces;
 using sones.Plugins.Index;
-using sones.Plugins.SonesGQL;
-using sones.Plugins.SonesGQL.Functions;
+using sones.Plugins.Index.Versioned;
 using sones.Plugins.SonesGQL.Aggregates;
-using sones.Plugins.SonesGQL.DBImport;
 using sones.Plugins.SonesGQL.DBExport;
+using sones.Plugins.SonesGQL.DBImport;
+using sones.Plugins.SonesGQL.Functions;
 using sones.Plugins.SonesGQL.Statements;
 
 namespace sones.GraphQL.GQL.Manager.Plugin
@@ -78,9 +74,8 @@ namespace sones.GraphQL.GQL.Manager.Plugin
 
             #region indices
 
-                .Register<ISingleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
-                .Register<IVersionedIndex<IComparable, Int64, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
-                .Register<IMultipleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
+                .Register<ISonesIndex>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
+                .Register<ISonesVersionedIndex>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
 
             #endregion
 
@@ -98,9 +93,8 @@ namespace sones.GraphQL.GQL.Manager.Plugin
 
             var componentName = this.GetType().Assembly.GetName().Name;
 
-            FillLookup<ISingleValueIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
-            FillLookup<IVersionedIndex<IComparable, Int64, Int64>>(componentName, _ => _.IndexName);
-            FillLookup<IMultipleValueIndex<IComparable, Int64>>(componentName, _ => _.IndexName);
+            FillLookup<ISonesIndex>(componentName, _ => _.IndexName);
+            FillLookup<ISonesVersionedIndex>(componentName, _ => _.IndexName);
             FillLookup<IGQLAggregate>(componentName, _ => _.PluginShortName);
             FillLookup<IGQLFunction>(componentName, _ => _.PluginShortName);
             FillLookup<IGraphDBImport>(componentName, _ => _.PluginShortName);

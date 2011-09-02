@@ -20,15 +20,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ISonesGQLFunction.Structure;
-using sones.Plugins.Index.Interfaces;
 using sones.GraphDB.TypeSystem;
-using sones.GraphDB;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using sones.Library.PropertyHyperGraph;
 using sones.Library.Arithmetics;
 using sones.Library.VersionedPluginManager;
 

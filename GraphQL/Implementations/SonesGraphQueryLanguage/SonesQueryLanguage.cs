@@ -23,23 +23,23 @@ using System.Collections.Generic;
 using System.Linq;
 using Irony.Parsing;
 using sones.GraphDB;
+using sones.GraphDB.TypeSystem;
 using sones.GraphQL.ErrorHandling;
 using sones.GraphQL.GQL.ErrorHandling;
 using sones.GraphQL.GQL.Manager.Plugin;
 using sones.GraphQL.Result;
 using sones.GraphQL.StatementNodes;
 using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
+using sones.Library.DataStructures;
 using sones.Library.ErrorHandling;
 using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
-using sones.Plugins.Index.Interfaces;
+using sones.Plugins.Index;
+using sones.Plugins.Index.Versioned;
 using sones.Plugins.SonesGQL.Aggregates;
-using sones.Plugins.SonesGQL.Functions;
-using sones.Plugins.SonesGQL.DBImport;
-using sones.GraphDB.TypeSystem;
-using sones.Library.DataStructures;
 using sones.Plugins.SonesGQL.DBExport;
+using sones.Plugins.SonesGQL.DBImport;
+using sones.Plugins.SonesGQL.Functions;
 using sones.Plugins.SonesGQL.Statements;
 
 namespace sones.GraphQL
@@ -322,15 +322,14 @@ namespace sones.GraphQL
 
             List<String> indices = new List<string>();
 
-            indices.AddRange(_GQLPluginManager.GetPluginNameForType<IVersionedIndex<IComparable, Int64, Int64>>());
-            indices.AddRange(_GQLPluginManager.GetPluginNameForType<ISingleValueIndex<IComparable, Int64>>());
-            indices.AddRange(_GQLPluginManager.GetPluginNameForType<IMultipleValueIndex<IComparable, Int64>>());
+            indices.AddRange(_GQLPluginManager.GetPluginNameForType<ISonesVersionedIndex>());
+            indices.AddRange(_GQLPluginManager.GetPluginNameForType<ISonesIndex>());
 
             if (indices.Count < 1)
             {
-                throw new GQLGrammarSetExtandableMemberException(typeof(IIndex<IComparable, Int64>), 
-                            @"There is no valid index plugin found to set in GQL grammar. 
-                            Expected at least SingleValueIndex or MultiValueIndex");
+                throw new GQLGrammarSetExtandableMemberException(typeof(ISonesIndex),
+                            @"There is no valid index plugin found to set in GQL grammar.");
+                           
             }
 
             myGQLGrammar.SetIndices(indices);

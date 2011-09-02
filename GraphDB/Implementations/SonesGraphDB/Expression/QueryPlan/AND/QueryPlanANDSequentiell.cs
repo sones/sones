@@ -18,16 +18,10 @@
 * 
 */
 
-using System.Collections.Generic;
-using sones.Library.PropertyHyperGraph;
 using System;
-using sones.Library.Commons.VertexStore;
-using sones.GraphDB.TypeSystem;
-using sones.GraphDB.Manager.Index;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using sones.Plugins.Index.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {

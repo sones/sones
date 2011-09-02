@@ -69,8 +69,6 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         IIndexDefinition SourceIndex { get; }
 
-        bool IsSingle { get; }
-
         bool IsRange { get; }
 
         bool IsVersioned { get; }

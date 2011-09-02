@@ -19,15 +19,10 @@
 */
 
 using System;
-using sones.Library.VersionedPluginManager;
-using sones.Plugins.Index.Interfaces;
-using sones.GraphDB.TypeSystem;
-using sones.GraphDB;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using sones.Library.PropertyHyperGraph;
 using System.Collections.Generic;
 using ISonesGQLFunction.Structure;
+using sones.GraphDB.TypeSystem;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.SonesGQL.Aggregates
 {
