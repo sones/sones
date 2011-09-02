@@ -140,10 +140,10 @@
       <FileName>Interfaces\Spatial\Geometries\IRectangle.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="sones.Plugins.Index.Spatial.ISonesSpatialIndex" Collapsed="true">
+  <Interface Name="sones.Plugins.Index.Spatial.ISonesSpatialIndex">
     <Position X="5.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CAMAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <HashCode>CAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Interfaces\Spatial\ISonesSpatialIndex.cs</FileName>
     </TypeIdentifier>
   </Interface>

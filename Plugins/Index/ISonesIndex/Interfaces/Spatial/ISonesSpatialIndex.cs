@@ -17,27 +17,6 @@ namespace sones.Plugins.Index.Spatial
     /// </summary>
     public interface ISonesSpatialIndex : ISonesIndex
     {
-        #region Add
-
-        /// <summary>
-        /// Adds a vertexID at the given point.
-        /// </summary>
-        /// <param name="myPoint">Spatial position of the vertex.</param>
-        /// <param name="myVertexID">The VertexID</param>
-        /// <param name="myIndexAddStrategy">Define what happens if a vertexID exists at the given point.</param>
-        void Add(IPoint myPoint, Int64 myVertexID,
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
-
-        /// <summary>
-        /// Adds a collection of Point-VertexID pairs.
-        /// </summary>
-        /// <param name="myKeyValuePairs">A collection of Point-VertexID pairs</param>
-        /// <param name="myIndexAddStrategy">Define what happens if a vertexID exists at the given point.</param>
-        void AddRange(IEnumerable<KeyValuePair<IPoint, Int64>> myKeyValuePairs,
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
-
-        #endregion
-
         #region Retrieval
 
         #region Exact and Region match (Returns all values at a given point or in a given space.)
@@ -65,17 +44,6 @@ namespace sones.Plugins.Index.Spatial
         bool TryGetValuesNear(IPoint myCentralPoint, Int32 myK, out IEnumerable<Int64> myVertexIDs, double? myMaximumDistance);
 
         #endregion
-
-        #endregion
-
-        #region Remove
-
-        /// <summary>
-        /// Removes all vertexIDs stored in the given space.
-        /// </summary>
-        /// <param name="myGeometry">Search space</param>
-        /// <returns>True, if the stored values where deleted.</returns>
-        bool Remove(IGeometry myGeometry);
 
         #endregion
     }
