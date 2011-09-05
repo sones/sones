@@ -33,21 +33,27 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
     /// </summary>
     public sealed class AlterType_DefineAttributes : AAlterTypeCommand
     {
+        public readonly List<AttributeDefinition> ListOfAttributes;
+        public readonly List<IncomingEdgeDefinition> BackwardEdgeInformation;
 
-        #region data
-
-        private List<AttributeDefinition> _ListOfAttributes;
-
-        #endregion
-
-        public override TypesOfAlterCmd AlterType
+        public AlterType_DefineAttributes(List<AttributeDefinition> listOfAttributes) : this(listOfAttributes, null)
         {
-            get { throw new NotImplementedException(); }
+
         }
 
-        public AlterType_DefineAttributes(List<AttributeDefinition> listOfAttributes)
+        public AlterType_DefineAttributes(List<AttributeDefinition> listOfAttributes,
+                                                List<IncomingEdgeDefinition> backwardEdgeInformation)
         {
-            _ListOfAttributes = listOfAttributes;
+            ListOfAttributes = listOfAttributes;
+            BackwardEdgeInformation = backwardEdgeInformation;
+        }
+
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
+        public override TypesOfAlterCmd AlterType
+        {
+            get { return TypesOfAlterCmd.DefineAttribute; }
         }
 
         public override IVertexView CreateResult(IBaseType myAlteredType)

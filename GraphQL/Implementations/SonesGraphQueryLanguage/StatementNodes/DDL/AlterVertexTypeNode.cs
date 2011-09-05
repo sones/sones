@@ -377,11 +377,24 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         private void ProcessDefineAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            var command = (AlterType_DropAttributes)myAlterCommand;
+            var command = (AlterType_DefineAttributes)myAlterCommand;
 
-            foreach (var aAttribute in command.ListOfAttributes)
+            if (command.ListOfAttributes != null && command.ListOfAttributes.Count > 0)
             {
-                //result(aAttribute);
+                foreach (var aAttribute in command.ListOfAttributes)
+                {
+                    result.AddUnknownAttribute(GenerateUnknownAttribute(aAttribute));
+                }
+            }
+            else
+            {
+                if (command.BackwardEdgeInformation != null && command.BackwardEdgeInformation.Count > 0)
+                {
+                    foreach (var aIncomingEdge in command.BackwardEdgeInformation)
+                    {
+                        result.AddIncomingEdge(GenerateAIncomingEdge(aIncomingEdge));
+                    }
+                }
             }
         }
 
