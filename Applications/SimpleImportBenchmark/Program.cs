@@ -17,34 +17,41 @@ namespace SimpleImportBenchmark
     {
         static void Main(string[] args)
         {
-            if (args.Length < 3)
+            if (args.Length < 4)
             {
-                Console.WriteLine("Use: SimpleImportBenchmark.exe ${Schema GraphQL file path} ${Data XML file path} ${IsVERBOSE}");
-                Console.WriteLine("E.G.: SimpleImportBenchmark.exe C:\\data\\schema.gql C:\\data\\text.xml True");
+                Console.WriteLine("Use: SimpleImportBenchmark.exe ${Sones GraphDB path} ${Schema GraphQL file path} ${Data XML file path} ${IsVERBOSE}");
+                Console.WriteLine("E.G.: SimpleImportBenchmark.exe C:\\Sones\\GraphDB C:\\data\\schema.gql C:\\data\\text.xml True");
+
+                Console.WriteLine("Current arguments:");
+                for (int i = 0; i < args.Length; i++)
+                {
+                    Console.WriteLine("Argument {0}: {1}", i, args[i]);
+                }
             }
             else
             {
-                string schemaFilePath = args[0];
-                string dataFilePath = args[1];
-                string isVerbose = args[2];
+                string graphdbPath = args[0];
+                string schemaFilePath = args[1];
+                string dataFilePath = args[2];
+                string isVerbose = args[3];
 
-                //Get the current path
-                string execPath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-                int fileNameBeginsIdx = execPath.LastIndexOf("/");
-                execPath = execPath.Substring(0, fileNameBeginsIdx);
-                Uri execUri = new Uri(execPath);
+                ////Get the current path
+                //string execPath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
+                //int fileNameBeginsIdx = execPath.LastIndexOf("/");
+                //execPath = execPath.Substring(0, fileNameBeginsIdx);
+                //Uri execUri = new Uri(execPath);
 
                 //Startup the sones GraphDB in a seperate process
-                string sonesGraphDBStarter = execUri.LocalPath + Path.DirectorySeparatorChar + "sonesGraphDBStarter.exe";
+                //string sonesGraphDBStarter = execUri.LocalPath + Path.DirectorySeparatorChar + "sonesGraphDBStarter.exe";
+                string sonesGraphDBStarter = Path.Combine(graphdbPath, "sonesGraphDBStarter.exe");
 
                 Console.WriteLine("===  Startup ===");
                 Console.WriteLine("Starting: " + sonesGraphDBStarter);
-                Process.Start(sonesGraphDBStarter);
+                Process.Start(new ProcessStartInfo(sonesGraphDBStarter) { UseShellExecute = false });
 
                 //Wait a moment to give the process a chance to get started -- So wait 10s
                 for (int i = 0; i < 100; i++)
                 {
-                    Console.Write(".");
                     Thread.Sleep(100);
                 }
 
@@ -73,12 +80,30 @@ namespace SimpleImportBenchmark
                 
                 TransactionToken tx = null;
                 SecurityToken sec = null;
+
+
+                #region Import schema
+
+                Console.WriteLine("Importing Schema ... ");
+
+                var schemaQuery = "IMPORT FROM 'file:\\\\" + schemaFilePath + "' FORMAT gql";
+
+                Console.WriteLine("Sending query: {0}", schemaQuery);
+
+                var schema_result = client.Query(sec, tx, schemaQuery, "sones.gql");
+
+                Console.WriteLine("... {0}", schema_result.TypeOfResult);
+
+                if (schema_result.TypeOfResult != ResultType.Successful && schema_result.Error != null)
+                    Console.WriteLine(schema_result.Error.Message);
+                    
+                #endregion
+
                 
-                client.Query(sec, tx, "IMPORT FROM 'file:\\\\" + schemaFilePath + "' FORMAT gql", "sones.gql");
 
                 string importQuery = null;
 
-                if (isVerbose.Equals("True"))
+                if (isVerbose.Equals("True", StringComparison.InvariantCultureIgnoreCase))
                 {
                     importQuery = "IMPORT FROM 'file:\\\\" + dataFilePath + "' FORMAT fastimport VERBOSITY full";
                 }
@@ -89,6 +114,8 @@ namespace SimpleImportBenchmark
 
                 Stopwatch sw = new Stopwatch();
 
+                Console.WriteLine("Sending query: {0}", importQuery);
+
                 Console.WriteLine("Start: " + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString());
                 sw.Start();
 
@@ -96,14 +123,14 @@ namespace SimpleImportBenchmark
 
                 sw.Stop();
 
-                Console.WriteLine(rs.Error.Message);
+                if (rs.Error != null)
+                    Console.WriteLine(rs.Error.Message);
 
                 Console.WriteLine("Stop: " + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString());
                 Console.WriteLine("Elapsed: " + sw.ElapsedMilliseconds + " ms");
         }
         
         }
-
 
         private static String ReadConfig(string configFilePath, string settingName)
         {
