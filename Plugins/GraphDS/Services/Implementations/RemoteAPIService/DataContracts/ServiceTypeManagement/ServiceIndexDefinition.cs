@@ -37,7 +37,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
             this.ID = myIndexDefinition.ID;
             this.IndexTypeName = myIndexDefinition.IndexTypeName;
             this.IsRange = myIndexDefinition.IsRange;
-            this.IsSingle = myIndexDefinition.IsSingle;
             this.IsUserdefined = myIndexDefinition.IsUserdefined;
             this.IsVersioned = myIndexDefinition.IsVersioned;
             this.Name = myIndexDefinition.Name;
