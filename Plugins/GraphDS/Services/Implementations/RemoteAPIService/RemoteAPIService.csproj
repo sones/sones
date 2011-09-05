@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="DataContracts\ChangesetObjects\ServiceAlterEdgeChangeset.cs" />
     <Compile Include="DataContracts\ChangesetObjects\ServiceAlterVertexChangeset.cs" />
+    <Compile Include="DataContracts\ChangesetObjects\ServiceUpdateChangeset.cs" />
     <Compile Include="DataContracts\InstanceObjects\AGraphElement.cs" />
     <Compile Include="DataContracts\InstanceObjects\ServiceEdgeInstance.cs" />
     <Compile Include="DataContracts\InstanceObjects\ServiceHyperEdgeInstance.cs" />

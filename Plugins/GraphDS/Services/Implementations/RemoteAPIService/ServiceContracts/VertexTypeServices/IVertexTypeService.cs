@@ -391,7 +391,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// Has this vertex type a certain outgoing IncomingEdge?
         /// </summary>
         /// <returns>True or false</returns>
-        [OperationContract]
+        [OperationContract(Name = "test")]
         bool HasOutgoingEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, String myEdgeName);
 
         /// <summary>

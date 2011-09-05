@@ -70,9 +70,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         List<ServiceVertexType> CreateVertexTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, 
             List<ServiceVertexTypePredefinition> myVertexTypePreDef);
                 
-        //[OperationContract]
-        //List<Int64> Delete(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
-        //    ServiceVertexType myVertexType, List<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null); 
+        [OperationContract]
+        List<Int64> Delete(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+            ServiceVertexType myVertexType, List<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null); 
 
         [OperationContract]
         ServiceIndexDefinition DescribeIndex(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
@@ -126,13 +126,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         [OperationContract]
         SecurityToken LogOn(String myLogin, String myPassword);
 
-        [OperationContract]
-        ServiceQueryResult Query(SecurityToken mySecToken, ServiceTransactionToken myTransToken, String myQueryString, String myLanguage); 
+        //[OperationContract] There is no plan to implement the Query method yet, because client libs are already available
+        //ServiceQueryResult Query(SecurityToken mySecToken, ServiceTransactionToken myTransToken, String myQueryString, String myLanguage); 
 
         //Traverse Vertex
 
-        //Update 
-      
+        [OperationContract]
+        List<ServiceVertexInstance> Update(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs,
+            ServiceUpdateChangeset myUpdateChangeset);
                    
                                                  
     }
