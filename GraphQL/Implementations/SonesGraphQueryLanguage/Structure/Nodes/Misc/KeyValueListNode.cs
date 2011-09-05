@@ -43,9 +43,7 @@ namespace sones.GraphQL.Structure.Nodes.Misc
         #region constructor
 
         public KeyValueListNode()
-        {
-
-        }
+        { }
 
         #endregion
 

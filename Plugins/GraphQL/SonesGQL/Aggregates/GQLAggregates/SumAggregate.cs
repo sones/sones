@@ -21,14 +21,9 @@
 using System;
 using System.Collections.Generic;
 using ISonesGQLFunction.Structure;
-using sones.GraphDB;
 using sones.GraphDB.TypeSystem;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using sones.Library.PropertyHyperGraph;
-using sones.Library.VersionedPluginManager;
-using sones.Plugins.Index.Interfaces;
 using sones.Library.Arithmetics;
+using sones.Library.VersionedPluginManager;
 using sones.Plugins.SonesGQL.Aggregates.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Aggregates

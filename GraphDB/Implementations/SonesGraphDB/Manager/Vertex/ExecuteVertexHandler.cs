@@ -26,7 +26,6 @@ using sones.GraphDB.Expression;
 using sones.GraphDB.Expression.Tree;
 using sones.GraphDB.Extensions;
 using sones.GraphDB.Manager.Index;
-using sones.GraphDB.Manager.QueryPlan;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Request;
 using sones.GraphDB.Request.Insert;
@@ -34,14 +33,16 @@ using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.TypeSystem;
 using sones.Library.CollectionWrapper;
 using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
 using sones.Library.Commons.VertexStore;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.VertexStore.Definitions.Update;
 using sones.Library.LanguageExtensions;
 using sones.Library.PropertyHyperGraph;
+using sones.Plugins.Index;
 using sones.Plugins.Index.Helper;
-using sones.Plugins.Index.Interfaces;
+using sones.Plugins.Index.ErrorHandling;
+using System.Threading.Tasks;
+using sones.GraphFS.ErrorHandling;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -214,38 +215,16 @@ namespace sones.GraphDB.Manager.Vertex
             }
 
             var addDefinition = RequestInsertVertexToVertexAddDefinition(myInsertDefinition, vertexType, myTransaction, mySecurity);
+
             var result = (addDefinition.Item1.HasValue)
                             ? _vertexStore.AddVertex(mySecurity, myTransaction, addDefinition.Item2, addDefinition.Item1.Value)
                             : _vertexStore.AddVertex(mySecurity, myTransaction, addDefinition.Item2);
 
-
-
+            // add vertex to the indices of the corresponding vertextype
             foreach (var indexDef in vertexType.GetIndexDefinitions(false))
             {
-                var key = CreateIndexEntry(indexDef.IndexedProperties, myInsertDefinition.StructuredProperties);
-                if (key != null)
-                {
-                    //do sth if there is a value corresponding to the index definition
-
-                    var index = _indexManager.GetIndex(indexDef.Name, mySecurity, myTransaction);
-
-                    if (index is ISingleValueIndex<IComparable, Int64>)
-                    {
-                        (index as ISingleValueIndex<IComparable, Int64>).Add(key, result.VertexID);
-                    }
-                    else if (index is IMultipleValueIndex<IComparable, Int64>)
-                    {
-                        //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
-                        //TODO: Refactor IIndex structure
-                        (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64> { result.VertexID });
-                    }
-                    else
-                    {
-                        throw new NotImplementedException(
-                            "Indices other than single or multiple value indices are not supported yet.");
-                    }
-
-                }
+                var index = _indexManager.GetIndex(indexDef.Name, mySecurity, myTransaction);
+                index.Add(result);
             }
 
             return result;
@@ -404,7 +383,15 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     case EdgeMultiplicity.SingleEdge:
                         {
-                            var edge = CreateSingleEdgeAddDefinition(myTransaction, mySecurity, date, attrDef.ID, edgeDef, attrDef.EdgeType, source, attrDef.TargetVertexType);
+                            var edge = CreateSingleEdgeAddDefinition(myTransaction, 
+                                                                        mySecurity, 
+                                                                        date, 
+                                                                        attrDef.ID, 
+                                                                        edgeDef, 
+                                                                        attrDef.EdgeType, 
+                                                                        source,
+                                                                        attrDef);
+
                             if (edge.HasValue)
                                 singleEdges.Add(edgeDef.EdgeName, edge.Value);
                         }
@@ -416,7 +403,13 @@ namespace sones.GraphDB.Manager.Vertex
                         }
                     case EdgeMultiplicity.MultiEdge:
                         {
-                            var edge = CreateMultiEdgeAddDefinition(myTransaction, mySecurity, source, date, edgeDef, attrDef);
+                            var edge = CreateMultiEdgeAddDefinition(myTransaction, 
+                                                                    mySecurity, 
+                                                                    source, 
+                                                                    date, 
+                                                                    edgeDef, 
+                                                                    attrDef);
+
                             if (edge.HasValue)
                                 hyperEdges.Add(attrDef.Name, edge.Value);
                         }
@@ -444,13 +437,13 @@ namespace sones.GraphDB.Manager.Vertex
             if (contained == null)
                 return null;
 
-            return new HyperEdgeAddDefinition(attrDef.ID, 
-                                                attrDef.EdgeType.ID, 
-                                                source, 
-                                                contained, 
-                                                edgeDef.Comment, 
-                                                date, 
-                                                date, 
+            return new HyperEdgeAddDefinition(attrDef.ID,
+                                                attrDef.EdgeType.ID,
+                                                source,
+                                                contained,
+                                                edgeDef.Comment,
+                                                date,
+                                                date,
                                                 ConvertStructuredProperties(edgeDef, attrDef.InnerEdgeType), 
                                                 edgeDef.UnstructuredProperties);
         }
@@ -485,8 +478,6 @@ namespace sones.GraphDB.Manager.Vertex
             {
                 foreach (var vertex in vertexIDs)
                 {
-                    AddDefaultPropertiesToEdgePredefinition(ref edgeDef, attrDef, myDate);
-
                     var toAdd = CreateSingleEdgeAddDefinition(myTransaction, 
                                                                 mySecurity, 
                                                                 myDate, 
@@ -494,7 +485,7 @@ namespace sones.GraphDB.Manager.Vertex
                                                                 edgeDef, 
                                                                 attrDef.InnerEdgeType, 
                                                                 mySource, 
-                                                                attrDef.TargetVertexType);
+                                                                attrDef);
 
                     if (toAdd.HasValue)
                         result.Add(toAdd.Value);
@@ -516,7 +507,7 @@ namespace sones.GraphDB.Manager.Vertex
                                                                 edge, 
                                                                 attrDef.InnerEdgeType, 
                                                                 mySource, 
-                                                                attrDef.TargetVertexType);
+                                                                attrDef);
 
                     if (toAdd.HasValue)
                         result.Add(toAdd.Value);
@@ -538,8 +529,12 @@ namespace sones.GraphDB.Manager.Vertex
             foreach (var item in new Dictionary<String, IComparable>
                                         { { "CreationDate", myDate },
                                           { "ModificationDate", myDate },
-                                          { "EdgeTypeName", myAttrDef.InnerEdgeType.Name },
-                                          { "EdgeTypeID", myAttrDef.InnerEdgeType.ID } })
+                                          { "EdgeTypeName", (myAttrDef.InnerEdgeType == null) 
+                                                            ? myAttrDef.EdgeType.Name 
+                                                            : myAttrDef.InnerEdgeType.Name },
+                                          { "EdgeTypeID", (myAttrDef.InnerEdgeType == null) 
+                                                            ? myAttrDef.EdgeType.ID 
+                                                            : myAttrDef.InnerEdgeType.ID } })
             {
                 if (myPredef.StructuredProperties == null || 
                     !myPredef.StructuredProperties.ContainsKey(item.Key))
@@ -555,17 +550,19 @@ namespace sones.GraphDB.Manager.Vertex
             EdgePredefinition edgeDef,
             IEdgeType myEdgeType,
             VertexInformation source,
-            IVertexType myTargetType = null)
+            IOutgoingEdgeDefinition attrDef)
         {
+            AddDefaultPropertiesToEdgePredefinition(ref edgeDef, attrDef, date);
+
             var vertexIDs = GetResultingVertexIDs(myTransaction,
                                                     mySecurity,
                                                     edgeDef,
-                                                    myTargetType);
+                                                    attrDef.TargetVertexType);
 
             if (vertexIDs == null)
                 return null;
 
-            CheckTargetVertices(myTargetType, vertexIDs);
+            CheckTargetVertices(attrDef.TargetVertexType, vertexIDs);
 
             //adds the basic attributes like CreationDate, ModificationDate ... to the structured properties
             AddDefaultValues(ref edgeDef, myEdgeType);
@@ -584,9 +581,11 @@ namespace sones.GraphDB.Manager.Vertex
         private void AddDefaultValues(ref EdgePredefinition edgeDef, IEdgeType myEdgeType)
         {
             var mandatoryProps = myEdgeType.GetPropertyDefinitions(true).Where(_ => _.IsMandatory);
+
             foreach (var propertyDefinition in mandatoryProps)
             {
-                if (edgeDef.StructuredProperties == null || !edgeDef.StructuredProperties.ContainsKey(propertyDefinition.Name))
+                if (edgeDef.StructuredProperties == null || 
+                    !edgeDef.StructuredProperties.ContainsKey(propertyDefinition.Name))
                     edgeDef.AddStructuredProperty(propertyDefinition.Name, propertyDefinition.DefaultValue);
             }
         }
@@ -869,19 +868,12 @@ namespace sones.GraphDB.Manager.Vertex
 
                         foreach (var aToBeDeletedProperty in toBeDeletedProperties)
                         {
-                            if (aVertex.HasProperty(aToBeDeletedProperty.Key))
+                            foreach (var aIndexDefinition in aToBeDeletedProperty.Value.InIndices)
                             {
-                                foreach (var aIndexDefinition in aToBeDeletedProperty.Value.InIndices)
-                                {
-                                    RemoveVertexPropertyFromIndex(
-                                        aVertex,
-                                        aIndexDefinition,
-                                        _indexManager.GetIndices(vertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken)
-                                        , mySecurityToken, myTransactionToken);
-                                }
-
-                                toBeDeletedStructuredPropertiesUpdate.Add(aToBeDeletedProperty.Key);
+                                RemoveFromIndices(aVertex, 
+                                    _indexManager.GetIndices(vertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken));
                             }
+                            toBeDeletedStructuredPropertiesUpdate.Add(aToBeDeletedProperty.Key);
                         }
 
                         #endregion
@@ -975,45 +967,10 @@ namespace sones.GraphDB.Manager.Vertex
                 {
                     foreach (var aIndexDefinition in aStructuredProperty.InIndices)
                     {
-                        RemoveVertexPropertyFromIndex(
-                            aVertex,
-                            aIndexDefinition,
-                            _indexManager.GetIndices(myVertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken)
-                            , mySecurityToken, myTransactionToken);
+                        RemoveFromIndices(aVertex,
+                            _indexManager.GetIndices(myVertexType, aIndexDefinition.IndexedProperties, mySecurityToken, myTransactionToken));
                     }
                 }
-            }
-        }
-
-        private void RemoveVertexPropertyFromIndex(IVertex aVertex, IIndexDefinition aIndexDefinition, IEnumerable<IIndex<IComparable, long>> myIndices, SecurityToken mySecurityToken, Int64 myTransactionToken)
-        {
-            var entry = CreateIndexEntry(aIndexDefinition.IndexedProperties, aVertex.GetAllProperties().ToDictionary(key => key.Item1, value => value.Item2));
-
-            if (entry == null)
-                return;
-
-            foreach (var iIndex in myIndices)
-            {
-                if (iIndex is IMultipleValueIndex<IComparable, long>)
-                {
-                    lock (iIndex)
-                    {
-                        if (iIndex.ContainsKey(entry))
-                        {
-                            var toBeUpdatedIndex = (IMultipleValueIndex<IComparable, long>)iIndex;
-
-                            var payLoad = toBeUpdatedIndex[entry];
-                            payLoad.Remove(aVertex.VertexID);
-
-                            toBeUpdatedIndex.Add(entry, payLoad, IndexAddStrategy.REPLACE);
-                        }
-                    }
-                }
-                else
-                {
-                    iIndex.Remove(entry);
-                }
-
             }
         }
 
@@ -1055,7 +1012,7 @@ namespace sones.GraphDB.Manager.Vertex
                                 //the list of property names, that can make an update of multiple vertices on unique properties unique again.
 
                                 var uniquemaker = uniqueIndex.UniquePropertyDefinitions.Select(_ => _.Name).Except(toBeUpdatedStructuredNames);
-                                if (!uniquemaker.CountIsGreater(0) && group.CountIsGreater(1))
+                                if (!uniquemaker.CountIsGreater(0) && group.CountIsGreater(0))
                                     throw new IndexUniqueConstrainViolationException(vertexType.Name, String.Join(", ", uniquemaker));
                             }
                         }
@@ -1133,9 +1090,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                     if (neededPropNames.CountIsGreater(0))
                     {
-                        var structured = GetStructuredFromVertex(vertex, vertexType, neededPropNames);
-
-                        RemoveFromIndex(vertex.VertexID, structured, vertexType, indices, myTransaction, mySecurity);
+                        RemoveFromIndices(vertex, indices);
                     }
 
                     var updatedVertex =
@@ -1162,8 +1117,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                     if (neededPropNames.CountIsGreater(0))
                     {
-                        var structured = GetStructuredFromVertex(updatedVertex, vertexType, neededPropNames);
-                        AddToIndex(structured, updatedVertex.VertexID, vertexType, indices, myTransaction, mySecurity);
+                        AddToIndices(updatedVertex, indices);
                     }
 
                 }
@@ -1171,92 +1125,59 @@ namespace sones.GraphDB.Manager.Vertex
             return result;
         }
 
-        private void AddToIndex(IDictionary<string, IComparable> structured,
-                                long id,
-                                IVertexType vertexType,
-                                IDictionary<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, long>>> indices,
-                                Int64 myTransaction,
-                                SecurityToken mySecurity)
+        /// <summary>
+        /// Adds a given vertex to the defined indices.
+        /// The indices are mapped to the properties.
+        /// </summary>
+        /// <param name="myVertex">Vertex which shall be indexed</param>
+        /// <param name="myIndices">Indices which are mapped to a list of indexed properties.</param>
+        private void AddToIndices(IVertex myVertex,
+            IDictionary<IList<IPropertyDefinition>, IEnumerable<ISonesIndex>> myIndices)
         {
-            foreach (var indexGroup in indices)
+            foreach (var indexGroup in myIndices)
             {
-                foreach (var index in indexGroup.Value)
-                {
-                    var entry = CreateIndexEntry(indexGroup.Key, structured);
-
-                    if (entry == null)
-                        continue;
-
-                    if (index is ISingleValueIndex<IComparable, long>)
-                    {
-                        (index as ISingleValueIndex<IComparable, long>).Add(entry, id);
-                    }
-                    else if (index is IMultipleValueIndex<IComparable, long>)
-                    {
-                        //Ask: Why do I need to create a hashset for a single value??? *aaarghhh*
-                        (index as IMultipleValueIndex<IComparable, long>).Add(entry, new HashSet<long>(new[] { id }));
-                    }
-                    else
-                        throw new NotImplementedException("Other index types are not known.");
-                }
+                AddToIndices(myVertex, indexGroup.Value);
             }
         }
 
-        private void RemoveFromIndex(
-            long myVertexID,
-            IDictionary<string, IComparable> structured,
-            IVertexType vertexType,
-            IEnumerable<KeyValuePair<IList<IPropertyDefinition>, IEnumerable<IIndex<IComparable, long>>>> indices,
-            Int64 myTransaction,
-            SecurityToken mySecurity)
+        /// <summary>
+        /// Adds a given vertex to a collection of indices.
+        /// 
+        /// Adding is done in parallel.
+        /// </summary>
+        /// <param name="myVertex">Vertex which shall be indexed</param>
+        /// <param name="myIndices">A collection of indices</param>
+        private void AddToIndices(IVertex myVertex, IEnumerable<ISonesIndex> myIndices)
         {
-            foreach (var indexGroup in indices)
-            {
-                foreach (var index in indexGroup.Value)
-                {
-                    var entry = CreateIndexEntry(indexGroup.Key, structured);
-
-                    if (entry != null)
-                    {
-                        if (index is IMultipleValueIndex<IComparable, long>)
-                        {
-                            lock (index)
-                            {
-                                if (index.ContainsKey(entry))
-                                {
-                                    var toBeUpdatedIndex = (IMultipleValueIndex<IComparable, long>)index;
-
-                                    var payLoad = toBeUpdatedIndex[entry];
-                                    payLoad.Remove(myVertexID);
-
-                                    toBeUpdatedIndex.Add(entry, payLoad, IndexAddStrategy.REPLACE);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            index.Remove(entry);
-                        }
-                    }
-
-                }
-
-            }
-
+            Parallel.ForEach<ISonesIndex>(myIndices, idx => idx.Add(myVertex));
         }
 
-        private IDictionary<String, IComparable> GetStructuredFromVertex(IVertex vertex, IVertexType vertexType, IEnumerable<string> neededPropNames)
+        /// <summary>
+        /// Removes a given vertex from all given indices.
+        /// The indices are mapped to the properties.
+        /// </summary>
+        /// <param name="myVertex">Vertex which shall be removed</param>
+        /// <param name="myIndexGroups">Indices which are mapped to a list of indexed properties.</param>
+        private void RemoveFromIndices(IVertex myVertex,
+            IEnumerable<KeyValuePair<IList<IPropertyDefinition>, IEnumerable<ISonesIndex>>> myIndexGroups)
         {
-            var result = new Dictionary<String, IComparable>();
-            foreach (var propName in neededPropNames)
+            foreach (var indexGroup in myIndexGroups)
             {
-                var propDef = vertexType.GetPropertyDefinition(propName);
-
-                if (propDef.HasValue(vertex))
-                    result.Add(propName, propDef.GetValue(vertex));
+                RemoveFromIndices(myVertex, indexGroup.Value);
             }
+        }
 
-            return result;
+        /// <summary>
+        /// Removes a given vertex from all indices in a given collection.
+        /// 
+        /// Removing is done in parallel.
+        /// </summary>
+        /// <param name="myVertex">Vertex which shall be removed</param>
+        /// <param name="myIndices">A collection of indices</param>
+        private void RemoveFromIndices(IVertex myVertex,
+            IEnumerable<ISonesIndex> myIndices)
+        {
+            Parallel.ForEach<ISonesIndex>(myIndices, idx => idx.Remove(myVertex));
         }
 
         private Tuple<long?, String, VertexUpdateDefinition> CreateVertexUpdateDefinition(
@@ -1771,15 +1692,15 @@ namespace sones.GraphDB.Manager.Vertex
                                         }
                                     }
 
-                                    toBeUpdatedHyper = toBeUpdatedHyper ?? 
+                                    toBeUpdatedHyper = toBeUpdatedHyper ??
                                                         new Dictionary<long, HyperEdgeUpdateDefinition>();
 
                                     if (toBeUpdatedHyper.ContainsKey(edgeDef.ID))
                                     {
                                         var temp = toBeUpdatedHyper[edgeDef.ID];
                                         toBeUpdatedHyper.Remove(edgeDef.ID);
-                                        toBeUpdatedHyper.Add(edgeDef.ID, 
-                                                            MergeToBeAddedHyperEdgeUpdates(temp, 
+                                        toBeUpdatedHyper.Add(edgeDef.ID,
+                                                            MergeToBeAddedHyperEdgeUpdates(temp,
                                                                                             internSingleUpdate));
                                     }
                                     else
@@ -1826,6 +1747,12 @@ namespace sones.GraphDB.Manager.Vertex
                         StructuredPropertiesUpdate structuredUpdate;
                         UnstructuredPropertiesUpdate unstructuredUpdate;
                         IEnumerable<SingleEdgeUpdateDefinition> singleUpdate;
+
+                        CheckIfToBeAddedElementAlreadyExist(myVertex, 
+                                                            edgeDef, 
+                                                            hyperEdge.Value,
+                                                            myTransaction,
+                                                            mySecurity);
 
                         CreateSingleEdgeUpdateDefinitions(source,
                                                             myTransaction,
@@ -1909,6 +1836,56 @@ namespace sones.GraphDB.Manager.Vertex
                                                             updateHyper));
         }
 
+        /// <summary>
+        /// This method checks if a element inside the to be updated edge already exist,
+        /// if it exist an exception is thrown.
+        /// </summary>
+        /// <param name="myVertex">the to be updated vertex.</param>
+        /// <param name="myEdgeDef">The edge definition.</param>
+        /// <param name="myEdgePredef">The update edge predefinition.</param>
+        /// <param name="myTransaction">TransactionID</param>
+        /// <param name="mySecurityToken">SecurityToken</param>
+        private void CheckIfToBeAddedElementAlreadyExist(IVertex myVertex,
+                                                            IOutgoingEdgeDefinition myEdgeDef,
+                                                            EdgePredefinition myEdgePredef,
+                                                            Int64 myTransaction,
+                                                            SecurityToken mySecurityToken)
+        {
+            switch (myEdgeDef.Multiplicity)
+            {
+                case EdgeMultiplicity.HyperEdge:
+                    break;
+                case EdgeMultiplicity.MultiEdge:
+                    var newTargets = GetResultingVertexIDs(myTransaction, mySecurityToken, myEdgePredef, myEdgeDef.TargetVertexType);
+                    var existTargets = myVertex.GetOutgoingHyperEdge(myEdgeDef.ID) == null
+                                        ? new List<IVertex>()
+                                        : myVertex.GetOutgoingHyperEdge(myEdgeDef.ID).GetTargetVertices();
+
+                    if (newTargets == null)
+                    {
+                        if (myEdgePredef.ContainedEdges != null)
+                        {
+                            foreach (var innerEdge in myEdgePredef.ContainedEdges)
+                            {
+                                newTargets = GetResultingVertexIDs(myTransaction, mySecurityToken, innerEdge, myEdgeDef.TargetVertexType);
+                                
+                                foreach (var target in newTargets)
+                                    if (existTargets.Any(item => item.VertexID.Equals(target.VertexID) && 
+                                            item.VertexTypeID.Equals(target.VertexTypeID)))
+                                        throw new VertexAlreadyExistException(target.VertexTypeID, target.VertexID);
+                            }
+                        }
+                    }
+                    else
+                        foreach (var target in newTargets)
+                            if (existTargets.Any(item => item.VertexID.Equals(target.VertexID) &&
+                                        item.VertexTypeID.Equals(target.VertexTypeID)))
+                                throw new VertexAlreadyExistException(target.VertexTypeID, target.VertexID);
+
+                    break;
+                default: throw new Exception("The EdgeMultiplicity enumeration was changed, but not this switch statement.");
+            }
+        }
 
         private IEnumerable<SingleEdgeDeleteDefinition> CreateSingleEdgeDeleteDefinitions(VertexInformation mySource, Int64 myTransaction, SecurityToken mySecurity, EdgePredefinition myEdge, IOutgoingEdgeDefinition edgeDef)
         {
@@ -2028,7 +2005,7 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         private HyperEdgeUpdateDefinition MergeToBeAddedHyperEdgeUpdates(
-                HyperEdgeUpdateDefinition myExisting, 
+                HyperEdgeUpdateDefinition myExisting,
                 IEnumerable<SingleEdgeUpdateDefinition> myToBeAdded)
         {
             IEnumerable<SingleEdgeDeleteDefinition> del = null;
@@ -2050,6 +2027,6 @@ namespace sones.GraphDB.Manager.Vertex
                                                     update);
         }
 
-        #endregion
+            #endregion
     }
 }

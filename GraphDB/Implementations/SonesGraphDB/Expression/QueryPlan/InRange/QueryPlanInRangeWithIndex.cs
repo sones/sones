@@ -18,16 +18,16 @@
 * 
 */
 
-using System.Collections.Generic;
-using sones.Library.PropertyHyperGraph;
 using System;
-using sones.Library.Commons.VertexStore;
-using sones.GraphDB.TypeSystem;
-using sones.GraphDB.Manager.Index;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using sones.Plugins.Index.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
+using sones.GraphDB.Manager.Index;
+using sones.GraphDB.TypeSystem;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.VertexStore;
+using sones.Library.PropertyHyperGraph;
+using sones.Plugins.Index;
+using sones.Plugins.Index.Range;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -169,27 +169,48 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myIndex">The interesting index</param>
         /// <param name="myConstant">The inderesting range</param>
         /// <returns>An enumerable of vertexIDs</returns>
-        private IEnumerable<Int64> GetValues(IIndex<IComparable, long> myIndex, RangeLiteralExpression myConstant)
+        private IEnumerable<long> GetValues(ISonesIndex myIndex, RangeLiteralExpression myConstant)
         {
-            if (myIndex is ISingleValueIndex<IComparable, Int64>)
+            if (myIndex is ISonesRangeIndex)
             {
-                foreach (var aVertexID in GetSingleIndexValues((ISingleValueIndex<IComparable, Int64>)myIndex, myConstant))
+                //use the range funtionality
+                foreach (var aVertexID in ((ISonesRangeIndex)myIndex)
+                    .Between(myConstant.Lower, myConstant.Upper, myConstant.IncludeBorders, myConstant.IncludeBorders))
                 {
                     yield return aVertexID;
                 }
             }
             else
             {
-                if (myIndex is IMultipleValueIndex<IComparable, Int64>)
+                //stupid, but works
+
+                if (myConstant.IncludeBorders)
                 {
-                    foreach (var aVertexID in GetMultipleIndexValues((IMultipleValueIndex<IComparable, Int64>)myIndex, myConstant))
+                    foreach (var aVertexIDSet in myIndex.Keys()
+                        .Where(key =>
+                            (key.CompareTo(myConstant.Lower) >= 0) &&
+                            (key.CompareTo(myConstant.Upper) <= 0))
+                                .Select(key => myIndex[key]))
                     {
-                        yield return aVertexID;
+                        foreach (var aVertexID in aVertexIDSet)
+                        {
+                            yield return aVertexID;
+                        }
                     }
                 }
                 else
                 {
-                    //there might be a little more interfaces... sth versioned
+                    foreach (var aVertexIDSet in myIndex.Keys()
+                        .Where(key =>
+                            (key.CompareTo(myConstant.Lower) > 0) &&
+                            (key.CompareTo(myConstant.Upper) < 0))
+                                .Select(key => myIndex[key]))
+                    {
+                        foreach (var aVertexID in aVertexIDSet)
+                        {
+                            yield return aVertexID;
+                        }
+                    }
                 }
             }
 
@@ -201,116 +222,9 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// </summary>
         /// <param name="myIndexCollection">An enumerable of possible indices</param>
         /// <returns>The chosen one</returns>
-        private IIndex<IComparable, long> GetBestMatchingIdx(IEnumerable<IIndex<IComparable, long>> myIndexCollection)
+        private ISonesIndex GetBestMatchingIdx(IEnumerable<ISonesIndex> myIndexCollection)
         {
             return myIndexCollection.First();
-        }
-
-        /// <summary>
-        /// Extract values from a single value index
-        /// </summary>
-        /// <param name="mySingleValueIndex">The interesting index</param>
-        /// <param name="myConstant">The interesting range</param>
-        /// <returns>An enumerable of vertexIDs</returns>
-        private IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, long> mySingleValueIndex, RangeLiteralExpression myConstant)
-        {
-            if (mySingleValueIndex is IRangeIndex<IComparable, long>)
-            {
-                //use the range funtionality
-
-                foreach (var aVertexID in ((ISingleValueRangeIndex<IComparable, long>)mySingleValueIndex)
-                    .InRange(myConstant.Lower, myConstant.Upper, myConstant.IncludeBorders, myConstant.IncludeBorders))
-                {
-                    yield return aVertexID;
-                }
-            }
-            else
-            {
-                //stupid, but works
-
-                if (myConstant.IncludeBorders)
-                {
-                    foreach (var aVertexID in mySingleValueIndex
-                        .Where(kv => 
-                            (kv.Key.CompareTo(myConstant.Lower) >= 0) && 
-                            (kv.Key.CompareTo(myConstant.Upper) <= 0))
-                                .Select(kv => kv.Value))
-                    {
-                        yield return aVertexID;
-                    }
-                }
-                else
-                {
-                    foreach (var aVertexID in mySingleValueIndex
-                        .Where(kv =>
-                            (kv.Key.CompareTo(myConstant.Lower) > 0) &&
-                            (kv.Key.CompareTo(myConstant.Upper) < 0))
-                                .Select(kv => kv.Value))
-                    {
-                        yield return aVertexID;
-                    }
-                }
-            }
-
-            yield break;
-        }
-
-        /// <summary>
-        /// Extract values from a multiple value index
-        /// </summary>
-        /// <param name="mySingleValueIndex">The interesting index</param>
-        /// <param name="myConstant">The interesting range</param>
-        /// <returns>An enumerable of vertexIDs</returns>
-        private IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, long> myMultipleValueIndex, RangeLiteralExpression myConstant)
-        {
-            if (myMultipleValueIndex is IRangeIndex<IComparable, long>)
-            {
-                //use the range funtionality
-
-                foreach (var aVertexIDSet in ((IMultipleValueRangeIndex<IComparable, long>)myMultipleValueIndex)
-                    .InRange(myConstant.Lower, myConstant.Upper, myConstant.IncludeBorders, myConstant.IncludeBorders))
-                {
-                    foreach (var aVertexID in aVertexIDSet)
-                    {
-                        yield return aVertexID;
-                    }
-                }
-            }
-            else
-            {
-                //stupid, but works
-                if (myConstant.IncludeBorders)
-                {
-                    foreach (var aVertexIDSet in myMultipleValueIndex
-                    .Where(kv =>
-                        (kv.Key.CompareTo(myConstant.Lower) >= 0) &&
-                        (kv.Key.CompareTo(myConstant.Upper) <= 0))
-                            .Select(kv => kv.Value))
-                    {
-                        foreach (var aVertexID in aVertexIDSet)
-                        {
-                            yield return aVertexID;
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (var aVertexIDSet in myMultipleValueIndex
-                    .Where(kv =>
-                        (kv.Key.CompareTo(myConstant.Lower) > 0) &&
-                        (kv.Key.CompareTo(myConstant.Upper) < 0))
-                            .Select(kv => kv.Value))
-                    {
-                        foreach (var aVertexID in aVertexIDSet)
-                        {
-                            yield return aVertexID;
-                        }
-                    }
-                }
-
-            }
-
-            yield break;
         }
 
         #endregion

@@ -553,8 +553,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                 var result = _indexManager.GetIndex(BaseUniqueIndex.EdgeTypeDotName);
 
                 if (result != null)
-                    if (!result.Remove(type.Name))
-                        throw new TypeRemoveException<IEdgeType>(type.Name, "Error during delete the Index on type.");
+                    result.Remove(type.Name);
+                    //if (!result.Remove(type.Name))
+                    //    throw new TypeRemoveException<IEdgeType>(type.Name, "Error during delete the Index on type.");
             }
 
             #endregion
