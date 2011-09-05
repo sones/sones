@@ -302,77 +302,115 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 
         public bool IsSealed(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.IsSealed;
         }
 
         public bool HasParentType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.HasParentType;
         }
 
         public bool HasChildTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.HasChildTypes;
         }
 
         public bool IsAncestor(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceType, ServiceVertexType myOtherType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myOtherType.Name);
+            var BaseType = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.IsAncestor(BaseType);
         }
 
         public bool IsAncestorOrSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceType, ServiceVertexType myOtherType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myOtherType.Name);
+            var BaseType = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.IsAncestorOrSelf(BaseType);
         }
 
         public bool IsDescendant(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceType, ServiceVertexType myOtherType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myOtherType.Name);
+            var BaseType = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.IsDescendant(BaseType);
         }
 
         public bool IsDescendantOrSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceType, ServiceVertexType myOtherType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myOtherType.Name);
+            var BaseType = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.IsDescendantOrSelf(BaseType);
         }
 
         public List<ServiceBaseType> GetDescendantTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetDescendantTypes().Select(x => new ServiceBaseType(x)).ToList();
         }
 
         public List<ServiceBaseType> GetDescendantTypesAndSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetDescendantTypesAndSelf().Select(x => new ServiceBaseType(x)).ToList();
         }
 
         public List<ServiceBaseType> GetAncestorTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetAncestorTypes().Select(x => new ServiceBaseType(x)).ToList();
         }
 
         public List<ServiceBaseType> GetAncestorTypesAndSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetAncestorTypesAndSelf().Select(x => new ServiceBaseType(x)).ToList();
         }
 
         public List<ServiceBaseType> GetKinsmenTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetKinsmenTypes().Select(x => new ServiceBaseType(x)).ToList();
         }
 
         public List<ServiceBaseType> GetKinsmenTypesAndSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.GetKinsmenTypesAndSelf().Select(x => new ServiceBaseType(x)).ToList();
         }
 
         public List<ServiceBaseType> ChildrenTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return Response.ChildrenTypes.Select(x => new ServiceBaseType(x)).ToList();
         }
 
         public ServiceBaseType ParentType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType)
         {
-            throw new NotImplementedException();
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
+            return new ServiceBaseType(Response.ParentType);
         }
     }
 }
