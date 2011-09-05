@@ -28,7 +28,7 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
 {
-    [DataContract(Namespace = "http://www.sones.com")]
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceIndexDefinition
     {
         public ServiceIndexDefinition(IIndexDefinition myIndexDefinition)
@@ -62,8 +62,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
         [DataMember]
         public ServiceIndexDefinition SourceIndex;
 
-        [DataMember]
-        public Boolean IsSingle;
         [DataMember]
         public Boolean IsRange;
         [DataMember]
