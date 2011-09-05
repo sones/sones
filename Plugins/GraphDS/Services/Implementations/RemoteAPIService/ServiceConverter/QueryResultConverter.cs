@@ -11,9 +11,17 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
     // VertexView / EdgeView - Objects are in general for data evaluating purposes and not for the interaction with the GraphDB - the InstanceObjects 
     // of the RemoteAPI Service are not suitable and equivalent.
 
-    public static class QueryResultConverter
+    public class QueryResultConverter
     {
-        public static List<Dictionary<ServiceVertexInstance, List<ServiceEdgeInstance>>> ConvertVertexViewList(IEnumerable<IVertexView> myVertices)
+        private IGraphDS _GraphDS;
+
+        public QueryResultConverter(IGraphDS myGraphDS)
+        {
+            _GraphDS = myGraphDS;
+        }
+        
+        
+        public  List<Dictionary<ServiceVertexInstance, List<ServiceEdgeInstance>>> ConvertVertexViewList(IEnumerable<IVertexView> myVertices)
         {
             List<Dictionary<ServiceVertexInstance, List<ServiceEdgeInstance>>> ReturnView = new List<Dictionary<ServiceVertexInstance, List<ServiceEdgeInstance>>>();
 
@@ -26,16 +34,17 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             return ReturnView;
         }
 
-        private static Dictionary<ServiceVertexInstance, List<ServiceEdgeInstance>> ConvertVertexView(IVertexView myVertex)
+        private  Dictionary<ServiceVertexInstance, List<ServiceEdgeInstance>> ConvertVertexView(IVertexView myVertex)
         {
             Dictionary<ServiceVertexInstance, List<ServiceEdgeInstance>> ReturnVertexView = new Dictionary<ServiceVertexInstance, List<ServiceEdgeInstance>>();
 
-             //todo implement convert method
+
+            
 
             return ReturnVertexView;
         }
 
-        private static List<ServiceEdgeInstance> ConvertEdgeViewList(IEnumerable<IEdgeView> myEdges)
+        private  List<ServiceEdgeInstance> ConvertEdgeViewList(IEnumerable<IEdgeView> myEdges)
         {
             List<ServiceEdgeInstance> ReturnEdges = new List<ServiceEdgeInstance>();
 
@@ -44,14 +53,17 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             return ReturnEdges;
         }
 
-        private static ServiceEdgeInstance ConvertEdgeView(IEdgeView myEdge)
+        private  ServiceEdgeInstance ConvertEdgeView(IEdgeView myEdge)
         {
             if (myEdge is ISingleEdgeView)
             {
                 ServiceSingleEdgeInstance ReturnEdge = new ServiceSingleEdgeInstance();
-                var Edge =  myEdge as ISingleEdgeView;
+                var EdgeInstance =  myEdge as ISingleEdgeView;
 
-                //todo implement convert method
+                var EdgeType = EdgeInstance.GetProperty<Int64>("EdgeTypeID");
+                var EdgeID = EdgeInstance.GetProperty<Int64>("EdgeID");
+
+                
 
 
                 return ReturnEdge;
