@@ -79,10 +79,6 @@ namespace sones.GraphDS.Services.RemoteAPIService
                 if (myStartParameter != null && myStartParameter.ContainsKey("URI"))
                     UriPattern = (String)Convert.ChangeType(myStartParameter["URI"], typeof(String));
                                 
-                String Namespace = "http://www.sones.com";
-                if (myStartParameter != null && myStartParameter.ContainsKey("Namespace"))
-                    Namespace = (String)Convert.ChangeType(myStartParameter["Namespace"], typeof(String));
-
                 IPAddress Address = IPAddress.Any;
                 if (myStartParameter != null && myStartParameter.ContainsKey("IPAddress"))
                     Address = (IPAddress)Convert.ChangeType(myStartParameter["IPAddress"], typeof(IPAddress));
@@ -92,7 +88,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
                     Port = (ushort)Convert.ChangeType(myStartParameter["Port"], typeof(ushort));
 
                 _RunningTime.Start();
-                _RPCServer = new sonesRPCServer(_GraphDS, Address, Port, UriPattern, IsSecure, Namespace);
+                _RPCServer = new sonesRPCServer(_GraphDS, Address, Port, UriPattern, IsSecure);
                 _RPCServer.StartServiceHost();
 
             }

@@ -44,7 +44,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
         /// The current IGraphDS instance
         /// </summary>
         private IGraphDS _GraphDS;
-
+                
         /// <summary>
         /// The current listening ipaddress
         /// </summary>
@@ -68,8 +68,9 @@ namespace sones.GraphDS.Services.RemoteAPIService
         /// <summary>
         /// The current used Namespace
         /// </summary>
-        public static String Namespace { get; private set; }
-
+        public const String Namespace = "http://www.sones.com";
+       
+       
         /// <summary>
         /// The complete URI of the service
         /// </summary>
@@ -83,14 +84,13 @@ namespace sones.GraphDS.Services.RemoteAPIService
         #endregion
 
         #region C'tor
-
-        public sonesRPCServer(IGraphDS myGraphDS, IPAddress myIPAdress, ushort myPort, String myURI, Boolean myIsSecure,String myNamespace, Boolean myAutoStart = false)
+       
+        public sonesRPCServer(IGraphDS myGraphDS, IPAddress myIPAdress, ushort myPort, String myURI, Boolean myIsSecure, Boolean myAutoStart = false)
         {
             this._GraphDS = myGraphDS;
             this.IsSecure = myIsSecure;
             this.ListeningIPAdress = myIPAdress;
             this.ListeningPort = myPort;
-            Namespace = myNamespace;
             String CompleteUri = (myIsSecure == true ? "https://" : "http://") + myIPAdress.ToString() + ":" + myPort + "/" + myURI;
             this.URI = new Uri(CompleteUri);
 
