@@ -79,10 +79,8 @@ namespace sones.GraphDB.Request
 
         public int DefineAttributeCount
         {
-            get
-            {
-                return (_toBeDefinedAttributes == null) ? 0 : _toBeDefinedAttributes.Count;
-            }
+            get;
+            private set;
         }
 
         public int RemoveAttributeCount
@@ -115,6 +113,7 @@ namespace sones.GraphDB.Request
         public RequestAlterEdgeType(String myToBeAlteredType)
         {
             TypeName = myToBeAlteredType;
+            DefineAttributeCount = 0;
         }
 
         #endregion
@@ -254,6 +253,23 @@ namespace sones.GraphDB.Request
                 _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AAttributePredefinition>();
                 _toBeAddedAttributes.Add(myUnknownPredefinition);
                 AddUnknownPropertyCount++;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Defines an attribute in the type definition
+        /// </summary>
+        /// <param name="myUnknownPredefinition">The attribute definition that is going to be added</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestAlterEdgeType DefineAttribute(UnknownAttributePredefinition myUnknownPredefinition)
+        {
+            if (myUnknownPredefinition != null)
+            {
+                _toBeDefinedAttributes = (_toBeDefinedAttributes) ?? new List<AAttributePredefinition>();
+                _toBeDefinedAttributes.Add(myUnknownPredefinition);
+                DefineAttributeCount++;
             }
 
             return this;

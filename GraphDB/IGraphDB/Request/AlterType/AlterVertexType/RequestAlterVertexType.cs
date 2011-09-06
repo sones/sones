@@ -381,6 +381,7 @@ namespace sones.GraphDB.Request
         public RequestAlterVertexType(String myToBeAlteredType)
         {
             TypeName = myToBeAlteredType;
+            DefineAttributeCount = 0;
         }
 
         #endregion
