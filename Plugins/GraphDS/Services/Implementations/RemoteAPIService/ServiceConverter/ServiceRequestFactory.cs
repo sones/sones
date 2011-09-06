@@ -29,6 +29,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InsertPayload;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.PayloadObjects;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 {
@@ -296,6 +297,88 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
         public static RequestGetVertices MakeRequestGetVertices(ServiceVertexType myVertexType)
         {
             return new RequestGetVertices(myVertexType.Name);
+        }
+
+        public static RequestUpdate MakeRequestUpdate(ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs, ServiceUpdateChangeset myUpdateChangeset)
+        {
+            #region PreRequest
+
+            
+            RequestGetVertices PreRequest = null;
+            if (myVertexIDs != null)
+            {
+                PreRequest = new RequestGetVertices(myVertexType.Name, myVertexIDs);
+            }
+            else
+            {
+                PreRequest = new RequestGetVertices(myVertexType.Name);
+            }
+
+            RequestUpdate Request = new RequestUpdate(PreRequest);
+
+            if (!String.IsNullOrEmpty(myUpdateChangeset.Comment))
+                Request.UpdateComment(myUpdateChangeset.Comment);
+
+            if (!String.IsNullOrEmpty(myUpdateChangeset.Edition))
+                Request.UpdateEdition(myUpdateChangeset.Edition);
+
+            #endregion
+
+            #region Update Edges
+
+            foreach (var EdgeType in myUpdateChangeset.ToBeUpdatedEdges)
+            {
+                if(EdgeType is ServiceSingleEdgeInstance)
+                {
+                    var SingleEdge = EdgeType as ServiceSingleEdgeInstance;
+                    
+                    EdgePredefinition def = new EdgePredefinition();
+                    def.Comment = SingleEdge.Comment;
+                    def.AddVertexID(SingleEdge.TargetVertex.TypeID,SingleEdge.TargetVertex.VertexID);
+                    
+                    Request.UpdateEdge(def);
+
+                }
+                else if(EdgeType is ServiceHyperEdgeInstance)
+                {
+                    var HyperEdge = EdgeType as ServiceHyperEdgeInstance;
+
+                    EdgePredefinition def = new EdgePredefinition();
+                    def.Comment = HyperEdge.Comment;
+                    
+                    foreach(var SingleEdge in HyperEdge.SingleEdges)
+                    {
+                        EdgePredefinition InnerEdge = new EdgePredefinition();
+                        InnerEdge.Comment = SingleEdge.Comment;
+                        InnerEdge.AddVertexID(SingleEdge.TargetVertex.TypeID,SingleEdge.TargetVertex.VertexID);
+                    
+                        def.AddEdge(InnerEdge);
+                    
+                    }
+                    
+                    Request.UpdateEdge(def);
+                    
+                }
+                
+            }
+            
+            #endregion          
+
+            #region Properties
+            
+            foreach (var toAdd in myUpdateChangeset.ToBeUpdatedUnstructuredProperties)
+            {
+                Request.UpdateUnstructuredProperty(toAdd.Key,toAdd.Value);
+            }
+
+            foreach (var toAdd in myUpdateChangeset.ToBeUpdatedStructuredProperties)
+            {
+                Request.UpdateStructuredProperty(toAdd.Key, toAdd.Value);
+            }
+
+            #endregion
+                
+            return Request;
         }
 
         public static RequestInsertVertex MakeRequestInsertVertex(String myVertexTypeName, ServiceInsertPayload myPayload)

@@ -6,6 +6,8 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 using sones.GraphQL.Result;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.Security;
+using sones.GraphDB.TypeSystem;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 {
@@ -27,9 +29,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
         }
         
         
-        public  List<Tuple<ServiceVertexInstance, List<ServiceEdgeInstance>>> ConvertVertexViewList(IEnumerable<IVertexView> myVertices)
+        public  List<Tuple<ServiceVertexType, List<ServiceEdgeInstance>>> ConvertVertexTypeViewList(IEnumerable<IVertexView> myVertices)
         {
-            List<Tuple<ServiceVertexInstance, List<ServiceEdgeInstance>>> ReturnView = new List<Tuple<ServiceVertexInstance, List<ServiceEdgeInstance>>>();
+            List<Tuple<ServiceVertexType, List<ServiceEdgeInstance>>> ReturnView = new List<Tuple<ServiceVertexType, List<ServiceEdgeInstance>>>();
 
             foreach (var VertexView in myVertices)
             {
@@ -43,19 +45,32 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
         private Tuple<ServiceVertexInstance, List<ServiceEdgeInstance>> ConvertVertexView(IVertexView myVertex)
         {
             
-            Tuple<ServiceVertexInstance, List<ServiceEdgeInstance>> ReturnVertexView;
-            var VertexTypeID = myVertex.GetProperty<Int64>("VertexTypeID");
-            var VertexID = myVertex.GetProperty<Int64>("VertexID");
+            Tuple<ServiceVertexInstance, List<ServiceEdgeInstance>> ReturnVertexView = new Tuple<ServiceVertexInstance,List<ServiceEdgeInstance>>(null,null);
+
+            var type = myVertex.GetProperty<String>("Type");
+            if (type.Equals("Type"))
+            {
+                var VertexTypeID = myVertex.GetProperty<Int64>("VertexID");
+                var Vertex = this._GraphDS.GetVertexType<IVertexType>(SecToken, TransToken, ServiceRequestFactory.MakeRequestGetVertexType(VertexTypeID),
+                ServiceReturnConverter.ConvertOnlyVertexType);
+
+                //todo implement convert method
+
+            }
+            else
+            {
+
+            }
+
+
+            
             var Edition = myVertex.GetProperty<String>("Edition");
-            var Vertex = this._GraphDS.GetVertex<IVertex>(SecToken, TransToken, ServiceRequestFactory.MakeRequestGetVertex(VertexTypeID, VertexID),
-                ServiceReturnConverter.ConvertOnlyVertexInstance);
 
-            ServiceVertexInstance ReturnVertex = new ServiceVertexInstance(Vertex);
 
-           
 
-            List<ServiceEdgeInstance> Edges = ConvertEdgeViewList(Vertex, myVertex.GetAllEdges().Select(x => x.Item2));
-            return ReturnVertexView = new Tuple<ServiceVertexInstance, List<ServiceEdgeInstance>>(ReturnVertex, Edges);
+
+            //todo implement convert method
+            return ReturnVertexView;
         }
 
             
@@ -68,6 +83,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             foreach (var Edge in myEdges)
             {
                 Edge.GetProperty<Int64>("PropertyID");
+                //todo implement convert method
             }
 
             return ReturnEdges;
@@ -83,7 +99,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
                 var EdgeType = EdgeInstance.GetProperty<Int64>("EdgeTypeID");
                 var EdgeID = EdgeInstance.GetProperty<Int64>("EdgeID");
 
-                
+                //todo implement convert method
 
 
                 return ReturnEdge;
