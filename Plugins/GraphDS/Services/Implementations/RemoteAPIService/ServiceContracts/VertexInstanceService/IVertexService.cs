@@ -171,7 +171,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// </summary>
         /// <param name="myPropertyID">The ID of the property</param>
         /// <returns>True if the property exists, otherwise false</returns>
-        [OperationContract]
+        [OperationContract(Name = "HasPropertyByVertexInstance")]
         bool HasProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexInstance myVertex, long myPropertyID);
 
         /// <summary>
