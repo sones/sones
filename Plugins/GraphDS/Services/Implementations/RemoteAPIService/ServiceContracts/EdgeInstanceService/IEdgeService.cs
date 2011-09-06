@@ -29,7 +29,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// </summary>
         /// <param name="myPropertyID">The ID of the property</param>
         /// <returns>True if the property exists, otherwise false</returns>
-        [OperationContract]
+        [OperationContract(Name = "HasPropertyByEdgeInstance")]
         bool HasProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement, Int64 myPropertyID);
 
         /// <summary>
