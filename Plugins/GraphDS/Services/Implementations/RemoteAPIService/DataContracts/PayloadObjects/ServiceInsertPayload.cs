@@ -28,6 +28,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InsertPayload
         [DataMember]
         public String Edition;
 
+        [DataMember]
+        public List<ServiceEdgePredefinition> Edges;
+
 
     }
 }

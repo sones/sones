@@ -31,15 +31,13 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
     [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceIncomingEdgePredefinition : ServiceAttributePredefinition
     {
-        
+        [DataMember]
+        public String OutgoingEdgeName;
 
         public IncomingEdgePredefinition ToIncomingEdgePredefinition()
         {
-            IncomingEdgePredefinition IncomingEdgePredef = new IncomingEdgePredefinition(this.AttributeName,"",""); //todo
-            var VertexTypeName = this.AttributeType.Substring(0,this.AttributeType.IndexOf('.'));
-            var OutgoingEdgeName = this.AttributeType.Substring(this.AttributeType.IndexOf('.'),this.AttributeType.Length - 1);
-
-                      
+            IncomingEdgePredefinition IncomingEdgePredef = new IncomingEdgePredefinition(this.AttributeName,this.AttributeType,this.OutgoingEdgeName); 
+                               
 
             if(this.Comment != null)
                 IncomingEdgePredef.SetComment(this.Comment);

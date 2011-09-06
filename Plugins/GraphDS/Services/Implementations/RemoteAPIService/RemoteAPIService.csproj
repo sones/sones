@@ -56,6 +56,7 @@
     <Compile Include="DataContracts\PayloadObjects\StructuredProperty.cs" />
     <Compile Include="DataContracts\QueryResult\ServiceQueryResult.cs" />
     <Compile Include="DataContracts\PayloadObjects\ServiceInsertPayload.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceEdgePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceEdgeTypePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceAttributePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceIncomingEdgePredefinition.cs" />

@@ -54,6 +54,12 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
         [DataMember]
         public String IndexOptions;
 
+        /// <summary>
+        /// The options that will be passed to the index instance
+        /// </summary>
+        [DataMember]
+        public String IndexType;
+
         
 
         /// <summary>
@@ -78,6 +84,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 
             IndexPreDef.SetComment(this.Comment);
             IndexPreDef.SetEdition(this.Edition);
+            IndexPreDef.SetIndexType(this.IndexType);
 
             foreach (var Property in this.Properties)
             {

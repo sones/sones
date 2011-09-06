@@ -77,7 +77,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 
         public OutgoingEdgePredefinition ToOutgoingEdgePredefinition()
         {
-            OutgoingEdgePredefinition OutgoingEdgePreDef = new OutgoingEdgePredefinition(this.AttributeName,"");
+            OutgoingEdgePredefinition OutgoingEdgePreDef = new OutgoingEdgePredefinition(this.AttributeName,this.AttributeType);
 
             OutgoingEdgePreDef.SetAttributeType(this.AttributeType);
             OutgoingEdgePreDef.SetComment(this.Comment);

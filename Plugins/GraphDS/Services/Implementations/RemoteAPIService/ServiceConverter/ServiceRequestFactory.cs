@@ -405,7 +405,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
                     Request.AddUnstructuredProperty(toInsert.PropertyName, toInsert.PropertyValue);
             }
             
-            //todo implement unknown property
             return Request;
         }
 
