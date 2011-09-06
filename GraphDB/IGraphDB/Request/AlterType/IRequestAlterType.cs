@@ -43,6 +43,7 @@ namespace sones.GraphDB.Request
         int                                         AddPropertyCount { get; }
         int                                         AddUnknownPropertyCount { get; }
         int                                         AddAttributeCount { get; }
+        int                                         DefineAttributeCount { get; }
         int                                         RemoveAttributeCount { get; }
         int                                         RenameAttributeCount { get; }
 
@@ -54,6 +55,11 @@ namespace sones.GraphDB.Request
         /// Properties to be added to the altered type.
         /// </summary>
         IEnumerable<PropertyPredefinition>          ToBeAddedProperties { get; }
+
+        /// <summary>
+        /// Properties to be added to the altered type.
+        /// </summary>
+        IEnumerable<UnknownAttributePredefinition> ToBeDefinedAttributes { get; }
 
         /// <summary>
         /// Unknown attributes to be added to the altered type.

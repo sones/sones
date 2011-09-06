@@ -386,16 +386,6 @@ namespace sones.GraphQL.StatementNodes.DDL
                     result.AddUnknownAttribute(GenerateUnknownAttribute(aAttribute));
                 }
             }
-            else
-            {
-                if (command.BackwardEdgeInformation != null && command.BackwardEdgeInformation.Count > 0)
-                {
-                    foreach (var aIncomingEdge in command.BackwardEdgeInformation)
-                    {
-                        result.AddIncomingEdge(GenerateAIncomingEdge(aIncomingEdge));
-                    }
-                }
-            }
         }
 
         private void ProcessUndefineAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)

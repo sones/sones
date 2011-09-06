@@ -41,6 +41,7 @@ namespace sones.GraphDB.Request
         /// Attributes which are to be added
         /// </summary>
         private List<AAttributePredefinition>   _toBeAddedAttributes;
+        private List<AAttributePredefinition>   _toBeDefinedAttributes;
         private List<IndexPredefinition>        _toBeAddedIndices;
         private List<UniquePredefinition>       _toBeAddedUniques;
         private List<MandatoryPredefinition>    _toBeAddedMandatories;
@@ -108,6 +109,11 @@ namespace sones.GraphDB.Request
             { 
                 return (_toBeAddedAttributes == null) ? 0 : _toBeAddedAttributes.Count; 
             } 
+        }
+        public int DefineAttributeCount
+        {
+            get;
+            private set;
         }
 
         public int RemoveAttributeCount
@@ -177,6 +183,17 @@ namespace sones.GraphDB.Request
             get 
             { 
                 return (_toBeAddedAttributes == null) ? null : _toBeAddedAttributes.OfType<UnknownAttributePredefinition>(); 
+            }
+        }
+
+        /// <summary>
+        /// Attributes to be defined in the altered type.
+        /// </summary>
+        public IEnumerable<UnknownAttributePredefinition> ToBeDefinedAttributes
+        {
+            get
+            {
+                return (_toBeAddedAttributes == null) ? null : _toBeAddedAttributes.OfType<UnknownAttributePredefinition>();
             }
         }
 
@@ -410,9 +427,9 @@ namespace sones.GraphDB.Request
         {
             if (myUnknownPredefinition != null)
             {
-                _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AAttributePredefinition>();
-                _toBeAddedAttributes.Add(myUnknownPredefinition);
-                AddUnknownPropertyCount++;
+                _toBeDefinedAttributes = (_toBeDefinedAttributes) ?? new List<AAttributePredefinition>();
+                _toBeDefinedAttributes.Add(myUnknownPredefinition);
+                DefineAttributeCount++;
             }
 
             return this;
