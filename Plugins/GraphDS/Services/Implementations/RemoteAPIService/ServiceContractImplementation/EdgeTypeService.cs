@@ -36,125 +36,210 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
-    
     public partial class RPCServiceContract : IEdgeTypeService
     {
+        #region Inheritance
 
-        public List<ServiceEdgeType> GetDescendantEdgeTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myEdgeType)
+        public List<ServiceEdgeType> GetDescendantEdgeTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myEdgeType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetDescendantEdgeTypes().Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceEdgeType> GetDescendantEdgeTypesAndSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myEdgeType)
+        public List<ServiceEdgeType> GetDescendantEdgeTypesAndSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myEdgeType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetDescendantEdgeTypesAndSelf().Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceEdgeType> GetAncestorEdgeTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myEdgeType)
+        public List<ServiceEdgeType> GetAncestorEdgeTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myEdgeType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetAncestorEdgeTypes().Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceEdgeType> GetAncestorEdgeTypesAndSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myEdgeType)
+        public List<ServiceEdgeType> GetAncestorEdgeTypesAndSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myEdgeType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetAncestorEdgeTypesAndSelf().Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceEdgeType> GetKinsmenEdgeTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myEdgeType)
+        public List<ServiceEdgeType> GetKinsmenEdgeTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myEdgeType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetKinsmenEdgeTypes().Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceEdgeType> GetKinsmenEdgeTypesAndSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myEdgeType)
+        public List<ServiceEdgeType> GetKinsmenEdgeTypesAndSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myEdgeType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetKinsmenEdgeTypesAndSelf().Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceEdgeType> ChildrenEdgeTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myEdgeType)
+        public List<ServiceEdgeType> ChildrenEdgeTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myEdgeType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.ChildrenEdgeTypes.Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public ServiceEdgeType ParentEdgeType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myEdgeType)
+        public ServiceEdgeType ParentEdgeType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myEdgeType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServiceEdgeType(Response.ParentEdgeType);
         }
 
-        #region IBaseTypeServices
+        #endregion
 
-        
+        #region Inheritance
 
-        public bool IsSealed(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType)
+        public bool IsSealed(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.IsSealed;
         }
 
-        public bool HasParentType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType)
+        public bool HasParentType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasParentType;
         }
 
-        public bool HasChildTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType)
+        public bool HasChildTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasChildTypes;
         }
 
-        public bool IsAncestor(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType, ServiceEdgeType myOtherType)
+        public bool IsAncestor(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType)
         {
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myOtherType.Name);
             var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceType.Name);
+            Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.IsAncestor(BaseType);
         }
 
-        public bool IsAncestorOrSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType, ServiceEdgeType myOtherType)
+        public bool IsAncestorOrSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType)
         {
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myOtherType.Name);
             var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceType.Name);
+            Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.IsAncestorOrSelf(BaseType);
         }
 
-        public bool IsDescendant(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType, ServiceEdgeType myOtherType)
+        public bool IsDescendant(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType)
         {
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myOtherType.Name);
             var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceType.Name);
+            Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.IsDescendant(BaseType);
         }
 
-        public bool IsDescendantOrSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceType, ServiceEdgeType myOtherType)
+        public bool IsDescendantOrSelf(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType)
         {
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myOtherType.Name);
             var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceType.Name);
+            Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.IsDescendantOrSelf(BaseType);
+        }
+
+        #endregion
+
+        #region Attributes
+        
+        public bool HasAttribute(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, string myAttributeName)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return Response.HasAttribute(myAttributeName);
+        }
+
+        public ServiceAttributeDefinition GetAttributeDefinition(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, string myAttributeName)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return new ServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeName));
+        }
+
+        public ServiceAttributeDefinition GetAttributeDefinitionByID(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, long myAttributeID)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return new ServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeID));
+        }
+
+        public bool HasAttributes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return Response.HasAttributes(myIncludeAncestorDefinitions);
+        }
+
+        public List<ServiceAttributeDefinition> GetAttributeDefinitions(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return Response.GetAttributeDefinitions(myIncludeAncestorDefinitions).Select(x => new ServiceAttributeDefinition(x)).ToList();
+        }
+
+        #endregion
+
+        #region Properties
+
+        public bool HasProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, string myAttributeName)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return Response.HasProperty(myAttributeName);
+        }
+
+        public ServicePropertyDefinition GetPropertyDefinition(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, string myPropertyName)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return new ServicePropertyDefinition(Response.GetPropertyDefinition(myPropertyName));
+        }
+
+        public ServicePropertyDefinition GetPropertyDefinitionByID(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, long myPropertyID)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return new ServicePropertyDefinition(Response.GetPropertyDefinition(myPropertyID));
+        }
+
+        public bool HasProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return Response.HasProperties(myIncludeAncestorDefinitions);
+        }
+
+        public List<ServicePropertyDefinition> GetPropertyDefinitions(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return Response.GetPropertyDefinitions(myIncludeAncestorDefinitions).Select(x => new ServicePropertyDefinition(x)).ToList();
+        }
+
+        public List<ServicePropertyDefinition> GetPropertyDefinitionsByNameList(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeType myServiceEdgeType, List<string> myPropertyNames)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return Response.GetPropertyDefinitions(myPropertyNames).Select(x => new ServicePropertyDefinition(x)).ToList();
         }
 
         #endregion

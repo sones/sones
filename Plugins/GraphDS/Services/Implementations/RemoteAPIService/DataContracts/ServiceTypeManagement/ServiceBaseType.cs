@@ -36,7 +36,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
             this.Comment = myBaseType.Comment;
             this.Name = myBaseType.Name;
             this.IsUserDefined = myBaseType.IsUserDefined;
-                     
         }
 
         [DataMember]

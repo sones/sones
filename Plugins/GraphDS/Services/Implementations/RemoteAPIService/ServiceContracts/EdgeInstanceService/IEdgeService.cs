@@ -20,7 +20,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <typeparam name="T">The type of the interesting property</typeparam>
         /// <param name="myPropertyID">The ID of the interesing property</param>
         /// <returns>A Property</returns>
-        [OperationContract]
+        [OperationContract(Name = "GetPropertyByEdgeInstance")]
         object GetProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement, Int64 myPropertyID);
 
 
@@ -36,7 +36,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// Returns the count of the vertex properties
         /// </summary>
         /// <returns>An unsigned value</returns>
-        [OperationContract]
+        [OperationContract(Name = "GetCountOfPropertiesByEdgeInstance")]
         int GetCountOfProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement);
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// </summary>
         /// <param name="myFilter">A function to filter properties</param>
         /// <returns>An IEnumerable of Property/Value</returns>
-        [OperationContract]
+        [OperationContract(Name = "GetAllPropertiesByEdgeInstance")]
         List<Tuple<Int64, object>> GetAllProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement);
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// </summary>
         /// <param name="myPropertyID">The id of the property</param>
         /// <returns>The string representation of the property</returns>
-        [OperationContract]
+        [OperationContract(Name = "GetPropertyAsStringByEdgeInstance")]
         String GetPropertyAsString(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement, Int64 myPropertyID);
 
         #endregion
@@ -65,7 +65,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <typeparam name="T">The type of the interesting property</typeparam>
         /// <param name="myPropertyName">The name of the interesting unstructured property</param>
         /// <returns>The value of an unstructured property</returns>
-        [OperationContract]
+        [OperationContract(Name = "GetUnstructuredPropertyByEdgeInstance")]
         object GetUnstructuredProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement, string myPropertyName);
 
         /// <summary>
@@ -73,14 +73,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// </summary>
         /// <param name="myPropertyName">The name of the unstructured property</param>
         /// <returns>True if the property exists, otherwise false</returns>
-        [OperationContract]
+        [OperationContract(Name = "HasUnstructuredPropertyByEdgeInstance")]
         bool HasUnstructuredProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement, String myPropertyName);
 
         /// <summary>
         /// Returns the count of the unstructured vertex properties
         /// </summary>
         /// <returns>An unsigned value</returns>
-        [OperationContract]
+        [OperationContract(Name = "GetCountOfUnstructuredPropertiesByEdgeInstance")]
         int GetCountOfUnstructuredProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement);
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// </summary>
         /// <param name="myFilter">A function to filter properties</param>
         /// <returns>An IEnumerable of NameOfProperty/Value</returns>
-        [OperationContract]
+        [OperationContract(Name = "GetAllUnstructuredPropertiesByEdgeInstance")]
         List<Tuple<String, Object>> GetAllUnstructuredProperties(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement);
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// </summary>
         /// <param name="myPropertyName">The name of the unstructured property</param>
         /// <returns>The string representation of the property</returns>
-        [OperationContract]
+        [OperationContract(Name = "GetUnstructuredPropertyAsStringByEdgeInstance")]
         String GetUnstructuredPropertyAsString(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement, String myPropertyName);
 
         #endregion
@@ -106,7 +106,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <summary>
         /// Gets the comment of this graph element
         /// </summary>
-        [OperationContract]
+        [OperationContract(Name="CommentByEdgeInstance")]
         String Comment(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement);
 
         #endregion
@@ -116,7 +116,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <summary>
         /// The date the graph element has been created
         /// </summary>
-        [OperationContract]
+        [OperationContract(Name="CreationDateByEdgeInstance")]
         long CreationDate(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement);
 
         #endregion
@@ -126,7 +126,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <summary>
         /// The date the graph element has been modified the last time
         /// </summary>
-        [OperationContract]
+        [OperationContract(Name="ModificationDateByEdgeInstance")]
         long ModificationDate(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceEdgeInstance myGraphElement);
 
         #endregion
