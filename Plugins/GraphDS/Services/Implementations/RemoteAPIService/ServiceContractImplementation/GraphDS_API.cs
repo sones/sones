@@ -251,11 +251,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return new ServiceQueryResult(this.GraphDS.Query(mySecurityToken, myTransactionToken.TransactionID, myQueryString, myLanguage));
         }
 
-        public List<long> Delete(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myVertexType, List<long> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public List<ServiceVertexInstance> Update(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myVertexType, IEnumerable<long> myVertexIDs, ServiceUpdateChangeset myUpdateChangeset)
         {
             var Request = ServiceRequestFactory.MakeRequestUpdate(myVertexType, myVertexIDs, myUpdateChangeset);

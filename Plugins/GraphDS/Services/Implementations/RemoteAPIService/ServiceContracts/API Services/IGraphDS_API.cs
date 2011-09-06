@@ -71,8 +71,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
             List<ServiceVertexTypePredefinition> myVertexTypePreDef);
                 
         [OperationContract]
-        List<Int64> Delete(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
-            ServiceVertexType myVertexType, List<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null); 
+        List<Int64> Delete(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+            ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null); 
 
         [OperationContract]
         ServiceIndexDefinition DescribeIndex(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
