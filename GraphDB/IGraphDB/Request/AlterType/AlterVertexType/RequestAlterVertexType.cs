@@ -193,7 +193,7 @@ namespace sones.GraphDB.Request
         {
             get
             {
-                return (_toBeAddedAttributes == null) ? null : _toBeAddedAttributes.OfType<UnknownAttributePredefinition>();
+                return (_toBeDefinedAttributes == null) ? null : _toBeDefinedAttributes.OfType<UnknownAttributePredefinition>();
             }
         }
 

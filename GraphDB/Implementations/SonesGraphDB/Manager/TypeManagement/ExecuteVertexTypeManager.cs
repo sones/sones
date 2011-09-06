@@ -249,6 +249,23 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             return dict;
         }
+
+        /// <summary>
+        /// Defines specified attributes in the given type and stores them.
+        /// </summary>
+        /// <param name="myToBeDefinedAttributes">The attributes to be defined</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myType">The type to be altered.</param>
+        /// <returns>A dictionary with to be defined attributes and default value</returns>returns>
+        protected override Dictionary<long, IComparable> ProcessDefineAttributes(
+            IEnumerable<UnknownAttributePredefinition> myToBeDefinedAttributes,
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            IVertexType myType)
+        {
+            throw new NotImplementedException();
+        }
         
         #endregion
 
@@ -919,6 +936,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                           request.ToBeAddedIncomingEdges,
                           request.ToBeAddedOutgoingEdges,
                           request.ToBeAddedProperties,
+                          request.ToBeDefinedAttributes,
                           myType, myTransactionToken, mySecurityToken);
 
             myType = GetType(request.TypeName, myTransactionToken, mySecurityToken);
@@ -1715,6 +1733,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                                     IEnumerable<IncomingEdgePredefinition> myToBeAddedIncomingEdges,
                                     IEnumerable<OutgoingEdgePredefinition> myToBeAddedOutgoingEdges,
                                     IEnumerable<PropertyPredefinition> myToBeAddedProperties,
+                                    IEnumerable<UnknownAttributePredefinition> myToBeDefinedAttributes,
                                     IVertexType myType, 
                                     Int64 myTransactionToken, 
                                     SecurityToken mySecurityToken)
@@ -1757,6 +1776,16 @@ namespace sones.GraphDB.Manager.TypeManagement
                                         mySecurityToken, 
                                         myType);
                 
+                CleanUpTypes();
+            }
+
+            if (myToBeDefinedAttributes.IsNotNullOrEmpty())
+            {
+                ProcessDefineAttributes(myToBeDefinedAttributes,
+                                        myTransactionToken,
+                                        mySecurityToken,
+                                        myType);
+
                 CleanUpTypes();
             }
 

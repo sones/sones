@@ -703,6 +703,23 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         /// <summary>
+        /// Defines specified attributes in the given type and stores them.
+        /// </summary>
+        /// <param name="myToBeDefinedAttributes">The attributes to be defined</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myType">The type to be altered.</param>
+        /// <returns>A dictionary with to be defined attributes and default value</returns>returns>
+        protected override Dictionary<long, IComparable> ProcessDefineAttributes(
+            IEnumerable<UnknownAttributePredefinition> myToBeDefinedAttributes,
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            IEdgeType myType)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Renames attributes.
         /// </summary>
         /// <param name="myToBeRenamedAttributes">The to be renamed properties.</param>
