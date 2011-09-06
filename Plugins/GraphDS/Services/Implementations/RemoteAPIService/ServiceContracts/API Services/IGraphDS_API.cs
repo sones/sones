@@ -37,7 +37,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 
 namespace sones.GraphDS.Services.RemoteAPIService.API_Services
 {
-    [ServiceContract(Namespace = sonesRPCServer.Namespace, Name = "IGraphDS")]
+    [ServiceContract(Namespace = sonesRPCServer.Namespace, Name = "GraphDS")]
     public interface IGraphDS_API
     {
         [OperationContract]
@@ -128,8 +128,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
 
         //[OperationContract] There is no plan to implement the Query method yet, because client libs are already available
         //ServiceQueryResult Query(SecurityToken mySecToken, ServiceTransactionToken myTransToken, String myQueryString, String myLanguage); 
-
-        //Traverse Vertex
+        
+        //[OperationContract] There is no plan to implement the Travers method yet, because there is no way to transport traverser logic from the client
+        //List<ServiceVertexInstance>Traverse(SecurityToken mySecToken, ServiceTransactionToken myTransToken);
 
         [OperationContract]
         List<ServiceVertexInstance> Update(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs,

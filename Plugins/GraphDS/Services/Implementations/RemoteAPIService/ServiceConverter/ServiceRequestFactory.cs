@@ -187,8 +187,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
         {
             return new RequestCreateEdgeTypes(myEdgeTypePredefinition.Select(x => x.ToEdgeTypePredefinition()));
         }
-
-
+        
         public static RequestCreateIndex MakeRequestCreateIndex(ServiceIndexPredefinition myIndexPreDef)
         {
             return new RequestCreateIndex(myIndexPreDef.ToIndexPredefinition());
@@ -424,7 +423,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 
         public static RequestTraverseVertex MakeRequestTraverseVertex()
         {
-            return null;
+            return null; //This Request is currently unused, because of the fact there is no way to deliver the logic for graph traversals;
         }
 
         public static RequestClear MakeRequestClear()
