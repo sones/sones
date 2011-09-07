@@ -38,6 +38,7 @@ using sones.GraphDB.Request;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.VertexStore.Definitions.Update;
 using sones.Library.ErrorHandling;
+using sones.Library.Commons.VertexStore;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -264,7 +265,76 @@ namespace sones.GraphDB.Manager.TypeManagement
             SecurityToken mySecurityToken,
             IVertexType myType)
         {
-            throw new NotImplementedException();
+            Dictionary<long, IComparable> dict = null;
+
+            foreach (var aAttribute in myToBeDefinedAttributes)
+            {
+                dict = dict ?? new Dictionary<long, IComparable>();
+
+                var id = _idManager
+                            .GetVertexTypeUniqeID((long)BaseTypes.Attribute)
+                            .GetNextID();
+
+                dict.Add(id, aAttribute.DefaultValue);
+
+                foreach (var vertex in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myType.ID))
+                {
+                    foreach (var property in vertex.GetAllUnstructuredProperties())
+                    {
+                        foreach (var attr in myToBeDefinedAttributes)
+                        {
+                            if (property.Item1.CompareTo(attr.AttributeName) == 0)
+                            {
+                                var targettype = _baseStorageManager.GetBaseType(attr.AttributeType);
+                                var curtype = property.Item2.GetType();
+
+                                if (targettype != curtype)
+                                {
+                                    // Try Convert Type
+                                    try
+                                    {
+                                        var targetproperty = Convert.ChangeType(property.Item2, targettype);
+                                        throw new InvalidCastException();
+                                    }
+                                    catch (InvalidCastException)
+                                    {
+                                        throw new VertexAttributeCastException(attr.AttributeName, curtype, targettype);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                PropertyMultiplicity multiplicity = PropertyMultiplicity.Single;
+                switch (aAttribute.Multiplicity)
+                {
+                    case UnknownAttributePredefinition.LISTMultiplicity: multiplicity = PropertyMultiplicity.List; break;
+                    case UnknownAttributePredefinition.SETMultiplicity: multiplicity = PropertyMultiplicity.Set; break;
+                    default: multiplicity = PropertyMultiplicity.Single; break;
+                }
+
+                _baseStorageManager.StoreProperty(
+                    _vertexManager.ExecuteManager.VertexStore,
+                    new VertexInformation(
+                        (long)BaseTypes.Property,
+                        id),
+                    aAttribute.AttributeName,
+                    aAttribute.Comment,
+                    DateTime.UtcNow.ToBinary(),
+                    aAttribute.IsMandatory,
+                    multiplicity,
+                    aAttribute.DefaultValue,
+                    true,
+                    new VertexInformation(
+                        (long)BaseTypes.VertexType,
+                        myType.ID),
+                    ConvertBasicType(aAttribute.AttributeType),
+                    mySecurityToken,
+                    myTransactionToken);
+            }
+
+            return dict;
         }
         
         #endregion

@@ -101,6 +101,7 @@
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UndefinedAttributesException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UnknownPropertyTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeAlreadyExistsException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeCastException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeExistsInSubtypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeExistsInSuperVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DropOfVertexAttributeNotAllowedException.cs" />
