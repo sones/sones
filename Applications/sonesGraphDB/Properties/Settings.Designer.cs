@@ -61,18 +61,6 @@ namespace sones.sonesGraphDBStarter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UsePersistence {
-            get {
-                return ((bool)(this["UsePersistence"]));
-            }
-            set {
-                this["UsePersistence"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("data")]
         public string PersistenceLocation {
             get {
@@ -152,6 +140,30 @@ namespace sones.sonesGraphDBStarter.Properties {
             }
             set {
                 this["UDCEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UsePersistence {
+            get {
+                return ((bool)(this["UsePersistence"]));
+            }
+            set {
+                this["UsePersistence"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("WriteThrough")]
+        public string WriteStrategy {
+            get {
+                return ((string)(this["WriteStrategy"]));
+            }
+            set {
+                this["WriteStrategy"] = value;
             }
         }
     }

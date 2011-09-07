@@ -91,6 +91,7 @@ namespace sones.sonesGraphDBStarter
                 string configuredLocation = Properties.Settings.Default.PersistenceLocation;
                 string configuredPageSize = Properties.Settings.Default.PageSize;
                 string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
+                string configuredWriteStrategy = Properties.Settings.Default.WriteStrategy;
 
                 /* Configure the location */
 
@@ -117,7 +118,7 @@ namespace sones.sonesGraphDBStarter
                 try
                 {
                     //Make a new GraphDB instance
-                    GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location }, { "pageSize", pageSize }, { "bufferSizePages", bufferSize} })));
+                    GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location }, { "pageSize", pageSize }, { "bufferSizePages", bufferSize}, { "writeStrategy", configuredWriteStrategy } })));
                 
                     if (!quiet)
                         Console.WriteLine("Persistence layer initialized.");

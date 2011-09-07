@@ -11,9 +11,6 @@
     <Setting Name="ListeningPort" Type="System.UInt16" Scope="User">
       <Value Profile="(Default)">9975</Value>
     </Setting>
-    <Setting Name="UsePersistence" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="PersistenceLocation" Type="System.String" Scope="User">
       <Value Profile="(Default)">data</Value>
     </Setting>
@@ -34,6 +31,12 @@
     </Setting>
     <Setting Name="UDCEnabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UsePersistence" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="WriteStrategy" Type="System.String" Scope="User">
+      <Value Profile="(Default)">WriteThrough</Value>
     </Setting>
   </Settings>
 </SettingsFile>
