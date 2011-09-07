@@ -50,7 +50,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         
         [OperationContract]
         ServiceEdgeType AlterEdgeType(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
-            ServiceEdgeType myEdgeType, ServiceAlterEdgeChangeset myChangeset);  
+            ServiceEdgeType myEdgeType, ServiceAlterEdgeChangeset myChangeset);
+
+        [OperationContract]
+        ServiceVertexType GetVertexType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, String myVertexTypeName);
                
 
         [OperationContract]
