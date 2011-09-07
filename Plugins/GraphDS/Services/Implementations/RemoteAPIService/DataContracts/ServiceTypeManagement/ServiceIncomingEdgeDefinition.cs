@@ -27,13 +27,17 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
 {
-    [DataContract(Namespace = "http://www.sones.com")]
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceIncomingEdgeDefinition : ServiceAttributeDefinition
     {
         public ServiceIncomingEdgeDefinition(IIncomingEdgeDefinition myIncomingEdgeDefinition)
             : base(myIncomingEdgeDefinition)
         {
-            this.RelatedEdgeDefinition = new ServiceOutgoingEdgeDefinition(myIncomingEdgeDefinition.RelatedEdgeDefinition);
+            if (myIncomingEdgeDefinition != null)
+            {
+                this.RelatedEdgeDefinition = new ServiceOutgoingEdgeDefinition(myIncomingEdgeDefinition.RelatedEdgeDefinition);
+            }
+            
         }
         [DataMember]
         public ServiceOutgoingEdgeDefinition RelatedEdgeDefinition;

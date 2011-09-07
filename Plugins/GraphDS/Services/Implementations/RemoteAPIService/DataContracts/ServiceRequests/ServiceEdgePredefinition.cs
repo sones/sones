@@ -36,26 +36,37 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
             if (!String.IsNullOrEmpty(Comment))
                 EdgePredef.Comment = this.Comment;
 
-            foreach (var Edge in this.ContainedEdges)
+            if (ContainedEdges != null)
             {
-                EdgePredef.AddEdge(Edge.ToEdgePredefinition());
+                foreach (var Edge in this.ContainedEdges)
+                {
+                    EdgePredef.AddEdge(Edge.ToEdgePredefinition());
+                }
             }
 
-            foreach (var Property in this.StructuredProperties)
+            if (StructuredProperties != null)
             {
-                EdgePredef.AddStructuredProperty(Property.PropertyName, Property.PropertyValue as IComparable);
+                foreach (var Property in this.StructuredProperties)
+                {
+                    EdgePredef.AddStructuredProperty(Property.PropertyName, Property.PropertyValue as IComparable);
+                }
             }
 
-            foreach (var Property in this.UnstructuredProperties)
+            if (UnstructuredProperties != null)
             {
-                EdgePredef.AddUnstructuredProperty(Property.PropertyName, Property.PropertyValue);
+                foreach (var Property in this.UnstructuredProperties)
+                {
+                    EdgePredef.AddUnstructuredProperty(Property.PropertyName, Property.PropertyValue);
+                }
             }
 
-            foreach (var Vertex in this.VertexIDsByID)
+            if (VertexIDsByID != null)
             {
-                EdgePredef.AddVertexID(Vertex.Item1,Vertex.Item2);
+                foreach (var Vertex in this.VertexIDsByID)
+                {
+                    EdgePredef.AddVertexID(Vertex.Item1, Vertex.Item2);
+                }
             }
-
             
             return EdgePredef;
         }

@@ -327,7 +327,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
-            return new ServiceOutgoingEdgeDefinition(Response.GetOutgoingEdgeDefinition(myEdgeName));
+            var value = Response.GetOutgoingEdgeDefinition(myEdgeName);
+            if (value != null)
+                return new ServiceOutgoingEdgeDefinition(value);
+            return null;
         }
 
         public bool HasOutgoingEdges(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
@@ -341,9 +344,11 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexType);
-            return Response.GetOutgoingEdgeDefinitions(myIncludeAncestorDefinitions).Select(x => new ServiceOutgoingEdgeDefinition(x)).ToList();
+            var value = Response.GetOutgoingEdgeDefinitions(myIncludeAncestorDefinitions);
+            if (value != null)
+                return Response.GetOutgoingEdgeDefinitions(myIncludeAncestorDefinitions).Select(x => new ServiceOutgoingEdgeDefinition(x)).ToList();
+            return null;
         }
-
         #endregion
 
         #endregion

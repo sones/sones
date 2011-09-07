@@ -382,11 +382,12 @@ namespace sones.TagExampleWithRest
 
             //insert a "Tag" with an OutgoingEdge to a "Website" include that the GraphDB creates an IncomingEdge on the given Website instances
             //(because we created an IncomingEdge on type "Website") --> as a consequence we never have to set any IncomingEdge
-            var good = _dsServer.Insert<IVertex>(SecToken, TransactionID, new RequestInsertVertex("Tag")
+            var bla =  new RequestInsertVertex("Tag")
                                                                                     .AddStructuredProperty("Name", "good")
                                                                                     .AddEdge(new EdgePredefinition("TaggedWebsites")
                                                                                         .AddVertexID(Website.ID, cnn.VertexID)
-                                                                                        .AddVertexID(Website.ID, xkcd.VertexID)),
+                                                                                        .AddVertexID(Website.ID, xkcd.VertexID));
+            var good = _dsServer.Insert<IVertex>(SecToken, TransactionID,bla,
                                                                                     (Statistics, Result) => Result);
 
             var funny = _dsServer.Insert<IVertex>(SecToken, TransactionID, new RequestInsertVertex("Tag")

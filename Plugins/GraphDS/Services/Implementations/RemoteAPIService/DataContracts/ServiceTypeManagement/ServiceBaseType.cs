@@ -32,14 +32,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
     {
         public ServiceBaseType(IBaseType myBaseType)
         {
-            this.BaseType = myBaseType.ID;
+            this.ID = myBaseType.ID;
             this.Comment = myBaseType.Comment;
             this.Name = myBaseType.Name;
             this.IsUserDefined = myBaseType.IsUserDefined;
         }
 
         [DataMember]
-        public long BaseType;
+        public long ID;
         [DataMember]
         public String Name;
         [DataMember]

@@ -199,14 +199,13 @@ namespace sones.GraphDS.Services.RemoteAPIService
             _ServiceHost.Description.Behaviors.Add(smb);
             // Add MEX endpoint
 
-            _ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
+            _ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexHttpBinding(),"mex");
             //foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
             //{
             //    endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
 
             //}
-
-
+            
             #endregion
 
 

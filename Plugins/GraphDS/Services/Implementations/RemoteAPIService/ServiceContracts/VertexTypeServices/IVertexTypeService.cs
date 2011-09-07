@@ -338,6 +338,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// </summary>
         /// <param name="myAttributeName">The name of the interesting outgoing IncomingEdge</param>
         /// <returns>An outgoing IncomingEdge definition</returns>
+        [OperationContract(Name = "GetOutgoingEdgeDefinitionByVertexType")]
         ServiceOutgoingEdgeDefinition GetOutgoingEdgeDefinition(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, String myEdgeName);
 
         /// <summary>
@@ -352,6 +353,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of outgoing IncomingEdge attributes</returns>
+        [OperationContract(Name = "GetOutgoingEdgeDefinitionsByVertexType")]
         List<ServiceOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
         #endregion

@@ -93,7 +93,13 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
-            return new ServiceHyperEdgeInstance(Response.GetOutgoingHyperEdge(myEdgePropertyID), myEdgePropertyID);
+            var value = Response.GetOutgoingHyperEdge(myEdgePropertyID);
+            if (value != null)
+            {
+                return new ServiceHyperEdgeInstance(Response.GetOutgoingHyperEdge(myEdgePropertyID), myEdgePropertyID);
+            }
+            return null;
+            
         }
 
         public ServiceSingleEdgeInstance GetOutgoingSingleEdge(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
@@ -101,7 +107,12 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
-            return new ServiceSingleEdgeInstance(Response.GetOutgoingSingleEdge(myEdgePropertyID), myEdgePropertyID);
+            var value = Response.GetOutgoingSingleEdge(myEdgePropertyID);
+            if (value != null)
+            {
+                return new ServiceSingleEdgeInstance(value, myEdgePropertyID);
+            }
+            return null;                            
         }
 
         public System.IO.Stream GetBinaryProperty(SecurityToken mySecToken, ServiceTransactionToken myTransToken,

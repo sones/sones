@@ -404,6 +404,15 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
                 foreach (var toInsert in myPayload.UnstructuredProperties)
                     Request.AddUnstructuredProperty(toInsert.PropertyName, toInsert.PropertyValue);
             }
+
+            if (myPayload.Edges != null)
+            {
+                foreach (var Edge in myPayload.Edges)
+                {
+                    Request.AddEdge(Edge.ToEdgePredefinition());
+                }
+            }
+            
             
             return Request;
         }
