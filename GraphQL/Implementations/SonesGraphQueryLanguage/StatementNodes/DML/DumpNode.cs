@@ -60,7 +60,8 @@ namespace sones.GraphQL.StatementNodes.DML
 
             if (HasChildNodes(parseNode.ChildNodes[1]))
             {
-                _TypesToDump = ((parseNode.ChildNodes[1].ChildNodes[1].AstNode as VertexTypeListNode).Types).Select(tlnode => tlnode.TypeName).ToList();
+                _TypesToDump = ((parseNode.ChildNodes[1].ChildNodes[1].AstNode as VertexTypeListNode).Types)
+                                .Select(tlnode => tlnode.TypeName).ToList();
             }
 
             #endregion
@@ -70,14 +71,10 @@ namespace sones.GraphQL.StatementNodes.DML
             _DumpableGrammar = context.Parser.Language.Grammar as IDumpable;
 
             if (_DumpableGrammar == null)
-            {
                 throw new NotADumpableGrammarException(context.Parser.Language.Grammar.GetType().ToString(), "");
-            }
 
             if (HasChildNodes(parseNode.ChildNodes[4]))
-            {
                 _DumpDestination = parseNode.ChildNodes[4].ChildNodes[1].Token.ValueString;
-            }
         }
 
         #endregion
@@ -94,7 +91,12 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.Readonly; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, 
+                                            IGraphQL myGraphQL, 
+                                            GQLPluginManager myPluginManager, 
+                                            String myQuery, 
+                                            SecurityToken mySecurityToken, 
+                                            Int64 myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
 
@@ -106,7 +108,15 @@ namespace sones.GraphQL.StatementNodes.DML
 
                 if (plugin != null)
                 {
-                    result = plugin.Export(_DumpDestination, _DumpableGrammar, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, _TypesToDump, _DumpType);
+                    result = plugin.Export(_DumpDestination, 
+                                            _DumpableGrammar, 
+                                            myGraphDB, 
+                                            myGraphQL, 
+                                            mySecurityToken, 
+                                            myTransactionToken, 
+                                            _TypesToDump, 
+                                            null,
+                                            _DumpType);
                 }
             }
 
@@ -114,7 +124,12 @@ namespace sones.GraphQL.StatementNodes.DML
 
             if (result != null)
             {
-                return new QueryResult(myQuery, _DumpFormat.ToString(), (ulong)sw.ElapsedMilliseconds, result.TypeOfResult, result.Vertices, result.Error);
+                return new QueryResult(myQuery, 
+                                        _DumpFormat.ToString(), 
+                                        (ulong)sw.ElapsedMilliseconds, 
+                                        result.TypeOfResult, 
+                                        result.Vertices, 
+                                        result.Error);
             }
             else
                 return null;
@@ -124,7 +139,11 @@ namespace sones.GraphQL.StatementNodes.DML
 
         private QueryResult GenerateOutput(IRequestStatistics myStats)
         {
-            return new QueryResult(_Query, "GQL", Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), ResultType.Successful, new List<IVertexView>());
+            return new QueryResult(_Query, 
+                                    "GQL", 
+                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), 
+                                    ResultType.Successful, 
+                                    new List<IVertexView>());
         }
     }
 }

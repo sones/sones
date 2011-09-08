@@ -688,9 +688,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             if (_indexManager != null)
             {
-                var uniqueIdx = _indexManager.GetBestMatchingIndexName(true, false, false);
+                var uniqueIdx = _indexManager.GetBestMatchingIndexName(false, false);
 
-                var indexIdx = _indexManager.GetBestMatchingIndexName(false, false, false);
+                var indexIdx = _indexManager.GetBestMatchingIndexName(false, false);
 
                 myResultPos = 0;
                 for (var current = vertexDefsTopologically.First; current != null; current = current.Next, myResultPos++)
@@ -917,8 +917,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                 var result = _indexManager.GetIndex(BaseUniqueIndex.VertexTypeDotName);
 
                 if (result != null)
-                    if (!result.Remove(type.Name))
-                        throw new TypeRemoveException<IVertexType>(type.Name, "Error during delete the Index on type.");
+                    result.Remove(type.Name);
+                    //if (!result.Remove(type.Name))
+                    //    throw new TypeRemoveException<IVertexType>(type.Name, "Error during delete the Index on type.");
             }
 
             #endregion

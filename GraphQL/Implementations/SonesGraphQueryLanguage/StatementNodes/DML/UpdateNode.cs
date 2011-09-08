@@ -169,19 +169,40 @@ namespace sones.GraphQL.StatementNodes.DML
                 new RequestGetVertexType(_TypeName),
                 (stats, vtype) => vtype);
 
+            RequestUpdate result = null;
+
             if (_vertexIDs == null)
             {
                 if (_WhereExpression != null)
                 {
                     //validate
-                    _WhereExpression.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, vertexType);
+                    _WhereExpression.Validate(myPluginManager, 
+                                                myGraphDB, 
+                                                mySecurityToken, 
+                                                myTransactionToken, 
+                                                vertexType);
 
                     //calculate
-                    var expressionGraph = _WhereExpression.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken), false);
+                    var expressionGraph = _WhereExpression.Calculon(myPluginManager, 
+                                                                    myGraphDB, 
+                                                                    mySecurityToken, 
+                                                                    myTransactionToken, 
+                                                                    new CommonUsageGraph(myGraphDB, 
+                                                                                            mySecurityToken, 
+                                                                                            myTransactionToken), 
+                                                                    false);
 
                     //extract
+                    toBeupdatedVertices = expressionGraph.Select(new LevelKey(vertexType.ID, myGraphDB, 
+                                                                                mySecurityToken, 
+                                                                                myTransactionToken), 
+                                                                 null, true);
 
-                    toBeupdatedVertices = expressionGraph.Select(new LevelKey(vertexType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
+                    result = new RequestUpdate(
+                                new RequestGetVertices(toBeupdatedVertices
+                                                        .Select(_ => _.VertexTypeID)
+                                                        .FirstOrDefault(), 
+                                                       toBeupdatedVertices.Select(_ => _.VertexID), false));
                 }
                 else
                 {
@@ -198,23 +219,48 @@ namespace sones.GraphQL.StatementNodes.DML
                 toBeupdatedVertices = _vertexIDs;
             }
 
+            if(result == null)
+                result = new RequestUpdate(new RequestGetVertices(vertexType.ID, 
+                                                                    toBeupdatedVertices
+                                                                        .Select(_ => _.VertexID), 
+                                                                    false));
 
-            var result = new RequestUpdate(new RequestGetVertices(vertexType.ID, toBeupdatedVertices.Select(_ => _.VertexID) , false));
-
-            ProcessListOfUpdates(vertexType, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, ref result);
+            ProcessListOfUpdates(vertexType, 
+                                    myPluginManager, 
+                                    myGraphDB, 
+                                    mySecurityToken, 
+                                    myTransactionToken, 
+                                    ref result);
 
             return result;
         }
 
-        private void ProcessListOfUpdates(IVertexType vertexType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, ref RequestUpdate result)
+        private void ProcessListOfUpdates(IVertexType vertexType, 
+                                            GQLPluginManager myPluginManager, 
+                                            IGraphDB myGraphDB, 
+                                            SecurityToken mySecurityToken, 
+                                            Int64 myTransactionToken, 
+                                            ref RequestUpdate result)
         {
             foreach (var aUpdate in _listOfUpdates)
             {
-                ProcessUpdate(vertexType, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, aUpdate, ref result);
+                ProcessUpdate(vertexType, 
+                                myPluginManager, 
+                                myGraphDB, 
+                                mySecurityToken, 
+                                myTransactionToken, 
+                                aUpdate, 
+                                ref result);
             }
         }
 
-        private void ProcessUpdate(IVertexType vertexType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, AAttributeAssignOrUpdateOrRemove aUpdate, ref RequestUpdate result)
+        private void ProcessUpdate(IVertexType vertexType, 
+                                    GQLPluginManager myPluginManager, 
+                                    IGraphDB myGraphDB, 
+                                    SecurityToken mySecurityToken, 
+                                    Int64 myTransactionToken, 
+                                    AAttributeAssignOrUpdateOrRemove aUpdate, 
+                                    ref RequestUpdate result)
         {
             if (aUpdate is AttributeAssignOrUpdateValue)
             {
@@ -222,11 +268,23 @@ namespace sones.GraphQL.StatementNodes.DML
             }
             else if (aUpdate is AttributeAssignOrUpdateList)
             {
-                ProcessAttributeAssignOrUpdateList(vertexType, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, (AttributeAssignOrUpdateList)aUpdate, ref result);
+                ProcessAttributeAssignOrUpdateList(vertexType, 
+                                                    myPluginManager, 
+                                                    myGraphDB, 
+                                                    mySecurityToken, 
+                                                    myTransactionToken, 
+                                                    (AttributeAssignOrUpdateList)aUpdate, 
+                                                    ref result);
             }
             else if (aUpdate is AttributeAssignOrUpdateSetRef)
             {
-                ProcessAttributeAssignOrUpdateSetRef(vertexType, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, (AttributeAssignOrUpdateSetRef)aUpdate, ref result);
+                ProcessAttributeAssignOrUpdateSetRef(vertexType, 
+                                                        myPluginManager, 
+                                                        myGraphDB, 
+                                                        mySecurityToken, 
+                                                        myTransactionToken, 
+                                                        (AttributeAssignOrUpdateSetRef)aUpdate, 
+                                                        ref result);
             }
             else if (aUpdate is AttributeRemove)
             {
@@ -237,7 +295,13 @@ namespace sones.GraphQL.StatementNodes.DML
             }
             else if (aUpdate is AttributeRemoveList)
             {
-                ProcessAttributeRemoveList(vertexType, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, (AttributeRemoveList)aUpdate, ref result);
+                ProcessAttributeRemoveList(vertexType, 
+                                            myPluginManager, 
+                                            myGraphDB, 
+                                            mySecurityToken, 
+                                            myTransactionToken, 
+                                            (AttributeRemoveList)aUpdate, 
+                                            ref result);
             }
             else
             {
@@ -245,7 +309,13 @@ namespace sones.GraphQL.StatementNodes.DML
             }
         }
 
-        private void ProcessAttributeRemoveList(IVertexType vertexType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, AttributeRemoveList attributeRemoveList, ref RequestUpdate result)
+        private void ProcessAttributeRemoveList(IVertexType vertexType, 
+                                                GQLPluginManager myPluginManager, 
+                                                IGraphDB myGraphDB, 
+                                                SecurityToken mySecurityToken, 
+                                                Int64 myTransactionToken, 
+                                                AttributeRemoveList attributeRemoveList, 
+                                                ref RequestUpdate result)
         {
             if (attributeRemoveList.TupleDefinition is VertexTypeVertexIDCollectionNode)
             {
@@ -371,7 +441,13 @@ namespace sones.GraphQL.StatementNodes.DML
             }
         }
 
-        private void ProcessAttributeAssignOrUpdateSetRef(IVertexType vertexType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, AttributeAssignOrUpdateSetRef attributeAssignOrUpdateSetRef, ref RequestUpdate result)
+        private void ProcessAttributeAssignOrUpdateSetRef(IVertexType vertexType, 
+                                                            GQLPluginManager myPluginManager, 
+                                                            IGraphDB myGraphDB, 
+                                                            SecurityToken mySecurityToken, 
+                                                            Int64 myTransactionToken, 
+                                                            AttributeAssignOrUpdateSetRef attributeAssignOrUpdateSetRef, 
+                                                            ref RequestUpdate result)
         {
             #region SetRefNode
 
@@ -462,7 +538,13 @@ namespace sones.GraphQL.StatementNodes.DML
             #endregion
         }
 
-        private void ProcessAttributeAssignOrUpdateList(IVertexType vertexType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, AttributeAssignOrUpdateList attributeAssignOrUpdateList, ref RequestUpdate result)
+        private void ProcessAttributeAssignOrUpdateList(IVertexType vertexType, 
+                                                        GQLPluginManager myPluginManager, 
+                                                        IGraphDB myGraphDB, 
+                                                        SecurityToken mySecurityToken, 
+                                                        Int64 myTransactionToken, 
+                                                        AttributeAssignOrUpdateList attributeAssignOrUpdateList, 
+                                                        ref RequestUpdate result)
         {
             Type myRequestedType;
 

@@ -18,15 +18,13 @@
 * 
 */
 
+using System;
+using System.Collections.Generic;
+using sones.GraphDB.Request;
+using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using System.Collections;
-using System;
-using sones.Plugins.Index.Interfaces;
-using System.Collections.Generic;
-using sones.GraphDB.TypeManagement.Base;
-using sones.GraphDB.Request;
+using sones.Plugins.Index;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -68,7 +66,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken"></param>
         /// <param name="myTransactionToken"></param>
         /// <returns></returns>
-        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
+        IEnumerable<ISonesIndex> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         /// <summary>
         /// 
@@ -78,7 +76,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken"></param>
         /// <param name="myTransactionToken"></param>
         /// <returns></returns>
-        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
+        IEnumerable<ISonesIndex> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         /// <summary>
         /// Returns all indices
@@ -88,16 +86,15 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken"></param>
         /// <param name="myTransactionToken"></param>
         /// <returns></returns>
-        IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
+        IEnumerable<ISonesIndex> GetIndices(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         /// <summary>
         /// Returns the name of the index type, that matches the requirements.
         /// </summary>
-        /// <param name="myIsSingleValue">If true, the index type must be a single value index otherwise a multi value index.</param>
         /// <param name="myIsRange">If true, the index type must support range queries otherwise not.</param>
         /// <param name="myIsVersioned">If true, the index type must support versioning otherwise not.</param>
         /// <returns></returns>
-        String GetBestMatchingIndexName(bool myIsSingleValue, bool myIsRange, bool myIsVersioned);
+        String GetBestMatchingIndexName(bool myIsRange, bool myIsVersioned);
 
         /// <summary>
         /// 
@@ -130,7 +127,7 @@ namespace sones.GraphDB.Manager.Index
         /// 
         /// </summary>
         /// <param name="myIndexID"></param>
-        ISingleValueIndex<IComparable, Int64> GetIndex(BaseUniqueIndex myIndex);
+        ISonesIndex GetIndex(BaseUniqueIndex myIndex);
 
         /// <summary>
         /// Drops indices
@@ -140,6 +137,6 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="mySecurityToken">The current security token</param>
         void DropIndex(RequestDropIndex myDropIndexRequest, Int64 myTransactionToken, SecurityToken mySecurityToken);
 
-        IIndex<IComparable, Int64> GetIndex(string myIndexName, SecurityToken mySecurity, Int64 myTransaction);
+        ISonesIndex GetIndex(string myIndexName, SecurityToken mySecurity, Int64 myTransaction);
     }
 }

@@ -20,16 +20,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Plugins.Index.Interfaces;
-using sones.Library.Commons.VertexStore;
-using sones.GraphDB.Manager.Index;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using sones.Library.PropertyHyperGraph;
-using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Expression.Tree.Literals;
+using sones.GraphDB.TypeSystem;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.VertexStore;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {

@@ -711,7 +711,9 @@ namespace sones.GraphFS
                             GetOrCreateTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID,
                                                     aSingleEdgeDefinition.TargetVertexInformation.VertexID);
 
-                        singleEdge = new SingleEdge(aSingleEdgeDefinition.PropertyID, myVertex, targetVertex,
+                        singleEdge = new SingleEdge(aSingleEdgeDefinition.EdgeTypeID, 
+                                                    myVertex, 
+                                                    targetVertex,
                                                     aSingleEdgeDefinition.Comment,
                                                     aSingleEdgeDefinition.CreationDate,
                                                     aSingleEdgeDefinition.ModificationDate,
