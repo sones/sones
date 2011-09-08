@@ -263,7 +263,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             IEnumerable<UnknownAttributePredefinition> myToBeDefinedAttributes,
             Int64 myTransactionToken,
             SecurityToken mySecurityToken,
-            IVertexType myType)
+            IVertexType myType,
+            ref RequestUpdate myUpdateRequest)
         {
             Dictionary<long, IComparable> dict = null;
 
@@ -279,6 +280,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 foreach (var vertex in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myType.ID))
                 {
+                    List<Tuple<String, IComparable>> properties2cast = new List<Tuple<String, IComparable>>();
+
                     foreach (var property in vertex.GetAllUnstructuredProperties())
                     {
                         foreach (var attr in myToBeDefinedAttributes)
@@ -286,24 +289,29 @@ namespace sones.GraphDB.Manager.TypeManagement
                             if (property.Item1.CompareTo(attr.AttributeName) == 0)
                             {
                                 var targettype = _baseStorageManager.GetBaseType(attr.AttributeType);
-                                var curtype = property.Item2.GetType();
-
-                                if (targettype != curtype)
+                            
+                                // Try Convert Type
+                                try
                                 {
-                                    // Try Convert Type
-                                    try
-                                    {
-                                        var targetproperty = Convert.ChangeType(property.Item2, targettype);
-                                        throw new InvalidCastException();
-                                    }
-                                    catch (InvalidCastException)
-                                    {
-                                        throw new VertexAttributeCastException(attr.AttributeName, curtype, targettype);
-                                    }
+                                    properties2cast.Add(new Tuple<String, IComparable>(property.Item1, property.Item2.ConvertToIComparable(targettype)));
+                                }
+                                catch (InvalidCastException)
+                                {
+                                    throw new VertexAttributeCastException(attr.AttributeName, property.Item2.GetType(), targettype, false);
+                                }
+                                catch (FormatException)
+                                {
+                                    throw new VertexAttributeCastException(attr.AttributeName, property.Item2.GetType(), targettype, true);
                                 }
                             }
                         }
                     }
+
+                   foreach (var prop in properties2cast)
+                   {
+                       myUpdateRequest.RemoveAttribute(prop.Item1);
+                       myUpdateRequest.UpdateStructuredProperty(prop.Item1, prop.Item2);
+                   }
                 }
 
                 PropertyMultiplicity multiplicity = PropertyMultiplicity.Single;
@@ -332,6 +340,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     ConvertBasicType(aAttribute.AttributeType),
                     mySecurityToken,
                     myTransactionToken);
+
             }
 
             return dict;
@@ -1007,7 +1016,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                           request.ToBeAddedOutgoingEdges,
                           request.ToBeAddedProperties,
                           request.ToBeDefinedAttributes,
-                          myType, myTransactionToken, mySecurityToken);
+                          myType, myTransactionToken, mySecurityToken,
+                          ref myUpdateRequest);
 
             myType = GetType(request.TypeName, myTransactionToken, mySecurityToken);
 
@@ -1806,7 +1816,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                                     IEnumerable<UnknownAttributePredefinition> myToBeDefinedAttributes,
                                     IVertexType myType, 
                                     Int64 myTransactionToken, 
-                                    SecurityToken mySecurityToken)
+                                    SecurityToken mySecurityToken,
+                                    ref RequestUpdate myRequestUpdate)
         {
 
             if (myToBeAddedProperties.IsNotNullOrEmpty())
@@ -1854,7 +1865,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                 ProcessDefineAttributes(myToBeDefinedAttributes,
                                         myTransactionToken,
                                         mySecurityToken,
-                                        myType);
+                                        myType,
+                                        ref myRequestUpdate);
 
                 CleanUpTypes();
             }

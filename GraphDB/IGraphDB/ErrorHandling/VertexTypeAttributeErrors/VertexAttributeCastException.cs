@@ -34,10 +34,17 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new VertexAttributeAlreadyExistsException exception
         /// </summary>
         /// <param name="myAttributeName">The attribute name</param>
-        public VertexAttributeCastException(String myAttributeName, Type fromtype, Type totype)
+        public VertexAttributeCastException(String myAttributeName, Type fromtype, Type totype, bool bFormat)
         {
             AttributeName = myAttributeName;
-            _msg = String.Format("The attribute \"{0}\" cannot be casted from {1} to {2}!", AttributeName, fromtype, totype);
+            if (bFormat)
+            {
+                _msg = String.Format("The attribute \"{0}\" cannot be casted from {1} to {2} due to wrong format of string!", AttributeName, fromtype, totype);
+            }
+            else
+            {
+                _msg = String.Format("The attribute \"{0}\" cannot be casted from {1} to {2}!", AttributeName, fromtype, totype);
+            }
         }
     }
 }
