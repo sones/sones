@@ -455,8 +455,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             IEnumerable<UnknownAttributePredefinition> myToBeDefinedAttributes,
             Int64 myTransactionToken,
             SecurityToken mySecurityToken,
-            T myType,
-            ref RequestUpdate myUpdateRequest);
+            T myType);
 
         /// <summary>
         /// Renames attributes.

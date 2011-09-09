@@ -715,8 +715,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             IEnumerable<UnknownAttributePredefinition> myToBeDefinedAttributes,
             Int64 myTransactionToken,
             SecurityToken mySecurityToken,
-            IEdgeType myType,
-            ref RequestUpdate myUpdateRequest)
+            IEdgeType myType)
         {
             throw new NotImplementedException();
         }
