@@ -116,6 +116,7 @@
     <Compile Include="ErrorHandling\VertexTypeErrors\EmptyVertexTypeNameException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\InvalidIndexAttributeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\InvalidDefineAttributeTypeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeErrors\InvalidUndefineAttributeTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\SealedBaseVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\TruncateNotAllowedOnInheritedTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\InvalidBaseVertexTypeException.cs" />

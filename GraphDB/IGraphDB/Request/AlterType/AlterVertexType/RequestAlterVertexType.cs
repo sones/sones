@@ -260,7 +260,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Attributes to be undefined from the altered type.
         /// </summary>
-        public IEnumerable<String> ToBeUndefineAttributes
+        public IEnumerable<String> ToBeUndefinedAttributes
         {
             get
             {

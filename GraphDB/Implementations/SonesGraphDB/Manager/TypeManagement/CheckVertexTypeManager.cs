@@ -149,6 +149,41 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
             #endregion
 
+            #region check attributes to be undefined
+
+            if (myRequest.ToBeUndefinedAttributes != null)
+            {
+                foreach (var attr in myRequest.ToBeUndefinedAttributes)
+                {
+                    var attrDef = vertexType.GetAttributeDefinition(attr);
+
+                    if (attrDef == null)
+                        throw new AttributeDoesNotExistException(attr);
+
+                    switch (attrDef.Kind)
+                    {
+                        case AttributeType.Property:
+                            break;
+
+                        case AttributeType.OutgoingEdge:
+                            throw new InvalidUndefineAttributeTypeException("Outgoing Edge", vertexType.Name);
+                            
+                        case AttributeType.IncomingEdge:
+                            throw new InvalidUndefineAttributeTypeException("Incoming Edge", vertexType.Name);
+                            
+                        case AttributeType.BinaryProperty:
+                            throw new InvalidUndefineAttributeTypeException(BinaryPropertyPredefinition.TypeName, vertexType.Name);
+                            
+                        default:
+                            throw new Exception("The enumeration AttributeType was changed, but not this switch statement.");
+                    }
+                }
+
+                myRequest.ClearToBeRemovedUnknownAttributes();
+            }
+
+            #endregion
+
             #region checks
 
             CallCheckFunctions(myAlterTypeRequest, vertexType, myTransactionToken, mySecurityToken);
