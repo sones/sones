@@ -239,6 +239,14 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                             T myType);
 
         /// <summary>
+        /// Checks the attributes that should be defined.
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The alter type request.</param>
+        /// <param name="myType">The type.</param>
+        protected abstract void CheckToBeDefinedAttributes(IRequestAlterType myAlterTypeRequest,
+                                                            T myType);
+
+        /// <summary>
         /// Checks the to be removed attributes.
         /// </summary>
         /// <param name="myAlterTypeRequest">The alter type request.</param>

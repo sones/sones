@@ -342,6 +342,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             CheckAttributesNameAndType(request);
 
             CheckToBeAddedAttributes(request, myType);
+            CheckToBeDefinedAttributes(request, myType);
             CheckToBeRemovedAttributes(request, myType);
             CheckToBeRenamedAttributes(request, myType);
             CheckNewTypeName(request.AlteredTypeName, myTransactionToken, mySecurityToken);
@@ -477,6 +478,31 @@ namespace sones.GraphDB.Manager.TypeManagement
                 }
 
                 #endregion
+            }
+        }
+
+        /// <summary>
+        /// Checks if the attributes that should be defined exist in the given type or derived ones.
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The request.</param>
+        /// <param name="myType">The type.</param>
+        protected override void CheckToBeDefinedAttributes(IRequestAlterType myAlterTypeRequest,
+                                                            IVertexType myType)
+        {
+            var request = myAlterTypeRequest as RequestAlterVertexType;
+
+            foreach (var aVertexType in myType.GetDescendantVertexTypesAndSelf())
+            {
+                var attributesOfCurrentVertexType = aVertexType.GetAttributeDefinitions(false).ToList();
+
+                if (request.ToBeDefinedAttributes != null)
+                {
+                    foreach (var aToBeDefinedAttribute in request.ToBeDefinedAttributes)
+                    {
+                        if (attributesOfCurrentVertexType.Any(_ => _.Name == aToBeDefinedAttribute.AttributeName))
+                            throw new VertexAttributeAlreadyExistsException(aToBeDefinedAttribute.AttributeName);
+                    }
+                }
             }
         }
 
