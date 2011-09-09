@@ -1311,6 +1311,22 @@ namespace sones.GraphDB.Manager.Vertex
                 #endregion
             }
 
+            if (myUpdate.RemovedUnstructuredProperties != null)
+            {
+                #region remove each unstructured property
+
+                foreach (var name in myUpdate.RemovedUnstructuredProperties)
+                {
+                    if ((myVertexType.HasAttribute(name)) && (myVertexType.GetAttributeDefinition(name).Kind == AttributeType.Property))
+                    {
+                        toBeDeletedUnstructured = toBeDeletedUnstructured ?? new List<String>();
+                        toBeDeletedUnstructured.Add(name);
+                    }
+                }
+
+                #endregion
+            }
+
             #endregion
 
             #region get update definitions

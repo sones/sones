@@ -309,7 +309,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                    foreach (var prop in properties2cast)
                    {
-                       myUpdateRequest.RemoveAttribute(prop.Item1);
+                       myUpdateRequest.RemoveUnstructuredProperty(prop.Item1);
                        myUpdateRequest.UpdateStructuredProperty(prop.Item1, prop.Item2);
                    }
                 }
