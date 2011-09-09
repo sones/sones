@@ -26,5 +26,8 @@
     <Setting Name="BufferSizeInPages" Type="System.String" Scope="User">
       <Value Profile="(Default)">1000</Value>
     </Setting>
+    <Setting Name="VertexPreExtension" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1200</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
