@@ -50,6 +50,7 @@ namespace sones.GraphDB.Request
         /// Attributes which are to be removed
         /// </summary>
         private List<String>                    _toBeRemovedProperties;
+        private List<String>                    _toBeUndefinedAttributes;
         private List<String>                    _toBeRemovedBinaryProperties;
         private List<String>                    _toBeRemovedIncomingEdges;
         private List<String>                    _toBeRemovedOutgoingEdges;
@@ -257,6 +258,17 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
+        /// Attributes to be undefined from the altered type.
+        /// </summary>
+        public IEnumerable<String> ToBeUndefineAttributes
+        {
+            get
+            {
+                return _toBeUndefinedAttributes;
+            }
+        }
+
+        /// <summary>
         /// Outgoing edges to be removed from the altered type.
         /// </summary>
         public IEnumerable<String> ToBeRemovedOutgoingEdges
@@ -422,7 +434,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Defines an attribute
         /// </summary>
-        /// <param name="myUnknownPredefinition">The unknwown property definition that is going to be added</param>
+        /// <param name="myUnknownPredefinition">The unknwown property definition that is going to be defined</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public RequestAlterVertexType DefineAttribute(UnknownAttributePredefinition myUnknownPredefinition)
         {
@@ -431,6 +443,22 @@ namespace sones.GraphDB.Request
                 _toBeDefinedAttributes = (_toBeDefinedAttributes) ?? new List<AAttributePredefinition>();
                 _toBeDefinedAttributes.Add(myUnknownPredefinition);
                 DefineAttributeCount++;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Undefines an attribute
+        /// </summary>
+        /// <param name="myUnknownPredefinition">The name of the attribute that is going to be undefined</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestAlterVertexType UndefineAttribute(String myAttributeName)
+        {
+            if (!String.IsNullOrWhiteSpace(myAttributeName))
+            {
+                _toBeUndefinedAttributes = (_toBeUndefinedAttributes) ?? new List<String>();
+                _toBeUndefinedAttributes.Add(myAttributeName);
             }
 
             return this;

@@ -390,11 +390,14 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         private void ProcessUndefineAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
         {
-            var command = (AlterType_DropAttributes)myAlterCommand;
+            var command = (AlterType_UndefineAttributes)myAlterCommand;
 
-            foreach (var aAttribute in command.ListOfAttributes)
+            if (command.ListOfAttributes != null && command.ListOfAttributes.Count > 0)
             {
-                //result.RemoveUnknownAttribute(aAttribute);
+                foreach (var aAttribute in command.ListOfAttributes)
+                {
+                    result.UndefineAttribute(aAttribute);
+                }
             }
         }
 
