@@ -125,6 +125,30 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #endregion
 
+            #region check attributes to be defined
+            if (myRequest.ToBeDefinedAttributes != null)
+            {
+                foreach (var unknownProp in myRequest.ToBeDefinedAttributes)
+                {
+                    var toBeDefined = myRequest.ToBeDefinedAttributes.ToArray();
+
+                    foreach (var unknown in toBeDefined)
+                    {
+                        if (BinaryPropertyPredefinition.TypeName.Equals(unknown.AttributeType))
+                        {
+                            throw new InvalidDefineAttributeTypeException(BinaryPropertyPredefinition.TypeName, vertexType.Name);
+                        } else if (unknown.AttributeType.Contains(IncomingEdgePredefinition.TypeSeparator))
+                        {
+                            throw new InvalidDefineAttributeTypeException("incoming edge", vertexType.Name);
+                        } else if (!_baseTypeManager.IsBaseType(unknown.AttributeType))
+                        {
+                            throw new InvalidDefineAttributeTypeException("user defined", vertexType.Name);
+                        }
+                    }
+                }
+            }
+            #endregion
+
             #region checks
 
             CallCheckFunctions(myAlterTypeRequest, vertexType, myTransactionToken, mySecurityToken);
