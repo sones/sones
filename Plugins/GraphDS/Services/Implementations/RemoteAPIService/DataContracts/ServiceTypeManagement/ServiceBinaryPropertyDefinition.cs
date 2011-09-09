@@ -27,7 +27,7 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
 {
-    [DataContract(Namespace = "http://www.sones.com")]
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceBinaryPropertyDefinition : ServiceAttributeDefinition
     {
         public ServiceBinaryPropertyDefinition(IBinaryPropertyDefinition myBinaryPropertyDefinition)
