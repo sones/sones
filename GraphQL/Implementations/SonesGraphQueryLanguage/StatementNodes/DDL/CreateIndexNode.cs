@@ -159,8 +159,11 @@ namespace sones.GraphQL.StatementNodes.DDL
                                     "sones.gql", 
                                     Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds), 
                                     ResultType.Successful, 
-                                    new List<IVertexView> { new VertexView(new Dictionary<String, object> { {"CreatedIndex", myIndexDefinition} } , 
-                                                                            new Dictionary<String, IEdgeView>()) });
+                                    new List<IVertexView> { new VertexView(new Dictionary<String, object> { 
+                                        {"CreatedIndex", myIndexDefinition}, 
+                                        {"CreatedIndexTypeName", myIndexDefinition.IndexTypeName } 
+                                    }, 
+                                    new Dictionary<String, IEdgeView>()) });
         }
 
     }
