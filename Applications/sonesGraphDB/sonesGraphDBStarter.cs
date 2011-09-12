@@ -91,6 +91,7 @@ namespace sones.sonesGraphDBStarter
                 string configuredLocation = Properties.Settings.Default.PersistenceLocation;
                 string configuredPageSize = Properties.Settings.Default.PageSize;
 				string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
+				string configuredMinDummyVertexInitCapacity = Properties.Settings.Default.MinDummyVertexInitCapacity;
 				string configuredVertexPreExtension = Properties.Settings.Default.VertexPreExtension;
 
                 /* Configure the location */
@@ -114,6 +115,9 @@ namespace sones.sonesGraphDBStarter
                 /* Configuration for the buffer size */
                 int bufferSize = Int32.Parse(configuredBufferSize);
 
+				/* Configuration for the minimum initial dummy vertex data capacity */
+				int minDummyVertexInitCapacity = Int32.Parse(configuredMinDummyVertexInitCapacity);
+
 				/* Configuration for the vertex pre-extension */
 				int vertexPreExtension = Int32.Parse(configuredVertexPreExtension);
 
@@ -125,7 +129,8 @@ namespace sones.sonesGraphDBStarter
 						new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location },
 																													{ "pageSize", pageSize },
 																													{ "bufferSizePages", bufferSize },
-																													{ "optVertexPreExtension", vertexPreExtension } })));
+																													{ "minDummyVertexInitCapacity", minDummyVertexInitCapacity },
+																													{ "vertexPreExtension", vertexPreExtension } })));
                 
                     if (!quiet)
                         Console.WriteLine("Persistence layer initialized.");
