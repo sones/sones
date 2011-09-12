@@ -365,9 +365,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
             // As long as this doesn't work under mono, we can't validate the incoming xml against the given schema
             // http://bugzilla.xamarin.com/show_bug.cgi?id=220
-#if __MonoCS__ 
+#if !__MonoCS__ 
             xmlDocument.Validate(evHandler);
 #endif
+
+
             
            
             var rootNode = xmlDocument.FirstChild.NextSibling;
