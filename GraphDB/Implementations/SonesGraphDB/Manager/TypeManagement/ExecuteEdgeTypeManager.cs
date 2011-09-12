@@ -734,7 +734,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myType">The type to be altered.</param>
         /// <returns>A list containing IDs of undefined attributes</returns>returns>
         protected override IEnumerable<long> ProcessUndefineAttributes(
-            IEnumerable<String> myToBeDefinedAttributes,
+            IEnumerable<String> myToBeUndefinedAttributes,
             Int64 myTransactionToken,
             SecurityToken mySecurityToken,
             IEdgeType myType)

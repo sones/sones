@@ -277,49 +277,56 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 dict.Add(id, aAttribute.DefaultValue);
 
+                #region cast existing unstructured properties on vertices to structured
+                
                 foreach (var vertex in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myType.ID))
                 {
-                    Dictionary<string, IComparable> properties2cast = new Dictionary<string, IComparable>();
-
                     foreach (var property in vertex.GetAllUnstructuredProperties())
                     {
-                        foreach (var attr in myToBeDefinedAttributes)
+                        if (property.Item1.CompareTo(aAttribute.AttributeName) == 0)
                         {
-                            if (property.Item1.CompareTo(attr.AttributeName) == 0)
-                            {
-                                var targettype = _baseStorageManager.GetBaseType(attr.AttributeType);
+                            // Found unstructured property with same name on the vertex
+                            var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
+                            IComparable value = null;
                                 
-                                // Try Convert Type
-                                try
-                                {
-                                    properties2cast.Add(property.Item1, property.Item2.ConvertToIComparable(targettype));
-                                }
-                                catch (InvalidCastException)
-                                {
-                                    throw new VertexAttributeCastException(attr.AttributeName, property.Item2.GetType(), targettype, false);
-                                }
-                                catch (FormatException)
-                                {
-                                    throw new VertexAttributeCastException(attr.AttributeName, property.Item2.GetType(), targettype, true);
-                                }
+                            // Try Convert Type
+                            try
+                            {
+                                value = property.Item2.ConvertToIComparable(targettype);
                             }
+                            catch (InvalidCastException)
+                            {
+                                throw new VertexAttributeCastException(aAttribute.AttributeName, property.Item2.GetType(), targettype, false);
+                            }
+                            catch (FormatException)
+                            {
+                                throw new VertexAttributeCastException(aAttribute.AttributeName, property.Item2.GetType(), targettype, true);
+                            }
+
+                            // add list with only one item -> unstructured property to delete
+                            var unstructdel = new List<string>();
+                            unstructdel.Add(property.Item1);
+                            UnstructuredPropertiesUpdate propdelete = new UnstructuredPropertiesUpdate(null, unstructdel);
+
+                            // add list with only one item -> structured property to add
+                            Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
+                            properties2add.Add(id, value);
+                            StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
+
+                            // Update the vertex (delete unstructured and add structured)
+                            VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, propadd, propdelete);
+                            _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
+
+                            // we can break as we already found the property on the vertex
+                            break;
                         }
                     }
-
-                    UnstructuredPropertiesUpdate propdelete = new UnstructuredPropertiesUpdate(null, properties2cast.Keys.ToList<string>());
-
-                    Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
-                    foreach (var prop in properties2cast)
-                    {
-                        properties2add.Add(id, prop.Value);
-                    }
-                    StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
-
-                    VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, propadd, propdelete);
-
-                    _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
                 }
 
+                #endregion
+
+                #region add property definition to vertex type
+                
                 PropertyMultiplicity multiplicity = PropertyMultiplicity.Single;
                 switch (aAttribute.Multiplicity)
                 {
@@ -347,6 +354,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     mySecurityToken,
                     myTransactionToken);
 
+                #endregion
             }
 
             return dict;
@@ -361,12 +369,86 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myType">The type to be altered.</param>
         /// <returns>A list containing IDs of undefined attributes</returns>returns>
         protected override IEnumerable<long> ProcessUndefineAttributes(
-            IEnumerable<String> myToBeDefinedAttributes,
+            IEnumerable<String> myToBeUndefinedAttributes,
             Int64 myTransactionToken,
             SecurityToken mySecurityToken,
             IVertexType myType)
         {
-            throw new NotImplementedException();
+            List<long> undefined = null;
+
+            foreach (var aProperty in myToBeUndefinedAttributes)
+            {
+                #region remove related indices
+                var propertyDefinition = myType.GetPropertyDefinition(aProperty);
+
+                foreach (var aIndexDefinition in propertyDefinition.InIndices)
+                {
+                    _indexManager.RemoveIndexInstance(aIndexDefinition.ID,
+                                                        myTransactionToken,
+                                                        mySecurityToken);
+                }
+
+                #endregion
+
+                undefined = undefined ?? new List<long>();
+                undefined.Add(propertyDefinition.ID);
+
+                #region cast existing structured properties on vertices to unstructured
+
+                foreach (var vertex in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myType.ID))
+                {
+                    foreach (var property in vertex.GetAllProperties())
+                    {
+                        if (property.Item1 == propertyDefinition.ID)
+                        {
+                            // The property is set on this vertex
+                            string value = null;
+
+                            // Try Convert Type
+                            try
+                            {
+                                value = Convert.ToString(property.Item2);
+                            }
+                            catch (InvalidCastException)
+                            {
+                                throw new VertexAttributeCastException(aProperty, property.Item2.GetType(), typeof(String), false);
+                            }
+                            catch (FormatException)
+                            {
+                                throw new VertexAttributeCastException(aProperty, property.Item2.GetType(), typeof(String), true);
+                            }
+
+                            // list with only ony entry -> the structured property to delete
+                            var structdel = new List<long>();
+                            structdel.Add(propertyDefinition.ID);
+                            StructuredPropertiesUpdate propdelete = new StructuredPropertiesUpdate(null, structdel);
+
+                            // list with only one entry -> the new unstructured property to add
+                            Dictionary<string, Object> properties2add = new Dictionary<string, Object>();
+                            properties2add.Add(aProperty, value);
+                            UnstructuredPropertiesUpdate propadd = new UnstructuredPropertiesUpdate(properties2add, null);
+
+                            // update the vertex (convert property from structured to unstructured)
+                            VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, propdelete, propadd);
+                            _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
+
+                            // we can break as we already found the property on the vertex
+                            break;
+                        }
+                    }
+                }
+
+                #endregion
+
+                // remove the property definition from the vertex type
+                _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurityToken,
+                                                                        myTransactionToken,
+                                                                        propertyDefinition.ID,
+                                                                        (long)BaseTypes.Property);
+                
+            }
+
+            return undefined;
         }
         
         #endregion
