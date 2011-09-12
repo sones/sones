@@ -87,7 +87,7 @@ namespace sones.sonesGraphDBStarter
             {
                 if (!quiet)
                    Console.WriteLine("Initializing persistence layer...");
- 
+
                 string configuredLocation = Properties.Settings.Default.PersistenceLocation;
                 string configuredPageSize = Properties.Settings.Default.PageSize;
                 string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
@@ -324,7 +324,7 @@ namespace sones.sonesGraphDBStarter
                         quiet = true;
                 }
             }
-
+            
             if (!quiet)
             {
                 DiscordianDate ddate = new DiscordianDate();

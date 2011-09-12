@@ -186,8 +186,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
             #endregion
             
             #endregion
-
-
+            
             #region Metadata Exchange
 
             //Todo Add mono workaround for MEX
@@ -207,7 +206,6 @@ namespace sones.GraphDS.Services.RemoteAPIService
             }
             
             #endregion
-
 
         }
 

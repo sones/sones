@@ -143,9 +143,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         }
 
         public ServiceEdgeType GetEdgeType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
-            Int64 myEdgeTypeID, String myEdition = null)
+            String myEdgeTypeName, String myEdition = null)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myEdgeTypeID, myEdition);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myEdgeTypeName, myEdition);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransactionToken.TransactionID, Request,
                 ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServiceEdgeType(Response);
@@ -265,6 +265,22 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request,
                 ServiceReturnConverter.ConvertOnlyVertexType);
             return new ServiceVertexType(Response);
+        }
+
+
+        public void CommitTransaction(SecurityToken mySecToken, ServiceTransactionToken myTransToken)
+        {
+            this.GraphDS.CommitTransaction(mySecToken, myTransToken.TransactionID);
+        }
+
+        public void RollbackTransaction(SecurityToken mySecToken, ServiceTransactionToken myTransToken)
+        {
+            this.GraphDS.RollbackTransaction(mySecToken, myTransToken.TransactionID);
+        }
+
+        public void Shutdown(SecurityToken mySecurityToken)
+        {
+            this.GraphDS.Shutdown(mySecurityToken);
         }
     }
 }

@@ -58,6 +58,15 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
 
         [OperationContract]
         ServiceTransactionToken BeginTransaction(SecurityToken mySecToken);
+
+        [OperationContract]
+        void CommitTransaction(SecurityToken mySecToken, ServiceTransactionToken myTransToken);
+
+        [OperationContract]
+        void RollbackTransaction(SecurityToken mySecToken, ServiceTransactionToken myTransToken);
+
+        [OperationContract]
+        void Shutdown(SecurityToken mySecurityToken);
         
         [OperationContract]
         List<Int64> Clear(SecurityToken mySecToken, ServiceTransactionToken myTransToken);
@@ -107,7 +116,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
 
         [OperationContract]
         ServiceEdgeType GetEdgeType(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
-            Int64 myEdgeTypeID, String myEdition = null);
+            String myEdgeTypeName, String myEdition = null);
 
         [OperationContract]
         ServiceVertexInstance GetVertex(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
