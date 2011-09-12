@@ -81,6 +81,11 @@ namespace sones.GraphDB.Request
         IEnumerable<String>                         ToBeRemovedUnknownAttributes { get; }
 
         /// <summary>
+        /// Attributes to be undefined from the altered type.
+        /// </summary>
+        IEnumerable<String>                         ToBeUndefinedAttributes { get;  }
+
+        /// <summary>
         /// To reset the IEnumerable which holds the to be removed unknown attributes.
         /// </summary>
         void ClearToBeRemovedUnknownAttributes();

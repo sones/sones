@@ -608,10 +608,15 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                     SecurityToken mySecurityToken,
                                                     ref RequestUpdate myUpdateRequest)
         {
-            var removedProps = RemoveAttributes(myAlterTypeRequest.ToBeRemovedProperties,
+            List<long> removedProps = (List<long>)RemoveAttributes(myAlterTypeRequest.ToBeRemovedProperties,
                                                 myType,
                                                 myTransactionToken,
                                                 mySecurityToken);
+
+            removedProps.AddRange(UndefineAttributes(myAlterTypeRequest.ToBeUndefinedAttributes,
+                                                myType,
+                                                myTransactionToken,
+                                                mySecurityToken));
 
             myUpdateRequest
                 .UpdateEdge(new SingleEdgeUpdateDefinition(
@@ -713,6 +718,23 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <returns>A dictionary with to be defined attributes and default value</returns>returns>
         protected override Dictionary<long, IComparable> ProcessDefineAttributes(
             IEnumerable<UnknownAttributePredefinition> myToBeDefinedAttributes,
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            IEdgeType myType)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Undefines specified attributes in the given type.
+        /// </summary>
+        /// <param name="myToBeDefinedAttributes">The attributes to be undefined</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myType">The type to be altered.</param>
+        /// <returns>A list containing IDs of undefined attributes</returns>returns>
+        protected override IEnumerable<long> ProcessUndefineAttributes(
+            IEnumerable<String> myToBeDefinedAttributes,
             Int64 myTransactionToken,
             SecurityToken mySecurityToken,
             IEdgeType myType)
@@ -873,8 +895,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// Removes attributes.
         /// </summary>
-        /// <param name="myToBeRemovedIncomingEdges">To be removed incoming edges.</param>
-        /// <param name="myToBeRemovedOutgoingEdges">To be removed outgoing edges.</param>
         /// <param name="myToBeRemovedProperties">To be removed Proerties.</param>
         /// <param name="myType">The to be altered type.</param>
         /// <param name="myTransactionToken">The Int64.</param>
@@ -890,6 +910,28 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                 myType, 
                                                 myTransactionToken, 
                                                 mySecurityToken);
+
+            return null;
+        }
+
+        /// <summary>
+        /// Undefines attributes.
+        /// </summary>
+        /// <param name="myToBeUndefinedAttributes">To be undefined Attributes.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <returns>A list with the undefined attribute id's.</returns>
+        private IEnumerable<long> UndefineAttributes(IEnumerable<string> myToBeUndefinedAttributes,
+                                                    IEdgeType myType,
+                                                    Int64 myTransactionToken,
+                                                    SecurityToken mySecurityToken)
+        {
+            if (myToBeUndefinedAttributes.IsNotNullOrEmpty())
+                return ProcessUndefineAttributes(myToBeUndefinedAttributes,
+                                                myTransactionToken,
+                                                mySecurityToken,
+                                                myType);
 
             return null;
         }

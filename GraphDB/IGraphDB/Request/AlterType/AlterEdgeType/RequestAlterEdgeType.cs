@@ -51,6 +51,11 @@ namespace sones.GraphDB.Request
         /// </summary>
         private List<String>                    _toBeRemovedProperties;
         private List<String>                    _toBeRemovedUnknownAttributes;
+
+        /// <summary>
+        /// Attributes which are to be undefined
+        /// </summary>
+        private List<String>                    _toBeUndefinedAttributes;
                         
         private Dictionary<String, String>      _toBeRenamedAttributes;
 
@@ -165,6 +170,17 @@ namespace sones.GraphDB.Request
             get 
             { 
                 return _toBeRemovedProperties; 
+            }
+        }
+
+        /// <summary>
+        /// Attributes to be undefined from the altered type.
+        /// </summary>
+        public IEnumerable<String> ToBeUndefinedAttributes
+        {
+            get
+            {
+                return _toBeUndefinedAttributes;
             }
         }
 

@@ -458,6 +458,20 @@ namespace sones.GraphDB.Manager.TypeManagement
             T myType);
 
         /// <summary>
+        /// Undefines specified attributes in the given type.
+        /// </summary>
+        /// <param name="myToBeDefinedAttributes">The attributes to be undefined</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myType">The type to be altered.</param>
+        /// <returns>A list containing IDs of undefined attributes</returns>returns>
+        protected abstract IEnumerable<long> ProcessUndefineAttributes(
+            IEnumerable<String> myToBeDefinedAttributes,
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            T myType);
+
+        /// <summary>
         /// Renames attributes.
         /// </summary>
         /// <param name="myToBeRenamedAttributes">The to be renamed attributes.</param>

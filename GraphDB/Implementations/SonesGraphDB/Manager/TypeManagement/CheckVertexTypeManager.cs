@@ -178,8 +178,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                             throw new Exception("The enumeration AttributeType was changed, but not this switch statement.");
                     }
                 }
-
-                myRequest.ClearToBeRemovedUnknownAttributes();
             }
 
             #endregion

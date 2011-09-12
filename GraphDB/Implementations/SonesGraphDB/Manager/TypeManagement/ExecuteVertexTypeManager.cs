@@ -351,6 +351,23 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             return dict;
         }
+
+        /// <summary>
+        /// Undefines specified attributes in the given type.
+        /// </summary>
+        /// <param name="myToBeDefinedAttributes">The attributes to be undefined</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myType">The type to be altered.</param>
+        /// <returns>A list containing IDs of undefined attributes</returns>returns>
+        protected override IEnumerable<long> ProcessUndefineAttributes(
+            IEnumerable<String> myToBeDefinedAttributes,
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            IVertexType myType)
+        {
+            throw new NotImplementedException();
+        }
         
         #endregion
 
@@ -1000,6 +1017,11 @@ namespace sones.GraphDB.Manager.TypeManagement
                              myTransactionToken,
                              mySecurityToken,
                              ref myUpdateRequest);
+
+            UndefineAttributes(request.ToBeUndefinedAttributes,
+                                myType,
+                                myTransactionToken,
+                                mySecurityToken);
         }
 
         /// <summary>
@@ -1757,6 +1779,28 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                 .Where(_ => myToBeRemovedProperties.Contains(_.Name)));
                 }
             }
+        }
+
+        /// <summary>
+        /// Undefines attributes.
+        /// </summary>
+        /// <param name="myToBeUndefinedAttributes">To be undefined Attributes.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <returns>A list with the undefined attribute id's.</returns>
+        private IEnumerable<long> UndefineAttributes(IEnumerable<string> myToBeUndefinedAttributes,
+                                                    IVertexType myType,
+                                                    Int64 myTransactionToken,
+                                                    SecurityToken mySecurityToken)
+        {
+            if (myToBeUndefinedAttributes.IsNotNullOrEmpty())
+                return ProcessUndefineAttributes(myToBeUndefinedAttributes,
+                                                myTransactionToken,
+                                                mySecurityToken,
+                                                myType);
+
+            return null;
         }
 
         /// <summary>
