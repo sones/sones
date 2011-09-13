@@ -46,186 +46,186 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
     public partial class RPCServiceContract : IGraphDS_API
     {
 
-        public ServiceVertexType CreateVertexType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public ServiceVertexType CreateVertexType(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexTypePredefinition myVertexTypePreDef)
         {
             var Request = ServiceRequestFactory.MakeRequestCreateVertexType(myVertexTypePreDef);
-            var Response = this.GraphDS.CreateVertexType<IVertexType>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.CreateVertexType<IVertexType>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyVertexType);
             return new ServiceVertexType(Response);
         }
 
-        public ServiceVertexType AlterVertexType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public ServiceVertexType AlterVertexType(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexType myVertexType, ServiceAlterVertexChangeset myChangeset)
         {
             var Request = ServiceRequestFactory.MakeRequestAlterVertexType(myVertexType, myChangeset);
-            var Response = this.GraphDS.AlterVertexType<IVertexType>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.AlterVertexType<IVertexType>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyVertexType);
             return new ServiceVertexType(Response);
         }
 
-        public List<Int64> Clear(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken)
+        public List<Int64> Clear(SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             var Request = ServiceRequestFactory.MakeRequestClear();
-            var Response = this.GraphDS.Clear(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.Clear(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyVertexTypeIDs);
             return Response.ToList();
         }
 
-        public ServiceIndexDefinition CreateIndex(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceIndexPredefinition myVertexTypePreDef)
+        public ServiceIndexDefinition CreateIndex(SecurityToken mySecurityToken, Int64 myTransactionToken, ServiceIndexPredefinition myVertexTypePreDef)
         {
             var Request = ServiceRequestFactory.MakeRequestCreateIndex(myVertexTypePreDef);
-            var Response = this.GraphDS.CreateIndex<IIndexDefinition>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.CreateIndex<IIndexDefinition>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConverteOnlyIndexDefinition);
             return new ServiceIndexDefinition(Response);
         }
 
-        public List<ServiceVertexType> CreateVertexTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public List<ServiceVertexType> CreateVertexTypes(SecurityToken mySecurityToken, Int64 myTransactionToken,
             List<ServiceVertexTypePredefinition> myVertexTypePreDef)
         {
             var Request = ServiceRequestFactory.MakeRequestCreateVertexTypes(myVertexTypePreDef);
-            var Response = this.GraphDS.CreateVertexTypes<IEnumerable<IVertexType>>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.CreateVertexTypes<IEnumerable<IVertexType>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyVertexTypes);
             return Response.Select(x => new ServiceVertexType(x)).ToList();
         }
 
-        public List<Int64> Delete(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public List<Int64> Delete(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null)
         {
             var Request = ServiceRequestFactory.MakeRequestDelete(myVertexType, myVertexIDs, myDeletePayload);
-            var Result = this.GraphDS.Delete<List<Int64>>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Result = this.GraphDS.Delete<List<Int64>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConverterOnlyRelevantList);
             return Result;
         }
 
-        public ServiceIndexDefinition DescribeIndex(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public ServiceIndexDefinition DescribeIndex(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexType myVertexType, String myIndexName)
         {
             var Request = ServiceRequestFactory.MakeRequestDescribeIndex(myVertexType, myIndexName);
-            var Response = this.GraphDS.DescribeIndex<IEnumerable<IIndexDefinition>>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.DescribeIndex<IEnumerable<IIndexDefinition>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConverteOnlyIndexDefinitions);
             return new ServiceIndexDefinition(Response.FirstOrDefault()); //should only returns one index definition
         }
 
-        public void DropIndex(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public void DropIndex(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexType myVertexType, String myIndexName, String myEdition)
         {
             var Request = ServiceRequestFactory.MakeRequestDropIndex(myVertexType, myIndexName, myEdition);
-            var Response = this.GraphDS.DropIndex(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.DropIndex(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConverteToVoid);
         }
 
-        public Dictionary<Int64, String> DropVertexType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public Dictionary<Int64, String> DropVertexType(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexType myVertexType)
         {
             var Request = ServiceRequestFactory.MakeRequestDropVertexType(myVertexType);
-            var Response = this.GraphDS.DropVertexType<Dictionary<Int64, String>>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.DropVertexType<Dictionary<Int64, String>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConverteOnlyDeletedTypeIDs);
             return Response;
         }
 
-        public List<ServiceEdgeType> GetAllEdgeTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public List<ServiceEdgeType> GetAllEdgeTypes(SecurityToken mySecurityToken, Int64 myTransactionToken,
             String myEdition)
         {
             var Request = ServiceRequestFactory.MakeRequestGetAllEdgeTypes(myEdition);
-            var Response = this.GraphDS.GetAllEdgeTypes<IEnumerable<IEdgeType>>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.GetAllEdgeTypes<IEnumerable<IEdgeType>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyEdgeTypes);
             return Response.Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceVertexType> GetAllVertexTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public List<ServiceVertexType> GetAllVertexTypes(SecurityToken mySecurityToken, Int64 myTransactionToken,
             String myEdition)
         {
             var Request = ServiceRequestFactory.MakeRequestGetAllVertexTypes(myEdition);
-            var Response = this.GraphDS.GetAllVertexTypes<IEnumerable<IVertexType>>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.GetAllVertexTypes<IEnumerable<IVertexType>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyVertexTypes);
             return Response.Select(x => new ServiceVertexType(x)).ToList();
         }
 
-        public ServiceEdgeType GetEdgeType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public ServiceEdgeType GetEdgeType(SecurityToken mySecurityToken, Int64 myTransactionToken,
             String myEdgeTypeName, String myEdition = null)
         {
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myEdgeTypeName, myEdition);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServiceEdgeType(Response);
         }
 
-        public ServiceVertexInstance GetVertex(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public ServiceVertexInstance GetVertex(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexType myVertexType, Int64 myVertexID)
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertexType, myVertexID);
-            var Response = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyVertexInstance);
             return new ServiceVertexInstance(Response);
         }
 
-        public UInt64 GetVertexCount(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myVertexType)
+        public UInt64 GetVertexCount(SecurityToken mySecurityToken, Int64 myTransactionToken, ServiceVertexType myVertexType)
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertexCount(myVertexType);
-            var Response = this.GraphDS.GetVertexCount<UInt64>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.GetVertexCount<UInt64>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyCount);
             return Response;
         }
 
-        public List<ServiceVertexInstance> GetVertices(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, ServiceVertexType myVertexType)
+        public List<ServiceVertexInstance> GetVertices(SecurityToken mySecurityToken, Int64 myTransactionToken, ServiceVertexType myVertexType)
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertices(myVertexType);
-            var Response = this.GraphDS.GetVertices<IEnumerable<IVertex>>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.GetVertices<IEnumerable<IVertex>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyVertices);
             return Response.Select(x => new ServiceVertexInstance(x)).ToList();
         }
 
-        public ServiceVertexInstance Insert(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, String myVertexTypeName,
+        public ServiceVertexInstance Insert(SecurityToken mySecurityToken, Int64 myTransactionToken, String myVertexTypeName,
             ServiceInsertPayload myPayload)
         {
             var Request = ServiceRequestFactory.MakeRequestInsertVertex(myVertexTypeName, myPayload);
-            var Response = this.GraphDS.Insert<IVertex>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.Insert<IVertex>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyVertexInstance);
             return new ServiceVertexInstance(Response);
         }
 
-        public ServiceEdgeType AlterEdgeType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public ServiceEdgeType AlterEdgeType(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceEdgeType myEdgeType, ServiceAlterEdgeChangeset myChangeset)
         {
             var Request = ServiceRequestFactory.MakeRequestAlterEdgeType(myEdgeType, myChangeset);
-            var Response = this.GraphDS.AlterEdgeType<IEdgeType>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.AlterEdgeType<IEdgeType>(mySecurityToken, myTransactionToken, Request,
                ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServiceEdgeType(Response);
         }
 
-        public ServiceEdgeType CreateEdgeType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public ServiceEdgeType CreateEdgeType(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceEdgeTypePredefinition myEdgeTypePreDef)
         {
             var Request = ServiceRequestFactory.MakeRequestCreateEdgeType(myEdgeTypePreDef);
-            var Response = this.GraphDS.CreateEdgeType<IEdgeType>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.CreateEdgeType<IEdgeType>(mySecurityToken, myTransactionToken, Request,
                ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServiceEdgeType(Response);
         }
 
-        public List<ServiceEdgeType> CreateEdgeTypes(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public List<ServiceEdgeType> CreateEdgeTypes(SecurityToken mySecurityToken, Int64 myTransactionToken,
             IEnumerable<ServiceEdgeTypePredefinition> myEdgeTypePreDef)
         {
             var Request = ServiceRequestFactory.MakeRequestCreateEdgeTypes(myEdgeTypePreDef);
-            var Response = this.GraphDS.CreateEdgeTypes<IEnumerable<IEdgeType>>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.CreateEdgeTypes<IEnumerable<IEdgeType>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyEdgeTypes);
             return Response.Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceIndexDefinition> DescribeIndices(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public List<ServiceIndexDefinition> DescribeIndices(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexType myVertexType)
         {
             var Request = ServiceRequestFactory.MakeRequestDescribeIndex(myVertexType, ""); // todo prove the capability of this method call
-            var Response = this.GraphDS.DescribeIndices<IEnumerable<IIndexDefinition>>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.DescribeIndices<IEnumerable<IIndexDefinition>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConverteOnlyIndexDefinitions);
             return Response.Select(x => new ServiceIndexDefinition(x)).ToList();
         }
 
-        public Dictionary<Int64, String> DropEdgeType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        public Dictionary<Int64, String> DropEdgeType(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceEdgeType myEdgeType)
         {
             var Request = ServiceRequestFactory.MakeRequestDropEdgeType(myEdgeType);
-            var Response = this.GraphDS.DropEdgeType<Dictionary<Int64, String>>(mySecurityToken, myTransactionToken.TransactionID, Request,
+            var Response = this.GraphDS.DropEdgeType<Dictionary<Int64, String>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConverteOnlyDeletedTypeIDs);
             return Response;
         }
@@ -241,41 +241,41 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return SecToken;
         }
 
-        public ServiceTransactionToken BeginTransaction(SecurityToken mySecurityToken)
+        public Int64 BeginTransaction(SecurityToken mySecurityToken)
         {
-            return new ServiceTransactionToken(this.GraphDS.BeginTransaction(mySecurityToken));
+            return this.GraphDS.BeginTransaction(mySecurityToken);
         }
 
-        public ServiceQueryResult Query(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken, string myQueryString, string myLanguage)
+        public ServiceQueryResult Query(SecurityToken mySecurityToken, Int64 myTransactionToken, string myQueryString, string myLanguage)
         {
-            return new ServiceQueryResult(this.GraphDS.Query(mySecurityToken, myTransactionToken.TransactionID, myQueryString, myLanguage));
+            return new ServiceQueryResult(this.GraphDS.Query(mySecurityToken, myTransactionToken, myQueryString, myLanguage));
         }
 
-        public List<ServiceVertexInstance> Update(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myVertexType, IEnumerable<long> myVertexIDs, ServiceUpdateChangeset myUpdateChangeset)
+        public List<ServiceVertexInstance> Update(SecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myVertexType, IEnumerable<long> myVertexIDs, ServiceUpdateChangeset myUpdateChangeset)
         {
             var Request = ServiceRequestFactory.MakeRequestUpdate(myVertexType, myVertexIDs, myUpdateChangeset);
-            var Response = this.GraphDS.Update<IEnumerable<IVertex>>(mySecToken, myTransToken.TransactionID, Request, ServiceReturnConverter.ConvertOnlyVertices);
+            var Response = this.GraphDS.Update<IEnumerable<IVertex>>(mySecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertices);
             return Response.Select(x => new ServiceVertexInstance(x)).ToList();
         }
 
 
-        public ServiceVertexType GetVertexType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, string myVertexTypeName)
+        public ServiceVertexType GetVertexType(SecurityToken mySecToken, Int64 myTransToken, string myVertexTypeName)
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myVertexTypeName);
-            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken.TransactionID, Request,
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecToken, myTransToken, Request,
                 ServiceReturnConverter.ConvertOnlyVertexType);
             return new ServiceVertexType(Response);
         }
 
 
-        public void CommitTransaction(SecurityToken mySecToken, ServiceTransactionToken myTransToken)
+        public void CommitTransaction(SecurityToken mySecToken, Int64 myTransToken)
         {
-            this.GraphDS.CommitTransaction(mySecToken, myTransToken.TransactionID);
+            this.GraphDS.CommitTransaction(mySecToken, myTransToken);
         }
 
-        public void RollbackTransaction(SecurityToken mySecToken, ServiceTransactionToken myTransToken)
+        public void RollbackTransaction(SecurityToken mySecToken, Int64 myTransToken)
         {
-            this.GraphDS.RollbackTransaction(mySecToken, myTransToken.TransactionID);
+            this.GraphDS.RollbackTransaction(mySecToken, myTransToken);
         }
 
         public void Shutdown(SecurityToken mySecurityToken)

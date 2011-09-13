@@ -41,95 +41,95 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
     public interface IGraphDS_API
     {
         [OperationContract]
-        ServiceVertexType CreateVertexType(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        ServiceVertexType CreateVertexType(SecurityToken mySecToken, Int64 myTransToken,
             ServiceVertexTypePredefinition myVertexTypePreDef);
         
         [OperationContract]
-        ServiceVertexType AlterVertexType(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        ServiceVertexType AlterVertexType(SecurityToken mySecToken, Int64 myTransToken,
             ServiceVertexType myVertexType, ServiceAlterVertexChangeset myChangeset);
         
         [OperationContract]
-        ServiceEdgeType AlterEdgeType(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        ServiceEdgeType AlterEdgeType(SecurityToken mySecToken, Int64 myTransToken,
             ServiceEdgeType myEdgeType, ServiceAlterEdgeChangeset myChangeset);
 
         [OperationContract]
-        ServiceVertexType GetVertexType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, String myVertexTypeName);
+        ServiceVertexType GetVertexType(SecurityToken mySecToken, Int64 myTransToken, String myVertexTypeName);
                
 
         [OperationContract]
-        ServiceTransactionToken BeginTransaction(SecurityToken mySecToken);
+        Int64 BeginTransaction(SecurityToken mySecToken);
 
         [OperationContract]
-        void CommitTransaction(SecurityToken mySecToken, ServiceTransactionToken myTransToken);
+        void CommitTransaction(SecurityToken mySecToken, Int64 myTransToken);
 
         [OperationContract]
-        void RollbackTransaction(SecurityToken mySecToken, ServiceTransactionToken myTransToken);
+        void RollbackTransaction(SecurityToken mySecToken, Int64 myTransToken);
 
         [OperationContract]
         void Shutdown(SecurityToken mySecurityToken);
         
         [OperationContract]
-        List<Int64> Clear(SecurityToken mySecToken, ServiceTransactionToken myTransToken);
+        List<Int64> Clear(SecurityToken mySecToken, Int64 myTransToken);
 
         [OperationContract]
-        ServiceEdgeType CreateEdgeType(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        ServiceEdgeType CreateEdgeType(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceEdgeTypePredefinition myEdgeTypePreDef);
 
         [OperationContract]
-        ServiceIndexDefinition CreateIndex(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceIndexPredefinition myVertexTypePreDef);
+        ServiceIndexDefinition CreateIndex(SecurityToken mySecToken, Int64 myTransToken, ServiceIndexPredefinition myVertexTypePreDef);
 
         [OperationContract]
-        List<ServiceVertexType> CreateVertexTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken, 
+        List<ServiceVertexType> CreateVertexTypes(SecurityToken mySecToken, Int64 myTransToken, 
             List<ServiceVertexTypePredefinition> myVertexTypePreDef);
                 
         [OperationContract]
-        List<Int64> Delete(SecurityToken mySecurityToken, ServiceTransactionToken myTransactionToken,
+        List<Int64> Delete(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null); 
 
         [OperationContract]
-        ServiceIndexDefinition DescribeIndex(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        ServiceIndexDefinition DescribeIndex(SecurityToken mySecToken, Int64 myTransToken,
             ServiceVertexType myVertexType, String myIndexName);
 
         [OperationContract]
-        List<ServiceIndexDefinition> DescribeIndices(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        List<ServiceIndexDefinition> DescribeIndices(SecurityToken mySecToken, Int64 myTransToken,
             ServiceVertexType myVertexType);
 
         [OperationContract]
-        Dictionary<Int64, String> DropEdgeType(SecurityToken mySecToken, ServiceTransactionToken myTransToken, 
+        Dictionary<Int64, String> DropEdgeType(SecurityToken mySecToken, Int64 myTransToken, 
             ServiceEdgeType myEdgeType);
                 
         [OperationContract]
-        void DropIndex(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        void DropIndex(SecurityToken mySecToken, Int64 myTransToken,
             ServiceVertexType myVertexType, String myIndexName, String myEdition);
 
         [OperationContract]
-        Dictionary<Int64, String> DropVertexType(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        Dictionary<Int64, String> DropVertexType(SecurityToken mySecToken, Int64 myTransToken,
             ServiceVertexType myVertexType);
 
         [OperationContract]
-        List<ServiceEdgeType> GetAllEdgeTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        List<ServiceEdgeType> GetAllEdgeTypes(SecurityToken mySecToken, Int64 myTransToken,
             String myEdition);
 
         [OperationContract]
-        List<ServiceVertexType> GetAllVertexTypes(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        List<ServiceVertexType> GetAllVertexTypes(SecurityToken mySecToken, Int64 myTransToken,
             String myEdition);
 
         [OperationContract]
-        ServiceEdgeType GetEdgeType(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        ServiceEdgeType GetEdgeType(SecurityToken mySecToken, Int64 myTransToken,
             String myEdgeTypeName, String myEdition = null);
 
         [OperationContract]
-        ServiceVertexInstance GetVertex(SecurityToken mySecToken, ServiceTransactionToken myTransToken,
+        ServiceVertexInstance GetVertex(SecurityToken mySecToken, Int64 myTransToken,
             ServiceVertexType myVertexType, Int64 myVertexID);
 
         [OperationContract]
-        UInt64 GetVertexCount(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myVertexType);
+        UInt64 GetVertexCount(SecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myVertexType);
 
         [OperationContract]
-        List<ServiceVertexInstance> GetVertices(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myVertexType);
+        List<ServiceVertexInstance> GetVertices(SecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myVertexType);
 
         [OperationContract]
-        ServiceVertexInstance Insert(SecurityToken mySecToken, ServiceTransactionToken myTransToken, String myVertexTypeName,
+        ServiceVertexInstance Insert(SecurityToken mySecToken, Int64 myTransToken, String myVertexTypeName,
             ServiceInsertPayload myPayload);
 
         [OperationContract]
@@ -139,13 +139,13 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         SecurityToken LogOn(String myLogin, String myPassword);
 
         //[OperationContract] There is no plan to implement the Query method yet, because client libs are already available
-        //ServiceQueryResult Query(SecurityToken mySecToken, ServiceTransactionToken myTransToken, String myQueryString, String myLanguage); 
+        //ServiceQueryResult Query(SecurityToken mySecToken, Int64 myTransToken, String myQueryString, String myLanguage); 
         
         //[OperationContract] There is no plan to implement the Travers method yet, because there is no way to transport traverser logic from the client
-        //List<ServiceVertexInstance>Traverse(SecurityToken mySecToken, ServiceTransactionToken myTransToken);
+        //List<ServiceVertexInstance>Traverse(SecurityToken mySecToken, Int64 myTransToken);
 
         [OperationContract]
-        List<ServiceVertexInstance> Update(SecurityToken mySecToken, ServiceTransactionToken myTransToken, ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs,
+        List<ServiceVertexInstance> Update(SecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs,
             ServiceUpdateChangeset myUpdateChangeset);
                    
                                                  

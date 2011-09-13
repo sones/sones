@@ -67,7 +67,6 @@
     <Compile Include="DataContracts\ServiceRequests\ServicePropertyPredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceUniquePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceVertexTypePredefinition.cs" />
-    <Compile Include="DataContracts\ServiceTransactionToken.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeType.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceBaseType.cs" />
