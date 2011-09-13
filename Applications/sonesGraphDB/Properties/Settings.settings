@@ -35,6 +35,9 @@
     <Setting Name="UDCEnabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="WriteStrategy" Type="System.String" Scope="User">
+      <Value Profile="(Default)">WriteThrough</Value>
+    </Setting>
     <Setting Name="VertexPreExtension" Type="System.String" Scope="User">
       <Value Profile="(Default)">1200</Value>
     </Setting>

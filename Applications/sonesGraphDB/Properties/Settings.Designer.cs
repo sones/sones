@@ -157,6 +157,18 @@ namespace sones.sonesGraphDBStarter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("WriteThrough")]
+        public string WriteStrategy {
+            get {
+                return ((string)(this["WriteStrategy"]));
+            }
+            set {
+                this["WriteStrategy"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1200")]
         public string VertexPreExtension {
             get {

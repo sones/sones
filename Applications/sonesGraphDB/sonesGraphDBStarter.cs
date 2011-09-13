@@ -91,6 +91,7 @@ namespace sones.sonesGraphDBStarter
                 string configuredLocation = Properties.Settings.Default.PersistenceLocation;
                 string configuredPageSize = Properties.Settings.Default.PageSize;
 				string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
+                string configuredWriteStrategy = Properties.Settings.Default.WriteStrategy;
 				string configuredMinDummyVertexInitCapacity = Properties.Settings.Default.MinDummyVertexInitCapacity;
 				string configuredVertexPreExtension = Properties.Settings.Default.VertexPreExtension;
 
@@ -129,6 +130,7 @@ namespace sones.sonesGraphDBStarter
 						new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location },
 																													{ "pageSize", pageSize },
 																													{ "bufferSizePages", bufferSize },
+																													{ "writeStrategy", configuredWriteStrategy },
 																													{ "minDummyVertexInitCapacity", minDummyVertexInitCapacity },
 																													{ "vertexPreExtension", vertexPreExtension } })));
                 
