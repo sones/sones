@@ -56,6 +56,18 @@
     <Compile Include="DataContracts\PayloadObjects\StructuredProperty.cs" />
     <Compile Include="DataContracts\QueryResult\ServiceQueryResult.cs" />
     <Compile Include="DataContracts\PayloadObjects\ServiceInsertPayload.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Operator\ServiceBinaryOperator.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Operator\ServiceUnaryOperator.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\ServiceBinaryExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\ServiceBaseExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\Literals\ServiceCollectionLiteralExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\Literals\ServiceBaseLiteralExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\Literals\ServiceRangeLiteralExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\Literals\ServiceSingleLiteralExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\ServicePropertyExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\TimeSpanDefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\TypeOfExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\ServiceUnaryExpression.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceEdgePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceEdgeTypePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceAttributePredefinition.cs" />
@@ -95,6 +107,7 @@
     <Compile Include="ServiceContracts\IRPCServiceContract.cs" />
     <Compile Include="ServiceContracts\VertexInstanceService\IVertexService.cs" />
     <Compile Include="ServiceContracts\VertexTypeServices\IVertexTypeService.cs" />
+    <Compile Include="ServiceConverter\ServiceExpressionConverter.cs" />
     <Compile Include="ServiceConverter\QueryResultConverter.cs" />
     <Compile Include="ServiceConverter\ServiceRequestFactory.cs" />
     <Compile Include="ServiceConverter\ServiceReturnConverter.cs" />

@@ -12,6 +12,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphQL.Result;
+using sones.GraphDB.Expression;
 
 /// <summary>
 /// This is an Example wich describes and shows the simplicity of setting up a GraphDB by using the sones GraphDB CommunityEdition.

@@ -33,6 +33,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InsertPayload;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.PayloadObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expression;
 
 
 namespace sones.GraphDS.Services.RemoteAPIService.API_Services
@@ -125,8 +126,20 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         [OperationContract]
         UInt64 GetVertexCount(SecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myVertexType);
 
-        [OperationContract]
+        [OperationContract(Name = "GetVerticesByTypeID")]
         List<ServiceVertexInstance> GetVertices(SecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myVertexType);
+
+        [OperationContract(Name = "GetVerticesByExpression")]
+        [ServiceKnownType(typeof(ServiceBinaryExpression))]
+        [ServiceKnownType(typeof(ServiceBinaryOperator))]
+        [ServiceKnownType(typeof(ServiceUnaryExpression))]
+        [ServiceKnownType(typeof(ServiceUnaryLogicOperator))]
+        [ServiceKnownType(typeof(ServicePropertyExpression))]
+        [ServiceKnownType(typeof(ServiceSingleLiteralExpression))]
+        [ServiceKnownType(typeof(ServiceRangeLiteralExpression))]
+        [ServiceKnownType(typeof(ServiceCollectionLiteralExpression))]
+        List<ServiceVertexInstance> GetVertices(SecurityToken mySecToken, Int64 myTransToken, ServiceBaseExpression myVertexType);
+
 
         [OperationContract]
         ServiceVertexInstance Insert(SecurityToken mySecToken, Int64 myTransToken, String myVertexTypeName,

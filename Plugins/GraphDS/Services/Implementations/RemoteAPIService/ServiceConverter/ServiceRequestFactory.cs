@@ -30,6 +30,8 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InsertPayload;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.PayloadObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
+using sones.GraphDB.Expression;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expression;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 {
@@ -298,6 +300,11 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             return new RequestGetVertices(myVertexType.Name);
         }
 
+        public static RequestGetVertices MakeRequestGetVertices(ServiceBaseExpression myExpression)
+        {
+            return new RequestGetVertices(ServiceExpressionConverter.ConvertExpression(myExpression));
+        }
+
         public static RequestUpdate MakeRequestUpdate(ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs, ServiceUpdateChangeset myUpdateChangeset)
         {
             #region PreRequest
@@ -438,6 +445,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
         {
            return new RequestClear();
         }
+
         
     }
 }

@@ -80,9 +80,9 @@ namespace sones.sonesGraphDBStarter
                 }
             }
             #region Start REST, WebDAV and WebAdmin services, send GraphDS notification
-
+            
             IGraphDB GraphDB;
-
+            
             if (Properties.Settings.Default.UsePersistence)
             {
                 if (!quiet)
