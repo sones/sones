@@ -29,5 +29,11 @@
     <Setting Name="WriteStrategy" Type="System.String" Scope="User">
       <Value Profile="(Default)">WriteThrough</Value>
     </Setting>
+    <Setting Name="VertexPreExtension" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1200</Value>
+    </Setting>
+    <Setting Name="MinDummyVertexInitCapacity" Type="System.String" Scope="User">
+      <Value Profile="(Default)">2400</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
