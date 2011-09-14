@@ -29,6 +29,8 @@ using sones.GraphDS;
 using sones.GraphQL.Result;
 using System.Runtime.Serialization;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts;
+using sones.Library.Commons.Security;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
@@ -41,6 +43,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 
         private IGraphDS GraphDS;
 
+        private Dictionary<ServiceSecurityToken, SecurityToken> SecurityTokenMap;
         
         #endregion
 
@@ -49,6 +52,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         public RPCServiceContract(IGraphDS myGraphDS)
         {
             this.GraphDS = myGraphDS;
+            this.SecurityTokenMap = new Dictionary<ServiceSecurityToken, SecurityToken>();
         }
 
         #endregion
