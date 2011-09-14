@@ -126,7 +126,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         [OperationContract]
         UInt64 GetVertexCount(SecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myVertexType);
 
-        [OperationContract(Name = "GetVerticesByTypeID")]
+        [OperationContract(Name = "GetVerticesByType")]
         List<ServiceVertexInstance> GetVertices(SecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myVertexType);
 
         [OperationContract(Name = "GetVerticesByExpression")]
