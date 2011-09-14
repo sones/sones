@@ -47,7 +47,7 @@ namespace SimpleImportBenchmark
 
                 Console.WriteLine("===  Startup ===");
                 Console.WriteLine("Starting: " + sonesGraphDBStarter);
-                var process = Process.Start(new ProcessStartInfo(sonesGraphDBStarter) { UseShellExecute = false });
+                var process = Process.Start(new ProcessStartInfo(sonesGraphDBStarter) { UseShellExecute = false, RedirectStandardInput = true });
                 try
                 {
 
