@@ -79,6 +79,7 @@
     <Compile Include="DataContracts\ServiceRequests\ServicePropertyPredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceUniquePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceVertexTypePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceSecurityToken.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeType.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceBaseType.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceUniqueDefinition.cs" />
     <Compile Include="DataContracts\InstanceObjects\ServiceVertexInstance.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceVertexType.cs" />
+    <Compile Include="ErrorHandling\SecurityException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteAPIService.cs" />
     <Compile Include="ServiceContractImplementation\EdgeService.cs" />
@@ -165,7 +167,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ErrorHandling\" />
     <Folder Include="ServiceStatus\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
