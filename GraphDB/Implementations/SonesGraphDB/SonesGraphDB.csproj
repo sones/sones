@@ -93,7 +93,6 @@
     <Compile Include="Manager\TypeManagement\ExecuteEdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\ExecuteVertexTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\VertexTypeManager.cs" />
-    <Compile Include="Manager\TypeManagement\UniqueID.cs" />
     <Compile Include="Manager\Vertex\AVertexHandler.cs" />
     <Compile Include="Manager\Vertex\CheckVertexHandler.cs" />
     <Compile Include="Manager\Vertex\ExecuteVertexHandler.cs" />
@@ -175,6 +174,10 @@
     <ProjectReference Include="..\..\..\Library\Internal\Constants\Constants.csproj">
       <Project>{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723}</Project>
       <Name>Constants</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\DataStructures\DataStructures.csproj">
+      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
+      <Name>DataStructures</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
