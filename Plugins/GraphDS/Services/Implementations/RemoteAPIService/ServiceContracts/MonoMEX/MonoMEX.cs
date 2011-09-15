@@ -31,36 +31,35 @@ using System.Runtime.Serialization;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts;
 using sones.Library.Commons.Security;
+using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MonoMEX;
+using System.Reflection;
+using System.IO;
+using System.Xml;
+using System.ServiceModel.Channels;
+using System.ServiceModel.Web;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
     
     
-    [ServiceBehavior(Namespace = sonesRPCServer.Namespace, InstanceContextMode = InstanceContextMode.Single)]
-    public partial class RPCServiceContract : IRPCServiceContract
+    [ServiceBehavior(Namespace = sonesRPCServer.Namespace,  IncludeExceptionDetailInFaults = true)]
+    public  class MonoMEX : IMonoMEX
     {
-        #region Data
 
-        private IGraphDS GraphDS;
-
-        private Dictionary<ServiceSecurityToken, SecurityToken> SecurityTokenMap;
-        
-        #endregion
-
-        #region C'tor
-
-        public RPCServiceContract(IGraphDS myGraphDS)
+        public Stream GetWSDL()
         {
-            this.GraphDS = myGraphDS;
-            this.SecurityTokenMap = new Dictionary<ServiceSecurityToken, SecurityToken>();
-        }
 
-        #endregion
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MonoMEX.WSDL.xml");
+     
+            OutgoingWebResponseContext context = WebOperationContext.Current.OutgoingResponse;
+            
+            // everything is OK, so send image 
 
+            context.Headers.Add(System.Net.HttpResponseHeader.CacheControl, "public");
+            context.ContentType = "application/xml";
+            context.StatusCode = System.Net.HttpStatusCode.OK;
+            return stream;
 
-        public string Ping()
-        {
-            return "Pong";
         }
     }
 }

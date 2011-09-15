@@ -36,6 +36,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -97,6 +98,7 @@
     <Compile Include="ErrorHandling\SecurityTokenException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteAPIService.cs" />
+    <Compile Include="ServiceContracts\MonoMEX\MonoMEX.cs" />
     <Compile Include="ServiceContractImplementation\EdgeService.cs" />
     <Compile Include="ServiceContractImplementation\EdgeTypeService.cs" />
     <Compile Include="ServiceContractImplementation\GraphDS_API.cs" />
@@ -107,6 +109,7 @@
     <Compile Include="ServiceContracts\EdgeInstanceService\IEdgeService.cs" />
     <Compile Include="ServiceContracts\EdgeTypeServices\IEdgeTypeService.cs" />
     <Compile Include="ServiceContracts\IRPCServiceContract.cs" />
+    <Compile Include="ServiceContracts\MonoMEX\IMonoMEX.cs" />
     <Compile Include="ServiceContracts\VertexInstanceService\IVertexService.cs" />
     <Compile Include="ServiceContracts\VertexTypeServices\IVertexTypeService.cs" />
     <Compile Include="ServiceConverter\ServiceExpressionConverter.cs" />
@@ -168,6 +171,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ServiceStatus\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ServiceContracts\MonoMEX\WSDL.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -33,6 +33,7 @@ using WCFExtras.Wsdl;
 using sones.GraphDS.Services.RemoteAPIService.EdgeTypeService;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanceService;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceService;
+using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MonoMEX;
 
 namespace sones.GraphDS.Services.RemoteAPIService
 {
@@ -111,6 +112,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
         private void InitializeServer()
         {
             BasicHttpBinding BasicBinding = new BasicHttpBinding();
+            
             BasicBinding.Name = "sonesBasic";
             BasicBinding.Namespace = Namespace;
             BasicBinding.MessageEncoding = WSMessageEncoding.Text;
@@ -189,22 +191,52 @@ namespace sones.GraphDS.Services.RemoteAPIService
             
             #region Metadata Exchange
 
-            //Todo Add mono workaround for MEX
+            // mono can't export automatic generated WSDL. Because of that, we must do that explicit
+                        
+            WebHttpBinding WebBinding = new WebHttpBinding();
+            WebBinding.Namespace = Namespace;
+            var rpc = this.URI.Segments.Last();
+            var monoURI = this.URI.ToString().Replace(rpc, "");
 
-            ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
-            smb.HttpGetEnabled = true;
-            
-            //smb.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
-            _ServiceHost.Description.Behaviors.Add(smb);
-            // Add MEX endpoint
+            var _ServiceHost2 = new ServiceHost(typeof(MonoMEX), new Uri(monoURI));
+            _ServiceHost2.Description.Namespace = Namespace;
 
-            _ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexHttpBinding(),"mex");
-            foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
-            {
-                endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
+            ContractDescription MonoMEX = ContractDescription.GetContract(typeof(IMonoMEX));
 
-            }
-            
+
+            ServiceEndpoint MonoMEXeService = new ServiceEndpoint(MonoMEX, WebBinding, new EndpointAddress(new Uri(monoURI)));
+
+            _ServiceHost2.AddServiceEndpoint(MonoMEXeService);
+            _ServiceHost2.Description.Endpoints[0].Behaviors.Add(new System.ServiceModel.Description.WebHttpBehavior());
+            _ServiceHost2.Open();
+
+
+            //the on-the-fly generation of the WSDL leads to several errors on client side (and crashes the server) - so a simple output is necessary
+
+            #region Automatic WCF WSDL Generator
+
+            //ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
+            //smb.HttpGetEnabled = true;
+
+
+            //_ServiceHost.Description.Behaviors.Add(smb);
+
+            //// Add MEX endpoint
+
+            //_ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
+            //foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
+            //{
+            //    //export just one file
+            //    endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
+
+            //} 
+
+            #endregion
+
+
+
+
+
             #endregion
 
         }
