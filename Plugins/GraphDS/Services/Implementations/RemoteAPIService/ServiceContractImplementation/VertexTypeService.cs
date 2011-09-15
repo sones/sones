@@ -263,14 +263,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 
         #region Properties
 
-        public bool HasProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, string myAttributeName)
+        public bool HasProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, string myPropertyName)
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
                 throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
             var Response = this.GraphDS.GetVertexType<IVertexType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
-            return Response.HasProperty(myAttributeName);
+            return Response.HasProperty(myPropertyName);
         }
 
         public ServicePropertyDefinition GetPropertyDefinition(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, string myPropertyName)
@@ -329,24 +329,24 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 
         #region Incoming
 
-        public bool HasBinaryProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, string myEdgeName)
+        public bool HasBinaryProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, string myPropertyName)
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
                 throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
             var Response = this.GraphDS.GetVertexType<IVertexType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
-            return Response.HasBinaryProperty(myEdgeName);
+            return Response.HasBinaryProperty(myPropertyName);
         }
 
-        public ServiceBinaryPropertyDefinition GetBinaryPropertyDefinition(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, string myEdgeName)
+        public ServiceBinaryPropertyDefinition GetBinaryPropertyDefinition(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, string myPropertyName)
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
                 throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
             var Response = this.GraphDS.GetVertexType<IVertexType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
-            return new ServiceBinaryPropertyDefinition(Response.GetBinaryPropertyDefinition(myEdgeName));
+            return new ServiceBinaryPropertyDefinition(Response.GetBinaryPropertyDefinition(myPropertyName));
         }
 
         public bool HasBinaryProperties(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
