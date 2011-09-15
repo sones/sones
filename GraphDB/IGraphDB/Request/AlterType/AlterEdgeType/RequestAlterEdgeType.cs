@@ -292,6 +292,22 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
+        /// Undefines an attribute
+        /// </summary>
+        /// <param name="myUnknownPredefinition">The name of the attribute that is going to be undefined</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestAlterEdgeType UndefineAttribute(String myAttributeName)
+        {
+            if (!String.IsNullOrWhiteSpace(myAttributeName))
+            {
+                _toBeUndefinedAttributes = (_toBeUndefinedAttributes) ?? new List<String>();
+                _toBeUndefinedAttributes.Add(myAttributeName);
+            }
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a property to the type definition
         /// </summary>
         /// <param name="myPropertyDefinition">The property definition that is going to be added</param>

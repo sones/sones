@@ -110,6 +110,65 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #endregion
 
+            #region check attributes to be defined
+            if (myRequest.ToBeDefinedAttributes != null)
+            {
+                foreach (var unknownProp in myRequest.ToBeDefinedAttributes)
+                {
+                    var toBeDefined = myRequest.ToBeDefinedAttributes.ToArray();
+
+                    foreach (var unknown in toBeDefined)
+                    {
+                        if (BinaryPropertyPredefinition.TypeName.Equals(unknown.AttributeType))
+                        {
+                            throw new InvalidDefineAttributeTypeException(BinaryPropertyPredefinition.TypeName, edgeType.Name);
+                        }
+                        else if (unknown.AttributeType.Contains(IncomingEdgePredefinition.TypeSeparator))
+                        {
+                            throw new InvalidDefineAttributeTypeException("incoming edge", edgeType.Name);
+                        }
+                        else if (!_baseTypeManager.IsBaseType(unknown.AttributeType))
+                        {
+                            throw new InvalidDefineAttributeTypeException("user defined", edgeType.Name);
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            #region check attributes to be undefined
+
+            if (myRequest.ToBeUndefinedAttributes != null)
+            {
+                foreach (var attr in myRequest.ToBeUndefinedAttributes)
+                {
+                    var attrDef = edgeType.GetAttributeDefinition(attr);
+
+                    if (attrDef == null)
+                        throw new AttributeDoesNotExistException(attr);
+
+                    switch (attrDef.Kind)
+                    {
+                        case AttributeType.Property:
+                            break;
+
+                        case AttributeType.OutgoingEdge:
+                            throw new InvalidUndefineAttributeTypeException("Outgoing Edge", edgeType.Name);
+
+                        case AttributeType.IncomingEdge:
+                            throw new InvalidUndefineAttributeTypeException("Incoming Edge", edgeType.Name);
+
+                        case AttributeType.BinaryProperty:
+                            throw new InvalidUndefineAttributeTypeException(BinaryPropertyPredefinition.TypeName, edgeType.Name);
+
+                        default:
+                            throw new Exception("The enumeration AttributeType was changed, but not this switch statement.");
+                    }
+                }
+            }
+
+            #endregion
+
             #region checks
 
             CallCheckFunctions(myAlterTypeRequest, edgeType, myTransactionToken, mySecurityToken);
@@ -298,6 +357,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             CheckAttributesNameAndType(myAlterTypeRequest);
 
             CheckToBeAddedAttributes(myAlterTypeRequest, myType);
+            CheckToBeDefinedAttributes(myAlterTypeRequest, myType);
             CheckToBeRemovedAttributes(myAlterTypeRequest, myType);
             CheckToBeRenamedAttributes(myAlterTypeRequest, myType);
             CheckNewTypeName(myAlterTypeRequest.AlteredTypeName, myTransactionToken, mySecurityToken);
@@ -382,7 +442,21 @@ namespace sones.GraphDB.Manager.TypeManagement
         protected override void CheckToBeDefinedAttributes(IRequestAlterType myAlterTypeRequest,
                                                             IEdgeType myType)
         {
-            throw new NotImplementedException();
+            var request = myAlterTypeRequest as RequestAlterEdgeType;
+
+            foreach (var aEdgeType in myType.GetDescendantEdgeTypesAndSelf())
+            {
+                var attributesOfCurrentEdgeType = aEdgeType.GetAttributeDefinitions(false).ToList();
+
+                if (request.ToBeDefinedAttributes != null)
+                {
+                    foreach (var aToBeDefinedAttribute in request.ToBeDefinedAttributes)
+                    {
+                        if (attributesOfCurrentEdgeType.Any(_ => _.Name == aToBeDefinedAttribute.AttributeName))
+                            throw new AttributeAlreadyExistsException(aToBeDefinedAttribute.AttributeName);
+                    }
+                }
+            }
         }
 
         /// <summary>
