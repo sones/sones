@@ -20,7 +20,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertexTypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.HasIncomingVertices(myVertexTypeID, myEdgePropertyID);
@@ -31,7 +31,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetAllIncomingVertices().Select(x => new Tuple<long, long, List<ServiceVertexInstance>>(x.Item1, x.Item2, x.Item3.Select(y => new ServiceVertexInstance(y)).ToList())).ToList();
@@ -42,7 +42,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetIncomingVertices(myVertexTypeID, myEdgePropertyID).Select(x => new ServiceVertexInstance(x)).ToList();
@@ -53,7 +53,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.HasOutgoingEdge(myEdgePropertyID);
@@ -64,7 +64,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetAllOutgoingEdges().Select(x =>
@@ -81,7 +81,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetAllOutgoingHyperEdges().Select(x => new Tuple<long, ServiceHyperEdgeInstance>(x.Item1, new ServiceHyperEdgeInstance(x.Item2, x.Item1))).ToList();
@@ -92,7 +92,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetAllOutgoingSingleEdges().Select(x => new Tuple<long, ServiceSingleEdgeInstance>(x.Item1, new ServiceSingleEdgeInstance(x.Item2, x.Item1))).ToList();
@@ -103,7 +103,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             var Edge = Response.GetOutgoingEdge(myEdgePropertyID);
@@ -118,7 +118,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             var value = Response.GetOutgoingHyperEdge(myEdgePropertyID);
@@ -135,7 +135,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             var value = Response.GetOutgoingSingleEdge(myEdgePropertyID);
@@ -151,7 +151,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             throw new NotImplementedException();
         }
 
@@ -160,7 +160,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             throw new NotImplementedException();
         }
 
@@ -169,7 +169,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetProperty(myPropertyID);
@@ -180,7 +180,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.HasProperty(myPropertyID);
@@ -191,7 +191,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetCountOfProperties();
@@ -202,7 +202,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetAllProperties().Select(x => new Tuple<long, object>(x.Item1, (object)x.Item2)).ToList();
@@ -213,7 +213,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetPropertyAsString(myPropertyID);
@@ -224,7 +224,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetUnstructuredProperty<object>(myPropertyName);
@@ -235,7 +235,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.HasUnstructuredProperty(myPropertyName);
@@ -245,7 +245,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetCountOfUnstructuredProperties();
@@ -255,7 +255,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetAllUnstructuredProperties().ToList();
@@ -265,7 +265,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetUnstructuredPropertyAsString(myPropertyName);
@@ -275,7 +275,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.Comment;
@@ -285,7 +285,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.CreationDate;
@@ -295,7 +295,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.ModificationDate;

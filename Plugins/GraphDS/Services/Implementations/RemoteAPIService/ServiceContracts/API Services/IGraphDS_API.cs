@@ -161,6 +161,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         List<ServiceVertexInstance> Update(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs,
             ServiceUpdateChangeset myUpdateChangeset);
                    
+        [OperationContract]
+        void RebuildIndices(ServiceSecurityToken mySecurityToken, Int64 myTransToken, IEnumerable<String> myVertexTypeNames);
                                                  
     }
 }

@@ -45,7 +45,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetDescendantEdgeTypes().Select(x => new ServiceEdgeType(x)).ToList();
@@ -55,7 +55,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetDescendantEdgeTypesAndSelf().Select(x => new ServiceEdgeType(x)).ToList();
@@ -65,7 +65,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetAncestorEdgeTypes().Select(x => new ServiceEdgeType(x)).ToList();
@@ -75,7 +75,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetAncestorEdgeTypesAndSelf().Select(x => new ServiceEdgeType(x)).ToList();
@@ -85,7 +85,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetKinsmenEdgeTypes().Select(x => new ServiceEdgeType(x)).ToList();
@@ -95,7 +95,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetKinsmenEdgeTypesAndSelf().Select(x => new ServiceEdgeType(x)).ToList();
@@ -105,7 +105,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.ChildrenEdgeTypes.Select(x => new ServiceEdgeType(x)).ToList();
@@ -115,7 +115,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServiceEdgeType(Response.ParentEdgeType);
@@ -129,7 +129,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.IsSealed;
@@ -139,7 +139,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasParentType;
@@ -149,7 +149,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasChildTypes;
@@ -159,7 +159,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myOtherType.Name);
             var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
@@ -171,7 +171,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myOtherType.Name);
             var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
@@ -183,7 +183,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myOtherType.Name);
             var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
@@ -195,7 +195,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myOtherType.Name);
             var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
@@ -211,7 +211,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasAttribute(myAttributeName);
@@ -221,7 +221,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeName));
@@ -231,7 +231,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeID));
@@ -241,7 +241,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasAttributes(myIncludeAncestorDefinitions);
@@ -251,7 +251,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetAttributeDefinitions(myIncludeAncestorDefinitions).Select(x => new ServiceAttributeDefinition(x)).ToList();
@@ -265,7 +265,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasProperty(myAttributeName);
@@ -275,7 +275,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServicePropertyDefinition(Response.GetPropertyDefinition(myPropertyName));
@@ -285,7 +285,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServicePropertyDefinition(Response.GetPropertyDefinition(myPropertyID));
@@ -295,7 +295,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasProperties(myIncludeAncestorDefinitions);
@@ -305,7 +305,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetPropertyDefinitions(myIncludeAncestorDefinitions).Select(x => new ServicePropertyDefinition(x)).ToList();
@@ -315,7 +315,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityException("The givin ServiceSecurityToken was violated! The request was not executed.");
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetPropertyDefinitions(myPropertyNames).Select(x => new ServicePropertyDefinition(x)).ToList();

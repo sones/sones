@@ -305,7 +305,7 @@ namespace TagExample
                 //(that's why we fetched the type from DB an read out the property definition of property "Name")
                 var name = item.GetPropertyAsString(propName.ID);
             }
-
+            GraphDSServer.RT
             #endregion
         }
 
