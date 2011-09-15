@@ -163,6 +163,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
                    
         [OperationContract]
         void RebuildIndices(ServiceSecurityToken mySecurityToken, Int64 myTransToken, IEnumerable<String> myVertexTypeNames);
-                                                 
+
+        [OperationContract]
+        void TruncateVertexType(ServiceSecurityToken mySecurityToken, Int64 myTransToken, String myVertexTypeNames);
     }
 }

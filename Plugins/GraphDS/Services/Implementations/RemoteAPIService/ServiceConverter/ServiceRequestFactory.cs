@@ -32,6 +32,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.PayloadObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 using sones.GraphDB.Expression;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expression;
+using sones.GraphDB;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 {
@@ -439,6 +440,12 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
         public static RequestTraverseVertex MakeRequestTraverseVertex()
         {
             return null; //This Request is currently unused, because of the fact there is no way to deliver the logic for graph traversals;
+        }
+
+        public static RequestTruncate MakeRequestTruncate(String myVertexTypeName)
+        {
+            RequestTruncate Request = new RequestTruncate(myVertexTypeName);
+            return Request;
         }
 
         public static RequestClear MakeRequestClear()

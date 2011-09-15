@@ -395,5 +395,15 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             var Response = this.GraphDS.RebuildIndices(myDBSecToken, myTransToken, Request, (Statistics) => Statistics);
             return;
         }
+
+
+        public void TruncateVertexType(ServiceSecurityToken mySecurityToken, long myTransToken, string myVertexTypeName)
+        {
+            SecurityToken myDBSecToken;
+            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
+                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
+            var Request = ServiceRequestFactory.MakeRequestTruncate(myVertexTypeName);
+            this.GraphDS.Truncate(myDBSecToken, myTransToken, Request, (x) => x);
+        }
     }
 }
