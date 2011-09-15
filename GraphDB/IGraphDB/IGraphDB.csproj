@@ -112,6 +112,7 @@
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeIsNotDefinedException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeUniqueConstraintViolation.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\CircularTypeHierarchyException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeErrors\DefineMandatoryWithoutDefaultException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\DuplicatedVertexTypeName.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\EmptyVertexTypeNameException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\InvalidIndexAttributeException.cs" />

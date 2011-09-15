@@ -277,14 +277,18 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 dict.Add(id, aAttribute.DefaultValue);
 
-                #region cast existing unstructured properties on vertices to structured
-                
                 foreach (var vertex in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myType.ID))
                 {
+                    bool bFound = false;
+
+                    #region cast existing unstructured properties on vertices to structured
+
                     foreach (var property in vertex.GetAllUnstructuredProperties())
                     {
                         if (property.Item1.CompareTo(aAttribute.AttributeName) == 0)
                         {
+                            bFound = true;
+
                             // Found unstructured property with same name on the vertex
                             var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
                             IComparable value = null;
@@ -321,9 +325,45 @@ namespace sones.GraphDB.Manager.TypeManagement
                             break;
                         }
                     }
-                }
 
-                #endregion
+                    #endregion
+
+                    #region add mandatory attribute if not existing on vertex
+
+                    if ((!bFound) && (aAttribute.IsMandatory))
+                    {
+                        if (aAttribute.DefaultValue == null) throw new DefineMandatoryWithoutDefaultException(aAttribute.AttributeName, myType.Name);
+                        
+                        // Found unstructured property with same name on the vertex
+                        var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
+                        IComparable value = null;
+
+                        // Try Convert Type
+                        try
+                        {
+                            value = aAttribute.DefaultValue.ConvertToIComparable(targettype);
+                        }
+                        catch (InvalidCastException)
+                        {
+                            throw new VertexAttributeCastException(aAttribute.AttributeName, aAttribute.DefaultValue.GetType(), targettype, false);
+                        }
+                        catch (FormatException)
+                        {
+                            throw new VertexAttributeCastException(aAttribute.AttributeName, aAttribute.DefaultValue.GetType(), targettype, true);
+                        }
+
+                        // add list with only one item -> structured property to add
+                        Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
+                        properties2add.Add(id, value);
+                        StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
+
+                        // Update the vertex (add structured)
+                        VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, propadd);
+                        _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
+                    }
+
+                    #endregion
+                }
 
                 #region add property definition to vertex type
                 
