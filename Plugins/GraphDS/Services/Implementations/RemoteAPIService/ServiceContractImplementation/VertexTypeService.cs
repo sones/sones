@@ -359,7 +359,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return Response.HasBinaryProperties(myIncludeAncestorDefinitions);
         }
 
-        public List<ServiceBinaryPropertyDefinition> GetBinaryProperties(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
+        public List<ServiceBinaryPropertyDefinition> GetBinaryPropertyDefinitions(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
         {
             SecurityToken myDBSecToken;
             if (!SecurityTokenMap.TryGetValue(mySecToken, out myDBSecToken))
