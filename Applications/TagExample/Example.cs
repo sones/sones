@@ -39,9 +39,8 @@ namespace TagExample
     {
         #region public DATA
 
-        //GraphDB instance
-        IGraphDB GraphDB;
-        IGraphDS GraphDSServer;
+        //GraphDS server instance
+        IGraphDSServer GraphDSServer;
 
         //Security- and TransactionToken
         SecurityToken SecToken;
@@ -54,16 +53,16 @@ namespace TagExample
         public TagExample()
         {
             //Make a new GraphDB instance
-            GraphDB = new SonesGraphDB();
+            var graphDB = new SonesGraphDB();
             
             var credentials = new UserPasswordCredentials("User", "test");
 
             //GraphDSServer = new GraphDS_Server(GraphDB, (ushort)9975, "User", "test", IPAddress.Any, PluginsAndParameters);
-            GraphDSServer = new GraphDS_Server(GraphDB, null);
+            GraphDSServer = new GraphDS_Server(graphDB, null);
             GraphDSServer.LogOn(credentials);
             //GraphDSServer.StartRESTService("", Properties.Settings.Default.ListeningPort, IPAddress.Any);
 
-            //get a Security- and TransactionToken
+            //get a SecurityToken and an TransactionID
             SecToken = GraphDSServer.LogOn(credentials);
             TransationID = GraphDSServer.BeginTransaction(SecToken);
         }
@@ -173,7 +172,7 @@ namespace TagExample
             //Beware: Use just one of them!
 
             //1. create an index definition and specifie the property- and type name
-            var MyIndex = new IndexPredefinition("MyIndex").SetIndexType("MultipleValueIndex").AddProperty("Name").SetVertexType("Website");
+            var MyIndex = new IndexPredefinition("MyIndex").SetIndexType("SonesIndex").AddProperty("Name").SetVertexType("Website");
             //add index
             Website_VertexTypePredefinition.AddIndex((IndexPredefinition)MyIndex);
 
@@ -189,7 +188,7 @@ namespace TagExample
             //                                                          TransToken,
             //                                                          new RequestCreateIndex(
             //                                                          new IndexPredefinition("MyIndex")
-            //                                                                   .SetIndexType("MultipleValueIndex")
+            //                                                                   .SetIndexType("SonesIndex")
             //                                                                   .AddProperty("Name")
             //                                                                   .SetVertexType("Website")), (Statistics, Index) => Index);
 
@@ -319,7 +318,7 @@ namespace TagExample
             //1. create an index definition and specifie the property name and index type
             var Types = GraphDSServer.Query(SecToken, TransationID, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
                                                                                 Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags) 
-                                                                                    INDICES (MyIndex INDEXTYPE MultipleValueIndex ON ATTRIBUTES Name)", SonesGQLConstants.GQL);
+                                                                                    INDICES (MyIndex INDEXTYPE SonesIndex ON ATTRIBUTES Name)", SonesGQLConstants.GQL);
 
             //2. on creating the type with the property "Name", just define the property "Name" under INDICES
             //var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
@@ -328,7 +327,7 @@ namespace TagExample
             //3. make a create index query
             //var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
             //                                                                    Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags)");
-            //var MyIndex = GraphQL.Query(SecToken, TransToken, "CREATE INDEX MyIndex ON VERTEX TYPE Website (Name) INDEXTYPE MultipleValueIndex");            
+            //var MyIndex = GraphQL.Query(SecToken, TransToken, "CREATE INDEX MyIndex ON VERTEX TYPE Website (Name) INDEXTYPE SonesIndex");            
             CheckResult(Types);
             #endregion
 

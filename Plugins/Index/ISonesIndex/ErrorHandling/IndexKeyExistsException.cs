@@ -18,18 +18,35 @@
 * 
 */
 
+#region Usings
+
 using System;
 
-namespace sones.Plugins.Index.Interfaces
+#endregion
+
+namespace sones.Plugins.Index.ErrorHandling
 {
-    /// <summary>
-    /// Default interface for range indices.
-    /// </summary>
-    /// <typeparam name="TKey">The type of the comparable index key</typeparam>
-    /// <typeparam name="TValue">The type of the index value</typeparam>
-    public interface IRangeIndex<TKey, TValue>
-        : IIndex<TKey, TValue>
-        where TKey : IComparable
+    public sealed class IndexKeyExistsException : ASonesIndexException
     {
+        #region Data
+
+        public String Info { get; private set; }
+
+        #endregion
+
+        #region Constructor
+
+        public IndexKeyExistsException(String myInfo)
+        {
+            Info = myInfo;
+        }
+
+        #endregion
+
+        public override string ToString()
+        {
+            return Info;
+        }
+
     }
 }

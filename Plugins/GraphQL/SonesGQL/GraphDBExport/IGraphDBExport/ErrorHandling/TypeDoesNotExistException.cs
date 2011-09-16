@@ -30,7 +30,7 @@ namespace sones.Plugins.SonesGQL.DBExport
         private String Type;
         private String Info;
 
-        public TypeDoesNotExistException(String myType, String myInfo)
+        public TypeDoesNotExistException(String myType, String myInfo = "")
         {
             Type = myType;
             Info = myInfo;

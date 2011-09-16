@@ -65,10 +65,24 @@ namespace sones.Library.LanguageExtensions
 
             if (typeof(DateTime).Equals(myConvertType) && typeof(long).Equals(item.GetType()))
                 return DateTime.FromBinary((long)item);
+            if (typeof(DateTime).Equals(myConvertType) && typeof(string).Equals(myObject.GetType()))
+            {
+                try
+                {
+                    return Convert.ToDateTime(myObject, CultureInfo.GetCultureInfo("en-US"));
+                }
+                catch (Exception e)
+                {
+                    return Convert.ToDateTime(myObject);
+                }
+
+
+            }
+
 
             #endregion
 
-            return (IComparable)Convert.ChangeType(item, myConvertType, CultureInfo.GetCultureInfo("en-us"));
+            return (IComparable)Convert.ChangeType(item, myConvertType, CultureInfo.GetCultureInfo("en-US"));
         }
 
         public static ICollectionWrapper ConvertToIComparableList(this Object myObject, Type myConvertType)
@@ -87,7 +101,7 @@ namespace sones.Library.LanguageExtensions
                                                 .Select(_ => (IComparable)Convert
                                                                 .ChangeType(_, 
                                                                             myConvertType, 
-                                                                            CultureInfo.GetCultureInfo("en-us"))));
+                                                                            CultureInfo.GetCultureInfo("en-US"))));
         }
 
     }

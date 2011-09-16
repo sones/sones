@@ -18,17 +18,15 @@
 * 
 */
 
-using System.Collections.Generic;
-using sones.Library.PropertyHyperGraph;
 using System;
-using sones.Library.Commons.VertexStore;
-using sones.GraphDB.TypeSystem;
-using sones.GraphDB.Manager.Index;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
-using sones.Plugins.Index.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.Expression.Tree.Literals;
+using sones.GraphDB.Manager.Index;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.VertexStore;
+using sones.Library.PropertyHyperGraph;
+using sones.Plugins.Index;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -67,19 +65,14 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         #region overrides
 
-        public override IIndex<IComparable, long> GetBestMatchingIdx(IEnumerable<IIndex<IComparable, long>> myIndexCollection)
+        public override ISonesIndex GetBestMatchingIdx(IEnumerable<ISonesIndex> myIndexCollection)
         {
             return myIndexCollection.First();
         }
-        
-        public override IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, long> mySingleValueIndex, IComparable myIComparable)
-        {
-            return mySingleValueIndex.Where(kv => kv.Key.CompareTo(myIComparable) != 0).Select(kv => kv.Value);
-        }
 
-        public override IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, long> myMultipleValueIndex, IComparable myIComparable)
+        protected override IEnumerable<long> GetValues(ISonesIndex myIndex, IComparable myIComparable)
         {
-            foreach (var aVertexIDSet in myMultipleValueIndex.Where(kv => kv.Key.CompareTo(myIComparable) != 0).Select(kv => kv.Value))
+            foreach (var aVertexIDSet in myIndex.Keys().Where(key => key.CompareTo(myIComparable) != 0).Select(key => myIndex[key]))
             {
                 foreach (var aVertexID in aVertexIDSet)
                 {
@@ -87,7 +80,7 @@ namespace sones.GraphDB.Expression.QueryPlan
                 }
             }
 
-            yield break;
+            yield break;       
         }
 
         #endregion
