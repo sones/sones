@@ -32,6 +32,7 @@ using sones.Library.VersionedPluginManager;
 using sones.Plugins.SonesGQL.Function.ErrorHandling;
 using sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSearch;
 using sones.Library.CollectionWrapper;
+using sones.GraphDB.Request;
 
 namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 {
@@ -123,10 +124,15 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
                 //mark if the BidirectionalBFS should be used
                 useBidirectionalBFS = Convert.ToBoolean(myParams[5].Value);
 
-            var vertexType = myGraphDB.GetVertexType<IVertexType>(mySecurityToken, myTransactionToken, new GraphDB.Request.RequestGetVertexType(startNode.VertexTypeID), (stats, type) => type);
+            var vertexType = myGraphDB.GetVertexType<IVertexType>(mySecurityToken, 
+                                                                    myTransactionToken, 
+                                                                    new RequestGetVertexType(startNode.VertexTypeID), 
+                                                                    (stats, type) => type);
 
             if (vertexType == null)
-                throw new InvalidFunctionParameterException("StartVertexType", "VertexType that represents the start vertex type not found", startNode.VertexTypeID);
+                throw new InvalidFunctionParameterException("StartVertexType", 
+                                                            "VertexType that represents the start vertex type not found", 
+                                                            startNode.VertexTypeID);
             #endregion
 
             #region check correctness of parameters
@@ -146,9 +152,22 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
             //call BFS find methods
             if (useBidirectionalBFS)
-                paths = new BidirectionalBFS().Find(typeAttribute, vertexType, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
+                paths = new BidirectionalBFS().Find(typeAttribute, 
+                                                    vertexType, 
+                                                    startNode, 
+                                                    targetNode, 
+                                                    onlyShortestPath, 
+                                                    allPaths, 
+                                                    maxDepth, maxPathLength);
             else
-                paths = new BFS().Find(typeAttribute, vertexType, startNode, targetNode, onlyShortestPath, allPaths, maxDepth, maxPathLength);
+                paths = new BFS().Find(typeAttribute, 
+                                        vertexType, 
+                                        startNode, 
+                                        targetNode, 
+                                        onlyShortestPath, 
+                                        allPaths, 
+                                        maxDepth, 
+                                        maxPathLength);
 
             #endregion
 

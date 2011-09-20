@@ -184,9 +184,9 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             _DummyLeft = null;
             _DummyRight = null;
 
-            _ShortestOnly = shortestOnly;
             _FindAll = findAll;
-
+            _ShortestOnly = shortestOnly;
+            
             #endregion
 
             #region BidirectionalBFS
@@ -221,10 +221,12 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
             #endregion
 
             //if there is more than one object in the queue and the actual depth is less than MaxDepth
-            while (((_QueueLeft.Count > 0) && (_QueueRight.Count > 0)) && ((_DepthLeft <= _MaxDepthLeft) || (_DepthRight <= _MaxDepthRight)))
+            while (((_QueueLeft.Count > 0) && (_QueueRight.Count > 0)) && 
+                   ((_DepthLeft <= _MaxDepthLeft) || (_DepthRight <= _MaxDepthRight)))
             {
                 #region both queues contain objects and both depths are not reached
-                if (((_QueueLeft.Count > 0) && (_QueueRight.Count > 0)) && ((_DepthLeft <= _MaxDepthLeft) && (_DepthRight <= _MaxDepthRight)))
+                if (((_QueueLeft.Count > 0) && (_QueueRight.Count > 0)) && 
+                    ((_DepthLeft <= _MaxDepthLeft) && (_DepthRight <= _MaxDepthRight)))
                 {
                     #region check if a level is completely searched
 
@@ -377,7 +379,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms.BreathFirstSea
 
                                 //return new TargetAnalyzer(_Root, _Target, _ShortestPathLength, _ShortestOnly, _FindAll).GetPaths();
                                 return new TargetAnalyzer(_Root, _Target, _ShortestPathLength, _ShortestOnly, _FindAll)
-                                            .GetPaths();
+                                            .GetShortestPath(_IntersectNodes);
                             }
                             //if find all shortest paths
                             else if (_ShortestOnly && _FindAll)
