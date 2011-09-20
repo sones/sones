@@ -97,7 +97,9 @@ namespace sones.Plugins.SonesGQL
 
                 #region Start import using the AGraphDBImport implementation and return the result
 
-                return Import(stream, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, myParallelTasks, myComments, myOffset, myLimit, myVerbosityType);
+                result = Import(stream, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, myParallelTasks, myComments, myOffset, myLimit, myVerbosityType);
+
+                return new QueryResult(result.Query, result.NameOfQuerylanguage, result.Duration, result.TypeOfResult, null, result.Error);
 
                 #endregion
             }
