@@ -70,6 +70,11 @@ namespace sones.Plugins.GraphDS.IO
             get { return "text"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "This class realize an text output."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

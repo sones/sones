@@ -26,6 +26,7 @@ using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.DataStructures;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.SonesGQL.DBImport
 {
@@ -53,10 +54,8 @@ namespace sones.Plugins.SonesGQL.DBImport
     /// <summary>
     /// The interface for a GraphDBImporter
     /// </summary>
-    public interface IGraphDBImport
+    public interface IGraphDBImport : IPluginable
     {
-        string ImportFormat { get; }
-
         QueryResult Import(String myLocation, 
 			IGraphDB myGraphDB, 
 			IGraphQL myGraphQL, 

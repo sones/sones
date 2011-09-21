@@ -68,6 +68,11 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             get { return "json"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "This class realize an json output."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

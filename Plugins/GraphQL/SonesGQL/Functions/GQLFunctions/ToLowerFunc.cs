@@ -33,7 +33,7 @@ using sones.Plugins.SonesGQL.Function.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class ToLowerFunc : ABaseFunction, IPluginable
+    public sealed class ToLowerFunc : ABaseFunction
     {
         #region constructor
 
@@ -41,11 +41,6 @@ namespace sones.Plugins.SonesGQL.Functions
         { }
 
         #endregion
-
-        public override string GetDescribeOutput()
-        {
-            return "Returns a copy of this attribute value converted to lowercase.";
-        }
 
         public override bool ValidateWorkingBase(Object myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
@@ -94,6 +89,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "tolower"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "Returns a copy of this attribute value converted to lowercase."; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -104,13 +104,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new ToLowerFunc();
         }
 
-        public void Dispose()
+        public override void Dispose()
         { }
-
-        public override string FunctionName
-        {
-            get { return "tolower"; }
-        }
 
         #endregion
 

@@ -34,7 +34,7 @@ using sones.Plugins.SonesGQL.Function.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class InsertFunc : ABaseFunction, IPluginable
+    public sealed class InsertFunc : ABaseFunction
     {
         #region constructor
 
@@ -45,11 +45,6 @@ namespace sones.Plugins.SonesGQL.Functions
         }
 
         #endregion
-
-        public override string GetDescribeOutput()
-        {
-            return "This function inserts one or more strings at the given position.";
-        }
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
@@ -123,6 +118,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "insert"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "This function inserts one or more strings at the given position."; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -133,13 +133,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new InsertFunc();
         }
 
-        public void Dispose()
+        public override void Dispose()
         { }
-
-        public override string FunctionName
-        {
-            get { return "insert"; }
-        }
 
         #endregion
 
