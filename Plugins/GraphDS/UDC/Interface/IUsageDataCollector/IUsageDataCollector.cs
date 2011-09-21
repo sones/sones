@@ -49,6 +49,5 @@ namespace sones.GraphDS.UDC
     public interface IUsageDataCollector : IPluginable
     {
         void Shutdown();
-
     }
 }

@@ -30,7 +30,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
     /// <summary>
     /// The Aggregate Count
     /// </summary>
-    public sealed class CountAggregate :IGQLAggregate, IPluginable
+    public sealed class CountAggregate :IGQLAggregate
     {
         #region constructor
 
@@ -44,17 +44,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         #endregion
 
-        #region describe
-        /// <summary>
-        /// Returns the description of the aggregate.
-        /// </summary>
-        public string GetDescribeOutput()
-        {
-            return "This aggregate will operate a count on a MultiEdge / HyperEdge. This aggregate is type dependent and will only operate on Multi- / HyperEdges.";
-        }
-        #endregion
-
-        #region IGQLAggregate Members
+        #region IGQLAggregate
 
         /// <summary>
         /// Calculates the count
@@ -66,7 +56,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         #endregion
 
-        #region IPluginable Members
+        #region IPluginable
 
         public string PluginName
         {
@@ -76,6 +66,11 @@ namespace sones.Plugins.SonesGQL.Aggregates
         public string PluginShortName
         {
             get { return "count"; }
+        }
+
+        public string PluginDescription
+        {
+            get { return "This aggregate will operate a count on a MultiEdge / HyperEdge. This aggregate is type dependent and will only operate on Multi- / HyperEdges."; }
         }
 
         public PluginParameters<Type> SetableParameters
@@ -91,16 +86,6 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         public void Dispose()
         { }
-
-        #endregion
-
-        #region IGQLAggregate Members
-
-
-        public string AggregateName
-        {
-            get { return "count"; }
-        }
 
         #endregion
     }

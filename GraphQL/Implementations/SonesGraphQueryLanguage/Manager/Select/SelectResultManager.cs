@@ -2183,7 +2183,7 @@ namespace sones.GraphQL.GQL.Manager.Select
                 {
                     FuncParameter aggrResult = null;
 
-                    if (aggr.Aggregate.AggregateName == "count" && aggr.RelatedIDChainDefinition.SelectType == TypesOfSelect.Asterisk)
+                    if (aggr.Aggregate.PluginShortName == "count" && aggr.RelatedIDChainDefinition.SelectType == TypesOfSelect.Asterisk)
                     {
                         aggrResult = new FuncParameter(_graphdb.GetVertexCount<UInt64>(mySecurityToken, 
                                                                                         myTransactionToken, 

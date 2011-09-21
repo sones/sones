@@ -57,6 +57,11 @@ namespace QueryLog
             get { return "querylog"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "This class realizes a query log."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type> { { "AppendLogPath", typeof(String) } }; }

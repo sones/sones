@@ -46,7 +46,7 @@ namespace sones.Plugins.SonesGQL.DBExport
         Http
     }
 
-    public sealed class GraphDBExport_GQL : IGraphDBExport, IPluginable
+    public sealed class GraphDBExport_GQL : IGraphDBExport
     {
         #region Data
 
@@ -66,11 +66,6 @@ namespace sones.Plugins.SonesGQL.DBExport
         #endregion
 
         #region IGraphDBExport Member
-
-        public string ExportFormat
-        {
-            get { return "sones.gql"; }
-        }
 
         public string ExporterName
         {
@@ -136,9 +131,9 @@ namespace sones.Plugins.SonesGQL.DBExport
             #endregion
 
             if(error != null)
-                return new QueryResult("", ExportFormat, 0L, ResultType.Failed, result.Vertices, error);
+                return new QueryResult("", PluginShortName, 0L, ResultType.Failed, result.Vertices, error);
             else
-                return new QueryResult("", ExportFormat, 0L, result.TypeOfResult, result.Vertices);
+                return new QueryResult("", PluginShortName, 0L, result.TypeOfResult, result.Vertices);
         }
 
         private QueryResult Export(IDumpable myGrammar, 
@@ -210,15 +205,15 @@ namespace sones.Plugins.SonesGQL.DBExport
             #endregion
 
             return new QueryResult("", 
-                                    ExportFormat, 
-                                    0L, 
+                                    PluginShortName,
+                                    0L,
                                     ResultType.Successful, 
                                     new List<IVertexView> { new VertexView(dumpReadout, null) }, error);
         }
 
         #endregion
 
-        #region IPluginable Member
+        #region IPluginable
 
         public string PluginName
         {
@@ -227,7 +222,12 @@ namespace sones.Plugins.SonesGQL.DBExport
 
         public string PluginShortName
         {
-            get { return "gqlexport"; }
+            get { return "sones.gql"; }
+        }
+
+        public string PluginDescription
+        {
+            get { return "This class realizes GQL code export to a file."; }
         }
 
         public PluginParameters<Type> SetableParameters
