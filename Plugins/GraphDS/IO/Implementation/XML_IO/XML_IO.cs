@@ -907,6 +907,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             get { return "xml"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "This class realize an XML output."; }
+        }
+        
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

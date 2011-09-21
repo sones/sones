@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using ISonesGQLFunction.Structure;
 using sones.GraphDB.TypeSystem;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.SonesGQL.Aggregates
 {
@@ -50,7 +51,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
     /// <summary>
     /// The interface for all GQL aggregates
     /// </summary>
-    public interface IGQLAggregate
+    public interface IGQLAggregate : IPluginable
     {
         /// <summary>
         /// Abstract aggregate function
@@ -58,16 +59,5 @@ namespace sones.Plugins.SonesGQL.Aggregates
         /// <returns>The result of the aggregation</returns>
         FuncParameter Aggregate(IEnumerable<IComparable> myValues,
                                 IPropertyDefinition myPropertyDefinition);
-
-        /// <summary>
-        /// The name of the aggregate
-        /// </summary>
-        String AggregateName { get; }
-
-        /// <summary>
-        /// The ouput of a describe.
-        /// </summary>
-        /// <returns></returns>
-        String GetDescribeOutput();
     }
 }

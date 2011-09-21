@@ -33,7 +33,7 @@ using sones.Plugins.SonesGQL.Function.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class SubstringFunc : ABaseFunction, IPluginable
+    public sealed class SubstringFunc : ABaseFunction
     {
         #region constructor
 
@@ -44,11 +44,6 @@ namespace sones.Plugins.SonesGQL.Functions
         }
 
         #endregion
-
-        public override string GetDescribeOutput()
-        {
-            return "Retrieves a substring from the attribute value. The substring starts at a specified character position and has a specified length.";
-        }
 
         public override bool ValidateWorkingBase(Object myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
@@ -88,6 +83,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "substring"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "Retrieves a substring from the attribute value. The substring starts at a specified character position and has a specified length."; }
+        }
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -98,13 +98,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new SubstringFunc();
         }
 
-        public void Dispose()
+        public override void Dispose()
         { }
-
-        public override string FunctionName
-        {
-            get { return "substring"; }
-        }
 
         #endregion
 

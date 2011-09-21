@@ -39,6 +39,11 @@ namespace sones.Library.VersionedPluginManager
         String PluginShortName { get; }
 
         /// <summary>
+        /// The description of the plugin
+        /// </summary>
+        String PluginDescription { get; }
+
+        /// <summary>
         /// The parameters that are settable for this plugin
         /// </summary>
         PluginParameters<Type> SetableParameters { get; }

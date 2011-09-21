@@ -32,7 +32,7 @@ using sones.Library.LanguageExtensions;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class FromUNIXDate : ABaseFunction, IPluginable
+    public sealed class FromUNIXDate : ABaseFunction
     {
         #region constructor
 
@@ -40,11 +40,6 @@ namespace sones.Plugins.SonesGQL.Functions
         { }
 
         #endregion
-
-        public override string GetDescribeOutput()
-        {
-            return "Convert from unix datime format to DBDateTime format.";
-        }
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
@@ -83,7 +78,7 @@ namespace sones.Plugins.SonesGQL.Functions
             }
         }
 
-        #region Ipluginable
+        #region IPluginable
 
         public override string PluginName
         {
@@ -93,6 +88,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override string PluginShortName
         {
             get { return "fromunixdate"; }
+        }
+
+        public override string PluginDescription
+        {
+            get { return "Convert from unix datime format to DBDateTime format."; }
         }
 
         public override PluginParameters<Type> SetableParameters
@@ -105,13 +105,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new FromUNIXDate();
         }
 
-        public void Dispose()
+        public override void Dispose()
         { }
-
-        public override string FunctionName
-        {
-            get { return "fromunixdate"; }
-        }
 
         #endregion
 
