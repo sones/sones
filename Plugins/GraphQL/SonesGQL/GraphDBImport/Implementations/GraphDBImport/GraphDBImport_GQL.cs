@@ -172,28 +172,6 @@ namespace sones.Plugins.SonesGQL
             Stopwatch StopWatchLines = new Stopwatch();
             #endregion
 
-            List<String> creates = new List<String>();
-
-            var lineEnum = myLines.GetEnumerator();
-            if (lineEnum.Current == null)
-                lineEnum.MoveNext();
-
-            while (lineEnum.Current != null && lineEnum.Current.StartsWith("CREATE"))
-            {
-                creates.Add(lineEnum.Current);
-
-                lineEnum.MoveNext();
-            };
-
-            var skip = creates.Count();
-
-            ExecuteAsSingleThread(creates,
-                                    myIGraphQL,
-                                    mySecurityToken,
-                                    myTransactionToken,
-                                    myVerbosityType,
-                                    comments);
-
             #region Create parallel options
 
             var parallelOptions = new ParallelOptions()
@@ -207,7 +185,7 @@ namespace sones.Plugins.SonesGQL
 
             StopWatchLines.Start();
 
-            Parallel.ForEach(myLines.Skip(skip), parallelOptions, (line, state) =>
+            Parallel.ForEach(myLines, parallelOptions, (line, state) =>
             {
                 if (!IsComment(line, comments))
                 {
