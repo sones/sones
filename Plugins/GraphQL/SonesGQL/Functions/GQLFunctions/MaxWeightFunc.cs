@@ -36,7 +36,7 @@ namespace sones.Plugins.SonesGQL.Functions
     /// <summary>
     /// Class to get a function which calculates the max weight of a weighted edge
     /// </summary>
-    public sealed class MaxWeightFunc : ABaseFunction, IPluginable
+    public sealed class MaxWeightFunc : ABaseFunction
     {
         #region constructor
 
@@ -47,14 +47,6 @@ namespace sones.Plugins.SonesGQL.Functions
         { }
 
         #endregion
-
-        /// <summary>
-        /// Output for describe statement
-        /// </summary>
-        public override string GetDescribeOutput()
-        {
-            return "This function is valid for weighted edges and will return the maximum weight.";
-        }
 
         /// <summary>
         /// Validates the workingBase, checks if it is valid for this function
@@ -110,6 +102,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "maxweight"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "This function is valid for weighted edges and will return the maximum weight."; }
+        }
+        
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -120,13 +117,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new MaxWeightFunc();
         }
 
-        public void Dispose()
+        public override void Dispose()
         { }
-
-        public override string FunctionName
-        {
-            get { return "maxweight"; }
-        }
 
         #endregion
 

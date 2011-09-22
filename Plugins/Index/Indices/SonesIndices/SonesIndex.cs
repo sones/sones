@@ -380,6 +380,14 @@ namespace sones.Plugins.Index
         }
 
         /// <summary>
+        /// Plugin short name of this index.
+        /// </summary>
+        public string PluginDescription
+        {
+            get { return "This index is the default implementation of a sones GraphDB index."; }
+        }
+
+        /// <summary>
         /// Paramters which can be set for that index.
         /// </summary>
         public PluginParameters<Type> SetableParameters

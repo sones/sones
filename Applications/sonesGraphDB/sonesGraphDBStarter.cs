@@ -90,7 +90,10 @@ namespace sones.sonesGraphDBStarter
 
                 string configuredLocation = Properties.Settings.Default.PersistenceLocation;
                 string configuredPageSize = Properties.Settings.Default.PageSize;
-                string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
+				string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
+                string configuredWriteStrategy = Properties.Settings.Default.WriteStrategy;
+				string configuredMinDummyVertexInitCapacity = Properties.Settings.Default.MinDummyVertexInitCapacity;
+				string configuredVertexPreExtension = Properties.Settings.Default.VertexPreExtension;
 
                 /* Configure the location */
 
@@ -113,11 +116,23 @@ namespace sones.sonesGraphDBStarter
                 /* Configuration for the buffer size */
                 int bufferSize = Int32.Parse(configuredBufferSize);
 
+				/* Configuration for the minimum initial dummy vertex data capacity */
+				int minDummyVertexInitCapacity = Int32.Parse(configuredMinDummyVertexInitCapacity);
+
+				/* Configuration for the vertex pre-extension */
+				int vertexPreExtension = Int32.Parse(configuredVertexPreExtension);
+
                 /* Make a new instance by applying the configuration */
                 try
                 {
                     //Make a new GraphDB instance
-                    GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location }, { "pageSize", pageSize }, { "bufferSizePages", bufferSize} })));
+					GraphDB = new SonesGraphDB(new GraphDBPlugins(
+						new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location },
+																													{ "pageSize", pageSize },
+																													{ "bufferSizePages", bufferSize },
+																													{ "writeStrategy", configuredWriteStrategy },
+																													{ "minDummyVertexInitCapacity", minDummyVertexInitCapacity },
+																													{ "vertexPreExtension", vertexPreExtension } })));
                 
                     if (!quiet)
                         Console.WriteLine("Persistence layer initialized.");

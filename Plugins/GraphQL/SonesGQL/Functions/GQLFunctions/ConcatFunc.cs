@@ -32,16 +32,11 @@ using sones.Library.PropertyHyperGraph;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class ConcatFunc : ABaseFunction, IPluginable
+    public sealed class ConcatFunc : ABaseFunction
     {
         public ConcatFunc()
         {
             Parameters.Add(new ParameterValue("StringPart", typeof(String), true));
-        }
-
-        public override string GetDescribeOutput()
-        {
-            return "This will concatenate some strings. This function can be used as type independent to concatenate string values or as type dependent to concatenate an attribute output with other strings.";
         }
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
@@ -85,15 +80,17 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override string PluginName
         {
-            get
-            {
-                return "sones.concat";
-            }
+            get { return "sones.concat"; }
         }
 
         public override string PluginShortName
         {
             get { return "concat"; }
+        }
+
+        public override string PluginDescription
+        {
+            get { return "This will concatenate some strings. This function can be used as type independent to concatenate string values or as type dependent to concatenate an attribute output with other strings."; }
         }
 
         public override PluginParameters<Type> SetableParameters
@@ -106,12 +103,7 @@ namespace sones.Plugins.SonesGQL.Functions
             return new ConcatFunc();
         }
 
-        public override string FunctionName
-        {
-            get { return "concat"; }
-        }
-
-        public void Dispose()
+        public override void Dispose()
         { }
 
         #endregion

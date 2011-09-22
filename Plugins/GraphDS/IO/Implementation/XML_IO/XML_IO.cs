@@ -368,7 +368,14 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             var evHandler = new ValidationEventHandler(ValidationEventHandler);
             xmlDocument.Schemas.Add(XmlSchema.Read(typeof(XML_IO).Assembly.GetManifestResourceStream("sones.Plugins.GraphDS.IOInterface.XML_IO.QueryResultSchema.xsd"), evHandler));                      
 
+            // As long as this doesn't work under mono, we can't validate the incoming xml against the given schema
+            // http://bugzilla.xamarin.com/show_bug.cgi?id=220
+#if !__MonoCS__ 
             xmlDocument.Validate(evHandler);
+#endif
+
+
+            
            
             var rootNode = xmlDocument.FirstChild.NextSibling;
 
@@ -900,6 +907,11 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             get { return "xml"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "This class realize an XML output."; }
+        }
+        
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

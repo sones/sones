@@ -66,6 +66,11 @@ namespace sones.GraphDB.Manager
             get { return "BLEOpt"; }
         }
 
+        public String PluginDescription
+        {
+            get { return "A simple optimizer which doesn't optimize anything."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

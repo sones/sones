@@ -149,12 +149,22 @@ namespace sones.GraphDS.Services.RESTService
             get { return _description; }
         }
 
+        #region IPluginable
+
         public string PluginName
         {
             get { return "sones.RESTService"; }
         }
 
-        #region IPluginable
+        public string PluginShortName
+        {
+            get { return "RESTSVC"; }
+        }
+
+        public string PluginDescription
+        {
+            get { return "This class provides a web shell for sones GraphDB."; }
+        }
 
         public PluginParameters<Type> SetableParameters
         {
@@ -182,10 +192,6 @@ namespace sones.GraphDS.Services.RESTService
         public void Dispose()
         {
             Stop();
-        }
-        public string PluginShortName
-        {
-            get { return "RESTSVC"; }
         }
         #endregion
     }

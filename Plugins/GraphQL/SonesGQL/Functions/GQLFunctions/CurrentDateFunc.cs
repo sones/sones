@@ -32,7 +32,7 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class CurrentDateFunc : ABaseFunction, IPluginable
+    public sealed class CurrentDateFunc : ABaseFunction
     {
         #region constructor
 
@@ -40,11 +40,6 @@ namespace sones.Plugins.SonesGQL.Functions
         { }
         
         #endregion
-        
-        public override string GetDescribeOutput()
-        {
-            return "Returns the current date and time.";
-        }
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
@@ -68,6 +63,11 @@ namespace sones.Plugins.SonesGQL.Functions
             get { return "currentdate"; }
         }
 
+        public override string PluginDescription
+        {
+            get { return "Returns the current date and time."; }
+        }
+        
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -78,13 +78,8 @@ namespace sones.Plugins.SonesGQL.Functions
             return new CurrentDateFunc();
         }
 
-        public void Dispose()
+        public override void Dispose()
         { }
-
-        public override string FunctionName
-        {
-            get { return "currentdate"; }
-        }
         
         #endregion
 
