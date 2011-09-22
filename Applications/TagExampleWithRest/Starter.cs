@@ -148,7 +148,7 @@ namespace sones.TagExampleWithRest
                 foreach (var Service in _dsServer.AvailableServices)
                 {
                     Console.WriteLine("      * " + Service.PluginName);
-                    Console.WriteLine(Service.Description);
+                    Console.WriteLine(Service.ServiceDescription);
 
                 }
                 Console.WriteLine();

@@ -34,7 +34,7 @@ using sones.GraphDS.Services.RESTService.ErrorHandling;
 
 namespace sones.GraphDS.Services.RESTService
 {
-    public class RESTService : IService, IPluginable
+    public class RESTService : IService
     {
         #region Data
 
@@ -144,7 +144,7 @@ namespace sones.GraphDS.Services.RESTService
             return new ServiceStatus(_HttpServer.ListeningAddress, _HttpServer.ListeningPort, _HttpServer.IsRunning, _LifeTime.Elapsed, true);
         }
 
-        public string Description
+        public string ServiceDescription
         {
             get { return _description; }
         }

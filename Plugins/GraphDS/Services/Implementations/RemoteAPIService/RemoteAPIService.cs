@@ -29,7 +29,7 @@ using System.Net;
 
 namespace sones.GraphDS.Services.RemoteAPIService
 {
-    public class RemoteAPIService : IService, IPluginable
+    public class RemoteAPIService : IService
     {
         #region Data
 
@@ -40,6 +40,8 @@ namespace sones.GraphDS.Services.RemoteAPIService
         private Stopwatch _RunningTime;
 
         private sonesRPCServer _RPCServer;
+
+        private String _description;
 
         #endregion
 
@@ -54,13 +56,6 @@ namespace sones.GraphDS.Services.RemoteAPIService
         }
 
         #endregion
-        
-
-
-        public string PluginName
-        {
-            get { return "sones.RemoteAPIService"; }
-        }
 
         public void Start(IDictionary<string, object> myStartParameter = null)
         {
@@ -90,7 +85,10 @@ namespace sones.GraphDS.Services.RemoteAPIService
                 _RunningTime.Start();
                 _RPCServer = new sonesRPCServer(_GraphDS, Address, Port, UriPattern, IsSecure);
                 _RPCServer.StartServiceHost();
-
+                _description = "   * RemoteAPI Service is started at http://" + Address + ":" + Port + Environment.NewLine +
+                               "      * web service definition can be found at " + Environment.NewLine +
+                               "        http://" + Address + ":" + Port + "/wsdl" + Environment.NewLine +
+                               "      * default username and passwort: test / test ";
             }
             catch (Exception Ex)
             {
@@ -108,6 +106,11 @@ namespace sones.GraphDS.Services.RemoteAPIService
         {
             return new ServiceStatus(_RPCServer.ListeningIPAdress, _RPCServer.ListeningPort,_RPCServer.IsRunning,
                 _RunningTime.Elapsed,true);
+        }
+
+        public String ServiceDescription
+        {
+            get { return _description; }
         }
 
         #region IPluginable
@@ -136,20 +139,21 @@ namespace sones.GraphDS.Services.RemoteAPIService
         }
 
         public void Dispose()
-        {
-        
-        }
+        { }
 
-        
-        public string Description
+        public string PluginName
         {
-            get { return "Provides an API for remote procedure calls on top of the GraphDB API"; }
+            get { return "sones.RemoteAPIService"; }
         }
-
 
         public string PluginShortName
         {
             get { return "sones.RemoteAPIService"; }
+        }
+
+        public string PluginDescription
+        {
+            get { return "Provides an API for remote procedure calls on top of the GraphDB API"; }
         }
         
         #endregion
