@@ -24,45 +24,26 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphQL.Result;
-using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
-    public class ServiceQueryResult
+    public class ServiceVertexView
     {
-        public ServiceQueryResult(sones.GraphQL.Result.QueryResult myQueryResult)
+        public ServiceVertexView(IVertexView myVertexView)
         {
-            this.Duration = myQueryResult.Duration;
-            if (myQueryResult.Error != null)
-                this.Error = myQueryResult.Error.Message;
-
-            this.NameOfQueryLanguage = myQueryResult.NameOfQuerylanguage;
-            this.NumberOfAffectedVertices = myQueryResult.NumberOfAffectedVertices;
-            this.Query = myQueryResult.Query;
-            this.TypeOfResult = myQueryResult.TypeOfResult.ToString();
-            this.Vertices = myQueryResult.Vertices.Select(x => new ServiceVertexView(x)).ToList();
+            SingleEdges = myVertexView.GetAllSingleEdges().Select(x => new Tuple<string, ServiceSingleEdgeView>(x.Item1, new ServiceSingleEdgeView(x.Item2))).ToList();
+            HyperEdges = myVertexView.GetAllHyperEdges().Select(x => new Tuple<string, ServiceHyperEdgeView>(x.Item1, new ServiceHyperEdgeView(x.Item2))).ToList();
+            Properties = myVertexView.GetAllProperties().ToList();
         }
 
         [DataMember]
-        public UInt64 Duration;
+        public List<Tuple<string, ServiceSingleEdgeView>> SingleEdges;
 
         [DataMember]
-        public UInt64 NumberOfAffectedVertices;
+        public List<Tuple<string, ServiceHyperEdgeView>> HyperEdges;
 
         [DataMember]
-        public String Error;
-
-        [DataMember]
-        public String TypeOfResult;
-
-        [DataMember]
-        public String Query;
-
-        [DataMember]
-        public String NameOfQueryLanguage;
-
-        [DataMember]
-        public List<ServiceVertexView> Vertices;
+        public List<Tuple<string, object>> Properties;
     }
 }

@@ -133,10 +133,10 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
             #region Global Service Interface
 
-            ContractDescription RPCServiceContract = ContractDescription.GetContract(typeof(IRPCServiceContract));
-            RPCServiceContract.Namespace = Namespace;
-            ServiceEndpoint RPCServiceService = new ServiceEndpoint(RPCServiceContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
-            _ServiceHost.AddServiceEndpoint(RPCServiceService);
+            //ContractDescription RPCServiceContract = ContractDescription.GetContract(typeof(IRPCServiceContract));
+            //RPCServiceContract.Namespace = Namespace;
+            //ServiceEndpoint RPCServiceService = new ServiceEndpoint(RPCServiceContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
+            //_ServiceHost.AddServiceEndpoint(RPCServiceService);
 
             #endregion
 
@@ -192,7 +192,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
             #region Metadata Exchange
 
             // mono can't export automatic generated WSDL. Because of that, we must do that explicit
-                        
+
             WebHttpBinding WebBinding = new WebHttpBinding();
             WebBinding.Namespace = Namespace;
             var rpc = this.URI.Segments.Last();
@@ -215,21 +215,21 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
             #region Automatic WCF WSDL Generator
 
-            //ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
-            //smb.HttpGetEnabled = true;
+            ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
+            smb.HttpGetEnabled = true;
 
 
-            //_ServiceHost.Description.Behaviors.Add(smb);
+            _ServiceHost.Description.Behaviors.Add(smb);
 
-            //// Add MEX endpoint
+            // Add MEX endpoint
 
-            //_ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
-            //foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
-            //{
-            //    //export just one file
-            //    endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
+            _ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
+            foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
+            {
+                //export just one file
+                endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
 
-            //} 
+            } 
 
             #endregion
 

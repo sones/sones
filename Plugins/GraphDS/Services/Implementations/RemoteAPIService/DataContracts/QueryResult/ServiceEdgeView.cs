@@ -22,15 +22,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 using System.ServiceModel;
 
-
-
-namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
+namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
-    //This interface is a placeholder if any functions may be needed.
-    //[ServiceContract(Namespace = sonesRPCServer.Namespace)]
-    public interface IRPCServiceContract
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
+    public class ServiceEdgeView
     {
+        public ServiceEdgeView(IEnumerable<Tuple<string, object>> myPropertyList)
+        {
+            PropertyList = myPropertyList.ToList();
+        }
+
+        [DataMember]
+        public List<Tuple<string, object>> PropertyList;
     }
 }

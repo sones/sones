@@ -22,39 +22,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.ServiceModel;
-using sones.Library.Commons.Transaction;
-using sones.GraphDB;
-using sones.GraphDS;
 using sones.GraphQL.Result;
 using System.Runtime.Serialization;
-using sones.GraphDS.Services.RemoteAPIService.ServiceContracts;
-using sones.GraphDS.Services.RemoteAPIService.DataContracts;
-using sones.Library.Commons.Security;
 
-namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
+namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
-    
-    
-    [ServiceBehavior(Namespace = sonesRPCServer.Namespace, InstanceContextMode = InstanceContextMode.Single)]
-    public partial class RPCServiceContract : IRPCServiceContract
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
+    public class ServiceHyperEdgeView : ServiceEdgeView
     {
-        #region Data
-
-        private IGraphDS GraphDS;
-
-        private Dictionary<ServiceSecurityToken, SecurityToken> SecurityTokenMap;
-        
-        #endregion
-
-        #region C'tor
-
-        public RPCServiceContract(IGraphDS myGraphDS)
+        public ServiceHyperEdgeView(IHyperEdgeView myEdgeView) : base(myEdgeView.GetAllProperties())
         {
-            this.GraphDS = myGraphDS;
-            this.SecurityTokenMap = new Dictionary<ServiceSecurityToken, SecurityToken>();
+            Edges = myEdgeView.GetAllEdges().Select(x => new ServiceSingleEdgeView(x)).ToList();
         }
 
-        #endregion
+        [DataMember]
+        public List<ServiceSingleEdgeView> Edges;
     }
 }

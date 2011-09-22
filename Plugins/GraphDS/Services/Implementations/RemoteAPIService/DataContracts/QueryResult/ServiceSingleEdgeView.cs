@@ -22,15 +22,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.ServiceModel;
+using System.Runtime.Serialization;
+using sones.GraphQL.Result;
 
-
-
-namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts
+namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
-    //This interface is a placeholder if any functions may be needed.
-    //[ServiceContract(Namespace = sonesRPCServer.Namespace)]
-    public interface IRPCServiceContract
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
+    public class ServiceSingleEdgeView : ServiceEdgeView
     {
+        public ServiceSingleEdgeView(ISingleEdgeView myEdgeView) : base(myEdgeView.GetAllProperties())
+        {
+            var _Vertices = myEdgeView.GetTargetVertices();
+            if (_Vertices.Count() > 0)
+                TargetVertex = new ServiceVertexView(_Vertices.First());
+            else
+                TargetVertex = null;
+        }
+
+        [DataMember]
+        public ServiceVertexView TargetVertex;
     }
 }

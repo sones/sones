@@ -151,8 +151,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         [OperationContract]
         ServiceSecurityToken LogOn(String myLogin, String myPassword);
 
-        //[OperationContract] There is no plan to implement the Query method yet, because client libs are already available
-        //ServiceQueryResult Query(ServiceSecurityToken mySecToken, Int64 myTransToken, String myQueryString, String myLanguage); 
+        [OperationContract]
+        [ServiceKnownType(typeof(ServiceHyperEdgeView))]
+        [ServiceKnownType(typeof(ServiceSingleEdgeView))]
+        ServiceQueryResult Query(ServiceSecurityToken mySecToken, Int64 myTransToken, String myQueryString, String myLanguage); 
         
         //[OperationContract] There is no plan to implement the Travers method yet, because there is no way to transport traverser logic from the client
         //List<ServiceVertexInstance>Traverse(ServiceSecurityToken mySecToken, Int64 myTransToken);

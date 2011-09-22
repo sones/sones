@@ -55,8 +55,12 @@
     <Compile Include="DataContracts\PayloadObjects\ServiceDeletePayload.cs" />
     <Compile Include="DataContracts\PayloadObjects\UnstructuredProperty.cs" />
     <Compile Include="DataContracts\PayloadObjects\StructuredProperty.cs" />
+    <Compile Include="DataContracts\QueryResult\ServiceEdgeView.cs" />
+    <Compile Include="DataContracts\QueryResult\ServiceHyperEdgeView.cs" />
     <Compile Include="DataContracts\QueryResult\ServiceQueryResult.cs" />
     <Compile Include="DataContracts\PayloadObjects\ServiceInsertPayload.cs" />
+    <Compile Include="DataContracts\QueryResult\ServiceSingleEdgeView.cs" />
+    <Compile Include="DataContracts\QueryResult\ServiceVertexView.cs" />
     <Compile Include="DataContracts\ServiceRequests\Expression\Operator\ServiceBinaryOperator.cs" />
     <Compile Include="DataContracts\ServiceRequests\Expression\Operator\ServiceUnaryOperator.cs" />
     <Compile Include="DataContracts\ServiceRequests\Expression\Tree\ServiceBinaryExpression.cs" />
@@ -135,10 +139,6 @@
     <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\GraphDB\Implementations\SonesGraphDB\SonesGraphDB.csproj">
-      <Project>{1FC72801-4046-4CC7-BF83-8082FFD593BC}</Project>
-      <Name>SonesGraphDB</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\GraphDS\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
