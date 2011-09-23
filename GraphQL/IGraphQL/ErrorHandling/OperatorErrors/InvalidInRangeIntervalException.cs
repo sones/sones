@@ -35,7 +35,8 @@ namespace sones.GraphQL.ErrorHandling
         /// </summary>
         /// <param name="expected">The expected value</param>
         /// <param name="current">The current value</param>
-        public InvalidInRangeIntervalException(Int32 expected, Int32 current)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidInRangeIntervalException(Int32 expected, Int32 current, Exception innerException = null) : base(innerException)
         {
             Expected = expected;
             Current = current;

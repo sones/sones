@@ -27,20 +27,14 @@ namespace sones.GraphQL.ErrorHandling
     /// </summary>
     public sealed class UnknownQLException : AGraphQLException
     {
-        /// <summary>
-        /// The exception that has been thrown
-        /// </summary>
-        public Exception ThrownException { get; private set; }
-                
-        #region constructor
+		#region constructor
 
         /// <summary>
         /// Creates a new UnknownQL exception
         /// </summary>
-        /// <param name="e"></param>
-        public UnknownQLException(Exception e)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public UnknownQLException(Exception innerException = null) : base(innerException)
         {
-            ThrownException = e;
             _msg = "An unknown error has occurred.";
         }
 

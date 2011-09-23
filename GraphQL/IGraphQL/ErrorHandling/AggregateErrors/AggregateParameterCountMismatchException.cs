@@ -38,7 +38,9 @@ namespace sones.GraphQL.ErrorHandling
         /// <param name="myAggregate">The used aggregate</param>
         /// <param name="myExpectedParameterCount">The expected count of parameters</param>
         /// <param name="myCurrentParameterCount">The current count of parameters</param>
-        public AggregateParameterCountMismatchException(String myAggregate, Int32 myExpectedParameterCount, Int32 myCurrentParameterCount)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public AggregateParameterCountMismatchException(String myAggregate, Int32 myExpectedParameterCount, Int32 myCurrentParameterCount, Exception innerException = null)
+			: base(innerException)
         {
             ExpectedParameterCount = myExpectedParameterCount;
             CurrentParameterCount = myCurrentParameterCount;
@@ -55,7 +57,9 @@ namespace sones.GraphQL.ErrorHandling
         /// </summary>        
         /// <param name="myExpectedParameterCount">The expected count of parameters</param>
         /// <param name="myCurrentParameterCount">The current count of parameters</param>
-        public AggregateParameterCountMismatchException(Int32 myExpectedParameterCount, Int32 myCurrentParameterCount)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public AggregateParameterCountMismatchException(Int32 myExpectedParameterCount, Int32 myCurrentParameterCount, Exception innerException = null)
+			: base(innerException)
         {
             ExpectedParameterCount = myExpectedParameterCount;
             CurrentParameterCount = myCurrentParameterCount;

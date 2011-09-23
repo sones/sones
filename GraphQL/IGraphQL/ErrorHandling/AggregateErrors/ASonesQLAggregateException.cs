@@ -19,10 +19,17 @@
 */
 
 using sones.Library.ErrorHandling;
+using System;
 
 namespace sones.GraphQL.ErrorHandling
 {
-    public class ASonesQLAggregateException : ASonesException
+    public abstract class ASonesQLAggregateException : ASonesException
     {        
+		/// <summary>
+		/// Initializes a new isntance of the ASonesQLAggregateException class.
+		/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public ASonesQLAggregateException(Exception innerException = null) : base(innerException)
+		{}
     }
 }

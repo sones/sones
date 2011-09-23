@@ -19,10 +19,17 @@
 */
 
 using sones.Library.ErrorHandling;
+using System;
 
 namespace sones.Plugins.SonesGQL.DBImport.ErrorHandling
 {
-    public class ASonesQLGraphDBImportException : ASonesException
+    public abstract class ASonesQLGraphDBImportException : ASonesException
     {
+		/// <summary>
+		/// Initializes a new instance of the ASonesQLGraphDBImportException.
+		/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public ASonesQLGraphDBImportException(Exception innerException = null) : base(innerException)
+		{}
     }
 }

@@ -34,7 +34,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new DBObjectCollisionException exception
         /// </summary>
         /// <param name="myOBject">The given DBObject</param>
-        public DBObjectCollisionException(String myOBject)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public DBObjectCollisionException(String myOBject, Exception innerException = null) : base(innerException)
         {
             Object = myOBject;
             _msg = String.Format("A DBObject collision occurred. The DBObject with attributes \"{0}\" has been inserted with a VertexID that already exists!", Object);

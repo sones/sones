@@ -36,8 +36,8 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="myInvalidIndexAttribute">The name of the invalid vertex type</param>
         /// <param name="myInfo"></param>
-        public IndexCreationException(IndexPredefinition myIndexPredef, String myInfo)
-            : base()
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public IndexCreationException(IndexPredefinition myIndexPredef, String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             IndexPredef = myIndexPredef;

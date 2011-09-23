@@ -34,7 +34,8 @@ namespace sones.GraphDB.ErrorHandling.IndexErrors
         /// Creates a new IndexTypeDoesNotExistException exception
         /// </summary>
         /// <param name="myIndexTypeName"></param>
-        public RebuildIndicesFaildException(IEnumerable<String> myTypes, String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public RebuildIndicesFaildException(IEnumerable<String> myTypes, String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             TypeNames = myTypes;

@@ -35,7 +35,8 @@ namespace sones.GraphQL.ErrorHandling
         /// </summary>
         /// <param name="myAttributeName">The name of the attribute</param>
         /// <param name="myAttributeValue">The value of the attribute</param>
-        public InvalidVertexAttributeValueException(String myAttributeName, Object myAttributeValue)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidVertexAttributeValueException(String myAttributeName, Object myAttributeValue, Exception innerException = null) : base(innerException)
         {
             AttributeName = myAttributeName;
             AttributeValue = myAttributeValue;

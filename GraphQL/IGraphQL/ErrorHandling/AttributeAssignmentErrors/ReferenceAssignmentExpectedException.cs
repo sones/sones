@@ -30,7 +30,8 @@ namespace sones.GraphQL.ErrorHandling
         /// <summary>
         /// Creates a new ReferenceAssignmentExpectedException exception
         /// </summary>
-        public ReferenceAssignmentExpectedException(String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public ReferenceAssignmentExpectedException(String myInfo, Exception innerException = null) : base(innerException)
         {
             _msg = myInfo;
         }

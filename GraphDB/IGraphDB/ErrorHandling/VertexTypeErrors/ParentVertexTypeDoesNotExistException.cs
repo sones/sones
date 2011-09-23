@@ -35,7 +35,8 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="myParentVertexType">The name of the parent type</param>
         /// <param name="myVertexType">The current type</param>
-        public ParentVertexTypeDoesNotExistException(String myParentVertexType, String myVertexType)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public ParentVertexTypeDoesNotExistException(String myParentVertexType, String myVertexType, Exception innerException = null) : base(innerException)
         {
             ParentType = myParentVertexType;
             Type = myVertexType;

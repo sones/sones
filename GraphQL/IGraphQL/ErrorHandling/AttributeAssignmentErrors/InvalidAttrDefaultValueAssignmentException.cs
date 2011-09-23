@@ -43,7 +43,9 @@ namespace sones.GraphQL.ErrorHandling
         /// <param name="myAttributeName">The attribute name</param>
         /// <param name="myAttrType">The type of the attribute</param>
         /// <param name="myExpectedType">The expected type of the attribute</param>
-        public InvalidAttrDefaultValueAssignmentException(String myAttributeName, String myAttrType, String myExpectedType)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidAttrDefaultValueAssignmentException(String myAttributeName, String myAttrType, String myExpectedType, Exception innerException = null)
+			: base(innerException)
         {
             AttributeName = myAttributeName;
             AttributeType = myAttrType;
@@ -56,14 +58,20 @@ namespace sones.GraphQL.ErrorHandling
         /// </summary>
         /// <param name="myAttrType">The type of the attribute</param>
         /// <param name="myExpectedType">The expected type of the attribute</param>
-        public InvalidAttrDefaultValueAssignmentException(String myAttrType, String myExpectedType)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidAttrDefaultValueAssignmentException(String myAttrType, String myExpectedType, Exception innerException = null) : base(innerException)
         {            
             AttributeType = myAttrType;
             ExpectedType = myExpectedType;
             _msg = String.Format("Invalid type assignment for default value. Current type is \"{0}\". The type \"{1}\" is expected.", AttributeType, ExpectedType);
         }
 
-        public InvalidAttrDefaultValueAssignmentException(String myInfo)
+		/// <summary>
+		/// Initializes a new instance of the InvalidAttrDefaultValueAssignmentException class.
+		/// </summary>
+		/// <param name="myInfo"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidAttrDefaultValueAssignmentException(String myInfo, Exception innerException = null) : base(innerException)
         {
             AttributeName = null;
             AttributeType = null;

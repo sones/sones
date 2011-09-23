@@ -43,7 +43,8 @@ namespace sones.GraphQL.ErrorHandling
         /// </summary>
         /// <param name="myIndexName">The name of the index</param>
         /// <param name="myOperationName">The name of the operation</param>
-        public InvalidIndexOperationException(String myIndexName, String myOperationName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidIndexOperationException(String myIndexName, String myOperationName, Exception innerException = null) : base(innerException)
         {
             IndexName = myIndexName;
             OperationName = myOperationName;            

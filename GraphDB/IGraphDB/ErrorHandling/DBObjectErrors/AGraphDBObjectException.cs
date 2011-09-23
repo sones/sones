@@ -18,9 +18,16 @@
 * 
 */
 
+using System;
 namespace sones.GraphDB.ErrorHandling
 {
     public abstract class AGraphDBObjectException : AGraphDBException
     {
+		/// <summary>
+		/// Initializes a new instance of the AGraphDBObjectException class.
+		/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public AGraphDBObjectException(Exception innerException = null) : base(innerException)
+		{}
     }
 }

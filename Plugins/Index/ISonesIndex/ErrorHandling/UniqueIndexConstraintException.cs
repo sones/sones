@@ -36,7 +36,12 @@ namespace sones.Plugins.Index.ErrorHandling
 
         #region Constructor
 
-        public UniqueIndexConstraintException(String myInfo)
+		/// <summary>
+		/// Initializes a new instance of the UniqueIndexConstraintException.
+		/// </summary>
+		/// <param name="myInfo"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public UniqueIndexConstraintException(String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
         }

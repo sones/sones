@@ -33,7 +33,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new EdgeTypeDoesNotExistException exception
         /// </summary>
         /// <param name="myEdgeType"></param>
-        public EdgeTypeDoesNotExistException(String myEdgeType)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public EdgeTypeDoesNotExistException(String myEdgeType, Exception innerException = null) : base(innerException)
         {
             EdgeType = myEdgeType;            
             _msg = String.Format("The edgetype \"{0}\" does not exist!", EdgeType);

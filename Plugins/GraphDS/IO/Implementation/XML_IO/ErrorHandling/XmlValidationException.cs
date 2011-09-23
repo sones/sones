@@ -28,9 +28,13 @@ namespace sones.Plugins.GraphDS.IO.XML_IO.ErrorHandling
 {
     public class XmlValidationException : AGraphDSException
     {
-        public XmlValidationException(String myMessage)
+        /// <summary>
+		/// Initializes a new instance of the XmlValidationException class.
+		/// </summary>
+		/// <param name="message">The message that describes the failure. This parameter can be NULL.</param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public XmlValidationException(String message, Exception innerException = null) : base(message, innerException)
         {
-            _msg = myMessage;
         }
     }
 }

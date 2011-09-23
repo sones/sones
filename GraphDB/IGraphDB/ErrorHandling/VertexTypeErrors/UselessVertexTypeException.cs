@@ -30,7 +30,12 @@ namespace sones.GraphDB.ErrorHandling
     {
         private VertexTypePredefinition VertexType;
 
-        public UselessVertexTypeException(Request.VertexTypePredefinition predef)
+		/// <summary>
+		/// Initializes a new instance of the UselessVertexTypeException class.
+		/// </summary>
+		/// <param name="predef"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public UselessVertexTypeException(Request.VertexTypePredefinition predef, Exception innerException = null) : base(innerException)
         {
             this.VertexType = predef;
             _msg = string.Format("Vertex type [{0}] is marked sealed and abstract. This makes this type useless.", predef.VertexTypeName);

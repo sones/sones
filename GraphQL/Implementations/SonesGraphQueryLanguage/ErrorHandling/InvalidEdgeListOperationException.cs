@@ -36,14 +36,28 @@ namespace sones.GraphQL.GQL.ErrorHandling
         private EdgeKey _EdgeKey;
         private string _Operation;
 
-        public InvalidEdgeListOperationException(EdgeList myEdgeList, EdgeKey myEdgeKey, string myOperation)
+		/// <summary>
+		/// Initializes a new instance of the InvalidEdgeListOperationException using an edge key.
+		/// </summary>
+		/// <param name="myEdgeList"></param>
+		/// <param name="myEdgeKey"></param>
+		/// <param name="myOperation"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidEdgeListOperationException(EdgeList myEdgeList, EdgeKey myEdgeKey, string myOperation, Exception innerException = null) : base(innerException)
         {
             _EdgeList1 = myEdgeList;
             this._EdgeKey = myEdgeKey;
             this._Operation = myOperation;
         }
 
-        public InvalidEdgeListOperationException(EdgeList myEdgeList1, EdgeList myEdgeList2, string myOperation)
+		/// <summary>
+		/// Initializes a new instance of the InvalidEdgeListOperationException using an edge list.
+		/// </summary>
+		/// <param name="myEdgeList1"></param>
+		/// <param name="myEdgeList2"></param>
+		/// <param name="myOperation"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidEdgeListOperationException(EdgeList myEdgeList1, EdgeList myEdgeList2, string myOperation, Exception innerException = null) : base(innerException)
         {
             _EdgeList1 = myEdgeList1;
             _EdgeList2 = myEdgeList2;

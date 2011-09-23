@@ -40,7 +40,8 @@ namespace sones.GraphQL.GQL.ErrorHandling
         /// <summary>
         /// Creates a new EdgeTypeDoesNotExistException exception
         /// </summary>
-        public VertexTypeDoesNotExistException(String myVertex, String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public VertexTypeDoesNotExistException(String myVertex, String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             Vertex = myVertex;

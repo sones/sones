@@ -34,7 +34,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new VertexAttributeExistsInSubtypeException exception
         /// </summary>
         /// <param name="myAttributeName">The name of the attribute</param>
-        public VertexAttributeExistsInSubtypeException(String myAttributeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public VertexAttributeExistsInSubtypeException(String myAttributeName, Exception innerException = null) : base(innerException)
         {
             AttributeName = myAttributeName;
             _msg = String.Format("The attribute \"{0}\" already exists in subtype !", AttributeName);
@@ -45,7 +46,8 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="myAttributeName">The name of the attribute</param>
         /// <param name="mySubtypeName">The name of the subtype </param>
-        public VertexAttributeExistsInSubtypeException(String myAttributeName, String mySubtypeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public VertexAttributeExistsInSubtypeException(String myAttributeName, String mySubtypeName, Exception innerException = null) : base(innerException)
         {
             AttributeName = myAttributeName;
             SubtypeName = mySubtypeName;

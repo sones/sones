@@ -27,22 +27,23 @@ namespace sones.GraphDB.ErrorHandling
     /// </summary>
     public sealed class UnknownDBException : AGraphDBException
     {
-        /// <summary>
-        /// The exception that has been thrown
-        /// </summary>
-        public Exception ThrownException { get; private set; }
-                
-        #region constructor
+		#region constructor
 
-        public UnknownDBException(Exception e)
-        {
-            ThrownException = e;
-            _msg = "An unknown error has occurred.";
-        }
+		/// <summary>
+		/// Initializes a new instance of the UnknownDBException.
+		/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public UnknownDBException(Exception innerException = null) : this("An unknown error has occurred.", innerException)
+        {}
 
-        public UnknownDBException(string myMessage)
+		/// <summary>
+		/// Initializes a new instance of the UnknownDBException and specifying a custom exception.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public UnknownDBException(string message, Exception innerException = null) : base(innerException)
         {
-            _msg = myMessage;
+            _msg = message;
         }
 
         #endregion
