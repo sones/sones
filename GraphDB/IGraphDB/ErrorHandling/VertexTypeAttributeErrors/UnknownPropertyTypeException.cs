@@ -34,7 +34,14 @@ namespace sones.GraphDB.ErrorHandling
         private VertexTypePredefinition Predefinition;
         private string PropertyName;
 
-        public UnknownPropertyTypeException(VertexTypePredefinition myVertexTypeDefinition, string myPropertyName)
+		/// <summary>
+		/// Initializes a new instance of the UnknownPropertyTypeException class.
+		/// </summary>
+		/// <param name="myVertexTypeDefinition"></param>
+		/// <param name="myPropertyName"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public UnknownPropertyTypeException(VertexTypePredefinition myVertexTypeDefinition, string myPropertyName, Exception innerException = null) 
+			: base(innerException)
         {
             this.Predefinition = myVertexTypeDefinition;
             this.PropertyName = myPropertyName;

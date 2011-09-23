@@ -327,7 +327,7 @@ namespace sones.Library.Settings
 			}
 			catch (Exception ex)
 			{
-                throw new CouldNotLoadSettingFileException(ex.ToString());
+                throw new CouldNotLoadSettingFileException(ex.ToString(), ex);
 			}
 		}
 

@@ -36,7 +36,9 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="myPredefinition">The predefinition that causes the exception.</param>
         /// <param name="myPropertyName"></param>
-        public EmptyPropertyTypeException(VertexTypePredefinition myPredefinition, String myPropertyName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public EmptyPropertyTypeException(VertexTypePredefinition myPredefinition, String myPropertyName, Exception innerException = null)
+			: base(innerException)
         {
             Predefinition = myPredefinition;
             PropertyName = myPropertyName;

@@ -19,6 +19,7 @@
 */
 
 using sones.GraphDB.Request;
+using System;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -46,7 +47,9 @@ namespace sones.GraphDB.ErrorHandling
         /// <param name="myIncomingEdge">
         /// The incoming edge that causes the exception.
         /// </param>
-        public OutgoingEdgeNotFoundException(VertexTypePredefinition myPredefinition, IncomingEdgePredefinition myIncomingEdge)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public OutgoingEdgeNotFoundException(VertexTypePredefinition myPredefinition, IncomingEdgePredefinition myIncomingEdge,
+											 Exception innerException = null) : base(innerException)
         {
             Predefinition = myPredefinition;
             IncomingEdge = myIncomingEdge;

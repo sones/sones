@@ -39,7 +39,7 @@ namespace sones.Library.LanguageExtensions
 
             catch (Exception e)
             {
-                throw new Exception("Error in base64Encode" + e.Message);
+                throw new Exception("Error in base64Encode" + e.Message, e);
             }
 
         }
@@ -65,7 +65,7 @@ namespace sones.Library.LanguageExtensions
 
             catch (Exception e)
             {
-                throw new Exception("Error in base64Decode" + e.Message);
+                throw new Exception("Error in base64Decode" + e.Message, e);
             }
 
         }
