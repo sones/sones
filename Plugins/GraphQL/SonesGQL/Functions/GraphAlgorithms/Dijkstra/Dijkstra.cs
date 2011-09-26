@@ -14,181 +14,8 @@ using sones.Plugins.SonesGQL.Function.ErrorHandling;
 using System.Diagnostics;
 using System.Collections;
 
-
-
-
 namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 {
-    #region buffer
-    public class bufferDijkstra
-    {
-
-        SortedDictionary<Tuple<double,long>, Tuple<IVertex, double, ulong>> buffer;
-        
-
-        public int Count { get { return count; } }
-        int count;
-
-        public bufferDijkstra()
-        {
-            buffer = new SortedDictionary<Tuple<double, long>, Tuple<IVertex, double, ulong>>();
-   
-            count = 0;
-
-        }
-
-        public void add(IVertex current_node, double current_distance, UInt64 current_depth)
-        {
-            var id = current_node.VertexID;
-            buffer.Add(Tuple.Create(current_distance,id), Tuple.Create(current_node, current_distance, current_depth));
-                        
-            count++;
-
-
-
-        }
-        public Tuple<IVertex, double, ulong> min()
-        {
-            return buffer.ElementAt(0).Value;
-        }
-
-
-        public void remove(double key_primary,long key_secondary)
-        {
-            buffer.Remove(Tuple.Create(key_primary,key_secondary));
-            count--;
-        }
-
-        public void set(double key_primary,IVertex value, double current_distance, ulong current_depth)
-        {
-            var key = value.VertexID;
-            buffer.Remove(Tuple.Create(key_primary, key));
-            buffer.Add(Tuple.Create(current_distance,key),Tuple.Create(value, current_distance, current_depth));
-        }
-
-        public ulong getDepth(double key_primary,long current_vertex)
-        {
-            return buffer[Tuple.Create(key_primary,current_vertex)].Item3;
-        }
-
-        public ulong getDepth(int current_vertexID)
-        {
-            return buffer.ElementAt(current_vertexID).Value.Item3;
-        }
-
-        public double getDistance(double key_primary,long current_vertex)
-        {
-            return buffer[Tuple.Create(key_primary,current_vertex)].Item2;
-        }
-
-        public double getDistance(int current_vertexID)
-        {
-            return buffer.ElementAt(current_vertexID).Value.Item2;
-        }
-
-        public Tuple<IVertex, double, ulong> getElement(double key_primary,long index)
-        {
-            Tuple<IVertex, double, ulong> output;
-            buffer.TryGetValue(Tuple.Create(key_primary,index), out output);
-            return output;
-        }
-
-        public void Clear()
-        {
-            buffer.Clear();
-            count = 0;
-        }
-
-
-
-    }
-    #endregion
-    #region dataDijkstra
-    public class dataDijkstra
-    {
-
-        Dictionary<long, Tuple<IVertex, double, ulong, ISingleEdge, IVertex>> list;
-        public int Count { get { return Count; } }
-
-        int count;
-
-        public dataDijkstra()
-        {
-            list = new Dictionary<long, Tuple<IVertex, double, ulong, ISingleEdge, IVertex>>();
-            count = 0;
-
-        }
-        public void add(IVertex current_node, double current_distance, UInt64 current_depth, ISingleEdge current_edge, IVertex father)
-        {
-            var id = current_node.VertexID;
-            list.Add(id, Tuple.Create(current_node, current_distance, current_depth, current_edge, father));
-            count++;
-        }
-
-
-        public void set(IVertex value, double current_distance, ulong current_depth, ISingleEdge current_edge, IVertex father)
-        {
-            var key = value.VertexID;
-            list[key] = Tuple.Create(value, current_distance, current_depth, current_edge, father);
-
-        }
-
-        public ulong getDepth(long current_vertex)
-        {
-
-            return list[current_vertex].Item3;
-        }
-
-        public ulong getDepth(int current_vertexID)
-        {
-
-            return list.ElementAt(current_vertexID).Value.Item3;
-        }
-
-        public double getDistance(long current_vertex)
-        {
-
-            return list[current_vertex].Item2;
-        }
-
-        public double getDistance(int current_vertexID)
-        {
-
-            return list.ElementAt(current_vertexID).Value.Item2;
-        }
-
-        public Tuple<IVertex, double, ulong, ISingleEdge, IVertex> getElement(long key)
-        {
-            Tuple<IVertex, double, ulong, ISingleEdge, IVertex> temp;
-            list.TryGetValue(key, out temp);
-            return temp;
-        }
-
-       private Tuple<IVertex, double, ulong, ISingleEdge, IVertex> getTuple(int key)
-        {
-            return this.list.ElementAt(key).Value;
-        }
-
-        private Tuple<IVertex, double, ulong, ISingleEdge, IVertex> getTuple(long key)
-        {
-            return this.list[key];
-        }
-
-        public void Clear()
-        {
-            list.Clear();
-            count = 0;
-        }
-
-        private bool ConstainsKey(long key)
-        {
-
-            return this.list.ContainsKey(key);
-        }
-
-
-    }
-    #endregion
     public sealed class Dijkstra : ABaseFunction, IPluginable
     {
         #region constructor
@@ -202,11 +29,6 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
         }
         #endregion
-
-        public override string GetDescribeOutput()
-        {
-            return "A Dijkstra algorithm.";
-        }
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
@@ -836,13 +658,6 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
         #endregion
 
         #region IPluginable member
-
-
-        public override string PluginName
-        {
-            get { return "sones.dijkstra"; }
-        }
-
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -853,19 +668,15 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             return new Dijkstra();
         }
 
-        public override string FunctionName
-        {
-            get { return "dijkstra"; }
-        }
-
         public override string PluginShortName
         {
             get { return "dijkstra"; }
         }
-
-        public void Dispose()
-        { }
-
+        public override string PluginName
+        {
+            get { return "sones.dijkstra"; }
+        }
+        
         #endregion
 
         #region IGQLFunction member
@@ -877,7 +688,13 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
         #endregion
 
+        public override string PluginDescription
+        {
+            get { return "Dijkstra graph algorithm plugin"; }
+        }
 
+        public override void Dispose()
+        { }
 
     }
 
