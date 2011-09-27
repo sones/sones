@@ -48,7 +48,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <returns>An enumeration of ServiceEdgeType that are descendant of this IEdgeType.</returns>
         /// <seealso cref="IBaseType.GetDescendantTypes"/>
         [OperationContract]
-        List<ServiceEdgeType> GetDescendantEdgeTypes(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
+        List<ServiceEdgeType> GetDescendantEdgeTypes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
 
         /// <summary>
         /// Returns the descendant of this IEdgeType and this IEdgeType in one enumeration.
@@ -56,7 +56,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <returns>An enumeration of IEdgeType that are descendant of this IEdgeType and this IEdgeType itself.</returns>
         /// <seealso cref="IBaseType.GetDescendantTypesAndSelf"/>
         [OperationContract]
-        List<ServiceEdgeType> GetDescendantEdgeTypesAndSelf(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
+        List<ServiceEdgeType> GetDescendantEdgeTypesAndSelf(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
 
         /// <summary>
         /// Returns the ancestor of this IEdgeType.
@@ -64,7 +64,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <returns>An enumeration of IEdgeType that are ancestors of this IEdgeType.</returns>
         /// <seealso cref="IBaseType.GetAncestorTypes"/>
         [OperationContract]
-        List<ServiceEdgeType> GetAncestorEdgeTypes(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
+        List<ServiceEdgeType> GetAncestorEdgeTypes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
 
         /// <summary>
         /// Returns the ancestor of this IEdgeType and this IEdgeType in one enumeration.
@@ -72,7 +72,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <returns>An enumeration of IEdgeType that are ancestors of this IEdgeType and this IEdgeType itself.</returns>
         /// <seealso cref="IBaseType.GetAncestorTypesAndSelf"/>
         [OperationContract]
-        List<ServiceEdgeType> GetAncestorEdgeTypesAndSelf(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
+        List<ServiceEdgeType> GetAncestorEdgeTypesAndSelf(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
 
         /// <summary>
         /// Returns all descendant and ancestors of this IEdgeType.
@@ -80,7 +80,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <returns>An enumeration of all IEdgeType that are ancestors or descendant of this IEdgeType.</returns>
         /// <seealso cref="IBaseType.GetKinsmenTypes"/>
         [OperationContract]
-        List<ServiceEdgeType> GetKinsmenEdgeTypes(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
+        List<ServiceEdgeType> GetKinsmenEdgeTypes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
 
         /// <summary>
         /// Returns all descendant and ancestors of this IEdgeType and this IEdgeType in one enumeration. 
@@ -88,21 +88,21 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <returns>An enumeration of all IEdgeType that are ancestors or descendant of this IEdgeType and this IEdgeType itself.</returns>
         /// <seealso cref="IBaseType.GetKinsmenTypesAndSelf"/>
         [OperationContract]
-        List<ServiceEdgeType> GetKinsmenEdgeTypesAndSelf(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
+        List<ServiceEdgeType> GetKinsmenEdgeTypesAndSelf(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
 
         /// <summary>
         /// Returns the direct children of this IEdgeType.
         /// </summary>
         /// <seealso cref="IBaseType.ChildrenTypes"/>
         [OperationContract]
-        List<ServiceEdgeType> ChildrenEdgeTypes(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
+        List<ServiceEdgeType> ChildrenEdgeTypes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
 
         /// <summary>
         /// Gets the parent of this IEdgeType.
         /// </summary>
         /// <seealso cref="IBaseType.ParentType"/>
         [OperationContract]
-        ServiceEdgeType ParentEdgeType(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
+        ServiceEdgeType ParentEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
 
         #endregion
 
@@ -115,21 +115,21 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// If true, this edge type must not be used as a parent edge type.
         /// </value>
         [OperationContract(Name="IsSealedByEdgeType")]
-        Boolean IsSealed(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
+        Boolean IsSealed(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
 
         /// <summary>
         /// Has this type a parent type?
         /// </summary>
         /// <returns>True, if this type has a parent type, otherwise false.</returns>
         [OperationContract(Name="HasParentTypeByEdgeType")]
-        bool HasParentType(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
+        bool HasParentType(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
 
         /// <summary>
         /// Has this type child types?
         /// </summary>
         /// <returns>False, if this type has no child types, otherwise true.</returns>
         [OperationContract(Name = "HasChildTypesByEdgeType")]
-        bool HasChildTypes(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
+        bool HasChildTypes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType);
 
         /// <summary>
         /// Returns if the given type is an ancestor of the current type.
@@ -137,7 +137,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <param name="myOtherType">The given type.</param>
         /// <returns>True, if the given type is an ancestor of the current type, otherwise false.</returns>
         [OperationContract(Name = "IsAncestorByEdgeType")]
-        bool IsAncestor(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType);
+        bool IsAncestor(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType);
 
         /// <summary>
         /// Returns if the given type is an ancestor of or the current itself.
@@ -145,7 +145,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <param name="myOtherType">The given type.</param>
         /// <returns>True, if the given type is an ancestor of the current type or the current type itself, otherwise false.</returns>
         [OperationContract(Name = "IsAncestorOrSelfByEdgeType")]
-        bool IsAncestorOrSelf(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType);
+        bool IsAncestorOrSelf(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType);
 
         /// <summary>
         /// Returns if the given type is a descendant of the current type.
@@ -153,7 +153,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <param name="myOtherType">The given type.</param>
         /// <returns>True, if the given type is a descendant of the current type, otherwise false.</returns>
         [OperationContract(Name = "IsDescendantByEdgeType")]
-        bool IsDescendant(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType);
+        bool IsDescendant(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType);
 
         /// <summary>
         /// Returns if the given type is a descendant of or the current type itself.
@@ -161,7 +161,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <param name="myOtherType">The given type.</param>
         /// <returns>True, if the given type is a descendant of the current type or the current type itself, otherwise false.</returns>
         [OperationContract(Name = "IsDescendantOrSelfByEdgeType")]
-        bool IsDescendantOrSelf(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType);
+        bool IsDescendantOrSelf(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType);
 
         #endregion
 
@@ -172,7 +172,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// </summary>
         /// <returns>True or false</returns>
         [OperationContract(Name = "HasAttributeByEdgeType")]
-        bool HasAttribute(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, String myAttributeName);
+        bool HasAttribute(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, String myAttributeName);
 
         /// <summary>
         /// Gets a certain attribute definition
@@ -180,7 +180,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <param name="myAttributeName">The name of the interesting attribute</param>
         /// <returns>A attribute definition</returns>
         [OperationContract(Name = "GetAttributeDefinitionByEdgeType")]
-        ServiceAttributeDefinition GetAttributeDefinition(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, String myAttributeName);
+        ServiceAttributeDefinition GetAttributeDefinition(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, String myAttributeName);
 
         /// <summary>
         /// Gets a certain attribute definition
@@ -188,14 +188,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <param name="myAttributeID">The id of the interesting attribute</param>
         /// <returns>A attribute definition</returns>
         [OperationContract(Name = "GetAttributeDefinitionByIDByEdgeType")]
-        ServiceAttributeDefinition GetAttributeDefinitionByID(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, Int64 myAttributeID);
+        ServiceAttributeDefinition GetAttributeDefinitionByID(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, Int64 myAttributeID);
 
         /// <summary>
         /// Has this edge type any attributes?
         /// </summary>
         /// <returns>True or false</returns>
         [OperationContract(Name = "HasAttributesByEdgeType")]
-        bool HasAttributes(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions);
+        bool HasAttributes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions);
 
         /// <summary>
         /// Gets all attributes defined on this edge type.
@@ -203,7 +203,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <param name="myIncludeParents">Include the properties of the parent edge type(s)</param>
         /// <returns>An enumerable of attribute definitions</returns>
         [OperationContract(Name = "GetAttributeDefinitionsByEdgeType")]
-        List<ServiceAttributeDefinition> GetAttributeDefinitions(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions);
+        List<ServiceAttributeDefinition> GetAttributeDefinitions(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions);
 
         #endregion
 
@@ -214,7 +214,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// </summary>
         /// <returns>True or false</returns>
         [OperationContract(Name = "HasProprtyByEdgeType")]
-        bool HasProperty(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, String myAttributeName);
+        bool HasProperty(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, String myAttributeName);
 
         /// <summary>
         /// Gets a certain attribute definition
@@ -222,7 +222,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <param name="myPropertyName">The name of the property</param>
         /// <returns>A property definition</returns>
         [OperationContract(Name = "GetPropertyDefinitionByEdgeType")]
-        ServicePropertyDefinition GetPropertyDefinition(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, String myPropertyName);
+        ServicePropertyDefinition GetPropertyDefinition(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, String myPropertyName);
 
         /// <summary>
         /// Gets a certain attribute definition
@@ -230,14 +230,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <param name="myPropertyID">The id of the property</param>
         /// <returns>A property definition</returns>
         [OperationContract(Name = "GetPropertyDefinitionByIDByEdgeType")]
-        ServicePropertyDefinition GetPropertyDefinitionByID(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, Int64 myPropertyID);
+        ServicePropertyDefinition GetPropertyDefinitionByID(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, Int64 myPropertyID);
 
         /// <summary>
         /// Has this edge type any properties?
         /// </summary>
         /// <returns>True or false</returns>
         [OperationContract(Name = "HasPropertiesByEdgeType")]
-        bool HasProperties(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions);
+        bool HasProperties(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions);
 
         /// <summary>
         /// Gets all properties defined on this edge type.
@@ -245,7 +245,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <param name="myIncludeParents">Include the properties of the parent edge type(s)</param>
         /// <returns>An enumerable of property definitions</returns>
         [OperationContract(Name = "GetPropertyDefinitionsByEdgeType")]
-        List<ServicePropertyDefinition> GetPropertyDefinitions(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions);
+        List<ServicePropertyDefinition> GetPropertyDefinitions(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions);
 
         /// <summary>
         /// Gets the properties with the given name.
@@ -253,7 +253,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// <param name="myPropertyNames">A list of peroperty names.</param>
         /// <returns>An enumerable of property definitions</returns>
         [OperationContract(Name = "GetPropertyDefinitionsByNameListByEdgeType")]
-        List<ServicePropertyDefinition> GetPropertyDefinitionsByNameList(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, List<string> myPropertyNames);
+        List<ServicePropertyDefinition> GetPropertyDefinitionsByNameList(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, List<string> myPropertyNames);
 
         #endregion
 

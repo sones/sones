@@ -35,7 +35,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
         {
             this.Duration = myQueryResult.Duration;
             if (myQueryResult.Error != null)
-                this.Error = myQueryResult.Error.Message;
+                if (myQueryResult.Error.Message != null)
+                    this.Error = myQueryResult.Error.Message;
+                else
+                    this.Error = myQueryResult.Error.InnerException.Message;
 
             this.NameOfQueryLanguage = myQueryResult.NameOfQuerylanguage;
             this.NumberOfAffectedVertices = myQueryResult.NumberOfAffectedVertices;

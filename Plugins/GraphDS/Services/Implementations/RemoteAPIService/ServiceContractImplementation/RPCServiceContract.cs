@@ -43,8 +43,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 
         private IGraphDS GraphDS;
 
-        private Dictionary<ServiceSecurityToken, SecurityToken> SecurityTokenMap;
-        
         #endregion
 
         #region C'tor
@@ -52,7 +50,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         public RPCServiceContract(IGraphDS myGraphDS)
         {
             this.GraphDS = myGraphDS;
-            this.SecurityTokenMap = new Dictionary<ServiceSecurityToken, SecurityToken>();
         }
 
         #endregion
