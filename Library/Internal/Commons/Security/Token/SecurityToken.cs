@@ -30,7 +30,7 @@ namespace sones.Library.Commons.Security
     {
         #region data
 
-        private readonly Guid _id;
+        private Guid _id;
 
         #endregion
 

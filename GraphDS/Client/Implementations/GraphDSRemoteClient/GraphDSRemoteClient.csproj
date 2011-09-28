@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{64C46383-614C-4899-B1F4-9419F99BAE93}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GraphDSRemoteClient</RootNamespace>
+    <AssemblyName>GraphDSRemoteClient</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GraphDS_RemoteClient.cs" />
+    <Compile Include="GraphElements\ARemoteBaseType.cs" />
+    <Compile Include="GraphElements\ARemoteGraphElement.cs" />
+    <Compile Include="GraphElements\RemoteEdgeType.cs" />
+    <Compile Include="GraphElements\RemoteVertex.cs" />
+    <Compile Include="GraphElements\RemoteVertexType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service References\sonesGraphDSRemoteAPI\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="StubExtensions\ChangesetObjects\ServiceAlterEdgeChangeset.cs" />
+    <Compile Include="StubExtensions\ChangesetObjects\ServiceAlterVertexChangeset.cs" />
+    <Compile Include="StubExtensions\PayloadObjects\ServiceDeletePayload.cs" />
+    <Compile Include="StubExtensions\PayloadObjects\ServiceInsertPayload.cs" />
+    <Compile Include="StubExtensions\PayloadObjects\StructuredProperty.cs" />
+    <Compile Include="StubExtensions\PayloadObjects\UnstructuredProperty.cs" />
+    <Compile Include="StubExtensions\QueryResult\ServiceHyperEdgeView.cs" />
+    <Compile Include="StubExtensions\QueryResult\ServiceQueryResult.cs" />
+    <Compile Include="StubExtensions\QueryResult\ServiceSingleEdgeView.cs" />
+    <Compile Include="StubExtensions\QueryResult\ServiceVertexView.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServiceAttributePredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServiceEdgePredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServiceEdgeTypePredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServiceIncomingEdgePredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServiceIndexPredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServiceMandatoryPredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServiceOutgoingEdgePredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServicePropertyPredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServiceUniquePredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServiceVertexTypePredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceTypeManagement\ServiceBaseType.cs" />
+    <Compile Include="StubExtensions\ServiceTypeManagement\ServiceEdgeType.cs" />
+    <Compile Include="StubExtensions\ServiceTypeManagement\ServicePropertyDefinition.cs" />
+    <Compile Include="StubExtensions\ServiceTypeManagement\ServiceVertexType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
+      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
+      <Name>IGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
+      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
+      <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\GraphQL\QueryResult\QueryResult.csproj">
+      <Project>{BE2A2669-CCDE-40A8-AEAB-673260D7260A}</Project>
+      <Name>QueryResult</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Internal\Commons\Commons.csproj">
+      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
+      <Name>Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\IGraphDS\IGraphDS.csproj">
+      <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
+      <Name>IGraphDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IGraphDSClient\IGraphDSClient.csproj">
+      <Project>{89E70649-A81B-4A70-A9A1-B91EA96CE8A1}</Project>
+      <Name>IGraphDSClient</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\DataSources\sones.Library.Commons.Security.SecurityToken.datasource" />
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeInstance.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeInstance.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceQueryResult.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeInstance.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUniqueDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\RPCServiceContract1.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\sonesGraphDSRemoteAPI\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\sonesGraphDSRemoteAPI\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\sonesGraphDSRemoteAPI\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\sonesGraphDSRemoteAPI\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
