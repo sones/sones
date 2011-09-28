@@ -81,33 +81,32 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 
             foreach (var toDel in myChangeset.ToBeRemovedProperties)
             {
-                Request.RemoveProperty(toDel.AttributeName);
+                Request.RemoveProperty(toDel);
             }
 
             foreach (var toDel in myChangeset.ToBeRemovedIncomingEdges)
             {
-                Request.RemoveIncomingEdge(toDel.AttributeName);
+                Request.RemoveIncomingEdge(toDel);
             }
 
             foreach (var toDel in myChangeset.ToBeRemovedOutgoingEdges)
             {
-                Request.RemoveOutgoingEdge(toDel.AttributeName);
+                Request.RemoveOutgoingEdge(toDel);
             }
 
             foreach (var toDel in myChangeset.ToBeRemovedUniques)
             {
-                foreach(var unique in toDel.Properties)
-                    Request.RemoveUnique(unique);
+                Request.RemoveUnique(toDel);
             }
 
             foreach (var toDel in myChangeset.ToBeRemovedMandatories)
             {
-                Request.RemoveMandatory(toDel.PropertyName);
+                Request.RemoveMandatory(toDel);
             }
 
             foreach (var toDel in myChangeset.ToBeRemovedIndices)
             {
-                Request.RemoveIndex(toDel.Name, toDel.Edition);
+                Request.RemoveIndex(toDel.Key, toDel.Value);
             }
 
             #endregion
@@ -148,7 +147,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 
             foreach (var toDel in myChangeset.ToBeRemovedProperties)
             {
-                Request.RemoveProperty(toDel.AttributeName);
+                Request.RemoveProperty(toDel);
             }
 
             #endregion

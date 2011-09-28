@@ -55,22 +55,22 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects
         public List<ServiceMandatoryPredefinition> ToBeAddedMandatories;
 
         [DataMember]
-        public List<ServicePropertyPredefinition> ToBeRemovedProperties;
+        public List<String> ToBeRemovedProperties;
 
         [DataMember]
-        public List<ServiceIncomingEdgePredefinition> ToBeRemovedIncomingEdges;
+        public List<String> ToBeRemovedIncomingEdges;
 
         [DataMember]
-        public List<ServiceOutgoingEdgePredefinition> ToBeRemovedOutgoingEdges;
+        public List<String> ToBeRemovedOutgoingEdges;
 
         [DataMember]
-        public List<ServiceIndexPredefinition> ToBeRemovedIndices;
+        public Dictionary<String, String> ToBeRemovedIndices;
 
         [DataMember]
-        public List<ServiceUniquePredefinition> ToBeRemovedUniques;
+        public List<String> ToBeRemovedUniques;
 
         [DataMember]
-        public List<ServiceMandatoryPredefinition> ToBeRemovedMandatories;
+        public List<String> ToBeRemovedMandatories;
 
         [DataMember]
         public Dictionary<String, String> ToBeRenamedProperties;

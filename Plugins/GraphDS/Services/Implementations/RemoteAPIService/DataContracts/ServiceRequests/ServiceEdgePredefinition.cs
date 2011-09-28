@@ -42,7 +42,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
         public String Comment;
 
         [DataMember]
-        public List<Tuple<Int64, Int64>> VertexIDsByID;
+        public List<Tuple<Int64, List<Int64>>> VertexIDsByID;
 
         [DataMember]
         public List<StructuredProperty> StructuredProperties;
@@ -83,9 +83,12 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 
             if (VertexIDsByID != null)
             {
-                foreach (var Vertex in this.VertexIDsByID)
+                foreach (var VertexTypeSet in this.VertexIDsByID)
                 {
-                    EdgePredef.AddVertexID(Vertex.Item1, Vertex.Item2);
+                    foreach (var Vertex in VertexTypeSet.Item2)
+                    {
+                        EdgePredef.AddVertexID(VertexTypeSet.Item1, Vertex);
+                    }
                 }
             }
             

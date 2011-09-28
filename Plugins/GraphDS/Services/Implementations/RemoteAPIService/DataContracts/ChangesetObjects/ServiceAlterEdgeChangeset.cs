@@ -40,7 +40,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects
         public List<ServicePropertyPredefinition> ToBeAddedProperties;
                 
         [DataMember]
-        public List<ServicePropertyPredefinition> ToBeRemovedProperties;
+        public List<String> ToBeRemovedProperties;
                 
         [DataMember]
         public Dictionary<String, String> ToBeRenamedProperties;

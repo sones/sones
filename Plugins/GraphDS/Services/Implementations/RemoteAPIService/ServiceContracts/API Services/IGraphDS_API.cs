@@ -55,7 +55,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
 
         [OperationContract]
         ServiceVertexType GetVertexType(SecurityToken mySecurityToken, Int64 myTransToken, String myVertexTypeName);
-               
 
         [OperationContract]
         Int64 BeginTransaction(SecurityToken mySecurityToken);
@@ -77,6 +76,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
             ServiceEdgeTypePredefinition myEdgeTypePreDef);
 
         [OperationContract]
+        List<ServiceEdgeType> CreateEdgeTypes(SecurityToken mySecurityToken, Int64 myTransactionToken,
+            IEnumerable<ServiceEdgeTypePredefinition> myEdgeTypePreDef);
+
+        [OperationContract]
         ServiceIndexDefinition CreateIndex(SecurityToken mySecurityToken, Int64 myTransToken, ServiceIndexPredefinition myVertexTypePreDef);
 
         [OperationContract]
@@ -84,7 +87,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
             List<ServiceVertexTypePredefinition> myVertexTypePreDef);
                 
         [OperationContract]
-        List<Int64> Delete(SecurityToken mySecurityToken, Int64 myTransactionToken,
+        Tuple<IEnumerable<IComparable>, IEnumerable<IComparable>> Delete(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null); 
 
         [OperationContract]
