@@ -31,6 +31,8 @@ using System.Runtime.Serialization;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts;
 using sones.Library.Commons.Security;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
@@ -50,6 +52,32 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         public RPCServiceContract(IGraphDS myGraphDS)
         {
             this.GraphDS = myGraphDS;
+        }
+
+        #endregion
+
+
+        #region Helper
+
+        private ServiceAttributeDefinition ToServiceAttributeDefinition(IAttributeDefinition myAttributeDefinition)
+        {
+            ServiceAttributeDefinition svcAttributeDef = null;
+            switch (myAttributeDefinition.Kind)
+            {
+                case AttributeType.Property:
+                    svcAttributeDef = new ServicePropertyDefinition((IPropertyDefinition)myAttributeDefinition);
+                    break;
+                case AttributeType.OutgoingEdge:
+                    svcAttributeDef = new ServiceOutgoingEdgeDefinition((IOutgoingEdgeDefinition)myAttributeDefinition);
+                    break;
+                case AttributeType.IncomingEdge:
+                    svcAttributeDef = new ServiceIncomingEdgeDefinition((IIncomingEdgeDefinition)myAttributeDefinition);
+                    break;
+                case AttributeType.BinaryProperty:
+                    svcAttributeDef = new ServiceBinaryPropertyDefinition((IBinaryPropertyDefinition)myAttributeDefinition);
+                    break;
+            }
+            return svcAttributeDef;
         }
 
         #endregion

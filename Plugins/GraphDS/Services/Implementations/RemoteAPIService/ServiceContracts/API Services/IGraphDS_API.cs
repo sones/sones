@@ -88,15 +88,15 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
                 
         [OperationContract]
         Tuple<IEnumerable<IComparable>, IEnumerable<IComparable>> Delete(SecurityToken mySecurityToken, Int64 myTransactionToken,
-            ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null); 
+            ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null);
 
         [OperationContract]
-        ServiceIndexDefinition DescribeIndex(SecurityToken mySecurityToken, Int64 myTransToken,
-            ServiceVertexType myVertexType, String myIndexName);
+        ServiceIndexDefinition DescribeIndex(SecurityToken mySecurityToken, Int64 myTransactionToken,
+            String myVertexTypeName, String myIndexName);
 
         [OperationContract]
         List<ServiceIndexDefinition> DescribeIndices(SecurityToken mySecurityToken, Int64 myTransToken,
-            ServiceVertexType myVertexType);
+            String myVertexTypeName);
 
         [OperationContract]
         Dictionary<Int64, String> DropEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, 

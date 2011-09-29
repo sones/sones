@@ -100,9 +100,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         }
 
         public ServiceIndexDefinition DescribeIndex(SecurityToken mySecurityToken, Int64 myTransactionToken,
-            ServiceVertexType myVertexType, String myIndexName)
+            String myVertexTypeName, String myIndexName)
         {
-            var Request = ServiceRequestFactory.MakeRequestDescribeIndex(myVertexType, myIndexName);
+            var Request = ServiceRequestFactory.MakeRequestDescribeIndex(myVertexTypeName, myIndexName);
             var Response = this.GraphDS.DescribeIndex<IEnumerable<IIndexDefinition>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConverteOnlyIndexDefinitions);
             return new ServiceIndexDefinition(Response.FirstOrDefault()); //should only returns one index definition
@@ -214,9 +214,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         }
 
         public List<ServiceIndexDefinition> DescribeIndices(SecurityToken mySecurityToken, Int64 myTransactionToken,
-            ServiceVertexType myVertexType)
+            String myVertexTypeName)
         {
-            var Request = ServiceRequestFactory.MakeRequestDescribeIndex(myVertexType, ""); // todo prove the capability of this method call
+            var Request = ServiceRequestFactory.MakeRequestDescribeIndex(myVertexTypeName, ""); // todo prove the capability of this method call
             var Response = this.GraphDS.DescribeIndices<IEnumerable<IIndexDefinition>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConverteOnlyIndexDefinitions);
             return Response.Select(x => new ServiceIndexDefinition(x)).ToList();

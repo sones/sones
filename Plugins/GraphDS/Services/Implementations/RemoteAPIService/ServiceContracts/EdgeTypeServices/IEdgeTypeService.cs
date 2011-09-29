@@ -221,16 +221,16 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// </summary>
         /// <param name="myPropertyName">The name of the property</param>
         /// <returns>A property definition</returns>
-        [OperationContract(Name = "GetPropertyDefinitionByEdgeType")]
-        ServicePropertyDefinition GetPropertyDefinition(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, String myPropertyName);
+        [OperationContract]
+        ServicePropertyDefinition GetPropertyDefinitionByEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceEdgeTypeName, String myPropertyName);
 
         /// <summary>
         /// Gets a certain attribute definition
         /// </summary>
         /// <param name="myPropertyID">The id of the property</param>
         /// <returns>A property definition</returns>
-        [OperationContract(Name = "GetPropertyDefinitionByIDByEdgeType")]
-        ServicePropertyDefinition GetPropertyDefinitionByID(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, Int64 myPropertyID);
+        [OperationContract]
+        ServicePropertyDefinition GetPropertyDefinitionByIDByEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceEdgeTypeName, Int64 myPropertyID);
 
         /// <summary>
         /// Has this edge type any properties?
@@ -244,16 +244,16 @@ namespace sones.GraphDS.Services.RemoteAPIService.EdgeTypeService
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent edge type(s)</param>
         /// <returns>An enumerable of property definitions</returns>
-        [OperationContract(Name = "GetPropertyDefinitionsByEdgeType")]
-        List<ServicePropertyDefinition> GetPropertyDefinitions(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions);
+        [OperationContract]
+        List<ServicePropertyDefinition> GetPropertyDefinitionsByEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceEdgeTypeName, bool myIncludeAncestorDefinitions);
 
         /// <summary>
         /// Gets the properties with the given name.
         /// </summary>
         /// <param name="myPropertyNames">A list of peroperty names.</param>
         /// <returns>An enumerable of property definitions</returns>
-        [OperationContract(Name = "GetPropertyDefinitionsByNameListByEdgeType")]
-        List<ServicePropertyDefinition> GetPropertyDefinitionsByNameList(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, List<string> myPropertyNames);
+        [OperationContract]
+        List<ServicePropertyDefinition> GetPropertyDefinitionsByNameListByEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceEdgeTypeName, List<string> myPropertyNames);
 
         #endregion
 

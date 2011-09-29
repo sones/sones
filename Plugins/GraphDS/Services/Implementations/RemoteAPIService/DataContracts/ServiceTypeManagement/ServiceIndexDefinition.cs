@@ -40,7 +40,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
             this.IsUserdefined = myIndexDefinition.IsUserdefined;
             this.IsVersioned = myIndexDefinition.IsVersioned;
             this.Name = myIndexDefinition.Name;
-            //this.IndexedProperties = ServiceVertexTypeConverter.ConvertAllPropertiesToService(myIndexDefinition.IndexedProperties);
+            this.IndexedProperties = myIndexDefinition.IndexedProperties.Select(x => new Tuple<String, String>(x.RelatedType.Name, x.Name)).ToList();
         }
 
         [DataMember]
@@ -54,7 +54,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
         [DataMember]
         public Boolean IsUserdefined;
         [DataMember]
-        public IEnumerable<ServicePropertyDefinition> IndexedProperties;
+        public List<Tuple<String, String>> IndexedProperties; // Tuple<RelatedTypeName, PropertyName>
 
         [DataMember]
         public ServiceVertexType VertexType;

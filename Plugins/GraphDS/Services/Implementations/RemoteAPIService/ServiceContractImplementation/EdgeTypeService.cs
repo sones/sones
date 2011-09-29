@@ -173,14 +173,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            return new ServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeName));
+            return ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeName));
         }
 
         public ServiceAttributeDefinition GetAttributeDefinitionByID(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, long myAttributeID)
         {
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            return new ServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeID));
+            return ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeID));
         }
 
         public bool HasAttributes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
@@ -194,7 +194,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            return Response.GetAttributeDefinitions(myIncludeAncestorDefinitions).Select(x => new ServiceAttributeDefinition(x)).ToList();
+            return Response.GetAttributeDefinitions(myIncludeAncestorDefinitions).Select(x => ToServiceAttributeDefinition(x)).ToList();
         }
 
         #endregion
@@ -208,16 +208,16 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return Response.HasProperty(myAttributeName);
         }
 
-        public ServicePropertyDefinition GetPropertyDefinition(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, string myPropertyName)
+        public ServicePropertyDefinition GetPropertyDefinitionByEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceEdgeTypeName, string myPropertyName)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeTypeName);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServicePropertyDefinition(Response.GetPropertyDefinition(myPropertyName));
         }
 
-        public ServicePropertyDefinition GetPropertyDefinitionByID(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, long myPropertyID)
+        public ServicePropertyDefinition GetPropertyDefinitionByIDByEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceEdgeTypeName, long myPropertyID)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeTypeName);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServicePropertyDefinition(Response.GetPropertyDefinition(myPropertyID));
         }
@@ -229,16 +229,16 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return Response.HasProperties(myIncludeAncestorDefinitions);
         }
 
-        public List<ServicePropertyDefinition> GetPropertyDefinitions(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
+        public List<ServicePropertyDefinition> GetPropertyDefinitionsByEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceEdgeTypeName, bool myIncludeAncestorDefinitions)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeTypeName);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetPropertyDefinitions(myIncludeAncestorDefinitions).Select(x => new ServicePropertyDefinition(x)).ToList();
         }
 
-        public List<ServicePropertyDefinition> GetPropertyDefinitionsByNameList(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, List<string> myPropertyNames)
+        public List<ServicePropertyDefinition> GetPropertyDefinitionsByNameListByEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceEdgeTypeName, List<string> myPropertyNames)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeTypeName);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetPropertyDefinitions(myPropertyNames).Select(x => new ServicePropertyDefinition(x)).ToList();
         }

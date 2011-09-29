@@ -219,10 +219,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             return Request;
         }
 
-        public static RequestDescribeIndex MakeRequestDescribeIndex(ServiceVertexType myVertexType, String myIndexName)
+        public static RequestDescribeIndex MakeRequestDescribeIndex(String myVertexTypeName, String myIndexName)
         {
-            if (String.IsNullOrEmpty(myVertexType.Name))
-                return new RequestDescribeIndex(myVertexType.Name, myIndexName);
+            if (String.IsNullOrEmpty(myVertexTypeName))
+                return new RequestDescribeIndex(myVertexTypeName, myIndexName);
             return null;
         }
 

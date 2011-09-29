@@ -216,16 +216,16 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
 		/// </summary>
 		/// <param name="myPropertyName">The name of the property</param>
 		/// <returns>A property definition</returns>
-		[OperationContract(Name = "GetPropertyDefinitionByVertexType")]
-		ServicePropertyDefinition GetPropertyDefinition(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, String myPropertyName);
+		[OperationContract]
+        ServicePropertyDefinition GetPropertyDefinitionByVertexType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceVertexTypeName, String myPropertyName);
 
 		/// <summary>
 		/// Gets a certain attribute definition
 		/// </summary>
 		/// <param name="myPropertyID">The id of the property</param>
 		/// <returns>A property definition</returns>
-		[OperationContract(Name = "GetPropertyDefinitionByIDByVertexType")]
-		ServicePropertyDefinition GetPropertyDefinitionByID(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, Int64 myPropertyID);
+		[OperationContract]
+        ServicePropertyDefinition GetPropertyDefinitionByIDByVertexType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceVertexTypeName, Int64 myPropertyID);
 
 		/// <summary>
 		/// Has this vertex type any properties?
@@ -239,16 +239,16 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
 		/// </summary>
 		/// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
 		/// <returns>An enumerable of property definitions</returns>
-		[OperationContract(Name = "GetPropertyDefinitionsByVertexType")]
-		List<ServicePropertyDefinition> GetPropertyDefinitions(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+		[OperationContract]
+        List<ServicePropertyDefinition> GetPropertyDefinitionsByVertexType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceVertexTypeName, bool myIncludeAncestorDefinitions);
 
 		/// <summary>
 		/// Gets the properties with the given name.
 		/// </summary>
 		/// <param name="myPropertyNames">A list of peroperty names.</param>
 		/// <returns>An enumerable of property definitions</returns>
-		[OperationContract(Name = "GetPropertyDefinitionsByNameListByVertexType")]
-		List<ServicePropertyDefinition> GetPropertyDefinitionsByNameList(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, List<string> myPropertyNames);
+		[OperationContract]
+        List<ServicePropertyDefinition> GetPropertyDefinitionsByNameListByVertexType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceVertexTypeName, List<string> myPropertyNames);
 		
 		#endregion
 

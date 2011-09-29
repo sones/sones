@@ -35,7 +35,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
             : base(myPropertyDefinition)
         {
             this.IsMandatory = myPropertyDefinition.IsMandatory;
-            //this.InIndices = ServiceVertexTypeConverter.ConvertAllIndicesToService(myPropertyDefinition.InIndices);
+            this.InIndices = myPropertyDefinition.InIndices.Select(x => new Tuple<String, String>(x.VertexType.Name, x.Name)).ToList();
             this.Multiplicity = (ServicePropertyMultiplicity)myPropertyDefinition.Multiplicity;
             this.IsUserDefinedType = myPropertyDefinition.IsUserDefinedType;
             this.BaseType = myPropertyDefinition.BaseType.AssemblyQualifiedName;
@@ -54,6 +54,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
         public ServicePropertyMultiplicity Multiplicity;
 
         [DataMember]
-        public IEnumerable<ServiceIndexDefinition> InIndices;
+        public List<Tuple<String, String>> InIndices; // Tuple<VertexTypeName, IndexName>
     }
 }

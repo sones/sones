@@ -175,14 +175,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
-            return new ServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeName));
+            return ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeName));
         }
 
         public ServiceAttributeDefinition GetAttributeDefinitionByID(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, long myAttributeID)
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
-            return new ServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeID));
+            return ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeID));
         }
 
         public bool HasAttributes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
@@ -196,7 +196,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
-            return Response.GetAttributeDefinitions(myIncludeAncestorDefinitions).Select(x => new ServiceAttributeDefinition(x)).ToList();
+            return Response.GetAttributeDefinitions(myIncludeAncestorDefinitions).Select(x => ToServiceAttributeDefinition(x)).ToList();
         }
 
         #endregion
@@ -210,16 +210,16 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return Response.HasProperty(myPropertyName);
         }
 
-        public ServicePropertyDefinition GetPropertyDefinition(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, string myPropertyName)
+        public ServicePropertyDefinition GetPropertyDefinitionByVertexType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceVertexTypeName, string myPropertyName)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexTypeName);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
             return new ServicePropertyDefinition(Response.GetPropertyDefinition(myPropertyName));
         }
 
-        public ServicePropertyDefinition GetPropertyDefinitionByID(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, long myPropertyID)
+        public ServicePropertyDefinition GetPropertyDefinitionByIDByVertexType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceVertexTypeName, long myPropertyID)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexTypeName);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
             return new ServicePropertyDefinition(Response.GetPropertyDefinition(myPropertyID));
         }
@@ -231,16 +231,16 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return Response.HasProperties(myIncludeAncestorDefinitions);
         }
 
-        public List<ServicePropertyDefinition> GetPropertyDefinitions(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
+        public List<ServicePropertyDefinition> GetPropertyDefinitionsByVertexType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceVertexTypeName, bool myIncludeAncestorDefinitions)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexTypeName);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
             return Response.GetPropertyDefinitions(myIncludeAncestorDefinitions).Select(x => new ServicePropertyDefinition(x)).ToList();
         }
 
-        public List<ServicePropertyDefinition> GetPropertyDefinitionsByNameList(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, List<string> myPropertyNames)
+        public List<ServicePropertyDefinition> GetPropertyDefinitionsByNameListByVertexType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceVertexTypeName, List<string> myPropertyNames)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexTypeName);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
             return Response.GetPropertyDefinitions(myPropertyNames).Select(x => new ServicePropertyDefinition(x)).ToList();
         }
