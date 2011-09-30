@@ -34,6 +34,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
         {
             this.DefiningVertexType = new ServiceVertexType(myUniqueDefinition.DefiningVertexType);
             this.UniquePropertyDefinition = myUniqueDefinition.UniquePropertyDefinitions.Select(x => new ServicePropertyDefinition(x)).ToList();
+            this.CorrespondingIndex = new ServiceIndexDefinition(myUniqueDefinition.CorrespondingIndex);
         }
 
         [DataMember]
@@ -41,5 +42,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
 
         [DataMember]
         public List<ServicePropertyDefinition> UniquePropertyDefinition;
+
+        [DataMember]
+        public ServiceIndexDefinition CorrespondingIndex;
     }
 }
