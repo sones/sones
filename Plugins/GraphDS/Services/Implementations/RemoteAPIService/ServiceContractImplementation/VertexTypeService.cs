@@ -175,14 +175,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
-            return ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeName));
+            return ConvertHelper.ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeName));
         }
 
         public ServiceAttributeDefinition GetAttributeDefinitionByID(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, long myAttributeID)
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
-            return ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeID));
+            return ConvertHelper.ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeID));
         }
 
         public bool HasAttributes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions)
@@ -196,7 +196,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexType.Name);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
-            return Response.GetAttributeDefinitions(myIncludeAncestorDefinitions).Select(x => ToServiceAttributeDefinition(x)).ToList();
+            return Response.GetAttributeDefinitions(myIncludeAncestorDefinitions).Select(x => ConvertHelper.ToServiceAttributeDefinition(x)).ToList();
         }
 
         #endregion

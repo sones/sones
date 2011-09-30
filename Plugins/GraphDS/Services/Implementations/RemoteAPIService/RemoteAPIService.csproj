@@ -115,6 +115,7 @@
     <Compile Include="ServiceContracts\MonoMEX\IMonoMEX.cs" />
     <Compile Include="ServiceContracts\VertexInstanceService\IVertexService.cs" />
     <Compile Include="ServiceContracts\VertexTypeServices\IVertexTypeService.cs" />
+    <Compile Include="ServiceConverter\ConvertHelper.cs" />
     <Compile Include="ServiceConverter\ServiceExpressionConverter.cs" />
     <Compile Include="ServiceConverter\QueryResultConverter.cs" />
     <Compile Include="ServiceConverter\ServiceRequestFactory.cs" />

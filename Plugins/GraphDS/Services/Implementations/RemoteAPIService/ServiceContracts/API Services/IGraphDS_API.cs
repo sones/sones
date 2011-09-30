@@ -99,6 +99,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
             String myVertexTypeName);
 
         [OperationContract]
+        List<ServiceIndexDefinition> DescribeIndicesByNames(SecurityToken mySecurityToken, Int64 myTransToken,
+            String myVertexTypeName, List<String> myIndexNames);
+
+        [OperationContract]
         Dictionary<Int64, String> DropEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, 
             ServiceEdgeType myEdgeType);
                 

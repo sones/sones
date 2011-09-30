@@ -55,31 +55,5 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         }
 
         #endregion
-
-
-        #region Helper
-
-        private ServiceAttributeDefinition ToServiceAttributeDefinition(IAttributeDefinition myAttributeDefinition)
-        {
-            ServiceAttributeDefinition svcAttributeDef = null;
-            switch (myAttributeDefinition.Kind)
-            {
-                case AttributeType.Property:
-                    svcAttributeDef = new ServicePropertyDefinition((IPropertyDefinition)myAttributeDefinition);
-                    break;
-                case AttributeType.OutgoingEdge:
-                    svcAttributeDef = new ServiceOutgoingEdgeDefinition((IOutgoingEdgeDefinition)myAttributeDefinition);
-                    break;
-                case AttributeType.IncomingEdge:
-                    svcAttributeDef = new ServiceIncomingEdgeDefinition((IIncomingEdgeDefinition)myAttributeDefinition);
-                    break;
-                case AttributeType.BinaryProperty:
-                    svcAttributeDef = new ServiceBinaryPropertyDefinition((IBinaryPropertyDefinition)myAttributeDefinition);
-                    break;
-            }
-            return svcAttributeDef;
-        }
-
-        #endregion
     }
 }

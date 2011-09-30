@@ -222,6 +222,22 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return Response.Select(x => new ServiceIndexDefinition(x)).ToList();
         }
 
+        public List<ServiceIndexDefinition> DescribeIndicesByNames(SecurityToken mySecurityToken, Int64 myTransToken,
+            String myVertexTypeName, List<String> myIndexNames)
+        {
+            var ResponseList = new List<ServiceIndexDefinition>();
+            foreach (var item in myIndexNames)
+            {
+                var Request = ServiceRequestFactory.MakeRequestDescribeIndex(myVertexTypeName, item);
+                var Response = this.GraphDS.DescribeIndex<IEnumerable<IIndexDefinition>>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConverteOnlyIndexDefinitions);
+                foreach (var index in Response)
+                {
+                    ResponseList.Add(new ServiceIndexDefinition(index));
+                }
+            }
+            return ResponseList;
+        }
+
         public Dictionary<Int64, String> DropEdgeType(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceEdgeType myEdgeType)
         {

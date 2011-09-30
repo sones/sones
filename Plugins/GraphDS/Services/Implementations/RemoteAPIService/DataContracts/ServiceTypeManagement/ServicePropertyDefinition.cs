@@ -35,10 +35,11 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
             : base(myPropertyDefinition)
         {
             this.IsMandatory = myPropertyDefinition.IsMandatory;
-            this.InIndices = myPropertyDefinition.InIndices.Select(x => new Tuple<String, String>(x.VertexType.Name, x.Name)).ToList();
+            this.InIndices = myPropertyDefinition.InIndices.Select(x => x.Name).ToList();
             this.Multiplicity = (ServicePropertyMultiplicity)myPropertyDefinition.Multiplicity;
             this.IsUserDefinedType = myPropertyDefinition.IsUserDefinedType;
             this.BaseType = myPropertyDefinition.BaseType.AssemblyQualifiedName;
+            this.DefaultValue = myPropertyDefinition.DefaultValue;
         }
 
         [DataMember]
@@ -54,6 +55,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
         public ServicePropertyMultiplicity Multiplicity;
 
         [DataMember]
-        public List<Tuple<String, String>> InIndices; // Tuple<VertexTypeName, IndexName>
+        public IComparable DefaultValue;
+
+        [DataMember]
+        public List<String> InIndices;
     }
 }

@@ -173,14 +173,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            return ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeName));
+            return ConvertHelper.ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeName));
         }
 
         public ServiceAttributeDefinition GetAttributeDefinitionByID(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, long myAttributeID)
         {
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            return ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeID));
+            return ConvertHelper.ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeID));
         }
 
         public bool HasAttributes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
@@ -194,7 +194,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
             var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            return Response.GetAttributeDefinitions(myIncludeAncestorDefinitions).Select(x => ToServiceAttributeDefinition(x)).ToList();
+            return Response.GetAttributeDefinitions(myIncludeAncestorDefinitions).Select(x => ConvertHelper.ToServiceAttributeDefinition(x)).ToList();
         }
 
         #endregion

@@ -24,6 +24,8 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation;
+using sones.GraphDS.Services.RemoteAPIService.ServiceConverter;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
 {
@@ -41,7 +43,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
                 this.Name = myAttributeDefinition.Name;
                 this.IsUserDefined = myAttributeDefinition.IsUserDefined;
                 this.Kind = (ServiceAttributeType)myAttributeDefinition.Kind;
-                this.RelatedTypeName = myAttributeDefinition.RelatedType.Name;
+                this.RelatedType = ConvertHelper.ToServiceBaseType(myAttributeDefinition.RelatedType);
             }
         }
 
@@ -58,6 +60,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
         public ServiceAttributeType Kind;
 
         [DataMember]
-        public String RelatedTypeName;
+        public ServiceBaseType RelatedType;
     }
 }

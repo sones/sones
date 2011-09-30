@@ -26,7 +26,7 @@ using System.Runtime.Serialization;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
 {
-    [DataContract(Namespace = "http://www.sones.com")]
+    [DataContract(Namespace = sonesRPCServer.Namespace)]
     public enum ServiceAttributeType
     {
         [EnumMember]
@@ -40,6 +40,5 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
 
         [EnumMember]
         BinaryProperty
-
     }
 }
