@@ -33,7 +33,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The definition of the edges that are going to be created
         /// </summary>
-        public IEnumerable<EdgeTypePredefinition> TypePredefinitions;
+        public IEnumerable<ATypePredefinition> TypePredefinitions;
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace sones.GraphDB.Request
         /// Creates a new request that creates new edge types inside the Graphdb
         /// </summary>
         /// <param name="myTypePredefinitions">Describes the edges which are going to be created</param>
-        public RequestCreateEdgeTypes(IEnumerable<EdgeTypePredefinition> myTypePredefinitions)
+        public RequestCreateEdgeTypes(IEnumerable<ATypePredefinition> myTypePredefinitions)
         {
             TypePredefinitions = myTypePredefinitions;
         }

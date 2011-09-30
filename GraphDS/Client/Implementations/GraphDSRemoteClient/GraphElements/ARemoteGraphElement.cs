@@ -6,49 +6,36 @@ using GraphDSRemoteClient.sonesGraphDSRemoteAPI;
 
 namespace GraphDSRemoteClient.GraphElements
 {
-    public abstract class ARemoteGraphElement
+    internal abstract class ARemoteGraphElement
     {
-        #region data
+        #region Data
 
-        /// <summary>
-        /// A comment for the vertex
-        /// </summary>
-        private string _comment;
-
-        /// <summary>
-        /// The creation date of the vertex
-        /// </summary>
-        private long _creationDate;
-
-        /// <summary>
-        /// The modification date of the vertex
-        /// </summary>
-        private long _modificationDate;
-
-        /// <summary>
-        /// The structured properties
-        /// </summary>
-        private IDictionary<Int64, IComparable> _structuredProperties;
-
-        /// <summary>
-        /// The unstructured properties
-        /// </summary>
-        private IDictionary<String, Object> _unstructuredProperties;
+        private IServiceToken _ServiceToken;
 
         #endregion
 
 
         #region Getter / Setter
 
-        public String Comment { get; }
+        public abstract String Comment { get; }
 
-        public long CreationDate { get; }
+        public abstract long CreationDate { get; }
 
-        public long ModificationDate { get; }
+        public abstract long ModificationDate { get; }
 
-        public IDictionary<Int64, IComparable> StructuredProperties { get; }
+        public abstract IDictionary<Int64, IComparable> StructuredProperties { get; }
 
-        public IDictionary<String, Object> UnstructuredProperties { get; }
+        public abstract IDictionary<String, Object> UnstructuredProperties { get; }
+
+        #endregion
+
+
+        #region Constructor
+
+        internal ARemoteGraphElement(IServiceToken myServiceToken)
+        {
+            _ServiceToken = myServiceToken;
+        }
 
         #endregion
     }

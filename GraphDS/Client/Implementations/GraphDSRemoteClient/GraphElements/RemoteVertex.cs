@@ -7,14 +7,71 @@ using sones.Library.PropertyHyperGraph;
 
 namespace GraphDSRemoteClient.GraphElements
 {
-    public class RemoteVertex : ARemoteGraphElement, IVertex
+    internal class RemoteVertex : ARemoteGraphElement, IVertex
     {
-        private VertexInstanceService _VertexInstanceService;
+        #region Data
 
-        internal RemoteVertex(ServiceVertexInstance myVertex)
+        /// <summary>
+        /// The edition of the vertex
+        /// </summary>
+        private string _edition;
+
+        /// <summary>
+        /// The id of the vertex
+        /// </summary>
+        private readonly Int64 _vertexID;
+
+        /// <summary>
+        /// The vertex type id
+        /// </summary>
+        private readonly Int64 _vertexTypeID;
+
+        #endregion
+
+
+        #region Constructor
+
+        internal RemoteVertex(ServiceVertexInstance myVertex, IServiceToken myServiceToken) : base(myServiceToken)
         {
-
+            this._edition = myVertex.Edition;
+            this._vertexID = myVertex.VertexID;
+            this._vertexTypeID = myVertex.TypeID;
         }
+
+        #endregion
+
+
+        #region ARemoteGraphElement
+        
+        public override string Comment
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override long CreationDate
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override long ModificationDate
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override IDictionary<long, IComparable> StructuredProperties
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override IDictionary<string, object> UnstructuredProperties
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
+
+
+        #region IVertex
 
         public bool HasIncomingVertices(long myVertexTypeID, long myEdgePropertyID)
         {
@@ -160,5 +217,7 @@ namespace GraphDSRemoteClient.GraphElements
         {
             get { throw new NotImplementedException(); }
         }
+
+        #endregion
     }
 }

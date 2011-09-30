@@ -4,191 +4,253 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.TypeSystem;
 using GraphDSRemoteClient.sonesGraphDSRemoteAPI;
+using GraphDSRemoteClient.TypeManagement;
 
 namespace GraphDSRemoteClient.GraphElements
 {
-    public class RemoteEdgeType : ARemoteBaseType, IEdgeType
-    {
-        private EdgeTypeService _EdgeTypeService;
+	internal class RemoteEdgeType : ARemoteBaseType, IEdgeType
+	{
+		#region Constructor
 
-        internal RemoteEdgeType(ServiceEdgeType myServiceEdgeType, EdgeTypeService myEdgeTypeService) : base(myServiceEdgeType)
-        {
-            _EdgeTypeService = myEdgeTypeService;
-        }
+		internal RemoteEdgeType(ServiceEdgeType myServiceEdgeType, IServiceToken myServiceToken) : base(myServiceEdgeType, myServiceToken)
+		{ }
 
-        public IEnumerable<IEdgeType> GetDescendantEdgeTypes()
+		#endregion
+		
+
+		#region ARemoteBaseType
+
+		protected override ARemoteBaseType RetrieveParentType()
+		{
+			return HasParentType ? new RemoteEdgeType(_ServiceToken.EdgeTypeService.ParentEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this._Name)), _ServiceToken) : null;
+		}
+
+		protected override IEnumerable<ARemoteBaseType> RetrieveChildrenTypes()
+		{
+			if (!HasChildTypes)
+				return Enumerable.Empty<RemoteEdgeType>();
+
+			var vertices = _ServiceToken.EdgeTypeService.ChildrenEdgeTypes(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this));
+
+			return vertices.Select(vertex => new RemoteEdgeType(vertex, _ServiceToken)).ToArray();
+		}
+
+        protected override IDictionary<String, IAttributeDefinition> RetrieveAttributes()
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IEdgeType> GetDescendantEdgeTypesAndSelf()
-        {
-            throw new NotImplementedException();
-        }
+		#endregion
+
+
+		#region IEdgeType
+
+		public IEnumerable<IEdgeType> GetDescendantEdgeTypes()
+		{
+            return _ServiceToken.EdgeTypeService.GetDescendantEdgeTypes(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this)).Select(x => new RemoteEdgeType(x, _ServiceToken));
+		}
+
+		public IEnumerable<IEdgeType> GetDescendantEdgeTypesAndSelf()
+		{
+            return _ServiceToken.EdgeTypeService.GetDescendantEdgeTypesAndSelf(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this)).Select(x => new RemoteEdgeType(x, _ServiceToken));
+		}
 
         public IEnumerable<IEdgeType> GetAncestorEdgeTypes()
-        {
-            throw new NotImplementedException();
-        }
+		{
+            return _ServiceToken.EdgeTypeService.GetAncestorEdgeTypes(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this)).Select(x => new RemoteEdgeType(x, _ServiceToken));
+		}
 
         public IEnumerable<IEdgeType> GetAncestorEdgeTypesAndSelf()
-        {
-            throw new NotImplementedException();
-        }
+		{
+            return _ServiceToken.EdgeTypeService.GetAncestorEdgeTypesAndSelf(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this)).Select(x => new RemoteEdgeType(x, _ServiceToken));
+		}
 
         public IEnumerable<IEdgeType> GetKinsmenEdgeTypes()
-        {
-            throw new NotImplementedException();
-        }
+		{
+            return _ServiceToken.EdgeTypeService.GetKinsmenEdgeTypes(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this)).Select(x => new RemoteEdgeType(x, _ServiceToken));
+		}
 
         public IEnumerable<IEdgeType> GetKinsmenEdgeTypesAndSelf()
-        {
-            throw new NotImplementedException();
-        }
+		{
+            return _ServiceToken.EdgeTypeService.GetKinsmenEdgeTypesAndSelf(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this)).Select(x => new RemoteEdgeType(x, _ServiceToken));
+		}
 
         public IEnumerable<IEdgeType> ChildrenEdgeTypes
-        {
-            get { throw new NotImplementedException(); }
-        }
+		{
+			get
+            {
+                return RetrieveChildrenTypes().Cast<IEdgeType>();
+            }
+		}
 
         public IEdgeType ParentEdgeType
-        {
-            get { throw new NotImplementedException(); }
-        }
+		{
+			get
+            {
+                return (IEdgeType)RetrieveParentType();
+            }
+		}
 
-        public bool Equals(IBaseType other)
-        {
-            throw new NotImplementedException();
-        }
+		#endregion
 
-        public bool HasParentType
-        {
-            get { throw new NotImplementedException(); }
-        }
 
-        public bool HasChildTypes
-        {
-            get { throw new NotImplementedException(); }
-        }
+		#region IBaseType
 
-        public bool IsAncestor(IBaseType myOtherType)
-        {
-            throw new NotImplementedException();
-        }
+		public override bool IsSealed
+		{
+			get
+            {
+                return _ServiceToken.EdgeTypeService.IsSealedByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this));
+            }
+		}
 
-        public bool IsAncestorOrSelf(IBaseType myOtherType)
-        {
-            throw new NotImplementedException();
-        }
+		public override bool HasParentType
+		{
+			get
+            {
+                return _ServiceToken.EdgeTypeService.HasParentTypeByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this));
+            }
+		}
 
-        public bool IsDescendant(IBaseType myOtherType)
-        {
-            throw new NotImplementedException();
-        }
+		public override bool HasChildTypes
+		{
+			get
+            {
+                return _ServiceToken.EdgeTypeService.HasChildTypesByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this));
+            }
+		}
 
-        public bool IsDescendantOrSelf(IBaseType myOtherType)
-        {
-            throw new NotImplementedException();
-        }
+		public override bool IsAncestor(IBaseType myOtherType)
+		{
+            return (myOtherType is IEdgeType) ? _ServiceToken.EdgeTypeService.IsAncestorByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this), new ServiceEdgeType((IEdgeType)myOtherType)) : false;
+		}
 
-        public IEnumerable<IBaseType> GetDescendantTypes()
-        {
-            throw new NotImplementedException();
-        }
+		public override bool IsAncestorOrSelf(IBaseType myOtherType)
+		{
+            return (myOtherType is IEdgeType) ? _ServiceToken.EdgeTypeService.IsAncestorOrSelfByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this), new ServiceEdgeType((IEdgeType)myOtherType)) : false;
+		}
 
-        public IEnumerable<IBaseType> GetDescendantTypesAndSelf()
-        {
-            throw new NotImplementedException();
-        }
+		public override bool IsDescendant(IBaseType myOtherType)
+		{
+            return (myOtherType is IEdgeType) ? _ServiceToken.EdgeTypeService.IsDescendantByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this), new ServiceEdgeType((IEdgeType)myOtherType)) : false;
+		}
 
-        public IEnumerable<IBaseType> GetAncestorTypes()
-        {
-            throw new NotImplementedException();
-        }
+		public override bool IsDescendantOrSelf(IBaseType myOtherType)
+		{
+            return (myOtherType is IEdgeType) ? _ServiceToken.EdgeTypeService.IsDescendantOrSelfByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this), new ServiceEdgeType((IEdgeType)myOtherType)) : false;
+		}
 
-        public IEnumerable<IBaseType> GetAncestorTypesAndSelf()
-        {
-            throw new NotImplementedException();
-        }
+		public override IEnumerable<IBaseType> GetDescendantTypes()
+		{
+            return GetDescendantEdgeTypes();
+		}
 
-        public IEnumerable<IBaseType> GetKinsmenTypes()
-        {
-            throw new NotImplementedException();
-        }
+		public override IEnumerable<IBaseType> GetDescendantTypesAndSelf()
+		{
+            return GetDescendantEdgeTypesAndSelf();
+		}
 
-        public IEnumerable<IBaseType> GetKinsmenTypesAndSelf()
-        {
-            throw new NotImplementedException();
-        }
+		public override IEnumerable<IBaseType> GetAncestorTypes()
+		{
+            return GetAncestorEdgeTypes();
+		}
 
-        public IEnumerable<IBaseType> ChildrenTypes
-        {
-            get { throw new NotImplementedException(); }
-        }
+		public override IEnumerable<IBaseType> GetAncestorTypesAndSelf()
+		{
+            return GetAncestorEdgeTypesAndSelf();
+		}
 
-        public IBaseType ParentType
-        {
-            get { throw new NotImplementedException(); }
-        }
+		public override IEnumerable<IBaseType> GetKinsmenTypes()
+		{
+            return GetKinsmenEdgeTypes();
+		}
 
-        public bool HasAttribute(string myAttributeName)
-        {
-            throw new NotImplementedException();
-        }
+		public override IEnumerable<IBaseType> GetKinsmenTypesAndSelf()
+		{
+            return GetKinsmenEdgeTypesAndSelf();
+		}
 
-        public IAttributeDefinition GetAttributeDefinition(string myAttributeName)
-        {
-            throw new NotImplementedException();
-        }
+		public override IEnumerable<IBaseType> ChildrenTypes
+		{
+			get
+            {
+                return RetrieveChildrenTypes();
+            }
+		}
 
-        public IAttributeDefinition GetAttributeDefinition(long myAttributeID)
-        {
-            throw new NotImplementedException();
-        }
+		public override IBaseType ParentType
+		{
+			get
+            {
+                return RetrieveParentType();
+            }
+		}
 
-        public bool HasAttributes(bool myIncludeAncestorDefinitions)
-        {
-            throw new NotImplementedException();
-        }
+		public override bool HasAttribute(string myAttributeName)
+		{
+            return _ServiceToken.EdgeTypeService.HasAttributeByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this), myAttributeName);
+		}
 
-        public IEnumerable<IAttributeDefinition> GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
-        {
-            throw new NotImplementedException();
-        }
+		public override IAttributeDefinition GetAttributeDefinition(string myAttributeName)
+		{
+           return ConvertHelper.ToAttributeDefinition(
+               _ServiceToken.EdgeTypeService.GetAttributeDefinitionByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this), myAttributeName),
+               _ServiceToken);
+		}
 
-        public bool HasProperty(string myAttributeName)
-        {
-            throw new NotImplementedException();
-        }
+		public override IAttributeDefinition GetAttributeDefinition(long myAttributeID)
+		{
+            return ConvertHelper.ToAttributeDefinition(
+                _ServiceToken.EdgeTypeService.GetAttributeDefinitionByIDByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this), myAttributeID),
+                _ServiceToken);
+		}
 
-        public IPropertyDefinition GetPropertyDefinition(string myPropertyName)
-        {
-            throw new NotImplementedException();
-        }
+		public override bool HasAttributes(bool myIncludeAncestorDefinitions)
+		{
+            return _ServiceToken.EdgeTypeService.HasAttributesByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this), myIncludeAncestorDefinitions);
+		}
 
-        public IPropertyDefinition GetPropertyDefinition(long myPropertyID)
-        {
-            throw new NotImplementedException();
-        }
+		public override IEnumerable<IAttributeDefinition> GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
+		{
+            return _ServiceToken.EdgeTypeService.GetAttributeDefinitionsByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this), myIncludeAncestorDefinitions).Select(x => ConvertHelper.ToAttributeDefinition(x, _ServiceToken));
+		}
 
-        public bool HasProperties(bool myIncludeAncestorDefinitions)
-        {
-            throw new NotImplementedException();
-        }
+		public override bool HasProperty(string myAttributeName)
+		{
+            return _ServiceToken.EdgeTypeService.HasProprtyByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this), myAttributeName);
+		}
 
-        public IEnumerable<IPropertyDefinition> GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
-        {
-            throw new NotImplementedException();
-        }
+		public override IPropertyDefinition GetPropertyDefinition(string myPropertyName)
+		{
+            return new RemotePropertyDefinition(
+                _ServiceToken.EdgeTypeService.GetPropertyDefinitionByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, this.Name, myPropertyName),
+                _ServiceToken);
+		}
 
-        public IEnumerable<IPropertyDefinition> GetPropertyDefinitions(IEnumerable<string> myPropertyNames)
-        {
-            throw new NotImplementedException();
-        }
+		public override IPropertyDefinition GetPropertyDefinition(long myPropertyID)
+		{
+            return new RemotePropertyDefinition(
+                _ServiceToken.EdgeTypeService.GetPropertyDefinitionByIDByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, this.Name, myPropertyID),
+                _ServiceToken);
+		}
 
-        public bool Equals(IBaseType other)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public override bool HasProperties(bool myIncludeAncestorDefinitions)
+		{
+            return _ServiceToken.EdgeTypeService.HasPropertiesByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceEdgeType(this), myIncludeAncestorDefinitions);
+		}
+
+		public override IEnumerable<IPropertyDefinition> GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
+		{
+            return _ServiceToken.EdgeTypeService.GetPropertyDefinitionsByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, this.Name, myIncludeAncestorDefinitions)
+                .Select(x => new RemotePropertyDefinition(x, _ServiceToken));
+		}
+
+		public override IEnumerable<IPropertyDefinition> GetPropertyDefinitions(IEnumerable<string> myPropertyNames)
+		{
+            return _ServiceToken.EdgeTypeService.GetPropertyDefinitionsByNameListByEdgeType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, this.Name, myPropertyNames.ToList())
+                .Select(x => new RemotePropertyDefinition(x, _ServiceToken));
+		}
+
+		#endregion
+	}
 }

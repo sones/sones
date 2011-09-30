@@ -12,10 +12,11 @@ using GraphDSRemoteClient.GraphElements;
 using System.Diagnostics;
 using sones.GraphDB.Request;
 using sones.GraphQL.Result;
+using sones.GraphDB.TypeSystem;
 
 namespace GraphDSRemoteClient
 {
-    class GraphDS_RemoteClient : IGraphDSClient, ITransactionable, IUserAuthentication
+    class GraphDS_RemoteClient : IGraphDSClient, ITransactionable, IServiceToken
     {
         #region Data
 
@@ -24,6 +25,8 @@ namespace GraphDSRemoteClient
         private VertexInstanceService _VertexInstanceService;
         private EdgeTypeService _EdgeTypeService;
         private EdgeInstanceService _EdgeInstanceService;
+        private SecurityToken _SecurityToken;
+        private Int64 _TransactionToken;
         
         #endregion
 
@@ -63,11 +66,51 @@ namespace GraphDSRemoteClient
 
         #endregion
 
+
+        #region IServiceToken
+
+        public SecurityToken SecurityToken
+        {
+            get { return _SecurityToken; }
+        }
+        public Int64 TransactionToken
+        {
+            get { return _TransactionToken; }
+        }
+
+        public VertexTypeService VertexTypeService
+        {
+            get { return _VertexTypeService; }
+        }
+
+        public VertexInstanceService VertexService
+        {
+            get { return _VertexInstanceService; }
+        }
+
+        public EdgeTypeService EdgeTypeService
+        {
+            get { return _EdgeTypeService; }
+        }
+
+        public EdgeInstanceService EdgeService
+        {
+            get { return _EdgeInstanceService; }
+        }
+
+        public GraphDS GraphDSService
+        {
+            get { return _GraphDSService; }
+        }
+
+        #endregion
+
+
         #region IUserAuthentication
 
-        public SecurityToken LogOn(String myLogin, String myPassword)
+        public SecurityToken LogOn(IUserCredentials myUserCredentials)
         {
-            return _GraphDSService.LogOn(myLogin, myPassword);
+            throw new NotImplementedException();
         }
 
         public void LogOff(SecurityToken mySecurityToken)
@@ -82,7 +125,8 @@ namespace GraphDSRemoteClient
 
         public long BeginTransaction(SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
         {
-            return _GraphDSService.BeginTransaction(mySecurityToken);
+            _TransactionToken = _GraphDSService.BeginTransaction(mySecurityToken);
+            return _TransactionToken;
         }
 
         public void CommitTransaction(SecurityToken mySecurityToken, long myTransactionID)
@@ -119,7 +163,7 @@ namespace GraphDSRemoteClient
         {
             Stopwatch RunningTime = Stopwatch.StartNew();
             var svcVertexTypes = _GraphDSService.CreateVertexTypes(mySecurityToken, myTransactionID, myRequestCreateVertexTypes.VertexTypeDefinitions.Select(x => new ServiceVertexTypePredefinition(x)).ToList());
-            var vertexTypes = svcVertexTypes.Select(x => new RemoteVertexType(x, _VertexTypeService));
+            var vertexTypes = svcVertexTypes.Select(x => new RemoteVertexType(x, this));
             RunningTime.Stop();
             return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), vertexTypes);
         }
@@ -128,7 +172,7 @@ namespace GraphDSRemoteClient
         {
             Stopwatch RunningTime = Stopwatch.StartNew();
             var svcVertexType = _GraphDSService.CreateVertexType(mySecurityToken, myTransactionID, new ServiceVertexTypePredefinition(myRequestCreateVertexType.VertexTypeDefinition));
-            var vertexType = new RemoteVertexType(svcVertexType, _VertexTypeService);
+            var vertexType = new RemoteVertexType(svcVertexType, this);
             RunningTime.Stop();
             return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), vertexType);
         }
@@ -139,7 +183,7 @@ namespace GraphDSRemoteClient
             var svcVertexType = _GraphDSService.AlterVertexType(mySecurityToken, myTransactionID,
                 new ServiceVertexType(myRequestAlterVertexType.TypeName),
                 new ServiceAlterVertexChangeset(myRequestAlterVertexType));
-            var vertexType = new RemoteVertexType(svcVertexType, _VertexTypeService);
+            var vertexType = new RemoteVertexType(svcVertexType, this);
             RunningTime.Stop();
             return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), vertexType);
         }
@@ -148,8 +192,8 @@ namespace GraphDSRemoteClient
         {
             Stopwatch RunningTime = Stopwatch.StartNew();
             var svcEdgeType = _GraphDSService.CreateEdgeType(mySecurityToken, myTransactionID,
-                new ServiceEdgeTypePredefinition(myRequestCreateEdgeType.EdgeTypePredefinition));
-            var edgeType = new RemoteEdgeType(svcEdgeType, _EdgeTypeService);
+                new ServiceEdgeTypePredefinition((EdgeTypePredefinition)myRequestCreateEdgeType.EdgeTypePredefinition));
+            var edgeType = new RemoteEdgeType(svcEdgeType, this);
             RunningTime.Stop();
             return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), edgeType);
         }
@@ -157,8 +201,8 @@ namespace GraphDSRemoteClient
         public TResult CreateEdgeTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestCreateEdgeTypes myRequestCreateEdgeTypes, sones.GraphDB.Request.Converter.CreateEdgeTypesResultConverter<TResult> myOutputconverter)
         {
             Stopwatch RunningTime = Stopwatch.StartNew();
-            var svcEdgeTypes = _GraphDSService.CreateEdgeTypes(mySecurityToken, myTransactionID, myRequestCreateEdgeTypes.TypePredefinitions.Select(x => new ServiceEdgeTypePredefinition(x)).ToList());
-            var edgeTypes = svcEdgeTypes.Select(x => new RemoteEdgeType(x, _EdgeTypeService)).ToList();
+            var svcEdgeTypes = _GraphDSService.CreateEdgeTypes(mySecurityToken, myTransactionID, myRequestCreateEdgeTypes.TypePredefinitions.Select(x => new ServiceEdgeTypePredefinition((EdgeTypePredefinition)x)).ToList());
+            var edgeTypes = svcEdgeTypes.Select(x => new RemoteEdgeType(x, this)).ToList();
             RunningTime.Stop();
             return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), edgeTypes);
         }
@@ -169,7 +213,7 @@ namespace GraphDSRemoteClient
             var svcEdgeType = _GraphDSService.AlterEdgeType(mySecurityToken, myTransactionID,
                 new ServiceEdgeType(myRequestAlterEdgeType.TypeName),
                 new ServiceAlterEdgeChangeset(myRequestAlterEdgeType));
-            var edgeType = new RemoteEdgeType(svcEdgeType, _EdgeTypeService);
+            var edgeType = new RemoteEdgeType(svcEdgeType, this);
             RunningTime.Stop();
             return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), edgeType);
         }
@@ -197,7 +241,7 @@ namespace GraphDSRemoteClient
         {
             Stopwatch RunningTime = Stopwatch.StartNew();
             var svcVertex = _GraphDSService.Insert(mySecurityToken, myTransactionID, myRequestInsert.VertexTypeName, new ServiceInsertPayload(myRequestInsert));
-            var vertex = new RemoteVertex(svcVertex);
+            var vertex = new RemoteVertex(svcVertex, this);
             RunningTime.Stop();
             return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), vertex);
         }
