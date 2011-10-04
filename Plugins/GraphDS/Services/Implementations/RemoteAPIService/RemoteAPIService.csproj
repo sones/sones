@@ -53,6 +53,7 @@
     <Compile Include="DataContracts\InstanceObjects\ServiceHyperEdgeInstance.cs" />
     <Compile Include="DataContracts\InstanceObjects\ServiceSingleEdgeInstance.cs" />
     <Compile Include="DataContracts\PayloadObjects\ServiceDeletePayload.cs" />
+    <Compile Include="DataContracts\PayloadObjects\ServiceVertexStatistics.cs" />
     <Compile Include="DataContracts\PayloadObjects\UnstructuredProperty.cs" />
     <Compile Include="DataContracts\PayloadObjects\StructuredProperty.cs" />
     <Compile Include="DataContracts\QueryResult\ServiceEdgeView.cs" />

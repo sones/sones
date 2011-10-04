@@ -29,6 +29,8 @@ using System.IO;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 using sones.Library.Commons.Security;
 using sones.GraphDB.TypeSystem;
+using sones.Library.PropertyHyperGraph;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.PayloadObjects;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanceService
 {
@@ -47,7 +49,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
         /// <returns>True if there are incoming vertices, otherwise false</returns>
         [OperationContract]
-        Boolean HasIncomingVertices(SecurityToken mySecurityToken, Int64 myTransToken, Int64 myVertexTypeID, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+        Boolean HasIncomingVertices(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex, Int64 myVertexTypeID, Int64 myEdgePropertyID);
 
         /// <summary>
         /// Returns all incoming vertices
@@ -64,7 +66,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myEdgePropertyID">The edge property id that points to this vertex</param>
         /// <returns>All incoming vertices</returns>
         [OperationContract]
-        List<ServiceVertexInstance> GetIncomingVertices(SecurityToken mySecurityToken, Int64 myTransToken, Int64 myVertexTypeID, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+        List<ServiceVertexInstance> GetIncomingVertices(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex, Int64 myVertexTypeID, Int64 myEdgePropertyID);
 
         #endregion
 
@@ -84,7 +86,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myFilter">A function to filter those edges (EdgeID, IEdge, Bool)</param>
         /// <returns>An IEnumerable of all outgoing edges</returns>
         [OperationContract]
-        List<Tuple<Int64, ServiceEdgeInstance>> GetAllOutgoingEdges(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex);
+        List<ServiceEdgeInstance> GetAllOutgoingEdges(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex);
 
         /// <summary>
         /// Returns all outgoing hyper edges
@@ -92,7 +94,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myFilter">A function to filter those edges (EdgeID, IHyperEdge, Bool)</param>
         /// <returns>An IEnumerable of propertyID/hyper edge KVP</returns>
         [OperationContract]
-        List<Tuple<Int64, ServiceHyperEdgeInstance>> GetAllOutgoingHyperEdges(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex);
+        List<ServiceHyperEdgeInstance> GetAllOutgoingHyperEdges(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex);
 
         /// <summary>
         /// Returns all outgoing single edges
@@ -100,7 +102,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// <param name="myFilter">A function to filter those edges (EdgeID, ISingleEdge, Bool)</param>
         /// <returns>An IEnumerable of all single edges</returns>
         [OperationContract]
-        List<Tuple<Int64, ServiceSingleEdgeInstance>> GetAllOutgoingSingleEdges(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex);
+        List<ServiceSingleEdgeInstance> GetAllOutgoingSingleEdges(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex);
 
         /// <summary>
         /// Returns a specified edge
@@ -269,9 +271,22 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
         /// The date the graph element has been modified the last time
         /// </summary>
         [OperationContract(Name="ModificationDateByVertexInstance")]
-        long ModificationDate(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myGraphElement);
+        long ModificationDate(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex);
 
         #endregion
 
+        #region Statistics
+
+        [OperationContract]
+        ServiceVertexStatistics VertexStatistics(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex);
+
+        #endregion
+
+        #region PartitionID
+
+        [OperationContract]
+        Int64 PartitionID(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex);
+
+        #endregion
     }
 }

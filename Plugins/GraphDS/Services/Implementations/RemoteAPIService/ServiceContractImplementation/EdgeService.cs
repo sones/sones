@@ -43,7 +43,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             if(myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 return SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).GetProperty(myPropertyID);
             }
@@ -55,7 +55,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 return HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge){
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().GetProperty(myPropertyID);
             }
         }
@@ -64,7 +64,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             if(myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 return SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).HasProperty(myPropertyID);
             }
@@ -76,7 +76,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 return HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge){
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().HasProperty(myPropertyID);
             }
         }
@@ -85,7 +85,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             if(myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 return SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).GetCountOfProperties();
             }
@@ -97,7 +97,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 return HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge){
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().GetCountOfProperties();
             }
         }
@@ -107,7 +107,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             IEnumerable<Tuple<long, IComparable>> PropertyCollection;
             if(myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 PropertyCollection = SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).GetAllProperties();
             }
@@ -119,7 +119,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 PropertyCollection = HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge){
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().GetAllProperties();
             }
             return PropertyCollection.Select(x => new Tuple<long, object>(x.Item1, (object)x.Item2)).ToList();
@@ -129,7 +129,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             if(myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 return SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).GetPropertyAsString(myPropertyID);
             }
@@ -141,7 +141,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 return HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge){
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().GetPropertyAsString(myPropertyID);
             }
         }
@@ -150,7 +150,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             if(myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 return SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).GetUnstructuredProperty<object>(myPropertyName);
             }
@@ -162,7 +162,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 return HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge){
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().GetUnstructuredProperty<object>(myPropertyName);
             }
         }
@@ -171,7 +171,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             if(myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 return SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).HasUnstructuredProperty(myPropertyName);
             }
@@ -183,7 +183,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 return HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge){
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().HasUnstructuredProperty(myPropertyName);
             }
         }
@@ -192,7 +192,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             if(myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 return SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).GetCountOfUnstructuredProperties();
             }
@@ -204,7 +204,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 return HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge){
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().GetCountOfUnstructuredProperties();
             }
         }
@@ -213,7 +213,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             if(myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 return SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).GetAllUnstructuredProperties().ToList();
             }
@@ -225,7 +225,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 return HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge){
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().GetAllUnstructuredProperties().ToList();
             }
         }
@@ -234,7 +234,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             if(myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 return SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).GetUnstructuredPropertyAsString(myPropertyName);
             }
@@ -246,7 +246,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 return HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge){
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().GetUnstructuredPropertyAsString(myPropertyName);
             }
         }
@@ -255,7 +255,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             if (myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 return SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).Comment;
             }
@@ -268,7 +268,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 return HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge)
                 {
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().Comment;
             }
         }
@@ -277,7 +277,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             if (myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 return SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).CreationDate;
             }
@@ -290,7 +290,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 return HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge)
                 {
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().CreationDate;
             }
         }
@@ -299,7 +299,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             if (myEdge.EdgePropertyID != null)
             {
-                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertexTypeID, myEdge.SourceVertexID);
+                var Request = ServiceRequestFactory.MakeRequestGetVertex(myEdge.SourceVertex.TypeID, myEdge.SourceVertex.VertexID);
                 var SourceVertex = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
                 return SourceVertex.GetOutgoingEdge((Int64)myEdge.EdgePropertyID).ModificationDate;
             }
@@ -312,7 +312,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
                 IHyperEdge HyperEdge = SourceVertex.GetOutgoingHyperEdge((Int64)myEdge.EdgePropertyID);
                 return HyperEdge.GetAllEdges(delegate(ISingleEdge mySingleEdge)
                 {
-                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
+                    return (mySingleEdge.GetSourceVertex().VertexID == myEdge.SourceVertex.VertexID && mySingleEdge.GetTargetVertex().VertexID == (myEdge as ServiceSingleEdgeInstance).TargetVertex.VertexID);
                 }).First<ISingleEdge>().ModificationDate;
             }
         }
