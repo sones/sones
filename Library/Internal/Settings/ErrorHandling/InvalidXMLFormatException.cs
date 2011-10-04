@@ -42,7 +42,8 @@ namespace sones.Library.Settings.ErrorHandling
         /// creates a new InvalidXMLFormatException
         /// </summary>
         /// <param name="myInformation">An information about whats not well formed</param>
-        public InvalidXMLFormatException(String myInformation)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidXMLFormatException(String myInformation, Exception innerException = null) : base(innerException)
         {
             Info = myInformation;
         }

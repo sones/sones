@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new SelectTimeOutException exception
         /// </summary>
         /// <param name="myTimeout">The timeout</param>
-        public SelectTimeOutException(Int64 myTimeout)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public SelectTimeOutException(Int64 myTimeout, Exception innerException = null) : base(innerException)
         {
             TimeOut = myTimeout;
             _msg = String.Format("Aborting query because the timeout of {0}ms has been reached.", TimeOut);

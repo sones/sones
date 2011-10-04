@@ -35,7 +35,9 @@ namespace sones.GraphQL.ErrorHandling
         /// </summary>
         /// <param name="myIDChainDefinitionEdgesCount">The count of edges of the IDChainDefinition</param>
         /// <param name="myIDChainDefinitionContentString"></param>
-        public InvalidGroupByLevelException(String myIDChainDefinitionEdgesCount, String myIDChainDefinitionContentString)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidGroupByLevelException(String myIDChainDefinitionEdgesCount, String myIDChainDefinitionContentString, Exception innerException = null)
+			: base(innerException)
         {
             IDChainDefinitionEdgesCount = myIDChainDefinitionEdgesCount;
             IDChainDefinitionContentString = myIDChainDefinitionContentString;

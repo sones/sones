@@ -35,7 +35,8 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="myTypeName">The name of the given type</param>
         /// <param name="myIndexName">The name of the given index</param>
-        public IndexUniqueConstrainViolationException(String myTypeName, String myIndexName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public IndexUniqueConstrainViolationException(String myTypeName, String myIndexName, Exception innerException = null) : base(innerException)
         {
             TypeName = myTypeName;
             IndexName = myIndexName;

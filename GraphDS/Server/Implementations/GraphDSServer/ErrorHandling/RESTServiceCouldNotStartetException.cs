@@ -34,10 +34,10 @@ namespace sones.GraphDSServer.ErrorHandling
         /// <summary>
         /// The constructor for the exception.
         /// </summary>
-        /// <param name="myMessage">The exception message.</param>
-        public RESTServiceCouldNotBeStartedException(String myMessage)
+        /// <param name="message">The exception message, this parameter can be NULL.</param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public RESTServiceCouldNotBeStartedException(String message, Exception innerException = null) : base(message, innerException)
         {
-            _msg = myMessage;
         }
     }
 }

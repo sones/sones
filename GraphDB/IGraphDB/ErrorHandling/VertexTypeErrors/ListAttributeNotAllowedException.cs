@@ -33,7 +33,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new ListAttributeNotAllowedException exception
         /// </summary>
         /// <param name="VertexTypeName">The name of the vertex type</param>
-        public ListAttributeNotAllowedException(String myVertexTypeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public ListAttributeNotAllowedException(String myVertexTypeName, Exception innerException = null) : base(innerException)
         {
             VertexTypeName = myVertexTypeName;
             _msg = String.Format("The user defined vertex type \\{0}\\ should not be used with LIST<> attributes, please use SET<> instead.", VertexTypeName);

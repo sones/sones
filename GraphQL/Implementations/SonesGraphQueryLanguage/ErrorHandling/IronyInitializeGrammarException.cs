@@ -33,7 +33,13 @@ namespace sones.GraphQL.GQL.ErrorHandling
 
         private GrammarErrorList Errors;
 
-        public IronyInitializeGrammarException(GrammarErrorList myErrors, String myInfo)
+		/// <summary>
+		/// Initializes a new instance of the IronyInitializeGrammarException class.
+		/// </summary>
+		/// <param name="myErrors"></param>
+		/// <param name="myInfo"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public IronyInitializeGrammarException(GrammarErrorList myErrors, String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
 

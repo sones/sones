@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new UpdateVertexAttributeValueException exception
         /// </summary>
         /// <param name="myVertexAttributeName">The name of the vertex attribute</param>
-        public UpdateVertexAttributeValueException(String myVertexAttributeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public UpdateVertexAttributeValueException(String myVertexAttributeName, Exception innerException = null) : base(innerException)
         {
             VertexAttributeName = myVertexAttributeName;
             _msg = String.Format("Could not update value for vertex attribute \"{0}\".", VertexAttributeName);

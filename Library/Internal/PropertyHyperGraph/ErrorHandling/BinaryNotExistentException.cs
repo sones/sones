@@ -43,7 +43,8 @@ namespace sones.Library.PropertyHyperGraph.ErrorHandling
         /// Creates a new binary not existent exception.
         /// </summary>
         /// <param name="myPropertyID">The binary property id.</param>
-        public BinaryNotExistentException(Int64 myPropertyID)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public BinaryNotExistentException(Int64 myPropertyID, Exception innerException = null) : base(innerException)
         {
             PropertyID = myPropertyID;
         }

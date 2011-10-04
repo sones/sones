@@ -58,7 +58,9 @@ namespace sones.GraphDB.ErrorHandling
         /// <param name="myEdges">
         /// The list of edges that causes the exception.
         /// </param>
-        public TargetVertexTypeNotFoundException(VertexTypePredefinition myPredefinition, string myTargetVertexTypeName, IEnumerable<String> myEdges)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public TargetVertexTypeNotFoundException(VertexTypePredefinition myPredefinition, string myTargetVertexTypeName, IEnumerable<String> myEdges,
+												 Exception innerException = null) : base(innerException)
         {
             this.Predefinition = myPredefinition;
             this.TargetVertexTypeName = myTargetVertexTypeName;

@@ -132,7 +132,7 @@ namespace sones.sonesGraphDBStarter
 																													{ "bufferSizePages", bufferSize },
 																													{ "writeStrategy", configuredWriteStrategy },
 																													{ "minDummyVertexInitCapacity", minDummyVertexInitCapacity },
-																													{ "vertexPreExtension", vertexPreExtension } })));
+																													{ "vertexPreExtension", vertexPreExtension } })),true,null,location.AbsolutePath);
                 
                     if (!quiet)
                         Console.WriteLine("Persistence layer initialized.");

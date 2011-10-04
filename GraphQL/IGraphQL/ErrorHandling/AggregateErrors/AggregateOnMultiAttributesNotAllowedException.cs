@@ -29,7 +29,12 @@ namespace sones.GraphQL.ErrorHandling
     {
         public String Info { get; private set; }
 
-        public AggregateOnMultiAttributesNotAllowedException(String myInfo)
+		/// <summary>
+		/// Initializes a new instance of the AggregateOnMultiAttributesNotAllowedException class.
+		/// </summary>
+		/// <param name="myInfo"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public AggregateOnMultiAttributesNotAllowedException(String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             _msg = Info;

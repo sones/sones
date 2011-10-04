@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new InvalidSelectValueAssignmentException exception
         /// </summary>
         /// <param name="myInfo"></param>
-        public InvalidSelectValueAssignmentException(String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidSelectValueAssignmentException(String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             _msg = "You can not assign a value to [" + Info + "]";

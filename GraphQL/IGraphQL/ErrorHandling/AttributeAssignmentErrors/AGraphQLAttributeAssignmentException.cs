@@ -18,9 +18,17 @@
 * 
 */
 
+using System;
+
 namespace sones.GraphQL.ErrorHandling
 {
     public abstract class AGraphQLAttributeAssignmentException : AGraphQLException
     {        
+		/// <summary>
+		/// Initializes a new instance of the AGraphQLAttributeAssignmentException class.
+		/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public AGraphQLAttributeAssignmentException(Exception innerException = null) : base(innerException)
+		{}
     }
 }

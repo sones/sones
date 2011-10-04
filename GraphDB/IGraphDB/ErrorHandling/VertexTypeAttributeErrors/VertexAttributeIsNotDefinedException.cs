@@ -34,7 +34,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new VertexAttributeIsNotDefinedException exception
         /// </summary>
         /// <param name="myAttributeName">The name of the attribute</param>
-        public VertexAttributeIsNotDefinedException(String myAttributeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public VertexAttributeIsNotDefinedException(String myAttributeName, Exception innerException = null) : base(innerException)
         {
             AttributeName = myAttributeName;
             _msg = String.Format("The attribute \"{0}\" is not defined!", AttributeName);
@@ -45,7 +46,8 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="myTypeName">The name of the type</param>
         /// <param name="myAttributeName">The name of the attribute</param>
-        public VertexAttributeIsNotDefinedException(String myTypeName, String myAttributeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public VertexAttributeIsNotDefinedException(String myTypeName, String myAttributeName, Exception innerException = null) : base(innerException)
         {
             TypeName = myTypeName;
             AttributeName = myAttributeName;

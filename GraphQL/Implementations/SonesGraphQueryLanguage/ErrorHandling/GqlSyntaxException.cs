@@ -52,7 +52,8 @@ namespace sones.GraphQL.ErrorHandling
         /// </summary>
         /// <param name="mySyntaxError">The parser message from Irony (contains a message from kind of info, warning or error)</param>
         /// <param name="myQuery">The given query</param>
-        public GqlSyntaxException(ParserMessage mySyntaxError, String myQuery)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public GqlSyntaxException(ParserMessage mySyntaxError, String myQuery, Exception innerException = null) : base(innerException)
         {
             SyntaxError = mySyntaxError; 
             Info = myQuery;
@@ -70,24 +71,14 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new GqlSyntaxException exception
         /// </summary>
         /// <param name="myInfo"></param>
-        public GqlSyntaxException(String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public GqlSyntaxException(String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             _msg = Info;
-        }
 
-        /// <summary>
-        /// Creates a new GqlSyntaxException exception
-        /// </summary>
-        /// <param name="myInfo">An information</param>
-        /// <param name="myException">The occurred exception</param>
-        public GqlSyntaxException(String myInfo, Exception myException)
-        {
-            Info = myInfo;
-            Exception = myException;
-
-            if (myException != null)
-                _msg = Info + Environment.NewLine + Exception.Message;
+			if(InnerException != null)
+				_msg += Environment.NewLine + Exception.Message;
         }
 
         #endregion

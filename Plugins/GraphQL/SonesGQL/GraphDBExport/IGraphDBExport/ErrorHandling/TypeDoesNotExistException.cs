@@ -30,7 +30,13 @@ namespace sones.Plugins.SonesGQL.DBExport
         private String Type;
         private String Info;
 
-        public TypeDoesNotExistException(String myType, String myInfo)
+		/// <summary>
+		/// Initializes a new instance of the TypeDoesNotExistException class.
+		/// </summary>
+		/// <param name="myType"></param>
+		/// <param name="myInfo"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public TypeDoesNotExistException(String myType, String myInfo, Exception innerException = null) : base(innerException)
         {
             Type = myType;
             Info = myInfo;

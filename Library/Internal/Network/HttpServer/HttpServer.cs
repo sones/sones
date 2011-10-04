@@ -505,7 +505,7 @@ namespace sones.Library.Network.HttpServer
                 {
                     context.Response.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // no need to handle this exception, because the underlying connection is already closed
                 }

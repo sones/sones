@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new UpdateListVertexAttributeNoElementsException exception
         /// </summary>
         /// <param name="myAttributeName">The name of the attribute</param>
-        public UpdateListVertexAttributeNoElementsException(String myAttributeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public UpdateListVertexAttributeNoElementsException(String myAttributeName, Exception innerException = null) : base(innerException)
         {
             AttributeName = myAttributeName;
             _msg = String.Format("Could not find any objects while adding or removing elements to the list attribute {0}.", AttributeName);

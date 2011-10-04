@@ -84,9 +84,9 @@ namespace sones.Plugins.SonesGQL.Aggregates
                     }
                 }
             }
-            catch (ArithmeticException)
+            catch (ArithmeticException e)
             {
-                throw new InvalidArithmeticAggregationException(sumType, this.AggregateName);
+                throw new InvalidArithmeticAggregationException(sumType, this.AggregateName, e);
             }
 
             return new FuncParameter(sum, myPropertyDefinition);

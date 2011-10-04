@@ -34,7 +34,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Create a new instance of AbstractConstraintViolationException.
         /// </summary>
         /// <param name="myVertexTypeName">The name of the vertex type.</param>
-        public AbstractConstraintViolationException(String myVertexTypeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public AbstractConstraintViolationException(String myVertexTypeName, Exception innerException = null) : base(innerException)
         {
             VertexTypeName = myVertexTypeName;
             _msg = string.Format("Vertex type {0} ist abstract and can not contain vertices.", myVertexTypeName);

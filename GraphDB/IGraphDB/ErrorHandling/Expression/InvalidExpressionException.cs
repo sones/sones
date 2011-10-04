@@ -46,12 +46,19 @@ namespace sones.GraphDB.ErrorHandling.Expression
         /// Creates a new invalid expression exception
         /// </summary>
         /// <param name="myInvalidExpression">The expression that has been declared as invalid</param>
-        public InvalidExpressionException(IExpression myInvalidExpression)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidExpressionException(IExpression myInvalidExpression, Exception innerException = null) : base(innerException)
         {
             InvalidExpression = myInvalidExpression;
         }
 
-        public InvalidExpressionException(String myVertexTypeName, long myVertexID)
+		/// <summary>
+		/// Initializes a new instance of the InvalidExpressionException class using the specified vertex type name and vertex ID.
+		/// </summary>
+		/// <param name="myVertexTypeName"></param>
+		/// <param name="myVertexID"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidExpressionException(String myVertexTypeName, long myVertexID, Exception innerException = null) : base(innerException)
         {
             VertexTypeName = myVertexTypeName;
             VertexID = myVertexID;

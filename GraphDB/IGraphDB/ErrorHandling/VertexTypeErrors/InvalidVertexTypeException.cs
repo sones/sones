@@ -35,7 +35,8 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="myInvalidVertexType">The name of the invalid vertex type</param>
         /// <param name="myInfo"></param>
-        public InvalidVertexTypeException(String myInvalidVertexType, String myInfo) : base()
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidVertexTypeException(String myInvalidVertexType, String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             InvalidVertexType = myInvalidVertexType;

@@ -36,7 +36,8 @@ namespace sones.GraphQL.ErrorHandling
         /// <summary>
         /// Creates a new InvalidDumpFormatException exception
         /// </summary>
-        public InvalidDumpFormatException(String myDumpFormat, String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidDumpFormatException(String myDumpFormat, String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             DumpFormat = myDumpFormat;

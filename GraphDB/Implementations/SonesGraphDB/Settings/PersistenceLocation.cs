@@ -1,4 +1,4 @@
-﻿/*
+/*
 * sones GraphDB - Community Edition - http://www.sones.com
 * Copyright (C) 2007-2011 sones GmbH
 *
@@ -19,20 +19,37 @@
 */
 
 using System;
-using sones.Library.ErrorHandling;
+using sones.Library.Settings;
 
-namespace sones.Library.CollectionWrapper.ErrorHandling
+// HACK: this is to be replaced by dedicated settings !!! (btk,23.09.2011)
+namespace sones.GraphDB.Settings
 {
     /// <summary>
-    /// Abstract exception class for any collection wrapper exception.
+    /// setting that defines the persistence location of GraphDB
     /// </summary>
-    public abstract class ACollectionException : ASonesException
+    public sealed class PersistenceLocation : IGraphSetting
     {
-		/// <summary>
-		/// Initializes a new instance of the ACollectionException.
-		/// </summary>
-		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
-		public ACollectionException(Exception innerException = null) : base(innerException)
-		{}
+        #region IGraphSetting Members
+
+        public string SettingName
+        {
+            get { return "PersistenceLocation"; }
+        }
+
+        public string DefaultSettingValue
+        {
+            get { return ""; }
+        }
+
+        public Type SettingType
+        {
+            get { return typeof(String); }
+        }
+
+        public bool IsValidValue(string myValue)
+        {
+            return true;
+        }
+        #endregion
     }
 }

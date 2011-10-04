@@ -365,9 +365,9 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
             {
                 Convert.ChangeType(val, myParameter.Value as Type);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw new FunctionParameterTypeMismatchException(myParameter.Value as Type, val.GetType());
+                throw new FunctionParameterTypeMismatchException(myParameter.Value as Type, val.GetType(), e);
             }
 
             return new FuncParameter(val, myTypeAttribute);

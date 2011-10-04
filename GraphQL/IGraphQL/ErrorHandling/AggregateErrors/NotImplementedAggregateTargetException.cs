@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new NotImplementedAggregateTargetException exception
         /// </summary>
         /// <param name="myAggregateTarget"></param>
-        public NotImplementedAggregateTargetException(Type myAggregateTarget)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public NotImplementedAggregateTargetException(Type myAggregateTarget, Exception innerException = null) : base(innerException)
         {
             AggregateTarget = myAggregateTarget;
             _msg = String.Format("Currently the type {0} is not implemented for aggregates.", AggregateTarget.Name);

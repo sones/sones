@@ -43,7 +43,9 @@ namespace sones.Plugins.SonesGQL.Function.ErrorHandling
         /// <param name="myFunctionParameterName">The function parameter name</param>
         /// <param name="myExpected">The expected parameter value</param>
         /// <param name="myFunctionParameterValue">The function parameter value</param>
-        public InvalidFunctionParameterException(String myFunctionParameterName, Object myExpected, Object myFunctionParameterValue)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidFunctionParameterException(String myFunctionParameterName, Object myExpected, Object myFunctionParameterValue, Exception innerException = null)
+			: base(innerException)
         {
             FunctionParameterName = myFunctionParameterName;
             FunctionParameterValue = myFunctionParameterValue;
