@@ -54,7 +54,16 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// <returns>A data tuple.</returns>
         private static DataContainer JoinData(DataContainer leftData, DataContainer rightData)
         {
-            return new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(leftData.IDChainDefinitions.Item1, rightData.IDChainDefinitions.Item1), new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Operands.Item1, rightData.Operands.Item1), new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Extraordinaries.Item1, rightData.Extraordinaries.Item1));
+            return new DataContainer(
+                    new Tuple<IDChainDefinition, IDChainDefinition>(
+                        leftData.IDChainDefinitions.Item1, 
+                        rightData.IDChainDefinitions.Item1), 
+                    new Tuple<AExpressionDefinition, AExpressionDefinition>(
+                        leftData.Operands.Item1, 
+                        rightData.Operands.Item1), 
+                    new Tuple<AExpressionDefinition, AExpressionDefinition>(
+                        leftData.Extraordinaries.Item1, 
+                        rightData.Extraordinaries.Item1));
         }
 
         /// <summary>
@@ -65,7 +74,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// <param name="errors">The list of errors.</param>
         /// <param name="typeOfBinExpr">The kind of the binary expression</param>
         /// <returns>A data tuple.</returns>
-        private static DataContainer ExtractData(AExpressionDefinition myComplexValue, AExpressionDefinition mySimpleValue, ref TypesOfBinaryExpression typeOfBinExpr, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, Boolean aggregateAllowed)
+        private static DataContainer ExtractData(AExpressionDefinition myComplexValue, 
+                                                    AExpressionDefinition mySimpleValue, 
+                                                    ref TypesOfBinaryExpression typeOfBinExpr, 
+                                                    GQLPluginManager myPluginManager, 
+                                                    IGraphDB myGraphDB, 
+                                                    SecurityToken mySecurityToken, 
+                                                    Int64 myTransactionToken, 
+                                                    Boolean aggregateAllowed)
         {
             #region data
 
@@ -218,10 +234,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
             #endregion
 
-            return new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(complexIDNode, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(simpleValue, complexValue), new Tuple<AExpressionDefinition, AExpressionDefinition>(extraordinaryValue, null));
+            return new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(complexIDNode, null), 
+                                        new Tuple<AExpressionDefinition, AExpressionDefinition>(simpleValue, complexValue), 
+                                        new Tuple<AExpressionDefinition, AExpressionDefinition>(extraordinaryValue, null));
         }
 
-        private static ValueDefinition GetCorrectValueDefinition(IAttributeDefinition typeAttribute, IVertexType graphDBType, ValueDefinition myValueDefinition)
+        private static ValueDefinition GetCorrectValueDefinition(IAttributeDefinition typeAttribute, 
+                                                                    IVertexType graphDBType, 
+                                                                    ValueDefinition myValueDefinition)
         {
 
             if (typeAttribute.Kind == AttributeType.IncomingEdge)

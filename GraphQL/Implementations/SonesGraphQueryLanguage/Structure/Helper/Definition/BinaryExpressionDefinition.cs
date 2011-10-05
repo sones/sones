@@ -41,7 +41,6 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 {
     public sealed class BinaryExpressionDefinition : AExpressionDefinition
     {
-
         #region Properties
 
         public TypesOfBinaryExpression TypeOfBinaryExpression { get; private set; }
@@ -97,7 +96,11 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         /// <summary>
         /// Validates the expression (Set the TypeOfBinaryExpression, do some simplifications and validates all IDChains
         /// </summary>
-        public void Validate(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, params IVertexType[] types)
+        public void Validate(GQLPluginManager myPluginManager, 
+                                IGraphDB myGraphDB, 
+                                SecurityToken mySecurityToken, 
+                                Int64 myTransactionToken, 
+                                params IVertexType[] types)
         {
 
             if (IsValidated)
@@ -231,6 +234,8 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
             #endregion
 
+            
+
             #region try to get values from complex expr
 
             AOperationDefinition leftTemp;
@@ -354,7 +359,12 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
             }
         }
 
-        private AExpressionDefinition TryGetBinexpression(AExpressionDefinition expression, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, params IVertexType[] types)
+        private AExpressionDefinition TryGetBinexpression(AExpressionDefinition expression, 
+                                                            GQLPluginManager myPluginManager, 
+                                                            IGraphDB myGraphDB, 
+                                                            SecurityToken mySecurityToken, 
+                                                            Int64 myTransactionToken, 
+                                                            params IVertexType[] types)
         {
 
             if (expression is BinaryExpressionDefinition)
@@ -386,7 +396,12 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         /// <summary>
         /// This will check all tupe value. If it contains only one value it will be converted to a ValueDefinition. If it contains a SelectDefinition it will be executed and the result added to the tuple.
         /// </summary>
-        private AOperationDefinition AssignCorrectTuple(GQLPluginManager myPluginManager, TupleDefinition myTupleDefinition, BinaryOperator myOperator, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        private AOperationDefinition AssignCorrectTuple(GQLPluginManager myPluginManager, 
+                                                        TupleDefinition myTupleDefinition, 
+                                                        BinaryOperator myOperator, 
+                                                        IGraphDB myGraphDB, 
+                                                        SecurityToken mySecurityToken, 
+                                                        Int64 myTransactionToken)
         {
             var retVal = new TupleDefinition(myTupleDefinition.KindOfTuple);
             var validTuple = ABinaryOperator.GetValidTupleReloaded(myTupleDefinition, myGraphDB, mySecurityToken, myTransactionToken);
@@ -550,7 +565,12 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         /// <summary>
         /// This method evaluates binary expressions.
         /// </summary>
-        public IExpressionGraph Calculon(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, IExpressionGraph resultGraph, bool aggregateAllowed = true)
+        public IExpressionGraph Calculon(GQLPluginManager myPluginManager, 
+                                            IGraphDB myGraphDB, 
+                                            SecurityToken mySecurityToken, 
+                                            Int64 myTransactionToken, 
+                                            IExpressionGraph resultGraph, 
+                                            bool aggregateAllowed = true)
         {
             //a leaf expression is a expression without any recursive BinaryExpression
             if (IsLeafExpression())
@@ -560,9 +580,9 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
                 return ABinaryCompareOperator.TypeOperation(this.Left, this.Right,
                     myPluginManager, myGraphDB, mySecurityToken, myTransactionToken,
                     this.TypeOfBinaryExpression,
-                   resultGraph,
-                   TypesOfOperators.AffectsLocalLevelOnly, Operator,
-                   aggregateAllowed);
+                    resultGraph,
+                    TypesOfOperators.AffectsLocalLevelOnly, Operator,
+                    aggregateAllowed);
 
                 #endregion
             }

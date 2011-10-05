@@ -42,6 +42,11 @@ namespace sones.GraphDB.Expression
         /// </summary>
         public readonly IExpression Right;
 
+        /// <summary>
+        /// The index which should be used to resolve the expression.
+        /// </summary>
+        public readonly string ExpressionIndex = null;
+
         #endregion
 
         #region Constructor
@@ -52,11 +57,17 @@ namespace sones.GraphDB.Expression
         /// <param name="myLeftExpression">The left side of the BinaryExpression</param>
         /// <param name="myBinaryOperator">The binary operator</param>
         /// <param name="myRightExpression">The right side of the BinaryExpression</param>
-        public BinaryExpression (IExpression myLeftExpression, BinaryOperator myBinaryOperator, IExpression myRightExpression)
+        /// <param name="myExpressionIndex">The index which should be used for the expression</param>
+        public BinaryExpression (IExpression myLeftExpression, 
+                                    BinaryOperator myBinaryOperator, 
+                                    IExpression myRightExpression,
+                                    string myExpressionIndex = null)
         {
             Left = myLeftExpression;
             Right = myRightExpression;
             Operator = myBinaryOperator;
+
+            ExpressionIndex = myExpressionIndex;
         }
 
         #endregion

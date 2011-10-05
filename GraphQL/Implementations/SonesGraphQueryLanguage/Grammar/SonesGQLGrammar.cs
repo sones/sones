@@ -1268,7 +1268,18 @@ namespace sones.GraphQL
 
             #region SELECT
 
-            SelectStmtGraph.Rule = S_FROM + VertexTypeList + S_SELECT + selList + NT_whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
+            SelectStmtGraph.Rule = S_FROM + 
+                                    VertexTypeList + 
+                                    S_SELECT + 
+                                    selList + 
+                                    NT_whereClauseOpt + 
+                                    groupClauseOpt + 
+                                    havingClauseOpt + 
+                                    orderClauseOpt + 
+                                    offsetOpt + 
+                                    limitOpt + 
+                                    resolutionDepthOpt + 
+                                    selectOutputOpt;
 
             resolutionDepthOpt.Rule = Empty
                                         | S_DEPTH + number;
