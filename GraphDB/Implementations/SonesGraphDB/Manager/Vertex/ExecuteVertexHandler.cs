@@ -1975,7 +1975,7 @@ namespace sones.GraphDB.Manager.Vertex
                         }
                     }
 
-                    outStructuredUpdate = CreateStructuredUpdate(myEdge.StructuredProperties, edgeDef.EdgeType);
+                    outStructuredUpdate = CreateStructuredUpdate(myEdge.StructuredProperties, edgeDef.InnerEdgeType);
                     outUnstructuredUpdate = CreateUnstructuredUpdate(myEdge.UnstructuredProperties);
 
                     break;

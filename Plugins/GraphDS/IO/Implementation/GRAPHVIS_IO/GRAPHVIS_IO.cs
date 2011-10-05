@@ -105,6 +105,11 @@ namespace sones.Plugins.GraphDS.IO
             get { return "graphvis"; }
         }
 
+        public string PluginDescription
+        {
+            get { return "This class realize a visual graph output based on D3 framework."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

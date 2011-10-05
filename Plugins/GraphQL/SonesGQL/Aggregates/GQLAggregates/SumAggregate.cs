@@ -31,7 +31,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
     /// <summary>
     /// The aggregate Sum
     /// </summary>
-    public sealed class SumAggregate : IGQLAggregate, IPluginable
+    public sealed class SumAggregate : IGQLAggregate
     {
         #region constructor
 
@@ -45,17 +45,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         #endregion
 
-        #region describe
-        /// <summary>
-        /// Returns the description of the aggregate.
-        /// </summary>
-        public string GetDescribeOutput()
-        {
-            return "This aggregate will calculate the sum of the given operands. This aggregate is type dependent and will only operate on numbers.";
-        }
-        #endregion
-
-        #region IGQLAggregate Members
+        #region IGQLAggregate
 
         /// <summary>
         /// Calculates the sum
@@ -81,7 +71,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
             }
             catch (ArithmeticException)
             {
-                throw new InvalidArithmeticAggregationException(sumType, this.AggregateName);
+                throw new InvalidArithmeticAggregationException(sumType, this.PluginShortName);
             }
 
             return new FuncParameter(sum, myPropertyDefinition);
@@ -89,7 +79,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         #endregion
 
-        #region IPluginable Members
+        #region IPluginable
 
         public string PluginName
         {
@@ -99,6 +89,11 @@ namespace sones.Plugins.SonesGQL.Aggregates
         public string PluginShortName
         {
             get { return "sum"; }
+        }
+
+        public string PluginDescription
+        {
+            get { return "This aggregate will calculate the sum of the given operands. This aggregate is type dependent and will only operate on numbers."; }
         }
 
         public PluginParameters<Type> SetableParameters
@@ -113,16 +108,6 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         public void Dispose()
         { }
-
-        #endregion
-
-        #region IGQLAggregate Members
-
-
-        public string AggregateName
-        {
-            get { return "sum"; }
-        }
 
         #endregion
     }

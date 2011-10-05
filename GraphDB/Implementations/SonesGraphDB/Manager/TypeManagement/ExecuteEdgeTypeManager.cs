@@ -613,10 +613,10 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                 myTransactionToken,
                                                 mySecurityToken);
 
-            removedProps.AddRange(UndefineAttributes(myAlterTypeRequest.ToBeUndefinedAttributes,
+            List<long> undefProps = (List<long>)UndefineAttributes(myAlterTypeRequest.ToBeUndefinedAttributes,
                                                 myType,
                                                 myTransactionToken,
-                                                mySecurityToken));
+                                                mySecurityToken);
 
             myUpdateRequest
                 .UpdateEdge(new SingleEdgeUpdateDefinition(
@@ -645,6 +645,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             var addedProps = AddAttributes(myAlterTypeRequest.ToBeAddedProperties,
                                               myType, 
                                               myTransactionToken, 
+                                              mySecurityToken);
+
+            var definedProps = DefineAttributes(myAlterTypeRequest.ToBeDefinedAttributes,
+                                              myType,
+                                              myTransactionToken,
                                               mySecurityToken);
 
             myUpdateRequest
@@ -722,7 +727,139 @@ namespace sones.GraphDB.Manager.TypeManagement
             SecurityToken mySecurityToken,
             IEdgeType myType)
         {
-            throw new NotImplementedException();
+            Dictionary<long, IComparable> dict = null;
+
+            foreach (var aAttribute in myToBeDefinedAttributes)
+            {
+                dict = dict ?? new Dictionary<long, IComparable>();
+
+                var id = _idManager
+                            .GetEdgeTypeUniqeID((long)BaseTypes.Attribute)
+                            .GetNextID();
+
+                dict.Add(id, aAttribute.DefaultValue);
+
+                foreach (var vertex in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myType.ID))
+                {
+                    bool bFound = false;
+
+                    #region cast existing unstructured properties on vertices to structured
+
+                    foreach (var property in vertex.GetAllUnstructuredProperties())
+                    {
+                        if (property.Item1.CompareTo(aAttribute.AttributeName) == 0)
+                        {
+                            bFound = true;
+
+                            // Found unstructured property with same name on the vertex
+                            var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
+                            IComparable value = null;
+
+                            // Try Convert Type
+                            try
+                            {
+                                value = property.Item2.ConvertToIComparable(targettype);
+                            }
+                            catch (InvalidCastException)
+                            {
+                                throw new VertexAttributeCastException(aAttribute.AttributeName, property.Item2.GetType(), targettype, false);
+                            }
+                            catch (FormatException)
+                            {
+                                throw new VertexAttributeCastException(aAttribute.AttributeName, property.Item2.GetType(), targettype, true);
+                            }
+
+                            // add list with only one item -> unstructured property to delete
+                            var unstructdel = new List<string>();
+                            unstructdel.Add(property.Item1);
+                            UnstructuredPropertiesUpdate propdelete = new UnstructuredPropertiesUpdate(null, unstructdel);
+
+                            // add list with only one item -> structured property to add
+                            Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
+                            properties2add.Add(id, value);
+                            StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
+
+                            // Update the vertex (delete unstructured and add structured)
+                            VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, propadd, propdelete);
+                            _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
+
+                            // we can break as we already found the property on the vertex
+                            break;
+                        }
+                    }
+
+                    #endregion
+
+                    #region add mandatory attribute if not existing on vertex
+
+                    if ((!bFound) && (aAttribute.IsMandatory))
+                    {
+                        if (aAttribute.DefaultValue == null) throw new DefineMandatoryWithoutDefaultException(aAttribute.AttributeName, myType.Name);
+
+                        // Found unstructured property with same name on the vertex
+                        var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
+                        IComparable value = null;
+
+                        // Try Convert Type
+                        try
+                        {
+                            value = aAttribute.DefaultValue.ConvertToIComparable(targettype);
+                        }
+                        catch (InvalidCastException)
+                        {
+                            throw new VertexAttributeCastException(aAttribute.AttributeName, aAttribute.DefaultValue.GetType(), targettype, false);
+                        }
+                        catch (FormatException)
+                        {
+                            throw new VertexAttributeCastException(aAttribute.AttributeName, aAttribute.DefaultValue.GetType(), targettype, true);
+                        }
+
+                        // add list with only one item -> structured property to add
+                        Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
+                        properties2add.Add(id, value);
+                        StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
+
+                        // Update the vertex (add structured)
+                        VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, propadd);
+                        _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
+                    }
+
+                    #endregion
+                }
+
+                #region add property definition to vertex type
+
+                PropertyMultiplicity multiplicity = PropertyMultiplicity.Single;
+                switch (aAttribute.Multiplicity)
+                {
+                    case UnknownAttributePredefinition.LISTMultiplicity: multiplicity = PropertyMultiplicity.List; break;
+                    case UnknownAttributePredefinition.SETMultiplicity: multiplicity = PropertyMultiplicity.Set; break;
+                    default: multiplicity = PropertyMultiplicity.Single; break;
+                }
+
+                _baseStorageManager.StoreProperty(
+                    _vertexManager.ExecuteManager.VertexStore,
+                    new VertexInformation(
+                        (long)BaseTypes.Property,
+                        id),
+                    aAttribute.AttributeName,
+                    aAttribute.Comment,
+                    DateTime.UtcNow.ToBinary(),
+                    aAttribute.IsMandatory,
+                    multiplicity,
+                    aAttribute.DefaultValue,
+                    true,
+                    new VertexInformation(
+                        (long)BaseTypes.EdgeType,
+                        myType.ID),
+                    ConvertBasicType(aAttribute.AttributeType),
+                    mySecurityToken,
+                    myTransactionToken);
+
+                #endregion
+            }
+
+            return dict;
         }
 
         /// <summary>
@@ -953,6 +1090,30 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             if (myToBeAddedProperties.IsNotNullOrEmpty())
                 return ProcessAddPropery(myToBeAddedProperties,
+                                            myTransactionToken,
+                                            mySecurityToken,
+                                            myType);
+
+            return null;
+        }
+
+        /// <summary>
+        /// Defines attributes.
+        /// </summary>
+        /// <param name="myToBeDefinedAttributes">The to be defined attributes.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <returns>A dictionary with to be defined attributes and default value.</returns>
+        private Dictionary<long, IComparable> DefineAttributes(
+            IEnumerable<UnknownAttributePredefinition> myToBeDefinedAttributes,
+            IEdgeType myType,
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken)
+        {
+
+            if (myToBeDefinedAttributes.IsNotNullOrEmpty())
+                return ProcessDefineAttributes(myToBeDefinedAttributes,
                                             myTransactionToken,
                                             mySecurityToken,
                                             myType);

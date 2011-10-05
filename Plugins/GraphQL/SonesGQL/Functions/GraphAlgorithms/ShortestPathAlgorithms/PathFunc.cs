@@ -51,12 +51,6 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
 
         #endregion
 
-        public override string GetDescribeOutput()
-        {
-            return "A path algorithm. This algorithm searches the shortest, all shortest or all paths up to a given depth an path length." +
-                    "Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used.";
-        }
-
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             if (myWorkingBase is IAttributeDefinition)
@@ -276,6 +270,11 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             get { return "path"; }
         }
 
+		public override string PluginDescription
+        {
+			get { return "A path algorithm. This algorithm searches the shortest, all shortest or all paths up to a given depth an path length. Depending on the parameter 'UseBidirectionalBFS' a standard BFS algorithm or a bidirectional BFS is used."; }
+		}
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -286,12 +285,7 @@ namespace sones.Plugins.SonesGQL.Functions.ShortestPathAlgorithms
             return new PathFunc();
         }
 
-        public override string FunctionName
-        {
-            get { return "path"; }
-        }
-
-        public void Dispose()
+        public override void Dispose()
         { }
 
         #endregion

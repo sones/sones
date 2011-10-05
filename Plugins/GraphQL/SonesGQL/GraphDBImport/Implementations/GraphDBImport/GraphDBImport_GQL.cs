@@ -39,7 +39,7 @@ using System.Threading;
 
 namespace sones.Plugins.SonesGQL
 {
-    public sealed class GraphDBImport_GQL : IGraphDBImport, IPluginable
+    public sealed class GraphDBImport_GQL : IGraphDBImport
     {
         #region constructor
 
@@ -49,11 +49,6 @@ namespace sones.Plugins.SonesGQL
         #endregion
 
         #region IGraphDBImport Members
-
-        public string ImportFormat
-        {
-            get { return "GQL"; }
-        }
 
         public QueryResult Import(String myLocation,
             IGraphDB myGraphDB,
@@ -91,13 +86,15 @@ namespace sones.Plugins.SonesGQL
                 else
                 {
                     error = new InvalidImportLocationException(myLocation, @"file:\\", "http://");
-                    result = new QueryResult("", ImportFormat, 0L, ResultType.Failed, null, error);
+                    result = new QueryResult("", PluginShortName, 0L, ResultType.Failed, null, error);
                     return result;
                 }
 
                 #region Start import using the AGraphDBImport implementation and return the result
 
-                return Import(stream, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, myParallelTasks, myComments, myOffset, myLimit, myVerbosityType);
+                result = Import(stream, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, myParallelTasks, myComments, myOffset, myLimit, myVerbosityType);
+
+                return new QueryResult(result.Query, result.NameOfQuerylanguage, result.Duration, result.TypeOfResult, null, result.Error);
 
                 #endregion
             }
@@ -105,7 +102,7 @@ namespace sones.Plugins.SonesGQL
             {
                 #region throw new exception
                 error = new ImportFailedException(ex);
-                result = new QueryResult("", ImportFormat, 0L, ResultType.Failed, null, error);
+                result = new QueryResult("", PluginShortName, 0L, ResultType.Failed, null, error);
                 return result;
                 #endregion
             }
@@ -167,35 +164,13 @@ namespace sones.Plugins.SonesGQL
                                                 IEnumerable<String> comments = null)
         {
             #region data
-            QueryResult queryResult = new QueryResult(myLines.ToString(), ImportFormat, 0L, ResultType.Successful);
+            QueryResult queryResult = new QueryResult(myLines.ToString(), PluginShortName, 0L, ResultType.Successful);
             Int64 numberOfLine = 0;
             var query = String.Empty;
             var aggregatedResults = new List<IEnumerable<IVertexView>>();
             Stopwatch StopWatchLine = new Stopwatch();
             Stopwatch StopWatchLines = new Stopwatch();
             #endregion
-
-            List<String> creates = new List<String>();
-
-            var lineEnum = myLines.GetEnumerator();
-            if (lineEnum.Current == null)
-                lineEnum.MoveNext();
-
-            while (lineEnum.Current != null && lineEnum.Current.StartsWith("CREATE"))
-            {
-                creates.Add(lineEnum.Current);
-
-                lineEnum.MoveNext();
-            };
-
-            var skip = creates.Count();
-
-            ExecuteAsSingleThread(creates,
-                                    myIGraphQL,
-                                    mySecurityToken,
-                                    myTransactionToken,
-                                    myVerbosityType,
-                                    comments);
 
             #region Create parallel options
 
@@ -210,7 +185,7 @@ namespace sones.Plugins.SonesGQL
 
             StopWatchLines.Start();
 
-            Parallel.ForEach(myLines.Skip(skip), parallelOptions, (line, state) =>
+            Parallel.ForEach(myLines, parallelOptions, (line, state) =>
             {
                 if (!IsComment(line, comments))
                 {
@@ -234,7 +209,7 @@ namespace sones.Plugins.SonesGQL
 
                     if (qresult.TypeOfResult != ResultType.Successful && myVerbosityType != VerbosityTypes.Silent)
                     {
-                        queryResult = new QueryResult(line, ImportFormat, Convert.ToUInt64(StopWatchLine.ElapsedMilliseconds), ResultType.Failed, qresult.Vertices, qresult.Error);
+                        queryResult = new QueryResult(line, PluginShortName, Convert.ToUInt64(StopWatchLine.ElapsedMilliseconds), ResultType.Failed, qresult.Vertices, qresult.Error);
 
                         state.Break();
                     }
@@ -250,14 +225,14 @@ namespace sones.Plugins.SonesGQL
             //add the results of each query into the queryResult
             if (queryResult != null)
                 queryResult = new QueryResult(myLines.ToString(),
-                                                ImportFormat,
+                                                PluginShortName,
                                                 Convert.ToUInt64(StopWatchLines.ElapsedMilliseconds),
                                                 queryResult.TypeOfResult,
                                                 AggregateListOfListOfVertices(aggregatedResults),
                                                 queryResult.Error);
             else
                 queryResult = new QueryResult(myLines.ToString(),
-                                                ImportFormat,
+                                                PluginShortName,
                                                 Convert.ToUInt64(StopWatchLines.ElapsedMilliseconds),
                                                 ResultType.Successful,
                                                 AggregateListOfListOfVertices(aggregatedResults));
@@ -319,7 +294,7 @@ namespace sones.Plugins.SonesGQL
 
                     if (myVerbosityType == VerbosityTypes.Errors)
                     {
-                        queryResult = new QueryResult(_Line, ImportFormat, 0L, ResultType.Failed, tempResult.Vertices, tempResult.Error);
+                        queryResult = new QueryResult(_Line, PluginShortName, 0L, ResultType.Failed, tempResult.Vertices, tempResult.Error);
 
                         break;
                     }
@@ -337,14 +312,14 @@ namespace sones.Plugins.SonesGQL
             //add the results of each query into the queryResult
             if (queryResult != null)
                 queryResult = new QueryResult(myLines.ToString(),
-                                                ImportFormat,
+                                                PluginShortName,
                                                 Convert.ToUInt64(StopWatchLines.ElapsedMilliseconds),
                                                 queryResult.TypeOfResult,
                                                 AggregateListOfListOfVertices(aggregatedResults),
                                                 queryResult.Error);
             else
                 queryResult = new QueryResult(myLines.ToString(),
-                                                ImportFormat,
+                                                PluginShortName,
                                                 Convert.ToUInt64(StopWatchLines.ElapsedMilliseconds),
                                                 ResultType.Successful,
                                                 AggregateListOfListOfVertices(aggregatedResults));
@@ -440,7 +415,12 @@ namespace sones.Plugins.SonesGQL
 
         public string PluginShortName
         {
-            get { return "gqlimport"; }
+            get { return "GQL"; }
+        }
+
+        public string PluginDescription
+        {
+            get { return "This class realizes GQL code import from a file."; }
         }
 
         public PluginParameters<Type> SetableParameters
