@@ -76,16 +76,23 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
             get { return _OperatorSymbol; }
         }
 
+        public readonly String ExpressionIndex = null;
+        
         #endregion
 
         #region Ctor
 
-        public BinaryExpressionDefinition(String myOperatorSymbol, AExpressionDefinition myLeft, AExpressionDefinition myRight)
+        public BinaryExpressionDefinition(String myOperatorSymbol, 
+                                            AExpressionDefinition myLeft, 
+                                            AExpressionDefinition myRight,
+                                            String myExpressionIndex = null)
         {
 
             _OperatorSymbol = myOperatorSymbol;
             _Left = myLeft;
             _Right = myRight;
+
+            ExpressionIndex = myExpressionIndex;
 
         }
 
@@ -577,12 +584,19 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
             {
                 #region process leaf expression
 
-                return ABinaryCompareOperator.TypeOperation(this.Left, this.Right,
-                    myPluginManager, myGraphDB, mySecurityToken, myTransactionToken,
-                    this.TypeOfBinaryExpression,
-                    resultGraph,
-                    TypesOfOperators.AffectsLocalLevelOnly, Operator,
-                    aggregateAllowed);
+                return ABinaryCompareOperator.TypeOperation(
+                                                this.Left, 
+                                                this.Right,
+                                                myPluginManager, 
+                                                myGraphDB, 
+                                                mySecurityToken, 
+                                                myTransactionToken,
+                                                this.TypeOfBinaryExpression,
+                                                resultGraph,
+                                                TypesOfOperators.AffectsLocalLevelOnly, 
+                                                Operator,
+                                                this.ExpressionIndex,
+                                                aggregateAllowed);
 
                 #endregion
             }

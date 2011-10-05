@@ -45,7 +45,10 @@ namespace sones.GraphQL.GQL.ErrorHandling
             
             foreach (var error in myErrors)
             {
-                msg.AppendLine(String.Format("{0} {1} {2}", error.Level.ToString(), error.Message, error.State.Name));
+                msg.AppendLine(String.Format("{0} {1} {2}", 
+                                                error.Level.ToString(), 
+                                                error.Message, 
+                                                error.State == null ? "" : error.State.Name));
             }
 
             msg.AppendLine(Info);

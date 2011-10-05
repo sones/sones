@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\InvalidBinaryExpressionIndexException.cs" />
     <Compile Include="ErrorHandling\InvalidEdgeListOperationException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\ExpressionGraphInternalException.cs" />
@@ -279,6 +280,7 @@
     <Compile Include="Structure\Nodes\Misc\OptionsNode.cs" />
     <Compile Include="Structure\Nodes\Misc\KeyValuePairNode.cs" />
     <Compile Include="Structure\Nodes\Misc\KeyValueListNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\UseIndexNode.cs" />
     <Compile Include="Structure\Nodes\Misc\VertexTypeNode.cs" />
     <Compile Include="Structure\Helper\Definition\IDChainDefinition.cs" />
     <Compile Include="Structure\Nodes\Misc\IDNode.cs" />

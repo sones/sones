@@ -18,7 +18,6 @@
 * 
 */
 
-using System;
 using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphQL.GQL.Structure.Nodes.Expressions;
@@ -41,7 +40,6 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
         {
             if (HasChildNodes(parseNode))
             {
-
                 if (parseNode.ChildNodes[1].AstNode is TupleNode && (parseNode.ChildNodes[1].AstNode as TupleNode).TupleDefinition.TupleElements.Count == 1)
                 {
                     var tuple = (parseNode.ChildNodes[1].AstNode as TupleNode).TupleDefinition.Simplyfy();
