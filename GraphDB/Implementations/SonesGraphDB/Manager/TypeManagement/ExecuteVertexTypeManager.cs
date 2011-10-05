@@ -1621,11 +1621,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                 myType, 
                                                 myTransactionToken, 
                                                 mySecurityToken);
-
-                    myUpdateRequest
-                        .RemoveAlteredAttribute(myType
-                                                .GetAttributeDefinitions(true)
-                                                .Where(_ => myToBeRemovedIncomingEdges.Contains(_.Name)));
                 }
 
                 if (myToBeRemovedOutgoingEdges.IsNotNullOrEmpty())
@@ -1634,11 +1629,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                 myType, 
                                                 myTransactionToken, 
                                                 mySecurityToken);
-
-                    myUpdateRequest
-                        .RemoveAlteredAttribute(myType
-                                                .GetAttributeDefinitions(true)
-                                                .Where(_ => myToBeRemovedOutgoingEdges.Contains(_.Name)));
                 }
 
                 if (myToBeRemovedProperties.IsNotNullOrEmpty())
@@ -1647,11 +1637,6 @@ namespace sones.GraphDB.Manager.TypeManagement
                                             myType, 
                                             myTransactionToken, 
                                             mySecurityToken);
-
-                    myUpdateRequest
-                        .RemoveAlteredAttribute(myType
-                                                .GetAttributeDefinitions(true)
-                                                .Where(_ => myToBeRemovedProperties.Contains(_.Name)));
                 }
             }
         }
