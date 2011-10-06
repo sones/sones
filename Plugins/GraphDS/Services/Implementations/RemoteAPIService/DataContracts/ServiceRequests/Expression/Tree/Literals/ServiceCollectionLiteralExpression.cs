@@ -37,6 +37,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.
         /// <summary>
         /// A collection literal expression... sth like [13, 14, 15] or ["Alice", "Bob", "Carol"]
         /// </summary>
+        [DataMember]
         public List<Object> CollectionLiteral;
 
  

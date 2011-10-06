@@ -39,6 +39,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.InsertPayload;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.PayloadObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 using sones.GraphDS.Services.RemoteAPIService.ErrorHandling;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expression;
 
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
@@ -177,6 +178,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return Response.Select(x => new ServiceVertexInstance(x)).ToList();
         }
 
+        public List<ServiceVertexInstance> GetVertices(SecurityToken mySecurityToken, long myTransToken, ServiceBaseExpression myExpression)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetVertices(myExpression);
+            var Response = this.GraphDS.GetVertices<IEnumerable<IVertex>>(mySecurityToken, myTransToken, Request,
+                ServiceReturnConverter.ConvertOnlyVertices);
+            return Response.Select(x => new ServiceVertexInstance(x)).ToList();
+        }
+
         public ServiceVertexInstance Insert(SecurityToken mySecurityToken, Int64 myTransactionToken, String myVertexTypeName,
             ServiceInsertPayload myPayload)
         {
@@ -298,16 +307,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             this.GraphDS.Shutdown(mySecurityToken);
         }
-
-
-        public List<ServiceVertexInstance> GetVertices(SecurityToken mySecurityToken, long myTransToken, DataContracts.ServiceRequests.Expression.ServiceBaseExpression myVertexType)
-        {
-            var Request = ServiceRequestFactory.MakeRequestGetVertices(myVertexType);
-            var Response = this.GraphDS.GetVertices<IEnumerable<IVertex>>(mySecurityToken, myTransToken, Request,
-                ServiceReturnConverter.ConvertOnlyVertices);
-            return Response.Select(x => new ServiceVertexInstance(x)).ToList();
-        }
-
 
         public void RebuildIndices(SecurityToken mySecurityToken, long myTransToken, IEnumerable<string> myVertexTypeNames)
         {

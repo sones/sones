@@ -132,29 +132,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanc
 
         #endregion
 
-        #region Binary data
-
-        /// <summary>
-        /// Returns a specified binary property
-        /// </summary>
-        /// <param name="myPropertyID">The property id of the specified binary</param>
-        /// <returns>A stream</returns>
-        /// 
-        /// <exception cref="sones.Library.PropertyHyperGraph.ErrorHandling.BinaryNotExistentException">
-        /// The requested binary property does not exist on this vertex.
-        /// </exception>
-        [OperationContract]
-        Stream GetBinaryProperty(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex, Int64 myPropertyID);
-
-        /// <summary>
-        /// Returns all binary properties
-        /// </summary>
-        /// <param name="myFilter">A function to filter the binary properties</param> 
-        /// <returns>An IEnumerable of PropertyID/stream KVP</returns>
-        [OperationContract]
-        List<Tuple<Int64, Stream>> GetAllBinaryProperties(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex);
-
-        #endregion
 
         #region Properties
 

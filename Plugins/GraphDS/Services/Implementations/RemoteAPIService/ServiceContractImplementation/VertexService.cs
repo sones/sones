@@ -107,16 +107,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return null;                            
         }
 
-        public System.IO.Stream GetBinaryProperty(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex, long myPropertyID)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<Tuple<long, System.IO.Stream>> GetAllBinaryProperties(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex)
-        {
-            throw new NotImplementedException();
-        }
-
         public object GetProperty(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex, long myPropertyID)
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);

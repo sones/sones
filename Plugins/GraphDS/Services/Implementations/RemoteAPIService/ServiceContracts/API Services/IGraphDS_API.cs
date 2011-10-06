@@ -145,8 +145,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         [ServiceKnownType(typeof(ServiceSingleLiteralExpression))]
         [ServiceKnownType(typeof(ServiceRangeLiteralExpression))]
         [ServiceKnownType(typeof(ServiceCollectionLiteralExpression))]
-        List<ServiceVertexInstance> GetVertices(SecurityToken mySecurityToken, Int64 myTransToken, ServiceBaseExpression myVertexType);
-
+        List<ServiceVertexInstance> GetVertices(SecurityToken mySecurityToken, Int64 myTransToken, ServiceBaseExpression myExpression);
 
         [OperationContract]
         ServiceVertexInstance Insert(SecurityToken mySecurityToken, Int64 myTransToken, String myVertexTypeName,
@@ -174,6 +173,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         void RebuildIndices(SecurityToken mySecurityToken, Int64 myTransToken, IEnumerable<String> myVertexTypeNames);
 
         [OperationContract]
-        void TruncateVertexType(SecurityToken mySecurityToken, Int64 myTransToken, String myVertexTypeNames);
+        void TruncateVertexType(SecurityToken mySecurityToken, Int64 myTransToken, String myVertexTypeName);
     }
 }
