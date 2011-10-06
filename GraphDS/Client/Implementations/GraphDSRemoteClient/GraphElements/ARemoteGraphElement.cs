@@ -10,7 +10,7 @@ namespace GraphDSRemoteClient.GraphElements
     {
         #region Data
 
-        private IServiceToken _ServiceToken;
+        protected IServiceToken _ServiceToken;
 
         #endregion
 
@@ -22,10 +22,6 @@ namespace GraphDSRemoteClient.GraphElements
         public abstract long CreationDate { get; }
 
         public abstract long ModificationDate { get; }
-
-        public abstract IDictionary<Int64, IComparable> StructuredProperties { get; }
-
-        public abstract IDictionary<String, Object> UnstructuredProperties { get; }
 
         #endregion
 

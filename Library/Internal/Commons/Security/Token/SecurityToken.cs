@@ -43,5 +43,14 @@ namespace sones.Library.Commons.Security
 
         #endregion
 
+        #region GetID
+
+        public Guid GetID()
+        {
+            return _id;
+        }
+
+        #endregion
+
     }
 }

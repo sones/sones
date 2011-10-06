@@ -10,12 +10,10 @@ namespace GraphDSRemoteClient.sonesGraphDSRemoteAPI
     {
         internal ServiceVertexType(String myName) : base(myName)
         {
-
         }
 
         internal ServiceVertexType(IVertexType myVertexType) : base(myVertexType.Name)
         {
-
         }
     }
 }

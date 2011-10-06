@@ -132,6 +132,10 @@
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\IPluginable\IPluginable.csproj">
+      <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
+      <Name>IPluginable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\PluginDefinition\PluginDefinition.csproj">
       <Project>{CE9BF2C2-C785-4661-8F4F-64266C697343}</Project>
       <Name>PluginDefinition</Name>
@@ -179,6 +183,10 @@
     <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementation\XML_IO\XML_IO.csproj">
       <Project>{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}</Project>
       <Name>XML_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RemoteAPIService\RemoteAPIService.csproj">
+      <Project>{5A7B5A5F-289A-4109-AD1E-52C62F28DA51}</Project>
+      <Name>RemoteAPIService</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RESTService\RESTService.csproj">
       <Project>{9542AA45-4A4F-4364-BDD8-1446261F0963}</Project>

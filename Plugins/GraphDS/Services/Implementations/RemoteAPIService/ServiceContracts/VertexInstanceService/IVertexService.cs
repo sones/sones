@@ -1,0 +1,277 @@
+﻿/*
+* sones GraphDB - Community Edition - http://www.sones.com
+* Copyright (C) 2007-2011 sones GmbH
+*
+* This file is part of sones GraphDB Community Edition.
+*
+* sones GraphDB is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.ServiceModel;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts;
+using System.IO;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
+using sones.Library.Commons.Security;
+using sones.GraphDB.TypeSystem;
+
+namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanceService
+{
+    [ServiceContract(Namespace = sonesRPCServer.Namespace, Name = "VertexInstanceService")]
+    public interface IVertexService
+    {
+
+        #region Edges
+
+        #region Incoming
+
+        /// <summary>
+        /// Are there incoming vertices on this vertex?
+        /// </summary>
+        /// <param name="myVertexTypeID">The id of the vertex type that defines the edge</param>
+        /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
+        /// <returns>True if there are incoming vertices, otherwise false</returns>
+        [OperationContract]
+        Boolean HasIncomingVertices(ServiceSecurityToken mySecToken, Int64 myTransToken, Int64 myVertexTypeID, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+
+        /// <summary>
+        /// Returns all incoming vertices
+        /// </summary>
+        /// <param name="myFilter">A function to filter those incoming edges (VertexTypeID, EdgeID, ISingleEdges, Bool)</param>
+        /// <returns>An IEnumerable of incoming edges</returns>
+        [OperationContract]
+        List<Tuple<Int64, Int64, List<ServiceVertexInstance>>> GetAllIncomingVertices(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myVertex);
+
+        /// <summary>
+        /// Return all incoming vertices
+        /// </summary>
+        /// <param name="myVertexTypeID">The vertex type that points to this IVertex</param>
+        /// <param name="myEdgePropertyID">The edge property id that points to this vertex</param>
+        /// <returns>All incoming vertices</returns>
+        [OperationContract]
+        List<ServiceVertexInstance> GetIncomingVertices(ServiceSecurityToken mySecToken, Int64 myTransToken, Int64 myVertexTypeID, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+
+        #endregion
+
+        #region Outgoing
+
+        /// <summary>
+        /// Is there a specified outgoing edge?
+        /// </summary>
+        /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
+        /// <returns>True if there is a specified edge, otherwise false</returns>
+        [OperationContract(Name="HasOutgoingEdgeByVertexInstance")]
+        Boolean HasOutgoingEdge(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+
+        /// <summary>
+        /// Returns all outgoing edges
+        /// </summary>
+        /// <param name="myFilter">A function to filter those edges (EdgeID, IEdge, Bool)</param>
+        /// <returns>An IEnumerable of all outgoing edges</returns>
+        [OperationContract]
+        List<Tuple<Int64, ServiceEdgeInstance>> GetAllOutgoingEdges(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myVertex);
+
+        /// <summary>
+        /// Returns all outgoing hyper edges
+        /// </summary>
+        /// <param name="myFilter">A function to filter those edges (EdgeID, IHyperEdge, Bool)</param>
+        /// <returns>An IEnumerable of propertyID/hyper edge KVP</returns>
+        [OperationContract]
+        List<Tuple<Int64, ServiceHyperEdgeInstance>> GetAllOutgoingHyperEdges(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myVertex);
+
+        /// <summary>
+        /// Returns all outgoing single edges
+        /// </summary>
+        /// <param name="myFilter">A function to filter those edges (EdgeID, ISingleEdge, Bool)</param>
+        /// <returns>An IEnumerable of all single edges</returns>
+        [OperationContract]
+        List<Tuple<Int64, ServiceSingleEdgeInstance>> GetAllOutgoingSingleEdges(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myVertex);
+
+        /// <summary>
+        /// Returns a specified edge
+        /// </summary>
+        /// <param name="myEdgePropertyID">The property id of the specified edge</param>
+        /// <returns>An IEdge</returns>
+        [OperationContract]
+        ServiceEdgeInstance GetOutgoingEdge(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+
+        /// <summary>
+        /// Returns a specified hyper edge
+        /// </summary>
+        /// <param name="myEdgePropertyID">The property id of the specified edge</param>
+        /// <returns>A hyper edge</returns>
+        [OperationContract]
+        ServiceHyperEdgeInstance GetOutgoingHyperEdge(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+
+        /// <summary>
+        /// Get a specified single edge
+        /// </summary>
+        /// <param name="myEdgePropertyID">The property id of the specified edge</param>
+        /// <returns>A single edge</returns>
+        [OperationContract]
+        ServiceSingleEdgeInstance GetOutgoingSingleEdge(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myVertex, Int64 myEdgePropertyID);
+
+        #endregion
+
+        #endregion
+
+        #region Binary data
+
+        /// <summary>
+        /// Returns a specified binary property
+        /// </summary>
+        /// <param name="myPropertyID">The property id of the specified binary</param>
+        /// <returns>A stream</returns>
+        /// 
+        /// <exception cref="sones.Library.PropertyHyperGraph.ErrorHandling.BinaryNotExistentException">
+        /// The requested binary property does not exist on this vertex.
+        /// </exception>
+        [OperationContract]
+        Stream GetBinaryProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myVertex, Int64 myPropertyID);
+
+        /// <summary>
+        /// Returns all binary properties
+        /// </summary>
+        /// <param name="myFilter">A function to filter the binary properties</param> 
+        /// <returns>An IEnumerable of PropertyID/stream KVP</returns>
+        [OperationContract]
+        List<Tuple<Int64, Stream>> GetAllBinaryProperties(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myVertex);
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Returns the property of a graph element.
+        /// </summary>
+        /// <typeparam name="T">The type of the interesting property</typeparam>
+        /// <param name="myPropertyID">The ID of the interesing property</param>
+        /// <returns>A Property</returns>
+        [OperationContract(Name = "GetPropertyByVertexInstance")]
+        object GetProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myGraphElement, Int64 myPropertyID);
+
+
+        /// <summary>
+        /// Checks whether the graph element is in possession of a certain property
+        /// </summary>
+        /// <param name="myPropertyID">The ID of the property</param>
+        /// <returns>True if the property exists, otherwise false</returns>
+        [OperationContract(Name = "HasPropertyByVertexInstance")]
+        bool HasProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myVertex, long myPropertyID);
+
+        /// <summary>
+        /// Returns the count of the vertex properties
+        /// </summary>
+        /// <returns>An unsigned value</returns>
+        [OperationContract(Name = "GetCountOfPropertiesByVertexInstance")]
+        int GetCountOfProperties(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myGraphElement);
+
+        /// <summary>
+        /// Returns all properties
+        /// </summary>
+        /// <param name="myFilter">A function to filter properties</param>
+        /// <returns>An IEnumerable of Property/Value</returns>
+        [OperationContract(Name = "GetAllPropertiesByVertexInstance")]
+        List<Tuple<Int64, object>> GetAllProperties(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myGraphElement);
+
+        /// <summary>
+        /// Returns a property as string
+        /// </summary>
+        /// <param name="myPropertyID">The id of the property</param>
+        /// <returns>The string representation of the property</returns>
+        [OperationContract(Name = "GetPropertyAsStringByVertexInstance")]
+        String GetPropertyAsString(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myGraphElement, Int64 myPropertyID);
+
+        #endregion
+
+        #region Unstructured data/properties
+
+        /// <summary>
+        /// Gets unstructured data of the graph element
+        /// </summary>
+        /// <typeparam name="T">The type of the interesting property</typeparam>
+        /// <param name="myPropertyName">The name of the interesting unstructured property</param>
+        /// <returns>The value of an unstructured property</returns>
+        [OperationContract(Name = "GetUnstructuredPropertyByVertexInstance")]
+        object GetUnstructuredProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myGraphElement, string myPropertyName);
+
+        /// <summary>
+        /// Checks whether the graph element is in possession of a certain unstructered property
+        /// </summary>
+        /// <param name="myPropertyName">The name of the unstructured property</param>
+        /// <returns>True if the property exists, otherwise false</returns>
+        [OperationContract(Name = "HasUnstructuredPropertyByVertexInstance")]
+        bool HasUnstructuredProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myGraphElement, String myPropertyName);
+
+        /// <summary>
+        /// Returns the count of the unstructured vertex properties
+        /// </summary>
+        /// <returns>An unsigned value</returns>
+        [OperationContract(Name = "GetCountOfUnstructuredPropertiesByVertexInstance")]
+        int GetCountOfUnstructuredProperties(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myGraphElement);
+
+        /// <summary>
+        /// Returns all unstructured properties
+        /// </summary>
+        /// <param name="myFilter">A function to filter properties</param>
+        /// <returns>An IEnumerable of NameOfProperty/Value</returns>
+        [OperationContract(Name = "GetAllUnstructuredPropertiesByVertexInstance")]
+        List<Tuple<String, Object>> GetAllUnstructuredProperties(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myGraphElement);
+
+        /// <summary>
+        /// Returns an unstructured property as string
+        /// </summary>
+        /// <param name="myPropertyName">The name of the unstructured property</param>
+        /// <returns>The string representation of the property</returns>
+        [OperationContract(Name = "GetUnstructuredPropertyAsStringByVertexInstance")]
+        String GetUnstructuredPropertyAsString(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myGraphElement, String myPropertyName);
+
+        #endregion
+
+        #region Comment
+
+        /// <summary>
+        /// Gets the comment of this graph element
+        /// </summary>
+        [OperationContract(Name="CommentByVertexInstance")]
+        String Comment(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myGraphElement);
+
+        #endregion
+
+        #region Creation date
+
+        /// <summary>
+        /// The date the graph element has been created
+        /// </summary>
+        [OperationContract(Name="CreationDateByVertexInstance")]
+        long CreationDate(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myGraphElement);
+
+        #endregion
+
+        #region Modification date
+
+        /// <summary>
+        /// The date the graph element has been modified the last time
+        /// </summary>
+        [OperationContract(Name="ModificationDateByVertexInstance")]
+        long ModificationDate(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceVertexInstance myGraphElement);
+
+        #endregion
+
+    }
+}

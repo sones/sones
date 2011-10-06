@@ -22,6 +22,7 @@ namespace GraphDSRemoteClient.TypeManagement
 
         internal RemoteIndexDefinition(ServiceIndexDefinition mySvcIndexDefinition, IServiceToken myServiceToken)
         {
+            this._ServiceToken = myServiceToken;
             this.Name = mySvcIndexDefinition.Name;
             this.IndexTypeName = mySvcIndexDefinition.IndexTypeName;
             this.Edition = mySvcIndexDefinition.Edition;

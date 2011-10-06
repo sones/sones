@@ -6,6 +6,7 @@ using GraphDSRemoteClient.sonesGraphDSRemoteAPI;
 using sones.GraphDB.TypeSystem;
 using GraphDSRemoteClient.GraphElements;
 using GraphDSRemoteClient.TypeManagement;
+using sones.GraphDB.Expression;
 
 namespace GraphDSRemoteClient
 {
@@ -43,6 +44,36 @@ namespace GraphDSRemoteClient
                     break;
             }
             return AttributeDefinition;
+        }
+
+        internal static ServiceBaseExpression ToServiceExpression(IExpression myExpression)
+        {
+            ServiceBaseExpression expression = null;
+            if (myExpression is BinaryExpression)
+            {
+                expression = new ServiceBinaryExpression((BinaryExpression)myExpression);
+            }
+            else if (myExpression is PropertyExpression)
+            {
+                expression = new ServicePropertyExpression((PropertyExpression)myExpression);
+            }
+            else if (myExpression is SingleLiteralExpression)
+            {
+                expression = new ServiceSingleLiteralExpression((SingleLiteralExpression)myExpression);
+            }
+            else if (myExpression is CollectionLiteralExpression)
+            {
+                expression = new ServiceCollectionLiteralExpression((CollectionLiteralExpression)myExpression);
+            }
+            else if (myExpression is RangeLiteralExpression)
+            {
+                expression = new ServiceRangeLiteralExpression((RangeLiteralExpression)myExpression);
+            }
+            else if (myExpression is UnaryExpression)
+            {
+                expression = new ServiceUnaryExpression((UnaryExpression)myExpression);
+            }
+            return expression;
         }
     }
 }

@@ -13,6 +13,8 @@ using System.Diagnostics;
 using sones.GraphDB.Request;
 using sones.GraphQL.Result;
 using sones.GraphDB.TypeSystem;
+using GraphDSRemoteClient.TypeManagement;
+using sones.Library.PropertyHyperGraph;
 
 namespace GraphDSRemoteClient
 {
@@ -25,6 +27,7 @@ namespace GraphDSRemoteClient
         private VertexInstanceService _VertexInstanceService;
         private EdgeTypeService _EdgeTypeService;
         private EdgeInstanceService _EdgeInstanceService;
+        private StreamedService _StreamedService;
         private SecurityToken _SecurityToken;
         private Int64 _TransactionToken;
         
@@ -39,6 +42,12 @@ namespace GraphDSRemoteClient
             BasicBinding.Name = "sonesBasic";
             BasicBinding.MessageEncoding = WSMessageEncoding.Text;
             BasicBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
+
+            BasicHttpBinding StreamedBinding = new BasicHttpBinding();
+            StreamedBinding.Name = "sonesStreamed";
+            StreamedBinding.MessageEncoding = WSMessageEncoding.Text;
+            StreamedBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
+            StreamedBinding.TransferMode = TransferMode.Streamed;
 
             try
             {
@@ -57,6 +66,7 @@ namespace GraphDSRemoteClient
                 _VertexInstanceService = ChannelFactory<VertexInstanceService>.CreateChannel(BasicBinding, new EndpointAddress(myServiceAddress));
                 _EdgeTypeService = ChannelFactory<EdgeTypeService>.CreateChannel(BasicBinding, new EndpointAddress(myServiceAddress));
                 _EdgeInstanceService = ChannelFactory<EdgeInstanceService>.CreateChannel(BasicBinding, new EndpointAddress(myServiceAddress));
+                _StreamedService = ChannelFactory<StreamedService>.CreateChannel(StreamedBinding, new EndpointAddress(myServiceAddress + "/streamed"));
             }
             catch (Exception ex)
             {
@@ -101,6 +111,11 @@ namespace GraphDSRemoteClient
         public GraphDS GraphDSService
         {
             get { return _GraphDSService; }
+        }
+
+        public StreamedService StreamedService
+        {
+            get { return _StreamedService; }
         }
 
         #endregion
@@ -248,47 +263,91 @@ namespace GraphDSRemoteClient
 
         public TResult Truncate<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.RequestTruncate myRequestTruncate, sones.GraphDB.Request.Converter.TruncateResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            _GraphDSService.TruncateVertexType(mySecurityToken, myTransactionID, myRequestTruncate.VertexTypeName);
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)));
         }
 
         public TResult Update<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestUpdate myRequestUpdate, sones.GraphDB.Request.Converter.UpdateResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            var svcVertices = _GraphDSService.Update(
+                mySecurityToken,
+                myTransactionID,
+                new ServiceVertexType(myRequestUpdate.GetVerticesRequest.VertexTypeName),
+                myRequestUpdate.GetVerticesRequest.VertexIDs.ToList(),
+                new ServiceUpdateChangeset(myRequestUpdate));
+            var vertices = svcVertices.Select(x => new RemoteVertex(x, this));
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), vertices);
         }
 
         public TResult DropVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestDropVertexType myRequestDropType, sones.GraphDB.Request.Converter.DropVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            var result = _GraphDSService.DropVertexType(mySecurityToken, myTransactionID, new ServiceVertexType(myRequestDropType.TypeName));
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), result);
         }
 
         public TResult DropEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestDropEdgeType myRequestDropType, sones.GraphDB.Request.Converter.DropEdgeTypeResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            var result = _GraphDSService.DropEdgeType(mySecurityToken, myTransactionID, new ServiceEdgeType(myRequestDropType.TypeName));
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), result);
         }
 
         public TResult DropIndex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestDropIndex myRequestDropIndex, sones.GraphDB.Request.Converter.DropIndexResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            _GraphDSService.DropIndex(mySecurityToken, myTransactionID, new ServiceVertexType(myRequestDropIndex.TypeName), myRequestDropIndex.IndexName, myRequestDropIndex.Edition);
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)));
         }
 
         public TResult CreateIndex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestCreateIndex myRequestCreateIndex, sones.GraphDB.Request.Converter.CreateIndexResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            var svcIndexDef = _GraphDSService.CreateIndex(mySecurityToken, myTransactionID, new ServiceIndexPredefinition(myRequestCreateIndex.IndexDefinition));
+            var indexDef = new RemoteIndexDefinition(svcIndexDef, this);
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), indexDef);
         }
 
         public TResult RebuildIndices<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestRebuildIndices myRequestRebuildIndices, sones.GraphDB.Request.Converter.RebuildIndicesResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            _GraphDSService.RebuildIndices(mySecurityToken, myTransactionID, myRequestRebuildIndices.Types.ToList());
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)));
         }
 
         public TResult GetVertex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestGetVertex myRequestGetVertex, sones.GraphDB.Request.Converter.GetVertexResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            var svcVertex = _GraphDSService.GetVertex(mySecurityToken, myTransactionID, new ServiceVertexType(myRequestGetVertex.VertexTypeName), myRequestGetVertex.VertexID);
+            var vertex = new RemoteVertex(svcVertex, this);
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), vertex);
         }
 
         public TResult GetVertices<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestGetVertices myRequestGetVertices, sones.GraphDB.Request.Converter.GetVerticesResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            List<ServiceVertexInstance> svcVertices;
+            if (myRequestGetVertices.VertexTypeName != null)
+            {
+                svcVertices = _GraphDSService.GetVerticesByType(mySecurityToken, myTransactionID, new ServiceVertexType(myRequestGetVertices.VertexTypeName));
+            }
+            else
+            {
+                svcVertices = _GraphDSService.GetVerticesByExpression(mySecurityToken, myTransactionID, ConvertHelper.ToServiceExpression(myRequestGetVertices.Expression));
+            }
+            var vertices = svcVertices.Select(x => new RemoteVertex(x, this));
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), vertices);
         }
 
         public TResult TraverseVertex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurity, long myTransactionID, sones.GraphDB.Request.RequestTraverseVertex myRequestTraverseVertex, sones.GraphDB.Request.Converter.TraverseVertexResultConverter<TResult> myOutputconverter)
@@ -298,37 +357,65 @@ namespace GraphDSRemoteClient
 
         public TResult GetVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestGetVertexType myRequestGetVertexType, sones.GraphDB.Request.Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            var svcVertexType = _GraphDSService.GetVertexType(mySecurityToken, myTransactionID, myRequestGetVertexType.VertexTypeName);
+            var vertexType = new RemoteVertexType(svcVertexType, this);
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), vertexType);
         }
 
         public TResult GetAllVertexTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestGetAllVertexTypes myRequestGetAllVertexTypes, sones.GraphDB.Request.Converter.GetAllVertexTypesResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            var svcVertexTypes = _GraphDSService.GetAllVertexTypes(mySecurityToken, myTransactionID, myRequestGetAllVertexTypes.Edition);
+            var vertexTypes = svcVertexTypes.Select(x => new RemoteVertexType(x, this));
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), vertexTypes);
         }
 
         public TResult GetEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestGetEdgeType myRequestGetEdgeType, sones.GraphDB.Request.Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            var svcEdgeType = _GraphDSService.GetEdgeType(mySecurityToken, myTransactionID, myRequestGetEdgeType.EdgeTypeName, myRequestGetEdgeType.Edition);
+            var edgeType = new RemoteEdgeType(svcEdgeType, this);
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), edgeType);
         }
 
         public TResult GetAllEdgeTypes<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestGetAllEdgeTypes myRequestGetAllEdgeTypes, sones.GraphDB.Request.Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            var svcEdgeTypes = _GraphDSService.GetAllEdgeTypes(mySecurityToken, myTransactionID, myRequestGetAllEdgeTypes.Edition);
+            var edgeTypes = svcEdgeTypes.Select(x => new RemoteEdgeType(x, this));
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), edgeTypes);
         }
 
         public TResult DescribeIndex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestDescribeIndex myRequestDescribeIndex, sones.GraphDB.Request.Converter.DescribeIndexResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            var svcIndex = _GraphDSService.DescribeIndex(mySecurityToken, myTransactionID, myRequestDescribeIndex.TypeName, myRequestDescribeIndex.IndexName);
+            List<IIndexDefinition> index = new List<IIndexDefinition>();
+            index.Add(new RemoteIndexDefinition(svcIndex, this));
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), index);
         }
 
         public TResult DescribeIndices<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestDescribeIndex myRequestDescribeIndex, sones.GraphDB.Request.Converter.DescribeIndicesResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            var svcIndices = _GraphDSService.DescribeIndices(mySecurityToken, myTransactionID, myRequestDescribeIndex.TypeName);
+            var indices = svcIndices.Select(x => new RemoteIndexDefinition(x, this));
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), indices);
         }
 
         public TResult GetVertexCount<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestGetVertexCount myRequestGetVertexCount, sones.GraphDB.Request.Converter.GetVertexCountResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            Stopwatch RunningTime = Stopwatch.StartNew();
+            var vertexCount = _GraphDSService.GetVertexCount(mySecurityToken, myTransactionID, new ServiceVertexType(myRequestGetVertexCount.VertexTypeName));
+            RunningTime.Stop();
+            return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), vertexCount);
         }
 
         #endregion

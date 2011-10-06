@@ -16,5 +16,6 @@ namespace GraphDSRemoteClient
         EdgeTypeService EdgeTypeService { get; }
         EdgeInstanceService EdgeService { get; }
         GraphDS GraphDSService { get; }
+        StreamedService StreamedService { get; }
     }
 }

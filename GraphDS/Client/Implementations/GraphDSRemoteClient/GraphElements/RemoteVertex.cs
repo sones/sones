@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using GraphDSRemoteClient.sonesGraphDSRemoteAPI;
 using sones.Library.PropertyHyperGraph;
+using System.IO;
 
 namespace GraphDSRemoteClient.GraphElements
 {
@@ -45,27 +46,44 @@ namespace GraphDSRemoteClient.GraphElements
         
         public override string Comment
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return _ServiceToken.VertexService.CommentByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this));
+            }
         }
 
         public override long CreationDate
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return _ServiceToken.VertexService.CreationDateByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this));
+            }
         }
 
         public override long ModificationDate
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return _ServiceToken.VertexService.ModificationDateByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this));
+            }
         }
 
-        public override IDictionary<long, IComparable> StructuredProperties
+        public IDictionary<long, IComparable> StructuredProperties
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return _ServiceToken.VertexService.GetAllPropertiesByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this))
+                    .ToDictionary(k => k.Item1, v => (IComparable)v.Item2);
+            }
         }
 
-        public override IDictionary<string, object> UnstructuredProperties
+        public IDictionary<string, object> UnstructuredProperties
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return _ServiceToken.VertexService.GetAllUnstructuredPropertiesByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this))
+                    .ToDictionary(k => k.Item1, v => v.Item2);
+            }
         }
 
         #endregion
@@ -75,147 +93,209 @@ namespace GraphDSRemoteClient.GraphElements
 
         public bool HasIncomingVertices(long myVertexTypeID, long myEdgePropertyID)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.HasIncomingVertices(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myVertexTypeID, myEdgePropertyID);
         }
 
         public IEnumerable<Tuple<long, long, IEnumerable<IVertex>>> GetAllIncomingVertices(PropertyHyperGraphFilter.IncomingVerticesFilter myFilter = null)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.GetAllIncomingVertices(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this))
+                .Select(x => new Tuple<long, long, IEnumerable<IVertex>>(x.Item1, x.Item2, x.Item3.Select(y => new RemoteVertex(y, _ServiceToken))));
         }
 
         public IEnumerable<IVertex> GetIncomingVertices(long myVertexTypeID, long myEdgePropertyID)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.GetIncomingVertices(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myVertexTypeID, myEdgePropertyID)
+                .Select(x => new RemoteVertex(x, _ServiceToken));
         }
 
         public bool HasOutgoingEdge(long myEdgePropertyID)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.HasOutgoingEdgeByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myEdgePropertyID);
         }
 
         public IEnumerable<Tuple<long, IEdge>> GetAllOutgoingEdges(PropertyHyperGraphFilter.OutgoingEdgeFilter myFilter = null)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.GetAllOutgoingEdges(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this))
+                .Select(x =>
+                    {
+                        if (x is ServiceSingleEdgeInstance)
+                            return new Tuple<long, IEdge>(x.EdgePropertyID.Value, new RemoteSingleEdge((ServiceSingleEdgeInstance)x, _ServiceToken));
+                        else
+                            return new Tuple<long, IEdge>(x.EdgePropertyID.Value, new RemoteHyperEdge((ServiceHyperEdgeInstance)x, _ServiceToken));
+                    });
         }
 
         public IEnumerable<Tuple<long, IHyperEdge>> GetAllOutgoingHyperEdges(PropertyHyperGraphFilter.OutgoingHyperEdgeFilter myFilter = null)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.GetAllOutgoingHyperEdges(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this))
+                .Select(x => new Tuple<long, IHyperEdge>(x.EdgePropertyID.Value, new RemoteHyperEdge(x, _ServiceToken)));
         }
 
         public IEnumerable<Tuple<long, ISingleEdge>> GetAllOutgoingSingleEdges(PropertyHyperGraphFilter.OutgoingSingleEdgeFilter myFilter = null)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.GetAllOutgoingSingleEdges(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this))
+                .Select(x => new Tuple<long, ISingleEdge>(x.EdgePropertyID.Value, new RemoteSingleEdge(x, _ServiceToken)));
         }
 
         public IEdge GetOutgoingEdge(long myEdgePropertyID)
         {
-            throw new NotImplementedException();
+            var svcEdge = _ServiceToken.VertexService.GetOutgoingEdge(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myEdgePropertyID);
+            if (svcEdge is ServiceSingleEdgeInstance)
+                return new RemoteSingleEdge((ServiceSingleEdgeInstance)svcEdge, _ServiceToken);
+            else
+                return new RemoteHyperEdge((ServiceHyperEdgeInstance)svcEdge, _ServiceToken);
         }
 
         public IHyperEdge GetOutgoingHyperEdge(long myEdgePropertyID)
         {
-            throw new NotImplementedException();
+            return new RemoteHyperEdge(
+                _ServiceToken.VertexService.GetOutgoingHyperEdge(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myEdgePropertyID),
+                _ServiceToken);
         }
 
         public ISingleEdge GetOutgoingSingleEdge(long myEdgePropertyID)
         {
-            throw new NotImplementedException();
+            return new RemoteSingleEdge(
+                _ServiceToken.VertexService.GetOutgoingSingleEdge(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myEdgePropertyID),
+                _ServiceToken);
         }
 
-        public System.IO.Stream GetBinaryProperty(long myPropertyID)
+        public Stream GetBinaryProperty(long myPropertyID)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.StreamedService.GetBinaryProperty(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myPropertyID);
         }
 
-        public IEnumerable<Tuple<long, System.IO.Stream>> GetAllBinaryProperties(PropertyHyperGraphFilter.BinaryPropertyFilter myFilter = null)
+        public IEnumerable<Tuple<long, Stream>> GetAllBinaryProperties(PropertyHyperGraphFilter.BinaryPropertyFilter myFilter = null)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.StreamedService.GetAllBinaryProperties(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this)).ToList();
         }
 
         public T GetProperty<T>(long myPropertyID)
         {
-            throw new NotImplementedException();
+            return (T)_ServiceToken.VertexService.GetPropertyByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myPropertyID);
         }
 
         public IComparable GetProperty(long myPropertyID)
         {
-            throw new NotImplementedException();
+            return (IComparable)_ServiceToken.VertexService.GetPropertyByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myPropertyID);
         }
 
         public bool HasProperty(long myPropertyID)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.HasPropertyByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myPropertyID);
         }
 
         public int GetCountOfProperties()
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.GetCountOfPropertiesByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this));
         }
 
         public IEnumerable<Tuple<long, IComparable>> GetAllProperties(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.GetAllPropertiesByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this))
+                .Select(x => new Tuple<long, IComparable>(x.Item1, (IComparable)x.Item2));
         }
 
         public string GetPropertyAsString(long myPropertyID)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.GetPropertyAsStringByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myPropertyID);
         }
 
         public T GetUnstructuredProperty<T>(string myPropertyName)
         {
-            throw new NotImplementedException();
+            return (T)_ServiceToken.VertexService.GetUnstructuredPropertyByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myPropertyName);
         }
 
         public bool HasUnstructuredProperty(string myPropertyName)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.HasUnstructuredPropertyByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myPropertyName);
         }
 
         public int GetCountOfUnstructuredProperties()
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.GetCountOfUnstructuredPropertiesByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this));
         }
 
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(PropertyHyperGraphFilter.GraphElementUnStructuredPropertyFilter myFilter = null)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.GetAllUnstructuredPropertiesByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this));
         }
 
         public string GetUnstructuredPropertyAsString(string myPropertyName)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexService.GetUnstructuredPropertyAsStringByVertexInstance(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this), myPropertyName);
         }
 
         public long VertexTypeID
         {
-            get { throw new NotImplementedException(); }
+            get { return this.VertexTypeID; }
         }
 
         public long VertexID
         {
-            get { throw new NotImplementedException(); }
+            get { return this.VertexID; }
         }
 
         public long VertexRevisionID
         {
-            get { throw new NotImplementedException(); }
+            get { return this.VertexRevisionID; }
         }
 
         public string EditionName
         {
-            get { throw new NotImplementedException(); }
+            get { return this.EditionName; }
         }
 
         public IVertexStatistics Statistics
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return new RemoteVertexStatistics(_ServiceToken.VertexService.VertexStatistics(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this)));
+            }
         }
 
         public IGraphPartitionInformation PartitionInformation
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return new RemotePartitionInformation(_ServiceToken.VertexService.PartitionID(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexInstance(this)));
+            }
+        }
+
+        #endregion
+
+
+        #region inner classes
+
+        internal class RemoteVertexStatistics : IVertexStatistics
+        {
+            private ulong _OutDegree;
+            private ulong _InDegree;
+            private long _Visits;
+
+            internal RemoteVertexStatistics(ServiceVertexStatistics myStatistics)
+            {
+                _OutDegree = myStatistics.OutDegree;
+                _InDegree = myStatistics.InDegree;
+                _Visits = myStatistics.Visits;
+            }
+
+            public ulong InDegree { get { return _InDegree; } }
+            public ulong OutDegree { get { return _OutDegree; } }
+            public ulong Degree { get { return _InDegree + _OutDegree; } }
+            public long Visits { get { return _Visits; } }
+        }
+
+        internal class RemotePartitionInformation : IGraphPartitionInformation
+        {
+            private long _PartitionID;
+
+            internal RemotePartitionInformation(long myPartitionID)
+            {
+                _PartitionID = myPartitionID;
+            }
+
+            public long PartitionID { get { return _PartitionID; } }
         }
 
         #endregion
