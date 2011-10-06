@@ -30,11 +30,10 @@ namespace sones.GraphQL.GQL.ErrorHandling
 {
     public sealed class InvalidBinaryExpressionIndexException : AGraphQLException
     {
-        public InvalidBinaryExpressionIndexException(BinaryExpressionDefinition myBinaryExpression, 
-                                                        String myIndexName)
+        public InvalidBinaryExpressionIndexException(BinaryExpressionDefinition myBinaryExpression)
         {
             _msg = String.Format("The index {0} for the BinaryExpression {1} {2} {3} is not valid", 
-                                    myIndexName, 
+                                    myBinaryExpression.ExpressionIndex, 
                                     myBinaryExpression.Left.ToString(), 
                                     myBinaryExpression.Operator, 
                                     myBinaryExpression.Right.ToString());

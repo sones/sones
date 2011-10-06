@@ -27,6 +27,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.VertexStore;
 using sones.Library.PropertyHyperGraph;
 using sones.Plugins.Index;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -173,6 +174,11 @@ namespace sones.GraphDB.Expression.QueryPlan
                                                                         _property.Property, 
                                                                         _securityToken, 
                                                                         _transactionToken));
+
+                if (idx == null)
+                    throw new IndexDoesNotExistException(
+                                _expressionIndex == null ? "no index name specified" : _expressionIndex, 
+                                "default");
 
                 var values = GetValues(idx, _constant.Value);
 

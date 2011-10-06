@@ -246,7 +246,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
             if (typeAttribute.Kind == AttributeType.IncomingEdge)
             {
-                return GetCorrectValueDefinition(((IIncomingEdgeDefinition)typeAttribute).RelatedEdgeDefinition, graphDBType, myValueDefinition);
+                return GetCorrectValueDefinition(
+                        ((IIncomingEdgeDefinition)typeAttribute).RelatedEdgeDefinition, 
+                        graphDBType, 
+                        myValueDefinition);
             }
             else
             {
@@ -278,19 +281,18 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// <param name="myExpressionIndex">The name of the index which should be used for the expression.</param>
         /// <param name="aggregateAllowed"></param>
         /// <returns>An expression graph.</returns>
-        public static IExpressionGraph TypeOperation( 
-            AExpressionDefinition myLeftValueObject, 
-            AExpressionDefinition myRightValueObject,
-            GQLPluginManager myPluginManager,
-            IGraphDB myGraphDB, 
-            SecurityToken mySecurityToken, 
-            Int64 myTransactionToken,
-            TypesOfBinaryExpression typeOfBinExpr, 
-            IExpressionGraph resultGr, 
-            TypesOfOperators mytypesOfOpertators, 
-            BinaryOperator myOperator, 
-            String myExpressionIndex,
-            Boolean aggregateAllowed = true)
+        public static IExpressionGraph TypeOperation(AExpressionDefinition myLeftValueObject, 
+                                                        AExpressionDefinition myRightValueObject,
+                                                        GQLPluginManager myPluginManager,
+                                                        IGraphDB myGraphDB, 
+                                                        SecurityToken mySecurityToken, 
+                                                        Int64 myTransactionToken,
+                                                        TypesOfBinaryExpression typeOfBinExpr, 
+                                                        IExpressionGraph resultGr, 
+                                                        TypesOfOperators mytypesOfOpertators, 
+                                                        BinaryOperator myOperator, 
+                                                        String myExpressionIndex,
+                                                        Boolean aggregateAllowed = true)
         {
             #region Data
 
@@ -484,7 +486,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             }
 
             #endregion
-
 
             return resultGr;
         }
