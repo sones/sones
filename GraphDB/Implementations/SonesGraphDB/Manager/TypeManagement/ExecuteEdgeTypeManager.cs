@@ -115,6 +115,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             _indexManager       = myMetaManager.IndexManager;
             _vertexManager      = myMetaManager.VertexManager;
+            _vertexTypeManager =  myMetaManager.VertexTypeManager;
             _baseTypeManager    = myMetaManager.BaseTypeManager;
             _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
@@ -734,97 +735,125 @@ namespace sones.GraphDB.Manager.TypeManagement
                 dict = dict ?? new Dictionary<long, IComparable>();
 
                 var id = _idManager
-                            .GetEdgeTypeUniqeID((long)BaseTypes.Attribute)
+                            .GetVertexTypeUniqeID((long)BaseTypes.Attribute)
                             .GetNextID();
 
                 dict.Add(id, aAttribute.DefaultValue);
 
-                foreach (var vertex in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myType.ID))
+                
+                foreach (var vertextype in _vertexTypeManager.ExecuteManager.GetAllTypes(myTransactionToken, mySecurityToken))
                 {
-                    bool bFound = false;
-
-                    #region cast existing unstructured properties on vertices to structured
-
-                    foreach (var property in vertex.GetAllUnstructuredProperties())
+                    foreach (var vertex in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, vertextype.ID))
                     {
-                        if (property.Item1.CompareTo(aAttribute.AttributeName) == 0)
+                        foreach (var outedge in vertex.GetAllOutgoingSingleEdges(new PropertyHyperGraphFilter.OutgoingSingleEdgeFilter((ID, edge) => (edge.EdgeTypeID == myType.ID))))
                         {
-                            bFound = true;
+                            bool bFound = false;
+                            ISingleEdge edge = outedge.Item2;
 
-                            // Found unstructured property with same name on the vertex
-                            var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
-                            IComparable value = null;
+                            if (edge == null) continue;
 
-                            // Try Convert Type
-                            try
+                            #region cast existing unstructured properties on vertices to structured
+
+                            foreach (var property in edge.GetAllUnstructuredProperties())
                             {
-                                value = property.Item2.ConvertToIComparable(targettype);
+                                if (property.Item1.CompareTo(aAttribute.AttributeName) == 0)
+                                {
+                                    bFound = true;
+
+                                    // Found unstructured property with same name on the vertex
+                                    var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
+                                    IComparable value = null;
+
+                                    // Try Convert Type
+                                    try
+                                    {
+                                        value = property.Item2.ConvertToIComparable(targettype);
+                                    }
+                                    catch (InvalidCastException)
+                                    {
+                                        throw new VertexAttributeCastException(aAttribute.AttributeName, property.Item2.GetType(), targettype, false);
+                                    }
+                                    catch (FormatException)
+                                    {
+                                        throw new VertexAttributeCastException(aAttribute.AttributeName, property.Item2.GetType(), targettype, true);
+                                    }
+
+                                    // add list with only one item -> unstructured property to delete
+                                    var unstructdel = new List<string>();
+                                    unstructdel.Add(property.Item1);
+                                    UnstructuredPropertiesUpdate propdelete = new UnstructuredPropertiesUpdate(null, unstructdel);
+
+                                    // add list with only one item -> structured property to add
+                                    Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
+                                    properties2add.Add(id, value);
+                                    StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
+
+                                    var sourcevertex = edge.GetSourceVertex();
+                                    var targetvertex = edge.GetTargetVertex();
+
+                                    // add list with only one item -> edges to update
+                                    Dictionary<long, SingleEdgeUpdateDefinition> edges2update = new Dictionary<long, SingleEdgeUpdateDefinition>();
+                                    edges2update.Add(
+                                        outedge.Item1, 
+                                        new SingleEdgeUpdateDefinition(
+                                            new VertexInformation(sourcevertex.VertexTypeID, sourcevertex.VertexID), 
+                                            new VertexInformation(targetvertex.VertexTypeID, targetvertex.VertexID), 
+                                            edge.EdgeTypeID, null, propadd, propdelete
+                                        )
+                                    );
+                                    
+                                    SingleEdgeUpdate edgeupd = new SingleEdgeUpdate(edges2update);
+
+                                    // Update the vertex (delete unstructured and add structured)
+                                    VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, null, null, null, edgeupd, null, null);
+                                    _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
+
+                                    // we can break as we already found the property on the vertex
+                                    break;
+                                }
                             }
-                            catch (InvalidCastException)
+
+                            // TODO Implement define for HyperEdges
+
+                            #endregion
+
+                            #region add mandatory attribute if not existing on vertex
+
+                            if ((!bFound) && (aAttribute.IsMandatory))
                             {
-                                throw new VertexAttributeCastException(aAttribute.AttributeName, property.Item2.GetType(), targettype, false);
+                                if (aAttribute.DefaultValue == null) throw new DefineMandatoryWithoutDefaultException(aAttribute.AttributeName, myType.Name);
+
+                                // Found unstructured property with same name on the vertex
+                                var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
+                                IComparable value = null;
+
+                                // Try Convert Type
+                                try
+                                {
+                                    value = aAttribute.DefaultValue.ConvertToIComparable(targettype);
+                                }
+                                catch (InvalidCastException)
+                                {
+                                    throw new VertexAttributeCastException(aAttribute.AttributeName, aAttribute.DefaultValue.GetType(), targettype, false);
+                                }
+                                catch (FormatException)
+                                {
+                                    throw new VertexAttributeCastException(aAttribute.AttributeName, aAttribute.DefaultValue.GetType(), targettype, true);
+                                }
+
+                                // add list with only one item -> structured property to add
+                                Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
+                                properties2add.Add(id, value);
+                                StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
+
+                                // Update the vertex (add structured)
+                                VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, propadd);
+                                _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
                             }
-                            catch (FormatException)
-                            {
-                                throw new VertexAttributeCastException(aAttribute.AttributeName, property.Item2.GetType(), targettype, true);
-                            }
 
-                            // add list with only one item -> unstructured property to delete
-                            var unstructdel = new List<string>();
-                            unstructdel.Add(property.Item1);
-                            UnstructuredPropertiesUpdate propdelete = new UnstructuredPropertiesUpdate(null, unstructdel);
-
-                            // add list with only one item -> structured property to add
-                            Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
-                            properties2add.Add(id, value);
-                            StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
-
-                            // Update the vertex (delete unstructured and add structured)
-                            VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, propadd, propdelete);
-                            _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
-
-                            // we can break as we already found the property on the vertex
-                            break;
+                            #endregion
                         }
                     }
-
-                    #endregion
-
-                    #region add mandatory attribute if not existing on vertex
-
-                    if ((!bFound) && (aAttribute.IsMandatory))
-                    {
-                        if (aAttribute.DefaultValue == null) throw new DefineMandatoryWithoutDefaultException(aAttribute.AttributeName, myType.Name);
-
-                        // Found unstructured property with same name on the vertex
-                        var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
-                        IComparable value = null;
-
-                        // Try Convert Type
-                        try
-                        {
-                            value = aAttribute.DefaultValue.ConvertToIComparable(targettype);
-                        }
-                        catch (InvalidCastException)
-                        {
-                            throw new VertexAttributeCastException(aAttribute.AttributeName, aAttribute.DefaultValue.GetType(), targettype, false);
-                        }
-                        catch (FormatException)
-                        {
-                            throw new VertexAttributeCastException(aAttribute.AttributeName, aAttribute.DefaultValue.GetType(), targettype, true);
-                        }
-
-                        // add list with only one item -> structured property to add
-                        Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
-                        properties2add.Add(id, value);
-                        StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
-
-                        // Update the vertex (add structured)
-                        VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, propadd);
-                        _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
-                    }
-
-                    #endregion
                 }
 
                 #region add property definition to vertex type
@@ -1122,5 +1151,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         #endregion
+
     }
 }

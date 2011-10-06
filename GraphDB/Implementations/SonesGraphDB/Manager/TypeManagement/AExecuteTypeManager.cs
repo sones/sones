@@ -43,8 +43,9 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         #region Data
 
-        protected IDManager                     _idManager;
-        protected IIndexManager                 _indexManager;
+        protected IDManager                             _idManager;
+        protected IIndexManager                         _indexManager;
+        protected IManagerOf<ITypeHandler<IVertexType>> _vertexTypeManager;
 
         protected IDictionary<long, IBaseType>  _baseTypes;
         protected IDictionary<String, long>     _nameIndex;

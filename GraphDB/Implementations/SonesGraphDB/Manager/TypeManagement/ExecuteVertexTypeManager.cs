@@ -149,6 +149,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             _edgeManager = myMetaManager.EdgeTypeManager;
             _indexManager = myMetaManager.IndexManager;
             _vertexManager = myMetaManager.VertexManager;
+            _vertexTypeManager = myMetaManager.VertexTypeManager;
             _baseTypeManager = myMetaManager.BaseTypeManager;
             _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
