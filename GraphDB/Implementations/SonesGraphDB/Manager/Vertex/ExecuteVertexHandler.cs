@@ -1260,57 +1260,6 @@ namespace sones.GraphDB.Manager.Vertex
                 #endregion
             }
 
-            if (myUpdate.RemovedAlteredAttributes != null)
-            {
-                #region remove each attribute, which is no longer defined on type (f.e. after a alter type)
-
-                foreach (var attribute in myUpdate.RemovedAlteredAttributes)
-                {
-                    switch (attribute.Kind)
-                    {
-                        case AttributeType.Property:
-                            toBeDeletedStructured = toBeDeletedStructured ?? new List<long>();
-                            toBeDeletedStructured.Add(attribute.ID);
-                            break;
-
-                        case AttributeType.BinaryProperty:
-                            toBeDeletedBinaries = toBeDeletedBinaries ?? new List<long>();
-                            toBeDeletedBinaries.Add(attribute.ID);
-                            break;
-
-                        case AttributeType.IncomingEdge:
-                            //TODO: a better exception here.
-                            throw new Exception("The edges on an incoming edge attribute can not be removed.");
-
-                        case AttributeType.OutgoingEdge:
-                            switch ((attribute as IOutgoingEdgeDefinition).Multiplicity)
-                            {
-                                case EdgeMultiplicity.HyperEdge:
-                                case EdgeMultiplicity.MultiEdge:
-                                    toBeDeletedHyper = toBeDeletedHyper ?? new List<long>();
-                                    toBeDeletedHyper.Add(attribute.ID);
-                                    break;
-
-                                case EdgeMultiplicity.SingleEdge:
-                                    toBeDeletedSingle = toBeDeletedSingle ?? new List<long>();
-                                    toBeDeletedSingle.Add(attribute.ID);
-                                    break;
-
-                                default:
-                                    //TODO a better exception here
-                                    throw new Exception("The enumeration EdgeMultiplicity was changed, but not this switch statement.");
-                            }
-                            break;
-
-                        default:
-                            //TODO: a better exception here.
-                            throw new Exception("The enumeration AttributeType was updated, but not this switch statement.");
-                    }
-                }
-
-                #endregion
-            }
-
             #endregion
 
             #region get update definitions
