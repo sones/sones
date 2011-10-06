@@ -274,6 +274,11 @@ namespace sones.GraphDB.Manager.Index
             return myPropertyDefinition.InIndices.CountIsGreater(0);
         }
 
+        public bool HasIndex(String myIndexName)
+        {
+            return _ownIndex.ContainsKey(myIndexName);
+        }
+
         public IEnumerable<ISonesIndex> GetIndices(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             return myPropertyDefinition.InIndices.Select(_ => _indices[_.ID]);

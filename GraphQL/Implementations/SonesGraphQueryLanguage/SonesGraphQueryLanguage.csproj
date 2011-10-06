@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\InvalidBinaryExpressionIndexException.cs" />
     <Compile Include="ErrorHandling\InvalidEdgeListOperationException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\ExpressionGraphInternalException.cs" />
@@ -279,6 +280,7 @@
     <Compile Include="Structure\Nodes\Misc\OptionsNode.cs" />
     <Compile Include="Structure\Nodes\Misc\KeyValuePairNode.cs" />
     <Compile Include="Structure\Nodes\Misc\KeyValueListNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\UseIndexNode.cs" />
     <Compile Include="Structure\Nodes\Misc\VertexTypeNode.cs" />
     <Compile Include="Structure\Helper\Definition\IDChainDefinition.cs" />
     <Compile Include="Structure\Nodes\Misc\IDNode.cs" />
@@ -340,7 +342,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
+      <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\IGraphDBExport\IGraphDBExport.csproj">
       <Project>{80934A33-3BCB-4732-AA2D-02D8925336C9}</Project>

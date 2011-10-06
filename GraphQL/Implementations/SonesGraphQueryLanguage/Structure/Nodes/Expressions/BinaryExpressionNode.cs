@@ -22,6 +22,7 @@ using System;
 using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphQL.GQL.Structure.Nodes.Expressions;
+using sones.GraphQL.GQL.Structure.Nodes.Misc;
 
 namespace sones.GraphQL.Structure.Nodes.Expressions
 {
@@ -33,6 +34,7 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
         private AExpressionDefinition _left = null;
         private AExpressionDefinition _right = null;
         private String OriginalString = String.Empty;
+        private String _expressionIndex;
 
         #endregion
 
@@ -45,9 +47,7 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
         #region constructor
 
         public BinaryExpressionNode()
-        {
-
-        }
+        { }
 
         #endregion
 
@@ -61,9 +61,15 @@ namespace sones.GraphQL.Structure.Nodes.Expressions
             _left = GetExpressionDefinition(parseNode.ChildNodes[0]);
             _right = GetExpressionDefinition(parseNode.ChildNodes[2]);
 
+            if (parseNode.ChildNodes.Count > 3)
+                _expressionIndex = ((AstNode)parseNode.ChildNodes[4].AstNode).AsString;
+
             #endregion
 
-            BinaryExpressionDefinition = new BinaryExpressionDefinition(_OperatorSymbol, _left, _right);
+            BinaryExpressionDefinition = new BinaryExpressionDefinition(_OperatorSymbol, 
+                                                                        _left, 
+                                                                        _right,
+                                                                        _expressionIndex);
 
             OriginalString += _left.ToString() + " ";
             OriginalString += _OperatorSymbol + " ";
