@@ -42,7 +42,6 @@ using sones.GraphDS.Services.RemoteAPIService.ErrorHandling;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expression;
 using sones.GraphDS.GraphDSRemoteClient;
 
-
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
 

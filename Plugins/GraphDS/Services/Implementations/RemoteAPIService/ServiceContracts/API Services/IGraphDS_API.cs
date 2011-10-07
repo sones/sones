@@ -44,11 +44,11 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         [OperationContract]
         ServiceVertexType CreateVertexType(SecurityToken mySecurityToken, Int64 myTransToken,
             ServiceVertexTypePredefinition myVertexTypePreDef);
-        
+
         [OperationContract]
         ServiceVertexType AlterVertexType(SecurityToken mySecurityToken, Int64 myTransToken,
             ServiceVertexType myVertexType, ServiceAlterVertexChangeset myChangeset);
-        
+
         [OperationContract]
         ServiceEdgeType AlterEdgeType(SecurityToken mySecurityToken, Int64 myTransToken,
             ServiceEdgeType myEdgeType, ServiceAlterEdgeChangeset myChangeset);
@@ -67,7 +67,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
 
         [OperationContract]
         void Shutdown(SecurityToken mySecurityToken);
-        
+
         [OperationContract]
         List<Int64> Clear(SecurityToken mySecurityToken, Int64 myTransToken);
 
@@ -83,9 +83,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         ServiceIndexDefinition CreateIndex(SecurityToken mySecurityToken, Int64 myTransToken, ServiceIndexPredefinition myVertexTypePreDef);
 
         [OperationContract]
-        List<ServiceVertexType> CreateVertexTypes(SecurityToken mySecurityToken, Int64 myTransToken, 
+        List<ServiceVertexType> CreateVertexTypes(SecurityToken mySecurityToken, Int64 myTransToken,
             List<ServiceVertexTypePredefinition> myVertexTypePreDef);
-                
+
         [OperationContract]
         Tuple<IEnumerable<IComparable>, IEnumerable<IComparable>> Delete(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs = null, ServiceDeletePayload myDeletePayload = null);
@@ -103,9 +103,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
             String myVertexTypeName, List<String> myIndexNames);
 
         [OperationContract]
-        Dictionary<Int64, String> DropEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, 
+        Dictionary<Int64, String> DropEdgeType(SecurityToken mySecurityToken, Int64 myTransToken,
             ServiceEdgeType myEdgeType);
-                
+
         [OperationContract]
         void DropIndex(SecurityToken mySecurityToken, Int64 myTransToken,
             ServiceVertexType myVertexType, String myIndexName, String myEdition);
@@ -160,15 +160,15 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         [OperationContract]
         [ServiceKnownType(typeof(ServiceHyperEdgeView))]
         [ServiceKnownType(typeof(ServiceSingleEdgeView))]
-        ServiceQueryResult Query(SecurityToken mySecToken, Int64 myTransToken, String myQueryString, String myLanguage); 
-        
+        ServiceQueryResult Query(SecurityToken mySecToken, Int64 myTransToken, String myQueryString, String myLanguage);
+
         //[OperationContract] There is no plan to implement the Travers method yet, because there is no way to transport traverser logic from the client
         //List<ServiceVertexInstance>Traverse(SecurityToken mySecToken, Int64 myTransToken);
 
         [OperationContract]
         List<ServiceVertexInstance> Update(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs,
             ServiceUpdateChangeset myUpdateChangeset);
-                   
+
         [OperationContract]
         void RebuildIndices(SecurityToken mySecurityToken, Int64 myTransToken, IEnumerable<String> myVertexTypeNames);
 
