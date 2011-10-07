@@ -101,6 +101,7 @@
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceUniqueDefinition.cs" />
     <Compile Include="DataContracts\InstanceObjects\ServiceVertexInstance.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceVertexType.cs" />
+    <Compile Include="DataContracts\ServiceUserPasswordCredentials.cs" />
     <Compile Include="ErrorHandling\SecurityTokenException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteAPIService.cs" />

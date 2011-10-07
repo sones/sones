@@ -41,7 +41,6 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 using sones.GraphDS.Services.RemoteAPIService.ErrorHandling;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expression;
 
-
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
 
@@ -261,7 +260,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             this.GraphDS.LogOff(mySecurityToken);
         }
 
-        public SecurityToken LogOn(IUserCredentials myUserCredentials)
+        public SecurityToken LogOn(ServiceUserPasswordCredentials myUserCredentials)
         {
             return this.GraphDS.LogOn(myUserCredentials);
         }
