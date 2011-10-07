@@ -38,7 +38,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expr
 
 namespace sones.GraphDS.Services.RemoteAPIService.API_Services
 {
-    [ServiceContract(Namespace = sonesRPCServer.Namespace, Name = "GraphDS")]
+    [ServiceContract(Namespace = sonesRPCServer.Namespace, Name = "GraphDSService")]
     public interface IGraphDS_API
     {
         [OperationContract]
@@ -155,7 +155,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         void LogOff(SecurityToken mySecurityToken);
 
         [OperationContract]
-        SecurityToken LogOn(String myLogin, String myPassword);
+        SecurityToken LogOn(IUserCredentials myUserCredentials);
 
         [OperationContract]
         [ServiceKnownType(typeof(ServiceHyperEdgeView))]

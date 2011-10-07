@@ -261,9 +261,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             this.GraphDS.LogOff(mySecurityToken);
         }
 
-        public SecurityToken LogOn(String myLogin, String myPassword)
+        public SecurityToken LogOn(IUserCredentials myUserCredentials)
         {
-            return this.GraphDS.LogOn(new UserPasswordCredentials(myLogin, myPassword));
+            return this.GraphDS.LogOn(myUserCredentials);
         }
 
         public Int64 BeginTransaction(SecurityToken mySecurityToken)
