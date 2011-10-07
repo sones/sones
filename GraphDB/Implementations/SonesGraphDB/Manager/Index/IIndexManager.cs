@@ -59,6 +59,13 @@ namespace sones.GraphDB.Manager.Index
         bool HasIndex(IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, Int64 myTransactionToken);
 
         /// <summary>
+        /// Determines if the specified index exists.
+        /// </summary>
+        /// <param name="myIndexName">The interesting index</param>
+        /// <returns>True or false</returns>
+        bool HasIndex(String myIndexName);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="myVertexType"></param>

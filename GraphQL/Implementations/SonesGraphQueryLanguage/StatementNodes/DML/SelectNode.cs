@@ -145,8 +145,12 @@ namespace sones.GraphQL.StatementNodes.DML
                     foreach (var reference in GetTypeReferenceDefinitions(context))
                     {
                         //SelectedElements.Add(new IDChainDefinition(new ChainPartTypeOrAttributeDefinition(reference.TypeName), aColumnItemNode.SelType, typeName), null);
+                        
                         SelectedElements.Add(new Tuple<AExpressionDefinition, string, SelectValueAssignment>(
-                            new IDChainDefinition(new ChainPartTypeOrAttributeDefinition(reference.TypeName), aColumnItemNode.SelType, typeName), null, aColumnItemNode.ValueAssignment));
+                                                new IDChainDefinition(
+                                                    new ChainPartTypeOrAttributeDefinition(reference.TypeName), 
+                                                    aColumnItemNode.SelType, typeName), 
+                                                null, aColumnItemNode.ValueAssignment));
                     }
                     continue;
                 }

@@ -27,6 +27,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.VertexStore;
 using sones.Library.PropertyHyperGraph;
 using sones.Plugins.Index;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -69,6 +70,11 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// </summary>
         protected readonly Boolean _isLongrunning;
 
+        /// <summary>
+        /// The name of the index which is used for resolving the expression
+        /// </summary>
+        protected readonly String _expressionIndex;
+
         #endregion
 
         #region constructor
@@ -83,7 +89,14 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myIndexManager">The index manager is needed to get the property related indices</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
-        protected AComparativeIndexOperator(QueryPlanProperty myProperty, ILiteralExpression myConstant, Boolean myIsLongrunning, SecurityToken mySecurityToken, Int64 myTransactionToken, IIndexManager myIndexManager, IVertexStore myVertexStore)
+        protected AComparativeIndexOperator(QueryPlanProperty myProperty, 
+                                            ILiteralExpression myConstant, 
+                                            Boolean myIsLongrunning, 
+                                            SecurityToken mySecurityToken, 
+                                            Int64 myTransactionToken, 
+                                            IIndexManager myIndexManager, 
+                                            IVertexStore myVertexStore,
+                                            String myExpressionIndex = null)
         {
             _property = myProperty;
             _constant = myConstant;
@@ -92,6 +105,7 @@ namespace sones.GraphDB.Expression.QueryPlan
             _indexManager = myIndexManager;
             _securityToken = mySecurityToken;
             _transactionToken = myTransactionToken;
+            _expressionIndex = myExpressionIndex;
         }
 
         #endregion
@@ -151,7 +165,20 @@ namespace sones.GraphDB.Expression.QueryPlan
 
             if (!myVertexType.IsAbstract)
             {
-                var idx = GetBestMatchingIdx(_indexManager.GetIndices(myVertexType, _property.Property, _securityToken, _transactionToken));
+                ISonesIndex idx = null;
+
+                if (_expressionIndex != null)
+                    idx = _indexManager.GetIndex(_expressionIndex, _securityToken, _transactionToken);
+                else
+                    idx = GetBestMatchingIdx(_indexManager.GetIndices(myVertexType, 
+                                                                        _property.Property, 
+                                                                        _securityToken, 
+                                                                        _transactionToken));
+
+                if (idx == null)
+                    throw new IndexDoesNotExistException(
+                                _expressionIndex == null ? "no index name specified" : _expressionIndex, 
+                                "default");
 
                 var values = GetValues(idx, _constant.Value);
 
@@ -159,7 +186,12 @@ namespace sones.GraphDB.Expression.QueryPlan
                 {
                     foreach (var aVertexID in values)
                     {
-                        vertices.Add(_vertexStore.GetVertex(_securityToken, _transactionToken, aVertexID, myVertexType.ID, VertexEditionFilter, VertexRevisionFilter));
+                        vertices.Add(_vertexStore.GetVertex(_securityToken, 
+                                                            _transactionToken, 
+                                                            aVertexID, 
+                                                            myVertexType.ID, 
+                                                            VertexEditionFilter, 
+                                                            VertexRevisionFilter));
                     }
                 }
             }

@@ -26,9 +26,93 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
         {
             Parameters.Add(new ParameterValue("EndVertex", typeof(IEnumerable<IVertex>)));
             Parameters.Add(new ParameterValue("MaxDepth", typeof(UInt64)));
-
+            Parameters.Add(new ParameterValue("EdgeType",typeof(string)));
+            
         }
         #endregion
+        #region show all edges with target vertex 'vertexType' for 'vertexType'
+
+
+        private Dictionary<IOutgoingEdgeDefinition,Tuple<bool, long>> allEdgeWithTargetVertex(IVertexType vertexType)
+        {
+            Dictionary<IOutgoingEdgeDefinition, Tuple<bool, long>> idList = new Dictionary<IOutgoingEdgeDefinition, Tuple<bool, long>>();
+            var temp =   vertexType.GetOutgoingEdgeDefinitions(true);
+            foreach (IOutgoingEdgeDefinition vertex in temp)
+            {
+                if (vertex.TargetVertexType.ID == vertexType.ID)
+                {
+                    var hasProperty = vertex.InnerEdgeType.HasProperty("Weight");
+
+
+                    long myPropertyID = 0;
+
+                    if (hasProperty == true)
+                    {
+                        myPropertyID = vertex.InnerEdgeType.GetPropertyDefinition("Weight").ID;
+                    }
+
+                    idList.Add(vertex,Tuple.Create(hasProperty,myPropertyID));
+                }
+            }
+            return idList;
+        }
+        #endregion
+        #region Parser from String to IOutgoingEdgeDefinition and check property edgeType.InnerEdgeType.HasProperty("Weight")
+
+        private Dictionary<IOutgoingEdgeDefinition, Tuple<bool, long>> StringParser(String current_string,
+                                               
+                                               IVertexType vertexType)
+        {
+            Dictionary<IOutgoingEdgeDefinition, Tuple<bool, long>> idList = new Dictionary<IOutgoingEdgeDefinition, Tuple<bool, long>>();
+            bool endFlag = false;
+            int EndPos = 0;
+
+            try
+            {
+
+                do
+                {
+
+                    EndPos = current_string.IndexOf(',');
+                    if (EndPos == -1)
+                    {
+                        EndPos = current_string.Length;
+                        endFlag = true;
+                    }
+
+
+                    var idString = current_string.Substring(0, EndPos);
+                    var edgeType = vertexType.GetOutgoingEdgeDefinition(idString);
+
+                    var hasProperty = edgeType.InnerEdgeType.HasProperty("Weight");
+
+
+                    long myPropertyID = 0;
+
+                    if (hasProperty == true)
+                    {
+                        myPropertyID = edgeType.InnerEdgeType.GetPropertyDefinition("Weight").ID;
+                    }
+
+                    if (!idList.ContainsKey(edgeType))
+                    idList.Add(edgeType,Tuple.Create(hasProperty,myPropertyID));
+
+                    if (!endFlag)
+                        current_string = current_string.Substring(EndPos + 1);
+
+                }
+                while (endFlag != true);
+            }
+            catch
+            {
+                throw new InvalidFunctionParameterException("edgeType", "Object reference not set to an instance of an object.", "null");
+            }
+
+
+            return idList;
+        }
+        #endregion
+        #region ValidateWorkingBase
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
@@ -50,6 +134,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                 return false;
             }
         }
+        #endregion
         #region ExecFunc
         public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition,
                                                 Object myCallingObject,
@@ -94,7 +179,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                                       new sones.GraphDB.Request.RequestGetVertexType(myAttributeDefinition.RelatedType.Name),
                                                       (statistics, type) => type);
 
-            var myEdgeType = myAttributeDefinition.ID;
+           var myEdgeType = myAttributeDefinition.ID;
 
 
             var hasProperty = myType.GetOutgoingEdgeDefinition(myAttributeDefinition.Name).InnerEdgeType.HasProperty("Weight");
@@ -106,16 +191,37 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             {
                 myPropertyID = myType.GetOutgoingEdgeDefinition(myAttributeDefinition.Name).InnerEdgeType.GetPropertyDefinition("Weight").ID;
             }
+            
+            Dictionary<IOutgoingEdgeDefinition, Tuple<bool, long>> edgeTypeID = new Dictionary<IOutgoingEdgeDefinition, Tuple<bool, long>>();
 
+            var edgeType = myParams[2].Value.ToString();
 
-            long time = DateTime.Now.Ticks;
+           
+            if (edgeType == "")
+            {
+                edgeTypeID.Add(myType.GetOutgoingEdgeDefinition(myAttributeDefinition.Name), Tuple.Create(hasProperty, myPropertyID));
+            }
+            else
+            {
+                if (edgeType.Contains("all edgeType"))
+                {
+                    edgeTypeID = this.allEdgeWithTargetVertex(myType);
+                }
+                else
+                {
+                   edgeTypeID = this.StringParser(edgeType, myType); 
+                    if (!edgeTypeID.ContainsKey(myType.GetOutgoingEdgeDefinition(myAttributeDefinition.Name)))
+                   edgeTypeID.Add(myType.GetOutgoingEdgeDefinition(myAttributeDefinition.Name), Tuple.Create(hasProperty, myPropertyID));
 
+                }
+
+            }
 
 
 
             List<UInt64> depthBuffer = new List<UInt64>();
 
-            List<ISingleEdge> edgeBuffer = new List<ISingleEdge>();
+            List<Tuple<ISingleEdge, IOutgoingEdgeDefinition>> edgeBuffer = new List<Tuple<ISingleEdge, IOutgoingEdgeDefinition>>();
 
             List<double> distanceBuffer = new List<double>();
             List<IVertex> VertexBuffer = new List<IVertex>();
@@ -129,7 +235,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
 
             buf.add(myStartVertex, 0, 0);
-            lists.add(currentVertex, 0, 0, null, currentVertex);
+            lists.add(currentVertex, 0, 0, null,null, currentVertex);
 
                       
 
@@ -154,25 +260,42 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             {
                 if (currentVertexDepth < maxDepth)
                 {
-                    var hyperEdge = currentVertex.GetOutgoingHyperEdge(myEdgeType);
-
-                    if (hyperEdge != null)
+                    List<Tuple<ISingleEdge, IOutgoingEdgeDefinition>> AllsingleEdge = new List<Tuple<ISingleEdge, IOutgoingEdgeDefinition>>();
+                   foreach (IOutgoingEdgeDefinition id in edgeTypeID.Keys)
                     {
-                        var singleEdge = hyperEdge.GetAllEdges();
+                        var hyperEdge = currentVertex.GetOutgoingHyperEdge(id.ID);
 
-
-                        for (int iCount = 0; iCount < singleEdge.Count(); iCount++)
+                        if (hyperEdge != null)
                         {
-
-                            var TargetVertex = singleEdge.ElementAt(iCount).GetTargetVertex();
-
-
-                            double current_distance;
-
-                            if (hasProperty == true)
+                            var singleEdge = hyperEdge.GetAllEdges();
+                            foreach (ISingleEdge value in singleEdge)
                             {
-                            
-                                current_distance = Math.Abs(singleEdge.ElementAt(iCount).GetProperty<double>(myPropertyID));
+                                AllsingleEdge.Add(Tuple.Create(value,id));
+                            }
+
+                        }
+                    }
+
+
+
+                if (AllsingleEdge != null)
+                    {
+
+
+
+                        for (int iCount = 0; iCount < AllsingleEdge.Count(); iCount++)
+                        {
+                            var elementSingleEdge = AllsingleEdge.ElementAt(iCount);
+                            var TargetVertex = elementSingleEdge.Item1.GetTargetVertex();
+
+
+
+                            double current_distance=0;
+
+                            if (edgeTypeID[elementSingleEdge.Item2].Item1 == true)
+                            {
+
+                                current_distance = Math.Abs(AllsingleEdge.ElementAt(iCount).Item1.GetProperty<double>(edgeTypeID[elementSingleEdge.Item2].Item2));
                                
                             }
                             else
@@ -180,7 +303,8 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                 current_distance = 1;
                             }
 
-                            var current_singleEdge = singleEdge.ElementAt(iCount);
+
+                            var current_singleEdge = AllsingleEdge.ElementAt(iCount).Item1;
 
                             var TargetVertexID = lists.getElement(TargetVertex.VertexID);
                           
@@ -202,6 +326,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                         current_distance + currentVertexDistance,
                                         currentVertexDepth + 1,
                                         current_singleEdge,
+                                        elementSingleEdge.Item2,
                                         currentVertex);
 
                                 }
@@ -222,6 +347,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                        current_distance + currentVertexDistance,
                                        currentVertexDepth + 1,
                                        current_singleEdge,
+                                       elementSingleEdge.Item2,
                                        currentVertex);
 
 
@@ -245,6 +371,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                        current_distance + currentVertexDistance,
                                        currentVertexDepth + 1,
                                        current_singleEdge,
+                                       elementSingleEdge.Item2,
                                        currentVertex);
 
 
@@ -266,6 +393,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                        current_distance + currentVertexDistance,
                                        currentVertexDepth + 1,
                                        current_singleEdge,
+                                       elementSingleEdge.Item2,
                                        currentVertex);
 
                                         }
@@ -285,6 +413,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                        current_distance + currentVertexDistance,
                                        currentVertexDepth + 1,
                                        current_singleEdge,
+                                       elementSingleEdge.Item2,
                                        currentVertex);
 
 
@@ -306,6 +435,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                        current_distance + currentVertexDistance,
                                        currentVertexDepth + 1,
                                        current_singleEdge,
+                                       elementSingleEdge.Item2,
                                        currentVertex);
 
                                         }
@@ -454,13 +584,14 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                 myPropertyID = myType.GetOutgoingEdgeDefinition(myAttributeDefinition.Name).InnerEdgeType.GetPropertyDefinition("Weight").ID;
             }
 
+            var edgeTypeDifinition = myType.GetOutgoingEdgeDefinition(myAttributeDefinition.Name);
 
             dataDijkstra lists = new dataDijkstra();
             bufferDijkstra buffer = new bufferDijkstra();
 
 
             buffer.add(myStartVertex, 0, 0);
-            lists.add(currentVertex, 0, 0, null, currentVertex);
+            lists.add(currentVertex, 0, 0, null,null, currentVertex);
 
 
             double currentVertexDistance = 0;
@@ -514,6 +645,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                     current_distance + currentVertexDistance,
                                     currentVertexDepth + 1,
                                     current_singleEdge,
+                                    edgeTypeDifinition,
                                     currentVertex);
                             }
                             else
@@ -530,6 +662,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                    current_distance + currentVertexDistance,
                                    currentVertexDepth + 1,
                                    current_singleEdge,
+                                   edgeTypeDifinition,
                                    currentVertex);
 
 
@@ -549,6 +682,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                        current_distance + currentVertexDistance,
                                        currentVertexDepth + 1,
                                        current_singleEdge,
+                                       edgeTypeDifinition,
                                        currentVertex);
 
 
@@ -592,13 +726,14 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
         }
 
         #endregion
+       
 
         #region create Vertex View
         private VertexView createVertexView(long myPropertyID, List<IVertex> current_vertices,
-                                          List<double> current_distance, List<ISingleEdge> edge, List<UInt64> current_depth)
+                                          List<double> current_distance, List<Tuple<ISingleEdge, IOutgoingEdgeDefinition>> edge, List<UInt64> current_depth)
         {
 
-            List<ISingleEdgeView> singleEdges = new List<ISingleEdgeView>(); ;
+            List<ISingleEdgeView> singleEdges = new List<ISingleEdgeView>();
             Dictionary<string, Object> myPropertyList = new Dictionary<string, object>();
             Dictionary<string, Object> myPropertyTwo = new Dictionary<string, Object>();
             Dictionary<string, IEdgeView> edgeView = null;
@@ -609,17 +744,22 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             {
                 var iCount = current_vertices.Count - 1;
                 double dist;
-                if (myPropertyID != 0)
-                {
+
                     if (edge[iCount] != null && iCount >= 0)
-                        dist = Math.Abs(edge.ElementAt(iCount).GetProperty<double>(myPropertyID));
+                    {
+                        if (edge.ElementAt(iCount).Item2.InnerEdgeType.HasProperty("Weight"))
+                        {
+                            myPropertyID = edge.ElementAt(iCount).Item2.InnerEdgeType.GetPropertyDefinition("Weight").ID;
+                            dist = Math.Abs(edge.ElementAt(iCount).Item1.GetProperty<double>(myPropertyID));
+                        }
+                        else dist = 1; 
+                        myPropertyTwo.Add("EdgeID", edge.ElementAt(iCount).Item2.ID);
+                        myPropertyTwo.Add("EdgeName", edge.ElementAt(iCount).Item2.Name);
+                    }
                     else
                         dist = 0;
-                }
-                else
-                {
-                    dist = 1;
-                }
+
+
 
                 myPropertyList.Add("VertexID", currentVertex.VertexID);
                 myPropertyList.Add("VertexTypeID", currentVertex.VertexTypeID);
@@ -628,6 +768,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
 
                 myPropertyTwo.Add("current Distance", dist);
+                
 
 
                 current_vertices.RemoveAt(iCount);
