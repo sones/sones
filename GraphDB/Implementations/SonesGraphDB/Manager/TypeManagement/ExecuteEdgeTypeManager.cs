@@ -851,8 +851,54 @@ namespace sones.GraphDB.Manager.TypeManagement
                 properties2add.Add(PropertyId, value);
                 StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
 
-                // Update the vertex (add structured)
-                VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, propadd);
+                var sourcevertex = edge.GetSourceVertex();
+                var targetvertex = edge.GetTargetVertex();
+
+                VertexUpdateDefinition upddef;
+
+                if (bHyperEdge)
+                {
+                    // add list with only one item -> edges to update
+                    List<SingleEdgeUpdateDefinition> edges2update = new List<SingleEdgeUpdateDefinition>();
+                    edges2update.Add(
+                        new SingleEdgeUpdateDefinition(
+                            new VertexInformation(sourcevertex.VertexTypeID, sourcevertex.VertexID),
+                            new VertexInformation(targetvertex.VertexTypeID, targetvertex.VertexID),
+                            edge.EdgeTypeID, null, propadd, null
+                        )
+                    );
+
+                    // add list with only one item -> edges to update
+                    Dictionary<long, HyperEdgeUpdateDefinition> hedges2update = new Dictionary<long, HyperEdgeUpdateDefinition>();
+                    hedges2update.Add(
+                        EdgeId,
+                        new HyperEdgeUpdateDefinition(
+                           edge.EdgeTypeID, null, null, null, null, edges2update
+                        )
+                    );
+
+                    HyperEdgeUpdate edgeupd = new HyperEdgeUpdate(hedges2update);
+                    upddef = new VertexUpdateDefinition(null, null, null, null, null, edgeupd, null);
+                }
+                else
+                {
+                    // add list with only one item -> edges to update
+                    Dictionary<long, SingleEdgeUpdateDefinition> edges2update = new Dictionary<long, SingleEdgeUpdateDefinition>();
+                    edges2update.Add(
+                        EdgeId,
+                        new SingleEdgeUpdateDefinition(
+                            new VertexInformation(sourcevertex.VertexTypeID, sourcevertex.VertexID),
+                            new VertexInformation(targetvertex.VertexTypeID, targetvertex.VertexID),
+                            edge.EdgeTypeID, null, propadd, null
+                        )
+                    );
+
+                    SingleEdgeUpdate edgeupd = new SingleEdgeUpdate(edges2update);
+                    upddef = new VertexUpdateDefinition(null, null, null, null, edgeupd, null, null);
+                }
+
+                // Update the vertex (delete unstructured and add structured)
+
                 _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
             }
 
@@ -960,8 +1006,20 @@ namespace sones.GraphDB.Manager.TypeManagement
                 properties2add.Add(PropertyId, value);
                 StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
 
-                // Update the vertex (add structured)
-                VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, propadd);
+                // add list with only one item -> edges to update
+                Dictionary<long, HyperEdgeUpdateDefinition> edges2update = new Dictionary<long, HyperEdgeUpdateDefinition>();
+                edges2update.Add(
+                    EdgeId,
+                    new HyperEdgeUpdateDefinition(
+                        edge.EdgeTypeID,
+                        null, propadd, null
+                    )
+                );
+
+                HyperEdgeUpdate edgeupd = new HyperEdgeUpdate(edges2update);
+
+                // Update the vertex (delete unstructured and add structured)
+                VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, null, null, null, null, edgeupd, null);
                 _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
             }
 
