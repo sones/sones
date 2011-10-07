@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GraphDSRemoteClient.sonesGraphDSRemoteAPI;
+using sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI;
 using sones.GraphDB.TypeSystem;
-using GraphDSRemoteClient.GraphElements;
-using GraphDSRemoteClient.TypeManagement;
+using sones.GraphDS.GraphDSRemoteClient.GraphElements;
+using sones.GraphDS.GraphDSRemoteClient.TypeManagement;
 using sones.GraphDB.Expression;
 
-namespace GraphDSRemoteClient
+namespace sones.GraphDS.GraphDSRemoteClient
 {
     internal static class ConvertHelper
     {

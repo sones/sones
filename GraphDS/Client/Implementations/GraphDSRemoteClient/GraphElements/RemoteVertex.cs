@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GraphDSRemoteClient.sonesGraphDSRemoteAPI;
+using sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI;
 using sones.Library.PropertyHyperGraph;
 using System.IO;
 
-namespace GraphDSRemoteClient.GraphElements
+namespace sones.GraphDS.GraphDSRemoteClient.GraphElements
 {
     internal class RemoteVertex : ARemoteGraphElement, IVertex
     {

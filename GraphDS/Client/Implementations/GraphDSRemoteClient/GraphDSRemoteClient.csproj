@@ -8,7 +8,7 @@
     <ProjectGuid>{64C46383-614C-4899-B1F4-9419F99BAE93}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GraphDSRemoteClient</RootNamespace>
+    <RootNamespace>sones.GraphDS.GraphDSRemoteClient</RootNamespace>
     <AssemblyName>GraphDSRemoteClient</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -54,6 +54,7 @@
     <Compile Include="GraphElements\RemoteVertexType.cs" />
     <Compile Include="IServiceToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteUserPasswordCredentials.cs" />
     <Compile Include="Service References\sonesGraphDSRemoteAPI\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -146,49 +147,49 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Properties\DataSources\sones.Library.Commons.Security.SecurityToken.datasource" />
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeInstance.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeInstance.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceQueryResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeInstance.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUniqueDefinition.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexStatistics.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\sonesGraphDSRemoteAPI\GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
     <None Include="Service References\sonesGraphDSRemoteAPI\RPCServiceContract1.wsdl" />
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeInstance.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeInstance.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceQueryResult.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeInstance.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUniqueDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexStatistics.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Service References\sonesGraphDSRemoteAPI\" />

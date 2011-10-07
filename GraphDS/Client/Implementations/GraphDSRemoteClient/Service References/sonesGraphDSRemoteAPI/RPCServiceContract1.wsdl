@@ -746,47 +746,6 @@
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ArrayOfServiceVertexInstance" nillable="true" type="tns:ArrayOfServiceVertexInstance" />
-      <xsd:simpleType name="ServiceBinaryOperator">
-        <xsd:restriction base="xsd:string">
-          <xsd:enumeration value="Equals" />
-          <xsd:enumeration value="GreaterOrEqualsThan" />
-          <xsd:enumeration value="GreaterThan" />
-          <xsd:enumeration value="InRange" />
-          <xsd:enumeration value="LessOrEqualsThan" />
-          <xsd:enumeration value="LessThan" />
-          <xsd:enumeration value="NotEquals" />
-          <xsd:enumeration value="Like" />
-          <xsd:enumeration value="AND" />
-          <xsd:enumeration value="OR" />
-        </xsd:restriction>
-      </xsd:simpleType>
-      <xsd:element name="ServiceBinaryOperator" nillable="true" type="tns:ServiceBinaryOperator" />
-      <xsd:complexType name="ServiceBinaryExpression">
-        <xsd:complexContent mixed="false">
-          <xsd:extension base="tns:ServiceBaseExpression">
-            <xsd:sequence>
-              <xsd:element minOccurs="0" name="Left" nillable="true" type="tns:ServiceBaseExpression" />
-              <xsd:element minOccurs="0" name="Operator" type="tns:ServiceBinaryOperator" />
-              <xsd:element minOccurs="0" name="Right" nillable="true" type="tns:ServiceBaseExpression" />
-            </xsd:sequence>
-          </xsd:extension>
-        </xsd:complexContent>
-      </xsd:complexType>
-      <xsd:element name="ServiceBinaryExpression" nillable="true" type="tns:ServiceBinaryExpression" />
-      <xsd:complexType name="ServiceBaseExpression">
-        <xsd:sequence />
-      </xsd:complexType>
-      <xsd:element name="ServiceBaseExpression" nillable="true" type="tns:ServiceBaseExpression" />
-      <xsd:complexType name="ServiceSingleLiteralExpression">
-        <xsd:complexContent mixed="false">
-          <xsd:extension base="tns:ServiceBaseExpression">
-            <xsd:sequence>
-              <xsd:element minOccurs="0" name="Constant" nillable="true" type="xsd:anyType" />
-            </xsd:sequence>
-          </xsd:extension>
-        </xsd:complexContent>
-      </xsd:complexType>
-      <xsd:element name="ServiceSingleLiteralExpression" nillable="true" type="tns:ServiceSingleLiteralExpression" />
       <xsd:complexType name="ServiceRangeLiteralExpression">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceBaseExpression">
@@ -799,16 +758,10 @@
         </xsd:complexContent>
       </xsd:complexType>
       <xsd:element name="ServiceRangeLiteralExpression" nillable="true" type="tns:ServiceRangeLiteralExpression" />
-      <xsd:complexType name="ServiceCollectionLiteralExpression">
-        <xsd:complexContent mixed="false">
-          <xsd:extension base="tns:ServiceBaseExpression">
-            <xsd:sequence>
-              <xsd:element xmlns:q51="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="CollectionLiteral" nillable="true" type="q51:ArrayOfanyType" />
-            </xsd:sequence>
-          </xsd:extension>
-        </xsd:complexContent>
+      <xsd:complexType name="ServiceBaseExpression">
+        <xsd:sequence />
       </xsd:complexType>
-      <xsd:element name="ServiceCollectionLiteralExpression" nillable="true" type="tns:ServiceCollectionLiteralExpression" />
+      <xsd:element name="ServiceBaseExpression" nillable="true" type="tns:ServiceBaseExpression" />
       <xsd:complexType name="ServiceUnaryExpression">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceBaseExpression">
@@ -838,6 +791,53 @@
         </xsd:complexContent>
       </xsd:complexType>
       <xsd:element name="ServicePropertyExpression" nillable="true" type="tns:ServicePropertyExpression" />
+      <xsd:complexType name="ServiceBinaryExpression">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ServiceBaseExpression">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Left" nillable="true" type="tns:ServiceBaseExpression" />
+              <xsd:element minOccurs="0" name="Operator" type="tns:ServiceBinaryOperator" />
+              <xsd:element minOccurs="0" name="Right" nillable="true" type="tns:ServiceBaseExpression" />
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="ServiceBinaryExpression" nillable="true" type="tns:ServiceBinaryExpression" />
+      <xsd:simpleType name="ServiceBinaryOperator">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Equals" />
+          <xsd:enumeration value="GreaterOrEqualsThan" />
+          <xsd:enumeration value="GreaterThan" />
+          <xsd:enumeration value="InRange" />
+          <xsd:enumeration value="LessOrEqualsThan" />
+          <xsd:enumeration value="LessThan" />
+          <xsd:enumeration value="NotEquals" />
+          <xsd:enumeration value="Like" />
+          <xsd:enumeration value="AND" />
+          <xsd:enumeration value="OR" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:element name="ServiceBinaryOperator" nillable="true" type="tns:ServiceBinaryOperator" />
+      <xsd:complexType name="ServiceCollectionLiteralExpression">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ServiceBaseExpression">
+            <xsd:sequence>
+              <xsd:element xmlns:q51="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="CollectionLiteral" nillable="true" type="q51:ArrayOfanyType" />
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="ServiceCollectionLiteralExpression" nillable="true" type="tns:ServiceCollectionLiteralExpression" />
+      <xsd:complexType name="ServiceSingleLiteralExpression">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ServiceBaseExpression">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Constant" nillable="true" type="xsd:anyType" />
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="ServiceSingleLiteralExpression" nillable="true" type="tns:ServiceSingleLiteralExpression" />
       <xsd:element name="GetVerticesByExpression">
         <xsd:complexType>
           <xsd:sequence>
@@ -952,28 +952,6 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:complexType name="ServiceHyperEdgeView">
-        <xsd:complexContent mixed="false">
-          <xsd:extension base="tns:ServiceEdgeView">
-            <xsd:sequence>
-              <xsd:element minOccurs="0" name="Edges" nillable="true" type="tns:ArrayOfServiceSingleEdgeView" />
-            </xsd:sequence>
-          </xsd:extension>
-        </xsd:complexContent>
-      </xsd:complexType>
-      <xsd:element name="ServiceHyperEdgeView" nillable="true" type="tns:ServiceHyperEdgeView" />
-      <xsd:complexType name="ServiceEdgeView">
-        <xsd:sequence>
-          <xsd:element xmlns:q57="http://schemas.datacontract.org/2004/07/System" minOccurs="0" name="PropertyList" nillable="true" type="q57:ArrayOfTupleOfstringanyType" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:element name="ServiceEdgeView" nillable="true" type="tns:ServiceEdgeView" />
-      <xsd:complexType name="ArrayOfServiceSingleEdgeView">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" maxOccurs="unbounded" name="ServiceSingleEdgeView" nillable="true" type="tns:ServiceSingleEdgeView" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:element name="ArrayOfServiceSingleEdgeView" nillable="true" type="tns:ArrayOfServiceSingleEdgeView" />
       <xsd:complexType name="ServiceSingleEdgeView">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceEdgeView">
@@ -984,6 +962,12 @@
         </xsd:complexContent>
       </xsd:complexType>
       <xsd:element name="ServiceSingleEdgeView" nillable="true" type="tns:ServiceSingleEdgeView" />
+      <xsd:complexType name="ServiceEdgeView">
+        <xsd:sequence>
+          <xsd:element xmlns:q57="http://schemas.datacontract.org/2004/07/System" minOccurs="0" name="PropertyList" nillable="true" type="q57:ArrayOfTupleOfstringanyType" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="ServiceEdgeView" nillable="true" type="tns:ServiceEdgeView" />
       <xsd:complexType name="ServiceVertexView">
         <xsd:sequence>
           <xsd:element xmlns:q58="http://schemas.datacontract.org/2004/07/System" minOccurs="0" name="HyperEdges" nillable="true" type="q58:ArrayOfTupleOfstringServiceHyperEdgeView7AF3f8r2" />
@@ -992,6 +976,22 @@
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ServiceVertexView" nillable="true" type="tns:ServiceVertexView" />
+      <xsd:complexType name="ServiceHyperEdgeView">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ServiceEdgeView">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Edges" nillable="true" type="tns:ArrayOfServiceSingleEdgeView" />
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="ServiceHyperEdgeView" nillable="true" type="tns:ServiceHyperEdgeView" />
+      <xsd:complexType name="ArrayOfServiceSingleEdgeView">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="ServiceSingleEdgeView" nillable="true" type="tns:ServiceSingleEdgeView" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="ArrayOfServiceSingleEdgeView" nillable="true" type="tns:ArrayOfServiceSingleEdgeView" />
       <xsd:element name="Query">
         <xsd:complexType>
           <xsd:sequence>
@@ -3354,208 +3354,208 @@
   <wsdl:message name="StreamedService_GetAllBinaryProperties_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetAllBinaryPropertiesResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_CreateVertexType_InputMessage">
+  <wsdl:message name="GraphDSService_CreateVertexType_InputMessage">
     <wsdl:part name="parameters" element="tns:CreateVertexType" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_CreateVertexType_OutputMessage">
+  <wsdl:message name="GraphDSService_CreateVertexType_OutputMessage">
     <wsdl:part name="parameters" element="tns:CreateVertexTypeResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_AlterVertexType_InputMessage">
+  <wsdl:message name="GraphDSService_AlterVertexType_InputMessage">
     <wsdl:part name="parameters" element="tns:AlterVertexType" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_AlterVertexType_OutputMessage">
+  <wsdl:message name="GraphDSService_AlterVertexType_OutputMessage">
     <wsdl:part name="parameters" element="tns:AlterVertexTypeResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_AlterEdgeType_InputMessage">
+  <wsdl:message name="GraphDSService_AlterEdgeType_InputMessage">
     <wsdl:part name="parameters" element="tns:AlterEdgeType" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_AlterEdgeType_OutputMessage">
+  <wsdl:message name="GraphDSService_AlterEdgeType_OutputMessage">
     <wsdl:part name="parameters" element="tns:AlterEdgeTypeResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetVertexType_InputMessage">
+  <wsdl:message name="GraphDSService_GetVertexType_InputMessage">
     <wsdl:part name="parameters" element="tns:GetVertexType" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetVertexType_OutputMessage">
+  <wsdl:message name="GraphDSService_GetVertexType_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetVertexTypeResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_BeginTransaction_InputMessage">
+  <wsdl:message name="GraphDSService_BeginTransaction_InputMessage">
     <wsdl:part name="parameters" element="tns:BeginTransaction" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_BeginTransaction_OutputMessage">
+  <wsdl:message name="GraphDSService_BeginTransaction_OutputMessage">
     <wsdl:part name="parameters" element="tns:BeginTransactionResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_CommitTransaction_InputMessage">
+  <wsdl:message name="GraphDSService_CommitTransaction_InputMessage">
     <wsdl:part name="parameters" element="tns:CommitTransaction" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_CommitTransaction_OutputMessage">
+  <wsdl:message name="GraphDSService_CommitTransaction_OutputMessage">
     <wsdl:part name="parameters" element="tns:CommitTransactionResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_RollbackTransaction_InputMessage">
+  <wsdl:message name="GraphDSService_RollbackTransaction_InputMessage">
     <wsdl:part name="parameters" element="tns:RollbackTransaction" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_RollbackTransaction_OutputMessage">
+  <wsdl:message name="GraphDSService_RollbackTransaction_OutputMessage">
     <wsdl:part name="parameters" element="tns:RollbackTransactionResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_Shutdown_InputMessage">
+  <wsdl:message name="GraphDSService_Shutdown_InputMessage">
     <wsdl:part name="parameters" element="tns:Shutdown" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_Shutdown_OutputMessage">
+  <wsdl:message name="GraphDSService_Shutdown_OutputMessage">
     <wsdl:part name="parameters" element="tns:ShutdownResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_Clear_InputMessage">
+  <wsdl:message name="GraphDSService_Clear_InputMessage">
     <wsdl:part name="parameters" element="tns:Clear" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_Clear_OutputMessage">
+  <wsdl:message name="GraphDSService_Clear_OutputMessage">
     <wsdl:part name="parameters" element="tns:ClearResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_CreateEdgeType_InputMessage">
+  <wsdl:message name="GraphDSService_CreateEdgeType_InputMessage">
     <wsdl:part name="parameters" element="tns:CreateEdgeType" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_CreateEdgeType_OutputMessage">
+  <wsdl:message name="GraphDSService_CreateEdgeType_OutputMessage">
     <wsdl:part name="parameters" element="tns:CreateEdgeTypeResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_CreateEdgeTypes_InputMessage">
+  <wsdl:message name="GraphDSService_CreateEdgeTypes_InputMessage">
     <wsdl:part name="parameters" element="tns:CreateEdgeTypes" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_CreateEdgeTypes_OutputMessage">
+  <wsdl:message name="GraphDSService_CreateEdgeTypes_OutputMessage">
     <wsdl:part name="parameters" element="tns:CreateEdgeTypesResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_CreateIndex_InputMessage">
+  <wsdl:message name="GraphDSService_CreateIndex_InputMessage">
     <wsdl:part name="parameters" element="tns:CreateIndex" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_CreateIndex_OutputMessage">
+  <wsdl:message name="GraphDSService_CreateIndex_OutputMessage">
     <wsdl:part name="parameters" element="tns:CreateIndexResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_CreateVertexTypes_InputMessage">
+  <wsdl:message name="GraphDSService_CreateVertexTypes_InputMessage">
     <wsdl:part name="parameters" element="tns:CreateVertexTypes" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_CreateVertexTypes_OutputMessage">
+  <wsdl:message name="GraphDSService_CreateVertexTypes_OutputMessage">
     <wsdl:part name="parameters" element="tns:CreateVertexTypesResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_Delete_InputMessage">
+  <wsdl:message name="GraphDSService_Delete_InputMessage">
     <wsdl:part name="parameters" element="tns:Delete" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_Delete_OutputMessage">
+  <wsdl:message name="GraphDSService_Delete_OutputMessage">
     <wsdl:part name="parameters" element="tns:DeleteResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_DescribeIndex_InputMessage">
+  <wsdl:message name="GraphDSService_DescribeIndex_InputMessage">
     <wsdl:part name="parameters" element="tns:DescribeIndex" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_DescribeIndex_OutputMessage">
+  <wsdl:message name="GraphDSService_DescribeIndex_OutputMessage">
     <wsdl:part name="parameters" element="tns:DescribeIndexResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_DescribeIndices_InputMessage">
+  <wsdl:message name="GraphDSService_DescribeIndices_InputMessage">
     <wsdl:part name="parameters" element="tns:DescribeIndices" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_DescribeIndices_OutputMessage">
+  <wsdl:message name="GraphDSService_DescribeIndices_OutputMessage">
     <wsdl:part name="parameters" element="tns:DescribeIndicesResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_DescribeIndicesByNames_InputMessage">
+  <wsdl:message name="GraphDSService_DescribeIndicesByNames_InputMessage">
     <wsdl:part name="parameters" element="tns:DescribeIndicesByNames" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_DescribeIndicesByNames_OutputMessage">
+  <wsdl:message name="GraphDSService_DescribeIndicesByNames_OutputMessage">
     <wsdl:part name="parameters" element="tns:DescribeIndicesByNamesResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_DropEdgeType_InputMessage">
+  <wsdl:message name="GraphDSService_DropEdgeType_InputMessage">
     <wsdl:part name="parameters" element="tns:DropEdgeType" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_DropEdgeType_OutputMessage">
+  <wsdl:message name="GraphDSService_DropEdgeType_OutputMessage">
     <wsdl:part name="parameters" element="tns:DropEdgeTypeResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_DropIndex_InputMessage">
+  <wsdl:message name="GraphDSService_DropIndex_InputMessage">
     <wsdl:part name="parameters" element="tns:DropIndex" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_DropIndex_OutputMessage">
+  <wsdl:message name="GraphDSService_DropIndex_OutputMessage">
     <wsdl:part name="parameters" element="tns:DropIndexResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_DropVertexType_InputMessage">
+  <wsdl:message name="GraphDSService_DropVertexType_InputMessage">
     <wsdl:part name="parameters" element="tns:DropVertexType" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_DropVertexType_OutputMessage">
+  <wsdl:message name="GraphDSService_DropVertexType_OutputMessage">
     <wsdl:part name="parameters" element="tns:DropVertexTypeResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetAllEdgeTypes_InputMessage">
+  <wsdl:message name="GraphDSService_GetAllEdgeTypes_InputMessage">
     <wsdl:part name="parameters" element="tns:GetAllEdgeTypes" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetAllEdgeTypes_OutputMessage">
+  <wsdl:message name="GraphDSService_GetAllEdgeTypes_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetAllEdgeTypesResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetAllVertexTypes_InputMessage">
+  <wsdl:message name="GraphDSService_GetAllVertexTypes_InputMessage">
     <wsdl:part name="parameters" element="tns:GetAllVertexTypes" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetAllVertexTypes_OutputMessage">
+  <wsdl:message name="GraphDSService_GetAllVertexTypes_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetAllVertexTypesResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetEdgeType_InputMessage">
+  <wsdl:message name="GraphDSService_GetEdgeType_InputMessage">
     <wsdl:part name="parameters" element="tns:GetEdgeType" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetEdgeType_OutputMessage">
+  <wsdl:message name="GraphDSService_GetEdgeType_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetEdgeTypeResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetVertex_InputMessage">
+  <wsdl:message name="GraphDSService_GetVertex_InputMessage">
     <wsdl:part name="parameters" element="tns:GetVertex" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetVertex_OutputMessage">
+  <wsdl:message name="GraphDSService_GetVertex_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetVertexResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetVertexCount_InputMessage">
+  <wsdl:message name="GraphDSService_GetVertexCount_InputMessage">
     <wsdl:part name="parameters" element="tns:GetVertexCount" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetVertexCount_OutputMessage">
+  <wsdl:message name="GraphDSService_GetVertexCount_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetVertexCountResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetVerticesByType_InputMessage">
+  <wsdl:message name="GraphDSService_GetVerticesByType_InputMessage">
     <wsdl:part name="parameters" element="tns:GetVerticesByType" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetVerticesByType_OutputMessage">
+  <wsdl:message name="GraphDSService_GetVerticesByType_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetVerticesByTypeResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetVerticesByExpression_InputMessage">
+  <wsdl:message name="GraphDSService_GetVerticesByExpression_InputMessage">
     <wsdl:part name="parameters" element="tns:GetVerticesByExpression" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_GetVerticesByExpression_OutputMessage">
+  <wsdl:message name="GraphDSService_GetVerticesByExpression_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetVerticesByExpressionResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_Insert_InputMessage">
+  <wsdl:message name="GraphDSService_Insert_InputMessage">
     <wsdl:part name="parameters" element="tns:Insert" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_Insert_OutputMessage">
+  <wsdl:message name="GraphDSService_Insert_OutputMessage">
     <wsdl:part name="parameters" element="tns:InsertResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_LogOff_InputMessage">
+  <wsdl:message name="GraphDSService_LogOff_InputMessage">
     <wsdl:part name="parameters" element="tns:LogOff" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_LogOff_OutputMessage">
+  <wsdl:message name="GraphDSService_LogOff_OutputMessage">
     <wsdl:part name="parameters" element="tns:LogOffResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_LogOn_InputMessage">
+  <wsdl:message name="GraphDSService_LogOn_InputMessage">
     <wsdl:part name="parameters" element="tns:LogOn" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_LogOn_OutputMessage">
+  <wsdl:message name="GraphDSService_LogOn_OutputMessage">
     <wsdl:part name="parameters" element="tns:LogOnResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_Query_InputMessage">
+  <wsdl:message name="GraphDSService_Query_InputMessage">
     <wsdl:part name="parameters" element="tns:Query" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_Query_OutputMessage">
+  <wsdl:message name="GraphDSService_Query_OutputMessage">
     <wsdl:part name="parameters" element="tns:QueryResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_Update_InputMessage">
+  <wsdl:message name="GraphDSService_Update_InputMessage">
     <wsdl:part name="parameters" element="tns:Update" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_Update_OutputMessage">
+  <wsdl:message name="GraphDSService_Update_OutputMessage">
     <wsdl:part name="parameters" element="tns:UpdateResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_RebuildIndices_InputMessage">
+  <wsdl:message name="GraphDSService_RebuildIndices_InputMessage">
     <wsdl:part name="parameters" element="tns:RebuildIndices" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_RebuildIndices_OutputMessage">
+  <wsdl:message name="GraphDSService_RebuildIndices_OutputMessage">
     <wsdl:part name="parameters" element="tns:RebuildIndicesResponse" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_TruncateVertexType_InputMessage">
+  <wsdl:message name="GraphDSService_TruncateVertexType_InputMessage">
     <wsdl:part name="parameters" element="tns:TruncateVertexType" />
   </wsdl:message>
-  <wsdl:message name="GraphDS_TruncateVertexType_OutputMessage">
+  <wsdl:message name="GraphDSService_TruncateVertexType_OutputMessage">
     <wsdl:part name="parameters" element="tns:TruncateVertexTypeResponse" />
   </wsdl:message>
   <wsdl:message name="VertexTypeService_GetDescendantVertexTypes_InputMessage">
@@ -4180,142 +4180,142 @@
       <wsdl:output wsaw:Action="http://www.sones.com/StreamedService/GetAllBinaryPropertiesResponse" message="tns:StreamedService_GetAllBinaryProperties_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
-  <wsdl:portType name="GraphDS">
+  <wsdl:portType name="GraphDSService">
     <wsdl:operation name="CreateVertexType">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/CreateVertexType" message="tns:GraphDS_CreateVertexType_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/CreateVertexTypeResponse" message="tns:GraphDS_CreateVertexType_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/CreateVertexType" message="tns:GraphDSService_CreateVertexType_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/CreateVertexTypeResponse" message="tns:GraphDSService_CreateVertexType_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="AlterVertexType">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/AlterVertexType" message="tns:GraphDS_AlterVertexType_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/AlterVertexTypeResponse" message="tns:GraphDS_AlterVertexType_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/AlterVertexType" message="tns:GraphDSService_AlterVertexType_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/AlterVertexTypeResponse" message="tns:GraphDSService_AlterVertexType_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="AlterEdgeType">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/AlterEdgeType" message="tns:GraphDS_AlterEdgeType_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/AlterEdgeTypeResponse" message="tns:GraphDS_AlterEdgeType_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/AlterEdgeType" message="tns:GraphDSService_AlterEdgeType_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/AlterEdgeTypeResponse" message="tns:GraphDSService_AlterEdgeType_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetVertexType">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/GetVertexType" message="tns:GraphDS_GetVertexType_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/GetVertexTypeResponse" message="tns:GraphDS_GetVertexType_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetVertexType" message="tns:GraphDSService_GetVertexType_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetVertexTypeResponse" message="tns:GraphDSService_GetVertexType_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="BeginTransaction">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/BeginTransaction" message="tns:GraphDS_BeginTransaction_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/BeginTransactionResponse" message="tns:GraphDS_BeginTransaction_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/BeginTransaction" message="tns:GraphDSService_BeginTransaction_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/BeginTransactionResponse" message="tns:GraphDSService_BeginTransaction_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="CommitTransaction">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/CommitTransaction" message="tns:GraphDS_CommitTransaction_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/CommitTransactionResponse" message="tns:GraphDS_CommitTransaction_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/CommitTransaction" message="tns:GraphDSService_CommitTransaction_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/CommitTransactionResponse" message="tns:GraphDSService_CommitTransaction_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="RollbackTransaction">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/RollbackTransaction" message="tns:GraphDS_RollbackTransaction_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/RollbackTransactionResponse" message="tns:GraphDS_RollbackTransaction_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/RollbackTransaction" message="tns:GraphDSService_RollbackTransaction_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/RollbackTransactionResponse" message="tns:GraphDSService_RollbackTransaction_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="Shutdown">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/Shutdown" message="tns:GraphDS_Shutdown_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/ShutdownResponse" message="tns:GraphDS_Shutdown_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/Shutdown" message="tns:GraphDSService_Shutdown_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/ShutdownResponse" message="tns:GraphDSService_Shutdown_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="Clear">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/Clear" message="tns:GraphDS_Clear_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/ClearResponse" message="tns:GraphDS_Clear_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/Clear" message="tns:GraphDSService_Clear_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/ClearResponse" message="tns:GraphDSService_Clear_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="CreateEdgeType">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/CreateEdgeType" message="tns:GraphDS_CreateEdgeType_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/CreateEdgeTypeResponse" message="tns:GraphDS_CreateEdgeType_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/CreateEdgeType" message="tns:GraphDSService_CreateEdgeType_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/CreateEdgeTypeResponse" message="tns:GraphDSService_CreateEdgeType_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="CreateEdgeTypes">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/CreateEdgeTypes" message="tns:GraphDS_CreateEdgeTypes_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/CreateEdgeTypesResponse" message="tns:GraphDS_CreateEdgeTypes_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/CreateEdgeTypes" message="tns:GraphDSService_CreateEdgeTypes_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/CreateEdgeTypesResponse" message="tns:GraphDSService_CreateEdgeTypes_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="CreateIndex">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/CreateIndex" message="tns:GraphDS_CreateIndex_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/CreateIndexResponse" message="tns:GraphDS_CreateIndex_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/CreateIndex" message="tns:GraphDSService_CreateIndex_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/CreateIndexResponse" message="tns:GraphDSService_CreateIndex_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="CreateVertexTypes">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/CreateVertexTypes" message="tns:GraphDS_CreateVertexTypes_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/CreateVertexTypesResponse" message="tns:GraphDS_CreateVertexTypes_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/CreateVertexTypes" message="tns:GraphDSService_CreateVertexTypes_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/CreateVertexTypesResponse" message="tns:GraphDSService_CreateVertexTypes_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="Delete">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/Delete" message="tns:GraphDS_Delete_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/DeleteResponse" message="tns:GraphDS_Delete_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/Delete" message="tns:GraphDSService_Delete_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DeleteResponse" message="tns:GraphDSService_Delete_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="DescribeIndex">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/DescribeIndex" message="tns:GraphDS_DescribeIndex_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/DescribeIndexResponse" message="tns:GraphDS_DescribeIndex_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/DescribeIndex" message="tns:GraphDSService_DescribeIndex_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DescribeIndexResponse" message="tns:GraphDSService_DescribeIndex_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="DescribeIndices">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/DescribeIndices" message="tns:GraphDS_DescribeIndices_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/DescribeIndicesResponse" message="tns:GraphDS_DescribeIndices_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/DescribeIndices" message="tns:GraphDSService_DescribeIndices_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DescribeIndicesResponse" message="tns:GraphDSService_DescribeIndices_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="DescribeIndicesByNames">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/DescribeIndicesByNames" message="tns:GraphDS_DescribeIndicesByNames_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/DescribeIndicesByNamesResponse" message="tns:GraphDS_DescribeIndicesByNames_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/DescribeIndicesByNames" message="tns:GraphDSService_DescribeIndicesByNames_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DescribeIndicesByNamesResponse" message="tns:GraphDSService_DescribeIndicesByNames_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="DropEdgeType">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/DropEdgeType" message="tns:GraphDS_DropEdgeType_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/DropEdgeTypeResponse" message="tns:GraphDS_DropEdgeType_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/DropEdgeType" message="tns:GraphDSService_DropEdgeType_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DropEdgeTypeResponse" message="tns:GraphDSService_DropEdgeType_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="DropIndex">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/DropIndex" message="tns:GraphDS_DropIndex_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/DropIndexResponse" message="tns:GraphDS_DropIndex_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/DropIndex" message="tns:GraphDSService_DropIndex_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DropIndexResponse" message="tns:GraphDSService_DropIndex_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="DropVertexType">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/DropVertexType" message="tns:GraphDS_DropVertexType_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/DropVertexTypeResponse" message="tns:GraphDS_DropVertexType_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/DropVertexType" message="tns:GraphDSService_DropVertexType_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DropVertexTypeResponse" message="tns:GraphDSService_DropVertexType_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetAllEdgeTypes">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/GetAllEdgeTypes" message="tns:GraphDS_GetAllEdgeTypes_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/GetAllEdgeTypesResponse" message="tns:GraphDS_GetAllEdgeTypes_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetAllEdgeTypes" message="tns:GraphDSService_GetAllEdgeTypes_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetAllEdgeTypesResponse" message="tns:GraphDSService_GetAllEdgeTypes_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetAllVertexTypes">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/GetAllVertexTypes" message="tns:GraphDS_GetAllVertexTypes_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/GetAllVertexTypesResponse" message="tns:GraphDS_GetAllVertexTypes_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetAllVertexTypes" message="tns:GraphDSService_GetAllVertexTypes_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetAllVertexTypesResponse" message="tns:GraphDSService_GetAllVertexTypes_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetEdgeType">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/GetEdgeType" message="tns:GraphDS_GetEdgeType_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/GetEdgeTypeResponse" message="tns:GraphDS_GetEdgeType_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetEdgeType" message="tns:GraphDSService_GetEdgeType_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetEdgeTypeResponse" message="tns:GraphDSService_GetEdgeType_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetVertex">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/GetVertex" message="tns:GraphDS_GetVertex_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/GetVertexResponse" message="tns:GraphDS_GetVertex_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetVertex" message="tns:GraphDSService_GetVertex_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetVertexResponse" message="tns:GraphDSService_GetVertex_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetVertexCount">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/GetVertexCount" message="tns:GraphDS_GetVertexCount_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/GetVertexCountResponse" message="tns:GraphDS_GetVertexCount_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetVertexCount" message="tns:GraphDSService_GetVertexCount_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetVertexCountResponse" message="tns:GraphDSService_GetVertexCount_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetVerticesByType">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/GetVerticesByType" message="tns:GraphDS_GetVerticesByType_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/GetVerticesByTypeResponse" message="tns:GraphDS_GetVerticesByType_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetVerticesByType" message="tns:GraphDSService_GetVerticesByType_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetVerticesByTypeResponse" message="tns:GraphDSService_GetVerticesByType_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetVerticesByExpression">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/GetVerticesByExpression" message="tns:GraphDS_GetVerticesByExpression_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/GetVerticesByExpressionResponse" message="tns:GraphDS_GetVerticesByExpression_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetVerticesByExpression" message="tns:GraphDSService_GetVerticesByExpression_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetVerticesByExpressionResponse" message="tns:GraphDSService_GetVerticesByExpression_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="Insert">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/Insert" message="tns:GraphDS_Insert_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/InsertResponse" message="tns:GraphDS_Insert_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/Insert" message="tns:GraphDSService_Insert_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/InsertResponse" message="tns:GraphDSService_Insert_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="LogOff">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/LogOff" message="tns:GraphDS_LogOff_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/LogOffResponse" message="tns:GraphDS_LogOff_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/LogOff" message="tns:GraphDSService_LogOff_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/LogOffResponse" message="tns:GraphDSService_LogOff_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="LogOn">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/LogOn" message="tns:GraphDS_LogOn_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/LogOnResponse" message="tns:GraphDS_LogOn_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/LogOn" message="tns:GraphDSService_LogOn_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/LogOnResponse" message="tns:GraphDSService_LogOn_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="Query">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/Query" message="tns:GraphDS_Query_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/QueryResponse" message="tns:GraphDS_Query_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/Query" message="tns:GraphDSService_Query_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/QueryResponse" message="tns:GraphDSService_Query_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="Update">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/Update" message="tns:GraphDS_Update_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/UpdateResponse" message="tns:GraphDS_Update_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/Update" message="tns:GraphDSService_Update_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/UpdateResponse" message="tns:GraphDSService_Update_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="RebuildIndices">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/RebuildIndices" message="tns:GraphDS_RebuildIndices_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/RebuildIndicesResponse" message="tns:GraphDS_RebuildIndices_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/RebuildIndices" message="tns:GraphDSService_RebuildIndices_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/RebuildIndicesResponse" message="tns:GraphDSService_RebuildIndices_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="TruncateVertexType">
-      <wsdl:input wsaw:Action="http://www.sones.com/GraphDS/TruncateVertexType" message="tns:GraphDS_TruncateVertexType_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.sones.com/GraphDS/TruncateVertexTypeResponse" message="tns:GraphDS_TruncateVertexType_OutputMessage" />
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/TruncateVertexType" message="tns:GraphDSService_TruncateVertexType_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/TruncateVertexTypeResponse" message="tns:GraphDSService_TruncateVertexType_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:portType name="VertexTypeService">
@@ -4755,10 +4755,10 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:binding name="sonesBasic_GraphDS" type="tns:GraphDS">
+  <wsdl:binding name="sonesBasic_GraphDSService" type="tns:GraphDSService">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="CreateVertexType">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/CreateVertexType" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/CreateVertexType" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4767,7 +4767,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="AlterVertexType">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/AlterVertexType" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/AlterVertexType" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4776,7 +4776,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="AlterEdgeType">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/AlterEdgeType" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/AlterEdgeType" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4785,7 +4785,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetVertexType">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/GetVertexType" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetVertexType" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4794,7 +4794,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="BeginTransaction">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/BeginTransaction" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/BeginTransaction" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4803,7 +4803,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="CommitTransaction">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/CommitTransaction" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/CommitTransaction" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4812,7 +4812,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RollbackTransaction">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/RollbackTransaction" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/RollbackTransaction" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4821,7 +4821,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Shutdown">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/Shutdown" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/Shutdown" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4830,7 +4830,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Clear">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/Clear" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/Clear" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4839,7 +4839,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="CreateEdgeType">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/CreateEdgeType" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/CreateEdgeType" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4848,7 +4848,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="CreateEdgeTypes">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/CreateEdgeTypes" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/CreateEdgeTypes" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4857,7 +4857,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="CreateIndex">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/CreateIndex" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/CreateIndex" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4866,7 +4866,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="CreateVertexTypes">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/CreateVertexTypes" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/CreateVertexTypes" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4875,7 +4875,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Delete">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/Delete" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/Delete" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4884,7 +4884,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="DescribeIndex">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/DescribeIndex" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/DescribeIndex" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4893,7 +4893,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="DescribeIndices">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/DescribeIndices" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/DescribeIndices" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4902,7 +4902,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="DescribeIndicesByNames">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/DescribeIndicesByNames" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/DescribeIndicesByNames" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4911,7 +4911,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="DropEdgeType">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/DropEdgeType" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/DropEdgeType" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4920,7 +4920,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="DropIndex">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/DropIndex" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/DropIndex" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4929,7 +4929,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="DropVertexType">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/DropVertexType" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/DropVertexType" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4938,7 +4938,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetAllEdgeTypes">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/GetAllEdgeTypes" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetAllEdgeTypes" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4947,7 +4947,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetAllVertexTypes">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/GetAllVertexTypes" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetAllVertexTypes" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4956,7 +4956,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetEdgeType">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/GetEdgeType" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetEdgeType" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4965,7 +4965,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetVertex">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/GetVertex" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetVertex" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4974,7 +4974,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetVertexCount">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/GetVertexCount" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetVertexCount" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4983,7 +4983,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetVerticesByType">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/GetVerticesByType" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetVerticesByType" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4992,7 +4992,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetVerticesByExpression">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/GetVerticesByExpression" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetVerticesByExpression" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -5001,7 +5001,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Insert">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/Insert" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/Insert" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -5010,7 +5010,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="LogOff">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/LogOff" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/LogOff" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -5019,7 +5019,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="LogOn">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/LogOn" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/LogOn" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -5028,7 +5028,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Query">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/Query" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/Query" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -5037,7 +5037,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Update">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/Update" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/Update" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -5046,7 +5046,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RebuildIndices">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/RebuildIndices" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/RebuildIndices" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -5055,7 +5055,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="TruncateVertexType">
-      <soap:operation soapAction="http://www.sones.com/GraphDS/TruncateVertexType" style="document" />
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/TruncateVertexType" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -5998,7 +5998,7 @@
     <wsdl:port name="sonesStreamed_StreamedService" binding="tns:sonesStreamed_StreamedService">
       <soap:address location="http://127.0.0.1:9970/rpc/streamed" />
     </wsdl:port>
-    <wsdl:port name="sonesBasic_GraphDS" binding="tns:sonesBasic_GraphDS">
+    <wsdl:port name="sonesBasic_GraphDSService" binding="tns:sonesBasic_GraphDSService">
       <soap:address location="http://127.0.0.1:9970/rpc" />
     </wsdl:port>
     <wsdl:port name="sonesBasic_VertexTypeService" binding="tns:sonesBasic_VertexTypeService">

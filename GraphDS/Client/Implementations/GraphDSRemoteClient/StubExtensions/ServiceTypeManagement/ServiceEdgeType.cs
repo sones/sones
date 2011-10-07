@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.TypeSystem;
 
-namespace GraphDSRemoteClient.sonesGraphDSRemoteAPI
+namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
 {
     public partial class ServiceEdgeType
     {

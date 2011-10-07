@@ -3,26 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphDS.GraphDSRESTClient;
-using GraphDSRemoteClient.sonesGraphDSRemoteAPI;
+using sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI;
 using System.ServiceModel;
 using System.Net;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using GraphDSRemoteClient.GraphElements;
+using sones.GraphDS.GraphDSRemoteClient.GraphElements;
 using System.Diagnostics;
 using sones.GraphDB.Request;
 using sones.GraphQL.Result;
 using sones.GraphDB.TypeSystem;
-using GraphDSRemoteClient.TypeManagement;
+using sones.GraphDS.GraphDSRemoteClient.TypeManagement;
 using sones.Library.PropertyHyperGraph;
 
-namespace GraphDSRemoteClient
+namespace sones.GraphDS.GraphDSRemoteClient
 {
-    class GraphDS_RemoteClient : IGraphDSClient, ITransactionable, IServiceToken
+    public class GraphDS_RemoteClient : IGraphDSClient, ITransactionable, IServiceToken
     {
         #region Data
 
-        private GraphDS _GraphDSService;
+        private GraphDSService _GraphDSService;
         private VertexTypeService _VertexTypeService;
         private VertexInstanceService _VertexInstanceService;
         private EdgeTypeService _EdgeTypeService;
@@ -61,7 +61,7 @@ namespace GraphDSRemoteClient
 
             try
             { 
-                _GraphDSService = ChannelFactory<GraphDS>.CreateChannel(BasicBinding, new EndpointAddress(myServiceAddress));
+                _GraphDSService = ChannelFactory<GraphDSService>.CreateChannel(BasicBinding, new EndpointAddress(myServiceAddress));
                 _VertexTypeService = ChannelFactory<VertexTypeService>.CreateChannel(BasicBinding, new EndpointAddress(myServiceAddress));
                 _VertexInstanceService = ChannelFactory<VertexInstanceService>.CreateChannel(BasicBinding, new EndpointAddress(myServiceAddress));
                 _EdgeTypeService = ChannelFactory<EdgeTypeService>.CreateChannel(BasicBinding, new EndpointAddress(myServiceAddress));
@@ -108,7 +108,7 @@ namespace GraphDSRemoteClient
             get { return _EdgeInstanceService; }
         }
 
-        public GraphDS GraphDSService
+        public GraphDSService GraphDSService
         {
             get { return _GraphDSService; }
         }
@@ -125,7 +125,11 @@ namespace GraphDSRemoteClient
 
         public SecurityToken LogOn(IUserCredentials myUserCredentials)
         {
-            throw new NotImplementedException();
+            if (myUserCredentials is UserPasswordCredentials)
+            {
+                _GraphDSService.LogOn( myUserCredentials
+            }
+
         }
 
         public void LogOff(SecurityToken mySecurityToken)

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.Library.PropertyHyperGraph;
-using GraphDSRemoteClient.GraphElements;
+using sones.GraphDS.GraphDSRemoteClient.GraphElements;
 
-namespace GraphDSRemoteClient.sonesGraphDSRemoteAPI
+namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
 {
     public partial class ServiceEdgeInstance
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.Expression;
 
-namespace GraphDSRemoteClient.sonesGraphDSRemoteAPI
+namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
 {
     public partial class ServicePropertyExpression
     {

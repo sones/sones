@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphDB.TypeSystem;
-using GraphDSRemoteClient.sonesGraphDSRemoteAPI;
-using GraphDSRemoteClient.TypeManagement;
+using sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI;
+using sones.GraphDS.GraphDSRemoteClient.TypeManagement;
 
-namespace GraphDSRemoteClient.GraphElements
+namespace sones.GraphDS.GraphDSRemoteClient.GraphElements
 {
 	internal class RemoteEdgeType : ARemoteBaseType, IEdgeType
 	{

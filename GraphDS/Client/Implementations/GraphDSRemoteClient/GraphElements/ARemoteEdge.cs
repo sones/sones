@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.Library.PropertyHyperGraph;
-using GraphDSRemoteClient.sonesGraphDSRemoteAPI;
+using sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI;
 
-namespace GraphDSRemoteClient.GraphElements
+namespace sones.GraphDS.GraphDSRemoteClient.GraphElements
 {
     internal abstract class ARemoteEdge : ARemoteGraphElement, IEdge
     {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.Library.Commons.Security;
-using GraphDSRemoteClient.sonesGraphDSRemoteAPI;
+using sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI;
 
-namespace GraphDSRemoteClient
+namespace sones.GraphDS.GraphDSRemoteClient
 {
     internal interface IServiceToken
     {
@@ -15,7 +15,7 @@ namespace GraphDSRemoteClient
         VertexInstanceService VertexService { get; }
         EdgeTypeService EdgeTypeService { get; }
         EdgeInstanceService EdgeService { get; }
-        GraphDS GraphDSService { get; }
+        GraphDSService GraphDSService { get; }
         StreamedService StreamedService { get; }
     }
 }

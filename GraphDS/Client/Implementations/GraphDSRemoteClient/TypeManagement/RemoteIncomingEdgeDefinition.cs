@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphDB.TypeSystem;
-using GraphDSRemoteClient.sonesGraphDSRemoteAPI;
+using sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI;
 
-namespace GraphDSRemoteClient.TypeManagement
+namespace sones.GraphDS.GraphDSRemoteClient.TypeManagement
 {
     internal class RemoteIncomingEdgeDefinition : IIncomingEdgeDefinition
     {

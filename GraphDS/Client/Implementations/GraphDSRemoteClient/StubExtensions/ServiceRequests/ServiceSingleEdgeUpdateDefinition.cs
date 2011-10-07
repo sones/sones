@@ -5,7 +5,7 @@ using System.Text;
 using sones.Library.Commons.VertexStore.Definitions.Update;
 using sones.Library.Commons.VertexStore.Definitions;
 
-namespace GraphDSRemoteClient.sonesGraphDSRemoteAPI
+namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
 {
     public partial class ServiceSingleEdgeUpdateDefinition
     {

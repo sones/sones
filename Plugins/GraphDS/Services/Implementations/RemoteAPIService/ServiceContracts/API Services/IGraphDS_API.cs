@@ -38,7 +38,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expr
 
 namespace sones.GraphDS.Services.RemoteAPIService.API_Services
 {
-    [ServiceContract(Namespace = sonesRPCServer.Namespace, Name = "GraphDS")]
+    [ServiceContract(Namespace = sonesRPCServer.Namespace, Name = "GraphDSService")]
     public interface IGraphDS_API
     {
         [OperationContract]

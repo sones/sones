@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GraphDSRemoteClient.sonesGraphDSRemoteAPI;
+using sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI;
 using sones.GraphDB.TypeSystem;
-using GraphDSRemoteClient.GraphElements;
+using sones.GraphDS.GraphDSRemoteClient.GraphElements;
 
-namespace GraphDSRemoteClient.TypeManagement
+namespace sones.GraphDS.GraphDSRemoteClient.TypeManagement
 {
     internal class RemotePropertyDefinition : IPropertyDefinition
     {
