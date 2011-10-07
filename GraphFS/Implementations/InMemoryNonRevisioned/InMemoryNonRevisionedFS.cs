@@ -681,7 +681,7 @@ namespace sones.GraphFS
                                                 aSingleEdgeDefinition.TargetVertexInformation.VertexID);
 
                     //create the new Edge
-                    singleEdge = new SingleEdge(aSingleEdgeDefinition.PropertyID, 
+                    singleEdge = new SingleEdge(aSingleEdgeDefinition.EdgeTypeID, 
                                                 myVertex, 
                                                 targetVertex,
                                                 aSingleEdgeDefinition.Comment, 

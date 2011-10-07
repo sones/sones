@@ -43,8 +43,9 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         #region Data
 
-        protected IDManager                     _idManager;
-        protected IIndexManager                 _indexManager;
+        protected IDManager                             _idManager;
+        protected IIndexManager                         _indexManager;
+        protected IManagerOf<ITypeHandler<IVertexType>> _vertexTypeManager;
 
         protected IDictionary<long, IBaseType>  _baseTypes;
         protected IDictionary<String, long>     _nameIndex;
@@ -439,6 +440,34 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <returns>A dictionary with to be added attributes and default value</returns>returns>
         protected abstract Dictionary<long, IComparable> ProcessAddPropery(
             IEnumerable<PropertyPredefinition> myToBeAddedProperties,
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            T myType);
+
+        /// <summary>
+        /// Defines specified attributes in the given type and stores them.
+        /// </summary>
+        /// <param name="myToBeDefinedAttributes">The attributes to be defined</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myType">The type to be altered.</param>
+        /// <returns>A dictionary with to be defined attributes and default value</returns>returns>
+        protected abstract Dictionary<long, IComparable> ProcessDefineAttributes(
+            IEnumerable<UnknownAttributePredefinition> myToBeDefinedAttributes,
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            T myType);
+
+        /// <summary>
+        /// Undefines specified attributes in the given type.
+        /// </summary>
+        /// <param name="myToBeDefinedAttributes">The attributes to be undefined</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myType">The type to be altered.</param>
+        /// <returns>A list containing IDs of undefined attributes</returns>returns>
+        protected abstract IEnumerable<long> ProcessUndefineAttributes(
+            IEnumerable<String> myToBeUndefinedAttributes,
             Int64 myTransactionToken,
             SecurityToken mySecurityToken,
             T myType);

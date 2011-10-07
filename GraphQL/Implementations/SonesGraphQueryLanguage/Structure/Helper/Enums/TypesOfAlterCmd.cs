@@ -34,6 +34,8 @@ namespace sones.GraphQL.Structure.Helper.Enums
         DropUnqiue,
         Mandatory,
         DropMandatory,
-        ChangeComment
+        ChangeComment,
+        DefineAttribute,
+        UndefineAttribute
     }
 }

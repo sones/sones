@@ -90,6 +90,16 @@ namespace sones.GraphDB.Request
         /// </summary>
         public List<String> RemovedAttributes { get; private set; }
 
+        /// <summary>
+        /// The unstructured properties which should be removed of updated vertex.
+        /// </summary>
+        public List<String> RemovedUnstructuredProperties { get; private set; }
+
+        /// <summary>
+        /// The well defined properties which should be removed after a type is altered.
+        /// </summary>
+        public List<IAttributeDefinition> RemovedAlteredAttributes { get; private set; }
+
         #endregion
 
         #region constructor
@@ -254,6 +264,45 @@ namespace sones.GraphDB.Request
         {
             RemovedAttributes = RemovedAttributes ?? new List<String>();
             RemovedAttributes.Add(myPropertyName);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes an unstructured property.
+        /// </summary>
+        /// <param name="myPropertyName">The name of the property</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestUpdate RemoveUnstructuredProperty(String myPropertyName)
+        {
+            RemovedUnstructuredProperties = RemovedUnstructuredProperties ?? new List<String>();
+            RemovedUnstructuredProperties.Add(myPropertyName);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes structured property.
+        /// </summary>
+        /// <param name="myAttribute">The property.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestUpdate RemoveAlteredAttribute(IAttributeDefinition myAttribute)
+        {
+            RemovedAlteredAttributes = RemovedAlteredAttributes ?? new List<IAttributeDefinition>();
+            RemovedAlteredAttributes.Add(myAttribute);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes structured properties.
+        /// </summary>
+        /// <param name="myAttributes">The properties.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestUpdate RemoveAlteredAttribute(IEnumerable<IAttributeDefinition> myAttributes)
+        {
+            RemovedAlteredAttributes = RemovedAlteredAttributes ?? new List<IAttributeDefinition>();
+            RemovedAlteredAttributes.AddRange(myAttributes);
 
             return this;
         }

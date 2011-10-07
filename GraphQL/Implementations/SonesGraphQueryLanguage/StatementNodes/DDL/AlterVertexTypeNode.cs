@@ -201,6 +201,16 @@ namespace sones.GraphQL.StatementNodes.DDL
                     ProcessChangeComment(myAlterCommand, ref result);                    
 
                     break;
+                case TypesOfAlterCmd.DefineAttribute:
+
+                    ProcessDefineAttribute(myAlterCommand, ref result);                    
+
+                    break;
+                case TypesOfAlterCmd.UndefineAttribute:
+
+                    ProcessUndefineAttribute(myAlterCommand, ref result);                    
+
+                    break;
                 default:
                     break;
             }
@@ -363,6 +373,32 @@ namespace sones.GraphQL.StatementNodes.DDL
                 }
             }
             
+        }
+
+        private void ProcessDefineAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
+        {
+            var command = (AlterType_DefineAttributes)myAlterCommand;
+
+            if (command.ListOfAttributes != null && command.ListOfAttributes.Count > 0)
+            {
+                foreach (var aAttribute in command.ListOfAttributes)
+                {
+                    result.DefineAttribute(GenerateUnknownAttribute(aAttribute));
+                }
+            }
+        }
+
+        private void ProcessUndefineAttribute(AAlterTypeCommand myAlterCommand, ref RequestAlterVertexType result)
+        {
+            var command = (AlterType_UndefineAttributes)myAlterCommand;
+
+            if (command.ListOfAttributes != null && command.ListOfAttributes.Count > 0)
+            {
+                foreach (var aAttribute in command.ListOfAttributes)
+                {
+                    result.UndefineAttribute(aAttribute);
+                }
+            }
         }
 
         /// <summary>

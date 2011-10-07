@@ -125,6 +125,63 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #endregion
 
+            #region check attributes to be defined
+            if (myRequest.ToBeDefinedAttributes != null)
+            {
+                foreach (var unknownProp in myRequest.ToBeDefinedAttributes)
+                {
+                    var toBeDefined = myRequest.ToBeDefinedAttributes.ToArray();
+
+                    foreach (var unknown in toBeDefined)
+                    {
+                        if (BinaryPropertyPredefinition.TypeName.Equals(unknown.AttributeType))
+                        {
+                            throw new InvalidDefineAttributeTypeException(BinaryPropertyPredefinition.TypeName, vertexType.Name);
+                        } else if (unknown.AttributeType.Contains(IncomingEdgePredefinition.TypeSeparator))
+                        {
+                            throw new InvalidDefineAttributeTypeException("incoming edge", vertexType.Name);
+                        } else if (!_baseTypeManager.IsBaseType(unknown.AttributeType))
+                        {
+                            throw new InvalidDefineAttributeTypeException("user defined", vertexType.Name);
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            #region check attributes to be undefined
+
+            if (myRequest.ToBeUndefinedAttributes != null)
+            {
+                foreach (var attr in myRequest.ToBeUndefinedAttributes)
+                {
+                    var attrDef = vertexType.GetAttributeDefinition(attr);
+
+                    if (attrDef == null)
+                        throw new AttributeDoesNotExistException(attr);
+
+                    switch (attrDef.Kind)
+                    {
+                        case AttributeType.Property:
+                            break;
+
+                        case AttributeType.OutgoingEdge:
+                            throw new InvalidUndefineAttributeTypeException("Outgoing Edge", vertexType.Name);
+                            
+                        case AttributeType.IncomingEdge:
+                            throw new InvalidUndefineAttributeTypeException("Incoming Edge", vertexType.Name);
+                            
+                        case AttributeType.BinaryProperty:
+                            throw new InvalidUndefineAttributeTypeException(BinaryPropertyPredefinition.TypeName, vertexType.Name);
+                            
+                        default:
+                            throw new Exception("The enumeration AttributeType was changed, but not this switch statement.");
+                    }
+                }
+            }
+
+            #endregion
+
             #region checks
 
             CallCheckFunctions(myAlterTypeRequest, vertexType, myTransactionToken, mySecurityToken);
@@ -342,6 +399,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             CheckAttributesNameAndType(request);
 
             CheckToBeAddedAttributes(request, myType);
+            CheckToBeDefinedAttributes(request, myType);
             CheckToBeRemovedAttributes(request, myType);
             CheckToBeRenamedAttributes(request, myType);
             CheckNewTypeName(request.AlteredTypeName, myTransactionToken, mySecurityToken);
@@ -477,6 +535,31 @@ namespace sones.GraphDB.Manager.TypeManagement
                 }
 
                 #endregion
+            }
+        }
+
+        /// <summary>
+        /// Checks if the attributes that should be defined exist in the given type or derived ones.
+        /// </summary>
+        /// <param name="myAlterTypeRequest">The request.</param>
+        /// <param name="myType">The type.</param>
+        protected override void CheckToBeDefinedAttributes(IRequestAlterType myAlterTypeRequest,
+                                                            IVertexType myType)
+        {
+            var request = myAlterTypeRequest as RequestAlterVertexType;
+
+            foreach (var aVertexType in myType.GetDescendantVertexTypesAndSelf())
+            {
+                var attributesOfCurrentVertexType = aVertexType.GetAttributeDefinitions(false).ToList();
+
+                if (request.ToBeDefinedAttributes != null)
+                {
+                    foreach (var aToBeDefinedAttribute in request.ToBeDefinedAttributes)
+                    {
+                        if (attributesOfCurrentVertexType.Any(_ => _.Name == aToBeDefinedAttribute.AttributeName))
+                            throw new VertexAttributeAlreadyExistsException(aToBeDefinedAttribute.AttributeName);
+                    }
+                }
             }
         }
 
