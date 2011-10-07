@@ -21,7 +21,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <param name="myPropertyID">The ID of the interesing property</param>
         /// <returns>A Property</returns>
         [OperationContract(Name = "GetPropertyByEdgeInstance")]
-        object GetProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, Int64 myPropertyID);
+        object GetProperty(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, Int64 myPropertyID);
 
 
         /// <summary>
@@ -30,14 +30,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <param name="myPropertyID">The ID of the property</param>
         /// <returns>True if the property exists, otherwise false</returns>
         [OperationContract(Name = "HasPropertyByEdgeInstance")]
-        bool HasProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, Int64 myPropertyID);
+        bool HasProperty(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, Int64 myPropertyID);
 
         /// <summary>
         /// Returns the count of the vertex properties
         /// </summary>
         /// <returns>An unsigned value</returns>
         [OperationContract(Name = "GetCountOfPropertiesByEdgeInstance")]
-        int GetCountOfProperties(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
+        int GetCountOfProperties(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
 
         /// <summary>
         /// Returns all properties
@@ -45,7 +45,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <param name="myFilter">A function to filter properties</param>
         /// <returns>An IEnumerable of Property/Value</returns>
         [OperationContract(Name = "GetAllPropertiesByEdgeInstance")]
-        List<Tuple<Int64, object>> GetAllProperties(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
+        List<Tuple<Int64, object>> GetAllProperties(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
 
         /// <summary>
         /// Returns a property as string
@@ -53,7 +53,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <param name="myPropertyID">The id of the property</param>
         /// <returns>The string representation of the property</returns>
         [OperationContract(Name = "GetPropertyAsStringByEdgeInstance")]
-        String GetPropertyAsString(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, Int64 myPropertyID);
+        String GetPropertyAsString(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, Int64 myPropertyID);
 
         #endregion
 
@@ -66,7 +66,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <param name="myPropertyName">The name of the interesting unstructured property</param>
         /// <returns>The value of an unstructured property</returns>
         [OperationContract(Name = "GetUnstructuredPropertyByEdgeInstance")]
-        object GetUnstructuredProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, string myPropertyName);
+        object GetUnstructuredProperty(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, string myPropertyName);
 
         /// <summary>
         /// Checks whether the graph element is in possession of a certain unstructered property
@@ -74,14 +74,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <param name="myPropertyName">The name of the unstructured property</param>
         /// <returns>True if the property exists, otherwise false</returns>
         [OperationContract(Name = "HasUnstructuredPropertyByEdgeInstance")]
-        bool HasUnstructuredProperty(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, String myPropertyName);
+        bool HasUnstructuredProperty(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, String myPropertyName);
 
         /// <summary>
         /// Returns the count of the unstructured vertex properties
         /// </summary>
         /// <returns>An unsigned value</returns>
         [OperationContract(Name = "GetCountOfUnstructuredPropertiesByEdgeInstance")]
-        int GetCountOfUnstructuredProperties(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
+        int GetCountOfUnstructuredProperties(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
 
         /// <summary>
         /// Returns all unstructured properties
@@ -89,7 +89,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <param name="myFilter">A function to filter properties</param>
         /// <returns>An IEnumerable of NameOfProperty/Value</returns>
         [OperationContract(Name = "GetAllUnstructuredPropertiesByEdgeInstance")]
-        List<Tuple<String, Object>> GetAllUnstructuredProperties(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
+        List<Tuple<String, Object>> GetAllUnstructuredProperties(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
 
         /// <summary>
         /// Returns an unstructured property as string
@@ -97,7 +97,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <param name="myPropertyName">The name of the unstructured property</param>
         /// <returns>The string representation of the property</returns>
         [OperationContract(Name = "GetUnstructuredPropertyAsStringByEdgeInstance")]
-        String GetUnstructuredPropertyAsString(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, String myPropertyName);
+        String GetUnstructuredPropertyAsString(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, String myPropertyName);
 
         #endregion
 
@@ -107,7 +107,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// Gets the comment of this graph element
         /// </summary>
         [OperationContract(Name="CommentByEdgeInstance")]
-        String Comment(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
+        String Comment(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
 
         #endregion
 
@@ -117,7 +117,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// The date the graph element has been created
         /// </summary>
         [OperationContract(Name="CreationDateByEdgeInstance")]
-        long CreationDate(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
+        long CreationDate(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
 
         #endregion
 
@@ -127,7 +127,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// The date the graph element has been modified the last time
         /// </summary>
         [OperationContract(Name="ModificationDateByEdgeInstance")]
-        long ModificationDate(ServiceSecurityToken mySecToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
+        long ModificationDate(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement);
 
         #endregion
     }

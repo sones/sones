@@ -24,11 +24,16 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation;
+using sones.GraphDS.Services.RemoteAPIService.ServiceConverter;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
-    public class ServiceAttributeDefinition
+    [KnownType(typeof(ServicePropertyDefinition))]
+    [KnownType(typeof(ServiceIncomingEdgeDefinition))]
+    [KnownType(typeof(ServiceOutgoingEdgeDefinition))]
+    public abstract class ServiceAttributeDefinition
     {
         public ServiceAttributeDefinition(IAttributeDefinition myAttributeDefinition)
         {
@@ -38,8 +43,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
                 this.Name = myAttributeDefinition.Name;
                 this.IsUserDefined = myAttributeDefinition.IsUserDefined;
                 this.Kind = (ServiceAttributeType)myAttributeDefinition.Kind;
+                this.RelatedType = ConvertHelper.ToServiceBaseType(myAttributeDefinition.RelatedType);
             }
-            
         }
 
         [DataMember]
@@ -53,5 +58,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
 
         [DataMember]
         public ServiceAttributeType Kind;
+
+        [DataMember]
+        public ServiceBaseType RelatedType;
     }
 }

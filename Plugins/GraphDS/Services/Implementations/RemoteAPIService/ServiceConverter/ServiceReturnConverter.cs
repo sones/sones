@@ -81,14 +81,16 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             {
                 return myDeletedAttributes.Select(x => (Int64)x).ToList();
             }
-
             if (myDeletedVertices != null && myDeletedVertices.Count() != 0)
             {
                 return myDeletedVertices.Select(x => (Int64)x).ToList();
             }
-
             return new List<Int64>();
-            
+        }
+
+        public static Tuple<IEnumerable<IComparable>, IEnumerable<IComparable>> ConverteAllLists(IRequestStatistics myRequestStatistics, IEnumerable<IComparable> myDeletedAttributes, IEnumerable<IComparable> myDeletedVertices)
+        {
+            return new Tuple<IEnumerable<IComparable>, IEnumerable<IComparable>>(myDeletedAttributes, myDeletedVertices);
         }
 
         public static IEnumerable<IIndexDefinition> ConverteOnlyIndexDefinitions(IRequestStatistics myRequestStatistics, IEnumerable<IIndexDefinition> myIndexDefinitons)

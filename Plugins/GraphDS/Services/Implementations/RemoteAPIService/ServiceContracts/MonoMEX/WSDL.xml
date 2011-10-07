@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <wsdl:definitions name="RPCServiceContract" targetNamespace="http://www.sones.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://www.sones.com" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
   <wsdl:types>
-    <xsd:schema elementFormDefault="qualified" targetNamespace="http://www.sones.com" xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/">
+    <xsd:schema elementFormDefault="qualified" targetNamespace="http://www.sones.com">
       <xsd:element name="CreateVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q1:SecurityToken" xmlns:q1="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexTypePreDef" nillable="true" type="tns:ServiceVertexTypePredefinition"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:complexType name="ServiceSecurityToken">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" name="UniqueID" type="ser:guid"/>
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:element name="ServiceSecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
       <xsd:complexType name="ServiceVertexTypePredefinition">
         <xsd:sequence>
           <xsd:element minOccurs="0" name="Comment" nillable="true" type="xsd:string"/>
@@ -69,7 +63,7 @@
           <xsd:element minOccurs="0" name="IndexOptions" nillable="true" type="xsd:string"/>
           <xsd:element minOccurs="0" name="IndexType" nillable="true" type="xsd:string"/>
           <xsd:element minOccurs="0" name="Name" nillable="true" type="xsd:string"/>
-          <xsd:element minOccurs="0" name="Properties" nillable="true" type="q1:ArrayOfstring" xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="Properties" nillable="true" type="q2:ArrayOfstring" xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
           <xsd:element minOccurs="0" name="TypeName" nillable="true" type="xsd:string"/>
           <xsd:element minOccurs="0" name="VertexTypeName" nillable="true" type="xsd:string"/>
         </xsd:sequence>
@@ -147,7 +141,7 @@
       <xsd:element name="ArrayOfServiceUniquePredefinition" nillable="true" type="tns:ArrayOfServiceUniquePredefinition"/>
       <xsd:complexType name="ServiceUniquePredefinition">
         <xsd:sequence>
-          <xsd:element minOccurs="0" name="Properties" nillable="true" type="q2:ArrayOfstring" xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="Properties" nillable="true" type="q3:ArrayOfstring" xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ServiceUniquePredefinition" nillable="true" type="tns:ServiceUniquePredefinition"/>
@@ -178,7 +172,7 @@
       <xsd:element name="AlterVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q4:SecurityToken" xmlns:q4="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myChangeset" nillable="true" type="tns:ServiceAlterVertexChangeset"/>
@@ -201,7 +195,7 @@
           <xsd:element minOccurs="0" name="ToBeRemovedOutgoingEdges" nillable="true" type="tns:ArrayOfServiceOutgoingEdgePredefinition"/>
           <xsd:element minOccurs="0" name="ToBeRemovedProperties" nillable="true" type="tns:ArrayOfServicePropertyPredefinition"/>
           <xsd:element minOccurs="0" name="ToBeRemovedUniques" nillable="true" type="tns:ArrayOfServiceUniquePredefinition"/>
-          <xsd:element minOccurs="0" name="ToBeRenamedProperties" nillable="true" type="q3:ArrayOfKeyValueOfstringstring" xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="ToBeRenamedProperties" nillable="true" type="q5:ArrayOfKeyValueOfstringstring" xmlns:q5="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ServiceAlterVertexChangeset" nillable="true" type="tns:ServiceAlterVertexChangeset"/>
@@ -228,7 +222,7 @@
       <xsd:element name="AlterEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q6:SecurityToken" xmlns:q6="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myChangeset" nillable="true" type="tns:ServiceAlterEdgeChangeset"/>
@@ -249,7 +243,7 @@
           <xsd:element minOccurs="0" name="NewTypeName" nillable="true" type="xsd:string"/>
           <xsd:element minOccurs="0" name="ToBeAddedProperties" nillable="true" type="tns:ArrayOfServicePropertyPredefinition"/>
           <xsd:element minOccurs="0" name="ToBeRemovedProperties" nillable="true" type="tns:ArrayOfServicePropertyPredefinition"/>
-          <xsd:element minOccurs="0" name="ToBeRenamedProperties" nillable="true" type="q4:ArrayOfKeyValueOfstringstring" xmlns:q4="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="ToBeRenamedProperties" nillable="true" type="q7:ArrayOfKeyValueOfstringstring" xmlns:q7="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ServiceAlterEdgeChangeset" nillable="true" type="tns:ServiceAlterEdgeChangeset"/>
@@ -263,7 +257,7 @@
       <xsd:element name="GetVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q8:SecurityToken" xmlns:q8="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexTypeName" nillable="true" type="xsd:string"/>
           </xsd:sequence>
@@ -279,7 +273,7 @@
       <xsd:element name="BeginTransaction">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q9:SecurityToken" xmlns:q9="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -293,7 +287,7 @@
       <xsd:element name="CommitTransaction">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q10:SecurityToken" xmlns:q10="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -306,7 +300,7 @@
       <xsd:element name="RollbackTransaction">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q11:SecurityToken" xmlns:q11="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -319,7 +313,7 @@
       <xsd:element name="Shutdown">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q12:SecurityToken" xmlns:q12="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -331,7 +325,7 @@
       <xsd:element name="Clear">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q13:SecurityToken" xmlns:q13="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -339,14 +333,14 @@
       <xsd:element name="ClearResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="ClearResult" nillable="true" type="q5:ArrayOflong" xmlns:q5="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xsd:element minOccurs="0" name="ClearResult" nillable="true" type="q14:ArrayOflong" xmlns:q14="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="CreateEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q15:SecurityToken" xmlns:q15="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransactionToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myEdgeTypePreDef" nillable="true" type="tns:ServiceEdgeTypePredefinition"/>
           </xsd:sequence>
@@ -375,7 +369,7 @@
       <xsd:element name="CreateIndex">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q16:SecurityToken" xmlns:q16="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexTypePreDef" nillable="true" type="tns:ServiceIndexPredefinition"/>
           </xsd:sequence>
@@ -450,7 +444,7 @@
       <xsd:element name="CreateVertexTypes">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q17:SecurityToken" xmlns:q17="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexTypePreDef" nillable="true" type="tns:ArrayOfServiceVertexTypePredefinition"/>
           </xsd:sequence>
@@ -478,31 +472,31 @@
       <xsd:element name="Delete">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q18:SecurityToken" xmlns:q18="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransactionToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexType" nillable="true" type="tns:ServiceVertexType"/>
-            <xsd:element minOccurs="0" name="myVertexIDs" nillable="true" type="q6:ArrayOflong" xmlns:q6="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xsd:element minOccurs="0" name="myVertexIDs" nillable="true" type="q19:ArrayOflong" xmlns:q19="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
             <xsd:element minOccurs="0" name="myDeletePayload" nillable="true" type="tns:ServiceDeletePayload"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:complexType name="ServiceDeletePayload">
         <xsd:sequence>
-          <xsd:element minOccurs="0" name="ToBeDeletedAttributes" nillable="true" type="q7:ArrayOfstring" xmlns:q7="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="ToBeDeletedAttributes" nillable="true" type="q20:ArrayOfstring" xmlns:q20="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ServiceDeletePayload" nillable="true" type="tns:ServiceDeletePayload"/>
       <xsd:element name="DeleteResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="DeleteResult" nillable="true" type="q8:ArrayOflong" xmlns:q8="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xsd:element minOccurs="0" name="DeleteResult" nillable="true" type="q21:ArrayOflong" xmlns:q21="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="DescribeIndex">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q22:SecurityToken" xmlns:q22="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIndexName" nillable="true" type="xsd:string"/>
@@ -519,7 +513,7 @@
       <xsd:element name="DescribeIndices">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q23:SecurityToken" xmlns:q23="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -535,7 +529,7 @@
       <xsd:element name="DropEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q24:SecurityToken" xmlns:q24="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
           </xsd:sequence>
@@ -544,14 +538,14 @@
       <xsd:element name="DropEdgeTypeResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="DropEdgeTypeResult" nillable="true" type="q9:ArrayOfKeyValueOflongstring" xmlns:q9="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xsd:element minOccurs="0" name="DropEdgeTypeResult" nillable="true" type="q25:ArrayOfKeyValueOflongstring" xmlns:q25="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="DropIndex">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q26:SecurityToken" xmlns:q26="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIndexName" nillable="true" type="xsd:string"/>
@@ -567,7 +561,7 @@
       <xsd:element name="DropVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q27:SecurityToken" xmlns:q27="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -576,14 +570,14 @@
       <xsd:element name="DropVertexTypeResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="DropVertexTypeResult" nillable="true" type="q10:ArrayOfKeyValueOflongstring" xmlns:q10="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xsd:element minOccurs="0" name="DropVertexTypeResult" nillable="true" type="q28:ArrayOfKeyValueOflongstring" xmlns:q28="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="GetAllEdgeTypes">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q29:SecurityToken" xmlns:q29="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myEdition" nillable="true" type="xsd:string"/>
           </xsd:sequence>
@@ -605,7 +599,7 @@
       <xsd:element name="GetAllVertexTypes">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q30:SecurityToken" xmlns:q30="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myEdition" nillable="true" type="xsd:string"/>
           </xsd:sequence>
@@ -621,7 +615,7 @@
       <xsd:element name="GetEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q31:SecurityToken" xmlns:q31="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myEdgeTypeName" nillable="true" type="xsd:string"/>
             <xsd:element minOccurs="0" name="myEdition" nillable="true" type="xsd:string"/>
@@ -638,7 +632,7 @@
       <xsd:element name="GetVertex">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q32:SecurityToken" xmlns:q32="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myVertexID" type="xsd:long"/>
@@ -685,7 +679,7 @@
       <xsd:element name="GetVertexCount">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q33:SecurityToken" xmlns:q33="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -701,7 +695,7 @@
       <xsd:element name="GetVerticesByType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q34:SecurityToken" xmlns:q34="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -720,22 +714,28 @@
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ArrayOfServiceVertexInstance" nillable="true" type="tns:ArrayOfServiceVertexInstance"/>
-      <xsd:complexType name="ServiceRangeLiteralExpression">
+      <xsd:complexType name="ServiceCollectionLiteralExpression">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceBaseExpression">
-            <xsd:sequence>
-              <xsd:element minOccurs="0" name="IncludeBorders" type="xsd:boolean"/>
-              <xsd:element minOccurs="0" name="Lower" nillable="true" type="xsd:anyType"/>
-              <xsd:element minOccurs="0" name="Upper" nillable="true" type="xsd:anyType"/>
-            </xsd:sequence>
+            <xsd:sequence/>
           </xsd:extension>
         </xsd:complexContent>
       </xsd:complexType>
-      <xsd:element name="ServiceRangeLiteralExpression" nillable="true" type="tns:ServiceRangeLiteralExpression"/>
+      <xsd:element name="ServiceCollectionLiteralExpression" nillable="true" type="tns:ServiceCollectionLiteralExpression"/>
       <xsd:complexType name="ServiceBaseExpression">
         <xsd:sequence/>
       </xsd:complexType>
       <xsd:element name="ServiceBaseExpression" nillable="true" type="tns:ServiceBaseExpression"/>
+      <xsd:complexType name="ServiceSingleLiteralExpression">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ServiceBaseExpression">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Constant" nillable="true" type="xsd:anyType"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="ServiceSingleLiteralExpression" nillable="true" type="tns:ServiceSingleLiteralExpression"/>
       <xsd:complexType name="ServiceBinaryExpression">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceBaseExpression">
@@ -763,28 +763,18 @@
         </xsd:restriction>
       </xsd:simpleType>
       <xsd:element name="ServiceBinaryOperator" nillable="true" type="tns:ServiceBinaryOperator"/>
-      <xsd:complexType name="ServiceSingleLiteralExpression">
+      <xsd:complexType name="ServiceRangeLiteralExpression">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceBaseExpression">
             <xsd:sequence>
-              <xsd:element minOccurs="0" name="Constant" nillable="true" type="xsd:anyType"/>
+              <xsd:element minOccurs="0" name="IncludeBorders" type="xsd:boolean"/>
+              <xsd:element minOccurs="0" name="Lower" nillable="true" type="xsd:anyType"/>
+              <xsd:element minOccurs="0" name="Upper" nillable="true" type="xsd:anyType"/>
             </xsd:sequence>
           </xsd:extension>
         </xsd:complexContent>
       </xsd:complexType>
-      <xsd:element name="ServiceSingleLiteralExpression" nillable="true" type="tns:ServiceSingleLiteralExpression"/>
-      <xsd:complexType name="ServicePropertyExpression">
-        <xsd:complexContent mixed="false">
-          <xsd:extension base="tns:ServiceBaseExpression">
-            <xsd:sequence>
-              <xsd:element minOccurs="0" name="Edition" nillable="true" type="xsd:string"/>
-              <xsd:element minOccurs="0" name="NameOfProperty" nillable="true" type="xsd:string"/>
-              <xsd:element minOccurs="0" name="NameOfVertexType" nillable="true" type="xsd:string"/>
-            </xsd:sequence>
-          </xsd:extension>
-        </xsd:complexContent>
-      </xsd:complexType>
-      <xsd:element name="ServicePropertyExpression" nillable="true" type="tns:ServicePropertyExpression"/>
+      <xsd:element name="ServiceRangeLiteralExpression" nillable="true" type="tns:ServiceRangeLiteralExpression"/>
       <xsd:complexType name="ServiceUnaryExpression">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceBaseExpression">
@@ -802,18 +792,22 @@
         </xsd:restriction>
       </xsd:simpleType>
       <xsd:element name="ServiceUnaryLogicOperator" nillable="true" type="tns:ServiceUnaryLogicOperator"/>
-      <xsd:complexType name="ServiceCollectionLiteralExpression">
+      <xsd:complexType name="ServicePropertyExpression">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceBaseExpression">
-            <xsd:sequence/>
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Edition" nillable="true" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="NameOfProperty" nillable="true" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="NameOfVertexType" nillable="true" type="xsd:string"/>
+            </xsd:sequence>
           </xsd:extension>
         </xsd:complexContent>
       </xsd:complexType>
-      <xsd:element name="ServiceCollectionLiteralExpression" nillable="true" type="tns:ServiceCollectionLiteralExpression"/>
+      <xsd:element name="ServicePropertyExpression" nillable="true" type="tns:ServicePropertyExpression"/>
       <xsd:element name="GetVerticesByExpression">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q35:SecurityToken" xmlns:q35="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexType" nillable="true" type="tns:ServiceBaseExpression"/>
           </xsd:sequence>
@@ -829,7 +823,7 @@
       <xsd:element name="Insert">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q36:SecurityToken" xmlns:q36="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexTypeName" nillable="true" type="xsd:string"/>
             <xsd:element minOccurs="0" name="myPayload" nillable="true" type="tns:ServiceInsertPayload"/>
@@ -860,7 +854,7 @@
           <xsd:element minOccurs="0" name="EdgeName" nillable="true" type="xsd:string"/>
           <xsd:element minOccurs="0" name="StructuredProperties" nillable="true" type="tns:ArrayOfStructuredProperty"/>
           <xsd:element minOccurs="0" name="UnstructuredProperties" nillable="true" type="tns:ArrayOfUnstructuredProperty"/>
-          <xsd:element minOccurs="0" name="VertexIDsByID" nillable="true" type="q11:ArrayOfTupleOflonglong" xmlns:q11="http://schemas.datacontract.org/2004/07/System"/>
+          <xsd:element minOccurs="0" name="VertexIDsByID" nillable="true" type="q37:ArrayOfTupleOflonglong" xmlns:q37="http://schemas.datacontract.org/2004/07/System"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ServiceEdgePredefinition" nillable="true" type="tns:ServiceEdgePredefinition"/>
@@ -900,7 +894,7 @@
       <xsd:element name="LogOff">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q38:SecurityToken" xmlns:q38="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -920,34 +914,10 @@
       <xsd:element name="LogOnResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="LogOnResult" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="LogOnResult" nillable="true" type="q39:SecurityToken" xmlns:q39="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:complexType name="ServiceSingleEdgeView">
-        <xsd:complexContent mixed="false">
-          <xsd:extension base="tns:ServiceEdgeView">
-            <xsd:sequence>
-              <xsd:element minOccurs="0" name="TargetVertex" nillable="true" type="tns:ServiceVertexView"/>
-            </xsd:sequence>
-          </xsd:extension>
-        </xsd:complexContent>
-      </xsd:complexType>
-      <xsd:element name="ServiceSingleEdgeView" nillable="true" type="tns:ServiceSingleEdgeView"/>
-      <xsd:complexType name="ServiceEdgeView">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" name="PropertyList" nillable="true" type="q12:ArrayOfTupleOfstringanyType" xmlns:q12="http://schemas.datacontract.org/2004/07/System"/>
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:element name="ServiceEdgeView" nillable="true" type="tns:ServiceEdgeView"/>
-      <xsd:complexType name="ServiceVertexView">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" name="HyperEdges" nillable="true" type="q13:ArrayOfTupleOfstringServiceHyperEdgeView7AF3f8r2" xmlns:q13="http://schemas.datacontract.org/2004/07/System"/>
-          <xsd:element minOccurs="0" name="Properties" nillable="true" type="q14:ArrayOfTupleOfstringanyType" xmlns:q14="http://schemas.datacontract.org/2004/07/System"/>
-          <xsd:element minOccurs="0" name="SingleEdges" nillable="true" type="q15:ArrayOfTupleOfstringServiceSingleEdgeView7AF3f8r2" xmlns:q15="http://schemas.datacontract.org/2004/07/System"/>
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:element name="ServiceVertexView" nillable="true" type="tns:ServiceVertexView"/>
       <xsd:complexType name="ServiceHyperEdgeView">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceEdgeView">
@@ -958,16 +928,40 @@
         </xsd:complexContent>
       </xsd:complexType>
       <xsd:element name="ServiceHyperEdgeView" nillable="true" type="tns:ServiceHyperEdgeView"/>
+      <xsd:complexType name="ServiceEdgeView">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="PropertyList" nillable="true" type="q40:ArrayOfTupleOfstringanyType" xmlns:q40="http://schemas.datacontract.org/2004/07/System"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="ServiceEdgeView" nillable="true" type="tns:ServiceEdgeView"/>
       <xsd:complexType name="ArrayOfServiceSingleEdgeView">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="ServiceSingleEdgeView" nillable="true" type="tns:ServiceSingleEdgeView"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ArrayOfServiceSingleEdgeView" nillable="true" type="tns:ArrayOfServiceSingleEdgeView"/>
+      <xsd:complexType name="ServiceSingleEdgeView">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ServiceEdgeView">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="TargetVertex" nillable="true" type="tns:ServiceVertexView"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="ServiceSingleEdgeView" nillable="true" type="tns:ServiceSingleEdgeView"/>
+      <xsd:complexType name="ServiceVertexView">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="HyperEdges" nillable="true" type="q41:ArrayOfTupleOfstringServiceHyperEdgeView7AF3f8r2" xmlns:q41="http://schemas.datacontract.org/2004/07/System"/>
+          <xsd:element minOccurs="0" name="Properties" nillable="true" type="q42:ArrayOfTupleOfstringanyType" xmlns:q42="http://schemas.datacontract.org/2004/07/System"/>
+          <xsd:element minOccurs="0" name="SingleEdges" nillable="true" type="q43:ArrayOfTupleOfstringServiceSingleEdgeView7AF3f8r2" xmlns:q43="http://schemas.datacontract.org/2004/07/System"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="ServiceVertexView" nillable="true" type="tns:ServiceVertexView"/>
       <xsd:element name="Query">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="q44:SecurityToken" xmlns:q44="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myQueryString" nillable="true" type="xsd:string"/>
             <xsd:element minOccurs="0" name="myLanguage" nillable="true" type="xsd:string"/>
@@ -1002,10 +996,10 @@
       <xsd:element name="Update">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q45:SecurityToken" xmlns:q45="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexType" nillable="true" type="tns:ServiceVertexType"/>
-            <xsd:element minOccurs="0" name="myVertexIDs" nillable="true" type="q16:ArrayOflong" xmlns:q16="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xsd:element minOccurs="0" name="myVertexIDs" nillable="true" type="q46:ArrayOflong" xmlns:q46="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
             <xsd:element minOccurs="0" name="myUpdateChangeset" nillable="true" type="tns:ServiceUpdateChangeset"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -1015,8 +1009,8 @@
           <xsd:element minOccurs="0" name="Comment" nillable="true" type="xsd:string"/>
           <xsd:element minOccurs="0" name="Edition" nillable="true" type="xsd:string"/>
           <xsd:element minOccurs="0" name="ToBeUpdatedEdges" nillable="true" type="tns:ArrayOfServiceEdgeInstance"/>
-          <xsd:element minOccurs="0" name="ToBeUpdatedStructuredProperties" nillable="true" type="q17:ArrayOfKeyValueOfstringanyType" xmlns:q17="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
-          <xsd:element minOccurs="0" name="ToBeUpdatedUnstructuredProperties" nillable="true" type="q18:ArrayOfKeyValueOfstringanyType" xmlns:q18="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="ToBeUpdatedStructuredProperties" nillable="true" type="q47:ArrayOfKeyValueOfstringanyType" xmlns:q47="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="ToBeUpdatedUnstructuredProperties" nillable="true" type="q48:ArrayOfKeyValueOfstringanyType" xmlns:q48="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ServiceUpdateChangeset" nillable="true" type="tns:ServiceUpdateChangeset"/>
@@ -1036,9 +1030,9 @@
       <xsd:element name="RebuildIndices">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q49:SecurityToken" xmlns:q49="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
-            <xsd:element minOccurs="0" name="myVertexTypeNames" nillable="true" type="q19:ArrayOfstring" xmlns:q19="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xsd:element minOccurs="0" name="myVertexTypeNames" nillable="true" type="q50:ArrayOfstring" xmlns:q50="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -1050,7 +1044,7 @@
       <xsd:element name="TruncateVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q51:SecurityToken" xmlns:q51="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexTypeNames" nillable="true" type="xsd:string"/>
           </xsd:sequence>
@@ -1064,7 +1058,7 @@
       <xsd:element name="GetDescendantVertexTypes">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q52:SecurityToken" xmlns:q52="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -1080,7 +1074,7 @@
       <xsd:element name="GetDescendantVertexTypesAndSelf">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q53:SecurityToken" xmlns:q53="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -1096,7 +1090,7 @@
       <xsd:element name="GetAncestorVertexTypes">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q54:SecurityToken" xmlns:q54="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -1112,7 +1106,7 @@
       <xsd:element name="GetAncestorVertexTypesAndSelf">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q55:SecurityToken" xmlns:q55="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -1128,7 +1122,7 @@
       <xsd:element name="GetKinsmenVertexTypes">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q56:SecurityToken" xmlns:q56="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -1144,7 +1138,7 @@
       <xsd:element name="GetKinsmenVertexTypesAndSelf">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q57:SecurityToken" xmlns:q57="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -1160,7 +1154,7 @@
       <xsd:element name="ChildrenVertexTypes">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q58:SecurityToken" xmlns:q58="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -1176,7 +1170,7 @@
       <xsd:element name="ParentVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q59:SecurityToken" xmlns:q59="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -1192,7 +1186,7 @@
       <xsd:element name="IsSealedByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q60:SecurityToken" xmlns:q60="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -1208,7 +1202,7 @@
       <xsd:element name="HasParentTypeByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q61:SecurityToken" xmlns:q61="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -1224,7 +1218,7 @@
       <xsd:element name="HasChildTypeByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q62:SecurityToken" xmlns:q62="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
           </xsd:sequence>
@@ -1240,7 +1234,7 @@
       <xsd:element name="IsAncestorByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q63:SecurityToken" xmlns:q63="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myOtherType" nillable="true" type="tns:ServiceVertexType"/>
@@ -1257,7 +1251,7 @@
       <xsd:element name="IsAncestorOrSelfByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q64:SecurityToken" xmlns:q64="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myOtherType" nillable="true" type="tns:ServiceVertexType"/>
@@ -1274,7 +1268,7 @@
       <xsd:element name="IsDescendantByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q65:SecurityToken" xmlns:q65="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myOtherType" nillable="true" type="tns:ServiceVertexType"/>
@@ -1291,7 +1285,7 @@
       <xsd:element name="IsDescendantOrSelfByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q66:SecurityToken" xmlns:q66="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myOtherType" nillable="true" type="tns:ServiceVertexType"/>
@@ -1308,7 +1302,7 @@
       <xsd:element name="HasAttributeByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q67:SecurityToken" xmlns:q67="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myAttributeName" nillable="true" type="xsd:string"/>
@@ -1325,7 +1319,7 @@
       <xsd:element name="GetAttributeDefinitionByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q68:SecurityToken" xmlns:q68="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myAttributeName" nillable="true" type="xsd:string"/>
@@ -1342,7 +1336,7 @@
       <xsd:element name="GetAttributeDefinitionByIDByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q69:SecurityToken" xmlns:q69="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myAttributeID" type="xsd:long"/>
@@ -1359,7 +1353,7 @@
       <xsd:element name="HasAttributesByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q70:SecurityToken" xmlns:q70="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -1376,7 +1370,7 @@
       <xsd:element name="GetAttributeDefinitionsByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q71:SecurityToken" xmlns:q71="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -1399,7 +1393,7 @@
       <xsd:element name="HasPropertyByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q72:SecurityToken" xmlns:q72="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myAttributeName" nillable="true" type="xsd:string"/>
@@ -1416,7 +1410,7 @@
       <xsd:element name="GetPropertyDefinitionByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q73:SecurityToken" xmlns:q73="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myPropertyName" nillable="true" type="xsd:string"/>
@@ -1433,7 +1427,7 @@
       <xsd:element name="GetPropertyDefinitionByIDByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q74:SecurityToken" xmlns:q74="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myPropertyID" type="xsd:long"/>
@@ -1450,7 +1444,7 @@
       <xsd:element name="HasPropertiesByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q75:SecurityToken" xmlns:q75="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -1467,7 +1461,7 @@
       <xsd:element name="GetPropertyDefinitionsByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q76:SecurityToken" xmlns:q76="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -1484,10 +1478,10 @@
       <xsd:element name="GetPropertyDefinitionsByNameListByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q77:SecurityToken" xmlns:q77="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
-            <xsd:element minOccurs="0" name="myPropertyNames" nillable="true" type="q20:ArrayOfstring" xmlns:q20="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xsd:element minOccurs="0" name="myPropertyNames" nillable="true" type="q78:ArrayOfstring" xmlns:q78="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -1501,7 +1495,7 @@
       <xsd:element name="HasIncomingEdge">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q79:SecurityToken" xmlns:q79="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myEdgeName" nillable="true" type="xsd:string"/>
@@ -1518,7 +1512,7 @@
       <xsd:element name="GetIncomingEdgeDefinition">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q80:SecurityToken" xmlns:q80="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myEdgeName" nillable="true" type="xsd:string"/>
@@ -1559,7 +1553,7 @@
       <xsd:element name="HasIncomingEdges">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q81:SecurityToken" xmlns:q81="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -1576,7 +1570,7 @@
       <xsd:element name="GetIncomingEdgeDefinitions">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q82:SecurityToken" xmlns:q82="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -1599,7 +1593,7 @@
       <xsd:element name="HasOutgoingEdgeByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q83:SecurityToken" xmlns:q83="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myEdgeName" nillable="true" type="xsd:string"/>
@@ -1616,7 +1610,7 @@
       <xsd:element name="GetOutgoingEdgeDefinitionByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q84:SecurityToken" xmlns:q84="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myEdgeName" nillable="true" type="xsd:string"/>
@@ -1633,7 +1627,7 @@
       <xsd:element name="HasOutgoingEdgesByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q85:SecurityToken" xmlns:q85="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -1650,7 +1644,7 @@
       <xsd:element name="GetOutgoingEdgeDefinitionsByVertexType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q86:SecurityToken" xmlns:q86="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -1673,7 +1667,7 @@
       <xsd:element name="HasUniqueDefinitions">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q87:SecurityToken" xmlns:q87="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -1690,7 +1684,7 @@
       <xsd:element name="GetUniqueDefinitions">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q88:SecurityToken" xmlns:q88="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -1720,7 +1714,7 @@
       <xsd:element name="HasIndexDefinitions">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q89:SecurityToken" xmlns:q89="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -1737,7 +1731,7 @@
       <xsd:element name="GetIndexDefinitions">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q90:SecurityToken" xmlns:q90="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceVertexType" nillable="true" type="tns:ServiceVertexType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -1754,7 +1748,7 @@
       <xsd:element name="HasIncomingVertices">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q91:SecurityToken" xmlns:q91="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexTypeID" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
@@ -1772,7 +1766,7 @@
       <xsd:element name="GetAllIncomingVertices">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q92:SecurityToken" xmlns:q92="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
           </xsd:sequence>
@@ -1781,14 +1775,14 @@
       <xsd:element name="GetAllIncomingVerticesResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="GetAllIncomingVerticesResult" nillable="true" type="q21:ArrayOfTupleOflonglongArrayOfServiceVertexInstancegXhDpTc1" xmlns:q21="http://schemas.datacontract.org/2004/07/System"/>
+            <xsd:element minOccurs="0" name="GetAllIncomingVerticesResult" nillable="true" type="q93:ArrayOfTupleOflonglongArrayOfServiceVertexInstancegXhDpTc1" xmlns:q93="http://schemas.datacontract.org/2004/07/System"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="GetIncomingVertices">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q94:SecurityToken" xmlns:q94="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertexTypeID" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
@@ -1806,7 +1800,7 @@
       <xsd:element name="HasOutgoingEdgeByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q95:SecurityToken" xmlns:q95="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
             <xsd:element minOccurs="0" name="myEdgePropertyID" type="xsd:long"/>
@@ -1823,7 +1817,7 @@
       <xsd:element name="GetAllOutgoingEdges">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q96:SecurityToken" xmlns:q96="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
           </xsd:sequence>
@@ -1832,14 +1826,14 @@
       <xsd:element name="GetAllOutgoingEdgesResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="GetAllOutgoingEdgesResult" nillable="true" type="q22:ArrayOfTupleOflongServiceEdgeInstance7AF3f8r2" xmlns:q22="http://schemas.datacontract.org/2004/07/System"/>
+            <xsd:element minOccurs="0" name="GetAllOutgoingEdgesResult" nillable="true" type="q97:ArrayOfTupleOflongServiceEdgeInstance7AF3f8r2" xmlns:q97="http://schemas.datacontract.org/2004/07/System"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="GetAllOutgoingHyperEdges">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q98:SecurityToken" xmlns:q98="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
           </xsd:sequence>
@@ -1848,7 +1842,7 @@
       <xsd:element name="GetAllOutgoingHyperEdgesResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="GetAllOutgoingHyperEdgesResult" nillable="true" type="q23:ArrayOfTupleOflongServiceHyperEdgeInstance7AF3f8r2" xmlns:q23="http://schemas.datacontract.org/2004/07/System"/>
+            <xsd:element minOccurs="0" name="GetAllOutgoingHyperEdgesResult" nillable="true" type="q99:ArrayOfTupleOflongServiceHyperEdgeInstance7AF3f8r2" xmlns:q99="http://schemas.datacontract.org/2004/07/System"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -1882,7 +1876,7 @@
       <xsd:element name="GetAllOutgoingSingleEdges">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q100:SecurityToken" xmlns:q100="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
           </xsd:sequence>
@@ -1891,14 +1885,14 @@
       <xsd:element name="GetAllOutgoingSingleEdgesResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="GetAllOutgoingSingleEdgesResult" nillable="true" type="q24:ArrayOfTupleOflongServiceSingleEdgeInstance7AF3f8r2" xmlns:q24="http://schemas.datacontract.org/2004/07/System"/>
+            <xsd:element minOccurs="0" name="GetAllOutgoingSingleEdgesResult" nillable="true" type="q101:ArrayOfTupleOflongServiceSingleEdgeInstance7AF3f8r2" xmlns:q101="http://schemas.datacontract.org/2004/07/System"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="GetOutgoingEdge">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q102:SecurityToken" xmlns:q102="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
             <xsd:element minOccurs="0" name="myEdgePropertyID" type="xsd:long"/>
@@ -1915,7 +1909,7 @@
       <xsd:element name="GetOutgoingHyperEdge">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q103:SecurityToken" xmlns:q103="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
             <xsd:element minOccurs="0" name="myEdgePropertyID" type="xsd:long"/>
@@ -1932,7 +1926,7 @@
       <xsd:element name="GetOutgoingSingleEdge">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q104:SecurityToken" xmlns:q104="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
             <xsd:element minOccurs="0" name="myEdgePropertyID" type="xsd:long"/>
@@ -1949,7 +1943,7 @@
       <xsd:element name="GetBinaryProperty">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q105:SecurityToken" xmlns:q105="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
             <xsd:element minOccurs="0" name="myPropertyID" type="xsd:long"/>
@@ -1959,14 +1953,14 @@
       <xsd:element name="GetBinaryPropertyResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="GetBinaryPropertyResult" type="q25:StreamBody" xmlns:q25="http://schemas.microsoft.com/Message"/>
+            <xsd:element name="GetBinaryPropertyResult" type="q106:StreamBody" xmlns:q106="http://schemas.microsoft.com/Message"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="GetAllBinaryProperties">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q107:SecurityToken" xmlns:q107="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
           </xsd:sequence>
@@ -1975,14 +1969,14 @@
       <xsd:element name="GetAllBinaryPropertiesResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="GetAllBinaryPropertiesResult" nillable="true" type="q26:ArrayOfTupleOflongStreampETKBXRm" xmlns:q26="http://schemas.datacontract.org/2004/07/System"/>
+            <xsd:element minOccurs="0" name="GetAllBinaryPropertiesResult" nillable="true" type="q108:ArrayOfTupleOflongStreampETKBXRm" xmlns:q108="http://schemas.datacontract.org/2004/07/System"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="GetPropertyByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q109:SecurityToken" xmlns:q109="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceVertexInstance"/>
             <xsd:element minOccurs="0" name="myPropertyID" type="xsd:long"/>
@@ -1999,7 +1993,7 @@
       <xsd:element name="HasPropertyByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q110:SecurityToken" xmlns:q110="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myVertex" nillable="true" type="tns:ServiceVertexInstance"/>
             <xsd:element minOccurs="0" name="myPropertyID" type="xsd:long"/>
@@ -2016,7 +2010,7 @@
       <xsd:element name="GetCountOfPropertiesByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q111:SecurityToken" xmlns:q111="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceVertexInstance"/>
           </xsd:sequence>
@@ -2032,7 +2026,7 @@
       <xsd:element name="GetAllPropertiesByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q112:SecurityToken" xmlns:q112="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceVertexInstance"/>
           </xsd:sequence>
@@ -2041,14 +2035,14 @@
       <xsd:element name="GetAllPropertiesByVertexInstanceResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="GetAllPropertiesByVertexInstanceResult" nillable="true" type="q27:ArrayOfTupleOflonganyType" xmlns:q27="http://schemas.datacontract.org/2004/07/System"/>
+            <xsd:element minOccurs="0" name="GetAllPropertiesByVertexInstanceResult" nillable="true" type="q113:ArrayOfTupleOflonganyType" xmlns:q113="http://schemas.datacontract.org/2004/07/System"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="GetPropertyAsStringByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q114:SecurityToken" xmlns:q114="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceVertexInstance"/>
             <xsd:element minOccurs="0" name="myPropertyID" type="xsd:long"/>
@@ -2065,7 +2059,7 @@
       <xsd:element name="GetUnstructuredPropertyByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q115:SecurityToken" xmlns:q115="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceVertexInstance"/>
             <xsd:element minOccurs="0" name="myPropertyName" nillable="true" type="xsd:string"/>
@@ -2082,7 +2076,7 @@
       <xsd:element name="HasUnstructuredPropertyByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q116:SecurityToken" xmlns:q116="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceVertexInstance"/>
             <xsd:element minOccurs="0" name="myPropertyName" nillable="true" type="xsd:string"/>
@@ -2099,7 +2093,7 @@
       <xsd:element name="GetCountOfUnstructuredPropertiesByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q117:SecurityToken" xmlns:q117="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceVertexInstance"/>
           </xsd:sequence>
@@ -2115,7 +2109,7 @@
       <xsd:element name="GetAllUnstructuredPropertiesByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q118:SecurityToken" xmlns:q118="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceVertexInstance"/>
           </xsd:sequence>
@@ -2124,14 +2118,14 @@
       <xsd:element name="GetAllUnstructuredPropertiesByVertexInstanceResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="GetAllUnstructuredPropertiesByVertexInstanceResult" nillable="true" type="q28:ArrayOfTupleOfstringanyType" xmlns:q28="http://schemas.datacontract.org/2004/07/System"/>
+            <xsd:element minOccurs="0" name="GetAllUnstructuredPropertiesByVertexInstanceResult" nillable="true" type="q119:ArrayOfTupleOfstringanyType" xmlns:q119="http://schemas.datacontract.org/2004/07/System"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="GetUnstructuredPropertyAsStringByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q120:SecurityToken" xmlns:q120="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceVertexInstance"/>
             <xsd:element minOccurs="0" name="myPropertyName" nillable="true" type="xsd:string"/>
@@ -2148,7 +2142,7 @@
       <xsd:element name="CommentByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q121:SecurityToken" xmlns:q121="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceVertexInstance"/>
           </xsd:sequence>
@@ -2164,7 +2158,7 @@
       <xsd:element name="CreationDateByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q122:SecurityToken" xmlns:q122="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceVertexInstance"/>
           </xsd:sequence>
@@ -2180,7 +2174,7 @@
       <xsd:element name="ModificationDateByVertexInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q123:SecurityToken" xmlns:q123="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceVertexInstance"/>
           </xsd:sequence>
@@ -2196,7 +2190,7 @@
       <xsd:element name="GetDescendantEdgeTypes">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q124:SecurityToken" xmlns:q124="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
           </xsd:sequence>
@@ -2212,7 +2206,7 @@
       <xsd:element name="GetDescendantEdgeTypesAndSelf">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q125:SecurityToken" xmlns:q125="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
           </xsd:sequence>
@@ -2228,7 +2222,7 @@
       <xsd:element name="GetAncestorEdgeTypes">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q126:SecurityToken" xmlns:q126="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
           </xsd:sequence>
@@ -2244,7 +2238,7 @@
       <xsd:element name="GetAncestorEdgeTypesAndSelf">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q127:SecurityToken" xmlns:q127="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
           </xsd:sequence>
@@ -2260,7 +2254,7 @@
       <xsd:element name="GetKinsmenEdgeTypes">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q128:SecurityToken" xmlns:q128="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
           </xsd:sequence>
@@ -2276,7 +2270,7 @@
       <xsd:element name="GetKinsmenEdgeTypesAndSelf">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q129:SecurityToken" xmlns:q129="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
           </xsd:sequence>
@@ -2292,7 +2286,7 @@
       <xsd:element name="ChildrenEdgeTypes">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q130:SecurityToken" xmlns:q130="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
           </xsd:sequence>
@@ -2308,7 +2302,7 @@
       <xsd:element name="ParentEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q131:SecurityToken" xmlns:q131="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
           </xsd:sequence>
@@ -2324,7 +2318,7 @@
       <xsd:element name="IsSealedByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q132:SecurityToken" xmlns:q132="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
           </xsd:sequence>
@@ -2340,7 +2334,7 @@
       <xsd:element name="HasParentTypeByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q133:SecurityToken" xmlns:q133="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
           </xsd:sequence>
@@ -2356,7 +2350,7 @@
       <xsd:element name="HasChildTypesByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q134:SecurityToken" xmlns:q134="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
           </xsd:sequence>
@@ -2372,7 +2366,7 @@
       <xsd:element name="IsAncestorByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q135:SecurityToken" xmlns:q135="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myOtherType" nillable="true" type="tns:ServiceEdgeType"/>
@@ -2389,7 +2383,7 @@
       <xsd:element name="IsAncestorOrSelfByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q136:SecurityToken" xmlns:q136="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myOtherType" nillable="true" type="tns:ServiceEdgeType"/>
@@ -2406,7 +2400,7 @@
       <xsd:element name="IsDescendantByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q137:SecurityToken" xmlns:q137="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myOtherType" nillable="true" type="tns:ServiceEdgeType"/>
@@ -2423,7 +2417,7 @@
       <xsd:element name="IsDescendantOrSelfByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q138:SecurityToken" xmlns:q138="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myOtherType" nillable="true" type="tns:ServiceEdgeType"/>
@@ -2440,7 +2434,7 @@
       <xsd:element name="HasAttributeByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q139:SecurityToken" xmlns:q139="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myAttributeName" nillable="true" type="xsd:string"/>
@@ -2457,7 +2451,7 @@
       <xsd:element name="GetAttributeDefinitionByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q140:SecurityToken" xmlns:q140="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myAttributeName" nillable="true" type="xsd:string"/>
@@ -2474,7 +2468,7 @@
       <xsd:element name="GetAttributeDefinitionByIDByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q141:SecurityToken" xmlns:q141="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myAttributeID" type="xsd:long"/>
@@ -2491,7 +2485,7 @@
       <xsd:element name="HasAttributesByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q142:SecurityToken" xmlns:q142="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -2508,7 +2502,7 @@
       <xsd:element name="GetAttributeDefinitionsByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q143:SecurityToken" xmlns:q143="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -2525,7 +2519,7 @@
       <xsd:element name="HasProprtyByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q144:SecurityToken" xmlns:q144="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myAttributeName" nillable="true" type="xsd:string"/>
@@ -2542,7 +2536,7 @@
       <xsd:element name="GetPropertyDefinitionByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q145:SecurityToken" xmlns:q145="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myPropertyName" nillable="true" type="xsd:string"/>
@@ -2559,7 +2553,7 @@
       <xsd:element name="GetPropertyDefinitionByIDByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q146:SecurityToken" xmlns:q146="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myPropertyID" type="xsd:long"/>
@@ -2576,7 +2570,7 @@
       <xsd:element name="HasPropertiesByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q147:SecurityToken" xmlns:q147="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -2593,7 +2587,7 @@
       <xsd:element name="GetPropertyDefinitionsByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q148:SecurityToken" xmlns:q148="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
             <xsd:element minOccurs="0" name="myIncludeAncestorDefinitions" type="xsd:boolean"/>
@@ -2610,10 +2604,10 @@
       <xsd:element name="GetPropertyDefinitionsByNameListByEdgeType">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q149:SecurityToken" xmlns:q149="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myServiceEdgeType" nillable="true" type="tns:ServiceEdgeType"/>
-            <xsd:element minOccurs="0" name="myPropertyNames" nillable="true" type="q29:ArrayOfstring" xmlns:q29="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xsd:element minOccurs="0" name="myPropertyNames" nillable="true" type="q150:ArrayOfstring" xmlns:q150="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -2627,7 +2621,7 @@
       <xsd:element name="GetPropertyByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q151:SecurityToken" xmlns:q151="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
             <xsd:element minOccurs="0" name="myPropertyID" type="xsd:long"/>
@@ -2644,7 +2638,7 @@
       <xsd:element name="HasPropertyByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q152:SecurityToken" xmlns:q152="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
             <xsd:element minOccurs="0" name="myPropertyID" type="xsd:long"/>
@@ -2661,7 +2655,7 @@
       <xsd:element name="GetCountOfPropertiesByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q153:SecurityToken" xmlns:q153="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
           </xsd:sequence>
@@ -2677,7 +2671,7 @@
       <xsd:element name="GetAllPropertiesByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q154:SecurityToken" xmlns:q154="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
           </xsd:sequence>
@@ -2686,14 +2680,14 @@
       <xsd:element name="GetAllPropertiesByEdgeInstanceResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="GetAllPropertiesByEdgeInstanceResult" nillable="true" type="q30:ArrayOfTupleOflonganyType" xmlns:q30="http://schemas.datacontract.org/2004/07/System"/>
+            <xsd:element minOccurs="0" name="GetAllPropertiesByEdgeInstanceResult" nillable="true" type="q155:ArrayOfTupleOflonganyType" xmlns:q155="http://schemas.datacontract.org/2004/07/System"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="GetPropertyAsStringByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q156:SecurityToken" xmlns:q156="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
             <xsd:element minOccurs="0" name="myPropertyID" type="xsd:long"/>
@@ -2710,7 +2704,7 @@
       <xsd:element name="GetUnstructuredPropertyByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q157:SecurityToken" xmlns:q157="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
             <xsd:element minOccurs="0" name="myPropertyName" nillable="true" type="xsd:string"/>
@@ -2727,7 +2721,7 @@
       <xsd:element name="HasUnstructuredPropertyByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q158:SecurityToken" xmlns:q158="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
             <xsd:element minOccurs="0" name="myPropertyName" nillable="true" type="xsd:string"/>
@@ -2744,7 +2738,7 @@
       <xsd:element name="GetCountOfUnstructuredPropertiesByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q159:SecurityToken" xmlns:q159="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
           </xsd:sequence>
@@ -2760,7 +2754,7 @@
       <xsd:element name="GetAllUnstructuredPropertiesByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q160:SecurityToken" xmlns:q160="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
           </xsd:sequence>
@@ -2769,14 +2763,14 @@
       <xsd:element name="GetAllUnstructuredPropertiesByEdgeInstanceResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="GetAllUnstructuredPropertiesByEdgeInstanceResult" nillable="true" type="q31:ArrayOfTupleOfstringanyType" xmlns:q31="http://schemas.datacontract.org/2004/07/System"/>
+            <xsd:element minOccurs="0" name="GetAllUnstructuredPropertiesByEdgeInstanceResult" nillable="true" type="q161:ArrayOfTupleOfstringanyType" xmlns:q161="http://schemas.datacontract.org/2004/07/System"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="GetUnstructuredPropertyAsStringByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q162:SecurityToken" xmlns:q162="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
             <xsd:element minOccurs="0" name="myPropertyName" nillable="true" type="xsd:string"/>
@@ -2793,7 +2787,7 @@
       <xsd:element name="CommentByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q163:SecurityToken" xmlns:q163="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
           </xsd:sequence>
@@ -2809,7 +2803,7 @@
       <xsd:element name="CreationDateByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q164:SecurityToken" xmlns:q164="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
           </xsd:sequence>
@@ -2825,7 +2819,7 @@
       <xsd:element name="ModificationDateByEdgeInstance">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element minOccurs="0" name="mySecToken" nillable="true" type="tns:ServiceSecurityToken"/>
+            <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q165:SecurityToken" xmlns:q165="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
             <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
           </xsd:sequence>
@@ -2880,6 +2874,14 @@
       <xs:attribute name="Id" type="xs:ID"/>
       <xs:attribute name="Ref" type="xs:IDREF"/>
     </xs:schema>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security" xmlns:tns="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security" xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/">
+      <xsd:complexType name="SecurityToken">
+        <xsd:sequence>
+          <xsd:element name="_id" type="ser:guid"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="SecurityToken" nillable="true" type="tns:SecurityToken"/>
+    </xsd:schema>
     <xsd:schema elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
       <xsd:complexType name="ArrayOfstring">
         <xsd:sequence>
@@ -3008,7 +3010,7 @@
         </xsd:annotation>
         <xsd:sequence>
           <xsd:element name="m_Item1" nillable="true" type="xsd:string"/>
-          <xsd:element name="m_Item2" nillable="true" type="q32:ServiceHyperEdgeView" xmlns:q32="http://www.sones.com"/>
+          <xsd:element name="m_Item2" nillable="true" type="q166:ServiceHyperEdgeView" xmlns:q166="http://www.sones.com"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="TupleOfstringServiceHyperEdgeView7AF3f8r2" nillable="true" type="tns:TupleOfstringServiceHyperEdgeView7AF3f8r2"/>
@@ -3029,7 +3031,7 @@
         </xsd:annotation>
         <xsd:sequence>
           <xsd:element name="m_Item1" nillable="true" type="xsd:string"/>
-          <xsd:element name="m_Item2" nillable="true" type="q33:ServiceSingleEdgeView" xmlns:q33="http://www.sones.com"/>
+          <xsd:element name="m_Item2" nillable="true" type="q167:ServiceSingleEdgeView" xmlns:q167="http://www.sones.com"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="TupleOfstringServiceSingleEdgeView7AF3f8r2" nillable="true" type="tns:TupleOfstringServiceSingleEdgeView7AF3f8r2"/>
@@ -3052,7 +3054,7 @@
         <xsd:sequence>
           <xsd:element name="m_Item1" type="xsd:long"/>
           <xsd:element name="m_Item2" type="xsd:long"/>
-          <xsd:element name="m_Item3" nillable="true" type="q34:ArrayOfServiceVertexInstance" xmlns:q34="http://www.sones.com"/>
+          <xsd:element name="m_Item3" nillable="true" type="q168:ArrayOfServiceVertexInstance" xmlns:q168="http://www.sones.com"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="TupleOflonglongArrayOfServiceVertexInstancegXhDpTc1" nillable="true" type="tns:TupleOflonglongArrayOfServiceVertexInstancegXhDpTc1"/>
@@ -3073,7 +3075,7 @@
         </xsd:annotation>
         <xsd:sequence>
           <xsd:element name="m_Item1" type="xsd:long"/>
-          <xsd:element name="m_Item2" nillable="true" type="q35:ServiceEdgeInstance" xmlns:q35="http://www.sones.com"/>
+          <xsd:element name="m_Item2" nillable="true" type="q169:ServiceEdgeInstance" xmlns:q169="http://www.sones.com"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="TupleOflongServiceEdgeInstance7AF3f8r2" nillable="true" type="tns:TupleOflongServiceEdgeInstance7AF3f8r2"/>
@@ -3094,7 +3096,7 @@
         </xsd:annotation>
         <xsd:sequence>
           <xsd:element name="m_Item1" type="xsd:long"/>
-          <xsd:element name="m_Item2" nillable="true" type="q36:ServiceHyperEdgeInstance" xmlns:q36="http://www.sones.com"/>
+          <xsd:element name="m_Item2" nillable="true" type="q170:ServiceHyperEdgeInstance" xmlns:q170="http://www.sones.com"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="TupleOflongServiceHyperEdgeInstance7AF3f8r2" nillable="true" type="tns:TupleOflongServiceHyperEdgeInstance7AF3f8r2"/>
@@ -3115,7 +3117,7 @@
         </xsd:annotation>
         <xsd:sequence>
           <xsd:element name="m_Item1" type="xsd:long"/>
-          <xsd:element name="m_Item2" nillable="true" type="q37:ServiceSingleEdgeInstance" xmlns:q37="http://www.sones.com"/>
+          <xsd:element name="m_Item2" nillable="true" type="q171:ServiceSingleEdgeInstance" xmlns:q171="http://www.sones.com"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="TupleOflongServiceSingleEdgeInstance7AF3f8r2" nillable="true" type="tns:TupleOflongServiceSingleEdgeInstance7AF3f8r2"/>
@@ -3136,7 +3138,7 @@
         </xsd:annotation>
         <xsd:sequence>
           <xsd:element name="m_Item1" type="xsd:long"/>
-          <xsd:element name="m_Item2" nillable="true" type="q38:Stream" xmlns:q38="http://schemas.datacontract.org/2004/07/System.IO"/>
+          <xsd:element name="m_Item2" nillable="true" type="q172:Stream" xmlns:q172="http://schemas.datacontract.org/2004/07/System.IO"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="TupleOflongStreampETKBXRm" nillable="true" type="tns:TupleOflongStreampETKBXRm"/>
@@ -3176,7 +3178,7 @@
     <xsd:schema elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/System.IO" xmlns:tns="http://schemas.datacontract.org/2004/07/System.IO">
       <xsd:complexType name="Stream">
         <xsd:complexContent mixed="false">
-          <xsd:extension base="q39:MarshalByRefObject" xmlns:q39="http://schemas.datacontract.org/2004/07/System">
+          <xsd:extension base="q173:MarshalByRefObject" xmlns:q173="http://schemas.datacontract.org/2004/07/System">
             <xsd:sequence/>
           </xsd:extension>
         </xsd:complexContent>

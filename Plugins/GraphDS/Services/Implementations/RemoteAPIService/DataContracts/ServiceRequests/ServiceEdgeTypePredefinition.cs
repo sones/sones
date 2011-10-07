@@ -32,53 +32,31 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
     public class ServiceEdgeTypePredefinition
     {
         /// <summary>
-        /// The name of the vertex type that is going to be created
+        /// The name of the edge type that is going to be created
         /// </summary>
         [DataMember(IsRequired = true)]
         public string EdgeTypeName;
         
         /// <summary>
-        /// The name of the vertex type this vertex types inherites from.
+        /// The name of the edge type this vertex types inherites from.
         /// </summary>
         [DataMember]
-        public string SuperVertexTypeName;
+        public string SuperEdgeTypeName;
 
         /// <summary>
-        /// The properties of the vertex type.
+        /// The properties of the edge type.
         /// </summary>
         [DataMember]
         public IEnumerable<ServicePropertyPredefinition> Properties;
-
         
         /// <summary>
-        /// The outgoing edges of this vertex type.
-        /// </summary>
-        [DataMember]
-        public IEnumerable<ServiceOutgoingEdgePredefinition> OutgoingEdges;
-        
-
-        /// <summary>
-        /// The outgoing edges of this vertex type.
-        /// </summary>
-        [DataMember]
-        public IEnumerable<ServiceIncomingEdgePredefinition> IncomingEdges;
-      
-        /// <summary>
-        /// Gets if the vertex type will be sealed.
+        /// Gets if the edge type will be sealed.
         /// </summary>
         [DataMember]
         public bool IsSealed;
 
         /// <summary>
-        /// Gets if the vertex type will be abstract.
-        /// </summary>
-        [DataMember]
-        public bool IsAbstract;
-        
-     
-
-        /// <summary>
-        /// Gets the comment for this vertex type.
+        /// Gets the comment for this edge type.
         /// </summary>
         [DataMember]
         public string Comment;
@@ -86,14 +64,13 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 
         public EdgeTypePredefinition ToEdgeTypePredefinition()
         {
-            EdgeTypePredefinition EdgeTypePreDef = new EdgeTypePredefinition(this.EdgeTypeName); ;
-            
+            EdgeTypePredefinition EdgeTypePreDef = new EdgeTypePredefinition(this.EdgeTypeName);
            
             if (this.IsSealed)
                 EdgeTypePreDef.MarkAsSealed();
 
             EdgeTypePreDef.SetComment(this.Comment);
-            EdgeTypePreDef.SetSuperTypeName(this.SuperVertexTypeName);
+            EdgeTypePreDef.SetSuperTypeName(this.SuperEdgeTypeName);
 
             if (this.Properties != null)
             {
@@ -105,7 +82,5 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 
             return EdgeTypePreDef;
         }
-
-
     }
 }

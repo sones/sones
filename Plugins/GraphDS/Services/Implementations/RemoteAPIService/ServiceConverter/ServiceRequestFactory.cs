@@ -81,33 +81,32 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 
             foreach (var toDel in myChangeset.ToBeRemovedProperties)
             {
-                Request.RemoveProperty(toDel.AttributeName);
+                Request.RemoveProperty(toDel);
             }
 
             foreach (var toDel in myChangeset.ToBeRemovedIncomingEdges)
             {
-                Request.RemoveIncomingEdge(toDel.AttributeName);
+                Request.RemoveIncomingEdge(toDel);
             }
 
             foreach (var toDel in myChangeset.ToBeRemovedOutgoingEdges)
             {
-                Request.RemoveOutgoingEdge(toDel.AttributeName);
+                Request.RemoveOutgoingEdge(toDel);
             }
 
             foreach (var toDel in myChangeset.ToBeRemovedUniques)
             {
-                foreach(var unique in toDel.Properties)
-                    Request.RemoveUnique(unique);
+                Request.RemoveUnique(toDel);
             }
 
             foreach (var toDel in myChangeset.ToBeRemovedMandatories)
             {
-                Request.RemoveMandatory(toDel.PropertyName);
+                Request.RemoveMandatory(toDel);
             }
 
             foreach (var toDel in myChangeset.ToBeRemovedIndices)
             {
-                Request.RemoveIndex(toDel.Name, toDel.Edition);
+                Request.RemoveIndex(toDel.Key, toDel.Value);
             }
 
             #endregion
@@ -148,7 +147,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 
             foreach (var toDel in myChangeset.ToBeRemovedProperties)
             {
-                Request.RemoveProperty(toDel.AttributeName);
+                Request.RemoveProperty(toDel);
             }
 
             #endregion
@@ -220,10 +219,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             return Request;
         }
 
-        public static RequestDescribeIndex MakeRequestDescribeIndex(ServiceVertexType myVertexType, String myIndexName)
+        public static RequestDescribeIndex MakeRequestDescribeIndex(String myVertexTypeName, String myIndexName)
         {
-            if (String.IsNullOrEmpty(myVertexType.Name))
-                return new RequestDescribeIndex(myVertexType.Name, myIndexName);
+            if (String.IsNullOrEmpty(myVertexTypeName))
+                return new RequestDescribeIndex(myVertexTypeName, myIndexName);
             return null;
         }
 
@@ -310,7 +309,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
         {
             #region PreRequest
 
-            
             RequestGetVertices PreRequest = null;
             if (myVertexIDs != null)
             {
@@ -331,60 +329,72 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 
             #endregion
 
+            
+            #region element collection
+
+            foreach (var element in myUpdateChangeset.AddedElementsToCollectionProperties)
+            {
+                Request.AddElementsToCollection(element.Key, element.Value);
+            }
+
+            foreach (var element in myUpdateChangeset.RemovedElementsFromCollectionProperties)
+            {
+                Request.RemoveElementsFromCollection(element.Key, element.Value);
+            }
+
+            foreach (var element in myUpdateChangeset.AddedElementsToCollectionEdges)
+            {
+                Request.AddElementsToCollection(element.Key, element.Value.ToEdgePredefinition());
+            }
+
+            foreach (var element in myUpdateChangeset.RemovedElementsFromCollectionEdges)
+            {
+                Request.RemoveElementsFromCollection(element.Key, element.Value.ToEdgePredefinition());
+            }
+
+            #endregion
+
+
+            #region Properties
+
+            foreach (var item in myUpdateChangeset.UpdatedStructuredProperties)
+            {
+                Request.UpdateStructuredProperty(item.Key, item.Value);
+            }
+            
+            foreach (var item in myUpdateChangeset.UpdatedUnstructuredProperties)
+            {
+                Request.UpdateUnstructuredProperty(item.Key, item.Value);
+            }
+
+            foreach (var item in myUpdateChangeset.UpdatedUnknownProperties)
+            {
+                Request.UpdateUnknownProperty(item.Key, item.Value);
+            }
+
+
+            #endregion
+
+
             #region Update Edges
 
-            foreach (var EdgeType in myUpdateChangeset.ToBeUpdatedEdges)
+            foreach (var Edge in myUpdateChangeset.UpdatedOutgoingEdges)
             {
-                if(EdgeType is ServiceSingleEdgeInstance)
-                {
-                    var SingleEdge = EdgeType as ServiceSingleEdgeInstance;
-                    
-                    EdgePredefinition def = new EdgePredefinition();
-                    def.Comment = SingleEdge.Comment;
-                    def.AddVertexID(SingleEdge.TargetVertex.TypeID,SingleEdge.TargetVertex.VertexID);
-                    
-                    Request.UpdateEdge(def);
+                Request.UpdateEdge(Edge.ToEdgePredefinition());
+            }
 
-                }
-                else if(EdgeType is ServiceHyperEdgeInstance)
-                {
-                    var HyperEdge = EdgeType as ServiceHyperEdgeInstance;
-
-                    EdgePredefinition def = new EdgePredefinition();
-                    def.Comment = HyperEdge.Comment;
-                    
-                    foreach(var SingleEdge in HyperEdge.SingleEdges)
-                    {
-                        EdgePredefinition InnerEdge = new EdgePredefinition();
-                        InnerEdge.Comment = SingleEdge.Comment;
-                        InnerEdge.AddVertexID(SingleEdge.TargetVertex.TypeID,SingleEdge.TargetVertex.VertexID);
-                    
-                        def.AddEdge(InnerEdge);
-                    
-                    }
-                    
-                    Request.UpdateEdge(def);
-                    
-                }
-                
+            foreach (var Edge in myUpdateChangeset.UpdateOutgoingEdgesProperties)
+            {
+                Request.UpdateEdge(Edge.ToSingleEdgeUpdateDefinition());
             }
             
             #endregion          
 
-            #region Properties
-            
-            foreach (var toAdd in myUpdateChangeset.ToBeUpdatedUnstructuredProperties)
+            foreach (var item in myUpdateChangeset.RemovedAttributes)
             {
-                Request.UpdateUnstructuredProperty(toAdd.Key,toAdd.Value);
+                Request.RemoveAttribute(item);
             }
 
-            foreach (var toAdd in myUpdateChangeset.ToBeUpdatedStructuredProperties)
-            {
-                Request.UpdateStructuredProperty(toAdd.Key, toAdd.Value);
-            }
-
-            #endregion
-                
             return Request;
         }
 

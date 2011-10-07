@@ -53,6 +53,7 @@
     <Compile Include="DataContracts\InstanceObjects\ServiceHyperEdgeInstance.cs" />
     <Compile Include="DataContracts\InstanceObjects\ServiceSingleEdgeInstance.cs" />
     <Compile Include="DataContracts\PayloadObjects\ServiceDeletePayload.cs" />
+    <Compile Include="DataContracts\PayloadObjects\ServiceVertexStatistics.cs" />
     <Compile Include="DataContracts\PayloadObjects\UnstructuredProperty.cs" />
     <Compile Include="DataContracts\PayloadObjects\StructuredProperty.cs" />
     <Compile Include="DataContracts\QueryResult\ServiceEdgeView.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="DataContracts\ServiceRequests\ServiceEdgePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceEdgeTypePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceAttributePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceGraphElementUpdateDefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceIncomingEdgePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceIndexPredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceInsertDefinition.cs" />
@@ -84,7 +86,6 @@
     <Compile Include="DataContracts\ServiceRequests\ServicePropertyPredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceUniquePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceVertexTypePredefinition.cs" />
-    <Compile Include="DataContracts\ServiceSecurityToken.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeType.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceBaseType.cs" />
@@ -96,12 +97,14 @@
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceOutgoingEdgeDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServicePropertyDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServicePropertyMultiplicity.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceSingleEdgeUpdateDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceUniqueDefinition.cs" />
     <Compile Include="DataContracts\InstanceObjects\ServiceVertexInstance.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceVertexType.cs" />
     <Compile Include="ErrorHandling\SecurityTokenException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteAPIService.cs" />
+    <Compile Include="ServiceContractImplementation\StreamedService.cs" />
     <Compile Include="ServiceContracts\MonoMEX\MonoMEX.cs" />
     <Compile Include="ServiceContractImplementation\EdgeService.cs" />
     <Compile Include="ServiceContractImplementation\EdgeTypeService.cs" />
@@ -114,8 +117,10 @@
     <Compile Include="ServiceContracts\EdgeTypeServices\IEdgeTypeService.cs" />
     <Compile Include="ServiceContracts\IRPCServiceContract.cs" />
     <Compile Include="ServiceContracts\MonoMEX\IMonoMEX.cs" />
+    <Compile Include="ServiceContracts\StreamedService\IStreamedService.cs" />
     <Compile Include="ServiceContracts\VertexInstanceService\IVertexService.cs" />
     <Compile Include="ServiceContracts\VertexTypeServices\IVertexTypeService.cs" />
+    <Compile Include="ServiceConverter\ConvertHelper.cs" />
     <Compile Include="ServiceConverter\ServiceExpressionConverter.cs" />
     <Compile Include="ServiceConverter\QueryResultConverter.cs" />
     <Compile Include="ServiceConverter\ServiceRequestFactory.cs" />

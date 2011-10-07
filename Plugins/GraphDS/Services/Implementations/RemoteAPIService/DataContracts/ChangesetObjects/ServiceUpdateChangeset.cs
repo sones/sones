@@ -25,6 +25,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects
 {
@@ -38,12 +39,36 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects
         public String Edition;
 
         [DataMember]
-        public Dictionary<String, IComparable> ToBeUpdatedUnstructuredProperties;
+        public Dictionary<string, IEnumerable<IComparable>> AddedElementsToCollectionProperties;
 
         [DataMember]
-        public Dictionary<String, IComparable> ToBeUpdatedStructuredProperties;
+        public Dictionary<string, IEnumerable<IComparable>> RemovedElementsFromCollectionProperties;
 
         [DataMember]
-        public List<ServiceEdgeInstance> ToBeUpdatedEdges;
+        public Dictionary<string, ServiceEdgePredefinition> AddedElementsToCollectionEdges;
+
+        [DataMember]
+        public Dictionary<string, ServiceEdgePredefinition> RemovedElementsFromCollectionEdges;
+
+        [DataMember]
+        public Dictionary<String, IComparable> UpdatedUnstructuredProperties;
+
+        [DataMember]
+        public Dictionary<String, IComparable> UpdatedStructuredProperties;
+
+        //[DataMember]
+        //public IDictionary<String, Stream> UpdatedBinaryProperties;
+
+        [DataMember]
+        public List<ServiceEdgePredefinition> UpdatedOutgoingEdges;
+
+        [DataMember]
+        public List<ServiceSingleEdgeUpdateDefinition> UpdateOutgoingEdgesProperties;
+
+        [DataMember]
+        public Dictionary<string, object> UpdatedUnknownProperties;
+
+        [DataMember]
+        public List<string> RemovedAttributes;
     }
 }

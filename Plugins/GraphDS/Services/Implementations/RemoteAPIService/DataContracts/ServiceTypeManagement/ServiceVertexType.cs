@@ -35,7 +35,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
         public ServiceVertexType(IVertexType myVertexType)
             : base(myVertexType)
         {
-
+            this.IsAbstract = myVertexType.IsAbstract;
         }
+
+        [DataMember]
+        public Boolean IsAbstract;
     }
 }

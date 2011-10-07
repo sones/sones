@@ -35,13 +35,28 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
         {
             this.Duration = myQueryResult.Duration;
             if (myQueryResult.Error != null)
-                this.Error = myQueryResult.Error.Message;
+                if (myQueryResult.Error.Message != null)
+                    this.Error = myQueryResult.Error.Message;
+                else
+                    this.Error = myQueryResult.Error.InnerException.Message;
 
             this.NameOfQueryLanguage = myQueryResult.NameOfQuerylanguage;
             this.NumberOfAffectedVertices = myQueryResult.NumberOfAffectedVertices;
             this.Query = myQueryResult.Query;
-            this.TypeOfResult = myQueryResult.TypeOfResult.ToString();
+            if (myQueryResult.TypeOfResult == ResultType.Successful)
+                this.TypeOfResult = ServiceResultType.Successful;
+            else if (myQueryResult.TypeOfResult == ResultType.Failed)
+                this.TypeOfResult = ServiceResultType.Failed;
             this.Vertices = myQueryResult.Vertices.Select(x => new ServiceVertexView(x)).ToList();
+        }
+
+        [DataContract(Namespace = sonesRPCServer.Namespace)]
+        public enum ServiceResultType : byte
+        {
+            [EnumMember]
+            Successful,
+            [EnumMember]
+            Failed
         }
 
         [DataMember]
@@ -54,7 +69,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
         public String Error;
 
         [DataMember]
-        public String TypeOfResult;
+        public ServiceResultType TypeOfResult;
 
         [DataMember]
         public String Query;

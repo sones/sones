@@ -41,83 +41,59 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
     {
         #region Inheritance
 
-        public List<ServiceEdgeType> GetDescendantEdgeTypes(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
+        public List<ServiceEdgeType> GetDescendantEdgeTypes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetDescendantEdgeTypes().Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceEdgeType> GetDescendantEdgeTypesAndSelf(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
+        public List<ServiceEdgeType> GetDescendantEdgeTypesAndSelf(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetDescendantEdgeTypesAndSelf().Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceEdgeType> GetAncestorEdgeTypes(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
+        public List<ServiceEdgeType> GetAncestorEdgeTypes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetAncestorEdgeTypes().Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceEdgeType> GetAncestorEdgeTypesAndSelf(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
+        public List<ServiceEdgeType> GetAncestorEdgeTypesAndSelf(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetAncestorEdgeTypesAndSelf().Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceEdgeType> GetKinsmenEdgeTypes(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
+        public List<ServiceEdgeType> GetKinsmenEdgeTypes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetKinsmenEdgeTypes().Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceEdgeType> GetKinsmenEdgeTypesAndSelf(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
+        public List<ServiceEdgeType> GetKinsmenEdgeTypesAndSelf(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetKinsmenEdgeTypesAndSelf().Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public List<ServiceEdgeType> ChildrenEdgeTypes(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
+        public List<ServiceEdgeType> ChildrenEdgeTypes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.ChildrenEdgeTypes.Select(x => new ServiceEdgeType(x)).ToList();
         }
 
-        public ServiceEdgeType ParentEdgeType(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
+        public ServiceEdgeType ParentEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServiceEdgeType(Response.ParentEdgeType);
         }
 
@@ -125,81 +101,60 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 
         #region Inheritance
 
-        public bool IsSealed(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
+        public bool IsSealed(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.IsSealed;
         }
 
-        public bool HasParentType(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
+        public bool HasParentType(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasParentType;
         }
 
-        public bool HasChildTypes(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
+        public bool HasChildTypes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasChildTypes;
         }
 
-        public bool IsAncestor(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType)
+        public bool IsAncestor(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myOtherType.Name);
-            var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.IsAncestor(BaseType);
         }
 
-        public bool IsAncestorOrSelf(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType)
+        public bool IsAncestorOrSelf(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myOtherType.Name);
-            var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.IsAncestorOrSelf(BaseType);
         }
 
-        public bool IsDescendant(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType)
+        public bool IsDescendant(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myOtherType.Name);
-            var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.IsDescendant(BaseType);
         }
 
-        public bool IsDescendantOrSelf(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType)
+        public bool IsDescendantOrSelf(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, ServiceEdgeType myOtherType)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myOtherType.Name);
-            var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var BaseType = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.IsDescendantOrSelf(BaseType);
         }
 
@@ -207,117 +162,84 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 
         #region Attributes
 
-        public bool HasAttribute(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, string myAttributeName)
+        public bool HasAttribute(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, string myAttributeName)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasAttribute(myAttributeName);
         }
 
-        public ServiceAttributeDefinition GetAttributeDefinition(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, string myAttributeName)
+        public ServiceAttributeDefinition GetAttributeDefinition(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, string myAttributeName)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            return new ServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeName));
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return ConvertHelper.ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeName));
         }
 
-        public ServiceAttributeDefinition GetAttributeDefinitionByID(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, long myAttributeID)
+        public ServiceAttributeDefinition GetAttributeDefinitionByID(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, long myAttributeID)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            return new ServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeID));
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return ConvertHelper.ToServiceAttributeDefinition(Response.GetAttributeDefinition(myAttributeID));
         }
 
-        public bool HasAttributes(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
+        public bool HasAttributes(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasAttributes(myIncludeAncestorDefinitions);
         }
 
-        public List<ServiceAttributeDefinition> GetAttributeDefinitions(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
+        public List<ServiceAttributeDefinition> GetAttributeDefinitions(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
-            return Response.GetAttributeDefinitions(myIncludeAncestorDefinitions).Select(x => new ServiceAttributeDefinition(x)).ToList();
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            return Response.GetAttributeDefinitions(myIncludeAncestorDefinitions).Select(x => ConvertHelper.ToServiceAttributeDefinition(x)).ToList();
         }
 
         #endregion
 
         #region Properties
 
-        public bool HasProperty(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, string myAttributeName)
+        public bool HasProperty(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, string myAttributeName)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasProperty(myAttributeName);
         }
 
-        public ServicePropertyDefinition GetPropertyDefinition(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, string myPropertyName)
+        public ServicePropertyDefinition GetPropertyDefinitionByEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceEdgeTypeName, string myPropertyName)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeTypeName);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServicePropertyDefinition(Response.GetPropertyDefinition(myPropertyName));
         }
 
-        public ServicePropertyDefinition GetPropertyDefinitionByID(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, long myPropertyID)
+        public ServicePropertyDefinition GetPropertyDefinitionByIDByEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceEdgeTypeName, long myPropertyID)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeTypeName);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return new ServicePropertyDefinition(Response.GetPropertyDefinition(myPropertyID));
         }
 
-        public bool HasProperties(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
+        public bool HasProperties(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
             var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.HasProperties(myIncludeAncestorDefinitions);
         }
 
-        public List<ServicePropertyDefinition> GetPropertyDefinitions(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, bool myIncludeAncestorDefinitions)
+        public List<ServicePropertyDefinition> GetPropertyDefinitionsByEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceEdgeTypeName, bool myIncludeAncestorDefinitions)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeTypeName);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetPropertyDefinitions(myIncludeAncestorDefinitions).Select(x => new ServicePropertyDefinition(x)).ToList();
         }
 
-        public List<ServicePropertyDefinition> GetPropertyDefinitionsByNameList(ServiceSecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeType myServiceEdgeType, List<string> myPropertyNames)
+        public List<ServicePropertyDefinition> GetPropertyDefinitionsByNameListByEdgeType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceEdgeTypeName, List<string> myPropertyNames)
         {
-            SecurityToken myDBSecToken;
-            if (!SecurityTokenMap.TryGetValue(mySecurityToken, out myDBSecToken))
-                throw new SecurityTokenException("The givin ServiceSecurityToken was violated! The request was not executed.");
-            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeType.Name);
-            var Response = this.GraphDS.GetEdgeType<IEdgeType>(myDBSecToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myServiceEdgeTypeName);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyEdgeType);
             return Response.GetPropertyDefinitions(myPropertyNames).Select(x => new ServicePropertyDefinition(x)).ToList();
         }
 

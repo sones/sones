@@ -34,6 +34,7 @@ using sones.GraphDS.Services.RemoteAPIService.EdgeTypeService;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanceService;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceService;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MonoMEX;
+using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.StreamedService;
 
 namespace sones.GraphDS.Services.RemoteAPIService
 {
@@ -112,15 +113,22 @@ namespace sones.GraphDS.Services.RemoteAPIService
         private void InitializeServer()
         {
             BasicHttpBinding BasicBinding = new BasicHttpBinding();
-            
             BasicBinding.Name = "sonesBasic";
             BasicBinding.Namespace = Namespace;
             BasicBinding.MessageEncoding = WSMessageEncoding.Text;
             BasicBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
 
+            BasicHttpBinding StreamedBinding = new BasicHttpBinding();
+            StreamedBinding.Name = "sonesStreamed";
+            StreamedBinding.Namespace = Namespace;
+            StreamedBinding.MessageEncoding = WSMessageEncoding.Text;
+            StreamedBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
+            StreamedBinding.TransferMode = TransferMode.Streamed;
+
             if (IsSecure)
             {
                 BasicBinding.Security.Mode = BasicHttpSecurityMode.Transport;
+                StreamedBinding.Security.Mode = BasicHttpSecurityMode.Transport;
             }
             
             
@@ -139,6 +147,17 @@ namespace sones.GraphDS.Services.RemoteAPIService
             //_ServiceHost.AddServiceEndpoint(RPCServiceService);
 
             #endregion
+
+
+            #region Streamed Contract
+
+            ContractDescription StreamedContract = ContractDescription.GetContract(typeof(IStreamedService));
+            StreamedContract.Namespace = Namespace;
+            ServiceEndpoint StreamedService = new ServiceEndpoint(StreamedContract, StreamedBinding, new EndpointAddress(this.URI.ToString() + "/streamed"));
+            _ServiceHost.AddServiceEndpoint(StreamedService);
+
+            #endregion
+
 
             #region GraphDS API Contract
 
