@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDS.Services.RemoteAPIService.ServiceConverter;
 
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
@@ -36,7 +37,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
         {
             this.IsMandatory = myPropertyDefinition.IsMandatory;
             this.InIndices = myPropertyDefinition.InIndices.Select(x => x.Name).ToList();
-            this.Multiplicity = (ServicePropertyMultiplicity)myPropertyDefinition.Multiplicity;
+            this.Multiplicity = ConvertHelper.ToServicePropertyMultiplicity(myPropertyDefinition.Multiplicity);
             this.IsUserDefinedType = myPropertyDefinition.IsUserDefinedType;
             this.BaseType = myPropertyDefinition.BaseType.AssemblyQualifiedName;
             this.DefaultValue = myPropertyDefinition.DefaultValue;

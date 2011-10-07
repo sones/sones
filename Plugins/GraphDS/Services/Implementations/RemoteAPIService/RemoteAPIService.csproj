@@ -123,7 +123,6 @@
     <Compile Include="ServiceContracts\VertexTypeServices\IVertexTypeService.cs" />
     <Compile Include="ServiceConverter\ConvertHelper.cs" />
     <Compile Include="ServiceConverter\ServiceExpressionConverter.cs" />
-    <Compile Include="ServiceConverter\QueryResultConverter.cs" />
     <Compile Include="ServiceConverter\ServiceRequestFactory.cs" />
     <Compile Include="ServiceConverter\ServiceReturnConverter.cs" />
     <Compile Include="sonesRPCServer.cs" />

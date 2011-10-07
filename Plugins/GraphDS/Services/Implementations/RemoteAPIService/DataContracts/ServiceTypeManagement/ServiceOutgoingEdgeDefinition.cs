@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDS.Services.RemoteAPIService.ServiceConverter;
 
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
@@ -38,7 +39,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
             this.InnerEdgeType = new ServiceEdgeType(myOutgoingEdgeDefinition.InnerEdgeType);
             this.SourceVertexType = new ServiceVertexType(myOutgoingEdgeDefinition.SourceVertexType);
             this.TargetVertexType = new ServiceVertexType(myOutgoingEdgeDefinition.TargetVertexType);
-            this.Multiplicity = (ServiceEdgeMultiplicity)myOutgoingEdgeDefinition.Multiplicity;
+            this.Multiplicity = ConvertHelper.ToServiceEdgeMultiplicity(myOutgoingEdgeDefinition.Multiplicity);
         }
 
         [DataMember]
