@@ -121,6 +121,15 @@ namespace TagExampleWithGraphMappingFramework
 
             #region Start GraphDS Services
 
+            #region pre-configure REST Service
+            Dictionary<string, object> RestParameter = new Dictionary<string, object>();
+            RestParameter.Add("IPAddress", IPAddress.Any);
+            RestParameter.Add("Port", 9975);
+            RestParameter.Add("Username", "test");
+            RestParameter.Add("Password", "test");
+            _dsServer.StartService("sones.RESTService", RestParameter);
+            #endregion
+
             #region Remote API Service
             Dictionary<string, object> RemoteAPIParameter = new Dictionary<string, object>();
             RemoteAPIParameter.Add("IPAddress", IPAddress.Parse("127.0.0.1"));
@@ -216,12 +225,13 @@ namespace TagExampleWithGraphMappingFramework
         public void Run()
         {
             IGraphDSClient GraphDSClient = new GraphDS_RemoteClient(new Uri("http://localhost:9970/rpc"));
-            
+            SecToken = GraphDSClient.LogOn(new RemoteUserPasswordCredentials("test", "test"));
+            TransToken = GraphDSClient.BeginTransaction(SecToken);
+
+            GraphDBRequests();
+
             Console.WriteLine("Run :-)");
         }
-
-        #endregion
-
 
         private void GraphDBRequests()
         {
@@ -334,6 +344,7 @@ namespace TagExampleWithGraphMappingFramework
 
             #endregion
         }
+        #endregion
     }
     
 

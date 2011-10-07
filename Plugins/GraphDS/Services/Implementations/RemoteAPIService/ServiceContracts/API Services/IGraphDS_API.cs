@@ -155,7 +155,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         void LogOff(SecurityToken mySecurityToken);
 
         [OperationContract]
-        SecurityToken LogOn(IUserCredentials myUserCredentials);
+        SecurityToken LogOn(ServiceUserPasswordCredentials myUserCredentials);
 
         [OperationContract]
         [ServiceKnownType(typeof(ServiceHyperEdgeView))]

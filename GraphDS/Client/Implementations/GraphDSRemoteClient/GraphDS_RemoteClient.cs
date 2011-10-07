@@ -125,11 +125,11 @@ namespace sones.GraphDS.GraphDSRemoteClient
 
         public SecurityToken LogOn(IUserCredentials myUserCredentials)
         {
-            if (myUserCredentials is UserPasswordCredentials)
+            if (myUserCredentials is RemoteUserPasswordCredentials)
             {
-                _GraphDSService.LogOn( myUserCredentials
+                return _GraphDSService.LogOn(((RemoteUserPasswordCredentials)myUserCredentials).ServiceObject);
             }
-
+            return null;
         }
 
         public void LogOff(SecurityToken mySecurityToken)

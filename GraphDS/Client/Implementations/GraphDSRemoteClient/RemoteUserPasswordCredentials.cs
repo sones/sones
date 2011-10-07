@@ -23,26 +23,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.Library.Commons.Security;
+using sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI;
 
 namespace sones.GraphDS.GraphDSRemoteClient
 {
     /// <summary>
     /// Used for authentication via RemoteAPI
     /// </summary>
-    [Serializable()]
+    [Serializable]
     public class RemoteUserPasswordCredentials : IUserCredentials
     {
         #region data
 
-        /// <summary>
-        /// The hashed password
-        /// </summary>
-        private int _passwordHash;
-
-        /// <summary>
-        /// The login string
-        /// </summary>
-        private String _login;
+        private ServiceUserPasswordCredentials _ServiceObject;
 
         #endregion
 
@@ -55,8 +48,9 @@ namespace sones.GraphDS.GraphDSRemoteClient
         /// <param name="myPassword">The password</param>
         public RemoteUserPasswordCredentials(String myLogin, String myPassword)
         {
-            _login = myLogin;
-            _passwordHash = myPassword.GetHashCode();
+            _ServiceObject = new ServiceUserPasswordCredentials();
+            _ServiceObject._login = myLogin;
+            _ServiceObject._passwordHash = myPassword.GetHashCode();
         }
 
         #endregion
@@ -65,7 +59,7 @@ namespace sones.GraphDS.GraphDSRemoteClient
 
         public override string ToString()
         {
-            return String.Format("Login: {0}, PW-Hash: {1}", _login, _passwordHash);
+            return String.Format("Login: {0}, PW-Hash: {1}", _ServiceObject._login, _ServiceObject._passwordHash);
         }
 
         #endregion
@@ -74,14 +68,19 @@ namespace sones.GraphDS.GraphDSRemoteClient
 
         public string Login
         {
-            get { return _login; }
+            get { return _ServiceObject._login; }
         }
 
         #endregion
 
         public int PasswordHash
         {
-            get { return _passwordHash; }
+            get { return _ServiceObject._passwordHash; }
+        }
+
+        public ServiceUserPasswordCredentials ServiceObject
+        {
+            get { return _ServiceObject; }
         }
     }
 }

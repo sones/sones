@@ -65,6 +65,10 @@
       <Project>{64C46383-614C-4899-B1F4-9419F99BAE93}</Project>
       <Name>GraphDSRemoteClient</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\GraphDS\Client\Implementations\GraphDSRESTClient\GraphDSRESTClient.csproj">
+      <Project>{20D600AA-CD60-423D-A8EE-BCD93F861879}</Project>
+      <Name>GraphDSRESTClient</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\GraphDS\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
       <Name>IGraphDS</Name>
@@ -148,6 +152,10 @@
     <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RemoteAPIService\RemoteAPIService.csproj">
       <Project>{5A7B5A5F-289A-4109-AD1E-52C62F28DA51}</Project>
       <Name>RemoteAPIService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RESTService\RESTService.csproj">
+      <Project>{9542AA45-4A4F-4364-BDD8-1446261F0963}</Project>
+      <Name>RESTService %28Plugins\GraphDS\Services\Implementations\RESTService\RESTService%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphDS\Services\Interface\IService.csproj">
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
