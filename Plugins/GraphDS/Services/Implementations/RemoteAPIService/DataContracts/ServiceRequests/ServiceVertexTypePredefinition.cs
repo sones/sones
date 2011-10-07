@@ -143,7 +143,5 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
             }
             return VertexTypePreDef;
         }
-
-
     }
 }

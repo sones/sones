@@ -13,6 +13,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
     {
         [DataMember]
         public ServiceVertexInformation SourceVertex;
+
         [DataMember]
         public ServiceVertexInformation TargetVertex;
 

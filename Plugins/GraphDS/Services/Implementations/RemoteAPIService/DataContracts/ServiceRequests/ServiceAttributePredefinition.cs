@@ -36,7 +36,5 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
         public String AttributeName;
         [DataMember]
         public String Comment;
-               
     }
-    
 }
