@@ -85,17 +85,22 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
             IndexPreDef.SetComment(this.Comment);
             IndexPreDef.SetEdition(this.Edition);
             IndexPreDef.SetIndexType(this.IndexType);
-            IndexPreDef.AddOptions(this.IndexOptions);
-
-            foreach (var Property in this.Properties)
+            if (this.IndexOptions != null)
             {
-                IndexPreDef.AddProperty(Property);
+                IndexPreDef.AddOptions(this.IndexOptions);
+            }
+
+            if (this.Properties != null)
+            {
+                foreach (var Property in this.Properties)
+                {
+                    IndexPreDef.AddProperty(Property);
+                }
             }
 
             IndexPreDef.SetVertexType(this.VertexTypeName);
 
             return IndexPreDef;
         }
-
     }
 }

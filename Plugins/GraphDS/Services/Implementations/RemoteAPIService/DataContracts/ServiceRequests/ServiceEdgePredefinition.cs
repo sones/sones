@@ -50,7 +50,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
         [DataMember]
         public List<UnstructuredProperty> UnstructuredProperties;
 
-
         public EdgePredefinition ToEdgePredefinition()
         {
             EdgePredefinition EdgePredef = new EdgePredefinition(this.EdgeName);
