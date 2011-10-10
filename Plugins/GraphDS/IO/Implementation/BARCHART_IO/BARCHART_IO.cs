@@ -147,7 +147,11 @@ namespace sones.Plugins.GraphDS.IO
 
             if (barchart.Count == 0)
             {
+                Output.Append(ConvertString2WebShellOut("BarChart Visualisation Plugin:"));
                 Output.Append(ConvertString2WebShellOut("Error: No Properties with name x and y found!"));
+                Output.Append(ConvertString2WebShellOut("Please change your query string using \"as x\" and \"as y\" for returned vertices"));
+                Output.Append(ConvertString2WebShellOut("If you use WebShell and want to use another output format plugin,"));
+                Output.Append(ConvertString2WebShellOut("enter e.g. format json for JSON output!"));
                 return Output.ToString();
             }
             else

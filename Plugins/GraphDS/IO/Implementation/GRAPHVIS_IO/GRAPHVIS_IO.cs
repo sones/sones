@@ -158,8 +158,11 @@ namespace sones.Plugins.GraphDS.IO
 
             if (Nodes.Count == 0)
             {
+                Output.Append(ConvertString2WebShellOut("Graph Visualisation Plugin:"));
                 Output.Append(ConvertString2WebShellOut("Error: No vertex with property \"node\" found!"));
                 Output.Append(ConvertString2WebShellOut("Please change your query string using \"as node\" for returned vertices"));
+                Output.Append(ConvertString2WebShellOut("If you use WebShell and want to use another output format plugin,"));
+                Output.Append(ConvertString2WebShellOut("enter e.g. format json for JSON output!"));
                 return Output.ToString();
             }
             else
