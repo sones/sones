@@ -57,6 +57,7 @@ using sones.GraphDS.GraphDSRemoteClient;
 using sones.GraphDS.GraphDSRESTClient;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
+using sones.Library.PropertyHyperGraph;
 
 namespace TagExampleWithGraphMappingFramework
 {
@@ -224,7 +225,7 @@ namespace TagExampleWithGraphMappingFramework
 
         public void Run()
         {
-            IGraphDSClient GraphDSClient = new GraphDS_RemoteClient(new Uri("http://localhost:9970/rpc"));
+            GraphDSClient = new GraphDS_RemoteClient(new Uri("http://localhost:9970/rpc"));
             SecToken = GraphDSClient.LogOn(new RemoteUserPasswordCredentials("test", "test"));
             TransToken = GraphDSClient.BeginTransaction(SecToken);
 
@@ -235,6 +236,7 @@ namespace TagExampleWithGraphMappingFramework
 
         private void GraphDBRequests()
         {
+            Console.WriteLine("performing DB requests...");
             #region define type "Tag"
 
             //create a VertexTypePredefinition
@@ -339,8 +341,100 @@ namespace TagExampleWithGraphMappingFramework
              */
 
             var Tag = DBTypes.Where(type => type.Name == "Tag").FirstOrDefault();
-
+            if (Tag != null)
+                Console.WriteLine("Vertex Type 'Tag' created");
             var Website = DBTypes.Where(type => type.Name == "Website").FirstOrDefault();
+            if(Website != null)
+                Console.WriteLine("Vertex Type 'Website' created");
+
+            #endregion
+
+
+            #region insert some Websites by sending requests
+
+            var cnn = GraphDSClient.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
+                                                                                    .AddStructuredProperty("Name", "CNN")
+                                                                                    .AddStructuredProperty("URL", "http://cnn.com/"),
+                                                                                    (Statistics, Result) => Result);
+
+            var xkcd = GraphDSClient.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
+                                                                                    .AddStructuredProperty("Name", "xkcd")
+                                                                                    .AddStructuredProperty("URL", "http://xkcd.com/"),
+                                                                                    (Statistics, Result) => Result);
+
+            var onion = GraphDSClient.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
+                                                                                    .AddStructuredProperty("Name", "onion")
+                                                                                    .AddStructuredProperty("URL", "http://theonion.com/"),
+                                                                                    (Statistics, Result) => Result);
+
+            //adding an unknown property means the property isn't defined before
+            var test = GraphDSClient.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
+                                                                                    .AddStructuredProperty("Name", "Test")
+                                                                                    .AddStructuredProperty("URL", "")
+                                                                                    .AddUnknownProperty("Unknown", "unknown property"),
+                                                                                    (Statistics, Result) => Result);
+
+            if (cnn != null)
+                Console.WriteLine("Website 'cnn' successfully inserted");
+
+            if (xkcd != null)
+                Console.WriteLine("Website 'xkcd' successfully inserted");
+
+            if (onion != null)
+                Console.WriteLine("Website 'onion' successfully inserted");
+
+            if (test != null)
+                Console.WriteLine("Website 'test' successfully inserted");
+
+            #endregion
+
+            #region insert some Tags by sending requests
+
+            //insert a "Tag" with an OutgoingEdge to a "Website" include that the GraphDB creates an IncomingEdge on the given Website instances
+            //(because we created an IncomingEdge on type "Website") --> as a consequence we never have to set any IncomingEdge
+            var good = GraphDSClient.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Tag")
+                                                                                    .AddStructuredProperty("Name", "good")
+                                                                                    .AddEdge(new EdgePredefinition("TaggedWebsites")
+                                                                                        .AddVertexID(Website.ID, cnn.VertexID)
+                                                                                        .AddVertexID(Website.ID, xkcd.VertexID)),
+                                                                                    (Statistics, Result) => Result);
+
+            var funny = GraphDSClient.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Tag")
+                                                                                    .AddStructuredProperty("Name", "funny")
+                                                                                    .AddEdge(new EdgePredefinition("TaggedWebsites")
+                                                                                        .AddVertexID(Website.ID, xkcd.VertexID)
+                                                                                        .AddVertexID(Website.ID, onion.VertexID)),
+                                                                                    (Statistics, Result) => Result);
+
+            if (good != null)
+                Console.WriteLine("Tag 'good' successfully inserted");
+
+            if (funny != null)
+                Console.WriteLine("Tag 'funny' successfully inserted");
+
+            #endregion
+
+            #region how to get a type from the DB, properties of the type, instances of a specific type and read out property values
+
+            //how to get a type from the DB
+            var TagDBType = GraphDSClient.GetVertexType<IVertexType>(SecToken, TransToken, new RequestGetVertexType(Tag.Name), (Statistics, Type) => Type);
+
+            //read informations from type
+            var typeName = TagDBType.Name;
+            //are there other types wich extend the type "Tag"
+            var hasChildTypes = TagDBType.HasChildTypes;
+            //get the definition of the property "Name"
+            var propName = TagDBType.GetPropertyDefinition("Name");
+
+            //how to get all instances of a type from the DB
+            var TagInstances = GraphDSClient.GetVertices(SecToken, TransToken, new RequestGetVertices(TagDBType.Name), (Statistics, Vertices) => Vertices);
+
+            foreach (var item in TagInstances)
+            {
+                //to get the value of a property of an instance, you need the property ID 
+                //(that's why we fetched the type from DB an read out the property definition of property "Name")
+                var name = item.GetPropertyAsString(propName.ID);
+            }
 
             #endregion
         }

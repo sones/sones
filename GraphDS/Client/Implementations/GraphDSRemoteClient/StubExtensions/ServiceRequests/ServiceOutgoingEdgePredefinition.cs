@@ -12,18 +12,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
         {
             this.EdgeType = myOutgoingEdgePredefinition.EdgeType;
             this.InnerEdgeType = myOutgoingEdgePredefinition.InnerEdgeType;
-            switch(myOutgoingEdgePredefinition.Multiplicity)
-            {
-                case EdgeMultiplicity.SingleEdge:
-                    this.Multiplicity = ServiceEdgeMultiplicity.SingleEdge;
-                    break;
-                case EdgeMultiplicity.MultiEdge:
-                    this.Multiplicity = ServiceEdgeMultiplicity.MultiEdge;
-                    break;
-                case EdgeMultiplicity.HyperEdge:
-                    this.Multiplicity = ServiceEdgeMultiplicity.HyperEdge;
-                    break;
-            }
+            this.Multiplicity = ConvertHelper.ToServiceEdgeMultiplicity(myOutgoingEdgePredefinition.Multiplicity);
         }
     }
 }

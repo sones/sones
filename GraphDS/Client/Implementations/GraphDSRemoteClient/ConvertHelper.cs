@@ -75,5 +75,51 @@ namespace sones.GraphDS.GraphDSRemoteClient
             }
             return expression;
         }
+
+        /// <summary>
+        /// Converts EdgeMultiplicity into serializable ServiceEdgeMultiplicity, default: SingleEdge.
+        /// </summary>
+        /// <param name="myMultiplicity"></param>
+        /// <returns></returns>
+        internal static ServiceEdgeMultiplicity ToServiceEdgeMultiplicity(EdgeMultiplicity myMultiplicity)
+        {
+            ServiceEdgeMultiplicity multiplicity;
+            switch (myMultiplicity)
+            {
+                case EdgeMultiplicity.MultiEdge:
+                    multiplicity = ServiceEdgeMultiplicity.MultiEdge;
+                    break;
+                case EdgeMultiplicity.HyperEdge:
+                    multiplicity = ServiceEdgeMultiplicity.HyperEdge;
+                    break;
+                default:
+                    multiplicity = ServiceEdgeMultiplicity.SingleEdge;
+                    break;
+            }
+            return multiplicity;
+        }
+
+        /// <summary>
+        /// Converts PropertyMultiplicity into serializable ServicePropertyMultiplicity, default: Single.
+        /// </summary>
+        /// <param name="myMultiplicity"></param>
+        /// <returns></returns>
+        internal static ServicePropertyMultiplicity ToServicePropertyMultiplicity(PropertyMultiplicity myMultiplicity)
+        {
+            ServicePropertyMultiplicity multiplicity;
+            switch (myMultiplicity)
+            {
+                case PropertyMultiplicity.Set:
+                    multiplicity = ServicePropertyMultiplicity.Set;
+                    break;
+                case PropertyMultiplicity.List:
+                    multiplicity = ServicePropertyMultiplicity.List;
+                    break;
+                default:
+                    multiplicity = ServicePropertyMultiplicity.Single;
+                    break;
+            }
+            return multiplicity;
+        }
     }
 }

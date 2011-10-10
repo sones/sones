@@ -1316,12 +1316,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
@@ -1345,9 +1345,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition.ServiceVertexInformation))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeType))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition>))]
@@ -1954,11 +1954,11 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="ServiceBaseExpression", Namespace="http://www.sones.com")]
     [System.SerializableAttribute()]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
     public partial class ServiceBaseExpression : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
         
@@ -2022,53 +2022,6 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ServiceUnaryExpression", Namespace="http://www.sones.com")]
-    [System.SerializableAttribute()]
-    public partial class ServiceUnaryExpression : sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression {
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression ExpressionField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator OperatorField;
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression Expression {
-            get {
-                return this.ExpressionField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ExpressionField, value) != true)) {
-                    this.ExpressionField = value;
-                    this.RaisePropertyChanged("Expression");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator Operator {
-            get {
-                return this.OperatorField;
-            }
-            set {
-                if ((this.OperatorField.Equals(value) != true)) {
-                    this.OperatorField = value;
-                    this.RaisePropertyChanged("Operator");
-                }
-            }
-        }
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ServiceUnaryLogicOperator", Namespace="http://www.sones.com")]
-    public enum ServiceUnaryLogicOperator : int {
-        
-        [System.Runtime.Serialization.EnumMemberAttribute()]
-        Not = 0,
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="ServiceCollectionLiteralExpression", Namespace="http://www.sones.com")]
     [System.SerializableAttribute()]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance))]
@@ -2107,11 +2060,11 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
@@ -2135,9 +2088,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition.ServiceVertexInformation))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeType))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition>))]
@@ -2196,188 +2149,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         }
     }
     
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ServiceSingleLiteralExpression", Namespace="http://www.sones.com")]
-    [System.SerializableAttribute()]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.AGraphElement))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeInstance))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexTypePredefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgePredefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgePredefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributePredefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexPredefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexPredefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgePredefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgePredefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeMultiplicity))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyPredefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyPredefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyMultiplicity))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUniquePredefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUniquePredefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseType))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAlterVertexChangeset))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceMandatoryPredefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceMandatoryPredefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAlterEdgeChangeset))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeTypePredefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeTypePredefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexTypePredefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceDeletePayload))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.StructuredProperty>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.StructuredProperty))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.UnstructuredProperty>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.UnstructuredProperty))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUserPasswordCredentials))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeView))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeView))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexView))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeView))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeView>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceQueryResult))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceQueryResult.ServiceResultType))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexView>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUpdateChangeset))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceGraphElementUpdateDefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition.ServiceVertexInformation))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeType))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUniqueDefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUniqueDefinition))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeInstance>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeInstance>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeInstance))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeInstance>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeInstance))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexStatistics))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.Library.Commons.Security.SecurityToken))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, System.IO.Stream>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.MarshalByRefObject))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, System.Collections.Generic.List<long>>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, System.Collections.Generic.List<long>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeView>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeView>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeView>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeView>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, object>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.IO.Stream))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, string>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<long>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<object>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<long, string>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<long, object>))]
-    public partial class ServiceSingleLiteralExpression : sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression {
+    [System.Runtime.Serialization.DataContractAttribute(Name="ServiceUnaryLogicOperator", Namespace="http://www.sones.com")]
+    public enum ServiceUnaryLogicOperator : int {
         
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private object ConstantField;
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public object Constant {
-            get {
-                return this.ConstantField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ConstantField, value) != true)) {
-                    this.ConstantField = value;
-                    this.RaisePropertyChanged("Constant");
-                }
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ServicePropertyExpression", Namespace="http://www.sones.com")]
-    [System.SerializableAttribute()]
-    public partial class ServicePropertyExpression : sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression {
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string EditionField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string NameOfPropertyField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string NameOfVertexTypeField;
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Edition {
-            get {
-                return this.EditionField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.EditionField, value) != true)) {
-                    this.EditionField = value;
-                    this.RaisePropertyChanged("Edition");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string NameOfProperty {
-            get {
-                return this.NameOfPropertyField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.NameOfPropertyField, value) != true)) {
-                    this.NameOfPropertyField = value;
-                    this.RaisePropertyChanged("NameOfProperty");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string NameOfVertexType {
-            get {
-                return this.NameOfVertexTypeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.NameOfVertexTypeField, value) != true)) {
-                    this.NameOfVertexTypeField = value;
-                    this.RaisePropertyChanged("NameOfVertexType");
-                }
-            }
-        }
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        Not = 0,
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -2420,11 +2197,11 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
@@ -2448,9 +2225,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition.ServiceVertexInformation))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeType))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition>))]
@@ -2543,6 +2320,229 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="ServiceUnaryExpression", Namespace="http://www.sones.com")]
+    [System.SerializableAttribute()]
+    public partial class ServiceUnaryExpression : sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression {
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression ExpressionField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator OperatorField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression Expression {
+            get {
+                return this.ExpressionField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ExpressionField, value) != true)) {
+                    this.ExpressionField = value;
+                    this.RaisePropertyChanged("Expression");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator Operator {
+            get {
+                return this.OperatorField;
+            }
+            set {
+                if ((this.OperatorField.Equals(value) != true)) {
+                    this.OperatorField = value;
+                    this.RaisePropertyChanged("Operator");
+                }
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="ServicePropertyExpression", Namespace="http://www.sones.com")]
+    [System.SerializableAttribute()]
+    public partial class ServicePropertyExpression : sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression {
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string EditionField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string NameOfPropertyField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string NameOfVertexTypeField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Edition {
+            get {
+                return this.EditionField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.EditionField, value) != true)) {
+                    this.EditionField = value;
+                    this.RaisePropertyChanged("Edition");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string NameOfProperty {
+            get {
+                return this.NameOfPropertyField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.NameOfPropertyField, value) != true)) {
+                    this.NameOfPropertyField = value;
+                    this.RaisePropertyChanged("NameOfProperty");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string NameOfVertexType {
+            get {
+                return this.NameOfVertexTypeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.NameOfVertexTypeField, value) != true)) {
+                    this.NameOfVertexTypeField = value;
+                    this.RaisePropertyChanged("NameOfVertexType");
+                }
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="ServiceSingleLiteralExpression", Namespace="http://www.sones.com")]
+    [System.SerializableAttribute()]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.AGraphElement))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeInstance))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexTypePredefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgePredefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgePredefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributePredefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexPredefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexPredefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgePredefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgePredefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeMultiplicity))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyPredefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyPredefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyMultiplicity))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUniquePredefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUniquePredefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseType))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAlterVertexChangeset))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceMandatoryPredefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceMandatoryPredefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAlterEdgeChangeset))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeTypePredefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeTypePredefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexTypePredefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceDeletePayload))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.StructuredProperty>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.StructuredProperty))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.UnstructuredProperty>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.UnstructuredProperty))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUserPasswordCredentials))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeView))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeView))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexView))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeView))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeView>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceQueryResult))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceQueryResult.ServiceResultType))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexView>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUpdateChangeset))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceGraphElementUpdateDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition.ServiceVertexInformation))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeType))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUniqueDefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUniqueDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeInstance>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeInstance>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeInstance))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeInstance>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeInstance))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexStatistics))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.Library.Commons.Security.SecurityToken))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, System.IO.Stream>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.MarshalByRefObject))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, System.Collections.Generic.List<long>>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, System.Collections.Generic.List<long>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeView>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceHyperEdgeView>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeView>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeView>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, object>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.IO.Stream))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, string>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<long>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<object>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<long, string>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<object>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<long, object>))]
+    public partial class ServiceSingleLiteralExpression : sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression {
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private object ConstantField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public object Constant {
+            get {
+                return this.ConstantField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ConstantField, value) != true)) {
+                    this.ConstantField = value;
+                    this.RaisePropertyChanged("Constant");
+                }
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="ServiceInsertPayload", Namespace="http://www.sones.com")]
     [System.SerializableAttribute()]
     public partial class ServiceInsertPayload : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
@@ -2563,7 +2563,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         private System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.StructuredProperty> StructuredPropertiesField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private long UUIDField;
+        private System.Nullable<long> UUIDField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.UnstructuredProperty> UnstructuredPropertiesField;
@@ -2631,7 +2631,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public long UUID {
+        public System.Nullable<long> UUID {
             get {
                 return this.UUIDField;
             }
@@ -2831,12 +2831,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
@@ -2859,9 +2859,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition.ServiceVertexInformation))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeType))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition>))]
@@ -2998,12 +2998,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
@@ -3026,9 +3026,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition.ServiceVertexInformation))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeType))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition>))]
@@ -3990,9 +3990,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="ServiceAttributeDefinition", Namespace="http://www.sones.com")]
     [System.SerializableAttribute()]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
     public partial class ServiceAttributeDefinition : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
         
         [System.NonSerializedAttribute()]
@@ -4117,6 +4117,116 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="ServiceOutgoingEdgeDefinition", Namespace="http://www.sones.com")]
+    [System.SerializableAttribute()]
+    public partial class ServiceOutgoingEdgeDefinition : sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition {
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType EdgeTypeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType InnerEdgeTypeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeMultiplicity MultiplicityField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType SourceVertexTypeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType TargetVertexTypeField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType EdgeType {
+            get {
+                return this.EdgeTypeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.EdgeTypeField, value) != true)) {
+                    this.EdgeTypeField = value;
+                    this.RaisePropertyChanged("EdgeType");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType InnerEdgeType {
+            get {
+                return this.InnerEdgeTypeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.InnerEdgeTypeField, value) != true)) {
+                    this.InnerEdgeTypeField = value;
+                    this.RaisePropertyChanged("InnerEdgeType");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeMultiplicity Multiplicity {
+            get {
+                return this.MultiplicityField;
+            }
+            set {
+                if ((this.MultiplicityField.Equals(value) != true)) {
+                    this.MultiplicityField = value;
+                    this.RaisePropertyChanged("Multiplicity");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType SourceVertexType {
+            get {
+                return this.SourceVertexTypeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.SourceVertexTypeField, value) != true)) {
+                    this.SourceVertexTypeField = value;
+                    this.RaisePropertyChanged("SourceVertexType");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType TargetVertexType {
+            get {
+                return this.TargetVertexTypeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.TargetVertexTypeField, value) != true)) {
+                    this.TargetVertexTypeField = value;
+                    this.RaisePropertyChanged("TargetVertexType");
+                }
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="ServiceIncomingEdgeDefinition", Namespace="http://www.sones.com")]
+    [System.SerializableAttribute()]
+    public partial class ServiceIncomingEdgeDefinition : sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition {
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition RelatedEdgeDefinitionField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition RelatedEdgeDefinition {
+            get {
+                return this.RelatedEdgeDefinitionField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.RelatedEdgeDefinitionField, value) != true)) {
+                    this.RelatedEdgeDefinitionField = value;
+                    this.RaisePropertyChanged("RelatedEdgeDefinition");
+                }
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="ServicePropertyDefinition", Namespace="http://www.sones.com")]
     [System.SerializableAttribute()]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance))]
@@ -4155,12 +4265,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
@@ -4319,116 +4429,6 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
                 if ((this.MultiplicityField.Equals(value) != true)) {
                     this.MultiplicityField = value;
                     this.RaisePropertyChanged("Multiplicity");
-                }
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ServiceOutgoingEdgeDefinition", Namespace="http://www.sones.com")]
-    [System.SerializableAttribute()]
-    public partial class ServiceOutgoingEdgeDefinition : sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition {
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType EdgeTypeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType InnerEdgeTypeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeMultiplicity MultiplicityField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType SourceVertexTypeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType TargetVertexTypeField;
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType EdgeType {
-            get {
-                return this.EdgeTypeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.EdgeTypeField, value) != true)) {
-                    this.EdgeTypeField = value;
-                    this.RaisePropertyChanged("EdgeType");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType InnerEdgeType {
-            get {
-                return this.InnerEdgeTypeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.InnerEdgeTypeField, value) != true)) {
-                    this.InnerEdgeTypeField = value;
-                    this.RaisePropertyChanged("InnerEdgeType");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeMultiplicity Multiplicity {
-            get {
-                return this.MultiplicityField;
-            }
-            set {
-                if ((this.MultiplicityField.Equals(value) != true)) {
-                    this.MultiplicityField = value;
-                    this.RaisePropertyChanged("Multiplicity");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType SourceVertexType {
-            get {
-                return this.SourceVertexTypeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.SourceVertexTypeField, value) != true)) {
-                    this.SourceVertexTypeField = value;
-                    this.RaisePropertyChanged("SourceVertexType");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType TargetVertexType {
-            get {
-                return this.TargetVertexTypeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.TargetVertexTypeField, value) != true)) {
-                    this.TargetVertexTypeField = value;
-                    this.RaisePropertyChanged("TargetVertexType");
-                }
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ServiceIncomingEdgeDefinition", Namespace="http://www.sones.com")]
-    [System.SerializableAttribute()]
-    public partial class ServiceIncomingEdgeDefinition : sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition {
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition RelatedEdgeDefinitionField;
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition RelatedEdgeDefinition {
-            get {
-                return this.RelatedEdgeDefinitionField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.RelatedEdgeDefinitionField, value) != true)) {
-                    this.RelatedEdgeDefinitionField = value;
-                    this.RaisePropertyChanged("RelatedEdgeDefinition");
                 }
             }
         }
@@ -4640,31 +4640,34 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     public interface GraphDSService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/CreateVertexType", ReplyAction="http://www.sones.com/GraphDSService/CreateVertexTypeResponse")]
-        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType CreateVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexTypePredefinition myVertexTypePreDef);
+        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType CreateVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexTypePredefinition myVertexTypePreDef);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/AlterVertexType", ReplyAction="http://www.sones.com/GraphDSService/AlterVertexTypeResponse")]
-        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType AlterVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAlterVertexChangeset myChangeset);
+        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType AlterVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAlterVertexChangeset myChangeset);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/AlterEdgeType", ReplyAction="http://www.sones.com/GraphDSService/AlterEdgeTypeResponse")]
-        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType AlterEdgeType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType myEdgeType, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAlterEdgeChangeset myChangeset);
+        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType AlterEdgeType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType myEdgeType, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAlterEdgeChangeset myChangeset);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/GetVertexType", ReplyAction="http://www.sones.com/GraphDSService/GetVertexTypeResponse")]
-        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType GetVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myVertexTypeName);
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/GetVertexTypeByName", ReplyAction="http://www.sones.com/GraphDSService/GetVertexTypeByNameResponse")]
+        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType GetVertexTypeByName(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myVertexTypeName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/GetVertexTypeByID", ReplyAction="http://www.sones.com/GraphDSService/GetVertexTypeByIDResponse")]
+        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType GetVertexTypeByID(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, long myVertexTypeID);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/BeginTransaction", ReplyAction="http://www.sones.com/GraphDSService/BeginTransactionResponse")]
         long BeginTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/CommitTransaction", ReplyAction="http://www.sones.com/GraphDSService/CommitTransactionResponse")]
-        void CommitTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken);
+        void CommitTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/RollbackTransaction", ReplyAction="http://www.sones.com/GraphDSService/RollbackTransactionResponse")]
-        void RollbackTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken);
+        void RollbackTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/Shutdown", ReplyAction="http://www.sones.com/GraphDSService/ShutdownResponse")]
         void Shutdown(sones.Library.Commons.Security.SecurityToken mySecurityToken);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/Clear", ReplyAction="http://www.sones.com/GraphDSService/ClearResponse")]
-        System.Collections.Generic.List<long> Clear(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken);
+        System.Collections.Generic.List<long> Clear(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/CreateEdgeType", ReplyAction="http://www.sones.com/GraphDSService/CreateEdgeTypeResponse")]
         sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType CreateEdgeType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeTypePredefinition myEdgeTypePreDef);
@@ -4673,10 +4676,10 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType> CreateEdgeTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeTypePredefinition> myEdgeTypePreDef);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/CreateIndex", ReplyAction="http://www.sones.com/GraphDSService/CreateIndexResponse")]
-        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition CreateIndex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexPredefinition myVertexTypePreDef);
+        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition CreateIndex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexPredefinition myVertexTypePreDef);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/CreateVertexTypes", ReplyAction="http://www.sones.com/GraphDSService/CreateVertexTypesResponse")]
-        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType> CreateVertexTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexTypePredefinition> myVertexTypePreDef);
+        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType> CreateVertexTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexTypePredefinition> myVertexTypePreDef);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/Delete", ReplyAction="http://www.sones.com/GraphDSService/DeleteResponse")]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance))]
@@ -4715,12 +4718,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
@@ -4744,9 +4747,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition.ServiceVertexInformation))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition>))]
@@ -4791,43 +4794,46 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition DescribeIndex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myVertexTypeName, string myIndexName);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/DescribeIndices", ReplyAction="http://www.sones.com/GraphDSService/DescribeIndicesResponse")]
-        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition> DescribeIndices(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myVertexTypeName);
+        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition> DescribeIndices(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myVertexTypeName);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/DescribeIndicesByNames", ReplyAction="http://www.sones.com/GraphDSService/DescribeIndicesByNamesResponse")]
-        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition> DescribeIndicesByNames(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myVertexTypeName, System.Collections.Generic.List<string> myIndexNames);
+        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition> DescribeIndicesByNames(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myVertexTypeName, System.Collections.Generic.List<string> myIndexNames);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/DropEdgeType", ReplyAction="http://www.sones.com/GraphDSService/DropEdgeTypeResponse")]
-        System.Collections.Generic.Dictionary<long, string> DropEdgeType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType myEdgeType);
+        System.Collections.Generic.Dictionary<long, string> DropEdgeType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType myEdgeType);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/DropIndex", ReplyAction="http://www.sones.com/GraphDSService/DropIndexResponse")]
-        void DropIndex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, string myIndexName, string myEdition);
+        void DropIndex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, string myIndexName, string myEdition);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/DropVertexType", ReplyAction="http://www.sones.com/GraphDSService/DropVertexTypeResponse")]
-        System.Collections.Generic.Dictionary<long, string> DropVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType);
+        System.Collections.Generic.Dictionary<long, string> DropVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/GetAllEdgeTypes", ReplyAction="http://www.sones.com/GraphDSService/GetAllEdgeTypesResponse")]
-        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType> GetAllEdgeTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myEdition);
+        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType> GetAllEdgeTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myEdition);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/GetAllVertexTypes", ReplyAction="http://www.sones.com/GraphDSService/GetAllVertexTypesResponse")]
-        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType> GetAllVertexTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myEdition);
+        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType> GetAllVertexTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myEdition);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/GetEdgeType", ReplyAction="http://www.sones.com/GraphDSService/GetEdgeTypeResponse")]
-        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType GetEdgeType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myEdgeTypeName, string myEdition);
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/GetEdgeTypeByName", ReplyAction="http://www.sones.com/GraphDSService/GetEdgeTypeByNameResponse")]
+        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType GetEdgeTypeByName(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myEdgeTypeName, string myEdition);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/GetEdgeTypeByID", ReplyAction="http://www.sones.com/GraphDSService/GetEdgeTypeByIDResponse")]
+        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType GetEdgeTypeByID(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, long myEdgeTypeID, string myEdition);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/GetVertex", ReplyAction="http://www.sones.com/GraphDSService/GetVertexResponse")]
-        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance GetVertex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, long myVertexID);
+        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance GetVertex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, long myVertexID);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/GetVertexCount", ReplyAction="http://www.sones.com/GraphDSService/GetVertexCountResponse")]
-        ulong GetVertexCount(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType);
+        ulong GetVertexCount(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/GetVerticesByType", ReplyAction="http://www.sones.com/GraphDSService/GetVerticesByTypeResponse")]
-        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance> GetVerticesByType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType);
+        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance> GetVerticesByType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/GetVerticesByExpression", ReplyAction="http://www.sones.com/GraphDSService/GetVerticesByExpressionResponse")]
-        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance> GetVerticesByExpression(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression myExpression);
+        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance> GetVerticesByExpression(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression myExpression);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/Insert", ReplyAction="http://www.sones.com/GraphDSService/InsertResponse")]
-        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance Insert(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myVertexTypeName, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload myPayload);
+        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance Insert(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myVertexTypeName, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload myPayload);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/LogOff", ReplyAction="http://www.sones.com/GraphDSService/LogOffResponse")]
         void LogOff(sones.Library.Commons.Security.SecurityToken mySecurityToken);
@@ -4836,16 +4842,16 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         sones.Library.Commons.Security.SecurityToken LogOn(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUserPasswordCredentials myUserCredentials);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/Query", ReplyAction="http://www.sones.com/GraphDSService/QueryResponse")]
-        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceQueryResult Query(sones.Library.Commons.Security.SecurityToken mySecToken, long myTransToken, string myQueryString, string myLanguage);
+        sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceQueryResult Query(sones.Library.Commons.Security.SecurityToken mySecToken, long myTransactionToken, string myQueryString, string myLanguage);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/Update", ReplyAction="http://www.sones.com/GraphDSService/UpdateResponse")]
-        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance> Update(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, System.Collections.Generic.List<long> myVertexIDs, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUpdateChangeset myUpdateChangeset);
+        System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance> Update(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, System.Collections.Generic.List<long> myVertexIDs, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUpdateChangeset myUpdateChangeset);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/RebuildIndices", ReplyAction="http://www.sones.com/GraphDSService/RebuildIndicesResponse")]
-        void RebuildIndices(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, System.Collections.Generic.List<string> myVertexTypeNames);
+        void RebuildIndices(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, System.Collections.Generic.List<string> myVertexTypeNames);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/TruncateVertexType", ReplyAction="http://www.sones.com/GraphDSService/TruncateVertexTypeResponse")]
-        void TruncateVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myVertexTypeName);
+        void TruncateVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myVertexTypeName);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -4875,40 +4881,44 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
                 base(binding, remoteAddress) {
         }
         
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType CreateVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexTypePredefinition myVertexTypePreDef) {
-            return base.Channel.CreateVertexType(mySecurityToken, myTransToken, myVertexTypePreDef);
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType CreateVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexTypePredefinition myVertexTypePreDef) {
+            return base.Channel.CreateVertexType(mySecurityToken, myTransactionToken, myVertexTypePreDef);
         }
         
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType AlterVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAlterVertexChangeset myChangeset) {
-            return base.Channel.AlterVertexType(mySecurityToken, myTransToken, myVertexType, myChangeset);
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType AlterVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAlterVertexChangeset myChangeset) {
+            return base.Channel.AlterVertexType(mySecurityToken, myTransactionToken, myVertexType, myChangeset);
         }
         
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType AlterEdgeType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType myEdgeType, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAlterEdgeChangeset myChangeset) {
-            return base.Channel.AlterEdgeType(mySecurityToken, myTransToken, myEdgeType, myChangeset);
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType AlterEdgeType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType myEdgeType, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAlterEdgeChangeset myChangeset) {
+            return base.Channel.AlterEdgeType(mySecurityToken, myTransactionToken, myEdgeType, myChangeset);
         }
         
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType GetVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myVertexTypeName) {
-            return base.Channel.GetVertexType(mySecurityToken, myTransToken, myVertexTypeName);
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType GetVertexTypeByName(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myVertexTypeName) {
+            return base.Channel.GetVertexTypeByName(mySecurityToken, myTransactionToken, myVertexTypeName);
+        }
+        
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType GetVertexTypeByID(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, long myVertexTypeID) {
+            return base.Channel.GetVertexTypeByID(mySecurityToken, myTransactionToken, myVertexTypeID);
         }
         
         public long BeginTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken) {
             return base.Channel.BeginTransaction(mySecurityToken);
         }
         
-        public void CommitTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken) {
-            base.Channel.CommitTransaction(mySecurityToken, myTransToken);
+        public void CommitTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken) {
+            base.Channel.CommitTransaction(mySecurityToken, myTransactionToken);
         }
         
-        public void RollbackTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken) {
-            base.Channel.RollbackTransaction(mySecurityToken, myTransToken);
+        public void RollbackTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken) {
+            base.Channel.RollbackTransaction(mySecurityToken, myTransactionToken);
         }
         
         public void Shutdown(sones.Library.Commons.Security.SecurityToken mySecurityToken) {
             base.Channel.Shutdown(mySecurityToken);
         }
         
-        public System.Collections.Generic.List<long> Clear(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken) {
-            return base.Channel.Clear(mySecurityToken, myTransToken);
+        public System.Collections.Generic.List<long> Clear(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken) {
+            return base.Channel.Clear(mySecurityToken, myTransactionToken);
         }
         
         public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType CreateEdgeType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeTypePredefinition myEdgeTypePreDef) {
@@ -4919,12 +4929,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
             return base.Channel.CreateEdgeTypes(mySecurityToken, myTransactionToken, myEdgeTypePreDef);
         }
         
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition CreateIndex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexPredefinition myVertexTypePreDef) {
-            return base.Channel.CreateIndex(mySecurityToken, myTransToken, myVertexTypePreDef);
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition CreateIndex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexPredefinition myVertexTypePreDef) {
+            return base.Channel.CreateIndex(mySecurityToken, myTransactionToken, myVertexTypePreDef);
         }
         
-        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType> CreateVertexTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexTypePredefinition> myVertexTypePreDef) {
-            return base.Channel.CreateVertexTypes(mySecurityToken, myTransToken, myVertexTypePreDef);
+        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType> CreateVertexTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexTypePredefinition> myVertexTypePreDef) {
+            return base.Channel.CreateVertexTypes(mySecurityToken, myTransactionToken, myVertexTypePreDef);
         }
         
         public System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>> Delete(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, System.Collections.Generic.List<long> myVertexIDs, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceDeletePayload myDeletePayload) {
@@ -4935,56 +4945,60 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
             return base.Channel.DescribeIndex(mySecurityToken, myTransactionToken, myVertexTypeName, myIndexName);
         }
         
-        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition> DescribeIndices(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myVertexTypeName) {
-            return base.Channel.DescribeIndices(mySecurityToken, myTransToken, myVertexTypeName);
+        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition> DescribeIndices(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myVertexTypeName) {
+            return base.Channel.DescribeIndices(mySecurityToken, myTransactionToken, myVertexTypeName);
         }
         
-        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition> DescribeIndicesByNames(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myVertexTypeName, System.Collections.Generic.List<string> myIndexNames) {
-            return base.Channel.DescribeIndicesByNames(mySecurityToken, myTransToken, myVertexTypeName, myIndexNames);
+        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIndexDefinition> DescribeIndicesByNames(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myVertexTypeName, System.Collections.Generic.List<string> myIndexNames) {
+            return base.Channel.DescribeIndicesByNames(mySecurityToken, myTransactionToken, myVertexTypeName, myIndexNames);
         }
         
-        public System.Collections.Generic.Dictionary<long, string> DropEdgeType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType myEdgeType) {
-            return base.Channel.DropEdgeType(mySecurityToken, myTransToken, myEdgeType);
+        public System.Collections.Generic.Dictionary<long, string> DropEdgeType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType myEdgeType) {
+            return base.Channel.DropEdgeType(mySecurityToken, myTransactionToken, myEdgeType);
         }
         
-        public void DropIndex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, string myIndexName, string myEdition) {
-            base.Channel.DropIndex(mySecurityToken, myTransToken, myVertexType, myIndexName, myEdition);
+        public void DropIndex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, string myIndexName, string myEdition) {
+            base.Channel.DropIndex(mySecurityToken, myTransactionToken, myVertexType, myIndexName, myEdition);
         }
         
-        public System.Collections.Generic.Dictionary<long, string> DropVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType) {
-            return base.Channel.DropVertexType(mySecurityToken, myTransToken, myVertexType);
+        public System.Collections.Generic.Dictionary<long, string> DropVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType) {
+            return base.Channel.DropVertexType(mySecurityToken, myTransactionToken, myVertexType);
         }
         
-        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType> GetAllEdgeTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myEdition) {
-            return base.Channel.GetAllEdgeTypes(mySecurityToken, myTransToken, myEdition);
+        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType> GetAllEdgeTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myEdition) {
+            return base.Channel.GetAllEdgeTypes(mySecurityToken, myTransactionToken, myEdition);
         }
         
-        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType> GetAllVertexTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myEdition) {
-            return base.Channel.GetAllVertexTypes(mySecurityToken, myTransToken, myEdition);
+        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType> GetAllVertexTypes(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myEdition) {
+            return base.Channel.GetAllVertexTypes(mySecurityToken, myTransactionToken, myEdition);
         }
         
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType GetEdgeType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myEdgeTypeName, string myEdition) {
-            return base.Channel.GetEdgeType(mySecurityToken, myTransToken, myEdgeTypeName, myEdition);
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType GetEdgeTypeByName(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myEdgeTypeName, string myEdition) {
+            return base.Channel.GetEdgeTypeByName(mySecurityToken, myTransactionToken, myEdgeTypeName, myEdition);
         }
         
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance GetVertex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, long myVertexID) {
-            return base.Channel.GetVertex(mySecurityToken, myTransToken, myVertexType, myVertexID);
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeType GetEdgeTypeByID(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, long myEdgeTypeID, string myEdition) {
+            return base.Channel.GetEdgeTypeByID(mySecurityToken, myTransactionToken, myEdgeTypeID, myEdition);
         }
         
-        public ulong GetVertexCount(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType) {
-            return base.Channel.GetVertexCount(mySecurityToken, myTransToken, myVertexType);
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance GetVertex(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, long myVertexID) {
+            return base.Channel.GetVertex(mySecurityToken, myTransactionToken, myVertexType, myVertexID);
         }
         
-        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance> GetVerticesByType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType) {
-            return base.Channel.GetVerticesByType(mySecurityToken, myTransToken, myVertexType);
+        public ulong GetVertexCount(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType) {
+            return base.Channel.GetVertexCount(mySecurityToken, myTransactionToken, myVertexType);
         }
         
-        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance> GetVerticesByExpression(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression myExpression) {
-            return base.Channel.GetVerticesByExpression(mySecurityToken, myTransToken, myExpression);
+        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance> GetVerticesByType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType) {
+            return base.Channel.GetVerticesByType(mySecurityToken, myTransactionToken, myVertexType);
         }
         
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance Insert(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myVertexTypeName, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload myPayload) {
-            return base.Channel.Insert(mySecurityToken, myTransToken, myVertexTypeName, myPayload);
+        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance> GetVerticesByExpression(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression myExpression) {
+            return base.Channel.GetVerticesByExpression(mySecurityToken, myTransactionToken, myExpression);
+        }
+        
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance Insert(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myVertexTypeName, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload myPayload) {
+            return base.Channel.Insert(mySecurityToken, myTransactionToken, myVertexTypeName, myPayload);
         }
         
         public void LogOff(sones.Library.Commons.Security.SecurityToken mySecurityToken) {
@@ -4995,20 +5009,20 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
             return base.Channel.LogOn(myUserCredentials);
         }
         
-        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceQueryResult Query(sones.Library.Commons.Security.SecurityToken mySecToken, long myTransToken, string myQueryString, string myLanguage) {
-            return base.Channel.Query(mySecToken, myTransToken, myQueryString, myLanguage);
+        public sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceQueryResult Query(sones.Library.Commons.Security.SecurityToken mySecToken, long myTransactionToken, string myQueryString, string myLanguage) {
+            return base.Channel.Query(mySecToken, myTransactionToken, myQueryString, myLanguage);
         }
         
-        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance> Update(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, System.Collections.Generic.List<long> myVertexIDs, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUpdateChangeset myUpdateChangeset) {
-            return base.Channel.Update(mySecurityToken, myTransToken, myVertexType, myVertexIDs, myUpdateChangeset);
+        public System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance> Update(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexType myVertexType, System.Collections.Generic.List<long> myVertexIDs, sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUpdateChangeset myUpdateChangeset) {
+            return base.Channel.Update(mySecurityToken, myTransactionToken, myVertexType, myVertexIDs, myUpdateChangeset);
         }
         
-        public void RebuildIndices(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, System.Collections.Generic.List<string> myVertexTypeNames) {
-            base.Channel.RebuildIndices(mySecurityToken, myTransToken, myVertexTypeNames);
+        public void RebuildIndices(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, System.Collections.Generic.List<string> myVertexTypeNames) {
+            base.Channel.RebuildIndices(mySecurityToken, myTransactionToken, myVertexTypeNames);
         }
         
-        public void TruncateVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransToken, string myVertexTypeName) {
-            base.Channel.TruncateVertexType(mySecurityToken, myTransToken, myVertexTypeName);
+        public void TruncateVertexType(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myVertexTypeName) {
+            base.Channel.TruncateVertexType(mySecurityToken, myTransactionToken, myVertexTypeName);
         }
     }
     
@@ -5392,12 +5406,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
@@ -5421,9 +5435,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition.ServiceVertexInformation))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition>))]
@@ -5520,12 +5534,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
@@ -5549,9 +5563,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition.ServiceVertexInformation))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition>))]
@@ -6017,12 +6031,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
@@ -6046,9 +6060,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition.ServiceVertexInformation))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition>))]
@@ -6143,12 +6157,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBaseExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryOperator))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceCollectionLiteralExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryLogicOperator))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceRangeLiteralExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUnaryExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyExpression))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleLiteralExpression))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceInsertPayload))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgePredefinition))]
@@ -6172,9 +6186,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceSingleEdgeUpdateDefinition.ServiceVertexInformation))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeType))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceOutgoingEdgeDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServicePropertyDefinition>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceIncomingEdgeDefinition>))]

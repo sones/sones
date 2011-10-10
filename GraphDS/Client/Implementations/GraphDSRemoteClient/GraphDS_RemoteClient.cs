@@ -259,6 +259,7 @@ namespace sones.GraphDS.GraphDSRemoteClient
         public TResult Insert<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestInsertVertex myRequestInsert, sones.GraphDB.Request.Converter.InsertResultConverter<TResult> myOutputconverter)
         {
             Stopwatch RunningTime = Stopwatch.StartNew();
+            var bla = new ServiceInsertPayload(myRequestInsert);
             var svcVertex = _GraphDSService.Insert(mySecurityToken, myTransactionID, myRequestInsert.VertexTypeName, new ServiceInsertPayload(myRequestInsert));
             var vertex = new RemoteVertex(svcVertex, this);
             RunningTime.Stop();

@@ -27,6 +27,11 @@ namespace sones.GraphDS.GraphDSRemoteClient.GraphElements
         /// </summary>
         private readonly Int64 _vertexTypeID;
 
+        /// <summary>
+        /// The revision id of the vertex
+        /// </summary>
+        private readonly Int64 _vertexRevisionID;
+
         #endregion
 
 
@@ -37,6 +42,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.GraphElements
             this._edition = myVertex.Edition;
             this._vertexID = myVertex.VertexID;
             this._vertexTypeID = myVertex.TypeID;
+            //this._vertexRevisionID = myVertex
         }
 
         #endregion
@@ -228,22 +234,22 @@ namespace sones.GraphDS.GraphDSRemoteClient.GraphElements
 
         public long VertexTypeID
         {
-            get { return this.VertexTypeID; }
+            get { return this._vertexTypeID; }
         }
 
         public long VertexID
         {
-            get { return this.VertexID; }
+            get { return this._vertexID; }
         }
 
         public long VertexRevisionID
         {
-            get { return this.VertexRevisionID; }
+            get { return this._vertexRevisionID; }
         }
 
         public string EditionName
         {
-            get { return this.EditionName; }
+            get { return this._edition; }
         }
 
         public IVertexStatistics Statistics

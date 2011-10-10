@@ -10,12 +10,18 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
     {
         internal ServiceInsertPayload(RequestInsertVertex myRequestInsertVertex)
         {
-            this.StructuredProperties = myRequestInsertVertex.StructuredProperties.Select(x => new StructuredProperty(x.Key, x.Value)).ToList();
-            this.UnstructuredProperties = myRequestInsertVertex.UnstructuredProperties.Select(x => new UnstructuredProperty(x.Key, x.Value)).ToList();
-            this.UUID = myRequestInsertVertex.VertexUUID.Value;
+            this.UUID = myRequestInsertVertex.VertexUUID;
             this.Comment = myRequestInsertVertex.Comment;
             this.Edition = myRequestInsertVertex.Edition;
-            this.Edges = myRequestInsertVertex.OutgoingEdges.Select(x => new ServiceEdgePredefinition(x)).ToList();
+            
+            this.StructuredProperties = (myRequestInsertVertex.StructuredProperties == null)
+                ? null : myRequestInsertVertex.StructuredProperties.Select(x => new StructuredProperty(x.Key, x.Value)).ToList();
+
+            this.UnstructuredProperties = (myRequestInsertVertex.UnstructuredProperties == null)
+                ? null : myRequestInsertVertex.UnstructuredProperties.Select(x => new UnstructuredProperty(x.Key, x.Value)).ToList();
+
+            this.Edges = (myRequestInsertVertex.OutgoingEdges == null)
+                ? null : myRequestInsertVertex.OutgoingEdges.Select(x => new ServiceEdgePredefinition(x)).ToList();
         }
     }
 }

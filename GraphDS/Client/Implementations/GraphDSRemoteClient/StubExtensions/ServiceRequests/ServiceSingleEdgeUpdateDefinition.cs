@@ -13,10 +13,19 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
         {
             this.CommentUpdate = myUpdateDefinition.CommentUpdate;
             this.EdgeTypeID = myUpdateDefinition.EdgeTypeID;
-            this.UpdatedStructuredProperties = myUpdateDefinition.UpdatedStructuredProperties.Updated.ToDictionary(k => k.Key, v => (object)v.Value);
-            this.DeletedStructuredProperties = myUpdateDefinition.UpdatedStructuredProperties.Deleted.ToList();
-            this.UpdatedUnstructuredProperties = myUpdateDefinition.UpdatedUnstructuredProperties.Updated.ToDictionary(k => k.Key, v => (object)v.Value);
-            this.DeletedUnstructuredProperties = myUpdateDefinition.UpdatedUnstructuredProperties.Deleted.ToList();
+
+            this.UpdatedStructuredProperties = (myUpdateDefinition.UpdatedStructuredProperties.Updated == null)
+                ? null : myUpdateDefinition.UpdatedStructuredProperties.Updated.ToDictionary(k => k.Key, v => (object)v.Value);
+
+            this.DeletedStructuredProperties = (myUpdateDefinition.UpdatedStructuredProperties.Deleted == null)
+                ? null : myUpdateDefinition.UpdatedStructuredProperties.Deleted.ToList();
+
+            this.UpdatedUnstructuredProperties = (myUpdateDefinition.UpdatedUnstructuredProperties.Updated == null)
+                ? null : myUpdateDefinition.UpdatedUnstructuredProperties.Updated.ToDictionary(k => k.Key, v => (object)v.Value);
+
+            this.DeletedUnstructuredProperties = (myUpdateDefinition.UpdatedUnstructuredProperties.Deleted == null)
+                ? null : myUpdateDefinition.UpdatedUnstructuredProperties.Deleted.ToList();
+
             this.SourceVertex = new ServiceVertexInformation(myUpdateDefinition.SourceVertex);
             this.TargetVertex = new ServiceVertexInformation(myUpdateDefinition.TargetVertex);
         }

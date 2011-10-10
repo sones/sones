@@ -14,18 +14,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
             this.IsMandatory = myPropertyPredefinition.IsMandatory;
             this.IsUnique = myPropertyPredefinition.IsUnique;
             this.DefaultValue = myPropertyPredefinition.DefaultValue;
-            switch(myPropertyPredefinition.Multiplicity)
-            {
-                case PropertyMultiplicity.Single:
-                    this.Multiplicity = ServicePropertyMultiplicity.Single;
-                    break;
-                case PropertyMultiplicity.List:
-                    this.Multiplicity = ServicePropertyMultiplicity.List;
-                    break;
-                case PropertyMultiplicity.Set:
-                    this.Multiplicity = ServicePropertyMultiplicity.Set;
-                    break;
-            }
+            this.Multiplicity = ConvertHelper.ToServicePropertyMultiplicity(myPropertyPredefinition.Multiplicity);
         }
     }
 }
