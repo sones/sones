@@ -152,6 +152,15 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return new ServiceEdgeType(Response);
         }
 
+        public ServiceEdgeType GetEdgeType(SecurityToken mySecurityToken, Int64 myTransactionToken,
+            Int64 myEdgeTypeID, String myEdition = null)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetEdgeType(myEdgeTypeID, myEdition);
+            var Response = this.GraphDS.GetEdgeType<IEdgeType>(mySecurityToken, myTransactionToken, Request,
+                ServiceReturnConverter.ConvertOnlyEdgeType);
+            return new ServiceEdgeType(Response);
+        }
+
         public ServiceVertexInstance GetVertex(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexType myVertexType, Int64 myVertexID)
         {
@@ -282,7 +291,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return Response.Select(x => new ServiceVertexInstance(x)).ToList();
         }
 
-
         public ServiceVertexType GetVertexType(SecurityToken mySecurityToken, Int64 myTransToken, string myVertexTypeName)
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myVertexTypeName);
@@ -291,6 +299,13 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             return new ServiceVertexType(Response);
         }
 
+        public ServiceVertexType GetVertexType(SecurityToken mySecurityToken, Int64 myTransToken, Int64 myVertexTypeID)
+        {
+            var Request = ServiceRequestFactory.MakeRequestGetVertexType(myVertexTypeID);
+            var Response = this.GraphDS.GetVertexType<IVertexType>(mySecurityToken, myTransToken, Request,
+                ServiceReturnConverter.ConvertOnlyVertexType);
+            return new ServiceVertexType(Response);
+        }
 
         public void CommitTransaction(SecurityToken mySecurityToken, Int64 myTransToken)
         {

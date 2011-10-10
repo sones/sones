@@ -408,8 +408,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             if(!String.IsNullOrEmpty(myPayload.Edition))
                 Request.SetEdition(myPayload.Edition);
 
-            if (myPayload.UUID != 0)
-                Request.SetUUID(myPayload.UUID);
+            if (myPayload.UUID != null)
+                Request.SetUUID(myPayload.UUID.Value);
 
             if (myPayload.StructuredProperties != null)
             {

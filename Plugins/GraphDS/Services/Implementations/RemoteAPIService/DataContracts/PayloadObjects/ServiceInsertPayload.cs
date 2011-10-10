@@ -36,11 +36,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InsertPayload
         [DataMember]
         public List<UnstructuredProperty> UnstructuredProperties;
 
-        //[DataMember]
-        //public List<ServiceEdgeTypePredefinition> EdgesToAdd;
-
         [DataMember]
-        public Int64 UUID;
+        public Nullable<Int64> UUID;
 
         [DataMember]
         public String Comment;
@@ -50,7 +47,5 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InsertPayload
 
         [DataMember]
         public List<ServiceEdgePredefinition> Edges;
-
-
     }
 }
