@@ -23,22 +23,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
+using sones.GraphDB.TypeSystem;
 
-namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
+namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
-    public enum ServiceAttributeType : byte
+    public class ServiceBinaryPropertyPredefinition : ServiceAttributePredefinition
     {
-        [EnumMember]
-        Property,
-
-        [EnumMember]
-        IncomingEdge,
-
-        [EnumMember]
-        OutgoingEdge,
-
-        [EnumMember]
-        BinaryProperty
+        public BinaryPropertyPredefinition ToBinaryPropertyPredefinition()
+        {
+            var predef = new BinaryPropertyPredefinition(this.AttributeName, this.AttributeType);
+            predef.SetComment(this.Comment);
+            return predef;
+        }
     }
 }

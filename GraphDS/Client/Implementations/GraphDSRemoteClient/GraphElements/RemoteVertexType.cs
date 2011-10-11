@@ -106,22 +106,25 @@ namespace sones.GraphDS.GraphDSRemoteClient.GraphElements
 
         public bool HasBinaryProperty(string myEdgeName)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexTypeService.HasBinaryProperty(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexType(this), myEdgeName);
         }
 
         public IBinaryPropertyDefinition GetBinaryPropertyDefinition(string myEdgeName)
         {
-            throw new NotImplementedException();
+            return new RemoteBinaryPropertyDefinition(
+                _ServiceToken.VertexTypeService.GetBinaryPropertyDefinition(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexType(this), myEdgeName),
+                _ServiceToken);
         }
 
         public bool HasBinaryProperties(bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexTypeService.HasBinaryProperties(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexType(this), myIncludeAncestorDefinitions);
         }
 
         public IEnumerable<IBinaryPropertyDefinition> GetBinaryProperties(bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            return _ServiceToken.VertexTypeService.GetBinaryPropertyDefinitions(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexType(this), myIncludeAncestorDefinitions)
+                .Select(x => new RemoteBinaryPropertyDefinition(x, _ServiceToken));
         }
 
         public bool HasIncomingEdge(string myEdgeName)
@@ -318,8 +321,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.GraphElements
 
         public override IPropertyDefinition GetPropertyDefinition(string myPropertyName)
         {
+            var bla = _ServiceToken.VertexTypeService.GetPropertyDefinitionByVertexType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, this.Name, myPropertyName);
             return new RemotePropertyDefinition(
-                _ServiceToken.VertexTypeService.GetPropertyDefinitionByVertexType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, this.Name, myPropertyName),
+                bla,
                 _ServiceToken);
         }
 

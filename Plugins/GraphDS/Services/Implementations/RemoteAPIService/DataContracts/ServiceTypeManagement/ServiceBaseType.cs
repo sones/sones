@@ -28,6 +28,8 @@ using sones.GraphDB.TypeSystem;
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
+    [KnownType(typeof(ServiceVertexType))]
+    [KnownType(typeof(ServiceEdgeType))]
     public class ServiceBaseType
     {
         public ServiceBaseType(IBaseType myBaseType)

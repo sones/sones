@@ -26,6 +26,7 @@ using System.ServiceModel;
 using sones.Library.Commons.Security;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 using System.IO;
+using sones.GraphDS.Services.RemoteAPIService.MessageContracts;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.StreamedService
 {
@@ -53,6 +54,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.StreamedServi
         /// <returns>An IEnumerable of PropertyID/stream KVP</returns>
         [OperationContract]
         List<Tuple<Int64, Stream>> GetAllBinaryProperties(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexInstance myVertex);
+
+        [OperationContract]
+        void SetBinaryProperty(SetBinaryPropertyMessage myMessage);
 
         #endregion
     }

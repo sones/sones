@@ -74,6 +74,7 @@
     <Compile Include="DataContracts\ServiceRequests\Expression\Tree\TimeSpanDefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\Expression\Tree\TypeOfExpression.cs" />
     <Compile Include="DataContracts\ServiceRequests\Expression\Tree\ServiceUnaryExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceBinaryPropertyPredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceEdgePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceEdgeTypePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceAttributePredefinition.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceVertexType.cs" />
     <Compile Include="DataContracts\ServiceUserPasswordCredentials.cs" />
     <Compile Include="ErrorHandling\SecurityTokenException.cs" />
+    <Compile Include="MessageContracts\SetBinaryPropertyMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteAPIService.cs" />
     <Compile Include="ServiceContractImplementation\StreamedService.cs" />

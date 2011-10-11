@@ -261,6 +261,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
 		/// </summary>
 		/// <param name="myPropertyName">The name of the binary property.</param>
 		/// <returns>True, if a binary property with the given name exists, otherwise false.</returns>
+        [OperationContract]
 		bool HasBinaryProperty(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, String myPropertyName);
 
 		/// <summary>
@@ -268,21 +269,24 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexTypeSer
 		/// </summary>
 		/// <param name="myPropertyName">The name of the interesting binary property.</param>
 		/// <returns>A binary property definition, if existing otherwise <c>NULL</c>.</returns>
-		ServiceBinaryPropertyDefinition GetBinaryPropertyDefinition(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, String myPropertyName);
+        [OperationContract]
+        ServiceBinaryPropertyDefinition GetBinaryPropertyDefinition(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, String myPropertyName);
 
 		/// <summary>
 		/// Has this vertex type any binary property.
 		/// </summary>
 		/// <param name="myIncludeAncestorDefinitions">If true, the ancestor vertex types are included, otherwise false.</param>
 		/// <returns>True if a binary property exists, otherwise false.</returns>
-		bool HasBinaryProperties(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+        [OperationContract]
+        bool HasBinaryProperties(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
 		/// <summary>
 		/// Get all binary properties.
 		/// </summary>
 		/// <param name="myIncludeAncestorDefinitions">If true, the ancestor vertex types are included, otherwise false.</param>
 		/// <returns>An enumerable of binary property definitions.</returns>
-		List<ServiceBinaryPropertyDefinition> GetBinaryPropertyDefinitions(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
+        [OperationContract]
+        List<ServiceBinaryPropertyDefinition> GetBinaryPropertyDefinitions(SecurityToken mySecurityToken, Int64 myTransToken, ServiceVertexType myServiceVertexType, bool myIncludeAncestorDefinitions);
 
 		#endregion
 

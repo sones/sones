@@ -25,6 +25,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
             this.Properties = (myVertexTypePredefinition.Properties == null)
                 ? null : myVertexTypePredefinition.Properties.Select(x => new ServicePropertyPredefinition(x)).ToList();
 
+            this.BinaryProperties = (myVertexTypePredefinition.BinaryProperties == null)
+                ? null : myVertexTypePredefinition.BinaryProperties.Select(x => new ServiceBinaryPropertyPredefinition(x)).ToList();
+
             this.OutgoingEdges = (myVertexTypePredefinition.OutgoingEdges == null)
                 ? null : myVertexTypePredefinition.OutgoingEdges.Select(x => new ServiceOutgoingEdgePredefinition(x)).ToList();
 

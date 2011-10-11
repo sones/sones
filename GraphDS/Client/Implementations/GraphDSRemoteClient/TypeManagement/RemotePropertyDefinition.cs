@@ -24,7 +24,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.TypeManagement
             this.IsUserDefined = mySvcPropertyDefinition.IsUserDefined;
             this.IsUserDefinedType = mySvcPropertyDefinition.IsUserDefinedType;
             this.BaseType = Type.GetType(mySvcPropertyDefinition.BaseType);
-            switch(mySvcPropertyDefinition.Multiplicity)
+            switch (mySvcPropertyDefinition.Multiplicity)
             {
                 case ServicePropertyMultiplicity.Single:
                     this.Multiplicity = PropertyMultiplicity.Single;

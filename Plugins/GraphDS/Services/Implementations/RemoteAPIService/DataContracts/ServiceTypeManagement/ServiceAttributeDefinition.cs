@@ -33,6 +33,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
     [KnownType(typeof(ServicePropertyDefinition))]
     [KnownType(typeof(ServiceIncomingEdgeDefinition))]
     [KnownType(typeof(ServiceOutgoingEdgeDefinition))]
+    [KnownType(typeof(ServiceVertexType))]
+    [KnownType(typeof(ServiceEdgeType))]
     public abstract class ServiceAttributeDefinition
     {
         public ServiceAttributeDefinition(IAttributeDefinition myAttributeDefinition)

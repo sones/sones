@@ -59,6 +59,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
         public IComparable DefaultValue;
 
         [DataMember]
-        public List<String> InIndices;
+        public List<String> InIndices; 
     }
 }

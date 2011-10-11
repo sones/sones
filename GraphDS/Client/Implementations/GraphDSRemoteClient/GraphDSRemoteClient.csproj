@@ -80,6 +80,7 @@
     <Compile Include="StubExtensions\ServiceRequests\Expression\Tree\ServicePropertyExpression.cs" />
     <Compile Include="StubExtensions\ServiceRequests\Expression\Tree\ServiceUnaryExpression.cs" />
     <Compile Include="StubExtensions\ServiceRequests\ServiceAttributePredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServiceBinaryPropertyPredefinition.cs" />
     <Compile Include="StubExtensions\ServiceRequests\ServiceEdgePredefinition.cs" />
     <Compile Include="StubExtensions\ServiceRequests\ServiceEdgeTypePredefinition.cs" />
     <Compile Include="StubExtensions\ServiceRequests\ServiceIncomingEdgePredefinition.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="StubExtensions\ServiceTypeManagement\ServiceBaseType.cs" />
     <Compile Include="StubExtensions\ServiceTypeManagement\ServiceEdgeType.cs" />
     <Compile Include="StubExtensions\ServiceTypeManagement\ServiceVertexType.cs" />
+    <Compile Include="TypeManagement\RemoteBinaryPropertyDefinition.cs" />
     <Compile Include="TypeManagement\RemoteIncomingEdgeDefinition.cs" />
     <Compile Include="TypeManagement\RemoteIndexDefinition.cs" />
     <Compile Include="TypeManagement\RemoteOutgoingEdgeDefinition.cs" />
@@ -149,6 +151,9 @@
     <None Include="Properties\DataSources\sones.Library.Commons.Security.SecurityToken.datasource" />
     <None Include="Service References\sonesGraphDSRemoteAPI\RPCServiceContract1.wsdl" />
     <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceBinaryPropertyDefinition.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceEdgeInstance.datasource">

@@ -124,6 +124,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
             StreamedBinding.MessageEncoding = WSMessageEncoding.Text;
             StreamedBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
             StreamedBinding.TransferMode = TransferMode.Streamed;
+            StreamedBinding.MaxReceivedMessageSize = 1073741824;
 
             if (IsSecure)
             {

@@ -48,6 +48,7 @@ namespace sones.GraphDS.GraphDSRemoteClient
             StreamedBinding.MessageEncoding = WSMessageEncoding.Text;
             StreamedBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
             StreamedBinding.TransferMode = TransferMode.Streamed;
+            StreamedBinding.MaxReceivedMessageSize = 1073741824;
 
             try
             {
@@ -261,6 +262,13 @@ namespace sones.GraphDS.GraphDSRemoteClient
             Stopwatch RunningTime = Stopwatch.StartNew();
             var bla = new ServiceInsertPayload(myRequestInsert);
             var svcVertex = _GraphDSService.Insert(mySecurityToken, myTransactionID, myRequestInsert.VertexTypeName, new ServiceInsertPayload(myRequestInsert));
+            if (myRequestInsert.BinaryProperties != null)
+                foreach (var item in myRequestInsert.BinaryProperties)
+                {
+                    _StreamedService.SetBinaryProperty(new SetBinaryPropertyMessage(item.Key, _SecurityToken, _TransactionToken, svcVertex.VertexID, svcVertex.TypeID, item.Value));
+                }
+            
+            
             var vertex = new RemoteVertex(svcVertex, this);
             RunningTime.Stop();
             return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), vertex);
@@ -363,7 +371,11 @@ namespace sones.GraphDS.GraphDSRemoteClient
         public TResult GetVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestGetVertexType myRequestGetVertexType, sones.GraphDB.Request.Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
         {
             Stopwatch RunningTime = Stopwatch.StartNew();
-            var svcVertexType = _GraphDSService.GetVertexType(mySecurityToken, myTransactionID, myRequestGetVertexType.VertexTypeName);
+            ServiceVertexType svcVertexType;
+            if(myRequestGetVertexType.VertexTypeName != null)
+                svcVertexType = _GraphDSService.GetVertexTypeByName(mySecurityToken, myTransactionID, myRequestGetVertexType.VertexTypeName);
+            else
+                svcVertexType = _GraphDSService.GetVertexTypeByID(mySecurityToken, myTransactionID, myRequestGetVertexType.VertexTypeID);
             var vertexType = new RemoteVertexType(svcVertexType, this);
             RunningTime.Stop();
             return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), vertexType);
@@ -381,7 +393,11 @@ namespace sones.GraphDS.GraphDSRemoteClient
         public TResult GetEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestGetEdgeType myRequestGetEdgeType, sones.GraphDB.Request.Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
         {
             Stopwatch RunningTime = Stopwatch.StartNew();
-            var svcEdgeType = _GraphDSService.GetEdgeType(mySecurityToken, myTransactionID, myRequestGetEdgeType.EdgeTypeName, myRequestGetEdgeType.Edition);
+            ServiceEdgeType svcEdgeType;
+            if (myRequestGetEdgeType.EdgeTypeName != null)
+                svcEdgeType = _GraphDSService.GetEdgeTypeByName(mySecurityToken, myTransactionID, myRequestGetEdgeType.EdgeTypeName, myRequestGetEdgeType.Edition);
+            else
+                svcEdgeType = _GraphDSService.GetEdgeTypeByID(mySecurityToken, myTransactionID, myRequestGetEdgeType.EdgeTypeID, myRequestGetEdgeType.Edition);
             var edgeType = new RemoteEdgeType(svcEdgeType, this);
             RunningTime.Stop();
             return myOutputconverter(new RequestStatistics(new TimeSpan(RunningTime.ElapsedTicks)), edgeType);

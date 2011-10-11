@@ -33,6 +33,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 using sones.GraphDB.Expression;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expression;
 using sones.GraphDB;
+using System.IO;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 {
@@ -303,6 +304,15 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
         public static RequestGetVertices MakeRequestGetVertices(ServiceBaseExpression myExpression)
         {
             return new RequestGetVertices(ServiceExpressionConverter.ConvertExpression(myExpression));
+        }
+
+        public static RequestUpdate MakeRequestUpdateBinary(Int64 myVertexTypeID, Int64 myVertexID, String myPropertyName, Stream myStream)
+        {
+            var idList = new List<Int64>();
+            idList.Add(myVertexID);
+            var Request = new RequestUpdate(new RequestGetVertices(myVertexTypeID, idList));
+            Request.UpdateBinaryProperty(myPropertyName, myStream);
+            return Request;
         }
 
         public static RequestUpdate MakeRequestUpdate(ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs, ServiceUpdateChangeset myUpdateChangeset)

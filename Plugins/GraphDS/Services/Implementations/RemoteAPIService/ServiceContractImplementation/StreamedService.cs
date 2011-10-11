@@ -28,6 +28,7 @@ using System.IO;
 using sones.GraphDS.Services.RemoteAPIService.ServiceConverter;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.StreamedService;
+using sones.GraphDS.Services.RemoteAPIService.MessageContracts;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
@@ -46,6 +47,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             var Request = ServiceRequestFactory.MakeRequestGetVertex(myVertex.TypeID, myVertex.VertexID);
             var Response = this.GraphDS.GetVertex<IVertex>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexInstance);
             return Response.GetAllBinaryProperties().ToList();
+        }
+
+        public void SetBinaryProperty(SetBinaryPropertyMessage myMessage)
+        {
+            var Request = ServiceRequestFactory.MakeRequestUpdateBinary(myMessage.VertexTypeID, myMessage.VertexID, myMessage.PropertyName, myMessage.Stream);
+            var Response = this.GraphDS.Update<IEnumerable<IVertex>>(myMessage.SecurityToken, myMessage.TransToken, Request, ServiceReturnConverter.ConvertOnlyVertices);
+            
+            
         }
     }
 }

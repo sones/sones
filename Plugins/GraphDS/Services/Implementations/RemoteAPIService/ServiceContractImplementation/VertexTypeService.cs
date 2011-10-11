@@ -214,7 +214,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
         {
             var Request = ServiceRequestFactory.MakeRequestGetVertexType(myServiceVertexTypeName);
             var Response = this.GraphDS.GetVertexType<IVertexType>(mySecurityToken, myTransToken, Request, ServiceReturnConverter.ConvertOnlyVertexType);
-            return new ServicePropertyDefinition(Response.GetPropertyDefinition(myPropertyName));
+            var blub = new ServicePropertyDefinition(Response.GetPropertyDefinition(myPropertyName));
+            return blub;
         }
 
         public ServicePropertyDefinition GetPropertyDefinitionByIDByVertexType(SecurityToken mySecurityToken, Int64 myTransToken, String myServiceVertexTypeName, long myPropertyID)

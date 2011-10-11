@@ -55,7 +55,12 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
         [DataMember]
         public IEnumerable<ServicePropertyPredefinition> Properties;
 
-        
+        /// <summary>
+        /// The binary properties of the vertex type.
+        /// </summary>
+        [DataMember]
+        public IEnumerable<ServiceBinaryPropertyPredefinition> BinaryProperties;
+
         /// <summary>
         /// The outgoing edges of this vertex type.
         /// </summary>
@@ -107,6 +112,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
                 foreach (var Property in this.Properties)
                 {
                     VertexTypePreDef.AddProperty(Property.ToPropertyPredefinition());
+                }
+            }
+
+            if (this.BinaryProperties != null)
+            {
+                foreach (var BinaryProperty in this.BinaryProperties)
+                {
+                    VertexTypePreDef.AddBinaryProperty(BinaryProperty.ToBinaryPropertyPredefinition());
                 }
             }
 

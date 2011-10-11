@@ -58,6 +58,7 @@ using sones.GraphDS.GraphDSRESTClient;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
 using sones.Library.PropertyHyperGraph;
+using sones.GraphQL.Result;
 
 namespace TagExampleWithGraphMappingFramework
 {
@@ -229,9 +230,30 @@ namespace TagExampleWithGraphMappingFramework
             SecToken = GraphDSClient.LogOn(new RemoteUserPasswordCredentials("test", "test"));
             TransToken = GraphDSClient.BeginTransaction(SecToken);
 
+            #region create types, create instances and additional work using the GraphDB API
+
             GraphDBRequests();
 
-            Console.WriteLine("Run :-)");
+            #endregion
+
+            //clear the DB (delete all created types) to create them again using the QueryLanguage
+            //GraphDSClient.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
+
+            //#region create some types and insert values using the SonesQueryLanguage
+
+            //GraphQLQueries();
+
+            //#endregion
+
+            //#region make some SELECTS
+
+            //SELECTS();
+
+            //#endregion
+
+            //Console.WriteLine();
+            //Console.WriteLine("Finished Example. Type a key to finish!");
+            //Console.ReadKey();
         }
 
         private void GraphDBRequests()
@@ -272,9 +294,12 @@ namespace TagExampleWithGraphMappingFramework
             var PropertyUrl = new PropertyPredefinition("URL", "String")
                                          .SetAsMandatory();
 
+            var PropertyLogo = new BinaryPropertyPredefinition("Logo");
+
             //add properties
             Website_VertexTypePredefinition.AddProperty(PropertyName);
             Website_VertexTypePredefinition.AddProperty(PropertyUrl);
+            Website_VertexTypePredefinition.AddBinaryProperty(PropertyLogo);
 
             #region create an index on type "Website" on property "Name"
             //there are three ways to set an index on property "Name" 
@@ -347,10 +372,22 @@ namespace TagExampleWithGraphMappingFramework
             if(Website != null)
                 Console.WriteLine("Vertex Type 'Website' created");
 
+            Console.WriteLine("Has Logo: " + Website.HasBinaryProperty("Logo"));
+
             #endregion
 
-
             #region insert some Websites by sending requests
+
+            Stream logoStream = new FileStream("some_archive.rar", FileMode.Open);
+            
+
+            var sones = GraphDSClient.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
+                                                                                    .AddStructuredProperty("Name", "Sones")
+                                                                                    .AddStructuredProperty("URL", "http://sones.com/")
+                                                                                    .AddBinaryProperty("Logo", logoStream),
+                                                                                    (Statistics, Result) => Result);
+
+            logoStream.Close();
 
             var cnn = GraphDSClient.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
                                                                                     .AddStructuredProperty("Name", "CNN")
@@ -374,6 +411,9 @@ namespace TagExampleWithGraphMappingFramework
                                                                                     .AddUnknownProperty("Unknown", "unknown property"),
                                                                                     (Statistics, Result) => Result);
 
+            if (sones != null)
+                Console.WriteLine("Website 'sones' successfully inserted");
+
             if (cnn != null)
                 Console.WriteLine("Website 'cnn' successfully inserted");
 
@@ -387,6 +427,12 @@ namespace TagExampleWithGraphMappingFramework
                 Console.WriteLine("Website 'test' successfully inserted");
 
             #endregion
+
+            Stream newLogo = new FileStream("newLogo.png", FileMode.Create);
+            var propdef = Website.GetBinaryPropertyDefinition("Logo");
+            Stream incoming = sones.GetBinaryProperty(propdef.ID);
+            incoming.CopyTo(newLogo);
+            newLogo.Close();
 
             #region insert some Tags by sending requests
 
@@ -419,10 +465,16 @@ namespace TagExampleWithGraphMappingFramework
             //how to get a type from the DB
             var TagDBType = GraphDSClient.GetVertexType<IVertexType>(SecToken, TransToken, new RequestGetVertexType(Tag.Name), (Statistics, Type) => Type);
 
+            //how to get a type from the DB
+            var WebsiteDBType = GraphDSClient.GetVertexType<IVertexType>(SecToken, TransToken, new RequestGetVertexType(Website.Name), (Statistics, Type) => Type);
+
             //read informations from type
             var typeName = TagDBType.Name;
             //are there other types wich extend the type "Tag"
             var hasChildTypes = TagDBType.HasChildTypes;
+
+            var hasPropName = TagDBType.HasProperty("Name");
+
             //get the definition of the property "Name"
             var propName = TagDBType.GetPropertyDefinition("Name");
 
@@ -436,8 +488,125 @@ namespace TagExampleWithGraphMappingFramework
                 var name = item.GetPropertyAsString(propName.ID);
             }
 
+            Console.WriteLine("API operations finished...");
+
             #endregion
         }
+        #endregion
+
+
+        #region Graph Query Language
+        /// <summary>
+        /// Describes how to send queries using the GraphQL.
+        /// </summary>
+        private void GraphQLQueries()
+        {
+            #region create types
+            //create types at the same time, because of the circular dependencies (Tag has OutgoingEdge to Website, Website has IncomingEdge from Tag)
+            //like shown before, using the GraphQL there are also three different ways to create create an index on property "Name" of type "Website"
+            //1. create an index definition and specifie the property name and index type
+            var Types = GraphDSClient.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+                                                                                Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags) 
+                                                                                    INDICES (MyIndex INDEXTYPE SonesIndex ON ATTRIBUTES Name)", "sones.gql");
+
+            //2. on creating the type with the property "Name", just define the property "Name" under INDICES
+            //var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+            //                                                                    Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags) INDICES (Name)");
+
+            //3. make a create index query
+            //var Types = GraphQL.Query(SecToken, TransToken, @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+            //                                                                    Website ATTRIBUTES (String Name, String URL) INCOMINGEDGES (Tag.TaggedWebsites Tags)");
+            //var MyIndex = GraphQL.Query(SecToken, TransToken, "CREATE INDEX MyIndex ON VERTEX TYPE Website (Name) INDEXTYPE SonesIndex");            
+            CheckResult(Types);
+            #endregion
+
+            #region create instances of type "Website"
+
+            var cnnResult = GraphDSClient.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'CNN', URL = 'http://cnn.com/')", "sones.gql");
+            CheckResult(cnnResult);
+
+            var xkcdResult = GraphDSClient.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'xkcd', URL = 'http://xkcd.com/')", "sones.gql");
+            CheckResult(xkcdResult);
+
+            var onionResult = GraphDSClient.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'onion', URL = 'http://theonion.com/')", "sones.gql");
+            CheckResult(onionResult);
+
+            //adding an unknown property ("Unknown") means the property isn't defined before
+            var unknown = GraphDSClient.Query(SecToken, TransToken, "INSERT INTO Website VALUES (Name = 'Test', URL = '', Unknown = 'unknown property')", "sones.gql");
+            CheckResult(onionResult);
+
+            #endregion
+
+            #region create instances of type "Tag"
+
+            var goodResult = GraphDSClient.Query(SecToken, TransToken, "INSERT INTO Tag VALUES (Name = 'good', TaggedWebsites = SETOF(Name = 'CNN', Name = 'xkcd'))", "sones.gql");
+            CheckResult(goodResult);
+
+            var funnyResult = GraphDSClient.Query(SecToken, TransToken, "INSERT INTO Tag VALUES (Name = 'funny', TaggedWebsites = SETOF(Name = 'xkcd', Name = 'onion'))", "sones.gql");
+            CheckResult(funnyResult);
+
+            #endregion
+
+            Console.WriteLine("GQL Queries finished...");
+        }
+
+        /// <summary>
+        /// Executes some select statements.
+        /// </summary>
+        private void SELECTS()
+        {
+            // find out which tags xkcd is tagged with
+            var _xkcdtags = GraphDSClient.Query(SecToken, TransToken, "FROM Website w SELECT w.Tags WHERE w.Name = 'xkcd' DEPTH 1", "sones.gql");
+
+            CheckResult(_xkcdtags);
+
+            foreach (var _tag in _xkcdtags.Vertices)
+                foreach (var edge in _tag.GetHyperEdge("Tags").GetAllEdges())
+                    Console.WriteLine(edge.GetTargetVertex().GetPropertyAsString("Name"));
+
+            // List tagged sites names and the count of there tags
+            var _taggedsites = GraphDSClient.Query(SecToken, TransToken, "FROM Website w SELECT w.Name, w.Tags.Count() AS Counter", "sones.gql");
+
+            CheckResult(_taggedsites);
+
+            foreach (var _sites in _taggedsites.Vertices)
+                Console.WriteLine("{0} => {1}", _sites.GetPropertyAsString("Name"), _sites.GetPropertyAsString("Counter"));
+
+            // find out the URL's of the website of each Tag
+            var _urls = GraphDSClient.Query(SecToken, TransToken, "FROM Tag t SELECT t.Name, t.TaggedWebsites.URL", "sones.gql");
+
+            CheckResult(_urls);
+
+            foreach (var _tag in _urls.Vertices)
+                foreach (var edge in _tag.GetHyperEdge("TaggedWebsites").GetAllEdges())
+                    Console.WriteLine(_tag.GetPropertyAsString("Name") + " - " + edge.GetTargetVertex().GetPropertyAsString("URL"));
+
+            Console.WriteLine("SELECT operations finished...");
+        }
+
+        /// <summary>
+        /// This private method analyses the QueryResult, shows the ResultType and Errors if existing.
+        /// </summary>
+        /// <param name="myQueryResult">The result of a query.</param>
+        private bool CheckResult(QueryResult myQueryResult)
+        {
+            if (myQueryResult.Error != null)
+            {
+                if (myQueryResult.Error.InnerException != null)
+                    Console.WriteLine(myQueryResult.Error.InnerException.Message);
+                else
+                    Console.WriteLine(myQueryResult.Error.Message);
+
+                return false;
+            }
+            else
+            {
+                Console.WriteLine("Query " + myQueryResult.TypeOfResult);
+
+                return true;
+            }
+        }
+
         #endregion
     }
     
