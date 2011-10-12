@@ -175,6 +175,10 @@
       <Project>{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723}</Project>
       <Name>Constants</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\DataStructures\DataStructures.csproj">
+      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
+      <Name>DataStructures</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
