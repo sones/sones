@@ -48,7 +48,9 @@ namespace sones.GraphDS.GraphDSRemoteClient
             StreamedBinding.MessageEncoding = WSMessageEncoding.Text;
             StreamedBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
             StreamedBinding.TransferMode = TransferMode.Streamed;
-            StreamedBinding.MaxReceivedMessageSize = 1073741824;
+            StreamedBinding.MaxReceivedMessageSize = 2147483648;
+            StreamedBinding.MaxBufferSize = 4096;
+            StreamedBinding.SendTimeout = new TimeSpan(1, 0, 0, 0);
 
             try
             {

@@ -143,7 +143,7 @@ namespace TagExampleWithGraphMappingFramework
 
             #endregion
 
-            #endregion
+        #endregion
 
             #region Some helping lines...
             if (!quiet)
@@ -168,6 +168,8 @@ namespace TagExampleWithGraphMappingFramework
 
                 Console.WriteLine("Enter 'shutdown' to initiate the shutdown of this instance.");
             }
+
+
 
             Run();
 
@@ -226,34 +228,40 @@ namespace TagExampleWithGraphMappingFramework
 
         public void Run()
         {
+            
             GraphDSClient = new GraphDS_RemoteClient(new Uri("http://localhost:9970/rpc"));
             SecToken = GraphDSClient.LogOn(new RemoteUserPasswordCredentials("test", "test"));
             TransToken = GraphDSClient.BeginTransaction(SecToken);
 
             #region create types, create instances and additional work using the GraphDB API
 
+            GraphDSClient.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
+
+            Console.WriteLine("Press enter to start example");
+            Console.ReadLine();
+
             GraphDBRequests();
 
             #endregion
 
             //clear the DB (delete all created types) to create them again using the QueryLanguage
-            //GraphDSClient.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
+            GraphDSClient.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
 
-            //#region create some types and insert values using the SonesQueryLanguage
+            #region create some types and insert values using the SonesQueryLanguage
 
-            //GraphQLQueries();
+            GraphQLQueries();
 
-            //#endregion
+            #endregion
 
-            //#region make some SELECTS
+            #region make some SELECTS
 
-            //SELECTS();
+            SELECTS();
 
-            //#endregion
+            #endregion
 
-            //Console.WriteLine();
-            //Console.WriteLine("Finished Example. Type a key to finish!");
-            //Console.ReadKey();
+            Console.WriteLine();
+            Console.WriteLine("Finished Example. Type a key to finish!");
+            Console.ReadKey();
         }
 
         private void GraphDBRequests()
@@ -294,12 +302,9 @@ namespace TagExampleWithGraphMappingFramework
             var PropertyUrl = new PropertyPredefinition("URL", "String")
                                          .SetAsMandatory();
 
-            var PropertyLogo = new BinaryPropertyPredefinition("Logo");
-
             //add properties
             Website_VertexTypePredefinition.AddProperty(PropertyName);
             Website_VertexTypePredefinition.AddProperty(PropertyUrl);
-            Website_VertexTypePredefinition.AddBinaryProperty(PropertyLogo);
 
             #region create an index on type "Website" on property "Name"
             //there are three ways to set an index on property "Name" 
@@ -372,22 +377,14 @@ namespace TagExampleWithGraphMappingFramework
             if(Website != null)
                 Console.WriteLine("Vertex Type 'Website' created");
 
-            Console.WriteLine("Has Logo: " + Website.HasBinaryProperty("Logo"));
-
             #endregion
 
             #region insert some Websites by sending requests
 
-            Stream logoStream = new FileStream("some_archive.rar", FileMode.Open);
-            
-
             var sones = GraphDSClient.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
                                                                                     .AddStructuredProperty("Name", "Sones")
-                                                                                    .AddStructuredProperty("URL", "http://sones.com/")
-                                                                                    .AddBinaryProperty("Logo", logoStream),
+                                                                                    .AddStructuredProperty("URL", "http://sones.com/"),
                                                                                     (Statistics, Result) => Result);
-
-            logoStream.Close();
 
             var cnn = GraphDSClient.Insert<IVertex>(SecToken, TransToken, new RequestInsertVertex("Website")
                                                                                     .AddStructuredProperty("Name", "CNN")
@@ -427,12 +424,6 @@ namespace TagExampleWithGraphMappingFramework
                 Console.WriteLine("Website 'test' successfully inserted");
 
             #endregion
-
-            Stream newLogo = new FileStream("newLogo.png", FileMode.Create);
-            var propdef = Website.GetBinaryPropertyDefinition("Logo");
-            Stream incoming = sones.GetBinaryProperty(propdef.ID);
-            incoming.CopyTo(newLogo);
-            newLogo.Close();
 
             #region insert some Tags by sending requests
 
@@ -635,6 +626,7 @@ namespace TagExampleWithGraphMappingFramework
                 Console.WriteLine("-----------------------------------------------");
                 Console.WriteLine();
                 Console.WriteLine("Starting up GraphDB...");
+                
             }
 
             try
