@@ -91,8 +91,7 @@ namespace sones.sonesGraphDBStarter
                 string configuredLocation = Properties.Settings.Default.PersistenceLocation;
                 string configuredPageSize = Properties.Settings.Default.PageSize;
 				string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
-				string configuredMinDummyVertexInitCapacity = Properties.Settings.Default.MinDummyVertexInitCapacity;
-				string configuredVertexPreExtension = Properties.Settings.Default.VertexPreExtension;
+				string configuredUseVertexExtensions = Properties.Settings.Default.UseVertexExtensions;
                 string configuredWriteStrategy = Properties.Settings.Default.WriteStrategy;
 
                 /* Configure the location */
@@ -116,11 +115,8 @@ namespace sones.sonesGraphDBStarter
                 /* Configuration for the buffer size */
                 int bufferSize = Int32.Parse(configuredBufferSize);
 
-				/* Configuration for the minimum initial dummy vertex data capacity */
-				int minDummyVertexInitCapacity = Int32.Parse(configuredMinDummyVertexInitCapacity);
-
-				/* Configuration for the vertex pre-extension */
-				int vertexPreExtension = Int32.Parse(configuredVertexPreExtension);
+				/* Configuration for using vertex extensions */
+				bool useVertexExtensions = Boolean.Parse(configuredUseVertexExtensions);
 
                 /* Make a new instance by applying the configuration */
                 try
@@ -131,8 +127,7 @@ namespace sones.sonesGraphDBStarter
 																													{ "pageSize", pageSize },
 																													{ "bufferSizePages", bufferSize },
 																													{ "writeStrategy", configuredWriteStrategy },
-																													{ "minDummyVertexInitCapacity", minDummyVertexInitCapacity },
-																													{ "vertexPreExtension", vertexPreExtension } })),true,null,location.AbsolutePath);
+																													{ "useVertexExtensions", useVertexExtensions } })), true, null, location.AbsolutePath);
                 
                     if (!quiet)
                         Console.WriteLine("Persistence layer initialized.");
