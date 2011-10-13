@@ -84,10 +84,6 @@
     <None Include="sonesGraphDBStarter.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\EnterpriseEdition\Plugins\SonesGQL\GraphDBImport\Implementations\XMLBulkImport\XMLBulkImport.csproj">
-      <Project>{84B824AF-80ED-4383-9BEF-FBC533FFE629}</Project>
-      <Name>XMLBulkImport</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
