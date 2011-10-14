@@ -32,7 +32,7 @@ namespace sones.Plugins.Index.Abstract
 
         public abstract Type GetKeyType();
 
-        public abstract void Add(IComparable myKey, long myVertexID, 
+        public abstract void Add(IComparable myKey, long? myVertexID, 
             IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
 
         public abstract bool TryGetValues(IComparable myKey, out IEnumerable<long> myVertexIDs);
@@ -92,8 +92,7 @@ namespace sones.Plugins.Index.Abstract
         /// </summary>
         /// <param name="myVertices">A collection of indexes.</param>
         /// <param name="myIndexAddStrategy">Define what happens when a key already exists.</param>
-        public virtual void AddRange(IEnumerable<IVertex> myVertices, 
-            IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
+        public virtual void AddRange(IEnumerable<IVertex> myVertices, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             foreach (var vertex in myVertices)
             {
@@ -106,7 +105,7 @@ namespace sones.Plugins.Index.Abstract
         /// </summary>
         /// <param name="myKeyValuePairs">Collection of key-value-pairs</param>
         /// <param name="myIndexAddStrategy">Define what happens, if a key already exists.</param>
-        public virtual void AddRange(IEnumerable<KeyValuePair<IComparable, long>> myKeyValuePairs, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
+        public virtual void AddRange(IEnumerable<KeyValuePair<IComparable, long?>> myKeyValuePairs, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
         {
             foreach (var kvPair in myKeyValuePairs)
             {
