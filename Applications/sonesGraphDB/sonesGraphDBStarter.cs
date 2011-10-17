@@ -86,27 +86,26 @@ namespace sones.sonesGraphDBStarter
             if (Properties.Settings.Default.UsePersistence)
             {
                 if (!quiet)
-                   Console.WriteLine("Initializing persistence layer...");
- 
-                string configuredLocation = Properties.Settings.Default.PersistenceLocation;
+                    Console.WriteLine("Initializing persistence layer...");
+
+                Uri configuredLocation = new Uri(Properties.Settings.Default.PersistenceLocation, UriKind.RelativeOrAbsolute);
                 string configuredPageSize = Properties.Settings.Default.PageSize;
-				string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
-				string configuredUseVertexExtensions = Properties.Settings.Default.UseVertexExtensions;
+                string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
+                string configuredUseVertexExtensions = Properties.Settings.Default.UseVertexExtensions;
                 string configuredWriteStrategy = Properties.Settings.Default.WriteStrategy;
 
                 /* Configure the location */
 
                 Uri location = null;
-                
-                if (configuredLocation.Contains("file:"))
+
+                if (configuredLocation.IsAbsoluteUri)
                 {
-                    location = new Uri(configuredLocation);
+                    location = configuredLocation;
                 }
                 else
                 {
-                    string rootPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location);
-                    string dataPath = rootPath + Path.DirectorySeparatorChar + configuredLocation;
-                    location = new Uri(@dataPath);
+                    Uri rootPath = new Uri(Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location));
+                    location = new Uri(rootPath, configuredLocation);
                 }
 
                 /* Configuration for the page size */
@@ -115,34 +114,34 @@ namespace sones.sonesGraphDBStarter
                 /* Configuration for the buffer size */
                 int bufferSize = Int32.Parse(configuredBufferSize);
 
-				/* Configuration for using vertex extensions */
-				bool useVertexExtensions = Boolean.Parse(configuredUseVertexExtensions);
+                /* Configuration for using vertex extensions */
+                bool useVertexExtensions = Boolean.Parse(configuredUseVertexExtensions);
 
                 /* Make a new instance by applying the configuration */
                 try
                 {
                     //Make a new GraphDB instance
-					GraphDB = new SonesGraphDB(new GraphDBPlugins(
-						new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location },
+                    GraphDB = new SonesGraphDB(new GraphDBPlugins(
+                        new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location },
 																													{ "pageSize", pageSize },
 																													{ "bufferSizePages", bufferSize },
 																													{ "writeStrategy", configuredWriteStrategy },
 																													{ "useVertexExtensions", useVertexExtensions } })), true, null, location.AbsolutePath);
-                
+
                     if (!quiet)
                         Console.WriteLine("Persistence layer initialized.");
                 }
                 catch (Exception a)
                 {
                     if (!quiet)
-                    { 
+                    {
                         Console.WriteLine(a.Message);
                         Console.WriteLine(a.StackTrace);
 
                         Console.Error.WriteLine("Could not access the data directory " + location.AbsoluteUri + ". Please make sure you that you have the right file access permissions!");
                         Console.Error.WriteLine("Using in memory storage instead.");
                     }
-                    GraphDB = new SonesGraphDB(null,true,new CultureInfo(Properties.Settings.Default.DatabaseCulture));
+                    GraphDB = new SonesGraphDB(null, true, new CultureInfo(Properties.Settings.Default.DatabaseCulture));
                 }
             }
             else
@@ -154,58 +153,58 @@ namespace sones.sonesGraphDBStarter
             // Plugins are loaded by the GraphDS with their according PluginDefinition and only if they are listed
             // below - there is no auto-discovery for plugin types in GraphDS (!)
 
-                #region Query Languages
-                // the GQL Query Language Plugin needs the GraphDB instance as a parameter
-                List<PluginDefinition> QueryLanguages = new List<PluginDefinition>();
-                Dictionary<string, object> GQL_Parameters = new Dictionary<string, object>();
-                GQL_Parameters.Add("GraphDB", GraphDB);
+            #region Query Languages
+            // the GQL Query Language Plugin needs the GraphDB instance as a parameter
+            List<PluginDefinition> QueryLanguages = new List<PluginDefinition>();
+            Dictionary<string, object> GQL_Parameters = new Dictionary<string, object>();
+            GQL_Parameters.Add("GraphDB", GraphDB);
 
-                QueryLanguages.Add(new PluginDefinition("sones.gql", GQL_Parameters));
-                #endregion
+            QueryLanguages.Add(new PluginDefinition("sones.gql", GQL_Parameters));
+            #endregion
 
-                #region REST Service Plugins
-                List<PluginDefinition> SonesRESTServices = new List<PluginDefinition>();
-                // not yet used
-                #endregion
+            #region REST Service Plugins
+            List<PluginDefinition> SonesRESTServices = new List<PluginDefinition>();
+            // not yet used
+            #endregion
 
-                #region Drain Pipes            
-                
-                //// QueryLog DrainPipe
-                //Dictionary<string, object> QueryLog_Parameters = new Dictionary<string, object>();
-                //QueryLog_Parameters.Add("AsynchronousMode", true);  // do the work in a separate thread to not slow down queries
-                //QueryLog_Parameters.Add("MaximumAsyncBufferSize", (Int32)1024 * 1024 * 10); // 10 Mbytes of maximum async queue size
-                //QueryLog_Parameters.Add("AppendLogPathAndName", "sones.drainpipelog");
-                //QueryLog_Parameters.Add("CreateNew", false); // always create a new file on start-up
-                //QueryLog_Parameters.Add("FlushOnWrite", true);  // always flush on each write
-            
-                //// the DrainPipe Log expects several parameters
-                //Dictionary<string, object> DrainPipeLog_Parameters = new Dictionary<string, object>();
-                //DrainPipeLog_Parameters.Add("AsynchronousMode", true);  // do the work in a separate thread to not slow down queries
-                //DrainPipeLog_Parameters.Add("MaximumAsyncBufferSize", (Int32)1024 * 1024 * 10); // 10 Mbytes of maximum async queue size
-                //DrainPipeLog_Parameters.Add("AppendLogPathAndName", "sones.drainpipelog");
-                //DrainPipeLog_Parameters.Add("CreateNew", false); // always create a new file on start-up
-                //DrainPipeLog_Parameters.Add("FlushOnWrite", true);  // always flush on each write
+            #region Drain Pipes
 
-                //Dictionary<string, object> DrainPipeLog2_Parameters = new Dictionary<string, object>();
-                //DrainPipeLog2_Parameters.Add("AsynchronousMode", true);  // do the work in a separate thread to not slow down queries
-                //DrainPipeLog2_Parameters.Add("MaximumAsyncBufferSize", (Int32)1024 * 1024 * 10); // 10 Mbytes of maximum async queue size
-                //DrainPipeLog2_Parameters.Add("AppendLogPathAndName", "sones.drainpipelog2");
-                //DrainPipeLog2_Parameters.Add("CreateNew", false); // always create a new file on start-up
-                //DrainPipeLog2_Parameters.Add("FlushOnWrite", true);  // always flush on each write
+            //// QueryLog DrainPipe
+            //Dictionary<string, object> QueryLog_Parameters = new Dictionary<string, object>();
+            //QueryLog_Parameters.Add("AsynchronousMode", true);  // do the work in a separate thread to not slow down queries
+            //QueryLog_Parameters.Add("MaximumAsyncBufferSize", (Int32)1024 * 1024 * 10); // 10 Mbytes of maximum async queue size
+            //QueryLog_Parameters.Add("AppendLogPathAndName", "sones.drainpipelog");
+            //QueryLog_Parameters.Add("CreateNew", false); // always create a new file on start-up
+            //QueryLog_Parameters.Add("FlushOnWrite", true);  // always flush on each write
+
+            //// the DrainPipe Log expects several parameters
+            //Dictionary<string, object> DrainPipeLog_Parameters = new Dictionary<string, object>();
+            //DrainPipeLog_Parameters.Add("AsynchronousMode", true);  // do the work in a separate thread to not slow down queries
+            //DrainPipeLog_Parameters.Add("MaximumAsyncBufferSize", (Int32)1024 * 1024 * 10); // 10 Mbytes of maximum async queue size
+            //DrainPipeLog_Parameters.Add("AppendLogPathAndName", "sones.drainpipelog");
+            //DrainPipeLog_Parameters.Add("CreateNew", false); // always create a new file on start-up
+            //DrainPipeLog_Parameters.Add("FlushOnWrite", true);  // always flush on each write
+
+            //Dictionary<string, object> DrainPipeLog2_Parameters = new Dictionary<string, object>();
+            //DrainPipeLog2_Parameters.Add("AsynchronousMode", true);  // do the work in a separate thread to not slow down queries
+            //DrainPipeLog2_Parameters.Add("MaximumAsyncBufferSize", (Int32)1024 * 1024 * 10); // 10 Mbytes of maximum async queue size
+            //DrainPipeLog2_Parameters.Add("AppendLogPathAndName", "sones.drainpipelog2");
+            //DrainPipeLog2_Parameters.Add("CreateNew", false); // always create a new file on start-up
+            //DrainPipeLog2_Parameters.Add("FlushOnWrite", true);  // always flush on each write
 
 
-                List<PluginDefinition> DrainPipes = new List<PluginDefinition>();
-                //DrainPipes.Add(new PluginDefinition("sones.querylog", QueryLog_Parameters));
-                //DrainPipes.Add(new PluginDefinition("sones.drainpipelog", DrainPipeLog_Parameters));
-                //DrainPipes.Add(new PluginDefinition("sones.drainpipelog", DrainPipeLog2_Parameters));
-                #endregion
+            List<PluginDefinition> DrainPipes = new List<PluginDefinition>();
+            //DrainPipes.Add(new PluginDefinition("sones.querylog", QueryLog_Parameters));
+            //DrainPipes.Add(new PluginDefinition("sones.drainpipelog", DrainPipeLog_Parameters));
+            //DrainPipes.Add(new PluginDefinition("sones.drainpipelog", DrainPipeLog2_Parameters));
+            #endregion
 
             #endregion
 
-            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(SonesRESTServices,QueryLanguages,DrainPipes);
+            GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(SonesRESTServices, QueryLanguages, DrainPipes);
 
-            _dsServer = new GraphDS_Server(GraphDB, Properties.Settings.Default.ListeningPort,Properties.Settings.Default.Username,Properties.Settings.Default.Password, IPAddress.Any, PluginsAndParameters);
-            _dsServer.LogOn(new UserPasswordCredentials(Properties.Settings.Default.Username,Properties.Settings.Default.Password));
+            _dsServer = new GraphDS_Server(GraphDB, Properties.Settings.Default.ListeningPort, Properties.Settings.Default.Username, Properties.Settings.Default.Password, IPAddress.Any, PluginsAndParameters);
+            _dsServer.LogOn(new UserPasswordCredentials(Properties.Settings.Default.Username, Properties.Settings.Default.Password));
 
             _dsServer.StartRESTService("", Properties.Settings.Default.ListeningPort, IPAddress.Any);
 
@@ -218,26 +217,26 @@ namespace sones.sonesGraphDBStarter
                 Console.WriteLine("   * If you want to suppress console output add --Q as a");
                 Console.WriteLine("     parameter.");
                 Console.WriteLine();
-                Console.WriteLine("   * REST Service is started at http://localhost:"+Properties.Settings.Default.ListeningPort);
+                Console.WriteLine("   * REST Service is started at http://localhost:" + Properties.Settings.Default.ListeningPort);
                 Console.WriteLine("      * access it directly like in this example: ");
-                Console.WriteLine("           http://localhost:"+Properties.Settings.Default.ListeningPort+"/gql?DESCRIBE%20VERTEX%20TYPES");
+                Console.WriteLine("           http://localhost:" + Properties.Settings.Default.ListeningPort + "/gql?DESCRIBE%20VERTEX%20TYPES");
                 Console.WriteLine("      * if you want JSON Output add ACCEPT: application/json ");
                 Console.WriteLine("        to the client request header (or application/xml or");
                 Console.WriteLine("        application/text)");
                 Console.WriteLine();
                 Console.WriteLine("   * we recommend to use the AJAX WebShell. ");
-                Console.WriteLine("        Browse to http://localhost:"+Properties.Settings.Default.ListeningPort+"/WebShell and use");
-                Console.WriteLine("        the username \""+Properties.Settings.Default.Username+"\" and password \""+Properties.Settings.Default.Password+"\"");
+                Console.WriteLine("        Browse to http://localhost:" + Properties.Settings.Default.ListeningPort + "/WebShell and use");
+                Console.WriteLine("        the username \"" + Properties.Settings.Default.Username + "\" and password \"" + Properties.Settings.Default.Password + "\"");
                 Console.WriteLine();
                 Console.WriteLine("Enter 'shutdown' to initiate the shutdown of this instance.");
             }
 
             Console.CancelKeyPress += OnCancelKeyPress;
-            
+
             while (!shutdown)
             {
                 String command = Console.ReadLine();
-                
+
                 if (!_ctrlCPressed)
                 {
                     if (command != null)
@@ -267,20 +266,20 @@ namespace sones.sonesGraphDBStarter
             _ctrlCPressed = true;
             Console.Write("Shutdown GraphDB (y/n)?");
             string input;
-                do
-                {
-                    input = Console.ReadLine();
-                } while (input == null);
+            do
+            {
+                input = Console.ReadLine();
+            } while (input == null);
 
-                switch (input.ToUpper())
-                {
-                    case "Y":
-                        shutdown = true;
-                        return;
-                    default:
-                        shutdown = false;
-                        return;
-                }
+            switch (input.ToUpper())
+            {
+                case "Y":
+                    shutdown = true;
+                    return;
+                default:
+                    shutdown = false;
+                    return;
+            }
         }//method
         #endregion
 
@@ -320,7 +319,7 @@ namespace sones.sonesGraphDBStarter
             catch (RESTServiceCouldNotBeStartedException e)
             {
                 if (!quiet)
-                { 
+                {
                     Console.WriteLine(e.Message);
                     Console.WriteLine();
                     Console.WriteLine("Press <return> to exit.");
