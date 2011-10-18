@@ -104,7 +104,7 @@ namespace sones.sonesGraphDBStarter
                 }
                 else
                 {
-                    Uri rootPath = new Uri(Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location));
+                    Uri rootPath = new Uri(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location);
                     location = new Uri(rootPath, configuredLocation);
                 }
 
