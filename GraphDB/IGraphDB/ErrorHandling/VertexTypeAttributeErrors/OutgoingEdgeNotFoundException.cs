@@ -19,6 +19,7 @@
 */
 
 using sones.GraphDB.TypeSystem;
+using System;
 
 namespace sones.GraphDB.ErrorHandling
 {

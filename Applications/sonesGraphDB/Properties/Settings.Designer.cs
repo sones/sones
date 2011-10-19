@@ -145,30 +145,6 @@ namespace sones.sonesGraphDBStarter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("65536")]
-        public string PageSize {
-            get {
-                return ((string)(this["PageSize"]));
-            }
-            set {
-                this["PageSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
-        public string BufferSizeInPages {
-            get {
-                return ((string)(this["BufferSizeInPages"]));
-            }
-            set {
-                this["BufferSizeInPages"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("60000")]
         public int UDCWaitUpfront {
             get {
@@ -200,42 +176,6 @@ namespace sones.sonesGraphDBStarter.Properties {
             }
             set {
                 this["UDCEnabled"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("WriteThrough")]
-        public string WriteStrategy {
-            get {
-                return ((string)(this["WriteStrategy"]));
-            }
-            set {
-                this["WriteStrategy"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1200")]
-        public string VertexPreExtension {
-            get {
-                return ((string)(this["VertexPreExtension"]));
-            }
-            set {
-                this["VertexPreExtension"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2400")]
-        public string MinDummyVertexInitCapacity {
-            get {
-                return ((string)(this["MinDummyVertexInitCapacity"]));
-            }
-            set {
-                this["MinDummyVertexInitCapacity"] = value;
             }
         }
     }

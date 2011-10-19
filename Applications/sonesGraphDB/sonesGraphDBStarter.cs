@@ -96,16 +96,15 @@ namespace sones.sonesGraphDBStarter
                 /* Configure the location */
 
                 Uri location = null;
-                
-                if (configuredLocation.Contains("file:"))
+
+                if (configuredLocation.IsAbsoluteUri)
                 {
-                    location = new Uri(configuredLocation);
+                    location = configuredLocation;
                 }
                 else
                 {
-                    string rootPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location);
-                    string dataPath = rootPath + Path.DirectorySeparatorChar + configuredLocation;
-                    location = new Uri(@dataPath);
+                    Uri rootPath = new Uri(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location);
+                    location = new Uri(rootPath, configuredLocation);
                 }
 
                  /* Configuration for the page size */

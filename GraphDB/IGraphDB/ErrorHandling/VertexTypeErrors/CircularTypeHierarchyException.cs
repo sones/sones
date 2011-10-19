@@ -21,6 +21,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.TypeSystem;
+using System;
 
 namespace sones.GraphDB.ErrorHandling
 {
