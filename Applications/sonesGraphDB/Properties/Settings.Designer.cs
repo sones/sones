@@ -61,18 +61,6 @@ namespace sones.sonesGraphDBStarter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UsePersistence {
-            get {
-                return ((bool)(this["UsePersistence"]));
-            }
-            set {
-                this["UsePersistence"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("data")]
         public string PersistenceLocation {
             get {
@@ -92,6 +80,66 @@ namespace sones.sonesGraphDBStarter.Properties {
             }
             set {
                 this["DatabaseCulture"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("65536")]
+        public string PageSize {
+            get {
+                return ((string)(this["PageSize"]));
+            }
+            set {
+                this["PageSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public string BufferSizeInPages {
+            get {
+                return ((string)(this["BufferSizeInPages"]));
+            }
+            set {
+                this["BufferSizeInPages"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UsePersistence {
+            get {
+                return ((bool)(this["UsePersistence"]));
+            }
+            set {
+                this["UsePersistence"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("WriteThrough")]
+        public string WriteStrategy {
+            get {
+                return ((string)(this["WriteStrategy"]));
+            }
+            set {
+                this["WriteStrategy"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public string UseVertexExtensions {
+            get {
+                return ((string)(this["UseVertexExtensions"]));
+            }
+            set {
+                this["UseVertexExtensions"] = value;
             }
         }
         

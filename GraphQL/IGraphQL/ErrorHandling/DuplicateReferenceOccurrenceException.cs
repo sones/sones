@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new DuplicateReferenceOccurrenceException exception
         /// </summary>
         /// <param name="myType">The name of the type</param>
-        public DuplicateReferenceOccurrenceException(String myTypeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public DuplicateReferenceOccurrenceException(String myTypeName, Exception innerException = null) : base(innerException)
         {
             TypeName = myTypeName;
             _msg = String.Format("There is already a reference for type \"{0}\"!", TypeName);

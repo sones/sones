@@ -232,6 +232,10 @@
       <Project>{DFC1BC4B-F865-48C6-B8E1-64644D410748}</Project>
       <Name>GraphMLImport</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\GraphMLImport\GraphMLImport.csproj">
+      <Project>{DFC1BC4B-F865-48C6-B8E1-64644D410748}</Project>
+      <Name>GraphMLImport</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="sonesIcon.ico" />

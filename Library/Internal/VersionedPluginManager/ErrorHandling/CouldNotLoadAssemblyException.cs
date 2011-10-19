@@ -42,7 +42,7 @@ namespace sones.Library.VersionedPluginManager.ErrorHandling
         /// Creates a new CouldNotLoadAssemblyException exception
         /// </summary>
         /// <param name="myAssemblyFile">The path of the assembly file</param>
-        public CouldNotLoadAssemblyException(String myAssemblyFile)
+        public CouldNotLoadAssemblyException(String myAssemblyFile, Exception innerException = null) : base(innerException)
         {
             AssemblyFile = myAssemblyFile;
             _msg = "An assembly could not be loaded due to an incompatible platform ";

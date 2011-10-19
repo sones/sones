@@ -19,10 +19,17 @@
 */
 
 using sones.Library.ErrorHandling;
+using System;
 
 namespace sones.Plugins.SonesGQL.Function.ErrorHandling
 {
-    public class ASonesQLFunctionException : ASonesException
-    {        
+    public abstract class ASonesQLFunctionException : ASonesException
+    {    
+    	/// <summary>
+    	/// Initializes a new instance of the ASonesQLFunctionException.
+    	/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public ASonesQLFunctionException(Exception innerException = null) : base(innerException)
+		{}
     }
 }

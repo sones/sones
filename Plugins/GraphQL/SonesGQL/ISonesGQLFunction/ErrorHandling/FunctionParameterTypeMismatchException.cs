@@ -34,7 +34,13 @@ namespace sones.Plugins.SonesGQL.Function.ErrorHandling
 
         #region constructor
 
-        public FunctionParameterTypeMismatchException(Type myExpectedType, Type myCurrentType)
+		/// <summary>
+		/// Initializes a new instance of the FunctionParameterTypeMismatchException class.
+		/// </summary>
+		/// <param name="myExpectedType"></param>
+		/// <param name="myCurrentType"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public FunctionParameterTypeMismatchException(Type myExpectedType, Type myCurrentType, Exception innerException = null) : base(innerException)
         {
             ExpectedType = myExpectedType;
             CurrentType = myCurrentType;

@@ -232,9 +232,9 @@ namespace sones.Library.VersionedPluginManager
             {
                 loadedPluginAssembly = Assembly.LoadFrom(myFile);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw new CouldNotLoadAssemblyException(myFile);                
+                throw new CouldNotLoadAssemblyException(myFile, e);                
             }
 
             #endregion

@@ -42,7 +42,8 @@ namespace sones.GraphQL.GQL.ErrorHandling
         /// </summary>
         /// <param name="myMember">The extandable member which occurs the error</param>
         /// <param name="myInfo">Exception info</param>
-        public GQLGrammarSetExtandableMemberException(Type myMemberType, String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public GQLGrammarSetExtandableMemberException(Type myMemberType, String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             ExtandableMemberType = myMemberType;

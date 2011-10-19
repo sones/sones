@@ -40,7 +40,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new VertexAttributeExistsInSuperVertexTypeException exception
         /// </summary>
         /// <param name="myVertexAttributeName">The name of the vertex attribute</param>
-        public VertexAttributeExistsInSuperVertexTypeException(String myVertexAttributeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public VertexAttributeExistsInSuperVertexTypeException(String myVertexAttributeName, Exception innerException = null) : base(innerException)
         {
             VertexAttributeName = myVertexAttributeName;
         }
@@ -50,7 +51,8 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="myVertexAttributeName">The name of the vertex attribute</param>
         /// <param name="myVertexSupertypeName">The name of the vertex supertype</param>
-        public VertexAttributeExistsInSuperVertexTypeException(String myVertexAttributeName, String myVertexSupertypeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public VertexAttributeExistsInSuperVertexTypeException(String myVertexAttributeName, String myVertexSupertypeName, Exception innerException = null) : base(innerException)
         {
             VertexAttributeName = myVertexAttributeName;
             VertexSupertypeName = myVertexSupertypeName;

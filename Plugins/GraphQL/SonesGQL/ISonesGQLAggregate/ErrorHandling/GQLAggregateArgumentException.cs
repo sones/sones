@@ -31,7 +31,8 @@ namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
         /// Creates a new GQL Aggregate argument exception
         /// </summary>
         /// <param name="myInfo">The info concerning the exception</param>
-        public GQLAggregateArgumentException(string myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public GQLAggregateArgumentException(string myInfo, Exception innerException = null) : base(innerException)
         {
             _msg = myInfo;
         }

@@ -33,7 +33,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new AggregateOrFunctionDoesNotExistException exception
         /// </summary>
         /// <param name="myAggregateOrFunctionName"></param>
-        public AggregateOrFunctionDoesNotExistException(String myAggregateOrFunctionName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public AggregateOrFunctionDoesNotExistException(String myAggregateOrFunctionName, Exception innerException = null) : base(innerException)
         {
             AggregateOrFunctionName = myAggregateOrFunctionName;            
             _msg = String.Format("The aggregate or function \"{0}\" does not exist!", AggregateOrFunctionName);            

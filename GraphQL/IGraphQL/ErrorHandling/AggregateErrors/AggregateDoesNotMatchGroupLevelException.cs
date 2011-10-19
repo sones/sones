@@ -39,7 +39,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new AggregateDoesNotMatchGroupLevelException exception
         /// </summary>
         /// <param name="myInfo"></param>
-        public AggregateDoesNotMatchGroupLevelException(String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public AggregateDoesNotMatchGroupLevelException(String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             _msg = Info;

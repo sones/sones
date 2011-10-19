@@ -35,7 +35,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new IndexTypeDoesNotExistException exception
         /// </summary>
         /// <param name="myIndexTypeName"></param>
-        public IndexTypeDoesNotExistException(String myType, String myIndexName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public IndexTypeDoesNotExistException(String myType, String myIndexName, Exception innerException = null) : base(innerException)
         {
             IndexName = myIndexName;
             TypeName = myType;

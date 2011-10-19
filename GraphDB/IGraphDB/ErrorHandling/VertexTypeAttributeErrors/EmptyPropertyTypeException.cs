@@ -32,6 +32,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates an instance of EmptyEdgeTypeException.
         /// </summary>
         /// <param name="myPredefinition">The predefinition that causes the exception.</param>
+        public EmptyPropertyTypeException(VertexTypePredefinition myPredefinition, String myPropertyName, Exception innerException = null)
+			: base(innerException)
         /// <param name="myPropertyName">The name of the property.</param>
         public EmptyPropertyTypeException(ATypePredefinition myPredefinition, String myPropertyName)
         {

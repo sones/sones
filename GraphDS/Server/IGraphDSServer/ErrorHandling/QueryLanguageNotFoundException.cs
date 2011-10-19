@@ -35,7 +35,8 @@ namespace sones.GraphDSServer.ErrorHandling
         /// The constructor for the exception.
         /// </summary>
         /// <param name="myMessage">The exception message.</param>
-        public QueryLanguageNotFoundException(String myMessage)
+        /// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public QueryLanguageNotFoundException(String myMessage, Exception innerException = null) : base(message, innerException)
         {
             _msg = myMessage;
         }

@@ -48,7 +48,8 @@ namespace sones.Library.Settings.ErrorHandling
         /// </summary>
         /// <param name="myReferenceType">The type that is expected by the setting</param>
         /// <param name="myActualType">The type of the actual setting</param>
-        public DataTypeMismatchException(Type myReferenceType, Type myActualType)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public DataTypeMismatchException(Type myReferenceType, Type myActualType, Exception innerException = null) : base(innerException)
         {
             ReferenceType = myReferenceType;
             ActualType = myActualType;

@@ -35,7 +35,8 @@ namespace sones.GraphQL.ErrorHandling
         /// </summary>
         /// <param name="myTypeAttribute"></param>
         /// <param name="myFunctionName"></param>
-        public InvalidFunctionBaseException(String myTypeAttribute, String myFunctionName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidFunctionBaseException(String myTypeAttribute, String myFunctionName, Exception innerException = null) : base(innerException)
         {
             TypeAttribute = myTypeAttribute;
             FunctionName = myFunctionName;

@@ -1,4 +1,4 @@
-﻿/*
+/*
 * sones GraphDB - Community Edition - http://www.sones.com
 * Copyright (C) 2007-2011 sones GmbH
 *
@@ -31,7 +31,7 @@ namespace sones.GraphDB.ErrorHandling
     {
         private string _type;
 
-        public TypeDoesNotExistException(string myUnexpectedTypeName, string myInfo = "")
+        public TypeDoesNotExistException(string myUnexpectedTypeName, string myInfo = "", Exception innerException = null) : base(innerException)
         {
             this._type = myUnexpectedTypeName;
 

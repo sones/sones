@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new AggregateNotAllowedException exception
         /// </summary>
         /// <param name="myAggregateNode">The aggregate node</param>
-        public AggregateNotAllowedException(String myAggregateNode)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public AggregateNotAllowedException(String myAggregateNode, Exception innerException = null) : base(innerException)
         {
             Aggregate = myAggregateNode;
             _msg = String.Format("The aggregate \"{0}\" is not allowed in this context!", Aggregate);

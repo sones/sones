@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new OperatorDoesNotExistException exception
         /// </summary>
         /// <param name="myOperator"></param>
-        public OperatorDoesNotExistException(String myOperator)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public OperatorDoesNotExistException(String myOperator, Exception innerException = null) : base(innerException)
         {
             Operator = myOperator;
             _msg = String.Format("The operator {0} does not exist.", Operator);

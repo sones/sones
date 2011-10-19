@@ -111,7 +111,7 @@ namespace sones.GraphDB
         /// <param name="myCulture">the culture of this instance, defaults to en-us</param>
         public SonesGraphDB(
             GraphDBPlugins myPlugins = null,
-            Boolean myCreate = true, CultureInfo myCulture = null)
+            Boolean myCreate = true, CultureInfo myCulture = null, String myPersistenceLocation = "") // HACK: myPersistenceLocation was introduced because the global settings management is not in place at the moment...
         {
             _id = Guid.NewGuid();
 
@@ -133,6 +133,10 @@ namespace sones.GraphDB
             #region settings
 
             _applicationSettings = new GraphApplicationSettings(ConstantsSonesGraphDB.ApplicationSettingsLocation);
+
+            // HACK: if existing set the PersistenceLocation (btk,23.09.2011)
+            PersistenceLocation pl = new PersistenceLocation();
+            _applicationSettings.ApplySetting(pl, myPersistenceLocation);
 
             #endregion
 

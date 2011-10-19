@@ -144,10 +144,21 @@ namespace sones.GraphDB.Manager.Index
             parameter.Add(IndexConstants.PROPERTY_IDS_OPTIONS_KEY, propertyIDs);
             
             parameter = FillOptions(parameter, options);
-            
-            // initialize the index
-            var index = _pluginManager.GetAndInitializePlugin<ISonesIndex>(typeClass, parameter, indexID);
+            // HACK: manually inject eventuall existing PersistenceLocation (btk, 23.09.2011)
+            #region Hack
+            if (_applicationSettings.Get<PersistenceLocation>() != null)
+            {
+                // if not already, initialize
+                if (parameter == null)
+                    parameter = new Dictionary<string, object>();
 
+                if (!parameter.ContainsKey("Path")) // only add when not already in there...
+                    parameter.Add("Path", _applicationSettings.Get<PersistenceLocation>());
+            }
+            #endregion
+
+
+            var index = _pluginManager.GetAndInitializePlugin<ISonesIndex>(typeClass, parameter, indexID);
             var props = myIndexDefinition.Properties.Select(prop => new VertexInformation((long)BaseTypes.Property, vertexType.GetPropertyDefinition(prop).ID)).ToList();
 
             var date = DateTime.UtcNow.ToBinary();
@@ -467,6 +478,19 @@ namespace sones.GraphDB.Manager.Index
                 // add propertyIDs for indexing
                 parameter.Add(IndexConstants.PROPERTY_IDS_OPTIONS_KEY, def.IndexedProperties.Select(propDef => propDef.ID).ToList());
                 parameter = FillOptions(parameter, options);
+
+                // HACK: manually inject eventuall existing PersistenceLocation (btk, 23.09.2011)
+                #region Hack
+                if (_applicationSettings.Get<PersistenceLocation>() != null)
+                {
+                    // if not already, initialize
+                    if (parameter == null)
+                        parameter = new Dictionary<string, object>();
+
+                    if (!parameter.ContainsKey("Path")) // only add when not already in there...
+                        parameter.Add("Path", _applicationSettings.Get<PersistenceLocation>());
+                }
+                #endregion
 
                 var index = _pluginManager.GetAndInitializePlugin<ISonesIndex>(typeClass, parameter, indexID);
 

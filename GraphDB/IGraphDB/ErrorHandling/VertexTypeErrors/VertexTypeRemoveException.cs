@@ -35,7 +35,8 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="myExpectedVertexType">The expected type</param>
         /// <param name="myCurrentVertexType">The current type</param>
-        public VertexTypeRemoveException(String myVertexType, String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public VertexTypeRemoveException(String myVertexType, String myInfo, Exception innerException = null) : base(innerException)
         {
             VertexType = myVertexType;
             Info = myInfo;

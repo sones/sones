@@ -130,7 +130,7 @@
     <Compile Include="Request\Truncate\PipelineableTruncateRequest.cs" />
     <Compile Include="Request\Update\PipelineableUpdateRequest.cs" />
     <Compile Include="Settings\DefaultIndexImplementation.cs" />
-    <Compile Include="Settings\DefaultRequestManagerImplementation.cs" />
+    <Compile Include="Settings\PersistenceLocation.cs" />    <Compile Include="Settings\DefaultRequestManagerImplementation.cs" />
     <Compile Include="Settings\DefaultRequestSchedulerImplementation.cs" />
     <Compile Include="Settings\DefaultSecurityManagerImplementation.cs" />
     <Compile Include="Settings\DefaultTransactionManagerImplementation.cs" />

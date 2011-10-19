@@ -43,7 +43,8 @@ namespace sones.GraphDB.ErrorHandling.QueryPlan
         /// Creates a new invalid query plan execution exception
         /// </summary>
         /// <param name="myInfo">A description concerning the exception</param>
-        public InvalidQueryPlanExecutionException(String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidQueryPlanExecutionException(String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             _msg = Info;

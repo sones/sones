@@ -30,7 +30,14 @@ namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
         public readonly Type AggregatedType;
         public readonly string Operation;
 
-        public InvalidArithmeticAggregationException(Type myAggregatedType, string myOperation)
+		/// <summary>
+		/// Initializes a new instance of the InvalidArithmeticAggregationException class.
+		/// </summary>
+		/// 
+		/// <param name="myAggregatedType"></param>
+		/// <param name="myOperation"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidArithmeticAggregationException(Type myAggregatedType, string myOperation, Exception innerException = null) : base(innerException)
         {
             // TODO: Complete member initialization
             AggregatedType = myAggregatedType;
