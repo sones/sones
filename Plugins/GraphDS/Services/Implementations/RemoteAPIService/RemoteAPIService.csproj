@@ -160,14 +160,6 @@
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
       <Name>IGraphQL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Library\External\DojrDotNet\Library\Jampad.Dojo.Rpc.csproj">
-      <Project>{AB8B5125-B041-4D49-BB71-6626433EB3B2}</Project>
-      <Name>Jampad.Dojo.Rpc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Library\External\SMDBehavior\V.0.2.2\SMDBehavior.csproj">
-      <Project>{A4A769E4-17DF-4E9D-AAB0-C906AF1CB06A}</Project>
-      <Name>SMDBehavior</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>

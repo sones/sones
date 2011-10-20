@@ -35,7 +35,6 @@ using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanceSer
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceService;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MonoMEX;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.StreamedService;
-using FM.WCF.SMDBehavior;
 using System.Xml;
 
 namespace sones.GraphDS.Services.RemoteAPIService
