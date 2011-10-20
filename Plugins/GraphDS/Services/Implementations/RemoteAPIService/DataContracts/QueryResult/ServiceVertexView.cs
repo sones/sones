@@ -24,17 +24,33 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphQL.Result;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
+using sones.GraphDB.TypeSystem;
+using sones.GraphDS.Services.RemoteAPIService.ServiceConverter;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
+    [KnownType(typeof(ServicePropertyMultiplicity))]
     public class ServiceVertexView
     {
         public ServiceVertexView(IVertexView myVertexView)
         {
-            SingleEdges = myVertexView.GetAllSingleEdges().Select(x => new Tuple<string, ServiceSingleEdgeView>(x.Item1, new ServiceSingleEdgeView(x.Item2))).ToList();
-            HyperEdges = myVertexView.GetAllHyperEdges().Select(x => new Tuple<string, ServiceHyperEdgeView>(x.Item1, new ServiceHyperEdgeView(x.Item2))).ToList();
-            Properties = myVertexView.GetAllProperties().ToList();
+            var singleEdges = myVertexView.GetAllSingleEdges();
+            SingleEdges = (singleEdges == null) ? null : singleEdges.Select(x => new Tuple<string, ServiceSingleEdgeView>(x.Item1, new ServiceSingleEdgeView(x.Item2))).ToList();
+            var hyperEdges = myVertexView.GetAllHyperEdges();
+            HyperEdges = (hyperEdges == null) ? null : hyperEdges.Select(x => new Tuple<string, ServiceHyperEdgeView>(x.Item1, new ServiceHyperEdgeView(x.Item2))).ToList();
+            var properties = myVertexView.GetAllProperties();
+            if (properties == null)
+                Properties = null;
+            else
+                Properties = properties.Select(x =>
+                {
+                    if (x.Item2 is PropertyMultiplicity)
+                        return new Tuple<string, object>(x.Item1, ConvertHelper.ToServicePropertyMultiplicity((PropertyMultiplicity)x.Item2));
+                    else
+                        return x;
+                }).ToList();
         }
 
         [DataMember]

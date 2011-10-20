@@ -10,7 +10,6 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
     {
         internal QueryResult ToQueryResult()
         {
-            
             ResultType type;
             if(this.TypeOfResult == ServiceResultType.Successful)
                 type = ResultType.Successful;

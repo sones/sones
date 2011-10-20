@@ -121,5 +121,28 @@ namespace sones.GraphDS.GraphDSRemoteClient
             }
             return multiplicity;
         }
+
+        /// <summary>
+        /// Converts serializable ServicePropertyMultiplicity into PropertyMultiplicity, default: Single.
+        /// </summary>
+        /// <param name="myMultiplicity"></param>
+        /// <returns></returns>
+        internal static PropertyMultiplicity ToPropertyMultiplicity(ServicePropertyMultiplicity myMultiplicity)
+        {
+            PropertyMultiplicity multiplicity;
+            switch (myMultiplicity)
+            {
+                case ServicePropertyMultiplicity.Set:
+                    multiplicity = PropertyMultiplicity.Set;
+                    break;
+                case ServicePropertyMultiplicity.List:
+                    multiplicity = PropertyMultiplicity.List;
+                    break;
+                default:
+                    multiplicity = PropertyMultiplicity.Single;
+                    break;
+            }
+            return multiplicity;
+        }
     }
 }

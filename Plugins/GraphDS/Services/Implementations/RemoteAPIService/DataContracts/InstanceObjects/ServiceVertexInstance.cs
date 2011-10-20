@@ -34,11 +34,15 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
         {
             this.VertexID = myVertex.VertexID;
             this.Edition =  myVertex.EditionName;
+            this.VertexRevisionID = myVertex.VertexRevisionID;
         }
             
 
         [DataMember]
         public Int64 VertexID;
+
+        [DataMember]
+        public Int64 VertexRevisionID;
         
         [DataMember]
         public String Edition;

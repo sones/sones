@@ -35,6 +35,8 @@ using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanceSer
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceService;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MonoMEX;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.StreamedService;
+using FM.WCF.SMDBehavior;
+using System.Xml;
 
 namespace sones.GraphDS.Services.RemoteAPIService
 {
@@ -83,6 +85,11 @@ namespace sones.GraphDS.Services.RemoteAPIService
         /// </summary>
         private ServiceHost _ServiceHost;
 
+        /// <summary>
+        /// The MEX Service Host
+        /// </summary>
+        private ServiceHost _ServiceHost2;
+
         #endregion
 
         #region C'tor
@@ -117,6 +124,17 @@ namespace sones.GraphDS.Services.RemoteAPIService
             BasicBinding.Namespace = Namespace;
             BasicBinding.MessageEncoding = WSMessageEncoding.Text;
             BasicBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
+            BasicBinding.MaxBufferSize = 33554432;
+            BasicBinding.MaxReceivedMessageSize = 33554432;
+            BasicBinding.SendTimeout = new TimeSpan(1, 0, 0);
+            BasicBinding.ReceiveTimeout = new TimeSpan(1, 0, 0);
+            XmlDictionaryReaderQuotas readerQuotas = new XmlDictionaryReaderQuotas();
+            readerQuotas.MaxDepth = 2147483647;
+            readerQuotas.MaxStringContentLength = 2147483647;
+            readerQuotas.MaxBytesPerRead = 2147483647;
+            readerQuotas.MaxNameTableCharCount = 2147483647;
+            readerQuotas.MaxArrayLength = 2147483647;
+            BasicBinding.ReaderQuotas = readerQuotas;
 
             BasicHttpBinding StreamedBinding = new BasicHttpBinding();
             StreamedBinding.Name = "sonesStreamed";
@@ -128,6 +146,13 @@ namespace sones.GraphDS.Services.RemoteAPIService
             StreamedBinding.MaxBufferSize = 4096;
             StreamedBinding.SendTimeout = new TimeSpan(1, 0, 0, 0);
             StreamedBinding.ReceiveTimeout = new TimeSpan(1, 0, 0, 0);
+
+            WebHttpBinding WebBinding = new WebHttpBinding();
+            WebBinding.Name = "sonesWeb";
+            WebBinding.Namespace = Namespace;
+            WebBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
+            
+            
 
             if (IsSecure)
             {
@@ -167,8 +192,17 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
             ContractDescription APIContract = ContractDescription.GetContract(typeof(IGraphDS_API));
             APIContract.Namespace = Namespace;
+
+            #region SOAP
             ServiceEndpoint APIService = new ServiceEndpoint(APIContract, BasicBinding, new EndpointAddress(this.URI.ToString()));
             _ServiceHost.AddServiceEndpoint(APIService);
+            #endregion
+            
+            #region json
+            ServiceEndpoint APIServiceJson = new ServiceEndpoint(APIContract, WebBinding, new EndpointAddress(this.URI.ToString() + "/json"));
+            APIServiceJson.Behaviors.Add(new WebScriptEnablingBehavior());
+            _ServiceHost.AddServiceEndpoint(APIServiceJson);
+            #endregion
 
             #endregion
 
@@ -216,22 +250,21 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
             // mono can't export automatic generated WSDL. Because of that, we must do that explicit
 
-            WebHttpBinding WebBinding = new WebHttpBinding();
-            WebBinding.Namespace = Namespace;
+            WebHttpBinding MexWebBinding = new WebHttpBinding();
+            MexWebBinding.Namespace = Namespace;
             var rpc = this.URI.Segments.Last();
             var monoURI = this.URI.ToString().Replace(rpc, "");
 
-            var _ServiceHost2 = new ServiceHost(typeof(MonoMEX), new Uri(monoURI));
+            _ServiceHost2 = new ServiceHost(typeof(MonoMEX), new Uri(monoURI));
             _ServiceHost2.Description.Namespace = Namespace;
 
             ContractDescription MonoMEX = ContractDescription.GetContract(typeof(IMonoMEX));
 
 
-            ServiceEndpoint MonoMEXeService = new ServiceEndpoint(MonoMEX, WebBinding, new EndpointAddress(new Uri(monoURI)));
+            ServiceEndpoint MonoMEXeService = new ServiceEndpoint(MonoMEX, MexWebBinding, new EndpointAddress(new Uri(monoURI)));
 
             _ServiceHost2.AddServiceEndpoint(MonoMEXeService);
             _ServiceHost2.Description.Endpoints[0].Behaviors.Add(new System.ServiceModel.Description.WebHttpBehavior());
-            _ServiceHost2.Open();
 
 
             //the on-the-fly generation of the WSDL leads to several errors on client side (and crashes the server) - so a simple output is necessary
@@ -275,8 +308,9 @@ namespace sones.GraphDS.Services.RemoteAPIService
             if(!IsRunning)
             {
                 _ServiceHost.Open();
+                _ServiceHost2.Open();
+                IsRunning = true;
             }
-            
         }
 
         public void StopServiceHost()
@@ -284,6 +318,8 @@ namespace sones.GraphDS.Services.RemoteAPIService
             if (IsRunning)
             {
                 _ServiceHost.Close();
+                _ServiceHost2.Close();
+                IsRunning = false;
             }
         }
 

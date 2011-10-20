@@ -42,7 +42,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.GraphElements
             this._edition = myVertex.Edition;
             this._vertexID = myVertex.VertexID;
             this._vertexTypeID = myVertex.TypeID;
-            //this._vertexRevisionID = myVertex
+            this._vertexRevisionID = myVertex.VertexRevisionID;
         }
 
         #endregion

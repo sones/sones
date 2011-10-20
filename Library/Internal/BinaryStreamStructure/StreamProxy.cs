@@ -81,12 +81,12 @@ namespace sones.Library.BinaryStreamStructure
             
         }
 
-        public void CopyTo(Stream destination)
+        new public void CopyTo(Stream destination)
         {
             _Stream.CopyTo(destination);
         }
 
-        public void CopyTo(Stream destination, int bufferSize)
+        new public void CopyTo(Stream destination, int bufferSize)
         {
             _Stream.CopyTo(destination, bufferSize);
         }
@@ -96,7 +96,7 @@ namespace sones.Library.BinaryStreamStructure
             return _Stream.CreateObjRef(requestedType);
         }
 
-        public void Dispose()
+        new public void Dispose()
         {
             
         }
@@ -133,12 +133,12 @@ namespace sones.Library.BinaryStreamStructure
             return _Stream.GetHashCode();
         }
 
-        public Object GetLifetimeService()
+        new public Object GetLifetimeService()
         {
             return _Stream.GetLifetimeService();
         }
 
-        public Type GetType()
+        new public Type GetType()
         {
             return _Stream.GetType();
         }

@@ -15,6 +15,8 @@ using sones.GraphQL.Result;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDS.GraphDSRemoteClient.TypeManagement;
 using sones.Library.PropertyHyperGraph;
+using System.ServiceModel.Description;
+using System.Xml;
 
 namespace sones.GraphDS.GraphDSRemoteClient
 {
@@ -42,6 +44,18 @@ namespace sones.GraphDS.GraphDSRemoteClient
             BasicBinding.Name = "sonesBasic";
             BasicBinding.MessageEncoding = WSMessageEncoding.Text;
             BasicBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
+            BasicBinding.MaxBufferSize = 33554432;
+            BasicBinding.MaxReceivedMessageSize = 33554432;
+            BasicBinding.SendTimeout = new TimeSpan(1, 0, 0);
+            BasicBinding.ReceiveTimeout = new TimeSpan(1, 0, 0);
+            XmlDictionaryReaderQuotas readerQuotas = new XmlDictionaryReaderQuotas();
+            readerQuotas.MaxDepth = 2147483647;
+            readerQuotas.MaxStringContentLength = 2147483647;
+            readerQuotas.MaxBytesPerRead = 2147483647;
+            readerQuotas.MaxNameTableCharCount = 2147483647;
+            readerQuotas.MaxStringContentLength = int.MaxValue;
+            readerQuotas.MaxArrayLength = 2147483647;
+            BasicBinding.ReaderQuotas = readerQuotas;
 
             BasicHttpBinding StreamedBinding = new BasicHttpBinding();
             StreamedBinding.Name = "sonesStreamed";
@@ -63,8 +77,18 @@ namespace sones.GraphDS.GraphDSRemoteClient
             }
 
             try
-            { 
-                _GraphDSService = ChannelFactory<GraphDSService>.CreateChannel(BasicBinding, new EndpointAddress(myServiceAddress));
+            {
+                ChannelFactory<GraphDSService> factory = new ChannelFactory<GraphDSService>(BasicBinding, new EndpointAddress(myServiceAddress));
+                foreach (var op in factory.Endpoint.Contract.Operations)
+                {
+                    DataContractSerializerOperationBehavior dataContractBehavior = op.Behaviors.Find<DataContractSerializerOperationBehavior>() as DataContractSerializerOperationBehavior;
+                    if (dataContractBehavior != null)
+                    {
+                        dataContractBehavior.MaxItemsInObjectGraph = 2147483647;
+                    }
+                }
+                _GraphDSService = factory.CreateChannel();
+                
                 _VertexTypeService = ChannelFactory<VertexTypeService>.CreateChannel(BasicBinding, new EndpointAddress(myServiceAddress));
                 _VertexInstanceService = ChannelFactory<VertexInstanceService>.CreateChannel(BasicBinding, new EndpointAddress(myServiceAddress));
                 _EdgeTypeService = ChannelFactory<EdgeTypeService>.CreateChannel(BasicBinding, new EndpointAddress(myServiceAddress));
@@ -130,7 +154,8 @@ namespace sones.GraphDS.GraphDSRemoteClient
         {
             if (myUserCredentials is RemoteUserPasswordCredentials)
             {
-                return _GraphDSService.LogOn(((RemoteUserPasswordCredentials)myUserCredentials).ServiceObject);
+                _SecurityToken = _GraphDSService.LogOn(((RemoteUserPasswordCredentials)myUserCredentials).ServiceObject);
+                return _SecurityToken;
             }
             return null;
         }
@@ -262,7 +287,6 @@ namespace sones.GraphDS.GraphDSRemoteClient
         public TResult Insert<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionID, sones.GraphDB.Request.RequestInsertVertex myRequestInsert, sones.GraphDB.Request.Converter.InsertResultConverter<TResult> myOutputconverter)
         {
             Stopwatch RunningTime = Stopwatch.StartNew();
-            var bla = new ServiceInsertPayload(myRequestInsert);
             var svcVertex = _GraphDSService.Insert(mySecurityToken, myTransactionID, myRequestInsert.VertexTypeName, new ServiceInsertPayload(myRequestInsert));
             if (myRequestInsert.BinaryProperties != null)
                 foreach (var item in myRequestInsert.BinaryProperties)

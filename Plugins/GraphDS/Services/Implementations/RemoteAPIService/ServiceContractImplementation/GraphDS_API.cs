@@ -41,13 +41,12 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 using sones.GraphDS.Services.RemoteAPIService.ErrorHandling;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expression;
 using sones.GraphDS.GraphDSRemoteClient;
+using Jampad.Dojo.Rpc;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
-
     public partial class RPCServiceContract : IGraphDS_API
     {
-
         public ServiceVertexType CreateVertexType(SecurityToken mySecurityToken, Int64 myTransactionToken,
             ServiceVertexTypePredefinition myVertexTypePreDef)
         {

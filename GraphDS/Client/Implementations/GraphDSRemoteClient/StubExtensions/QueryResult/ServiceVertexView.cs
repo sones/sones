@@ -12,8 +12,18 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
         {
             Dictionary<String, Object> properties = new Dictionary<string,object>();
             Dictionary<String, IEdgeView> egdes = new Dictionary<string,IEdgeView>();
-            foreach(var item in this.Properties)
-                properties.Add(item.Item1, item.Item2);
+            foreach (var item in this.Properties)
+            {
+                if (item.Item2 is ServiceEdgeMultiplicity)
+                {
+                    properties.Add(item.Item1, ConvertHelper.ToPropertyMultiplicity((ServicePropertyMultiplicity)item.Item2));
+                }
+                else
+                {
+                    properties.Add(item.Item1, item.Item2);
+                }
+            }
+
             foreach(var item in this.SingleEdges)
                 egdes.Add(item.Item1, item.Item2.ToSingleEdgeView());
             foreach(var item in this.HyperEdges)

@@ -33,12 +33,13 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts;
 using sones.Library.Commons.Security;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
 using sones.GraphDB.TypeSystem;
+using sones.Plugins.GraphDS.Services;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {
-    
-    
-    [ServiceBehavior(Namespace = sonesRPCServer.Namespace, InstanceContextMode = InstanceContextMode.Single)]
+
+
+    [ServiceBehavior(Namespace = sonesRPCServer.Namespace, InstanceContextMode = InstanceContextMode.Single, MaxItemsInObjectGraph = 2147483646)]
     public partial class RPCServiceContract : IRPCServiceContract
     {
         #region Data

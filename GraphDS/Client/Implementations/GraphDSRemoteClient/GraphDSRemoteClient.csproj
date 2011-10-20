@@ -147,7 +147,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\DataSources\sones.Library.Commons.Security.SecurityToken.datasource" />
     <None Include="Service References\sonesGraphDSRemoteAPI\RPCServiceContract1.wsdl" />
     <None Include="Service References\sonesGraphDSRemoteAPI\sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceAttributeDefinition.datasource">

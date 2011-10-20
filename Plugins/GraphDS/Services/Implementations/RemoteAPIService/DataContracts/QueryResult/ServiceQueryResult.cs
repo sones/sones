@@ -25,10 +25,13 @@ using System.Text;
 using System.Runtime.Serialization;
 using sones.GraphQL.Result;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
+    [KnownType(typeof(ServicePropertyMultiplicity))]
     public class ServiceQueryResult
     {
         public ServiceQueryResult(sones.GraphQL.Result.QueryResult myQueryResult)

@@ -18,21 +18,6 @@
 * 
 */
 
-/*using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading;
-using sones.GraphDB;
-using sones.Library.DiscordianDate;
-using sones.Library.VersionedPluginManager;
-using sones.GraphDS.PluginManager;
-using sones.GraphDSServer;
-using sones.GraphDSServer.ErrorHandling;
-using sones.GraphDB.Manager.Plugin;*/
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,6 +44,7 @@ using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphQL.Result;
+using sones.Library.Network.HttpServer;
 
 namespace TagExampleWithGraphMappingFramework
 {
@@ -86,6 +72,7 @@ namespace TagExampleWithGraphMappingFramework
                         quiet = true;
                 }
             }
+
             #region Start RemoteAPI, WebDAV and WebAdmin services, send GraphDS notification
 
             IGraphDB GraphDB;
@@ -105,11 +92,6 @@ namespace TagExampleWithGraphMappingFramework
             QueryLanguages.Add(new PluginDefinition("sones.gql", GQL_Parameters));
             #endregion
 
-            #region REST Service Plugins
-            List<PluginDefinition> SonesRESTServices = new List<PluginDefinition>();
-            // not yet used
-            #endregion
-
             #region GraphDS Service Plugins
             List<PluginDefinition> GraphDSServices = new List<PluginDefinition>();
             #endregion
@@ -122,15 +104,6 @@ namespace TagExampleWithGraphMappingFramework
             _dsServer = new GraphDS_Server(GraphDB, PluginsAndParameters);
 
             #region Start GraphDS Services
-
-            #region pre-configure REST Service
-            Dictionary<string, object> RestParameter = new Dictionary<string, object>();
-            RestParameter.Add("IPAddress", IPAddress.Any);
-            RestParameter.Add("Port", 9975);
-            RestParameter.Add("Username", "test");
-            RestParameter.Add("Password", "test");
-            _dsServer.StartService("sones.RESTService", RestParameter);
-            #endregion
 
             #region Remote API Service
             Dictionary<string, object> RemoteAPIParameter = new Dictionary<string, object>();
@@ -232,6 +205,9 @@ namespace TagExampleWithGraphMappingFramework
             GraphDSClient = new GraphDS_RemoteClient(new Uri("http://localhost:9970/rpc"));
             SecToken = GraphDSClient.LogOn(new RemoteUserPasswordCredentials("test", "test"));
             TransToken = GraphDSClient.BeginTransaction(SecToken);
+
+            Tests();
+            GraphDSClient.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
 
             #region create types, create instances and additional work using the GraphDB API
 
@@ -482,6 +458,25 @@ namespace TagExampleWithGraphMappingFramework
             Console.WriteLine("API operations finished...");
 
             #endregion
+        }
+        #endregion
+
+        #region Tests
+        private void Tests()
+        {
+            //GraphDSClient.Query(SecToken, TransToken, "create abstract vertex type Entity attributes(String Name) comment = 'base entity providing a Name'", "sones.gql");
+            //var result = GraphDSClient.Query(SecToken, TransToken, "create vertex type Album", "sones.gql");
+            //GraphDSClient.Query(SecToken, TransToken, "create vertex type Artist extends Entity attributes(Set<Album> Albums) comment = 'an artist of an album'", "sones.gql");
+            //GraphDSClient.Query(SecToken, TransToken, "create vertex type Genre extends Entity attributes(Set<Album> Albums) comment = 'a genre of an album'", "sones.gql");
+            //GraphDSClient.Query(SecToken, TransToken, "create vertex type Year attributes(UInt32 Value, Set<Album> Albums) unique(Value) comment = 'a year in which an album has been released'", "sones.gql");
+            //GraphDSClient.Query(SecToken, TransToken, "alter vertex type Album add incomingedges(Artist.Albums ProducedBy, Genre.Albums Genre, Year.Albums ReleasedIn)", "sones.gql");
+
+            //GraphDSClient.Query(SecToken, TransToken, "alter vertex type Album add incomingedges(Artist.Albums ProducedBy)", "sones.gql");
+
+            //result = GraphDSClient.Query(SecToken, TransToken, "describe vertex type Album", "sones.gql");
+
+            var result = GraphDSClient.Query(SecToken, TransToken, "create vertex type Ship attributes (String Name, String Class)", "sones.gql");
+            result = GraphDSClient.Query(SecToken, TransToken, "describe vertex type Ship", "sones.gql");
         }
         #endregion
 

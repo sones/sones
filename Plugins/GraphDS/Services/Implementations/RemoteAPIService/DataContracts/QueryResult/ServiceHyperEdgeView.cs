@@ -24,6 +24,8 @@ using System.Linq;
 using System.Text;
 using sones.GraphQL.Result;
 using System.Runtime.Serialization;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
@@ -32,7 +34,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
     {
         public ServiceHyperEdgeView(IHyperEdgeView myEdgeView) : base(myEdgeView.GetAllProperties())
         {
-            Edges = myEdgeView.GetAllEdges().Select(x => new ServiceSingleEdgeView(x)).ToList();
+             Edges = myEdgeView.GetAllEdges().Select(x => new ServiceSingleEdgeView(x)).ToList();
+            //new List<ServiceSingleEdgeView>();
         }
 
         [DataMember]

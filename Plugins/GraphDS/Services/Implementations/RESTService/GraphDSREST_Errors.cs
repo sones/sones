@@ -26,7 +26,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using sones.Library.LanguageExtensions;
-using sones.GraphDS.Services.RESTService.Networking;
+using sones.Library.Network.HttpServer;
 
 
 #endregion

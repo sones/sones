@@ -27,10 +27,11 @@ using sones.Library.VersionedPluginManager;
 using System.IdentityModel.Selectors;
 using System.IdentityModel.Tokens;
 using sones.Library.Commons.Security;
-using sones.GraphDS.Services.RESTService.Networking;
+using sones.Library.Network.HttpServer;
 using System.Net;
 using System.Diagnostics;
 using sones.GraphDS.Services.RESTService.ErrorHandling;
+using sones.Library.Network.HttpServer.Security;
 
 namespace sones.GraphDS.Services.RESTService
 {
