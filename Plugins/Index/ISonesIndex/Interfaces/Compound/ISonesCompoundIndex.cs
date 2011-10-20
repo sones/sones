@@ -41,23 +41,6 @@ namespace sones.Plugins.Index.Compound
 
         #endregion
 
-        #region Init
-
-        /// <summary>
-        /// Inits the index and tells it which
-        /// propertyIDs to use for indexing.
-        /// 
-        /// The order of the list defines the internal
-        /// key order.
-        /// </summary>
-        /// <param name="myPropertyIDs">
-        /// A collection of propertyIDs which will
-        /// be used by the compound index.
-        /// </param>
-        void Init(IEnumerable<Int64> myPropertyIDs);
-
-        #endregion
-
         #region GetKeyTypes
 
         /// <summary>

@@ -63,6 +63,11 @@ namespace sones.Plugins.Index.Abstract
         /// <param name="myPropertyID">ID of the indexed property</param>
         public void Init(IList<Int64> myPropertyIDs)
         {
+            if (_PropertyIDs != null)
+            {
+                throw new InvalidOperationException("Init Method has already been called for this index or propertyIDs have been set in constructor!");
+            }
+
             _PropertyIDs = myPropertyIDs;
         }
 
