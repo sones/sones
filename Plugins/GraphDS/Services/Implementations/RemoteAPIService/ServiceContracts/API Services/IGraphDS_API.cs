@@ -35,6 +35,7 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.PayloadObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expression;
 using sones.GraphDB.TypeSystem;
+using sones.Library.CollectionWrapper;
 
 
 namespace sones.GraphDS.Services.RemoteAPIService.API_Services
@@ -170,6 +171,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         [ServiceKnownType(typeof(ServiceHyperEdgeView))]
         [ServiceKnownType(typeof(ServiceSingleEdgeView))]
         [ServiceKnownType(typeof(ServicePropertyMultiplicity))]
+        [ServiceKnownType(typeof(ServiceIndexDefinition))]
+        [ServiceKnownType(typeof(ServiceEdgeMultiplicity))]
+        [ServiceKnownType(typeof(ListCollectionWrapper))]
         ServiceQueryResult Query(SecurityToken mySecToken, Int64 myTransactionToken, String myQueryString, String myLanguage);
 
         //[OperationContract] There is no plan to implement the Travers method yet, because there is no way to transport traverser logic from the client

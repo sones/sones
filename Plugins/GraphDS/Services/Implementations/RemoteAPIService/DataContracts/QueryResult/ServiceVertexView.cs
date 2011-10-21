@@ -46,8 +46,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
             else
                 Properties = properties.Select(x =>
                 {
-                    if (x.Item2 is PropertyMultiplicity)
-                        return new Tuple<string, object>(x.Item1, ConvertHelper.ToServicePropertyMultiplicity((PropertyMultiplicity)x.Item2));
+                    object value = ConvertHelper.ToServiceObject(x.Item2);
+                    if (value != null)
+                        return new Tuple<string, object>(x.Item1, value);
                     else
                         return x;
                 }).ToList();

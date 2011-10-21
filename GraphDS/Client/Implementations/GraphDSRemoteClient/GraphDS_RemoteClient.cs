@@ -44,8 +44,8 @@ namespace sones.GraphDS.GraphDSRemoteClient
             BasicBinding.Name = "sonesBasic";
             BasicBinding.MessageEncoding = WSMessageEncoding.Text;
             BasicBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
-            BasicBinding.MaxBufferSize = 33554432;
-            BasicBinding.MaxReceivedMessageSize = 33554432;
+            BasicBinding.MaxBufferSize = 268435456;
+            BasicBinding.MaxReceivedMessageSize = 268435456;
             BasicBinding.SendTimeout = new TimeSpan(1, 0, 0);
             BasicBinding.ReceiveTimeout = new TimeSpan(1, 0, 0);
             XmlDictionaryReaderQuotas readerQuotas = new XmlDictionaryReaderQuotas();
@@ -193,7 +193,7 @@ namespace sones.GraphDS.GraphDSRemoteClient
 
         public sones.GraphQL.Result.QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
-            return _GraphDSService.Query(mySecurityToken, myTransactionToken, myQueryString, myQueryLanguageName).ToQueryResult();
+            return _GraphDSService.Query(mySecurityToken, myTransactionToken, myQueryString, myQueryLanguageName).ToQueryResult(this);
         }
 
         public Guid ID

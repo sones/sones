@@ -12,6 +12,18 @@ namespace sones.GraphDS.GraphDSRemoteClient
 {
     internal static class ConvertHelper
     {
+        internal static object ToDsObject(object mySvcObject, IServiceToken myServiceToken)
+        {
+            if (mySvcObject is ServicePropertyMultiplicity)
+                return ToPropertyMultiplicity((ServicePropertyMultiplicity)mySvcObject);
+            else if (mySvcObject is ServiceEdgeMultiplicity)
+                return ToEdgeMultiplicity((ServiceEdgeMultiplicity)mySvcObject);
+            else if (mySvcObject is ServiceIndexDefinition)
+                return new RemoteIndexDefinition((ServiceIndexDefinition)mySvcObject, myServiceToken);
+            else
+                return null;
+        }
+
         internal static IBaseType ToBaseType(ServiceBaseType myBaseType, IServiceToken myServiceToken)
         {
             IBaseType result = null;
@@ -76,6 +88,7 @@ namespace sones.GraphDS.GraphDSRemoteClient
             return expression;
         }
 
+        #region EdgeMultiplicity
         /// <summary>
         /// Converts EdgeMultiplicity into serializable ServiceEdgeMultiplicity, default: SingleEdge.
         /// </summary>
@@ -99,6 +112,31 @@ namespace sones.GraphDS.GraphDSRemoteClient
             return multiplicity;
         }
 
+        /// <summary>
+        /// Converts serializable ServiceEdgeMultiplicity into EdgeMultiplicity, default: SingleEdge.
+        /// </summary>
+        /// <param name="myMultiplicity"></param>
+        /// <returns></returns>
+        internal static EdgeMultiplicity ToEdgeMultiplicity(ServiceEdgeMultiplicity myMultiplicity)
+        {
+            EdgeMultiplicity multiplicity;
+            switch (myMultiplicity)
+            {
+                case ServiceEdgeMultiplicity.MultiEdge:
+                    multiplicity = EdgeMultiplicity.MultiEdge;
+                    break;
+                case ServiceEdgeMultiplicity.HyperEdge:
+                    multiplicity = EdgeMultiplicity.HyperEdge;
+                    break;
+                default:
+                    multiplicity = EdgeMultiplicity.SingleEdge;
+                    break;
+            }
+            return multiplicity;
+        }
+        #endregion
+
+        #region PropertyMultiplicity
         /// <summary>
         /// Converts PropertyMultiplicity into serializable ServicePropertyMultiplicity, default: Single.
         /// </summary>
@@ -144,5 +182,6 @@ namespace sones.GraphDS.GraphDSRemoteClient
             }
             return multiplicity;
         }
+        #endregion
     }
 }

@@ -9,6 +9,18 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 {
     public static class ConvertHelper
     {
+        public static object ToServiceObject(object myObject)
+        {
+            if (myObject is PropertyMultiplicity)
+                return ToServicePropertyMultiplicity((PropertyMultiplicity)myObject);
+            else if (myObject is EdgeMultiplicity)
+                return ToServiceEdgeMultiplicity((EdgeMultiplicity)myObject);
+            else if (myObject is IIndexDefinition)
+                return new ServiceIndexDefinition((IIndexDefinition)myObject);
+            else
+                return null;
+        }
+
         public static ServiceAttributeDefinition ToServiceAttributeDefinition(IAttributeDefinition myAttributeDefinition)
         {
             ServiceAttributeDefinition svcAttributeDef = null;

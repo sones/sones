@@ -124,8 +124,8 @@ namespace sones.GraphDS.Services.RemoteAPIService
             BasicBinding.Namespace = Namespace;
             BasicBinding.MessageEncoding = WSMessageEncoding.Text;
             BasicBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
-            BasicBinding.MaxBufferSize = 33554432;
-            BasicBinding.MaxReceivedMessageSize = 33554432;
+            BasicBinding.MaxBufferSize = 268435456;
+            BasicBinding.MaxReceivedMessageSize = 268435456;
             BasicBinding.SendTimeout = new TimeSpan(1, 0, 0);
             BasicBinding.ReceiveTimeout = new TimeSpan(1, 0, 0);
             XmlDictionaryReaderQuotas readerQuotas = new XmlDictionaryReaderQuotas();
