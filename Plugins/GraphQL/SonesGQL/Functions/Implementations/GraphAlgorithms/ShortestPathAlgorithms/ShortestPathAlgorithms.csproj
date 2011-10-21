@@ -49,45 +49,45 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
       <Name>IGraphQL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\GraphQL\QueryResult\QueryResult.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphQL\QueryResult\QueryResult.csproj">
       <Project>{BE2A2669-CCDE-40A8-AEAB-673260D7260A}</Project>
       <Name>QueryResult</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\Library\External\NewFastSerializer\NewFastSerializer.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\External\NewFastSerializer\NewFastSerializer.csproj">
       <Project>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</Project>
       <Name>NewFastSerializer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\Library\Internal\CollectionWrapper\CollectionWrapper.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\CollectionWrapper\CollectionWrapper.csproj">
       <Project>{7748D9BA-FB40-42F9-9F51-F636F9F1DA8E}</Project>
       <Name>CollectionWrapper</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\Library\Internal\Commons\Commons.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
+      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\ISonesGQLFunction\ISonesGQLFunction.csproj">
       <Project>{CDAE254B-77D9-4E59-9C07-C18F0085F570}</Project>

@@ -20,11 +20,11 @@
 
 using System;
 using System.Collections.Generic;
-using ISonesGQLFunction.Structure;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Arithmetics;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.SonesGQL.Aggregates.ErrorHandling;
+using ISonesGQLFunction.Structure;
 
 namespace sones.Plugins.SonesGQL.Aggregates
 {

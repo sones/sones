@@ -62,11 +62,11 @@
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\IO\Implementation\XML_IO\XML_IO.csproj">
+    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\IO\Implementations\XML_IO\XML_IO.csproj">
       <Project>{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}</Project>
       <Name>XML_IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\IO\Interface\IOInterface.csproj">
+    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\IO\IOInterface\IOInterface.csproj">
       <Project>{991132D2-15E0-4BB7-8328-3A51646D4F01}</Project>
       <Name>IOInterface</Name>
     </ProjectReference>

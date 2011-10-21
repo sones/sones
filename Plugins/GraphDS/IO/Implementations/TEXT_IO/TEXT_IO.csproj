@@ -68,7 +68,7 @@
       <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
       <Name>Settings</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Interface\IOInterface.csproj">
+    <ProjectReference Include="..\..\IOInterface\IOInterface.csproj">
       <Project>{991132D2-15E0-4BB7-8328-3A51646D4F01}</Project>
       <Name>IOInterface</Name>
     </ProjectReference>

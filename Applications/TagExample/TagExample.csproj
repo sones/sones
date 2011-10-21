@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -116,25 +116,13 @@
       <Project>{9542AA45-4A4F-4364-BDD8-1446261F0963}</Project>
       <Name>RESTService %28Plugins\GraphDS\Services\Implementations\RESTService\RESTService%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Aggregates\GQLAggregates\GQLAggregates.csproj">
-      <Project>{817E142F-ECD9-4B18-A9AE-D399C7C49007}</Project>
-      <Name>GQLAggregates</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Functions\GQLFunctions\GQLFunctions.csproj">
-      <Project>{7E58D30B-4108-4941-BF85-A5C309F87536}</Project>
-      <Name>GQLFunctions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\GraphDBExport\GraphDBExport.csproj">
       <Project>{95295FE7-C0EB-45ED-88B0-2B66902BEE0C}</Project>
-      <Name>GraphDBExport</Name>
+      <Name>GraphDBExport %28Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\GraphDBExport%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\GraphDBImport\SonesGraphDBImport.csproj">
       <Project>{51C8E5F7-F888-4500-B1EE-D20337FA451F}</Project>
       <Name>SonesGraphDBImport</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\Index\Indices\SonesIndices\SonesIndices.csproj">
-      <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>
-      <Name>SonesIndices</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
       <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
