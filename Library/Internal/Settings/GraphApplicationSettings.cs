@@ -199,8 +199,8 @@ namespace sones.Library.Settings
 		#endregion
 
 		#region ApplySetting
-
-		private void ApplySetting(IGraphSetting IGraphDSSetting, String mySettingValue)
+        // HACK: was private, but changed to public in order to inject the PersistenceLocation Setting (btk,23.09.2011)
+		public void ApplySetting(IGraphSetting IGraphDSSetting, String mySettingValue)
 		{
 
 			#region Apply setting
@@ -327,7 +327,7 @@ namespace sones.Library.Settings
 			}
 			catch (Exception ex)
 			{
-                throw new CouldNotLoadSettingFileException(ex.ToString());
+                throw new CouldNotLoadSettingFileException(ex.ToString(), ex);
 			}
 		}
 

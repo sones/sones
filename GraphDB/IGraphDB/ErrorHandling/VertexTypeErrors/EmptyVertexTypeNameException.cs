@@ -34,7 +34,8 @@ namespace sones.GraphDB.ErrorHandling
         /// <summary>
         /// Creates an instance of EmptyVertexTypeNameException.
         /// </summary>
-        public EmptyVertexTypeNameException()
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public EmptyVertexTypeNameException(Exception innerException = null) : base(innerException)
         {
             _msg = "This operation needs a valid vertex type name.";
         }

@@ -29,16 +29,14 @@ namespace sones.GraphQL.ErrorHandling
     /// </summary>
     public class NotImplementedQLException : AGraphQLException
     {
-        public String Message { get; protected set; }
-                                
         /// <summary>
         /// Creates a new NotImplementedException exception
         /// </summary>
         /// <param name="myMessage">The given message</param>
-        public NotImplementedQLException(String myMessage)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public NotImplementedQLException(String message, Exception innerException = null) : base(innerException)
         {            
-            Message = myMessage;
-            _msg = myMessage;
+            _msg = message;
         }
 
     }

@@ -24,7 +24,12 @@ namespace sones.GraphQL.ErrorHandling
 {
     public sealed class ReplaceException : AGraphQLException
     {
-        public ReplaceException(String myInfo)
+		/// <summary>
+		/// Initializes a new instance of the ReplaceException class.
+		/// </summary>
+		/// <param name="myInfo"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public ReplaceException(String myInfo, Exception innerException = null) : base(innerException)
         {
             _msg = myInfo;
         }

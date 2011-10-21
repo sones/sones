@@ -60,8 +60,9 @@ namespace sones.Library.VersionedPluginManager.ErrorHandling
         /// <param name="myPluginAssembly">The current plugin assembly</param>
         /// <param name="myCurrentVersion">The current version of the plugin interface</param>
         /// <param name="myMinVersion">The minimum expected verion of the plugin interface</param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
         public IncompatiblePluginVersionException(Assembly myPluginAssembly, Version myCurrentVersion,
-                                                  Version myMinVersion)
+                                                  Version myMinVersion, Exception innerException = null) : base(innerException)
         {
             PluginAssembly = myPluginAssembly;
             CurrentVersion = myCurrentVersion;

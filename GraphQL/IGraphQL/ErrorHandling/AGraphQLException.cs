@@ -19,6 +19,7 @@
 */
 
 using sones.Library.ErrorHandling;
+using System;
 
 namespace sones.GraphQL.ErrorHandling
 {
@@ -27,5 +28,11 @@ namespace sones.GraphQL.ErrorHandling
     /// </summary>
     public abstract class AGraphQLException : ASonesException
     {
+		/// <summary>
+		/// Initializes a new instance of the AGraphQLException class.
+		/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public AGraphQLException(Exception innerException = null) : base(innerException)
+		{}
     }
 }

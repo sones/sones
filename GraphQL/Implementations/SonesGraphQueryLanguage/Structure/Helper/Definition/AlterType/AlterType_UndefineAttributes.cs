@@ -36,7 +36,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
 
         #region data
 
-        private List<String> _ListOfAttributes;
+        public readonly List<String> ListOfAttributes;
 
         #endregion
 
@@ -44,7 +44,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
 
         public AlterType_UndefineAttributes(List<String> listOfAttributes)
         {
-            _ListOfAttributes = listOfAttributes;
+            ListOfAttributes = listOfAttributes;
         }
 
         #endregion
@@ -54,7 +54,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition.AlterType
         /// </summary>
         public override TypesOfAlterCmd AlterType
         {
-            get { throw new NotImplementedException(); }
+            get { return TypesOfAlterCmd.UndefineAttribute; }
         }
 
         public override IVertexView CreateResult(IBaseType myAlteredType)

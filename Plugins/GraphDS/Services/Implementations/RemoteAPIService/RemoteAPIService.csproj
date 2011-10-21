@@ -184,7 +184,7 @@
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Interface\IService.csproj">
+    <ProjectReference Include="..\..\IService\IService.csproj">
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
       <Name>IService</Name>
     </ProjectReference>

@@ -15,7 +15,7 @@ namespace sones.Plugins.Index.Compound
     /// it is possible to use exact match or partial match queries.
     /// 
     /// This interface is non-generic because in the sones GraphDB
-    /// every indexable attribute is hidden behing a propertyID
+    /// every indexable attribute is hidden behind a propertyID
     /// of type Int64.
     /// </summary>
     public interface ISonesCompoundIndex : ISonesIndex

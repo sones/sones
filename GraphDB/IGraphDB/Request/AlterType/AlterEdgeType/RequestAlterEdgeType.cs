@@ -42,10 +42,20 @@ namespace sones.GraphDB.Request
         private List<AAttributePredefinition>   _toBeAddedAttributes;
 
         /// <summary>
+        /// Attributes which are to be defined
+        /// </summary>
+        private List<AAttributePredefinition>   _toBeDefinedAttributes;
+
+        /// <summary>
         /// Attributes which are to be removed
         /// </summary>
         private List<String>                    _toBeRemovedProperties;
         private List<String>                    _toBeRemovedUnknownAttributes;
+
+        /// <summary>
+        /// Attributes which are to be undefined
+        /// </summary>
+        private List<String>                    _toBeUndefinedAttributes;
                         
         private Dictionary<String, String>      _toBeRenamedAttributes;
 
@@ -58,16 +68,24 @@ namespace sones.GraphDB.Request
             get; 
             private set; 
         }
+
         public int AddUnknownPropertyCount { 
             get; 
             private set; 
         }
+
         public int AddAttributeCount 
         { 
             get 
             { 
                 return (_toBeAddedAttributes == null) ? 0 : _toBeAddedAttributes.Count; 
             } 
+        }
+
+        public int DefineAttributeCount
+        {
+            get;
+            private set;
         }
 
         public int RemoveAttributeCount
@@ -100,6 +118,7 @@ namespace sones.GraphDB.Request
         public RequestAlterEdgeType(String myToBeAlteredType)
         {
             TypeName = myToBeAlteredType;
+            DefineAttributeCount = 0;
         }
 
         #endregion
@@ -128,6 +147,17 @@ namespace sones.GraphDB.Request
             }
         }
 
+        /// <summary>
+        /// Attributes to be defined in the altered type.
+        /// </summary>
+        public IEnumerable<UnknownAttributePredefinition> ToBeDefinedAttributes
+        {
+            get
+            {
+                return (_toBeDefinedAttributes == null) ? null : _toBeDefinedAttributes.OfType<UnknownAttributePredefinition>();
+            }
+        }
+
         #endregion
 
         #region remove
@@ -140,6 +170,17 @@ namespace sones.GraphDB.Request
             get 
             { 
                 return _toBeRemovedProperties; 
+            }
+        }
+
+        /// <summary>
+        /// Attributes to be undefined from the altered type.
+        /// </summary>
+        public IEnumerable<String> ToBeUndefinedAttributes
+        {
+            get
+            {
+                return _toBeUndefinedAttributes;
             }
         }
 
@@ -228,6 +269,39 @@ namespace sones.GraphDB.Request
                 _toBeAddedAttributes = (_toBeAddedAttributes) ?? new List<AAttributePredefinition>();
                 _toBeAddedAttributes.Add(myUnknownPredefinition);
                 AddUnknownPropertyCount++;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Defines an attribute in the type definition
+        /// </summary>
+        /// <param name="myUnknownPredefinition">The attribute definition that is going to be added</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestAlterEdgeType DefineAttribute(UnknownAttributePredefinition myUnknownPredefinition)
+        {
+            if (myUnknownPredefinition != null)
+            {
+                _toBeDefinedAttributes = (_toBeDefinedAttributes) ?? new List<AAttributePredefinition>();
+                _toBeDefinedAttributes.Add(myUnknownPredefinition);
+                DefineAttributeCount++;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Undefines an attribute
+        /// </summary>
+        /// <param name="myUnknownPredefinition">The name of the attribute that is going to be undefined</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestAlterEdgeType UndefineAttribute(String myAttributeName)
+        {
+            if (!String.IsNullOrWhiteSpace(myAttributeName))
+            {
+                _toBeUndefinedAttributes = (_toBeUndefinedAttributes) ?? new List<String>();
+                _toBeUndefinedAttributes.Add(myAttributeName);
             }
 
             return this;

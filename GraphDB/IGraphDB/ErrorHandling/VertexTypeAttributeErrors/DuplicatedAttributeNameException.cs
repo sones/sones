@@ -42,7 +42,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new instance of DuplicatedTypeNameException.
         /// </summary>
         /// <param name="myTypeName">The name of the type, that is tried to be added multiple times.</param>
-        public DuplicatedAttributeNameException(ATypePredefinition myTypePredefinition, String myTypeName)
+        public DuplicatedAttributeNameException(ATypePredefinition myTypePredefinition, String myTypeName, Exception innerException = null)
+			: base(innerException)
         {
             Predefinition = myTypePredefinition;
             DuplicatedName = myTypeName;

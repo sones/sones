@@ -32,7 +32,16 @@ namespace sones.Plugins.SonesGQL.DBExport
         private String ExpectedFile;
         private String ExpectedHttp;
 
-        public InvalidDumpLocationException(String myLocation, String myExpectedFile, String myExpectedHttp, String myInfo)
+		/// <summary>
+		/// Initializes a new instance of the InvalidDumpLocationException class.
+		/// </summary>
+		/// <param name="myLocation"></param>
+		/// <param name="myExpectedFile"></param>
+		/// <param name="myExpectedHttp"></param>
+		/// <param name="myInfo"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidDumpLocationException(String myLocation, String myExpectedFile, String myExpectedHttp, String myInfo, Exception innerException = null)
+			: base(innerException)
         {
             Location = myLocation;
             Info = myInfo;

@@ -30,7 +30,8 @@ namespace sones.GraphQL.ErrorHandling
         /// <summary>
         /// Creates a new MultipleResultsException exception
         /// </summary>
-        public MultipleResultsException()
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public MultipleResultsException(Exception innerException = null) : base(innerException)
         {
             _msg = "The selection returned more than one result. This is not allowed for the INSERTORUPDATE/INSERTORREPLACE statement.";
         }        

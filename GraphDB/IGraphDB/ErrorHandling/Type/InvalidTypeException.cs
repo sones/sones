@@ -30,7 +30,13 @@ namespace sones.GraphDB.ErrorHandling
         private string p;
         private string p_2;
 
-        public InvalidTypeException(string myUnexpectedType, string myExpectedType)
+		/// <summary>
+		/// Initializes a new instance of the InvalidTypeException class.
+		/// </summary>
+		/// <param name="myUnexpectedType"></param>
+		/// <param name="myExpectedType"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidTypeException(string myUnexpectedType, string myExpectedType, Exception innerException = null) : base(innerException)
         {
             this.p = myUnexpectedType;
             this.p_2 = myExpectedType;

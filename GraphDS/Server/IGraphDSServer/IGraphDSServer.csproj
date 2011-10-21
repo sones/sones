@@ -65,7 +65,7 @@
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Plugins\GraphDS\Services\Interface\IService.csproj">
+    <ProjectReference Include="..\..\..\Plugins\GraphDS\Services\IService\IService.csproj">
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
       <Name>IService</Name>
     </ProjectReference>

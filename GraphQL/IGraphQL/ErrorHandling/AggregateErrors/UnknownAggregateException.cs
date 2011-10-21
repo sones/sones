@@ -27,20 +27,14 @@ namespace sones.GraphQL.ErrorHandling
     /// </summary>
     public sealed class UnknownAggregateException : ASonesQLAggregateException
     {
-        /// <summary>
-        /// The exception that has been thrown
-        /// </summary>
-        public Exception ThrownException { get; private set; }
-       
         #region constructor
 
         /// <summary>
         /// Creates a new UnknownAggregateException exception
         /// </summary>
-        /// <param name="e"></param>
-        public UnknownAggregateException(Exception e)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public UnknownAggregateException(Exception innerException = null) : base(innerException)
         {
-            ThrownException = e;
             _msg = "An unknown aggregate error has occurred.";
         }
 

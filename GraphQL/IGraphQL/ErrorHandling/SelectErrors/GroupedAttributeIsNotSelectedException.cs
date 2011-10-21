@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new GroupedAttributeIsNotSelectedException exception
         /// </summary>
         /// <param name="myTypeAttribute">The name of the type attribute</param>
-        public GroupedAttributeIsNotSelectedException(String myTypeAttribute)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public GroupedAttributeIsNotSelectedException(String myTypeAttribute, Exception innerException = null) : base(innerException)
         {
             TypeAttribute = myTypeAttribute;
             _msg = String.Format("The attribute '{0}' is not selected and can not be grouped.", TypeAttribute);

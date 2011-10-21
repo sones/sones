@@ -30,10 +30,11 @@ namespace sones.Library.ErrorHandling
         #region constructor
 
         /// <summary>
-        /// Creates a new unknown exception
+        /// Creates a new unknown exception.
         /// </summary>
-        /// <param name="e">The thrown exception</param>
-        public UnknownException(Exception e):base(e)
+		/// 
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public UnknownException(Exception innerException = null) : base(innerException)
         {
             _msg = "An unknown exception was thrown. See InnerException for further information.";
         }

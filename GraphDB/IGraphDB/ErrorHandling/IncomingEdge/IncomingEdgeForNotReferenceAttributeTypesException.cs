@@ -34,7 +34,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new IncomingEdgeForNotReferenceAttributeTypesException exception
         /// </summary>
         /// <param name="myVertexAttributeName">The name of the vertex attribute</param>
-        public IncomingEdgeForNotReferenceAttributeTypesException(String myVertexAttributeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public IncomingEdgeForNotReferenceAttributeTypesException(String myVertexAttributeName, Exception innerException = null) : base(innerException)
         {
             VertexAttributeName = myVertexAttributeName;
             _msg = String.Format("You can not define incoming edges for non reference attribute \"{0}\"!", VertexAttributeName);

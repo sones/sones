@@ -35,7 +35,8 @@ namespace sones.GraphQL.ErrorHandling
         /// </summary>
         /// <param name="edgeTypeName">The name of the IncomingEdge type</param>
         /// <param name="currentElements">The current count of elements</param>
-        public TooManyElementsForEdgeException(String edgeTypeName, UInt64 currentElements)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public TooManyElementsForEdgeException(String edgeTypeName, UInt64 currentElements, Exception innerException = null) : base(innerException)
         {
             CurrentElements = currentElements;
             EdgeTypeName = edgeTypeName;

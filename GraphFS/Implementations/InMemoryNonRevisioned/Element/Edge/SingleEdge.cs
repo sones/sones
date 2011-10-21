@@ -63,7 +63,7 @@ namespace sones.GraphFS.Element.Edge
         /// <summary>
         /// Creates a new single edge
         /// </summary>
-        /// <param name="myEdgeTypeID">The edge property id</param>
+        /// <param name="myEdgeTypeID">The edge type id</param>
         /// <param name="mySourceVertex">The source vertex</param>
         /// <param name="myTargetVertex">The target vertex</param>
         /// <param name="myComment">The comment on this graph element</param>

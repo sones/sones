@@ -36,7 +36,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>Example.manifest</ApplicationManifest>
-  </PropertyGroup>  <ItemGroup>
+  </PropertyGroup>
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
@@ -155,23 +156,15 @@
       <Project>{1BC7DDCF-B048-4F55-B44F-6471AFB3DAC1}</Project>
       <Name>QueryLog</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RemoteAPIService\RemoteAPIService.csproj">
-      <Project>{5A7B5A5F-289A-4109-AD1E-52C62F28DA51}</Project>
-      <Name>RemoteAPIService</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RESTService\RESTService.csproj">
       <Project>{9542AA45-4A4F-4364-BDD8-1446261F0963}</Project>
       <Name>RESTService %28Plugins\GraphDS\Services\Implementations\RESTService\RESTService%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\Services\Interface\IService.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphDS\Services\IService\IService.csproj">
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
       <Name>IService</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Aggregates\GQLAggregates\GQLAggregates.csproj">
-      <Project>{817E142F-ECD9-4B18-A9AE-D399C7C49007}</Project>
-      <Name>GQLAggregates</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Functions\GQLFunctions\GQLFunctions.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Functions\Implementations\GQLFunctions\GQLFunctions.csproj">
       <Project>{7E58D30B-4108-4941-BF85-A5C309F87536}</Project>
       <Name>GQLFunctions</Name>
     </ProjectReference>
@@ -187,7 +180,7 @@
       <Project>{DFC1BC4B-F865-48C6-B8E1-64644D410748}</Project>
       <Name>GraphMLImport</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\Index\Indices\SonesIndices\SonesIndices.csproj">
+    <ProjectReference Include="..\..\Plugins\Index\Implementations\SonesIndices\SonesIndices.csproj">
       <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>
       <Name>SonesIndices</Name>
     </ProjectReference>

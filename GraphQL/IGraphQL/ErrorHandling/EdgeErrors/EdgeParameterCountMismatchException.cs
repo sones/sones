@@ -37,7 +37,9 @@ namespace sones.GraphQL.ErrorHandling
         /// <param name="IncomingEdge">The IncomingEdge</param>
         /// <param name="currentNumOfParams">The current count of parameters</param>
         /// <param name="expectedNumOfParams">The expected count of parameters</param>
-        public EdgeParameterCountMismatchException(String edge, UInt32 currentNumOfParams, UInt32 expectedNumOfParams)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public EdgeParameterCountMismatchException(String edge, UInt32 currentNumOfParams, UInt32 expectedNumOfParams, Exception innerException = null)
+			: base(innerException)
         {
             Edge = edge;
             CurrentNumOfParams = currentNumOfParams;

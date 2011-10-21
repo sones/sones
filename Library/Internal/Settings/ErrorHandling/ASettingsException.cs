@@ -19,10 +19,18 @@
 */
 
 using sones.Library.ErrorHandling;
+using System;
 
 namespace sones.Library.Settings.ErrorHandling
 {
     public abstract class ASettingsException : ASonesException
     {
+		/// <summary>
+		/// Initializes a new instance of the ASettingsException.
+		/// </summary>
+		/// 
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public ASettingsException(Exception innerException = null) : base(innerException)
+		{}
     }
 }

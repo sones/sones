@@ -35,6 +35,7 @@ using sones.GraphDB.Expression;
 using sones.Library.ErrorHandling;
 using sones.Library.LanguageExtensions;
 using sones.Library.Commons.VertexStore.Definitions.Update;
+using sones.GraphFS.ErrorHandling;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -115,6 +116,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             _indexManager       = myMetaManager.IndexManager;
             _vertexManager      = myMetaManager.VertexManager;
+            _vertexTypeManager =  myMetaManager.VertexTypeManager;
             _baseTypeManager    = myMetaManager.BaseTypeManager;
             _baseStorageManager = myMetaManager.BaseGraphStorageManager;
         }
@@ -608,7 +610,12 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                     SecurityToken mySecurityToken,
                                                     ref RequestUpdate myUpdateRequest)
         {
-            var removedProps = RemoveAttributes(myAlterTypeRequest.ToBeRemovedProperties,
+            List<long> removedProps = (List<long>)RemoveAttributes(myAlterTypeRequest.ToBeRemovedProperties,
+                                                myType,
+                                                myTransactionToken,
+                                                mySecurityToken);
+
+            List<long> undefProps = (List<long>)UndefineAttributes(myAlterTypeRequest.ToBeUndefinedAttributes,
                                                 myType,
                                                 myTransactionToken,
                                                 mySecurityToken);
@@ -640,6 +647,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             var addedProps = AddAttributes(myAlterTypeRequest.ToBeAddedProperties,
                                               myType, 
                                               myTransactionToken, 
+                                              mySecurityToken);
+
+            var definedProps = DefineAttributes(myAlterTypeRequest.ToBeDefinedAttributes,
+                                              myType,
+                                              myTransactionToken,
                                               mySecurityToken);
 
             myUpdateRequest
@@ -701,6 +713,646 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
 
             return dict;
+        }
+
+        private void DefinePropertyOnSingleEdge(
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            ISingleEdge edge, 
+            UnknownAttributePredefinition aAttribute, 
+            long PropertyId, 
+            long EdgeId,
+            IVertex vertex,
+            IEdgeType myType,
+            bool bHyperEdge = false
+        )
+        {
+            bool bFound = false;
+
+            #region cast existing unstructured properties on vertices to structured
+
+            foreach (var property in edge.GetAllUnstructuredProperties())
+            {
+                if (property.Item1.CompareTo(aAttribute.AttributeName) == 0)
+                {
+                    bFound = true;
+
+                    // Found unstructured property with same name on the vertex
+                    var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
+                    IComparable value = null;
+
+                    // Try Convert Type
+                    try
+                    {
+                        value = property.Item2.ConvertToIComparable(targettype);
+                    }
+                    catch (InvalidCastException)
+                    {
+                        throw new VertexAttributeCastException(aAttribute.AttributeName, property.Item2.GetType(), targettype, false);
+                    }
+                    catch (FormatException)
+                    {
+                        throw new VertexAttributeCastException(aAttribute.AttributeName, property.Item2.GetType(), targettype, true);
+                    }
+
+                    // add list with only one item -> unstructured property to delete
+                    var unstructdel = new List<string>();
+                    unstructdel.Add(property.Item1);
+                    UnstructuredPropertiesUpdate propdelete = new UnstructuredPropertiesUpdate(null, unstructdel);
+
+                    // add list with only one item -> structured property to add
+                    Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
+                    properties2add.Add(PropertyId, value);
+                    StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
+
+                    var sourcevertex = edge.GetSourceVertex();
+                    var targetvertex = edge.GetTargetVertex();
+
+                    VertexUpdateDefinition upddef;
+
+                    if (bHyperEdge)
+                    {
+                        // add list with only one item -> edges to update
+                        List<SingleEdgeUpdateDefinition> edges2update = new List<SingleEdgeUpdateDefinition>();
+                        edges2update.Add(
+                            new SingleEdgeUpdateDefinition(
+                                new VertexInformation(sourcevertex.VertexTypeID, sourcevertex.VertexID),
+                                new VertexInformation(targetvertex.VertexTypeID, targetvertex.VertexID),
+                                edge.EdgeTypeID, null, propadd, propdelete
+                            )
+                        );
+
+                        // add list with only one item -> edges to update
+                        Dictionary<long, HyperEdgeUpdateDefinition> hedges2update = new Dictionary<long, HyperEdgeUpdateDefinition>();
+                        hedges2update.Add(
+                            EdgeId,
+                            new HyperEdgeUpdateDefinition(
+                               edge.EdgeTypeID, null, null, null, null, edges2update
+                            )
+                        );
+
+                        HyperEdgeUpdate edgeupd = new HyperEdgeUpdate(hedges2update);
+                        upddef = new VertexUpdateDefinition(null, null, null, null, null, edgeupd, null);
+                    }
+                    else
+                    {
+                        // add list with only one item -> edges to update
+                        Dictionary<long, SingleEdgeUpdateDefinition> edges2update = new Dictionary<long, SingleEdgeUpdateDefinition>();
+                        edges2update.Add(
+                            EdgeId,
+                            new SingleEdgeUpdateDefinition(
+                                new VertexInformation(sourcevertex.VertexTypeID, sourcevertex.VertexID),
+                                new VertexInformation(targetvertex.VertexTypeID, targetvertex.VertexID),
+                                edge.EdgeTypeID, null, propadd, propdelete
+                            )
+                        );
+                        
+                        SingleEdgeUpdate edgeupd = new SingleEdgeUpdate(edges2update);
+                        upddef = new VertexUpdateDefinition(null, null, null, null, edgeupd, null, null);
+                    }
+
+                    // Update the vertex (delete unstructured and add structured)
+                    
+                    _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
+
+                    // we can break as we already found the property on the vertex
+                    break;
+                }
+            }
+
+            #endregion
+
+            #region add mandatory attribute if not existing on vertex
+
+            if ((!bFound) && (aAttribute.IsMandatory))
+            {
+                if (aAttribute.DefaultValue == null) throw new DefineMandatoryWithoutDefaultException(aAttribute.AttributeName, myType.Name);
+
+                // Found unstructured property with same name on the vertex
+                var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
+                IComparable value = null;
+
+                // Try Convert Type
+                try
+                {
+                    value = aAttribute.DefaultValue.ConvertToIComparable(targettype);
+                }
+                catch (InvalidCastException)
+                {
+                    throw new VertexAttributeCastException(aAttribute.AttributeName, aAttribute.DefaultValue.GetType(), targettype, false);
+                }
+                catch (FormatException)
+                {
+                    throw new VertexAttributeCastException(aAttribute.AttributeName, aAttribute.DefaultValue.GetType(), targettype, true);
+                }
+
+                // add list with only one item -> structured property to add
+                Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
+                properties2add.Add(PropertyId, value);
+                StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
+
+                var sourcevertex = edge.GetSourceVertex();
+                var targetvertex = edge.GetTargetVertex();
+
+                VertexUpdateDefinition upddef;
+
+                if (bHyperEdge)
+                {
+                    // add list with only one item -> edges to update
+                    List<SingleEdgeUpdateDefinition> edges2update = new List<SingleEdgeUpdateDefinition>();
+                    edges2update.Add(
+                        new SingleEdgeUpdateDefinition(
+                            new VertexInformation(sourcevertex.VertexTypeID, sourcevertex.VertexID),
+                            new VertexInformation(targetvertex.VertexTypeID, targetvertex.VertexID),
+                            edge.EdgeTypeID, null, propadd, null
+                        )
+                    );
+
+                    // add list with only one item -> edges to update
+                    Dictionary<long, HyperEdgeUpdateDefinition> hedges2update = new Dictionary<long, HyperEdgeUpdateDefinition>();
+                    hedges2update.Add(
+                        EdgeId,
+                        new HyperEdgeUpdateDefinition(
+                           edge.EdgeTypeID, null, null, null, null, edges2update
+                        )
+                    );
+
+                    HyperEdgeUpdate edgeupd = new HyperEdgeUpdate(hedges2update);
+                    upddef = new VertexUpdateDefinition(null, null, null, null, null, edgeupd, null);
+                }
+                else
+                {
+                    // add list with only one item -> edges to update
+                    Dictionary<long, SingleEdgeUpdateDefinition> edges2update = new Dictionary<long, SingleEdgeUpdateDefinition>();
+                    edges2update.Add(
+                        EdgeId,
+                        new SingleEdgeUpdateDefinition(
+                            new VertexInformation(sourcevertex.VertexTypeID, sourcevertex.VertexID),
+                            new VertexInformation(targetvertex.VertexTypeID, targetvertex.VertexID),
+                            edge.EdgeTypeID, null, propadd, null
+                        )
+                    );
+
+                    SingleEdgeUpdate edgeupd = new SingleEdgeUpdate(edges2update);
+                    upddef = new VertexUpdateDefinition(null, null, null, null, edgeupd, null, null);
+                }
+
+                // Update the vertex (delete unstructured and add structured)
+
+                _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
+            }
+
+            #endregion
+        }
+
+        private void DefinePropertyOnHyperEdge(
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            IHyperEdge edge, 
+            UnknownAttributePredefinition aAttribute, 
+            long PropertyId, 
+            long EdgeId,
+            IVertex vertex,
+            IEdgeType myType
+        )
+        {
+            bool bFound = false;
+
+            #region cast existing unstructured properties on vertices to structured
+
+            foreach (var property in edge.GetAllUnstructuredProperties())
+            {
+                if (property.Item1.CompareTo(aAttribute.AttributeName) == 0)
+                {
+                    bFound = true;
+
+                    // Found unstructured property with same name on the vertex
+                    var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
+                    IComparable value = null;
+
+                    // Try Convert Type
+                    try
+                    {
+                        value = property.Item2.ConvertToIComparable(targettype);
+                    }
+                    catch (InvalidCastException)
+                    {
+                        throw new VertexAttributeCastException(aAttribute.AttributeName, property.Item2.GetType(), targettype, false);
+                    }
+                    catch (FormatException)
+                    {
+                        throw new VertexAttributeCastException(aAttribute.AttributeName, property.Item2.GetType(), targettype, true);
+                    }
+
+                    // add list with only one item -> unstructured property to delete
+                    var unstructdel = new List<string>();
+                    unstructdel.Add(property.Item1);
+                    UnstructuredPropertiesUpdate propdelete = new UnstructuredPropertiesUpdate(null, unstructdel);
+
+                    // add list with only one item -> structured property to add
+                    Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
+                    properties2add.Add(PropertyId, value);
+                    StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
+
+                    // add list with only one item -> edges to update
+                    Dictionary<long, HyperEdgeUpdateDefinition> edges2update = new Dictionary<long, HyperEdgeUpdateDefinition>();
+                    edges2update.Add(
+                        EdgeId,
+                        new HyperEdgeUpdateDefinition(
+                            edge.EdgeTypeID,
+                            null, propadd, propdelete
+                        )
+                    );
+
+                    HyperEdgeUpdate edgeupd = new HyperEdgeUpdate(edges2update);
+
+                    // Update the vertex (delete unstructured and add structured)
+                    VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, null, null, null, null, edgeupd, null);
+                    _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
+
+                    // we can break as we already found the property on the vertex
+                    break;
+                }
+            }
+
+            #endregion
+
+            #region add mandatory attribute if not existing on vertex
+
+            if ((!bFound) && (aAttribute.IsMandatory))
+            {
+                if (aAttribute.DefaultValue == null) throw new DefineMandatoryWithoutDefaultException(aAttribute.AttributeName, myType.Name);
+
+                // Found unstructured property with same name on the vertex
+                var targettype = _baseStorageManager.GetBaseType(aAttribute.AttributeType);
+                IComparable value = null;
+
+                // Try Convert Type
+                try
+                {
+                    value = aAttribute.DefaultValue.ConvertToIComparable(targettype);
+                }
+                catch (InvalidCastException)
+                {
+                    throw new VertexAttributeCastException(aAttribute.AttributeName, aAttribute.DefaultValue.GetType(), targettype, false);
+                }
+                catch (FormatException)
+                {
+                    throw new VertexAttributeCastException(aAttribute.AttributeName, aAttribute.DefaultValue.GetType(), targettype, true);
+                }
+
+                // add list with only one item -> structured property to add
+                Dictionary<long, IComparable> properties2add = new Dictionary<long, IComparable>();
+                properties2add.Add(PropertyId, value);
+                StructuredPropertiesUpdate propadd = new StructuredPropertiesUpdate(properties2add, null);
+
+                // add list with only one item -> edges to update
+                Dictionary<long, HyperEdgeUpdateDefinition> edges2update = new Dictionary<long, HyperEdgeUpdateDefinition>();
+                edges2update.Add(
+                    EdgeId,
+                    new HyperEdgeUpdateDefinition(
+                        edge.EdgeTypeID,
+                        null, propadd, null
+                    )
+                );
+
+                HyperEdgeUpdate edgeupd = new HyperEdgeUpdate(edges2update);
+
+                // Update the vertex (delete unstructured and add structured)
+                VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, null, null, null, null, edgeupd, null);
+                _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
+            }
+
+            #endregion
+        }
+
+        /// <summary>
+        /// Defines specified attributes in the given type and stores them.
+        /// </summary>
+        /// <param name="myToBeDefinedAttributes">The attributes to be defined</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myType">The type to be altered.</param>
+        /// <returns>A dictionary with to be defined attributes and default value</returns>returns>
+        protected override Dictionary<long, IComparable> ProcessDefineAttributes(
+            IEnumerable<UnknownAttributePredefinition> myToBeDefinedAttributes,
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            IEdgeType myType)
+        {
+            Dictionary<long, IComparable> dict = null;
+
+            foreach (var aAttribute in myToBeDefinedAttributes)
+            {
+                dict = dict ?? new Dictionary<long, IComparable>();
+
+                var id = _idManager
+                            .GetVertexTypeUniqeID((long)BaseTypes.Attribute)
+                            .GetNextID();
+
+                dict.Add(id, aAttribute.DefaultValue);
+
+                foreach (var vertextype in _vertexTypeManager.ExecuteManager.GetAllTypes(myTransactionToken, mySecurityToken))
+                {
+                    foreach (var vertex in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, vertextype.ID))
+                    {
+                        foreach (var outedge in vertex.GetAllOutgoingSingleEdges(new PropertyHyperGraphFilter.OutgoingSingleEdgeFilter((ID, edge) => (edge.EdgeTypeID == myType.ID))))
+                        {
+                            ISingleEdge edge = outedge.Item2;
+                            if (edge == null) continue;
+
+                            DefinePropertyOnSingleEdge(myTransactionToken, mySecurityToken, edge, aAttribute, id, outedge.Item1, vertex, myType);
+                        }
+
+                        foreach (var outedge in vertex.GetAllOutgoingHyperEdges(new PropertyHyperGraphFilter.OutgoingHyperEdgeFilter((ID, edge) => (edge.EdgeTypeID == myType.ID))))
+                        {
+                            IHyperEdge edge = outedge.Item2;
+
+                            if (edge == null) continue;
+
+                            DefinePropertyOnHyperEdge(myTransactionToken, mySecurityToken, edge, aAttribute, id, outedge.Item1, vertex, myType);
+
+                            foreach (var containededge in edge.GetAllEdges(new PropertyHyperGraphFilter.SingleEdgeFilter((cedge) => (cedge.EdgeTypeID == myType.ID))))
+                            {
+                                DefinePropertyOnSingleEdge(myTransactionToken, mySecurityToken, containededge, aAttribute, id, outedge.Item1, vertex, myType, true);
+                            }
+                        }
+                    }
+                }
+
+                #region add property definition to vertex type
+
+                PropertyMultiplicity multiplicity = PropertyMultiplicity.Single;
+                switch (aAttribute.Multiplicity)
+                {
+                    case UnknownAttributePredefinition.LISTMultiplicity: multiplicity = PropertyMultiplicity.List; break;
+                    case UnknownAttributePredefinition.SETMultiplicity: multiplicity = PropertyMultiplicity.Set; break;
+                    default: multiplicity = PropertyMultiplicity.Single; break;
+                }
+
+                _baseStorageManager.StoreProperty(
+                    _vertexManager.ExecuteManager.VertexStore,
+                    new VertexInformation(
+                        (long)BaseTypes.Property,
+                        id),
+                    aAttribute.AttributeName,
+                    aAttribute.Comment,
+                    DateTime.UtcNow.ToBinary(),
+                    aAttribute.IsMandatory,
+                    multiplicity,
+                    aAttribute.DefaultValue,
+                    true,
+                    new VertexInformation(
+                        (long)BaseTypes.EdgeType,
+                        myType.ID),
+                    ConvertBasicType(aAttribute.AttributeType),
+                    mySecurityToken,
+                    myTransactionToken);
+
+                #endregion
+            }
+
+            return dict;
+        }
+
+        private void UndefinePropertyOnSingleEdge(
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            ISingleEdge edge,
+            string AttributeName,
+            long PropertyId,
+            long EdgeId,
+            IVertex vertex,
+            IEdgeType myType,
+            bool bHyperEdge = false
+        )
+        {
+            IComparable property;
+
+            try
+            {
+                property = edge.GetProperty(PropertyId);
+            }
+            catch (CouldNotFindStructuredEdgePropertyException)
+            {
+                return;
+            }
+          
+            // The property is set on this vertex
+            string value = null;
+
+            // Try Convert Type
+            try
+            {
+                value = Convert.ToString(property);
+            }
+            catch (InvalidCastException)
+            {
+                throw new VertexAttributeCastException(AttributeName, property.GetType(), typeof(String), false);
+            }
+            catch (FormatException)
+            {
+                throw new VertexAttributeCastException(AttributeName, property.GetType(), typeof(String), true);
+            }
+
+            // add list with only one item -> structured property to delete
+            var structdel = new List<long>();
+            structdel.Add(PropertyId);
+            StructuredPropertiesUpdate propdelete = new StructuredPropertiesUpdate(null, structdel);
+
+            // add list with only one item -> unstructured property to add
+            Dictionary<string, Object> properties2add = new Dictionary<string, Object>();
+            properties2add.Add(AttributeName, value);
+            UnstructuredPropertiesUpdate propadd = new UnstructuredPropertiesUpdate(properties2add, null);
+
+            var sourcevertex = edge.GetSourceVertex();
+            var targetvertex = edge.GetTargetVertex();
+
+            VertexUpdateDefinition upddef;
+
+            if (bHyperEdge)
+            {
+                // add list with only one item -> edges to update
+                List<SingleEdgeUpdateDefinition> edges2update = new List<SingleEdgeUpdateDefinition>();
+                edges2update.Add(
+                    new SingleEdgeUpdateDefinition(
+                        new VertexInformation(sourcevertex.VertexTypeID, sourcevertex.VertexID),
+                        new VertexInformation(targetvertex.VertexTypeID, targetvertex.VertexID),
+                        edge.EdgeTypeID, null, propdelete, propadd
+                    )
+                );
+
+                // add list with only one item -> edges to update
+                Dictionary<long, HyperEdgeUpdateDefinition> hedges2update = new Dictionary<long, HyperEdgeUpdateDefinition>();
+                hedges2update.Add(
+                    EdgeId,
+                    new HyperEdgeUpdateDefinition(
+                        edge.EdgeTypeID, null, null, null, null, edges2update
+                    )
+                );
+
+                HyperEdgeUpdate edgeupd = new HyperEdgeUpdate(hedges2update);
+                upddef = new VertexUpdateDefinition(null, null, null, null, null, edgeupd, null);
+            }
+            else
+            {
+                // add list with only one item -> edges to update
+                Dictionary<long, SingleEdgeUpdateDefinition> edges2update = new Dictionary<long, SingleEdgeUpdateDefinition>();
+                edges2update.Add(
+                    EdgeId,
+                    new SingleEdgeUpdateDefinition(
+                        new VertexInformation(sourcevertex.VertexTypeID, sourcevertex.VertexID),
+                        new VertexInformation(targetvertex.VertexTypeID, targetvertex.VertexID),
+                        edge.EdgeTypeID, null, propdelete, propadd
+                    )
+                );
+
+                SingleEdgeUpdate edgeupd = new SingleEdgeUpdate(edges2update);
+                upddef = new VertexUpdateDefinition(null, null, null, null, edgeupd, null, null);
+            }
+
+            // Update the vertex (delete unstructured and add structured)
+
+            _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
+        }
+
+        private void UndefinePropertyOnHyperEdge(
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            IHyperEdge edge,
+            string AttributeName,
+            long PropertyId,
+            long EdgeId,
+            IVertex vertex,
+            IEdgeType myType
+        )
+        {
+            IComparable property;
+
+            try
+            {
+                property = edge.GetProperty(PropertyId);
+            }
+            catch (CouldNotFindStructuredEdgePropertyException)
+            {
+                return;
+            }
+            
+            // The property is set on this vertex
+            string value = null;
+
+            // Try Convert Type
+            try
+            {
+                value = Convert.ToString(property);
+            }
+            catch (InvalidCastException)
+            {
+                throw new VertexAttributeCastException(AttributeName, property.GetType(), typeof(String), false);
+            }
+            catch (FormatException)
+            {
+                throw new VertexAttributeCastException(AttributeName, property.GetType(), typeof(String), true);
+            }
+
+            // add list with only one item -> structured property to delete
+            var structdel = new List<long>();
+            structdel.Add(PropertyId);
+            StructuredPropertiesUpdate propdelete = new StructuredPropertiesUpdate(null, structdel);
+
+            // add list with only one item -> unstructured property to add
+            Dictionary<string, Object> properties2add = new Dictionary<string, Object>();
+            properties2add.Add(AttributeName, value);
+            UnstructuredPropertiesUpdate propadd = new UnstructuredPropertiesUpdate(properties2add, null);
+
+            // add list with only one item -> edges to update
+            Dictionary<long, HyperEdgeUpdateDefinition> edges2update = new Dictionary<long, HyperEdgeUpdateDefinition>();
+            edges2update.Add(
+                EdgeId,
+                new HyperEdgeUpdateDefinition(
+                    edge.EdgeTypeID,
+                    null, propdelete, propadd
+                )
+            );
+
+            HyperEdgeUpdate edgeupd = new HyperEdgeUpdate(edges2update);
+
+            // Update the vertex (delete unstructured and add structured)
+            VertexUpdateDefinition upddef = new VertexUpdateDefinition(null, null, null, null, null, edgeupd, null);
+            _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken, myTransactionToken, vertex.VertexID, vertex.VertexTypeID, upddef);
+
+        }
+
+        /// <summary>
+        /// Undefines specified attributes in the given type.
+        /// </summary>
+        /// <param name="myToBeDefinedAttributes">The attributes to be undefined</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <param name="myType">The type to be altered.</param>
+        /// <returns>A list containing IDs of undefined attributes</returns>returns>
+        protected override IEnumerable<long> ProcessUndefineAttributes(
+            IEnumerable<String> myToBeUndefinedAttributes,
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken,
+            IEdgeType myType)
+        {
+            List<long> undefined = null;
+
+            foreach (var aAttribute in myToBeUndefinedAttributes)
+            {
+                #region remove related indices
+                var propertyDefinition = myType.GetPropertyDefinition(aAttribute);
+
+                foreach (var aIndexDefinition in propertyDefinition.InIndices)
+                {
+                    _indexManager.RemoveIndexInstance(aIndexDefinition.ID,
+                                                        myTransactionToken,
+                                                        mySecurityToken);
+                }
+
+                #endregion
+
+                undefined = undefined ?? new List<long>();
+                undefined.Add(propertyDefinition.ID);
+
+                foreach (var vertextype in _vertexTypeManager.ExecuteManager.GetAllTypes(myTransactionToken, mySecurityToken))
+                {
+                    foreach (var vertex in _vertexManager.ExecuteManager.VertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, vertextype.ID))
+                    {
+                        foreach (var outedge in vertex.GetAllOutgoingSingleEdges(new PropertyHyperGraphFilter.OutgoingSingleEdgeFilter((ID, edge) => (edge.EdgeTypeID == myType.ID))))
+                        {
+                            ISingleEdge edge = outedge.Item2;
+                            if (edge == null) continue;
+
+                            UndefinePropertyOnSingleEdge(myTransactionToken, mySecurityToken, edge, aAttribute, propertyDefinition.ID, outedge.Item1, vertex, myType);
+                        }
+
+                        foreach (var outedge in vertex.GetAllOutgoingHyperEdges(new PropertyHyperGraphFilter.OutgoingHyperEdgeFilter((ID, edge) => (edge.EdgeTypeID == myType.ID))))
+                        {
+                            IHyperEdge edge = outedge.Item2;
+
+                            if (edge == null) continue;
+
+                            UndefinePropertyOnHyperEdge(myTransactionToken, mySecurityToken, edge, aAttribute, propertyDefinition.ID, outedge.Item1, vertex, myType);
+
+                            foreach (var containededge in edge.GetAllEdges(new PropertyHyperGraphFilter.SingleEdgeFilter((cedge) => (cedge.EdgeTypeID == myType.ID))))
+                            {
+                                UndefinePropertyOnSingleEdge(myTransactionToken, mySecurityToken, containededge, aAttribute, propertyDefinition.ID, outedge.Item1, vertex, myType, true);
+                            }
+                        }
+                    }
+                }
+
+                // remove the property definition from the vertex type
+                _vertexManager.ExecuteManager.VertexStore.RemoveVertex(mySecurityToken,
+                                                                        myTransactionToken,
+                                                                        propertyDefinition.ID,
+                                                                        (long)BaseTypes.Property);
+
+            }
+
+            return undefined;
         }
 
         /// <summary>
@@ -856,8 +1508,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// Removes attributes.
         /// </summary>
-        /// <param name="myToBeRemovedIncomingEdges">To be removed incoming edges.</param>
-        /// <param name="myToBeRemovedOutgoingEdges">To be removed outgoing edges.</param>
         /// <param name="myToBeRemovedProperties">To be removed Proerties.</param>
         /// <param name="myType">The to be altered type.</param>
         /// <param name="myTransactionToken">The Int64.</param>
@@ -873,6 +1523,28 @@ namespace sones.GraphDB.Manager.TypeManagement
                                                 myType, 
                                                 myTransactionToken, 
                                                 mySecurityToken);
+
+            return null;
+        }
+
+        /// <summary>
+        /// Undefines attributes.
+        /// </summary>
+        /// <param name="myToBeUndefinedAttributes">To be undefined Attributes.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <returns>A list with the undefined attribute id's.</returns>
+        private IEnumerable<long> UndefineAttributes(IEnumerable<string> myToBeUndefinedAttributes,
+                                                    IEdgeType myType,
+                                                    Int64 myTransactionToken,
+                                                    SecurityToken mySecurityToken)
+        {
+            if (myToBeUndefinedAttributes.IsNotNullOrEmpty())
+                return ProcessUndefineAttributes(myToBeUndefinedAttributes,
+                                                myTransactionToken,
+                                                mySecurityToken,
+                                                myType);
 
             return null;
         }
@@ -901,6 +1573,31 @@ namespace sones.GraphDB.Manager.TypeManagement
             return null;
         }
 
+        /// <summary>
+        /// Defines attributes.
+        /// </summary>
+        /// <param name="myToBeDefinedAttributes">The to be defined attributes.</param>
+        /// <param name="myType">The to be altered type.</param>
+        /// <param name="myTransactionToken">The Int64.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        /// <returns>A dictionary with to be defined attributes and default value.</returns>
+        private Dictionary<long, IComparable> DefineAttributes(
+            IEnumerable<UnknownAttributePredefinition> myToBeDefinedAttributes,
+            IEdgeType myType,
+            Int64 myTransactionToken,
+            SecurityToken mySecurityToken)
+        {
+
+            if (myToBeDefinedAttributes.IsNotNullOrEmpty())
+                return ProcessDefineAttributes(myToBeDefinedAttributes,
+                                            myTransactionToken,
+                                            mySecurityToken,
+                                            myType);
+
+            return null;
+        }
+
         #endregion
+
     }
 }

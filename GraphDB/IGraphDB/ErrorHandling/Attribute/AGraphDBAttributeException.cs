@@ -30,5 +30,11 @@ namespace sones.GraphDB.ErrorHandling
     /// </summary>
     public abstract class AGraphDBAttributeException : AGraphDBException
     {
+		/// <summary>
+		/// Initializes a new instance of the AGraphDBAttributeException class.
+		/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public AGraphDBAttributeException(Exception innerException = null) : base(innerException)
+		{}
     }
 }

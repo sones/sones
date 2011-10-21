@@ -34,7 +34,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new IndexAttributeDoesNotExistException exception
         /// </summary>
         /// <param name="myIndexAttributeName">The name of the  given index attribute</param>
-        public IndexAttributeDoesNotExistException(String myIndexAttributeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public IndexAttributeDoesNotExistException(String myIndexAttributeName, Exception innerException = null) : base(innerException)
         {
             IndexAttributeName = myIndexAttributeName;
             _msg = String.Format("The attribute \"{0}\" for the index does not exist!", IndexAttributeName);

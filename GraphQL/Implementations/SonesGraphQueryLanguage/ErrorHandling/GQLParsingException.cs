@@ -32,7 +32,6 @@ namespace sones.GraphQL.GQL.ErrorHandling
         #region data
         
         public String Info { get; private set; }
-        public Exception Exception { get; private set; }
         public ParserMessage ParserError { get; private set; }
 
         public String ParserErrorMessage
@@ -52,7 +51,8 @@ namespace sones.GraphQL.GQL.ErrorHandling
         /// </summary>
         /// <param name="myParserError">The parser message from Irony (contains a message from kind of info, warning or error)</param>
         /// <param name="myQuery">The given query</param>
-        public GQLParsingException(ParserMessage myParserError, String myQuery)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public GQLParsingException(ParserMessage myParserError, String myQuery, Exception innerException = null) : base(innerException)
         {
             ParserError = myParserError; 
             Info = myQuery;
@@ -70,14 +70,13 @@ namespace sones.GraphQL.GQL.ErrorHandling
         /// Creates a new GQLParsingException exception
         /// </summary>
         /// <param name="myInfo">An information</param>
-        /// <param name="myException">The occurred exception</param>
-        public GQLParsingException(String myInfo, Exception myException)
+        /// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public GQLParsingException(String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
-            Exception = myException;
-
-            if (myException != null)
-                _msg = Info + Environment.NewLine + Exception.Message;
+            
+            if (InnerException != null)
+                _msg = Info + Environment.NewLine + InnerException.Message;
         }
 
         #endregion

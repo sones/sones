@@ -25,7 +25,7 @@ namespace sones.GraphDB.ErrorHandling
 
     public sealed class InvalidAlterTypeException : AGraphDBVertexAttributeException
     {
-        public InvalidAlterTypeException(String myInfo)
+        public InvalidAlterTypeException(String myInfo, Exception innerException = null) : base(innerException)
         {
             _msg = myInfo;
         }

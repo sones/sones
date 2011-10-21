@@ -49,7 +49,8 @@ namespace sones.GraphDB.ErrorHandling
         /// <param name="myParentVertexTypeName">
         /// The sealed parent vertex type.
         /// </param>
-        public SealedBaseVertexTypeException(string myVertexTypeName, string myParentVertexTypeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public SealedBaseVertexTypeException(string myVertexTypeName, string myParentVertexTypeName, Exception innerException = null) : base(innerException)
         {
             this.VertexTypeName = myVertexTypeName;
             this.ParentVertexTypeName = myParentVertexTypeName;

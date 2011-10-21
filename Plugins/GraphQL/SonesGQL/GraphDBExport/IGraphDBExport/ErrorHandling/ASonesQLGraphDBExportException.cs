@@ -26,7 +26,14 @@ using sones.Library.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.DBExport
 {
-    public class ASonesQLGraphDBExportException : ASonesException
+    public abstract class ASonesQLGraphDBExportException : ASonesException
     {
+		/// <summary>
+		/// Initializes a new instance of the ASonesQLGraphDBExportException class.
+		/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public ASonesQLGraphDBExportException(Exception innerException = null) : base(innerException)
+        {
+        }
     }
 }

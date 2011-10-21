@@ -35,7 +35,9 @@ namespace sones.GraphQL.ErrorHandling
         /// </summary>
         /// <param name="VertexTypeName">The name of the vertex type</param>
         /// <param name="myVertexAttributeName">The name of the vertex attribute</param>
-        public RemoveVertexTypeAttributeException(String myVertexTypeName, String myVertexAttributeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public RemoveVertexTypeAttributeException(String myVertexTypeName, String myVertexAttributeName, Exception innerException = null)
+			: base(innerException)
         {
             VertexTypeName = myVertexTypeName;
             VertexAttributeName = myVertexAttributeName;

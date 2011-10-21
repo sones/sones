@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new FunctionDoesNotExistException exception
         /// </summary>
         /// <param name="myFunctionName">The name of the function</param>
-        public FunctionDoesNotExistException(String myFunctionName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public FunctionDoesNotExistException(String myFunctionName, Exception innerException = null) : base(innerException)
         {
             FunctionName = myFunctionName;
             _msg = String.Format("The function \"{0}\" does not exist!", FunctionName);

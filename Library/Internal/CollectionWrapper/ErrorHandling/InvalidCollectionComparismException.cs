@@ -34,7 +34,8 @@ namespace sones.Library.CollectionWrapper.ErrorHandling
         /// Creates a new invalid expression exception
         /// </summary>
         /// <param name="myInvalidExpression">The expression that has been declared as invalid</param>
-        public InvalidCollectionComparismException(String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidCollectionComparismException(String myInfo, Exception innerException = null) : base(innerException)
         {
             _msg = myInfo;
         }

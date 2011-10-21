@@ -28,5 +28,11 @@ namespace sones.Library.CollectionWrapper.ErrorHandling
     /// </summary>
     public abstract class ACollectionException : ASonesException
     {
+		/// <summary>
+		/// Initializes a new instance of the ACollectionException.
+		/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public ACollectionException(Exception innerException = null) : base(innerException)
+		{}
     }
 }

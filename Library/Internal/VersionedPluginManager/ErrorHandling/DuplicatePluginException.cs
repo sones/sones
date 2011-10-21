@@ -54,7 +54,9 @@ namespace sones.Library.VersionedPluginManager.ErrorHandling
         /// <param name="myDuplicatePluginName">The name of the duplicate plugin</param>
         /// <param name="myPluginType">The type of the duplicate plugin</param>
         /// <param name="myComplainingComponent">The name of the component that complains about a duplicate plugin</param>
-        public DuplicatePluginException(String myDuplicatePluginName, Type myPluginType, String myComplainingComponent)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public DuplicatePluginException(String myDuplicatePluginName, Type myPluginType, String myComplainingComponent, Exception innerException = null)
+			: base(innerException)
         {
             PluginName = myDuplicatePluginName;
             ComplainingComponent = myComplainingComponent;

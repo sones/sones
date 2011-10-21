@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new CouldNotAlterIndexOnTypeException exception
         /// </summary>
         /// <param name="myIndexType"></param>
-        public CouldNotAlterIndexOnTypeException(String myIndexType)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public CouldNotAlterIndexOnTypeException(String myIndexType, Exception innerException = null) : base(innerException)
         {
             IndexType = myIndexType;
             _msg = String.Format("Could not alter index on type \"{0}\".", IndexType);

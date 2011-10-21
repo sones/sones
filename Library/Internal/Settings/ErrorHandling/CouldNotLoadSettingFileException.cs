@@ -42,7 +42,8 @@ namespace sones.Library.Settings.ErrorHandling
         /// creates a new CouldNotLoadSettingFileException
         /// </summary>
         /// <param name="myInformation">An information about what went wrong</param>
-        public CouldNotLoadSettingFileException(String myInformation)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public CouldNotLoadSettingFileException(String myInformation, Exception innerException = null) : base(innerException)
         {
             Info = myInformation;
         }

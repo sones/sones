@@ -30,7 +30,12 @@ namespace sones.GraphQL.GQL.ErrorHandling
 {
     public sealed class InvalidBinaryExpressionException : AGraphQLException
     {
-        public InvalidBinaryExpressionException(BinaryExpressionDefinition myBinaryExpression)
+		/// <summary>
+		/// Initializes a new instance of the BinaryExpressionDefinition class.
+		/// </summary>
+		/// <param name="myBinaryExpression"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidBinaryExpressionException(BinaryExpressionDefinition myBinaryExpression, Exception innerException = null) : base(innerException)
         {
             _msg = String.Format("The BinaryExpression is not valid: {0} {1} {2}", myBinaryExpression.Left.ToString(), myBinaryExpression.Operator, myBinaryExpression.Right.ToString());
         }

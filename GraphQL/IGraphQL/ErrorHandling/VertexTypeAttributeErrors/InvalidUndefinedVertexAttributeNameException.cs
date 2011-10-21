@@ -18,6 +18,8 @@
 * 
 */
 
+using System;
+
 namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
@@ -28,7 +30,8 @@ namespace sones.GraphQL.ErrorHandling
         /// <summary>
         /// Creates a new InvalidUndefinedVertexAttributeNameException exception
         /// </summary>
-        public InvalidUndefinedVertexAttributeNameException()
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidUndefinedVertexAttributeNameException(Exception innerException = null) : base(innerException)
         {
             _msg = "An undefined attribute with an \".\" is not allowed.";
         }

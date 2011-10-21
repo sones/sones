@@ -31,7 +31,13 @@ namespace sones.GraphQL.GQL.ErrorHandling
         public String Isolation;
         public String Info;
 
-        public InvalidTransactionIsolationLevelException(String myIsolationLevel, String myInfo)
+		/// <summary>
+		/// Initializes a new instance of the InvalidTransactionIsolationLevelException class.
+		/// </summary>
+		/// <param name="myIsolationLevel"></param>
+		/// <param name="myInfo"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidTransactionIsolationLevelException(String myIsolationLevel, String myInfo, Exception innerException = null) : base(innerException)
         {
             Isolation = myIsolationLevel;
             Info = myInfo;
