@@ -133,25 +133,13 @@ namespace sones.sonesGraphDBStarter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1200")]
-        public string VertexPreExtension {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public string UseVertexExtensions {
             get {
-                return ((string)(this["VertexPreExtension"]));
+                return ((string)(this["UseVertexExtensions"]));
             }
             set {
-                this["VertexPreExtension"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2400")]
-        public string MinDummyVertexInitCapacity {
-            get {
-                return ((string)(this["MinDummyVertexInitCapacity"]));
-            }
-            set {
-                this["MinDummyVertexInitCapacity"] = value;
+                this["UseVertexExtensions"] = value;
             }
         }
     }
