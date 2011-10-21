@@ -70,6 +70,10 @@
       <Project>{991132D2-15E0-4BB7-8328-3A51646D4F01}</Project>
       <Name>IOInterface</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\Services\IService\IService.csproj">
+      <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
+      <Name>IService</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
       <Name>IGraphDS</Name>
