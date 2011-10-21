@@ -68,10 +68,6 @@
       <Project>{64C46383-614C-4899-B1F4-9419F99BAE93}</Project>
       <Name>GraphDSRemoteClient</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\GraphDS\Client\Implementations\GraphDSRESTClient\GraphDSRESTClient.csproj">
-      <Project>{20D600AA-CD60-423D-A8EE-BCD93F861879}</Project>
-      <Name>GraphDSRESTClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\GraphDS\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
       <Name>IGraphDS</Name>
@@ -156,13 +152,17 @@
       <Project>{1BC7DDCF-B048-4F55-B44F-6471AFB3DAC1}</Project>
       <Name>QueryLog</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RESTService\RESTService.csproj">
-      <Project>{9542AA45-4A4F-4364-BDD8-1446261F0963}</Project>
-      <Name>RESTService %28Plugins\GraphDS\Services\Implementations\RESTService\RESTService%29</Name>
+    <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RemoteAPIService\RemoteAPIService.csproj">
+      <Project>{5A7B5A5F-289A-4109-AD1E-52C62F28DA51}</Project>
+      <Name>RemoteAPIService %28Plugins\GraphDS\Services\Implementations\RemoteAPIService\RemoteAPIService%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphDS\Services\IService\IService.csproj">
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
       <Name>IService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Aggregates\Implementations\GQLAggregates\GQLAggregates.csproj">
+      <Project>{2AC692FD-2E5E-45C1-A188-888064050D67}</Project>
+      <Name>GQLAggregates</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Functions\Implementations\GQLFunctions\GQLFunctions.csproj">
       <Project>{7E58D30B-4108-4941-BF85-A5C309F87536}</Project>
