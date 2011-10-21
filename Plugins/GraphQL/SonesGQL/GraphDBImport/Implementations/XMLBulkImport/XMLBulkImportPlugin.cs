@@ -264,6 +264,11 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
         private bool _closed;
         private IncomingEdgeSorter _sorter;
 
+		/// <summary>
+		/// Stores a value indicating whether to let the FS automatically create incoming edges.
+		/// </summary>
+		private bool _autoCreateIncomingEdges;
+
         #endregion
 
         #region constructor
@@ -333,6 +338,13 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
                 _currentImport = 0L;
                 _closed = false;
                 _sorter = new IncomingEdgeSorter(myOptions);
+				_autoCreateIncomingEdges = false;
+
+                if (myOptions != null)
+                {
+                    if (myOptions.ContainsKey("AutoCreateIncomingEdges"))
+                        bool.TryParse(myOptions["AutoCreateIncomingEdges"], out _autoCreateIncomingEdges);
+                }
 
                 try
                 {
@@ -526,6 +538,9 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
 
         private void InsertIncomingEdges()
         {
+			if(_autoCreateIncomingEdges)
+				return;
+
             var incomingEdges = _sorter.GetSorted().GetEnumerator();
 
             List<IncomingEdge> toAdd = new List<IncomingEdge>();
@@ -929,9 +944,10 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
 
                 var forResultingFS = new VertexAddDefinition(vertexID, vertexTypeID, edition, hyper, single, null, null, comment, creation, modification, structured, unstructured);
 
-                AddEdgesToSorter(hyper, single);
+				if(!_autoCreateIncomingEdges)
+					AddEdgesToSorter(hyper, single);
 
-                _resultingFS.AddVertex(_security, _transaction, forResultingFS, myCreateAutoIncomingEdges: false);
+                _resultingFS.AddVertex(_security, _transaction, forResultingFS, myCreateAutoIncomingEdges: _autoCreateIncomingEdges);
 
             }
             catch (Exception ex)
