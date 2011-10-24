@@ -337,7 +337,6 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
                 _limit = myLimit;
                 _currentImport = 0L;
                 _closed = false;
-                _sorter = new IncomingEdgeSorter(myOptions);
 				_autoCreateIncomingEdges = false;
 
                 if (myOptions != null)
@@ -345,6 +344,9 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
                     if (myOptions.ContainsKey("AutoCreateIncomingEdges"))
                         bool.TryParse(myOptions["AutoCreateIncomingEdges"], out _autoCreateIncomingEdges);
                 }
+
+                if (!_autoCreateIncomingEdges)
+                    _sorter = new IncomingEdgeSorter(myOptions);
 
                 try
                 {
@@ -376,6 +378,8 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
                     {
                         _logger.Log(Level.FINE, "Stream closed");
                         stream.Dispose();
+                        if (_sorter != null)
+                            _sorter.Dispose();
                     }
                 }
             }

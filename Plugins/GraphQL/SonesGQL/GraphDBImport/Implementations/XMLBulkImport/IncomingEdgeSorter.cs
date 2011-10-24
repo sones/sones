@@ -519,6 +519,7 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
         {
             State = IncomingEdgeSorterState.Closed;
             _cancel.Cancel();
+            _chunks.Clear();
 
             foreach (var file in _chunkFiles)
             {
