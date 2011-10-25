@@ -21,6 +21,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.TypeSystem;
+using System;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -39,7 +40,7 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new instance of CircularTypeHierarchyException.
         /// </summary>
         /// <param name="myVertexTypeNames">The list of vertex type names, that contains the circle in derivation hierarchy.</param>
-        public CircularTypeHierarchyException(IEnumerable<ATypePredefinition> myTypeNames)
+        public CircularTypeHierarchyException(IEnumerable<ATypePredefinition> myTypeNames, Exception innerException = null)
         {
             TypeNames = myTypeNames;
 

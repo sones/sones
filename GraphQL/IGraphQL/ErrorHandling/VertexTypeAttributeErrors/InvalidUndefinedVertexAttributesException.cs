@@ -32,17 +32,23 @@ namespace sones.GraphQL.ErrorHandling
         public String AttrName { get; private set; }
         public List<String> ListOfAttrNames { get; private set; }
 
-        public InvalidUndefinedVertexAttributesException(String myAttrName)
+		/// <summary>
+		/// Initializes a new instance of the InvalidUndefinedVertexAttributesException class using an attribute name.
+		/// </summary>
+		/// <param name="myAttrName"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidUndefinedVertexAttributesException(String myAttrName, Exception innerException = null) : base(innerException)
         {
             AttrName = myAttrName;
             _msg = String.Format("The vertex does not contain an undefined attribute with name \" {0} \".", AttrName);
         }
 
         /// <summary>
-        /// Creates a new InvalidUndefinedVertexAttributesException exception
+        /// Creates a new InvalidUndefinedVertexAttributesException exception using a list of attribute names.
         /// </summary>
         /// <param name="myListOfAttrNames">A list of attribute names</param>
-        public InvalidUndefinedVertexAttributesException(List<String> myListOfAttrNames)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidUndefinedVertexAttributesException(List<String> myListOfAttrNames, Exception innerException = null) : base(innerException)
         {
             ListOfAttrNames = myListOfAttrNames;
             String retVal = ListOfAttrNames[0];

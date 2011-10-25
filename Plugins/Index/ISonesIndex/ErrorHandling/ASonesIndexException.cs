@@ -29,6 +29,19 @@ namespace sones.Plugins.Index.ErrorHandling
 {
     public class ASonesIndexException : ASonesException
     {        
-        protected ASonesIndexException(Exception innerException = null) : base(innerException) { }
+		/// <summary>
+		/// Initializes a new instance of the ASonesIndexException.
+		/// </summary>		
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		protected ASonesIndexException(Exception innerException = null) : this(null, innerException)
+		{}
+		
+		/// <summary>
+		/// Initializes a new instance of the ASonesIndexException using a specified message
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		protected ASonesIndexException(String message, Exception innerException = null) : base(innerException)
+		{}
     }
 }

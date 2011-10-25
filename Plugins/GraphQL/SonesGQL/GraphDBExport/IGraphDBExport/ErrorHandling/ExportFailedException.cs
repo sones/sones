@@ -30,7 +30,13 @@ namespace sones.Plugins.SonesGQL.DBExport
         private String DumpType;
         private String Info;
 
-        public ExportFailedException(String myDumpType, String myInfo)
+		/// <summary>
+		/// Initializes a new instance of the ExportFailedException class.
+		/// </summary>
+		/// <param name="myDumpType"></param>
+		/// <param name="myInfo"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public ExportFailedException(String myDumpType, String myInfo, Exception innerException = null) : base(innerException)
         {
             DumpType = myDumpType;
             Info = myInfo;

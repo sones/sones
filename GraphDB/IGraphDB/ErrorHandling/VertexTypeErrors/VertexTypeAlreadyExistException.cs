@@ -33,7 +33,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new VertexTypeAlreadyExistException exception
         /// </summary>
         /// <param name="VertexTypeName">The name of the vertex type</param>
-        public VertexTypeAlreadyExistException(String myVertexTypeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public VertexTypeAlreadyExistException(String myVertexTypeName, Exception innerException = null) : base(innerException)
         {
             VertexTypeName = myVertexTypeName;
             _msg = String.Format("The vertex type {0} already exists", VertexTypeName);

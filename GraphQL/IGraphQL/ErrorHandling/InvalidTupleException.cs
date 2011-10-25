@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new InvalidTupleException exception
         /// </summary>
         /// <param name="myInfo"></param>
-        public InvalidTupleException(String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidTupleException(String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             _msg = String.Format("The tuple is not valid: {0}", Info);

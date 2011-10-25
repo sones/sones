@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new InvalidIDNodeException exception
         /// </summary>
         /// <param name="myInfo"></param>
-        public InvalidIDNodeException(String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidIDNodeException(String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             _msg = String.Format("The IDNode is not valid: \"{0}\"", Info);

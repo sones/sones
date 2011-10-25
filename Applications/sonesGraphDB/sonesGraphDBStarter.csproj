@@ -156,55 +156,55 @@
       <Project>{F51DA5BD-5808-409E-A907-4EF93B2C5E71}</Project>
       <Name>IDrainPipe</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementation\BARCHART_IO\BARCHART_IO.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementations\BARCHART_IO\BARCHART_IO.csproj">
       <Project>{DB2FEFF5-230E-4E2F-8DF9-053DCD9BBAD9}</Project>
       <Name>BARCHART_IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementation\GRAPHVIS_IO\GRAPHVIS_IO.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementations\GRAPHVIS_IO\GRAPHVIS_IO.csproj">
       <Project>{45EFCF07-AD1F-418E-BAC3-9569F903E011}</Project>
       <Name>GRAPHVIS_IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementation\HTML_IO\HTML_IO.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementations\HTML_IO\HTML_IO.csproj">
       <Project>{80D5F893-014A-4FA4-AD9B-CADEDABF0874}</Project>
       <Name>HTML_IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementation\JSON_IO\JSON_IO.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementations\JSON_IO\JSON_IO.csproj">
       <Project>{A820291C-1D86-42B7-9D97-F8C9A142E8D9}</Project>
       <Name>JSON_IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementation\TEXT_IO\TEXT_IO.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementations\TEXT_IO\TEXT_IO.csproj">
       <Project>{171350FD-4A94-498F-A8F3-3758038A92CA}</Project>
       <Name>TEXT_IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementation\XML_IO\XML_IO.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphDS\IO\Implementations\XML_IO\XML_IO.csproj">
       <Project>{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}</Project>
       <Name>XML_IO</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RESTService\RESTService.csproj">
       <Project>{9542AA45-4A4F-4364-BDD8-1446261F0963}</Project>
-      <Name>RESTService %28Plugins\GraphDS\Services\Implementations\RESTService\RESTService%29</Name>
+      <Name>RESTService</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\Services\Interface\IService.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphDS\Services\IService\IService.csproj">
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
       <Name>IService</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\UDC\Implementation\UsageDataCollectorClient\UsageDataCollectorClient.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphDS\UDC\Implementations\UsageDataCollectorClient\UsageDataCollectorClient.csproj">
       <Project>{527BFF61-4A88-4F92-B7B1-2F718735EFC9}</Project>
       <Name>UsageDataCollectorClient</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphDS\UDC\Interface\IUsageDataCollector\IUsageDataCollector.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphDS\UDC\IUsageDataCollector\IUsageDataCollector.csproj">
       <Project>{284AC56E-77A3-49E9-A2B7-23D015EE34FB}</Project>
       <Name>IUsageDataCollector</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Aggregates\GQLAggregates\GQLAggregates.csproj">
-      <Project>{817E142F-ECD9-4B18-A9AE-D399C7C49007}</Project>
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Aggregates\Implementations\GQLAggregates\GQLAggregates.csproj">
+      <Project>{2AC692FD-2E5E-45C1-A188-888064050D67}</Project>
       <Name>GQLAggregates</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Functions\GQLFunctions\GQLFunctions.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Functions\Implementations\GQLFunctions\GQLFunctions.csproj">
       <Project>{7E58D30B-4108-4941-BF85-A5C309F87536}</Project>
       <Name>GQLFunctions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Functions\GraphAlgorithms\ShortestPathAlgorithms\ShortestPathAlgorithms.csproj">
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Functions\Implementations\GraphAlgorithms\ShortestPathAlgorithms\ShortestPathAlgorithms.csproj">
       <Project>{9E2BBF58-75A7-4C03-959C-A557F04927BA}</Project>
       <Name>ShortestPathAlgorithms</Name>
     </ProjectReference>
@@ -215,10 +215,6 @@
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\GraphDBImport\SonesGraphDBImport.csproj">
       <Project>{51C8E5F7-F888-4500-B1EE-D20337FA451F}</Project>
       <Name>SonesGraphDBImport</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\Index\Indices\SonesIndices\SonesIndices.csproj">
-      <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>
-      <Name>SonesIndices</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plugins\GraphDS\DrainPipeLog\Implementations\QueryLog\QueryLog.csproj">
       <Project>{1BC7DDCF-B048-4F55-B44F-6471AFB3DAC1}</Project>
@@ -231,6 +227,18 @@
     <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\GraphMLImport\GraphMLImport.csproj">
       <Project>{DFC1BC4B-F865-48C6-B8E1-64644D410748}</Project>
       <Name>GraphMLImport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\GraphMLImport\GraphMLImport.csproj">
+      <Project>{DFC1BC4B-F865-48C6-B8E1-64644D410748}</Project>
+      <Name>GraphMLImport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\XMLBulkImport\XMLBulkImport.csproj">
+      <Project>{84B824AF-80ED-4383-9BEF-FBC533FFE629}</Project>
+      <Name>XMLBulkImport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\Index\Implementations\SonesIndices\SonesIndices.csproj">
+      <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>
+      <Name>SonesIndices</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdditionalVertices\TemporalVertex.cs" />
     <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\AGraphDBException.cs" />
     <Compile Include="ErrorHandling\Attribute\AttributeAlreadyExistException.cs" />
@@ -223,6 +224,10 @@
     <ProjectReference Include="..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\DataStructures\DataStructures.csproj">
+      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
+      <Name>DataStructures</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>

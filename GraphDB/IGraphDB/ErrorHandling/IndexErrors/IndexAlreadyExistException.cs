@@ -34,7 +34,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new IndexAlreadyExistException exception
         /// </summary>
         /// <param name="myIndex">The name of the index</param>
-        public IndexAlreadyExistException(String myIndex)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public IndexAlreadyExistException(String myIndex, Exception innerException = null) : base(innerException)
         {
             Index = myIndex;
             _msg = String.Format("The index \"{0}\" already exists!", Index);

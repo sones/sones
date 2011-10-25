@@ -130,6 +130,7 @@
     <Compile Include="Request\Truncate\PipelineableTruncateRequest.cs" />
     <Compile Include="Request\Update\PipelineableUpdateRequest.cs" />
     <Compile Include="Settings\DefaultIndexImplementation.cs" />
+    <Compile Include="Settings\PersistenceLocation.cs" />
     <Compile Include="Settings\DefaultRequestManagerImplementation.cs" />
     <Compile Include="Settings\DefaultRequestSchedulerImplementation.cs" />
     <Compile Include="Settings\DefaultSecurityManagerImplementation.cs" />
@@ -175,6 +176,10 @@
       <Project>{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723}</Project>
       <Name>Constants</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\DataStructures\DataStructures.csproj">
+      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
+      <Name>DataStructures</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
@@ -210,10 +215,6 @@
     <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
       <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Plugins\Index\Indices\SonesIndices\SonesIndices.csproj">
-      <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>
-      <Name>SonesIndices</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
       <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>

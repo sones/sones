@@ -34,5 +34,13 @@ namespace sones.Plugins.Index.Fulltext
         /// The additional parameters.
         /// </value>
         IDictionary<string, object> AdditionalParameters { get; }
+
+        /// <summary>
+        /// Gets the score for this result.
+        /// </summary>
+        /// <value>
+        /// The score.
+        /// </value>
+        Double? Score { get; }
     }
 }

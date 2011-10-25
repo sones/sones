@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new NotImpementedExpressionNodeException exception
         /// </summary>
         /// <param name="myNodeType">The current node type</param>
-        public NotImpementedExpressionNodeException(Type myNodeType)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public NotImpementedExpressionNodeException(Type myNodeType, Exception innerException = null) : base(innerException)
         {
             NodeType = myNodeType;
             _msg = String.Format("Currently the type {0} has not been implemented for expressions.", NodeType.Name);

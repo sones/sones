@@ -33,7 +33,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new TruncateNotAllowedOnInheritedTypeException exception
         /// </summary>
         /// <param name="VertexTypeName"></param>
-        public TruncateNotAllowedOnInheritedTypeException(String myVertexTypeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public TruncateNotAllowedOnInheritedTypeException(String myVertexTypeName, Exception innerException = null) : base(innerException)
         {
             VertexTypeName = myVertexTypeName;
             _msg = String.Format("Truncate on the inherited vertex type '{0}' is not allowed!", VertexTypeName);

@@ -113,11 +113,11 @@
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
       <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\IO\Interface\IOInterface.csproj">
+    <ProjectReference Include="..\..\..\IO\IOInterface\IOInterface.csproj">
       <Project>{991132D2-15E0-4BB7-8328-3A51646D4F01}</Project>
       <Name>IOInterface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Interface\IService.csproj">
+    <ProjectReference Include="..\..\IService\IService.csproj">
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
       <Name>IService</Name>
     </ProjectReference>

@@ -35,8 +35,7 @@ namespace sones.GraphQL.GQL.ErrorHandling
         public String Info { get; private set; }
         public AStatement Statement { get; private set; }
         public String Query { get; private set; }
-        ASonesException InnerException;
-
+        
         #endregion
 
         #region constructor
@@ -46,13 +45,13 @@ namespace sones.GraphQL.GQL.ErrorHandling
         /// </summary>
         /// <param name="mySyntaxError">The parser message from Irony (contains a message from kind of info, warning or error)</param>
         /// <param name="myQuery">The given query</param>
-        public GQLStatementNodeExecutionException(String myQuery, AStatement myStatement, String myInfo, ASonesException myInnerException = null)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public GQLStatementNodeExecutionException(String myQuery, AStatement myStatement, String myInfo, Exception innerException = null) : base(innerException)
         {
             Query = myQuery;
             Statement = myStatement;
             Info = myInfo;
-            InnerException = myInnerException;
-
+            
             if(InnerException != null)
                 _msg = String.Format("Error during execute statement: [{0}]\n\n in query: [{1}]\n\n{2}", Statement.StatementName, Query, Info);
             else

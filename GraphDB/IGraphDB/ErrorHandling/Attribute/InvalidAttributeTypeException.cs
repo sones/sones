@@ -27,9 +27,13 @@ namespace sones.GraphDB.ErrorHandling
 {
     public class InvalidAttributeTypeException : AGraphDBAttributeException
     {
-        public InvalidAttributeTypeException(String myAttributeName, String myAttributeType, String myInfo = "")
+        public InvalidAttributeTypeException(String myAttributeName, 
+                                                String myAttributeType, 
+                                                String myExpectedType,
+                                                String myInfo = "")
         {
-            _msg = String.Format("The attribute {0} has an invalid type [{1}]! {2}", myAttributeName, myAttributeType, myInfo);
+            _msg = String.Format("The attribute {0} has an invalid type [{1}], expected [{2}]! {3}", 
+                                    myAttributeName, myAttributeType, myExpectedType, myInfo);
         }
     }
 }

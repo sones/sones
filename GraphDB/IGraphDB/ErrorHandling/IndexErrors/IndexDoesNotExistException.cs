@@ -42,7 +42,8 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="myIndexName"></param>
         /// <param name="myIndexEdition"></param>
-        public IndexDoesNotExistException(String myIndexName, String myIndexEdition)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public IndexDoesNotExistException(String myIndexName, String myIndexEdition, Exception innerException = null) : base(innerException)
         {
             IndexName = myIndexName;
             IndexEdition = myIndexEdition;

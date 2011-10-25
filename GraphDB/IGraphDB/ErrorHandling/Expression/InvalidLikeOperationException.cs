@@ -34,7 +34,8 @@ namespace sones.GraphDB.ErrorHandling.Expression
         /// Creates a new like operation exception
         /// </summary>
         /// <param name="myInfo">A information about what went wrong</param>
-        public InvalidLikeOperationException(String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidLikeOperationException(String myInfo, Exception innerException = null) : base(innerException)
         {
             _msg = myInfo;
         }

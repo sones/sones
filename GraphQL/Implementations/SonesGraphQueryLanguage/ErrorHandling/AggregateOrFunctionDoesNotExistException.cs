@@ -33,7 +33,6 @@ namespace sones.GraphQL.GQL.ErrorHandling
         
         public String Info { get; private set; }
         public String AggrOrFuncName { get; private set; }
-        public ASonesException Exception { get; private set; }
         public Type AggrOrFuncType { get; private set; }
 
         #endregion
@@ -43,17 +42,17 @@ namespace sones.GraphQL.GQL.ErrorHandling
         /// <summary>
         /// Creates a new AggregateOrFunctionDoesNotExistException exception
         /// </summary>
-        public AggregateOrFunctionDoesNotExistException(Type myAggrOrFuncType, String myAggrOrFuncName, String myInfo, ASonesException myException = null)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public AggregateOrFunctionDoesNotExistException(Type myAggrOrFuncType, String myAggrOrFuncName, String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
-            Exception = myException;
             AggrOrFuncType = myAggrOrFuncType;
             AggrOrFuncName = myAggrOrFuncName;
             
-            if (Exception != null)
+            if (InnerException != null)
             {
-                if (Exception.Message != null && !Exception.Message.Equals(""))
-                    _msg = String.Format("Error during loading the aggregate plugin of type: [{0}] name: [{1}]\n\nInner Exception: {2}\n\n{3}", myAggrOrFuncType.ToString(), myAggrOrFuncName, Exception.Message, myInfo);
+				if(InnerException.Message != null && !InnerException.Message.Equals(""))
+					_msg = String.Format("Error during loading the aggregate plugin of type: [{0}] name: [{1}]\n\nInner Exception: {2}\n\n{3}", myAggrOrFuncType.ToString(), myAggrOrFuncName, InnerException.Message, myInfo);
                 else
                     _msg = String.Format("Error during loading the aggregate plugin of type: [{0}] name: [{1}]\n\n{2}", myAggrOrFuncType.ToString(), myAggrOrFuncName, myInfo);
             }

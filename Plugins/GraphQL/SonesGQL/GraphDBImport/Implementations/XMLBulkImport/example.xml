@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<BulkImport xmlns="http://schema.sones.com/graphds/xmlbulkimport.xsd">
+  <Import>
+    <Insert VertexType="User" VertexID="-9223372036854775808">
+      <SetValue AttributeName="Name" Value="SGFydHdpZw=="/>
+    </Insert>
+    <Insert VertexType="User" VertexID="-9223372036854775807">
+      <SetValue AttributeName="Name" Value="RWxpc2E="/>
+      <MultiLink AttributeName="Friends">
+        <Link VertexType="User" VertexID="-9223372036854775806"/>
+        <Link VertexType="User" VertexID="-9223372036854775808"/>
+      </MultiLink>
+    </Insert>
+    <Insert VertexType="User" VertexID="-9223372036854775806">
+      <SetValue AttributeName="Name" Value="VGltbw=="/>
+      <SingleLink AttributeName="Father">
+        <Link VertexType="User" VertexID="-9223372036854775808"/>
+      </SingleLink>
+      <MultiLink AttributeName="Friends">
+        <Link VertexType="User" VertexID="-9223372036854775807"/>
+      </MultiLink>
+      <MultiLink AttributeName="WeigthedFriend">
+        <Link VertexType="User" VertexID="-9223372036854775807">
+          <SetValue AttributeName="Weight" Value="MS43OTc2OTMxMzQ4NjIzMTU3RSszMDg="/>
+        </Link>
+      </MultiLink>
+    </Insert>
+  </Import>
+</BulkImport>

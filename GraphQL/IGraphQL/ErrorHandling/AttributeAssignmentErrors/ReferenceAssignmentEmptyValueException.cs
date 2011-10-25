@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new ReferenceAssignmentEmptyValueException exception
         /// </summary>
         /// <param name="myAttributeName">The name of the attribute</param>
-        public ReferenceAssignmentEmptyValueException(String myAttributeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public ReferenceAssignmentEmptyValueException(String myAttributeName, Exception innerException = null) : base(innerException)
         {
             AttributeName = myAttributeName;
             _msg = String.Format("The single reference attribute {0} does not contain any value.", AttributeName);

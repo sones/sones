@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using sones.GraphDB.Expression.Tree.Literals;
 using sones.GraphDB.Manager.Index;
 using sones.GraphDB.TypeSystem;
@@ -28,6 +29,9 @@ using sones.Library.Commons.VertexStore;
 using sones.Library.PropertyHyperGraph;
 using sones.Plugins.Index;
 using sones.GraphDB.ErrorHandling;
+using sones.Plugins.Index.Fulltext;
+using sones.GraphDB.AdditionalVertices;
+using sones.Library.DataStructures;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -130,7 +134,8 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myIndex">The interesting index</param>
         /// <param name="myIComparable">The interesting key</param>
         /// <returns>An enumerable of VertexIDs</returns>
-        protected abstract IEnumerable<long> GetValues(ISonesIndex myIndex, IComparable myIComparable);
+        protected abstract IEnumerable<long> GetValues(ISonesIndex myIndex, 
+                                                        IComparable myIComparable);
 
         /// <summary>
         /// Checks the revision of a vertex
@@ -165,35 +170,67 @@ namespace sones.GraphDB.Expression.QueryPlan
 
             if (!myVertexType.IsAbstract)
             {
+                #region loading the index
+
                 ISonesIndex idx = null;
 
+                //an index name is specified in an expression, try to get the index
+                //
+                //NOTE: if the specified index couldn't be found, null will be returnd
+                //      to use another index, the call of GetBestMatchingIndex could be added here
                 if (_expressionIndex != null)
-                    idx = _indexManager.GetIndex(_expressionIndex, _securityToken, _transactionToken);
+                    idx = _indexManager.GetIndex(_expressionIndex, 
+                                                    _securityToken, 
+                                                    _transactionToken);
+                //no index name is specified, get the best matching index
                 else
                     idx = GetBestMatchingIdx(_indexManager.GetIndices(myVertexType, 
                                                                         _property.Property, 
                                                                         _securityToken, 
                                                                         _transactionToken));
 
+                //no index could be found
                 if (idx == null)
                     throw new IndexDoesNotExistException(
-                                _expressionIndex == null ? "no index name specified" : _expressionIndex, 
+                                _expressionIndex == null ? "no index found" : _expressionIndex, 
                                 "default");
+                
+                #endregion
 
-                var values = GetValues(idx, _constant.Value);
+                #region get the index results
 
-                if (values != null)
+                //index is a ISonesFulltextIndex, 
+                //so we make a query and get a ISonesFulltextResult
+                if (idx is ISonesFulltextIndex)
                 {
-                    foreach (var aVertexID in values)
+                    var value = (idx as ISonesFulltextIndex).Query(_constant.Value.ToString());
+
+                    if (value != null)
                     {
-                        vertices.Add(_vertexStore.GetVertex(_securityToken, 
-                                                            _transactionToken, 
-                                                            aVertexID, 
-                                                            myVertexType.ID, 
-                                                            VertexEditionFilter, 
-                                                            VertexRevisionFilter));
+                        //read out the ISonesFulltextResultEntries
+                        //create TemporalVertices which store
+                        vertices.AddRange(value.Entries
+                                               .OrderByDescending(entry => entry.Score)
+                                               .Select(entry => CreateTemporalVertex(
+                                                                GetVertex(entry.VertexID, myVertexType),
+                                                                entry)));
                     }
                 }
+                else
+                {
+                    //read out the values
+                    var values = GetValues(idx, _constant.Value);
+
+                    if (values != null)
+                    {
+                        foreach (var aVertexID in values)
+                        {
+                            vertices.Add(GetVertex(aVertexID, myVertexType));
+                        }
+                    }
+                }
+
+                #endregion
             }
 
             #endregion
@@ -212,5 +249,39 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         #endregion
 
+        #region helper
+
+        private IVertex GetVertex(long myVertexID, IVertexType myVertexType)
+        {
+            return _vertexStore.GetVertex(_securityToken,
+                                            _transactionToken,
+                                            myVertexID,
+                                            myVertexType.ID,
+                                            VertexEditionFilter,
+                                            VertexRevisionFilter);
+        }
+
+        /// <summary>
+        /// Creates a TemporalVertex with the <paramref name="myVertex"/> 
+        /// and the FulltextResultEntry of the index.
+        /// </summary>
+        /// <param name="myVertex">
+        /// The vertex which is used to create the temporal vertex.
+        /// </param>
+        /// <param name="myEntry">
+        /// The FulltextResultEntry of the index query.
+        /// </param>
+        /// <returns>
+        /// A new TemporalVertex object.
+        /// </returns>
+        private IVertex CreateTemporalVertex(IVertex myVertex, ISonesFulltextResultEntry myEntry)
+        {
+            var result =  new TemporalVertex(myVertex);
+            result.AddTemporalProperty("ISonesFulltextResultEntry", myEntry);
+
+            return result;
+        }
+
+        #endregion
     }
 }

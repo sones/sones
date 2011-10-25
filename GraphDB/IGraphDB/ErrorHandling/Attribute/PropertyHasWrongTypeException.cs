@@ -65,7 +65,9 @@ namespace sones.GraphDB.ErrorHandling
         /// <param name="myPropertyName">The property that was used with the wrong type.</param>
         /// <param name="myExpectedTypeName">The expected type name.</param>
         /// <param name="myUnexpectedTypeName">The type name of the value.</param>
-        public PropertyHasWrongTypeException(String myDefiningTypeName, String myPropertyName, String myExpectedTypeName, String myUnexpectedTypeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public PropertyHasWrongTypeException(String myDefiningTypeName, String myPropertyName, String myExpectedTypeName, String myUnexpectedTypeName, Exception innerException = null)
+			: base(innerException)
         {
             DefiningTypeName = myDefiningTypeName;
             PropertyName = myPropertyName;
@@ -74,7 +76,16 @@ namespace sones.GraphDB.ErrorHandling
             _msg = string.Format("The property {0}.[1} needs a value of type {2} but was used with a value of type {3}", myDefiningTypeName, myPropertyName, myExpectedTypeName, myUnexpectedTypeName);
         }
 
-        public PropertyHasWrongTypeException(String myDefiningTypeName, String myPropertyName, PropertyMultiplicity myMultiplicity, String myExpectedTypeName)
+		/// <summary>
+		/// Initializes a new instance of the PropertyHasWrongTypeException class.
+		/// </summary>
+		/// <param name="myDefiningTypeName">The type that defines the property.</param>
+		/// <param name="myPropertyName">The property that was used with the wrong type.</param>
+		/// <param name="myMultiplicity"></param>
+		/// <param name="myExpectedTypeName">The expected type name.</param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public PropertyHasWrongTypeException(String myDefiningTypeName, String myPropertyName, PropertyMultiplicity myMultiplicity, String myExpectedTypeName, Exception innerException = null)
+			: base(innerException)
         {
             DefiningTypeName = myDefiningTypeName;
             PropertyName = myPropertyName;

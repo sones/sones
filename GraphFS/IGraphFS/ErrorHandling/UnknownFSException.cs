@@ -27,20 +27,15 @@ namespace sones.GraphFS.ErrorHandling
     /// </summary>
     public sealed class UnknownFSException : AGraphFSException
     {
-        /// <summary>
-        /// The exception that has been thrown
-        /// </summary>
-        public Exception ThrownException { get; private set; }
-        
         #region constructor
 
         /// <summary>
-        /// Creates a new UnknownFS exception
+        /// Initializes a new instance of the UnknownFSException class.
         /// </summary>
-        /// <param name="e"></param>
-        public UnknownFSException(Exception e)
+        ///
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public UnknownFSException(Exception innerException) : base("An unknown exception occured. See InnerException for details.", innerException)
         {
-            ThrownException = e;
         }
 
         #endregion

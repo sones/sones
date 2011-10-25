@@ -19,6 +19,7 @@
 */
 
 using sones.GraphDB.TypeSystem;
+using System;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -27,7 +28,8 @@ namespace sones.GraphDB.ErrorHandling
     /// </summary>
     public sealed class UnknownPropertyTypeException: AGraphDBVertexAttributeException
     {
-        public UnknownPropertyTypeException(ATypePredefinition myTypePredefinition, string myPropertyName)
+        public UnknownPropertyTypeException(ATypePredefinition myTypePredefinition, string myPropertyName, Exception innerException = null) 
+			: base(innerException)
         {
             _msg = string.Format("The property {0} on type {1} has an unknown type.", myPropertyName, myTypePredefinition.TypeName);
         }

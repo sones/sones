@@ -54,7 +54,9 @@ namespace sones.GraphFS.ErrorHandling
         /// <param name="myTypeID">The vertex type id</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myPropertyName">The desired property of the vertex</param>
-        public CouldNotFindUnStructuredVertexPropertyException(Int64 myTypeID, Int64 myVertexID, String myPropertyName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public CouldNotFindUnStructuredVertexPropertyException(Int64 myTypeID, Int64 myVertexID, String myPropertyName, Exception innerException = null)
+			: base(innerException)
         {
             TypeID = myTypeID;
             VertexID = myVertexID;

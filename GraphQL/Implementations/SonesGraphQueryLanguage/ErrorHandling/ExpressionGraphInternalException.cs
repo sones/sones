@@ -31,7 +31,12 @@ namespace sones.GraphQL.GQL.ErrorHandling
     {
         public String Info { get; private set; }
 
-        public ExpressionGraphInternalException(String myInfo)
+		/// <summary>
+		/// Initializes a new instance of the ExpressionGraphInternalException class.
+		/// </summary>
+		/// <param name="myInfo"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public ExpressionGraphInternalException(String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             _msg = String.Format("An internal ExpressionGraph error occurred: \"{0}\"\nStacktrace:\n{1}", Info, StackTrace);

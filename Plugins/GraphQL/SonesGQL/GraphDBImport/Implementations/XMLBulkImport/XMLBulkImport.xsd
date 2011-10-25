@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="XMLBulkImport"
+    targetNamespace="http://schema.sones.com/graphds/xmlbulkimport.xsd"
+    elementFormDefault="qualified"
+    xmlns="http://schema.sones.com/graphds/xmlbulkimport.xsd"
+    xmlns:mstns="http://schema.sones.com/graphds/xmlbulkimport.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <xs:complexType name="BulkImport" final ="#all">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element minOccurs="0" maxOccurs="1"         name="Options"   type="Options" />
+      <xs:element minOccurs="0" maxOccurs="1"         name="PrePhase"  type="PrePhase" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Import"    type="Import" />
+      <xs:element minOccurs="0" maxOccurs="1"         name="PostPhase" type="PostPhase" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Import">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Insert" type="Insert" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:attributeGroup name="AttributeName">
+    <xs:attribute name="AttributeName"   type="xs:string" use="required"/>
+  </xs:attributeGroup>
+  
+  <xs:attributeGroup name="UniqueVertexID">
+    <xs:attribute name="VertexType" type="xs:string" use="required" />
+    <xs:attribute name="VertexID"   type="xs:long"   use="required" />
+  </xs:attributeGroup>
+  
+  <xs:complexType name="Insert">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element minOccurs="0" maxOccurs="1" name="SetValue"   type="SetValue" />
+      <xs:element minOccurs="0" maxOccurs="1" name="SingleLink" type="SingleLink" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MultiLink"  type="MultiLink" />
+    </xs:sequence>
+    <xs:attributeGroup ref="UniqueVertexID" />
+  </xs:complexType>
+
+  <xs:complexType name="SetValue">
+    <xs:attributeGroup ref="AttributeName" />
+    <xs:attribute name="Value" type="xs:base64Binary" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="SingleLink">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element minOccurs="0" maxOccurs="1" name="Link" type="Link" />
+    </xs:sequence>
+    <xs:attributeGroup ref="AttributeName" />
+  </xs:complexType>
+
+  <xs:complexType name="MultiLink">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Link" type="Link" />
+    </xs:sequence>
+    <xs:attributeGroup ref="AttributeName" />
+  </xs:complexType>
+
+  <xs:complexType name="Link">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SetValue" type="SetValue" />
+    </xs:sequence>
+    <xs:attributeGroup ref="UniqueVertexID" />
+  </xs:complexType>
+
+  <xs:complexType name="Options">
+    <!--For later use-->
+  </xs:complexType>
+
+  <xs:complexType name="PrePhase">
+    <!--For later use-->
+  </xs:complexType>
+
+  <xs:complexType name="PostPhase">
+    <!--For later use-->
+  </xs:complexType>
+
+  <xs:element name="BulkImport" type="BulkImport" />
+</xs:schema>

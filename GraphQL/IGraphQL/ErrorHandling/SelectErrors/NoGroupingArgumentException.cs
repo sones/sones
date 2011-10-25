@@ -34,7 +34,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new NoGroupingArgumentException exception
         /// </summary>
         /// <param name="mySelection">The selection</param>
-        public NoGroupingArgumentException(String mySelection)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public NoGroupingArgumentException(String mySelection, Exception innerException = null) : base(innerException)
         {
             Selection = mySelection;
             _msg = "A selection with aggregates must be grouped. Missing for selection " + Selection;
