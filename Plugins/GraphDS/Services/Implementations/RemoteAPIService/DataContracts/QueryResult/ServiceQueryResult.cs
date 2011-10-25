@@ -27,6 +27,7 @@ using sones.GraphQL.Result;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
 using sones.GraphDB.TypeSystem;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
@@ -38,11 +39,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
         {
             this.Duration = myQueryResult.Duration;
             if (myQueryResult.Error != null)
-                if (myQueryResult.Error.Message != null)
-                    this.Error = myQueryResult.Error.Message;
-                else
-                    this.Error = myQueryResult.Error.InnerException.Message;
-
+                this.Error = myQueryResult.Error.Message;
+            else
+                this.Error = null;
             this.NameOfQueryLanguage = myQueryResult.NameOfQuerylanguage;
             this.NumberOfAffectedVertices = myQueryResult.NumberOfAffectedVertices;
             this.Query = myQueryResult.Query;

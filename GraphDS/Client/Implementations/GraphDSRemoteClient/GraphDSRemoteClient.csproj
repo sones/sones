@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConvertHelper.cs" />
+    <Compile Include="ErrorHandling\RemoteException.cs" />
     <Compile Include="GraphDS_RemoteClient.cs" />
     <Compile Include="GraphElements\ARemoteBaseType.cs" />
     <Compile Include="GraphElements\ARemoteEdge.cs" />

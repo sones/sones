@@ -17,6 +17,7 @@ using sones.GraphDS.GraphDSRemoteClient.TypeManagement;
 using sones.Library.PropertyHyperGraph;
 using System.ServiceModel.Description;
 using System.Xml;
+using sones.GraphDS.GraphDSRemoteClient.ErrorHandling;
 
 namespace sones.GraphDS.GraphDSRemoteClient
 {
