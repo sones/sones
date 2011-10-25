@@ -30,7 +30,7 @@ namespace sones.Library.Commons.Security
     {
         #region data
 
-        private readonly Guid _id;
+        private Guid _id;
 
         #endregion
 
@@ -39,6 +39,15 @@ namespace sones.Library.Commons.Security
         public SecurityToken()
         {
             _id = Guid.NewGuid();
+        }
+
+        #endregion
+
+        #region GetID
+
+        public Guid GetID()
+        {
+            return _id;
         }
 
         #endregion

@@ -12,6 +12,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphQL.Result;
+using sones.GraphDB.Expression;
 
 /// <summary>
 /// This is an Example wich describes and shows the simplicity of setting up a GraphDB by using the sones GraphDB CommunityEdition.
@@ -200,7 +201,8 @@ namespace TagExample
                                                                                             "TaggedWebsites"));
 
             #endregion
-
+            
+            
             #region create types by sending requests
 
             //create the types "Tag" and "Website"
@@ -229,11 +231,11 @@ namespace TagExample
              *                                                       new RequestCreateVertexType(Tag_VertexTypePredefinition), 
              *                                                       (Statistics, VertexType) => VertexType);
              */
-
+            
             var Tag = DBTypes.Where(type => type.Name == "Tag").FirstOrDefault();
 
             var Website = DBTypes.Where(type => type.Name == "Website").FirstOrDefault();
-
+           
             #endregion
 
             #region insert some Websites by sending requests
@@ -281,7 +283,7 @@ namespace TagExample
                                                                                     (Statistics, Result) => Result);
 
             #endregion
-
+            
             #region how to get a type from the DB, properties of the type, instances of a specific type and read out property values
 
             //how to get a type from the DB
@@ -303,7 +305,7 @@ namespace TagExample
                 //(that's why we fetched the type from DB an read out the property definition of property "Name")
                 var name = item.GetPropertyAsString(propName.ID);
             }
-
+            
             #endregion
         }
 
