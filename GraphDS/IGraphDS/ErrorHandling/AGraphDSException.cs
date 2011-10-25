@@ -28,6 +28,21 @@ namespace sones.GraphDB.ErrorHandling
     /// </summary>
     public abstract class AGraphDSException : ASonesException
     {
-        public AGraphDSException(Exception innerException = null):base(innerException){}
+		/// <summary>
+		/// Initializes a new instance of the ASonesIndexException.
+		/// </summary>		
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		protected AGraphDSException(Exception innerException = null) : this(null, innerException)
+		{}
+		
+		/// <summary>
+		/// Initializes a new instance of the ASonesIndexException using a specified message
+		/// </summary>
+		/// <param name="message">The message that describes the failure.</param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		protected AGraphDSException(String message, Exception innerException = null) : base(innerException)
+		{
+			_msg = message;
+		}
     }
 }

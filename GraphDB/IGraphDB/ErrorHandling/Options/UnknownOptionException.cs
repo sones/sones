@@ -11,7 +11,13 @@ namespace sones.GraphDB.ErrorHandling
         public String WrongParameter { get; private set; }
         public PluginParameters<Type> AllowedParameters { get; private set; }
 
-        public UnknownOptionException(string myOption, PluginParameters<Type> myParameters)
+		/// <summary>
+		/// Initializes a new instance of the UnknownOptionException class.
+		/// </summary>
+		/// <param name="myOption"></param>
+		/// <param name="myParameters"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public UnknownOptionException(string myOption, PluginParameters<Type> myParameters, Exception innerException = null) : base(innerException)
         {
             WrongParameter = myOption;
             AllowedParameters = myParameters;

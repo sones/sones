@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new InvalidDumpTypeException exception
         /// </summary>
         /// <param name="dumpType"></param>
-        public InvalidDumpTypeException(String dumpType)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidDumpTypeException(String dumpType, Exception innerException = null) : base(innerException)
         {
             DumpType = dumpType;
             _msg = DumpType;

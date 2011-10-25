@@ -35,7 +35,8 @@ namespace sones.GraphQL.ErrorHandling
         /// </summary>
         /// <param name="myUndefAttribute">The undefined attribute</param>
         /// <param name="myAttributeType">The target attribute type</param>
-        public InvalidUndefAttrTypeException(String myUndefAttribute, String myAttributeType)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidUndefAttrTypeException(String myUndefAttribute, String myAttributeType, Exception innerException = null) : base(innerException)
         {            
             Attribute = myUndefAttribute;
             AttributeType = myAttributeType;

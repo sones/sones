@@ -36,6 +36,15 @@ namespace sones.GraphFS.ErrorHandling
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the AGraphFSException using a specified inner exception.
+		/// </summary>
+		/// 
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		protected AGraphFSException(Exception innerException) : this(null, innerException)
+		{
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the AGraphFSException using a specified message and inner exception.
 		/// </summary>
 		/// 

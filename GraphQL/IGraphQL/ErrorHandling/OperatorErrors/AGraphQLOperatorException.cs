@@ -18,9 +18,16 @@
 * 
 */
 
+using System;
 namespace sones.GraphQL.ErrorHandling
 {
     public abstract class AGraphQLOperatorException : AGraphQLException
     {
+		/// <summary>
+		/// Initializes a new instance of the AGraphQLOperatorException class.
+		/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public AGraphQLOperatorException(Exception innerException = null) : base(innerException)
+		{}
     }
 }

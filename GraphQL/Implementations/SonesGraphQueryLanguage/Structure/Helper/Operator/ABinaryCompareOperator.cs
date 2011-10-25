@@ -54,7 +54,16 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// <returns>A data tuple.</returns>
         private static DataContainer JoinData(DataContainer leftData, DataContainer rightData)
         {
-            return new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(leftData.IDChainDefinitions.Item1, rightData.IDChainDefinitions.Item1), new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Operands.Item1, rightData.Operands.Item1), new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Extraordinaries.Item1, rightData.Extraordinaries.Item1));
+            return new DataContainer(
+                    new Tuple<IDChainDefinition, IDChainDefinition>(
+                        leftData.IDChainDefinitions.Item1, 
+                        rightData.IDChainDefinitions.Item1), 
+                    new Tuple<AExpressionDefinition, AExpressionDefinition>(
+                        leftData.Operands.Item1, 
+                        rightData.Operands.Item1), 
+                    new Tuple<AExpressionDefinition, AExpressionDefinition>(
+                        leftData.Extraordinaries.Item1, 
+                        rightData.Extraordinaries.Item1));
         }
 
         /// <summary>
@@ -65,7 +74,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// <param name="errors">The list of errors.</param>
         /// <param name="typeOfBinExpr">The kind of the binary expression</param>
         /// <returns>A data tuple.</returns>
-        private static DataContainer ExtractData(AExpressionDefinition myComplexValue, AExpressionDefinition mySimpleValue, ref TypesOfBinaryExpression typeOfBinExpr, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, Boolean aggregateAllowed)
+        private static DataContainer ExtractData(AExpressionDefinition myComplexValue, 
+                                                    AExpressionDefinition mySimpleValue, 
+                                                    ref TypesOfBinaryExpression typeOfBinExpr, 
+                                                    GQLPluginManager myPluginManager, 
+                                                    IGraphDB myGraphDB, 
+                                                    SecurityToken mySecurityToken, 
+                                                    Int64 myTransactionToken, 
+                                                    Boolean aggregateAllowed)
         {
             #region data
 
@@ -207,7 +223,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                 }
                 else
                 {
-                    throw new AggregateNotAllowedException(((AggregateDefinition)myComplexValue).ChainPartAggregateDefinition.Aggregate.AggregateName);
+                    throw new AggregateNotAllowedException(((AggregateDefinition)myComplexValue).ChainPartAggregateDefinition.Aggregate.PluginShortName);
                 }
                 #endregion
             }
@@ -218,15 +234,22 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
             #endregion
 
-            return new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(complexIDNode, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(simpleValue, complexValue), new Tuple<AExpressionDefinition, AExpressionDefinition>(extraordinaryValue, null));
+            return new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(complexIDNode, null), 
+                                        new Tuple<AExpressionDefinition, AExpressionDefinition>(simpleValue, complexValue), 
+                                        new Tuple<AExpressionDefinition, AExpressionDefinition>(extraordinaryValue, null));
         }
 
-        private static ValueDefinition GetCorrectValueDefinition(IAttributeDefinition typeAttribute, IVertexType graphDBType, ValueDefinition myValueDefinition)
+        private static ValueDefinition GetCorrectValueDefinition(IAttributeDefinition typeAttribute, 
+                                                                    IVertexType graphDBType, 
+                                                                    ValueDefinition myValueDefinition)
         {
 
             if (typeAttribute.Kind == AttributeType.IncomingEdge)
             {
-                return GetCorrectValueDefinition(((IIncomingEdgeDefinition)typeAttribute).RelatedEdgeDefinition, graphDBType, myValueDefinition);
+                return GetCorrectValueDefinition(
+                        ((IIncomingEdgeDefinition)typeAttribute).RelatedEdgeDefinition, 
+                        graphDBType, 
+                        myValueDefinition);
             }
             else
             {
@@ -247,12 +270,29 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
         /// </summary>
         /// <param name="myLeftValueObject">The left value of a binary expression.</param>
         /// <param name="myRightValueObject">The right value of a binary expression.</param>
-        /// <returns></returns>
-        public static IExpressionGraph TypeOperation( 
-            AExpressionDefinition myLeftValueObject, AExpressionDefinition myRightValueObject,
-            GQLPluginManager myPluginManager,
-            IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken,
-            TypesOfBinaryExpression typeOfBinExpr, IExpressionGraph resultGr, TypesOfOperators mytypesOfOpertators, BinaryOperator myOperator, Boolean aggregateAllowed = true)
+        /// <param name="myPluginManager"></param>
+        /// <param name="myGraphDB"></param>
+        /// <param name="mySecurityToken"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <param name="typeOfBinExpr">Type of the binary expression.</param>
+        /// <param name="resultGr"></param>
+        /// <param name="mytypesOfOpertators"></param>
+        /// <param name="myOperator">The binary operator.</param>
+        /// <param name="myExpressionIndex">The name of the index which should be used for the expression.</param>
+        /// <param name="aggregateAllowed"></param>
+        /// <returns>An expression graph.</returns>
+        public static IExpressionGraph TypeOperation(AExpressionDefinition myLeftValueObject, 
+                                                        AExpressionDefinition myRightValueObject,
+                                                        GQLPluginManager myPluginManager,
+                                                        IGraphDB myGraphDB, 
+                                                        SecurityToken mySecurityToken, 
+                                                        Int64 myTransactionToken,
+                                                        TypesOfBinaryExpression typeOfBinExpr, 
+                                                        IExpressionGraph resultGr, 
+                                                        TypesOfOperators mytypesOfOpertators, 
+                                                        BinaryOperator myOperator, 
+                                                        String myExpressionIndex,
+                                                        Boolean aggregateAllowed = true)
         {
             #region Data
 
@@ -285,7 +325,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                     //sth like U.Age = 21
                     #region Get LeftComplex data
 
-                    data = ExtractData(myLeftValueObject, myRightValueObject, ref typeOfBinExpr, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, aggregateAllowed);
+                    data = ExtractData(myLeftValueObject, 
+                                        myRightValueObject, 
+                                        ref typeOfBinExpr, 
+                                        myPluginManager, 
+                                        myGraphDB, 
+                                        mySecurityToken, 
+                                        myTransactionToken, 
+                                        aggregateAllowed);
 
                     #endregion
 
@@ -295,7 +342,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                     //sth like 21 = U.Age
                     #region Get RightComplex data
 
-                    data = ExtractData(myRightValueObject, myLeftValueObject, ref typeOfBinExpr, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, aggregateAllowed);
+                    data = ExtractData(myRightValueObject, 
+                                        myLeftValueObject, 
+                                        ref typeOfBinExpr, 
+                                        myPluginManager, 
+                                        myGraphDB, 
+                                        mySecurityToken, 
+                                        myTransactionToken, 
+                                        aggregateAllowed);
 
                     #endregion
 
@@ -305,9 +359,23 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                     //sth like U.Age = F.Alter
                     #region Get Complex data
 
-                    var leftData = ExtractData(myLeftValueObject, myRightValueObject, ref typeOfBinExpr, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, aggregateAllowed);
+                    var leftData = ExtractData(myLeftValueObject, 
+                                                myRightValueObject, 
+                                                ref typeOfBinExpr, 
+                                                myPluginManager, 
+                                                myGraphDB, 
+                                                mySecurityToken, 
+                                                myTransactionToken, 
+                                                aggregateAllowed);
 
-                    var rightData = ExtractData(myRightValueObject, myLeftValueObject, ref typeOfBinExpr, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, aggregateAllowed);
+                    var rightData = ExtractData(myRightValueObject, 
+                                                myLeftValueObject, 
+                                                ref typeOfBinExpr, 
+                                                myPluginManager, 
+                                                myGraphDB, 
+                                                mySecurityToken, 
+                                                myTransactionToken, 
+                                                aggregateAllowed);
 
                     if (typeOfBinExpr == TypesOfBinaryExpression.Unknown)
                     {
@@ -317,17 +385,24 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                         {
                             case TypesOfBinaryExpression.Atom:
 
-                                data = new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(null, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Operands.Item1, leftData.Operands.Item1), new Tuple<AExpressionDefinition, AExpressionDefinition>(null, null));
+                                data = new DataContainer(new Tuple<IDChainDefinition, 
+                                                            IDChainDefinition>(null, null), 
+                                                            new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Operands.Item1, leftData.Operands.Item1), 
+                                                            new Tuple<AExpressionDefinition, AExpressionDefinition>(null, null));
 
                                 break;
                             case TypesOfBinaryExpression.LeftComplex:
 
-                                data = new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(leftData.IDChainDefinitions.Item1, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(rightData.Operands.Item1, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(null, null));
+                                data = new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(leftData.IDChainDefinitions.Item1, null), 
+                                                            new Tuple<AExpressionDefinition, AExpressionDefinition>(rightData.Operands.Item1, null), 
+                                                            new Tuple<AExpressionDefinition, AExpressionDefinition>(null, null));
 
                                 break;
                             case TypesOfBinaryExpression.RightComplex:
 
-                                data = new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(rightData.IDChainDefinitions.Item1, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Operands.Item1, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(null, null));
+                                data = new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(rightData.IDChainDefinitions.Item1, null), 
+                                                            new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Operands.Item1, null), 
+                                                            new Tuple<AExpressionDefinition, AExpressionDefinition>(null, null));
 
                                 break;
                             case TypesOfBinaryExpression.Complex:
@@ -371,7 +446,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
                     #region LeftComplex
 
-                    MatchData(data, resultGr, myGraphDB, mySecurityToken, myTransactionToken, mytypesOfOpertators, myOperator);
+                    MatchData(data, 
+                                resultGr, 
+                                myGraphDB, 
+                                mySecurityToken, 
+                                myTransactionToken, 
+                                mytypesOfOpertators, 
+                                myOperator,
+                                myExpressionIndex);
 
                     #endregion
 
@@ -381,7 +463,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
 
                     #region RightComplex
 
-                    MatchData(data, resultGr, myGraphDB, mySecurityToken, myTransactionToken, mytypesOfOpertators, myOperator);
+                    MatchData(data, 
+                                resultGr, 
+                                myGraphDB, 
+                                mySecurityToken, 
+                                myTransactionToken, 
+                                mytypesOfOpertators, 
+                                myOperator,
+                                myExpressionIndex);
 
                     #endregion
 
@@ -397,7 +486,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             }
 
             #endregion
-
 
             return resultGr;
         }
@@ -432,7 +520,14 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
             return result;
         }
 
-        private static void MatchData(DataContainer data, IExpressionGraph resultGraph, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, TypesOfOperators myTypeOfOperator, BinaryOperator myOperator)
+        private static void MatchData(DataContainer data, 
+                                        IExpressionGraph resultGraph, 
+                                        IGraphDB myGraphDB, 
+                                        SecurityToken mySecurityToken, 
+                                        Int64 myTransactionToken, 
+                                        TypesOfOperators myTypeOfOperator, 
+                                        BinaryOperator myOperator,
+                                        String myExpressionIndex)
         {
             #region data
 
@@ -447,8 +542,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                     new BinaryExpression(
                         new PropertyExpression(data.IDChainDefinitions.Item1.LastType.Name, data.IDChainDefinitions.Item1.LastAttribute.Name),
                         myOperator,
-                        GenerateLiteral(data.Operands.Item1, ((IPropertyDefinition)data.IDChainDefinitions.Item1.LastAttribute).BaseType))),
-                        (stats, vertexEnumerable) => vertexEnumerable.ToList());
+                        GenerateLiteral(data.Operands.Item1, ((IPropertyDefinition)data.IDChainDefinitions.Item1.LastAttribute).BaseType), 
+                        myExpressionIndex)),
+                (stats, vertexEnumerable) => vertexEnumerable.ToList());
 
             foreach (var aVertex in vertices)
             {

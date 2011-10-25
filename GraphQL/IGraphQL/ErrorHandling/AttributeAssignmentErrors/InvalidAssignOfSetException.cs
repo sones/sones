@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new InvalidAssignOfSetException exception
         /// </summary>
         /// <param name="myAttributeName"></param>
-        public InvalidAssignOfSetException(String myAttributeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidAssignOfSetException(String myAttributeName, Exception innerException = null) : base(innerException)
         {
             AttributeName = myAttributeName;
             _msg = String.Format("Assignment of the reference type {0} with a list is not allowed. Use SETOF or REF (REFERENCE) instead.", AttributeName);

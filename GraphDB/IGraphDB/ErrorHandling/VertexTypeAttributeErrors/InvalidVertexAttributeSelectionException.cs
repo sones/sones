@@ -33,7 +33,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new InvalidVertexAttributeSelectionException exception
         /// </summary>
         /// <param name="mySelectedVertexAttribute">The current selected vertex attribute</param>
-        public InvalidVertexAttributeSelectionException(String mySelectedVertexAttribute)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidVertexAttributeSelectionException(String mySelectedVertexAttribute, Exception innerException = null) : base(innerException)
         {
             SelectedVertexAttribute = mySelectedVertexAttribute;
             _msg = String.Format("The selected vertex attribute \"{0}\" is not valid!", SelectedVertexAttribute);

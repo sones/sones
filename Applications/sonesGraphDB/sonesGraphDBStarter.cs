@@ -88,37 +88,46 @@ namespace sones.sonesGraphDBStarter
                 if (!quiet)
                    Console.WriteLine("Initializing persistence layer...");
  
-                string configuredLocation = Properties.Settings.Default.PersistenceLocation;
+                Uri configuredLocation = new Uri(Properties.Settings.Default.PersistenceLocation, UriKind.RelativeOrAbsolute);
                 string configuredPageSize = Properties.Settings.Default.PageSize;
                 string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
-
+                string configuredUseVertexExtensions = Properties.Settings.Default.UseVertexExtensions;
+                string configuredWriteStrategy = Properties.Settings.Default.WriteStrategy;
                 /* Configure the location */
 
                 Uri location = null;
-                
-                if (configuredLocation.Contains("file:"))
+
+                if (configuredLocation.IsAbsoluteUri)
                 {
-                    location = new Uri(configuredLocation);
+                    location = configuredLocation;
                 }
                 else
                 {
-                    string rootPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location);
-                    string dataPath = rootPath + Path.DirectorySeparatorChar + configuredLocation;
-                    location = new Uri(@dataPath);
+                    Uri rootPath = new Uri(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location);
+                    location = new Uri(rootPath, configuredLocation);
                 }
 
-                /* Configuration for the page size */
+                 /* Configuration for the page size */
                 int pageSize = Int32.Parse(configuredPageSize);
 
                 /* Configuration for the buffer size */
                 int bufferSize = Int32.Parse(configuredBufferSize);
 
+                /* Configuration for using vertex extensions */
+                bool useVertexExtensions = Boolean.Parse(configuredUseVertexExtensions);
+
                 /* Make a new instance by applying the configuration */
                 try
                 {
                     //Make a new GraphDB instance
-                    GraphDB = new SonesGraphDB(new GraphDBPlugins(new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location }, { "pageSize", pageSize }, { "bufferSizePages", bufferSize} })));
-                
+					 GraphDB = new SonesGraphDB(new GraphDBPlugins(
+                        new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location },
+																													{ "pageSize", pageSize },
+																													{ "bufferSizePages", bufferSize },
+																													{ "writeStrategy", configuredWriteStrategy },
+																													{ "useVertexExtensions", useVertexExtensions } })), true, null, location.AbsolutePath);
+
+
                     if (!quiet)
                         Console.WriteLine("Persistence layer initialized.");
                 }

@@ -33,7 +33,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new MandatoryConstraintViolationException exception
         /// </summary>
         /// <param name="myMandatoryConstraint">The mandatory constraint info message</param>
-        public MandatoryConstraintViolationException(String myMandatoryConstraint)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public MandatoryConstraintViolationException(String myMandatoryConstraint, Exception innerException = null) : base(innerException)
         {
             MandatoryConstraint = myMandatoryConstraint;
             _msg = String.Format("The mandatory constraint \"{0}\" was violated!", MandatoryConstraint);

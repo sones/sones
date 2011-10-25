@@ -41,7 +41,8 @@ namespace sones.GraphQL.ErrorHandling
         /// <summary>
         /// Creates a new InvalidVertexAttributeKindException exception
         /// </summary>
-        public InvalidVertexAttributeKindException()
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidVertexAttributeKindException(Exception innerException = null) : base(innerException)
         {
             ExpectedKindsOfType = new String[0];
             _msg = "The given kind does not match the expected";

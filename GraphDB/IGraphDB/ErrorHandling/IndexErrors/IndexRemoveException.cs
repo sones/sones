@@ -27,8 +27,14 @@ namespace sones.GraphDB.ErrorHandling
         public String Name { get; private set; }
         public String Edition { get; private set; }
 
-
-        public IndexRemoveException(String myName, String myEdition, string myInfo)
+		/// <summary>
+		/// Initializes a new instance of the IndexRemoveException class.
+		/// </summary>
+		/// <param name="myName"></param>
+		/// <param name="myEdition"></param>
+		/// <param name="myInfo"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public IndexRemoveException(String myName, String myEdition, string myInfo, Exception innerException = null) : base(innerException)
         {
             Name = myName;
             Edition = myEdition;

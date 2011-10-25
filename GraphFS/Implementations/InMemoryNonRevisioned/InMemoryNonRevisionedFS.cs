@@ -639,6 +639,11 @@ namespace sones.GraphFS
             get { return "inmemnonrevfs"; }
         }
 
+        public String PluginDescription
+        {
+            get { return "The in-memory-store is a non persisitent vertex store without handling any revisions."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }
@@ -676,7 +681,7 @@ namespace sones.GraphFS
                                                 aSingleEdgeDefinition.TargetVertexInformation.VertexID);
 
                     //create the new Edge
-                    singleEdge = new SingleEdge(aSingleEdgeDefinition.PropertyID, 
+                    singleEdge = new SingleEdge(aSingleEdgeDefinition.EdgeTypeID, 
                                                 myVertex, 
                                                 targetVertex,
                                                 aSingleEdgeDefinition.Comment, 

@@ -159,14 +159,6 @@
       <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
       <Name>DataStructures</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\ISonesGQLAggregate\ISonesGQLAggregate.csproj">
-      <Project>{B70DCE72-B636-442A-8825-F3BE78D86D34}</Project>
-      <Name>ISonesGQLAggregate</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\ISonesGQLFunction\ISonesGQLFunction.csproj">
-      <Project>{CDAE254B-77D9-4E59-9C07-C18F0085F570}</Project>
-      <Name>ISonesGQLFunction</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Documentation\ClassDiagram.cd" />

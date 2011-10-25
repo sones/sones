@@ -72,6 +72,11 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// Determines whether it is anticipated that the request could take longer
         /// </summary>
         private readonly Boolean _isLongrunning;
+
+        /// <summary>
+        /// The name of the index which is used for resolving the expression
+        /// </summary>
+        protected readonly String _expressionIndex;
         
         #endregion
 
@@ -86,7 +91,15 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myConstant">The constant value</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public QueryPlanInRangeWithIndex(SecurityToken mySecurityToken, Int64 myTransactionToken, QueryPlanProperty myProperty, RangeLiteralExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning, IIndexManager myIndexManager)
+        /// <param name="myExpressionIndex">The index name which is used for resolving the expression</param>
+        public QueryPlanInRangeWithIndex(SecurityToken mySecurityToken, 
+                                            Int64 myTransactionToken, 
+                                            QueryPlanProperty myProperty, 
+                                            RangeLiteralExpression myConstant, 
+                                            IVertexStore myVertexStore, 
+                                            Boolean myIsLongrunning, 
+                                            IIndexManager myIndexManager,
+                                            String myExpressionIndex = null)
         {
             _securityToken = mySecurityToken;
             _transactionToken = myTransactionToken;
@@ -94,6 +107,7 @@ namespace sones.GraphDB.Expression.QueryPlan
             _constant = myConstant;
             _vertexStore = myVertexStore;
             _isLongrunning = myIsLongrunning;
+            _expressionIndex = myExpressionIndex;
         }
 
         #endregion
@@ -138,10 +152,21 @@ namespace sones.GraphDB.Expression.QueryPlan
         {
             #region current type
 
-            var idx = GetBestMatchingIdx(_indexManager.GetIndices(_property.Property, _securityToken, _transactionToken));
+            ISonesIndex idx = null;
+
+            if (_expressionIndex != null)
+                idx = _indexManager.GetIndex(_expressionIndex, _securityToken, _transactionToken);
+            else
+                idx = GetBestMatchingIdx(_indexManager.GetIndices(_property.Property, _securityToken, _transactionToken));
 
             foreach (var aVertex in GetValues(idx, _constant)
-                .Select(aId => _vertexStore.GetVertex(_securityToken, _transactionToken, aId, myVertexType.ID, VertexEditionFilter, VertexRevisionFilter)))
+                                    .Select(aId => _vertexStore.GetVertex(
+                                                                    _securityToken, 
+                                                                    _transactionToken, 
+                                                                    aId, 
+                                                                    myVertexType.ID, 
+                                                                    VertexEditionFilter, 
+                                                                    VertexRevisionFilter)))
             {
                 yield return aVertex;
             }

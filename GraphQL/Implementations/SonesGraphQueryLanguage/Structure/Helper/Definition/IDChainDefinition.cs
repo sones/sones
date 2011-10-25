@@ -137,11 +137,11 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
             if (this.Function.GetParameters().Count != Parameters.Count && (!containsVariableNumOfParams))
             {
-                throw new FunctionParameterCountMismatchException(this.Function.FunctionName, this.Function.GetParameters().Count, Parameters.Count);
+                throw new FunctionParameterCountMismatchException(this.Function.PluginShortName, this.Function.GetParameters().Count, Parameters.Count);
             }
             else if (containsVariableNumOfParams && Parameters.Count == 0)
             {
-                throw new FunctionParameterCountMismatchException(this.Function.FunctionName, 1, Parameters.Count);
+                throw new FunctionParameterCountMismatchException(this.Function.PluginShortName, 1, Parameters.Count);
             }
 
             #endregion
@@ -372,9 +372,9 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
             {
                 Convert.ChangeType(val, myParameter.Value as Type);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw new FunctionParameterTypeMismatchException(myParameter.Value as Type, val.GetType());
+                throw new FunctionParameterTypeMismatchException(myParameter.Value as Type, val.GetType(), e);
             }
 
             return new FuncParameter(val, myTypeAttribute);

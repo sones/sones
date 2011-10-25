@@ -39,7 +39,8 @@ namespace sones.GraphQL.ErrorHandling
         /// <summary>
         /// Creates a new NotADumpableGrammarException exception
         /// </summary>
-        public NotADumpableGrammarException(String myGrammar, String myInfo)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public NotADumpableGrammarException(String myGrammar, String myInfo, Exception innerException = null) : base(innerException)
         {
             Info = myInfo;
             Grammar = myGrammar;

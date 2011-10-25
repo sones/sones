@@ -61,7 +61,7 @@
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Plugins\GraphDS\Services\Interface\IService.csproj">
+    <ProjectReference Include="..\..\..\Plugins\GraphDS\Services\IService\IService.csproj">
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
       <Name>IService</Name>
     </ProjectReference>

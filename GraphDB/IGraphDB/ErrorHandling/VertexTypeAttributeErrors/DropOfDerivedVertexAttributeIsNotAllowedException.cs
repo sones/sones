@@ -36,7 +36,8 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="VertexTypeName">The name of the current vertex type</param>
         /// <param name="myVertexAttributeName">The name of the current vertex attribute</param>
-        public DropOfDerivedVertexAttributeIsNotAllowedException(String myVertexTypeName, String myVertexAttributeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public DropOfDerivedVertexAttributeIsNotAllowedException(String myVertexTypeName, String myVertexAttributeName, Exception innerException = null) : base(innerException)
         {
             VertexTypeName = myVertexTypeName;
             VertexAttributeName = myVertexAttributeName;

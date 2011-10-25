@@ -33,7 +33,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new VertexTypeDoesNotExistException exception
         /// </summary>
         /// <param name="VertexTypeName">The name of the vertex type</param>
-        public VertexTypeDoesNotExistException(String myVertexTypeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public VertexTypeDoesNotExistException(String myVertexTypeName, Exception innerException = null) : base(innerException)
         {
             VertexTypeName = myVertexTypeName;
             _msg = String.Format("The vertex type {0} does not exists.", VertexTypeName);

@@ -27,16 +27,25 @@ namespace sones.Plugins.SonesGQL.DBImport.ErrorHandling
 {
     public sealed class ImportFailedException : ASonesQLGraphDBImportException
     {
-        public Exception Exception { get; private set; }
         public String Query        { get; private set; }
         public Int64 Line          { get; private set; }
 
-        public ImportFailedException(Exception myException)
+		/// <summary>
+		/// Initializes a new instance of the ImportFailedException class.
+		/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public ImportFailedException(Exception innerException = null) : base(innerException)
         {
-            Exception = myException;
+            
         }
 
-        public ImportFailedException(String myQuery, Int64 myLine)
+		/// <summary>
+		/// Initializes a new instance of the ImportFailedException class using a specified query and line.
+		/// </summary>
+		/// <param name="myQuery"></param>
+		/// <param name="myLine"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public ImportFailedException(String myQuery, Int64 myLine, Exception innerException = null) : base(innerException)
         {
             Query = myQuery;
             Line = myLine;
@@ -44,9 +53,9 @@ namespace sones.Plugins.SonesGQL.DBImport.ErrorHandling
 
         public override string ToString()
         {
-            if (Exception != null)
+            if (InnerException != null)
             {
-                return Exception.ToString();
+                return InnerException.ToString();
             }
             else
             {

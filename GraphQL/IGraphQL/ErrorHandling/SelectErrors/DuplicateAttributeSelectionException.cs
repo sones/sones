@@ -33,7 +33,8 @@ namespace sones.GraphQL.ErrorHandling
         /// Creates a new DuplicateAttributeSelectionException exception
         /// </summary>
         /// <param name="mySelectionAlias">The alias to use</param>
-        public DuplicateAttributeSelectionException(String mySelectionAlias)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public DuplicateAttributeSelectionException(String mySelectionAlias, Exception innerException = null) : base(innerException)
         {
             SelectionAlias = mySelectionAlias;
             _msg = String.Format("You cannot select \"{0}\" more than one time. Try to use an alias.", SelectionAlias);

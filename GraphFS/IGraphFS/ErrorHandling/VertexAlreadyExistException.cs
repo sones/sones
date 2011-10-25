@@ -48,7 +48,8 @@ namespace sones.GraphFS.ErrorHandling
         /// </summary>
         /// <param name="myTypeID">The vertex type id of the vertex</param>
         /// <param name="myVertexID">The id of the vertex</param>
-        public VertexAlreadyExistException(Int64 myTypeID, Int64 myVertexID)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public VertexAlreadyExistException(Int64 myTypeID, Int64 myVertexID, Exception innerException = null) : base(innerException)
         {
             TypeID = myTypeID;
             VertexID = myVertexID;

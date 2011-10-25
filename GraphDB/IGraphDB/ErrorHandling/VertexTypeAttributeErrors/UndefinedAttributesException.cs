@@ -18,6 +18,8 @@
 * 
 */
 
+using System;
+
 namespace sones.GraphDB.ErrorHandling
 {
     /// <summary>
@@ -28,7 +30,8 @@ namespace sones.GraphDB.ErrorHandling
         /// <summary>
         /// Creates a new UndefinedAttributesException exception
         /// </summary>
-        public UndefinedAttributesException()
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public UndefinedAttributesException(Exception innerException = null) : base(innerException)
         {
             _msg = "Undefined attributes can not inserted nor updated. Use the setting SETUNDEFBEHAVE to change this behaviour.";
         }

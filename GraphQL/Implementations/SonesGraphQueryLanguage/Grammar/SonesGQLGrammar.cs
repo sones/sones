@@ -50,6 +50,7 @@ using sones.Library.Commons.Transaction;
 using sones.Library.CollectionWrapper;
 using sones.Plugins.SonesGQL.Statements;
 using System.Globalization;
+using sones.GraphQL.GQL.Structure.Nodes.Misc;
 
 namespace sones.GraphQL
 {
@@ -112,6 +113,8 @@ namespace sones.GraphQL
         public readonly NonTerminal NT_ExtKeyValueList;
 
         public readonly NonTerminal NT_Options;
+
+        public readonly NonTerminal NT_UseIndex;
 
         #endregion
 
@@ -191,6 +194,7 @@ namespace sones.GraphQL
         public KeyTerm S_DEPTH { get; private set; }
         public KeyTerm S_DEFINE { get; private set; }
         public KeyTerm S_UNDEFINE { get; private set; }
+        public KeyTerm S_USE { get; private set; }
 
         #region REF/REFUUID/...
 
@@ -466,6 +470,7 @@ namespace sones.GraphQL
             S_VIA = ToTerm("VIA");
             S_LINK = ToTerm("LINK");
             S_UNLINK = ToTerm("UNLINK");
+            S_USE = ToTerm("USE");
 
             #region IMPORT
 
@@ -562,7 +567,7 @@ namespace sones.GraphQL
             var vertexTypeAttributesOpt = new NonTerminal("vertexTypeAttributesOpt");
             var edgeTypeAttributesOpt = new NonTerminal("edgeTypeAttributesOpt");
             var insertValuesOpt = new NonTerminal("insertValuesOpt");
-
+            NT_UseIndex = new NonTerminal("useIndexOpt", CreateUseIndexNode);
 
             #region Expression
 
@@ -1043,8 +1048,11 @@ namespace sones.GraphQL
                             | "-"
                             | "~";
 
-            binExpr.Rule = NT_Expression + binOp + NT_Expression;
+            binExpr.Rule = NT_Expression + binOp + NT_Expression
+                            | NT_Expression + binOp + NT_Expression + PreferShiftHere() + S_USE + Id_simple;
 
+            NT_UseIndex.Rule = S_USE + Id_simple;
+            
             binOp.Rule = ToTerm("+")
                             | "-"
                             | "*"
@@ -1233,8 +1241,8 @@ namespace sones.GraphQL
                             | S_RENAME + S_ATTRIBUTE + Id_simple + S_TO + Id_simple
                             | S_RENAME + S_INCOMINGEDGE + Id_simple + S_TO + Id_simple
                             | S_RENAME + S_TO + Id_simple
-                //| S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + VertexTypeAttributeList + S_BRACKET_RIGHT
-                //| S_UNDEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
+                            | S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + VertexTypeAttributeList + S_BRACKET_RIGHT
+                            | S_UNDEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
                             | S_DROP + S_UNIQUE + S_ON + Id_simple
                             | S_DROP + S_MANDATORY + S_ON + Id_simple
                             | S_COMMENT + "=" + string_literal;
@@ -1268,7 +1276,18 @@ namespace sones.GraphQL
 
             #region SELECT
 
-            SelectStmtGraph.Rule = S_FROM + VertexTypeList + S_SELECT + selList + NT_whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
+            SelectStmtGraph.Rule = S_FROM + 
+                                    VertexTypeList + 
+                                    S_SELECT + 
+                                    selList + 
+                                    NT_whereClauseOpt + 
+                                    groupClauseOpt + 
+                                    havingClauseOpt + 
+                                    orderClauseOpt + 
+                                    offsetOpt + 
+                                    limitOpt + 
+                                    resolutionDepthOpt + 
+                                    selectOutputOpt;
 
             resolutionDepthOpt.Rule = Empty
                                         | S_DEPTH + number;
@@ -1970,6 +1989,15 @@ namespace sones.GraphQL
             aWhereNode.Init(context, parseNode);
 
             parseNode.AstNode = aWhereNode;
+        }
+
+        private void CreateUseIndexNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            UseIndexNode aUseIndexNode = new UseIndexNode();
+
+            aUseIndexNode.Init(context, parseNode);
+
+            parseNode.AstNode = aUseIndexNode;
         }
 
         private void CreateSelectStatementNode(ParsingContext context, ParseTreeNode parseNode)
@@ -3562,8 +3590,8 @@ namespace sones.GraphQL
                 {
                     //BNF_AggregateName + S_BRACKET_LEFT + aggregateArg + S_BRACKET_RIGHT;
 
-                    var aggrRule = new NonTerminal("aggr_" + aggr.AggregateName, CreateAggregateNode);
-                    aggrRule.Rule = aggr.AggregateName + S_BRACKET_LEFT + NT_AggregateArg + S_BRACKET_RIGHT;
+                    var aggrRule = new NonTerminal("aggr_" + aggr.PluginShortName, CreateAggregateNode);
+                    aggrRule.Rule = aggr.PluginShortName + S_BRACKET_LEFT + NT_AggregateArg + S_BRACKET_RIGHT;
 
                     if (NT_Aggregate.Rule == null)
                     {
@@ -3595,12 +3623,12 @@ namespace sones.GraphQL
 
                     #region Create funcNonTerminal
 
-                    var funcNonTerminal = new NonTerminal("func" + func.FunctionName, CreateFunctionCallNode);
+                    var funcNonTerminal = new NonTerminal("func" + func.PluginShortName, CreateFunctionCallNode);
 
                     var funcParams = func.GetParameters();
                     if (funcParams == null || funcParams.Count() == 0)
                     {
-                        funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + S_BRACKET_RIGHT;
+                        funcNonTerminal.Rule = func.PluginShortName + S_BRACKET_LEFT + S_BRACKET_RIGHT;
 
                     }
                     else
@@ -3627,7 +3655,7 @@ namespace sones.GraphQL
 
                         #endregion
 
-                        funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + NT_FunArgs + S_BRACKET_RIGHT;
+                        funcNonTerminal.Rule = func.PluginShortName + S_BRACKET_LEFT + NT_FunArgs + S_BRACKET_RIGHT;
                     }
 
                     #endregion
@@ -3694,11 +3722,11 @@ namespace sones.GraphQL
                 {
                     if (NT_ImportFormat.Rule == null)
                     {
-                        NT_ImportFormat.Rule = ToTerm(importer.ImportFormat);
+                        NT_ImportFormat.Rule = ToTerm(importer.PluginShortName);
                     }
                     else
                     {
-                        NT_ImportFormat.Rule |= ToTerm(importer.ImportFormat);
+                        NT_ImportFormat.Rule |= ToTerm(importer.PluginShortName);
                     }
                 }
             }
@@ -3722,11 +3750,11 @@ namespace sones.GraphQL
                 {
                     if (NT_ImportFormat.Rule == null)
                     {
-                        NT_ImportFormat.Rule = ToTerm(importer.ExportFormat);
+                        NT_ImportFormat.Rule = ToTerm(importer.PluginShortName);
                     }
                     else
                     {
-                        NT_ImportFormat.Rule |= ToTerm(importer.ExportFormat);
+                        NT_ImportFormat.Rule |= ToTerm(importer.PluginShortName);
                     }
                 }
             }

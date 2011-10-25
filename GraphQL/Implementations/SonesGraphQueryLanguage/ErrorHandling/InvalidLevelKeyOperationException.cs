@@ -36,14 +36,28 @@ namespace sones.GraphQL.GQL.ErrorHandling
         public EdgeKey EdgeKeyB { get; private set; }
         public String Operation { get; private set; }
 
-        public InvalidLevelKeyOperationException(LevelKey myLevelKey, EdgeKey myEdgeKey, String myOperation)
+		/// <summary>
+		/// Initializes a new instance of the InvalidLevelKeyOperationException using an edge key.
+		/// </summary>
+		/// <param name="myLevelKey"></param>
+		/// <param name="myEdgeKey"></param>
+		/// <param name="myOperation"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidLevelKeyOperationException(LevelKey myLevelKey, EdgeKey myEdgeKey, String myOperation, Exception innerException = null) : base(innerException)
         {
             LevelKeyA = myLevelKey;
             EdgeKeyA = myEdgeKey;
             Operation = myOperation;
         }
 
-        public InvalidLevelKeyOperationException(LevelKey myLevelKeyA, LevelKey myLevelKeyB, String myOperation)
+		/// <summary>
+		/// Initializes a new instance of the InvalidLevelKeyOperationException using a level key.
+		/// </summary>
+		/// <param name="myLevelKeyA"></param>
+		/// <param name="myLevelKeyB"></param>
+		/// <param name="myOperation"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidLevelKeyOperationException(LevelKey myLevelKeyA, LevelKey myLevelKeyB, String myOperation, Exception innerException = null) : base(innerException)
         {
             LevelKeyA = myLevelKeyA;
             LevelKeyB = myLevelKeyB;

@@ -42,7 +42,8 @@ namespace sones.GraphFS.ErrorHandling
         /// Creates a new VertexTypeDoesNotExistException exception
         /// </summary>
         /// <param name="myTypeID">The vertex type id of the vertex</param>
-        public VertexTypeDoesNotExistException(Int64 myTypeID)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public VertexTypeDoesNotExistException(Int64 myTypeID, Exception innerException = null) : base(innerException)
         {
             TypeID = myTypeID;
             _msg = String.Format("The vertex type with id {0} does not exist.", myTypeID);

@@ -48,7 +48,8 @@ namespace sones.GraphFS.ErrorHandling
         /// </summary>
         /// <param name="myTypeID">The edge type id</param>
         /// <param name="myPropertyName">The desired property name of the edge</param>
-        public CouldNotFindUnStructuredEdgePropertyException(Int64 myTypeID, String myPropertyName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public CouldNotFindUnStructuredEdgePropertyException(Int64 myTypeID, String myPropertyName, Exception innerException = null) : base(innerException)
         {
             TypeID = myTypeID;
             PropertyName = myPropertyName;

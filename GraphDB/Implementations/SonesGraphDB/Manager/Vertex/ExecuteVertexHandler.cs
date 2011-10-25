@@ -1260,51 +1260,16 @@ namespace sones.GraphDB.Manager.Vertex
                 #endregion
             }
 
-            if (myUpdate.RemovedAlteredAttributes != null)
+            if (myUpdate.RemovedUnstructuredProperties != null)
             {
-                #region remove each attribute, which is no longer defined on type (f.e. after a alter type)
+                #region remove each unstructured property
 
-                foreach (var attribute in myUpdate.RemovedAlteredAttributes)
+                foreach (var name in myUpdate.RemovedUnstructuredProperties)
                 {
-                    switch (attribute.Kind)
+                    if ((myVertexType.HasAttribute(name)) && (myVertexType.GetAttributeDefinition(name).Kind == AttributeType.Property))
                     {
-                        case AttributeType.Property:
-                            toBeDeletedStructured = toBeDeletedStructured ?? new List<long>();
-                            toBeDeletedStructured.Add(attribute.ID);
-                            break;
-
-                        case AttributeType.BinaryProperty:
-                            toBeDeletedBinaries = toBeDeletedBinaries ?? new List<long>();
-                            toBeDeletedBinaries.Add(attribute.ID);
-                            break;
-
-                        case AttributeType.IncomingEdge:
-                            //TODO: a better exception here.
-                            throw new Exception("The edges on an incoming edge attribute can not be removed.");
-
-                        case AttributeType.OutgoingEdge:
-                            switch ((attribute as IOutgoingEdgeDefinition).Multiplicity)
-                            {
-                                case EdgeMultiplicity.HyperEdge:
-                                case EdgeMultiplicity.MultiEdge:
-                                    toBeDeletedHyper = toBeDeletedHyper ?? new List<long>();
-                                    toBeDeletedHyper.Add(attribute.ID);
-                                    break;
-
-                                case EdgeMultiplicity.SingleEdge:
-                                    toBeDeletedSingle = toBeDeletedSingle ?? new List<long>();
-                                    toBeDeletedSingle.Add(attribute.ID);
-                                    break;
-
-                                default:
-                                    //TODO a better exception here
-                                    throw new Exception("The enumeration EdgeMultiplicity was changed, but not this switch statement.");
-                            }
-                            break;
-
-                        default:
-                            //TODO: a better exception here.
-                            throw new Exception("The enumeration AttributeType was updated, but not this switch statement.");
+                        toBeDeletedUnstructured = toBeDeletedUnstructured ?? new List<String>();
+                        toBeDeletedUnstructured.Add(name);
                     }
                 }
 
@@ -1959,7 +1924,7 @@ namespace sones.GraphDB.Manager.Vertex
                         }
                     }
 
-                    outStructuredUpdate = CreateStructuredUpdate(myEdge.StructuredProperties, edgeDef.EdgeType);
+                    outStructuredUpdate = CreateStructuredUpdate(myEdge.StructuredProperties, edgeDef.InnerEdgeType);
                     outUnstructuredUpdate = CreateUnstructuredUpdate(myEdge.UnstructuredProperties);
 
                     break;

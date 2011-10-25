@@ -33,7 +33,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates a new InvalidBaseVertexTypeException exception
         /// </summary>
         /// <param name="myBaseVertexTypeName">The name of the base vertex type</param>
-        public InvalidBaseVertexTypeException(String myBaseVertexTypeName)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public InvalidBaseVertexTypeException(String myBaseVertexTypeName, Exception innerException = null) : base(innerException)
         {
             BaseVertexTypeName = myBaseVertexTypeName;
             _msg = String.Format("The base vertex type [{0}] must be a user defined type.", BaseVertexTypeName);

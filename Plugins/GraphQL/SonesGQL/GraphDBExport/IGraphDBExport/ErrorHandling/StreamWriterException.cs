@@ -29,14 +29,18 @@ namespace sones.Plugins.SonesGQL.DBExport
     {
         private String Stream;
         private String Info;
-        private Exception InnerException;
-
-        public StreamWriterException(String myStream, String myInfo, Exception myInnerException)
+        
+		/// <summary>
+		/// Initializes a new instance of the StreamWriterException class.
+		/// </summary>
+		/// <param name="myStream"></param>
+		/// <param name="myInfo"></param>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public StreamWriterException(String myStream, String myInfo, Exception innerException = null) : base(innerException)
         {
             Stream = myStream;
             Info = myInfo;
-            InnerException = myInnerException;
-
+            
             if(InnerException != null)
                 _msg = String.Format("Error during initializing new {0} StreamWriter.\n\n{1}\n\n{2}", Stream, InnerException.Message, Info);
             else

@@ -19,6 +19,7 @@
 */
 
 using sones.Library.ErrorHandling;
+using System;
 
 namespace sones.Library.VersionedPluginManager.ErrorHandling
 {
@@ -27,5 +28,11 @@ namespace sones.Library.VersionedPluginManager.ErrorHandling
     /// </summary>
     public abstract class APluginManagerException : ASonesException
     {
+		/// <summary>
+		/// Initializes a new instance of the APluginManagerException.
+		/// </summary>
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public APluginManagerException(Exception innerException = null) : base(innerException)
+		{}
     }
 }

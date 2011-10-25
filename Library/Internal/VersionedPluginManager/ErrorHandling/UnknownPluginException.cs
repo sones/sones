@@ -48,7 +48,8 @@ namespace sones.Library.VersionedPluginManager.ErrorHandling
         /// </summary>
         /// <param name="myUnknownPluginName">The name of the unknown plugin</param>
         /// <param name="myPluginType">The type of the unknown plugin</param>
-        public UnknownPluginException(String myUnknownPluginName, Type myPluginType)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+		public UnknownPluginException(String myUnknownPluginName, Type myPluginType, Exception innerException = null) : base(innerException)
         {
             PluginName = myUnknownPluginName;
             PluginType = myPluginType;

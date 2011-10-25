@@ -91,6 +91,11 @@ namespace sones.GraphDB.Request
         public List<String> RemovedAttributes { get; private set; }
 
         /// <summary>
+        /// The unstructured properties which should be removed of updated vertex.
+        /// </summary>
+        public List<String> RemovedUnstructuredProperties { get; private set; }
+
+        /// <summary>
         /// The well defined properties which should be removed after a type is altered.
         /// </summary>
         public List<IAttributeDefinition> RemovedAlteredAttributes { get; private set; }
@@ -259,6 +264,19 @@ namespace sones.GraphDB.Request
         {
             RemovedAttributes = RemovedAttributes ?? new List<String>();
             RemovedAttributes.Add(myPropertyName);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes an unstructured property.
+        /// </summary>
+        /// <param name="myPropertyName">The name of the property</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestUpdate RemoveUnstructuredProperty(String myPropertyName)
+        {
+            RemovedUnstructuredProperties = RemovedUnstructuredProperties ?? new List<String>();
+            RemovedUnstructuredProperties.Add(myPropertyName);
 
             return this;
         }

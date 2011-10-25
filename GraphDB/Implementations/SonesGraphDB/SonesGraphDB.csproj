@@ -129,6 +129,7 @@
     <Compile Include="Request\Truncate\PipelineableTruncateRequest.cs" />
     <Compile Include="Request\Update\PipelineableUpdateRequest.cs" />
     <Compile Include="Settings\DefaultIndexImplementation.cs" />
+    <Compile Include="Settings\PersistenceLocation.cs" />
     <Compile Include="Settings\DefaultRequestManagerImplementation.cs" />
     <Compile Include="Settings\DefaultRequestSchedulerImplementation.cs" />
     <Compile Include="Settings\DefaultSecurityManagerImplementation.cs" />
@@ -212,11 +213,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Plugins\Index\Indices\SonesIndices\SonesIndices.csproj">
-      <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>
-      <Name>SonesIndices</Name>
+      <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
       <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>

@@ -32,7 +32,7 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates an instance of EmptyEdgeTypeException.
         /// </summary>
         /// <param name="myPredefinition">The predefinition that causes the exception.</param>
-        public EmptyEdgeTypeException(ATypePredefinition myPredefinition, String myOutgoingEdgeName)
+        public EmptyEdgeTypeException(ATypePredefinition myPredefinition, String myOutgoingEdgeName, Exception innerException = null) : base(innerException)
         {
             Predefinition = myPredefinition;
             PropertyName = myOutgoingEdgeName;

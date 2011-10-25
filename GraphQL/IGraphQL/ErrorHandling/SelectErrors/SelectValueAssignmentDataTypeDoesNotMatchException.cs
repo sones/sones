@@ -35,7 +35,8 @@ namespace sones.GraphQL.ErrorHandling
         /// </summary>
         /// <param name="myExpectedDataType">The expected data type</param>
         /// <param name="myDataType">The current data type</param>
-        public SelectValueAssignmentDataTypeDoesNotMatchException(String myExpectedDataType, String myDataType)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public SelectValueAssignmentDataTypeDoesNotMatchException(String myExpectedDataType, String myDataType, Exception innerException = null) : base(innerException)
         {
             ExpectedDataType = myExpectedDataType;
             DataType = myDataType;

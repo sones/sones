@@ -193,9 +193,9 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             var temp = new Dictionary<String, object>();
             var edges = new Dictionary<String, IEdgeView>();
 
-            _Aggregate.Add("Aggregate", myAggregate.AggregateName);
+            _Aggregate.Add("Aggregate", myAggregate.PluginShortName);
             _Aggregate.Add("Type", myAggrName);
-            _Aggregate.Add("Description", myAggregate.GetDescribeOutput());
+            _Aggregate.Add("Description", myAggregate.PluginDescription);
 
             int count = 1;
             foreach (var parameter in ((IPluginable)myAggregate).SetableParameters)

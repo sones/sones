@@ -45,7 +45,9 @@ namespace sones.GraphDB.ErrorHandling
         /// <param name="VertexTypeName">The name of the vertex type</param>
         /// <param name="myVertexAttributeName">The name of the vertex attribute </param>
         /// <param name="myConflictingAttributes">A dictionary of the conflicting attributes (TypeAttributeName, GraphDBType)   </param>
-        public DropOfVertexAttributeNotAllowedException(String myVertexTypeName, String myVertexAttributeName, Dictionary<String, String> myConflictingAttributes)
+		/// <param name="innerException">The exception that is the cause of the current exception, this parameter can be NULL.</param>
+        public DropOfVertexAttributeNotAllowedException(String myVertexTypeName, String myVertexAttributeName,
+														Dictionary<String, String> myConflictingAttributes, Exception innerException = null) : base(innerException)
         {
             ConflictingAttributes = myConflictingAttributes;
             VertexTypeName = myVertexTypeName;

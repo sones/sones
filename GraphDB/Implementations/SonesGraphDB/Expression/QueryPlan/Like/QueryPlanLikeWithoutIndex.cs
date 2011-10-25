@@ -76,7 +76,7 @@ namespace sones.GraphDB.Expression.QueryPlan
             }
             catch (Exception e)
             {
-                throw new InvalidLikeOperationException(String.Format("Invalid regular expression given:{0}{1}", Environment.NewLine, e.Message));
+                throw new InvalidLikeOperationException(String.Format("Invalid regular expression given:{0}{1}", Environment.NewLine, e.Message), e);
             }
 
             foreach (var aVertex in _vertexStore.GetVerticesByTypeID(_securityToken, _transactionToken, myInterestingVertexType.ID, _property.Edition, VertexRevisionFilter))

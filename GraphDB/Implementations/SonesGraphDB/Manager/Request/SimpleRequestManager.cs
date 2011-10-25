@@ -104,6 +104,11 @@ namespace sones.GraphDB.Manager
             get { return "requman"; }
         }
 
+        public String PluginDescription
+        {
+            get { return "A manager that handles requests."; }
+        }
+
         public PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

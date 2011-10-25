@@ -32,8 +32,8 @@ namespace sones.GraphDB.ErrorHandling
         /// Creates an instance of EmptyEdgeTypeException.
         /// </summary>
         /// <param name="myPredefinition">The predefinition that causes the exception.</param>
-        /// <param name="myPropertyName">The name of the property.</param>
-        public EmptyPropertyTypeException(ATypePredefinition myPredefinition, String myPropertyName)
+        public EmptyPropertyTypeException(ATypePredefinition myPredefinition, String myPropertyName, Exception innerException = null)
+			: base(innerException)
         {
             _msg = string.Format("The property type {0} on type {1} is empty.", myPropertyName, myPredefinition.TypeName);
         }
