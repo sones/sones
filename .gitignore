@@ -15,3 +15,7 @@ CoreDeveloper.userprefs
 *.sln.docstates
 *.user
 *.userprefs
+*.datasource
+
+/Plugins/GraphDS/Services/Implementations/RemoteAPIService/RemoteAPIService.cs
+/Plugins/GraphDS/Services/Implementations/RemoteAPIService/RemoteAPIService.csproj

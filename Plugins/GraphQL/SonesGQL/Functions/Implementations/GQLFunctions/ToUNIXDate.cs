@@ -49,7 +49,7 @@ namespace sones.Plugins.SonesGQL.Functions
             }
             else
             {
-                if (myWorkingBase == typeof(UInt64) || myWorkingBase == typeof(DateTime))
+                if (myWorkingBase is UInt64 || myWorkingBase is DateTime)
                 {
                     return true;
                 }

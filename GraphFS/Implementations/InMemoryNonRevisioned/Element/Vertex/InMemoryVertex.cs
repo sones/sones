@@ -169,16 +169,8 @@ namespace sones.GraphFS.Element.Vertex
         private Stream CopyBinaryStream(Stream myBinStream)
         {
             var tmpStream = new MemoryStream();
-
-            var lastPos = myBinStream.Position;
-            
-            myBinStream.Position = 0;
-
             myBinStream.CopyTo(tmpStream);
-            
-            myBinStream.Position = lastPos;
             tmpStream.Position = 0;
-
             return tmpStream;            
         }
 

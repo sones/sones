@@ -61,6 +61,10 @@
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
+      <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
+      <Name>IPluginable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\GraphDS\Services\IService\IService.csproj">
       <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
       <Name>IService</Name>
