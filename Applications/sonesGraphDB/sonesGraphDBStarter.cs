@@ -235,6 +235,7 @@ namespace sones.sonesGraphDBStarter
 			Dictionary<string, object> RemoteAPIParameter = new Dictionary<string, object>();
 			RemoteAPIParameter.Add("IPAddress", IPAddress.Parse("127.0.0.1"));
 			RemoteAPIParameter.Add("Port", (ushort)9970);
+            //RemoteAPIParameter.Add("IsSecure", true);
 
 			_dsServer.StartService("sones.RemoteAPIService", RemoteAPIParameter);
 			#endregion
