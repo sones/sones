@@ -40,7 +40,7 @@ namespace sones.GraphDB.TypeSystem
         /// <summary>
         /// The comment for this edge definition.
         /// </summary>
-        public string Comment { get; private set; }
+        public string Comment { get; set; }
 
         /// <summary>
         /// The IDs of the vertices where to connect to.

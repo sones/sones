@@ -51,14 +51,6 @@
     <Compile Include="GraphDSREST_OutputFormat.cs" />
     <Compile Include="GraphDSREST_Service.cs" />
     <Compile Include="GraphDSREST_Settings.cs" />
-    <Compile Include="HttpServer\AcceptType.cs" />
-    <Compile Include="HttpServer\AuthenticationAttributes.cs" />
-    <Compile Include="HttpServer\Extensions.cs" />
-    <Compile Include="HttpServer\HttpListenerResponseExtensions.cs" />
-    <Compile Include="HttpServer\HttpServer.cs" />
-    <Compile Include="HttpServer\IServerSecurity.cs" />
-    <Compile Include="HttpServer\Security\BasicServerSecurity.cs" />
-    <Compile Include="HttpServer\URLParser.cs" />
     <Compile Include="IGraphDSREST_Service.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RESTService.cs" />
@@ -105,13 +97,17 @@
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\Network\HttpServer\HttpServer.csproj">
+      <Project>{85072DC6-7356-449F-9081-939F87AC0CC5}</Project>
+      <Name>HttpServer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
+      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\IO\IOInterface\IOInterface.csproj">
       <Project>{991132D2-15E0-4BB7-8328-3A51646D4F01}</Project>

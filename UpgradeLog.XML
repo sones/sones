@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="CoreDeveloper">
+</Property><Property Name="Solution File" Value="F:\CommunityEdition\CoreDeveloper.sln">
+</Property><Property Name="Date" Value="Montag, 17. Oktober 2011">
+</Property><Property Name="Time" Value="13:21:58">
+</Property></Properties><Event ErrorLevel="0" Project="SMDBehavior" Source="Library\External\SMDBehavior\V.0.2.2\SMDBehavior.csproj" Description="Project file successfully backed up as F:\CommunityEdition\Backup\SMDBehavior.csproj">
+</Event><Event ErrorLevel="0" Project="SMDBehavior" Source="Library\External\SMDBehavior\V.0.2.2\Properties\AssemblyInfo.cs" Description="File successfully backed up as F:\CommunityEdition\Backup\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="SMDBehavior" Source="Library\External\SMDBehavior\V.0.2.2\RawBodyWriter.cs" Description="File successfully backed up as F:\CommunityEdition\Backup\RawBodyWriter.cs">
+</Event><Event ErrorLevel="0" Project="SMDBehavior" Source="Library\External\SMDBehavior\V.0.2.2\SMDBehavior.cs" Description="File successfully backed up as F:\CommunityEdition\Backup\SMDBehavior.cs">
+</Event><Event ErrorLevel="0" Project="SMDBehavior" Source="Library\External\SMDBehavior\V.0.2.2\SMDBehaviorExtensionElement.cs" Description="File successfully backed up as F:\CommunityEdition\Backup\SMDBehaviorExtensionElement.cs">
+</Event><Event ErrorLevel="0" Project="SMDBehavior" Source="Library\External\SMDBehavior\V.0.2.2\SMDMessageInspector.cs" Description="File successfully backed up as F:\CommunityEdition\Backup\SMDMessageInspector.cs">
+</Event><Event ErrorLevel="0" Project="SMDBehavior" Source="Library\External\SMDBehavior\V.0.2.2\lgpl-3.0.txt" Description="File successfully backed up as F:\CommunityEdition\Backup\lgpl-3.0.txt">
+</Event><Event ErrorLevel="0" Project="SMDBehavior" Source="Library\External\SMDBehavior\V.0.2.2\SMDBehavior.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="SMDBehavior" Source="Library\External\SMDBehavior\V.0.2.2\SMDBehavior.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="SMDBehavior" Source="Library\External\SMDBehavior\V.0.2.2\SMDBehavior.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

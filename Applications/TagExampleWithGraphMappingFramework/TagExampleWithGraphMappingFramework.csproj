@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{96368F6F-F8D8-417F-B04E-A91878092D7B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TagExampleWithGraphMappingFramework</RootNamespace>
+    <AssemblyName>TagExampleWithGraphMappingFramework</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Example.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\TagExampleWithGraphMappingFramework.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\TagExampleWithGraphMappingFramework.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Example.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GraphDB\IGraphDB\IGraphDB.csproj">
+      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
+      <Name>IGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDB\Implementations\SonesGraphDB\SonesGraphDB.csproj">
+      <Project>{1FC72801-4046-4CC7-BF83-8082FFD593BC}</Project>
+      <Name>SonesGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDS\Client\IGraphDSClient\IGraphDSClient.csproj">
+      <Project>{89E70649-A81B-4A70-A9A1-B91EA96CE8A1}</Project>
+      <Name>IGraphDSClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDS\Client\Implementations\GraphDSRemoteClient\GraphDSRemoteClient.csproj">
+      <Project>{64C46383-614C-4899-B1F4-9419F99BAE93}</Project>
+      <Name>GraphDSRemoteClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDS\IGraphDS\IGraphDS.csproj">
+      <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
+      <Name>IGraphDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDS\PluginManager\GraphDSPluginManager\GraphDSPluginManager.csproj">
+      <Project>{6C8C30F7-1F75-4FA4-B5E9-6FB9AC8FA4FB}</Project>
+      <Name>GraphDSPluginManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDS\Server\IGraphDSServer\IGraphDSServer.csproj">
+      <Project>{1E30E203-20DE-4DA3-854A-18FEFADA6D7A}</Project>
+      <Name>IGraphDSServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDS\Server\Implementations\GraphDSServer\GraphDSServer.csproj">
+      <Project>{2FB38C4B-C29D-4F34-B42C-7A82E79A0C14}</Project>
+      <Name>GraphDSServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphFS\Implementations\InMemoryNonRevisioned\InMemoryNonRevisioned.csproj">
+      <Project>{AB7C27CC-534F-472E-BA56-A1287973B7E2}</Project>
+      <Name>InMemoryNonRevisioned</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphQL\IGraphQL\IGraphQL.csproj">
+      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
+      <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphQL\Implementations\SonesGraphQueryLanguage\SonesGraphQueryLanguage.csproj">
+      <Project>{26BFEE62-82B9-4EFA-9F91-08FD947551A8}</Project>
+      <Name>SonesGraphQueryLanguage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphQL\QueryResult\QueryResult.csproj">
+      <Project>{BE2A2669-CCDE-40A8-AEAB-673260D7260A}</Project>
+      <Name>QueryResult</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\Commons\Commons.csproj">
+      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
+      <Name>Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\DiscordianDate\DiscordianDate.csproj">
+      <Project>{8E0390D0-A7BF-46FE-900C-C411F762EFF2}</Project>
+      <Name>DiscordianDate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\IPluginable\IPluginable.csproj">
+      <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
+      <Name>IPluginable</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\Network\HttpServer\HttpServer.csproj">
+      <Project>{85072DC6-7356-449F-9081-939F87AC0CC5}</Project>
+      <Name>HttpServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\PluginDefinition\PluginDefinition.csproj">
+      <Project>{CE9BF2C2-C785-4661-8F4F-64266C697343}</Project>
+      <Name>PluginDefinition</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\TypeCodes\TypeCodeDefinition.csproj">
+      <Project>{90D26D64-57EA-4796-A195-15D044FCAF1A}</Project>
+      <Name>TypeCodeDefinition</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\UserdefinedDataType\UserdefinedDataType.csproj">
+      <Project>{1A2B672E-DD8C-4948-8370-1483408E3B50}</Project>
+      <Name>UserdefinedDataType</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
+      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
+      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphDS\DrainPipeLog\IDrainPipe\IDrainPipe.csproj">
+      <Project>{F51DA5BD-5808-409E-A907-4EF93B2C5E71}</Project>
+      <Name>IDrainPipe</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphDS\DrainPipeLog\Implementations\AppendLog\DrainPipeLog.csproj">
+      <Project>{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}</Project>
+      <Name>DrainPipeLog %28Plugins\GraphDS\DrainPipeLog\Implementations\DrainPipeLog%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphDS\DrainPipeLog\Implementations\QueryLog\QueryLog.csproj">
+      <Project>{1BC7DDCF-B048-4F55-B44F-6471AFB3DAC1}</Project>
+      <Name>QueryLog</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphDS\Services\Implementations\RemoteAPIService\RemoteAPIService.csproj">
+      <Project>{5A7B5A5F-289A-4109-AD1E-52C62F28DA51}</Project>
+      <Name>RemoteAPIService %28Plugins\GraphDS\Services\Implementations\RemoteAPIService\RemoteAPIService%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphDS\Services\IService\IService.csproj">
+      <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
+      <Name>IService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Aggregates\Implementations\GQLAggregates\GQLAggregates.csproj">
+      <Project>{2AC692FD-2E5E-45C1-A188-888064050D67}</Project>
+      <Name>GQLAggregates</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\Functions\Implementations\GQLFunctions\GQLFunctions.csproj">
+      <Project>{7E58D30B-4108-4941-BF85-A5C309F87536}</Project>
+      <Name>GQLFunctions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\GraphDBExport\GraphDBExport.csproj">
+      <Project>{95295FE7-C0EB-45ED-88B0-2B66902BEE0C}</Project>
+      <Name>GraphDBExport %28Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\GraphDBExport%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\GraphDBImport\SonesGraphDBImport.csproj">
+      <Project>{51C8E5F7-F888-4500-B1EE-D20337FA451F}</Project>
+      <Name>SonesGraphDBImport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\GraphMLImport\GraphMLImport.csproj">
+      <Project>{DFC1BC4B-F865-48C6-B8E1-64644D410748}</Project>
+      <Name>GraphMLImport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\Index\Implementations\SonesIndices\SonesIndices.csproj">
+      <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>
+      <Name>SonesIndices</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="some.wsdl" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

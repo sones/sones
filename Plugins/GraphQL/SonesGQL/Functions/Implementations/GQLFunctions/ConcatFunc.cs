@@ -41,7 +41,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
-            if (myWorkingBase == typeof(String) || 
+            if (myWorkingBase is String || 
                 ((myWorkingBase is IAttributeDefinition) && (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && (myWorkingBase as IPropertyDefinition).BaseType.Name.Equals("String")))
             {
                 return true; // valid for string

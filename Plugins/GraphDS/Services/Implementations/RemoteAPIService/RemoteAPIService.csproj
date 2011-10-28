@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5A7B5A5F-289A-4109-AD1E-52C62F28DA51}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>sones.GraphDS.Services.RemoteAPIService</RootNamespace>
+    <AssemblyName>RemoteAPIService</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataContracts\ChangesetObjects\ServiceAlterEdgeChangeset.cs" />
+    <Compile Include="DataContracts\ChangesetObjects\ServiceAlterVertexChangeset.cs" />
+    <Compile Include="DataContracts\ChangesetObjects\ServiceUpdateChangeset.cs" />
+    <Compile Include="DataContracts\InstanceObjects\AGraphElement.cs" />
+    <Compile Include="DataContracts\InstanceObjects\ServiceEdgeInstance.cs" />
+    <Compile Include="DataContracts\InstanceObjects\ServiceHyperEdgeInstance.cs" />
+    <Compile Include="DataContracts\InstanceObjects\ServiceSingleEdgeInstance.cs" />
+    <Compile Include="DataContracts\PayloadObjects\ServiceDeletePayload.cs" />
+    <Compile Include="DataContracts\PayloadObjects\ServiceVertexStatistics.cs" />
+    <Compile Include="DataContracts\PayloadObjects\UnstructuredProperty.cs" />
+    <Compile Include="DataContracts\PayloadObjects\StructuredProperty.cs" />
+    <Compile Include="DataContracts\QueryResult\ServiceEdgeView.cs" />
+    <Compile Include="DataContracts\QueryResult\ServiceHyperEdgeView.cs" />
+    <Compile Include="DataContracts\QueryResult\ServiceQueryResult.cs" />
+    <Compile Include="DataContracts\PayloadObjects\ServiceInsertPayload.cs" />
+    <Compile Include="DataContracts\QueryResult\ServiceSingleEdgeView.cs" />
+    <Compile Include="DataContracts\QueryResult\ServiceVertexView.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Operator\ServiceBinaryOperator.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Operator\ServiceUnaryOperator.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\ServiceBinaryExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\ServiceBaseExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\Literals\ServiceCollectionLiteralExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\Literals\ServiceBaseLiteralExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\Literals\ServiceRangeLiteralExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\Literals\ServiceSingleLiteralExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\ServicePropertyExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\TimeSpanDefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\TypeOfExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\Expression\Tree\ServiceUnaryExpression.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceBinaryPropertyPredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceEdgePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceEdgeTypePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceAttributePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceGraphElementUpdateDefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceIncomingEdgePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceIndexPredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceInsertDefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceMandatoryPredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceOutgoingEdgePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServicePropertyPredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceUniquePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceVertexTypePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeType.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceBaseType.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceBinaryPropertyDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceEdgeMultiplicity.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceEdgeType.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceIncomingEdgeDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceIndexDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceOutgoingEdgeDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServicePropertyDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServicePropertyMultiplicity.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceSingleEdgeUpdateDefinition.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceUniqueDefinition.cs" />
+    <Compile Include="DataContracts\InstanceObjects\ServiceVertexInstance.cs" />
+    <Compile Include="DataContracts\ServiceTypeManagement\ServiceVertexType.cs" />
+    <Compile Include="DataContracts\ServiceUserPasswordCredentials.cs" />
+    <Compile Include="ErrorHandling\SecurityTokenException.cs" />
+    <Compile Include="MessageContracts\SetBinaryPropertyMessage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteAPIService.cs" />
+    <Compile Include="ServiceContractImplementation\StreamedService.cs" />
+    <Compile Include="ServiceContracts\MonoMEX\MonoMEX.cs" />
+    <Compile Include="ServiceContractImplementation\EdgeService.cs" />
+    <Compile Include="ServiceContractImplementation\EdgeTypeService.cs" />
+    <Compile Include="ServiceContractImplementation\GraphDS_API.cs" />
+    <Compile Include="ServiceContractImplementation\RPCServiceContract.cs" />
+    <Compile Include="ServiceContractImplementation\VertexService.cs" />
+    <Compile Include="ServiceContractImplementation\VertexTypeService.cs" />
+    <Compile Include="ServiceContracts\API Services\IGraphDS_API.cs" />
+    <Compile Include="ServiceContracts\EdgeInstanceService\IEdgeService.cs" />
+    <Compile Include="ServiceContracts\EdgeTypeServices\IEdgeTypeService.cs" />
+    <Compile Include="ServiceContracts\IRPCServiceContract.cs" />
+    <Compile Include="ServiceContracts\MonoMEX\IMonoMEX.cs" />
+    <Compile Include="ServiceContracts\StreamedService\IStreamedService.cs" />
+    <Compile Include="ServiceContracts\VertexInstanceService\IVertexService.cs" />
+    <Compile Include="ServiceContracts\VertexTypeServices\IVertexTypeService.cs" />
+    <Compile Include="ServiceConverter\ConvertHelper.cs" />
+    <Compile Include="ServiceConverter\ServiceExpressionConverter.cs" />
+    <Compile Include="ServiceConverter\ServiceRequestFactory.cs" />
+    <Compile Include="ServiceConverter\ServiceReturnConverter.cs" />
+    <Compile Include="sonesRPCServer.cs" />
+    <Compile Include="WCFExtra\Utils\CodeDomUtils.cs" />
+    <Compile Include="WCFExtra\Utils\Extensions.cs" />
+    <Compile Include="WCFExtra\Utils\ReflectionUtils.cs" />
+    <Compile Include="WCFExtra\Utils\WsdlUtils.cs" />
+    <Compile Include="WCFExtra\Utils\XmlCommentsUtils.cs" />
+    <Compile Include="WCFExtra\Wsdl\Documentation\XmlCommentsAttribute.cs" />
+    <Compile Include="WCFExtra\Wsdl\Documentation\XmlCommentsConfig.cs" />
+    <Compile Include="WCFExtra\Wsdl\Documentation\XmlCommentsExporter.cs" />
+    <Compile Include="WCFExtra\Wsdl\Documentation\XmlCommentsImporter.cs" />
+    <Compile Include="WCFExtra\Wsdl\LocationOverrideExporter.cs" />
+    <Compile Include="WCFExtra\Wsdl\SingleFileExporter.cs" />
+    <Compile Include="WCFExtra\Wsdl\WsdlExtensions.cs" />
+    <Compile Include="WCFExtra\Wsdl\WsdlExtensionsConfig.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
+      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
+      <Name>IGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\GraphDS\Client\Implementations\GraphDSRemoteClient\GraphDSRemoteClient.csproj">
+      <Project>{64C46383-614C-4899-B1F4-9419F99BAE93}</Project>
+      <Name>GraphDSRemoteClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\GraphDS\IGraphDS\IGraphDS.csproj">
+      <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
+      <Name>IGraphDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
+      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
+      <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\External\NewFastSerializer\NewFastSerializer.csproj">
+      <Project>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</Project>
+      <Name>NewFastSerializer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\CollectionWrapper\CollectionWrapper.csproj">
+      <Project>{7748D9BA-FB40-42F9-9F51-F636F9F1DA8E}</Project>
+      <Name>CollectionWrapper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\Commons\Commons.csproj">
+      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
+      <Name>Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
+      <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
+      <Name>IPluginable</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IService\IService.csproj">
+      <Project>{8250E943-02A0-499B-B0E7-C075F248CBC9}</Project>
+      <Name>IService</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ServiceStatus\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ServiceContracts\MonoMEX\WSDL.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

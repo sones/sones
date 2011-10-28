@@ -35,7 +35,7 @@ using sones.GraphDS;
 using sones.GraphQL.Result;
 using sones.Library.DiscordianDate;
 using sones.Plugins.GraphDS.IO;
-using sones.GraphDS.Services.RESTService.Networking;
+using sones.Library.Network.HttpServer;
 
 #endregion
 

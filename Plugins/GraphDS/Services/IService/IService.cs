@@ -48,14 +48,9 @@ namespace sones.Plugins.GraphDS.Services
     }
 
     #endregion
-    
-    public interface IService 
-    {
-        /// <summary>
-        /// The name of the service
-        /// </summary>
-        String PluginName { get; }
 
+    public interface IService : IPluginable
+    {
         /// <summary>
         /// Starts the service
         /// </summary>
@@ -74,8 +69,8 @@ namespace sones.Plugins.GraphDS.Services
         ServiceStatus GetCurrentStatus();
 
         /// <summary>
-        /// The description of the service
+        /// The description of the running service
         /// </summary>
-        String Description { get; }
+        String ServiceDescription { get; }
     }
 }
