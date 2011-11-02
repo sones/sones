@@ -19,14 +19,6 @@ namespace sones.Plugins.Index.Fulltext
         Int64 VertexID { get; }
 
         /// <summary>
-        /// Gets the score for this result.
-        /// </summary>
-        /// <value>
-        /// The score.
-        /// </value>
-        Double? Score { get; }
-
-        /// <summary>
         /// Highlighted results for that document
         /// </summary>
         /// <value>
@@ -36,20 +28,19 @@ namespace sones.Plugins.Index.Fulltext
         IDictionary<Int64, string> Highlights { get; }
 
         /// <summary>
-        /// Contains vertex- / documentID which 
-        /// are similar to the vertex / document.
-        /// </summary>
-        /// <value>
-        /// All vertexIDs of similar results.
-        /// </value>
-        IEnumerable<Int64> SimilarResults { get; }
-
-        /// <summary>
         /// Can be used for additional information about the query result.
         /// </summary>
         /// <value>
         /// The additional parameters.
         /// </value>
         IDictionary<string, object> AdditionalParameters { get; }
+
+        /// <summary>
+        /// Gets the score for this result.
+        /// </summary>
+        /// <value>
+        /// The score.
+        /// </value>
+        Double? Score { get; }
     }
 }
