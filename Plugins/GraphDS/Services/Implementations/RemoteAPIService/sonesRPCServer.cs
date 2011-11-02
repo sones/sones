@@ -258,6 +258,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
              * When using automatic wsdl generation, there are errors when not using C# Visual Studio:
              *   - (server side) Mono does not yet support wsdl generation
              *   - Java Stub generation using Axis causes the server to hang up
+             *   - Some importers may not support multiple markup files
              */
 
             ServiceMetadataBehavior metadataBehavior = new ServiceMetadataBehavior();
@@ -276,13 +277,15 @@ namespace sones.GraphDS.Services.RemoteAPIService
             
             _ServiceHost.Description.Behaviors.Add(metadataBehavior);
             mexBinding.Namespace = Namespace;
-
-            var mexEndpoint = new ServiceEndpoint(new ContractDescription("IMetadataExchange"), mexBinding, new EndpointAddress("mex"));
-            if (IsSingleFile == true)
-            {
-                mexEndpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
-            }
-            _ServiceHost.AddServiceEndpoint(mexEndpoint);
+            _ServiceHost.AddServiceEndpoint(typeof(IMetadataExchange), mexBinding, "mex");
+            
+            //var mexEndpoint = new ServiceEndpoint(new ContractDescription("IMetadataExchange", "System.ServiceModel.Description"), mexBinding, new EndpointAddress(this.URI.ToString() + "/mex"));
+            //mexEndpoint.Name = "MexEndpoint";
+            //if (IsSingleFile == true)
+            //{
+            //    mexEndpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
+            //}
+            //_ServiceHost.AddServiceEndpoint(mexEndpoint);
 
             #endregion
         }
