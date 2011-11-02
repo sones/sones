@@ -1,0 +1,2829 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions name="RPCServiceContract" targetNamespace="http://www.sones.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://www.sones.com" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.sones.com/Imports">
+      <xsd:import schemaLocation="http://0.0.0.0:9970/rpc?xsd=xsd0" namespace="http://www.sones.com"/>
+      <xsd:import schemaLocation="http://0.0.0.0:9970/rpc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/"/>
+      <xsd:import schemaLocation="http://0.0.0.0:9970/rpc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
+      <xsd:import schemaLocation="http://0.0.0.0:9970/rpc?xsd=xsd3" namespace="http://schemas.microsoft.com/Message"/>
+      <xsd:import schemaLocation="http://0.0.0.0:9970/rpc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/System"/>
+      <xsd:import schemaLocation="http://0.0.0.0:9970/rpc?xsd=xsd5" namespace="http://schemas.datacontract.org/2004/07/System.IO"/>
+      <xsd:import schemaLocation="http://0.0.0.0:9970/rpc?xsd=xsd6" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="StreamedService_GetBinaryProperty_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBinaryProperty"/>
+  </wsdl:message>
+  <wsdl:message name="StreamedService_GetBinaryProperty_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBinaryPropertyResponse"/>
+  </wsdl:message>
+  <wsdl:message name="StreamedService_GetAllBinaryProperties_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllBinaryProperties"/>
+  </wsdl:message>
+  <wsdl:message name="StreamedService_GetAllBinaryProperties_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllBinaryPropertiesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="SetBinaryPropertyMessage">
+    <wsdl:part name="parameters" element="tns:SetBinaryPropertyMessage"/>
+  </wsdl:message>
+  <wsdl:message name="SetBinaryPropertyMessage_Headers">
+    <wsdl:part name="PropertyName" element="tns:PropertyName"/>
+    <wsdl:part name="SecurityToken" element="tns:SecurityToken"/>
+    <wsdl:part name="TransToken" element="tns:TransToken"/>
+    <wsdl:part name="VertexID" element="tns:VertexID"/>
+    <wsdl:part name="VertexTypeID" element="tns:VertexTypeID"/>
+  </wsdl:message>
+  <wsdl:message name="StreamedService_SetBinaryProperty_OutputMessage"/>
+  <wsdl:message name="GraphDSService_CreateVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_CreateVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_AlterVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:AlterVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_AlterVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AlterVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_AlterEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:AlterEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_AlterEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AlterEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetVertexTypeByName_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetVertexTypeByName"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetVertexTypeByName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetVertexTypeByNameResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetVertexTypeByID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetVertexTypeByID"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetVertexTypeByID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetVertexTypeByIDResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_BeginTransaction_InputMessage">
+    <wsdl:part name="parameters" element="tns:BeginTransaction"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_BeginTransaction_OutputMessage">
+    <wsdl:part name="parameters" element="tns:BeginTransactionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_CommitTransaction_InputMessage">
+    <wsdl:part name="parameters" element="tns:CommitTransaction"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_CommitTransaction_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CommitTransactionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_RollbackTransaction_InputMessage">
+    <wsdl:part name="parameters" element="tns:RollbackTransaction"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_RollbackTransaction_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RollbackTransactionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_Shutdown_InputMessage">
+    <wsdl:part name="parameters" element="tns:Shutdown"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_Shutdown_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ShutdownResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_Clear_InputMessage">
+    <wsdl:part name="parameters" element="tns:Clear"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_Clear_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ClearResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_CreateEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_CreateEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_CreateEdgeTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateEdgeTypes"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_CreateEdgeTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateEdgeTypesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_CreateIndex_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateIndex"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_CreateIndex_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateIndexResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_CreateVertexTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateVertexTypes"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_CreateVertexTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateVertexTypesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_Delete_InputMessage">
+    <wsdl:part name="parameters" element="tns:Delete"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_Delete_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_DescribeIndex_InputMessage">
+    <wsdl:part name="parameters" element="tns:DescribeIndex"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_DescribeIndex_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DescribeIndexResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_DescribeIndices_InputMessage">
+    <wsdl:part name="parameters" element="tns:DescribeIndices"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_DescribeIndices_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DescribeIndicesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_DescribeIndicesByNames_InputMessage">
+    <wsdl:part name="parameters" element="tns:DescribeIndicesByNames"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_DescribeIndicesByNames_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DescribeIndicesByNamesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_DropEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:DropEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_DropEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DropEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_DropIndex_InputMessage">
+    <wsdl:part name="parameters" element="tns:DropIndex"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_DropIndex_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DropIndexResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_DropVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:DropVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_DropVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DropVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetAllEdgeTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllEdgeTypes"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetAllEdgeTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllEdgeTypesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetAllVertexTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllVertexTypes"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetAllVertexTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllVertexTypesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetEdgeTypeByName_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetEdgeTypeByName"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetEdgeTypeByName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetEdgeTypeByNameResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetEdgeTypeByID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetEdgeTypeByID"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetEdgeTypeByID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetEdgeTypeByIDResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetVertex_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetVertex"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetVertex_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetVertexResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetVertexCount_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetVertexCount"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetVertexCount_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetVertexCountResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetVerticesByType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetVerticesByType"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetVerticesByType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetVerticesByTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetVerticesByExpression_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetVerticesByExpression"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_GetVerticesByExpression_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetVerticesByExpressionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_Insert_InputMessage">
+    <wsdl:part name="parameters" element="tns:Insert"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_Insert_OutputMessage">
+    <wsdl:part name="parameters" element="tns:InsertResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_LogOff_InputMessage">
+    <wsdl:part name="parameters" element="tns:LogOff"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_LogOff_OutputMessage">
+    <wsdl:part name="parameters" element="tns:LogOffResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_LogOn_InputMessage">
+    <wsdl:part name="parameters" element="tns:LogOn"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_LogOn_OutputMessage">
+    <wsdl:part name="parameters" element="tns:LogOnResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_Query_InputMessage">
+    <wsdl:part name="parameters" element="tns:Query"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_Query_OutputMessage">
+    <wsdl:part name="parameters" element="tns:QueryResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_Update_InputMessage">
+    <wsdl:part name="parameters" element="tns:Update"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_Update_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_RebuildIndices_InputMessage">
+    <wsdl:part name="parameters" element="tns:RebuildIndices"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_RebuildIndices_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RebuildIndicesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_TruncateVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:TruncateVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="GraphDSService_TruncateVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:TruncateVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetDescendantVertexTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDescendantVertexTypes"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetDescendantVertexTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDescendantVertexTypesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetDescendantVertexTypesAndSelf_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDescendantVertexTypesAndSelf"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetDescendantVertexTypesAndSelf_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDescendantVertexTypesAndSelfResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetAncestorVertexTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAncestorVertexTypes"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetAncestorVertexTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAncestorVertexTypesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetAncestorVertexTypesAndSelf_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAncestorVertexTypesAndSelf"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetAncestorVertexTypesAndSelf_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAncestorVertexTypesAndSelfResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetKinsmenVertexTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetKinsmenVertexTypes"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetKinsmenVertexTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetKinsmenVertexTypesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetKinsmenVertexTypesAndSelf_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetKinsmenVertexTypesAndSelf"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetKinsmenVertexTypesAndSelf_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetKinsmenVertexTypesAndSelfResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_ChildrenVertexTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:ChildrenVertexTypes"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_ChildrenVertexTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ChildrenVertexTypesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_ParentVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:ParentVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_ParentVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ParentVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_IsSealedByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsSealedByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_IsSealedByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsSealedByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasParentTypeByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasParentTypeByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasParentTypeByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasParentTypeByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasChildTypeByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasChildTypeByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasChildTypeByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasChildTypeByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_IsAncestorByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsAncestorByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_IsAncestorByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsAncestorByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_IsAncestorOrSelfByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsAncestorOrSelfByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_IsAncestorOrSelfByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsAncestorOrSelfByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_IsDescendantByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsDescendantByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_IsDescendantByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsDescendantByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_IsDescendantOrSelfByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsDescendantOrSelfByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_IsDescendantOrSelfByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsDescendantOrSelfByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasAttributeByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasAttributeByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasAttributeByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasAttributeByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetAttributeDefinitionByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAttributeDefinitionByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetAttributeDefinitionByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAttributeDefinitionByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetAttributeDefinitionByIDByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAttributeDefinitionByIDByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetAttributeDefinitionByIDByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAttributeDefinitionByIDByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasAttributesByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasAttributesByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasAttributesByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasAttributesByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetAttributeDefinitionsByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAttributeDefinitionsByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetAttributeDefinitionsByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAttributeDefinitionsByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasPropertyByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasPropertyByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasPropertyByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasPropertyByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetPropertyDefinitionByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetPropertyDefinitionByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetPropertyDefinitionByIDByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionByIDByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetPropertyDefinitionByIDByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionByIDByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasPropertiesByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasPropertiesByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasPropertiesByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasPropertiesByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetPropertyDefinitionsByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionsByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetPropertyDefinitionsByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionsByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetPropertyDefinitionsByNameListByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionsByNameListByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetPropertyDefinitionsByNameListByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionsByNameListByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasBinaryProperty_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasBinaryProperty"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasBinaryProperty_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasBinaryPropertyResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetBinaryPropertyDefinition_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBinaryPropertyDefinition"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetBinaryPropertyDefinition_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBinaryPropertyDefinitionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasBinaryProperties_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasBinaryProperties"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasBinaryProperties_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasBinaryPropertiesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetBinaryPropertyDefinitions_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBinaryPropertyDefinitions"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetBinaryPropertyDefinitions_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBinaryPropertyDefinitionsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasIncomingEdge_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasIncomingEdge"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasIncomingEdge_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasIncomingEdgeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetIncomingEdgeDefinition_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingEdgeDefinition"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetIncomingEdgeDefinition_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingEdgeDefinitionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasIncomingEdges_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasIncomingEdges"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasIncomingEdges_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasIncomingEdgesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetIncomingEdgeDefinitions_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingEdgeDefinitions"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetIncomingEdgeDefinitions_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingEdgeDefinitionsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasOutgoingEdgeByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasOutgoingEdgeByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasOutgoingEdgeByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasOutgoingEdgeByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetOutgoingEdgeDefinitionByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingEdgeDefinitionByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetOutgoingEdgeDefinitionByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingEdgeDefinitionByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasOutgoingEdgesByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasOutgoingEdgesByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasOutgoingEdgesByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasOutgoingEdgesByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetOutgoingEdgeDefinitionsByVertexType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingEdgeDefinitionsByVertexType"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetOutgoingEdgeDefinitionsByVertexType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingEdgeDefinitionsByVertexTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasUniqueDefinitions_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasUniqueDefinitions"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasUniqueDefinitions_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasUniqueDefinitionsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetUniqueDefinitions_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetUniqueDefinitions"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetUniqueDefinitions_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetUniqueDefinitionsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasIndexDefinitions_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasIndexDefinitions"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_HasIndexDefinitions_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasIndexDefinitionsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetIndexDefinitions_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetIndexDefinitions"/>
+  </wsdl:message>
+  <wsdl:message name="VertexTypeService_GetIndexDefinitions_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetIndexDefinitionsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_HasIncomingVertices_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasIncomingVertices"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_HasIncomingVertices_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasIncomingVerticesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetAllIncomingVertices_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllIncomingVertices"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetAllIncomingVertices_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllIncomingVerticesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetIncomingVertices_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingVertices"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetIncomingVertices_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingVerticesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_HasOutgoingEdgeByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasOutgoingEdgeByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_HasOutgoingEdgeByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasOutgoingEdgeByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetAllOutgoingEdges_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllOutgoingEdges"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetAllOutgoingEdges_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllOutgoingEdgesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetAllOutgoingHyperEdges_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllOutgoingHyperEdges"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetAllOutgoingHyperEdges_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllOutgoingHyperEdgesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetAllOutgoingSingleEdges_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllOutgoingSingleEdges"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetAllOutgoingSingleEdges_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllOutgoingSingleEdgesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetOutgoingEdge_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingEdge"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetOutgoingEdge_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingEdgeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetOutgoingHyperEdge_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingHyperEdge"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetOutgoingHyperEdge_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingHyperEdgeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetOutgoingSingleEdge_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingSingleEdge"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetOutgoingSingleEdge_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingSingleEdgeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetPropertyByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetPropertyByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_HasPropertyByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasPropertyByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_HasPropertyByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasPropertyByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetCountOfPropertiesByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCountOfPropertiesByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetCountOfPropertiesByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCountOfPropertiesByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetAllPropertiesByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllPropertiesByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetAllPropertiesByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllPropertiesByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetPropertyAsStringByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyAsStringByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetPropertyAsStringByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyAsStringByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetUnstructuredPropertyByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetUnstructuredPropertyByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetUnstructuredPropertyByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetUnstructuredPropertyByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_HasUnstructuredPropertyByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasUnstructuredPropertyByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_HasUnstructuredPropertyByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasUnstructuredPropertyByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetCountOfUnstructuredPropertiesByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCountOfUnstructuredPropertiesByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetCountOfUnstructuredPropertiesByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCountOfUnstructuredPropertiesByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetAllUnstructuredPropertiesByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllUnstructuredPropertiesByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetAllUnstructuredPropertiesByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllUnstructuredPropertiesByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetUnstructuredPropertyAsStringByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetUnstructuredPropertyAsStringByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_GetUnstructuredPropertyAsStringByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetUnstructuredPropertyAsStringByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_CommentByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:CommentByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_CommentByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CommentByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_CreationDateByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreationDateByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_CreationDateByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreationDateByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_ModificationDateByVertexInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:ModificationDateByVertexInstance"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_ModificationDateByVertexInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ModificationDateByVertexInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_VertexStatistics_InputMessage">
+    <wsdl:part name="parameters" element="tns:VertexStatistics"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_VertexStatistics_OutputMessage">
+    <wsdl:part name="parameters" element="tns:VertexStatisticsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_PartitionID_InputMessage">
+    <wsdl:part name="parameters" element="tns:PartitionID"/>
+  </wsdl:message>
+  <wsdl:message name="VertexInstanceService_PartitionID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PartitionIDResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetDescendantEdgeTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDescendantEdgeTypes"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetDescendantEdgeTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDescendantEdgeTypesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetDescendantEdgeTypesAndSelf_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDescendantEdgeTypesAndSelf"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetDescendantEdgeTypesAndSelf_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDescendantEdgeTypesAndSelfResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetAncestorEdgeTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAncestorEdgeTypes"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetAncestorEdgeTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAncestorEdgeTypesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetAncestorEdgeTypesAndSelf_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAncestorEdgeTypesAndSelf"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetAncestorEdgeTypesAndSelf_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAncestorEdgeTypesAndSelfResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetKinsmenEdgeTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetKinsmenEdgeTypes"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetKinsmenEdgeTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetKinsmenEdgeTypesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetKinsmenEdgeTypesAndSelf_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetKinsmenEdgeTypesAndSelf"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetKinsmenEdgeTypesAndSelf_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetKinsmenEdgeTypesAndSelfResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_ChildrenEdgeTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:ChildrenEdgeTypes"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_ChildrenEdgeTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ChildrenEdgeTypesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_ParentEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:ParentEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_ParentEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ParentEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_IsSealedByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsSealedByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_IsSealedByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsSealedByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_HasParentTypeByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasParentTypeByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_HasParentTypeByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasParentTypeByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_HasChildTypesByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasChildTypesByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_HasChildTypesByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasChildTypesByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_IsAncestorByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsAncestorByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_IsAncestorByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsAncestorByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_IsAncestorOrSelfByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsAncestorOrSelfByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_IsAncestorOrSelfByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsAncestorOrSelfByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_IsDescendantByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsDescendantByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_IsDescendantByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsDescendantByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_IsDescendantOrSelfByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsDescendantOrSelfByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_IsDescendantOrSelfByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsDescendantOrSelfByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_HasAttributeByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasAttributeByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_HasAttributeByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasAttributeByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetAttributeDefinitionByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAttributeDefinitionByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetAttributeDefinitionByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAttributeDefinitionByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetAttributeDefinitionByIDByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAttributeDefinitionByIDByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetAttributeDefinitionByIDByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAttributeDefinitionByIDByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_HasAttributesByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasAttributesByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_HasAttributesByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasAttributesByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetAttributeDefinitionsByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAttributeDefinitionsByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetAttributeDefinitionsByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAttributeDefinitionsByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_HasProprtyByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasProprtyByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_HasProprtyByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasProprtyByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetPropertyDefinitionByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetPropertyDefinitionByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetPropertyDefinitionByIDByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionByIDByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetPropertyDefinitionByIDByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionByIDByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_HasPropertiesByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasPropertiesByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_HasPropertiesByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasPropertiesByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetPropertyDefinitionsByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionsByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetPropertyDefinitionsByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionsByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetPropertyDefinitionsByNameListByEdgeType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionsByNameListByEdgeType"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeTypeService_GetPropertyDefinitionsByNameListByEdgeType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyDefinitionsByNameListByEdgeTypeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetPropertyByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetPropertyByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_HasPropertyByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasPropertyByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_HasPropertyByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasPropertyByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetCountOfPropertiesByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCountOfPropertiesByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetCountOfPropertiesByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCountOfPropertiesByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetAllPropertiesByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllPropertiesByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetAllPropertiesByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllPropertiesByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetPropertyAsStringByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyAsStringByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetPropertyAsStringByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertyAsStringByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetUnstructuredPropertyByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetUnstructuredPropertyByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetUnstructuredPropertyByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetUnstructuredPropertyByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_HasUnstructuredPropertyByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:HasUnstructuredPropertyByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_HasUnstructuredPropertyByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HasUnstructuredPropertyByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetCountOfUnstructuredPropertiesByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCountOfUnstructuredPropertiesByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetCountOfUnstructuredPropertiesByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCountOfUnstructuredPropertiesByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetAllUnstructuredPropertiesByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllUnstructuredPropertiesByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetAllUnstructuredPropertiesByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllUnstructuredPropertiesByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetUnstructuredPropertyAsStringByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetUnstructuredPropertyAsStringByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_GetUnstructuredPropertyAsStringByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetUnstructuredPropertyAsStringByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_CommentByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:CommentByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_CommentByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CommentByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_CreationDateByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreationDateByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_CreationDateByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreationDateByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_ModificationDateByEdgeInstance_InputMessage">
+    <wsdl:part name="parameters" element="tns:ModificationDateByEdgeInstance"/>
+  </wsdl:message>
+  <wsdl:message name="EdgeInstanceService_ModificationDateByEdgeInstance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ModificationDateByEdgeInstanceResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="StreamedService">
+    <wsdl:operation name="GetBinaryProperty">
+      <wsdl:input wsaw:Action="http://www.sones.com/StreamedService/GetBinaryProperty" message="tns:StreamedService_GetBinaryProperty_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/StreamedService/GetBinaryPropertyResponse" message="tns:StreamedService_GetBinaryProperty_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllBinaryProperties">
+      <wsdl:input wsaw:Action="http://www.sones.com/StreamedService/GetAllBinaryProperties" message="tns:StreamedService_GetAllBinaryProperties_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/StreamedService/GetAllBinaryPropertiesResponse" message="tns:StreamedService_GetAllBinaryProperties_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="SetBinaryProperty">
+      <wsdl:input wsaw:Action="http://www.sones.com/StreamedService/SetBinaryProperty" name="SetBinaryPropertyMessage" message="tns:SetBinaryPropertyMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/StreamedService/SetBinaryPropertyResponse" message="tns:StreamedService_SetBinaryProperty_OutputMessage"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="GraphDSService">
+    <wsdl:operation name="CreateVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/CreateVertexType" message="tns:GraphDSService_CreateVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/CreateVertexTypeResponse" message="tns:GraphDSService_CreateVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="AlterVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/AlterVertexType" message="tns:GraphDSService_AlterVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/AlterVertexTypeResponse" message="tns:GraphDSService_AlterVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="AlterEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/AlterEdgeType" message="tns:GraphDSService_AlterEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/AlterEdgeTypeResponse" message="tns:GraphDSService_AlterEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetVertexTypeByName">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetVertexTypeByName" message="tns:GraphDSService_GetVertexTypeByName_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetVertexTypeByNameResponse" message="tns:GraphDSService_GetVertexTypeByName_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetVertexTypeByID">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetVertexTypeByID" message="tns:GraphDSService_GetVertexTypeByID_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetVertexTypeByIDResponse" message="tns:GraphDSService_GetVertexTypeByID_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="BeginTransaction">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/BeginTransaction" message="tns:GraphDSService_BeginTransaction_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/BeginTransactionResponse" message="tns:GraphDSService_BeginTransaction_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="CommitTransaction">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/CommitTransaction" message="tns:GraphDSService_CommitTransaction_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/CommitTransactionResponse" message="tns:GraphDSService_CommitTransaction_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="RollbackTransaction">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/RollbackTransaction" message="tns:GraphDSService_RollbackTransaction_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/RollbackTransactionResponse" message="tns:GraphDSService_RollbackTransaction_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="Shutdown">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/Shutdown" message="tns:GraphDSService_Shutdown_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/ShutdownResponse" message="tns:GraphDSService_Shutdown_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="Clear">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/Clear" message="tns:GraphDSService_Clear_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/ClearResponse" message="tns:GraphDSService_Clear_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="CreateEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/CreateEdgeType" message="tns:GraphDSService_CreateEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/CreateEdgeTypeResponse" message="tns:GraphDSService_CreateEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="CreateEdgeTypes">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/CreateEdgeTypes" message="tns:GraphDSService_CreateEdgeTypes_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/CreateEdgeTypesResponse" message="tns:GraphDSService_CreateEdgeTypes_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="CreateIndex">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/CreateIndex" message="tns:GraphDSService_CreateIndex_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/CreateIndexResponse" message="tns:GraphDSService_CreateIndex_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="CreateVertexTypes">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/CreateVertexTypes" message="tns:GraphDSService_CreateVertexTypes_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/CreateVertexTypesResponse" message="tns:GraphDSService_CreateVertexTypes_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/Delete" message="tns:GraphDSService_Delete_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DeleteResponse" message="tns:GraphDSService_Delete_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="DescribeIndex">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/DescribeIndex" message="tns:GraphDSService_DescribeIndex_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DescribeIndexResponse" message="tns:GraphDSService_DescribeIndex_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="DescribeIndices">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/DescribeIndices" message="tns:GraphDSService_DescribeIndices_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DescribeIndicesResponse" message="tns:GraphDSService_DescribeIndices_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="DescribeIndicesByNames">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/DescribeIndicesByNames" message="tns:GraphDSService_DescribeIndicesByNames_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DescribeIndicesByNamesResponse" message="tns:GraphDSService_DescribeIndicesByNames_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="DropEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/DropEdgeType" message="tns:GraphDSService_DropEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DropEdgeTypeResponse" message="tns:GraphDSService_DropEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="DropIndex">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/DropIndex" message="tns:GraphDSService_DropIndex_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DropIndexResponse" message="tns:GraphDSService_DropIndex_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="DropVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/DropVertexType" message="tns:GraphDSService_DropVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/DropVertexTypeResponse" message="tns:GraphDSService_DropVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllEdgeTypes">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetAllEdgeTypes" message="tns:GraphDSService_GetAllEdgeTypes_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetAllEdgeTypesResponse" message="tns:GraphDSService_GetAllEdgeTypes_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllVertexTypes">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetAllVertexTypes" message="tns:GraphDSService_GetAllVertexTypes_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetAllVertexTypesResponse" message="tns:GraphDSService_GetAllVertexTypes_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetEdgeTypeByName">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetEdgeTypeByName" message="tns:GraphDSService_GetEdgeTypeByName_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetEdgeTypeByNameResponse" message="tns:GraphDSService_GetEdgeTypeByName_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetEdgeTypeByID">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetEdgeTypeByID" message="tns:GraphDSService_GetEdgeTypeByID_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetEdgeTypeByIDResponse" message="tns:GraphDSService_GetEdgeTypeByID_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetVertex">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetVertex" message="tns:GraphDSService_GetVertex_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetVertexResponse" message="tns:GraphDSService_GetVertex_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetVertexCount">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetVertexCount" message="tns:GraphDSService_GetVertexCount_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetVertexCountResponse" message="tns:GraphDSService_GetVertexCount_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetVerticesByType">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetVerticesByType" message="tns:GraphDSService_GetVerticesByType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetVerticesByTypeResponse" message="tns:GraphDSService_GetVerticesByType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetVerticesByExpression">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/GetVerticesByExpression" message="tns:GraphDSService_GetVerticesByExpression_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/GetVerticesByExpressionResponse" message="tns:GraphDSService_GetVerticesByExpression_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="Insert">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/Insert" message="tns:GraphDSService_Insert_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/InsertResponse" message="tns:GraphDSService_Insert_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="LogOff">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/LogOff" message="tns:GraphDSService_LogOff_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/LogOffResponse" message="tns:GraphDSService_LogOff_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="LogOn">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/LogOn" message="tns:GraphDSService_LogOn_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/LogOnResponse" message="tns:GraphDSService_LogOn_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="Query">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/Query" message="tns:GraphDSService_Query_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/QueryResponse" message="tns:GraphDSService_Query_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/Update" message="tns:GraphDSService_Update_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/UpdateResponse" message="tns:GraphDSService_Update_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="RebuildIndices">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/RebuildIndices" message="tns:GraphDSService_RebuildIndices_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/RebuildIndicesResponse" message="tns:GraphDSService_RebuildIndices_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="TruncateVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/GraphDSService/TruncateVertexType" message="tns:GraphDSService_TruncateVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/GraphDSService/TruncateVertexTypeResponse" message="tns:GraphDSService_TruncateVertexType_OutputMessage"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="VertexTypeService">
+    <wsdl:operation name="GetDescendantVertexTypes">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetDescendantVertexTypes" message="tns:VertexTypeService_GetDescendantVertexTypes_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetDescendantVertexTypesResponse" message="tns:VertexTypeService_GetDescendantVertexTypes_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetDescendantVertexTypesAndSelf">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetDescendantVertexTypesAndSelf" message="tns:VertexTypeService_GetDescendantVertexTypesAndSelf_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetDescendantVertexTypesAndSelfResponse" message="tns:VertexTypeService_GetDescendantVertexTypesAndSelf_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAncestorVertexTypes">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetAncestorVertexTypes" message="tns:VertexTypeService_GetAncestorVertexTypes_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetAncestorVertexTypesResponse" message="tns:VertexTypeService_GetAncestorVertexTypes_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAncestorVertexTypesAndSelf">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetAncestorVertexTypesAndSelf" message="tns:VertexTypeService_GetAncestorVertexTypesAndSelf_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetAncestorVertexTypesAndSelfResponse" message="tns:VertexTypeService_GetAncestorVertexTypesAndSelf_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetKinsmenVertexTypes">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetKinsmenVertexTypes" message="tns:VertexTypeService_GetKinsmenVertexTypes_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetKinsmenVertexTypesResponse" message="tns:VertexTypeService_GetKinsmenVertexTypes_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetKinsmenVertexTypesAndSelf">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetKinsmenVertexTypesAndSelf" message="tns:VertexTypeService_GetKinsmenVertexTypesAndSelf_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetKinsmenVertexTypesAndSelfResponse" message="tns:VertexTypeService_GetKinsmenVertexTypesAndSelf_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="ChildrenVertexTypes">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/ChildrenVertexTypes" message="tns:VertexTypeService_ChildrenVertexTypes_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/ChildrenVertexTypesResponse" message="tns:VertexTypeService_ChildrenVertexTypes_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="ParentVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/ParentVertexType" message="tns:VertexTypeService_ParentVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/ParentVertexTypeResponse" message="tns:VertexTypeService_ParentVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="IsSealedByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/IsSealedByVertexType" message="tns:VertexTypeService_IsSealedByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/IsSealedByVertexTypeResponse" message="tns:VertexTypeService_IsSealedByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasParentTypeByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasParentTypeByVertexType" message="tns:VertexTypeService_HasParentTypeByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasParentTypeByVertexTypeResponse" message="tns:VertexTypeService_HasParentTypeByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasChildTypeByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasChildTypeByVertexType" message="tns:VertexTypeService_HasChildTypeByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasChildTypeByVertexTypeResponse" message="tns:VertexTypeService_HasChildTypeByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="IsAncestorByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/IsAncestorByVertexType" message="tns:VertexTypeService_IsAncestorByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/IsAncestorByVertexTypeResponse" message="tns:VertexTypeService_IsAncestorByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="IsAncestorOrSelfByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/IsAncestorOrSelfByVertexType" message="tns:VertexTypeService_IsAncestorOrSelfByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/IsAncestorOrSelfByVertexTypeResponse" message="tns:VertexTypeService_IsAncestorOrSelfByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="IsDescendantByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/IsDescendantByVertexType" message="tns:VertexTypeService_IsDescendantByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/IsDescendantByVertexTypeResponse" message="tns:VertexTypeService_IsDescendantByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="IsDescendantOrSelfByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/IsDescendantOrSelfByVertexType" message="tns:VertexTypeService_IsDescendantOrSelfByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/IsDescendantOrSelfByVertexTypeResponse" message="tns:VertexTypeService_IsDescendantOrSelfByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasAttributeByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasAttributeByVertexType" message="tns:VertexTypeService_HasAttributeByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasAttributeByVertexTypeResponse" message="tns:VertexTypeService_HasAttributeByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAttributeDefinitionByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetAttributeDefinitionByVertexType" message="tns:VertexTypeService_GetAttributeDefinitionByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetAttributeDefinitionByVertexTypeResponse" message="tns:VertexTypeService_GetAttributeDefinitionByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAttributeDefinitionByIDByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetAttributeDefinitionByIDByVertexType" message="tns:VertexTypeService_GetAttributeDefinitionByIDByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetAttributeDefinitionByIDByVertexTypeResponse" message="tns:VertexTypeService_GetAttributeDefinitionByIDByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasAttributesByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasAttributesByVertexType" message="tns:VertexTypeService_HasAttributesByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasAttributesByVertexTypeResponse" message="tns:VertexTypeService_HasAttributesByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAttributeDefinitionsByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetAttributeDefinitionsByVertexType" message="tns:VertexTypeService_GetAttributeDefinitionsByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetAttributeDefinitionsByVertexTypeResponse" message="tns:VertexTypeService_GetAttributeDefinitionsByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasPropertyByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasPropertyByVertexType" message="tns:VertexTypeService_HasPropertyByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasPropertyByVertexTypeResponse" message="tns:VertexTypeService_HasPropertyByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetPropertyDefinitionByVertexType" message="tns:VertexTypeService_GetPropertyDefinitionByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetPropertyDefinitionByVertexTypeResponse" message="tns:VertexTypeService_GetPropertyDefinitionByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionByIDByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetPropertyDefinitionByIDByVertexType" message="tns:VertexTypeService_GetPropertyDefinitionByIDByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetPropertyDefinitionByIDByVertexTypeResponse" message="tns:VertexTypeService_GetPropertyDefinitionByIDByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasPropertiesByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasPropertiesByVertexType" message="tns:VertexTypeService_HasPropertiesByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasPropertiesByVertexTypeResponse" message="tns:VertexTypeService_HasPropertiesByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionsByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetPropertyDefinitionsByVertexType" message="tns:VertexTypeService_GetPropertyDefinitionsByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetPropertyDefinitionsByVertexTypeResponse" message="tns:VertexTypeService_GetPropertyDefinitionsByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionsByNameListByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetPropertyDefinitionsByNameListByVertexType" message="tns:VertexTypeService_GetPropertyDefinitionsByNameListByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetPropertyDefinitionsByNameListByVertexTypeResponse" message="tns:VertexTypeService_GetPropertyDefinitionsByNameListByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasBinaryProperty">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasBinaryProperty" message="tns:VertexTypeService_HasBinaryProperty_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasBinaryPropertyResponse" message="tns:VertexTypeService_HasBinaryProperty_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetBinaryPropertyDefinition">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetBinaryPropertyDefinition" message="tns:VertexTypeService_GetBinaryPropertyDefinition_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetBinaryPropertyDefinitionResponse" message="tns:VertexTypeService_GetBinaryPropertyDefinition_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasBinaryProperties">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasBinaryProperties" message="tns:VertexTypeService_HasBinaryProperties_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasBinaryPropertiesResponse" message="tns:VertexTypeService_HasBinaryProperties_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetBinaryPropertyDefinitions">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetBinaryPropertyDefinitions" message="tns:VertexTypeService_GetBinaryPropertyDefinitions_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetBinaryPropertyDefinitionsResponse" message="tns:VertexTypeService_GetBinaryPropertyDefinitions_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasIncomingEdge">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasIncomingEdge" message="tns:VertexTypeService_HasIncomingEdge_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasIncomingEdgeResponse" message="tns:VertexTypeService_HasIncomingEdge_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetIncomingEdgeDefinition">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetIncomingEdgeDefinition" message="tns:VertexTypeService_GetIncomingEdgeDefinition_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetIncomingEdgeDefinitionResponse" message="tns:VertexTypeService_GetIncomingEdgeDefinition_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasIncomingEdges">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasIncomingEdges" message="tns:VertexTypeService_HasIncomingEdges_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasIncomingEdgesResponse" message="tns:VertexTypeService_HasIncomingEdges_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetIncomingEdgeDefinitions">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetIncomingEdgeDefinitions" message="tns:VertexTypeService_GetIncomingEdgeDefinitions_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetIncomingEdgeDefinitionsResponse" message="tns:VertexTypeService_GetIncomingEdgeDefinitions_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasOutgoingEdgeByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasOutgoingEdgeByVertexType" message="tns:VertexTypeService_HasOutgoingEdgeByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasOutgoingEdgeByVertexTypeResponse" message="tns:VertexTypeService_HasOutgoingEdgeByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingEdgeDefinitionByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetOutgoingEdgeDefinitionByVertexType" message="tns:VertexTypeService_GetOutgoingEdgeDefinitionByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetOutgoingEdgeDefinitionByVertexTypeResponse" message="tns:VertexTypeService_GetOutgoingEdgeDefinitionByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasOutgoingEdgesByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasOutgoingEdgesByVertexType" message="tns:VertexTypeService_HasOutgoingEdgesByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasOutgoingEdgesByVertexTypeResponse" message="tns:VertexTypeService_HasOutgoingEdgesByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingEdgeDefinitionsByVertexType">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetOutgoingEdgeDefinitionsByVertexType" message="tns:VertexTypeService_GetOutgoingEdgeDefinitionsByVertexType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetOutgoingEdgeDefinitionsByVertexTypeResponse" message="tns:VertexTypeService_GetOutgoingEdgeDefinitionsByVertexType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasUniqueDefinitions">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasUniqueDefinitions" message="tns:VertexTypeService_HasUniqueDefinitions_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasUniqueDefinitionsResponse" message="tns:VertexTypeService_HasUniqueDefinitions_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetUniqueDefinitions">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetUniqueDefinitions" message="tns:VertexTypeService_GetUniqueDefinitions_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetUniqueDefinitionsResponse" message="tns:VertexTypeService_GetUniqueDefinitions_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasIndexDefinitions">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/HasIndexDefinitions" message="tns:VertexTypeService_HasIndexDefinitions_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/HasIndexDefinitionsResponse" message="tns:VertexTypeService_HasIndexDefinitions_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetIndexDefinitions">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexTypeService/GetIndexDefinitions" message="tns:VertexTypeService_GetIndexDefinitions_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexTypeService/GetIndexDefinitionsResponse" message="tns:VertexTypeService_GetIndexDefinitions_OutputMessage"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="VertexInstanceService">
+    <wsdl:operation name="HasIncomingVertices">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/HasIncomingVertices" message="tns:VertexInstanceService_HasIncomingVertices_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/HasIncomingVerticesResponse" message="tns:VertexInstanceService_HasIncomingVertices_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllIncomingVertices">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetAllIncomingVertices" message="tns:VertexInstanceService_GetAllIncomingVertices_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetAllIncomingVerticesResponse" message="tns:VertexInstanceService_GetAllIncomingVertices_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetIncomingVertices">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetIncomingVertices" message="tns:VertexInstanceService_GetIncomingVertices_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetIncomingVerticesResponse" message="tns:VertexInstanceService_GetIncomingVertices_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasOutgoingEdgeByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/HasOutgoingEdgeByVertexInstance" message="tns:VertexInstanceService_HasOutgoingEdgeByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/HasOutgoingEdgeByVertexInstanceResponse" message="tns:VertexInstanceService_HasOutgoingEdgeByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllOutgoingEdges">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetAllOutgoingEdges" message="tns:VertexInstanceService_GetAllOutgoingEdges_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetAllOutgoingEdgesResponse" message="tns:VertexInstanceService_GetAllOutgoingEdges_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllOutgoingHyperEdges">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetAllOutgoingHyperEdges" message="tns:VertexInstanceService_GetAllOutgoingHyperEdges_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetAllOutgoingHyperEdgesResponse" message="tns:VertexInstanceService_GetAllOutgoingHyperEdges_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllOutgoingSingleEdges">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetAllOutgoingSingleEdges" message="tns:VertexInstanceService_GetAllOutgoingSingleEdges_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetAllOutgoingSingleEdgesResponse" message="tns:VertexInstanceService_GetAllOutgoingSingleEdges_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingEdge">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetOutgoingEdge" message="tns:VertexInstanceService_GetOutgoingEdge_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetOutgoingEdgeResponse" message="tns:VertexInstanceService_GetOutgoingEdge_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingHyperEdge">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetOutgoingHyperEdge" message="tns:VertexInstanceService_GetOutgoingHyperEdge_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetOutgoingHyperEdgeResponse" message="tns:VertexInstanceService_GetOutgoingHyperEdge_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingSingleEdge">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetOutgoingSingleEdge" message="tns:VertexInstanceService_GetOutgoingSingleEdge_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetOutgoingSingleEdgeResponse" message="tns:VertexInstanceService_GetOutgoingSingleEdge_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetPropertyByVertexInstance" message="tns:VertexInstanceService_GetPropertyByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetPropertyByVertexInstanceResponse" message="tns:VertexInstanceService_GetPropertyByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasPropertyByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/HasPropertyByVertexInstance" message="tns:VertexInstanceService_HasPropertyByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/HasPropertyByVertexInstanceResponse" message="tns:VertexInstanceService_HasPropertyByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetCountOfPropertiesByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetCountOfPropertiesByVertexInstance" message="tns:VertexInstanceService_GetCountOfPropertiesByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetCountOfPropertiesByVertexInstanceResponse" message="tns:VertexInstanceService_GetCountOfPropertiesByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllPropertiesByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetAllPropertiesByVertexInstance" message="tns:VertexInstanceService_GetAllPropertiesByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetAllPropertiesByVertexInstanceResponse" message="tns:VertexInstanceService_GetAllPropertiesByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyAsStringByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetPropertyAsStringByVertexInstance" message="tns:VertexInstanceService_GetPropertyAsStringByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetPropertyAsStringByVertexInstanceResponse" message="tns:VertexInstanceService_GetPropertyAsStringByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetUnstructuredPropertyByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetUnstructuredPropertyByVertexInstance" message="tns:VertexInstanceService_GetUnstructuredPropertyByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetUnstructuredPropertyByVertexInstanceResponse" message="tns:VertexInstanceService_GetUnstructuredPropertyByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasUnstructuredPropertyByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/HasUnstructuredPropertyByVertexInstance" message="tns:VertexInstanceService_HasUnstructuredPropertyByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/HasUnstructuredPropertyByVertexInstanceResponse" message="tns:VertexInstanceService_HasUnstructuredPropertyByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetCountOfUnstructuredPropertiesByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetCountOfUnstructuredPropertiesByVertexInstance" message="tns:VertexInstanceService_GetCountOfUnstructuredPropertiesByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetCountOfUnstructuredPropertiesByVertexInstanceResponse" message="tns:VertexInstanceService_GetCountOfUnstructuredPropertiesByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllUnstructuredPropertiesByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetAllUnstructuredPropertiesByVertexInstance" message="tns:VertexInstanceService_GetAllUnstructuredPropertiesByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetAllUnstructuredPropertiesByVertexInstanceResponse" message="tns:VertexInstanceService_GetAllUnstructuredPropertiesByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetUnstructuredPropertyAsStringByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/GetUnstructuredPropertyAsStringByVertexInstance" message="tns:VertexInstanceService_GetUnstructuredPropertyAsStringByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/GetUnstructuredPropertyAsStringByVertexInstanceResponse" message="tns:VertexInstanceService_GetUnstructuredPropertyAsStringByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="CommentByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/CommentByVertexInstance" message="tns:VertexInstanceService_CommentByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/CommentByVertexInstanceResponse" message="tns:VertexInstanceService_CommentByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="CreationDateByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/CreationDateByVertexInstance" message="tns:VertexInstanceService_CreationDateByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/CreationDateByVertexInstanceResponse" message="tns:VertexInstanceService_CreationDateByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="ModificationDateByVertexInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/ModificationDateByVertexInstance" message="tns:VertexInstanceService_ModificationDateByVertexInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/ModificationDateByVertexInstanceResponse" message="tns:VertexInstanceService_ModificationDateByVertexInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="VertexStatistics">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/VertexStatistics" message="tns:VertexInstanceService_VertexStatistics_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/VertexStatisticsResponse" message="tns:VertexInstanceService_VertexStatistics_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="PartitionID">
+      <wsdl:input wsaw:Action="http://www.sones.com/VertexInstanceService/PartitionID" message="tns:VertexInstanceService_PartitionID_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/VertexInstanceService/PartitionIDResponse" message="tns:VertexInstanceService_PartitionID_OutputMessage"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="EdgeTypeService">
+    <wsdl:operation name="GetDescendantEdgeTypes">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetDescendantEdgeTypes" message="tns:EdgeTypeService_GetDescendantEdgeTypes_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetDescendantEdgeTypesResponse" message="tns:EdgeTypeService_GetDescendantEdgeTypes_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetDescendantEdgeTypesAndSelf">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetDescendantEdgeTypesAndSelf" message="tns:EdgeTypeService_GetDescendantEdgeTypesAndSelf_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetDescendantEdgeTypesAndSelfResponse" message="tns:EdgeTypeService_GetDescendantEdgeTypesAndSelf_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAncestorEdgeTypes">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetAncestorEdgeTypes" message="tns:EdgeTypeService_GetAncestorEdgeTypes_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetAncestorEdgeTypesResponse" message="tns:EdgeTypeService_GetAncestorEdgeTypes_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAncestorEdgeTypesAndSelf">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetAncestorEdgeTypesAndSelf" message="tns:EdgeTypeService_GetAncestorEdgeTypesAndSelf_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetAncestorEdgeTypesAndSelfResponse" message="tns:EdgeTypeService_GetAncestorEdgeTypesAndSelf_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetKinsmenEdgeTypes">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetKinsmenEdgeTypes" message="tns:EdgeTypeService_GetKinsmenEdgeTypes_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetKinsmenEdgeTypesResponse" message="tns:EdgeTypeService_GetKinsmenEdgeTypes_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetKinsmenEdgeTypesAndSelf">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetKinsmenEdgeTypesAndSelf" message="tns:EdgeTypeService_GetKinsmenEdgeTypesAndSelf_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetKinsmenEdgeTypesAndSelfResponse" message="tns:EdgeTypeService_GetKinsmenEdgeTypesAndSelf_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="ChildrenEdgeTypes">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/ChildrenEdgeTypes" message="tns:EdgeTypeService_ChildrenEdgeTypes_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/ChildrenEdgeTypesResponse" message="tns:EdgeTypeService_ChildrenEdgeTypes_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="ParentEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/ParentEdgeType" message="tns:EdgeTypeService_ParentEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/ParentEdgeTypeResponse" message="tns:EdgeTypeService_ParentEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="IsSealedByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/IsSealedByEdgeType" message="tns:EdgeTypeService_IsSealedByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/IsSealedByEdgeTypeResponse" message="tns:EdgeTypeService_IsSealedByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasParentTypeByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/HasParentTypeByEdgeType" message="tns:EdgeTypeService_HasParentTypeByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/HasParentTypeByEdgeTypeResponse" message="tns:EdgeTypeService_HasParentTypeByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasChildTypesByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/HasChildTypesByEdgeType" message="tns:EdgeTypeService_HasChildTypesByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/HasChildTypesByEdgeTypeResponse" message="tns:EdgeTypeService_HasChildTypesByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="IsAncestorByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/IsAncestorByEdgeType" message="tns:EdgeTypeService_IsAncestorByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/IsAncestorByEdgeTypeResponse" message="tns:EdgeTypeService_IsAncestorByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="IsAncestorOrSelfByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/IsAncestorOrSelfByEdgeType" message="tns:EdgeTypeService_IsAncestorOrSelfByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/IsAncestorOrSelfByEdgeTypeResponse" message="tns:EdgeTypeService_IsAncestorOrSelfByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="IsDescendantByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/IsDescendantByEdgeType" message="tns:EdgeTypeService_IsDescendantByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/IsDescendantByEdgeTypeResponse" message="tns:EdgeTypeService_IsDescendantByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="IsDescendantOrSelfByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/IsDescendantOrSelfByEdgeType" message="tns:EdgeTypeService_IsDescendantOrSelfByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/IsDescendantOrSelfByEdgeTypeResponse" message="tns:EdgeTypeService_IsDescendantOrSelfByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasAttributeByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/HasAttributeByEdgeType" message="tns:EdgeTypeService_HasAttributeByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/HasAttributeByEdgeTypeResponse" message="tns:EdgeTypeService_HasAttributeByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAttributeDefinitionByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetAttributeDefinitionByEdgeType" message="tns:EdgeTypeService_GetAttributeDefinitionByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetAttributeDefinitionByEdgeTypeResponse" message="tns:EdgeTypeService_GetAttributeDefinitionByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAttributeDefinitionByIDByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetAttributeDefinitionByIDByEdgeType" message="tns:EdgeTypeService_GetAttributeDefinitionByIDByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetAttributeDefinitionByIDByEdgeTypeResponse" message="tns:EdgeTypeService_GetAttributeDefinitionByIDByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasAttributesByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/HasAttributesByEdgeType" message="tns:EdgeTypeService_HasAttributesByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/HasAttributesByEdgeTypeResponse" message="tns:EdgeTypeService_HasAttributesByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAttributeDefinitionsByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetAttributeDefinitionsByEdgeType" message="tns:EdgeTypeService_GetAttributeDefinitionsByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetAttributeDefinitionsByEdgeTypeResponse" message="tns:EdgeTypeService_GetAttributeDefinitionsByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasProprtyByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/HasProprtyByEdgeType" message="tns:EdgeTypeService_HasProprtyByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/HasProprtyByEdgeTypeResponse" message="tns:EdgeTypeService_HasProprtyByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetPropertyDefinitionByEdgeType" message="tns:EdgeTypeService_GetPropertyDefinitionByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetPropertyDefinitionByEdgeTypeResponse" message="tns:EdgeTypeService_GetPropertyDefinitionByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionByIDByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetPropertyDefinitionByIDByEdgeType" message="tns:EdgeTypeService_GetPropertyDefinitionByIDByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetPropertyDefinitionByIDByEdgeTypeResponse" message="tns:EdgeTypeService_GetPropertyDefinitionByIDByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasPropertiesByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/HasPropertiesByEdgeType" message="tns:EdgeTypeService_HasPropertiesByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/HasPropertiesByEdgeTypeResponse" message="tns:EdgeTypeService_HasPropertiesByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionsByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetPropertyDefinitionsByEdgeType" message="tns:EdgeTypeService_GetPropertyDefinitionsByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetPropertyDefinitionsByEdgeTypeResponse" message="tns:EdgeTypeService_GetPropertyDefinitionsByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionsByNameListByEdgeType">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeTypeService/GetPropertyDefinitionsByNameListByEdgeType" message="tns:EdgeTypeService_GetPropertyDefinitionsByNameListByEdgeType_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeTypeService/GetPropertyDefinitionsByNameListByEdgeTypeResponse" message="tns:EdgeTypeService_GetPropertyDefinitionsByNameListByEdgeType_OutputMessage"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="EdgeInstanceService">
+    <wsdl:operation name="GetPropertyByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/GetPropertyByEdgeInstance" message="tns:EdgeInstanceService_GetPropertyByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/GetPropertyByEdgeInstanceResponse" message="tns:EdgeInstanceService_GetPropertyByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasPropertyByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/HasPropertyByEdgeInstance" message="tns:EdgeInstanceService_HasPropertyByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/HasPropertyByEdgeInstanceResponse" message="tns:EdgeInstanceService_HasPropertyByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetCountOfPropertiesByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/GetCountOfPropertiesByEdgeInstance" message="tns:EdgeInstanceService_GetCountOfPropertiesByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/GetCountOfPropertiesByEdgeInstanceResponse" message="tns:EdgeInstanceService_GetCountOfPropertiesByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllPropertiesByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/GetAllPropertiesByEdgeInstance" message="tns:EdgeInstanceService_GetAllPropertiesByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/GetAllPropertiesByEdgeInstanceResponse" message="tns:EdgeInstanceService_GetAllPropertiesByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyAsStringByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/GetPropertyAsStringByEdgeInstance" message="tns:EdgeInstanceService_GetPropertyAsStringByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/GetPropertyAsStringByEdgeInstanceResponse" message="tns:EdgeInstanceService_GetPropertyAsStringByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetUnstructuredPropertyByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/GetUnstructuredPropertyByEdgeInstance" message="tns:EdgeInstanceService_GetUnstructuredPropertyByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/GetUnstructuredPropertyByEdgeInstanceResponse" message="tns:EdgeInstanceService_GetUnstructuredPropertyByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="HasUnstructuredPropertyByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/HasUnstructuredPropertyByEdgeInstance" message="tns:EdgeInstanceService_HasUnstructuredPropertyByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/HasUnstructuredPropertyByEdgeInstanceResponse" message="tns:EdgeInstanceService_HasUnstructuredPropertyByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetCountOfUnstructuredPropertiesByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/GetCountOfUnstructuredPropertiesByEdgeInstance" message="tns:EdgeInstanceService_GetCountOfUnstructuredPropertiesByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/GetCountOfUnstructuredPropertiesByEdgeInstanceResponse" message="tns:EdgeInstanceService_GetCountOfUnstructuredPropertiesByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllUnstructuredPropertiesByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/GetAllUnstructuredPropertiesByEdgeInstance" message="tns:EdgeInstanceService_GetAllUnstructuredPropertiesByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/GetAllUnstructuredPropertiesByEdgeInstanceResponse" message="tns:EdgeInstanceService_GetAllUnstructuredPropertiesByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetUnstructuredPropertyAsStringByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/GetUnstructuredPropertyAsStringByEdgeInstance" message="tns:EdgeInstanceService_GetUnstructuredPropertyAsStringByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/GetUnstructuredPropertyAsStringByEdgeInstanceResponse" message="tns:EdgeInstanceService_GetUnstructuredPropertyAsStringByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="CommentByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/CommentByEdgeInstance" message="tns:EdgeInstanceService_CommentByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/CommentByEdgeInstanceResponse" message="tns:EdgeInstanceService_CommentByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="CreationDateByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/CreationDateByEdgeInstance" message="tns:EdgeInstanceService_CreationDateByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/CreationDateByEdgeInstanceResponse" message="tns:EdgeInstanceService_CreationDateByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+    <wsdl:operation name="ModificationDateByEdgeInstance">
+      <wsdl:input wsaw:Action="http://www.sones.com/EdgeInstanceService/ModificationDateByEdgeInstance" message="tns:EdgeInstanceService_ModificationDateByEdgeInstance_InputMessage"/>
+      <wsdl:output wsaw:Action="http://www.sones.com/EdgeInstanceService/ModificationDateByEdgeInstanceResponse" message="tns:EdgeInstanceService_ModificationDateByEdgeInstance_OutputMessage"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="sonesStreamed_StreamedService" type="tns:StreamedService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetBinaryProperty">
+      <soap:operation soapAction="http://www.sones.com/StreamedService/GetBinaryProperty" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllBinaryProperties">
+      <soap:operation soapAction="http://www.sones.com/StreamedService/GetAllBinaryProperties" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetBinaryProperty">
+      <soap:operation soapAction="http://www.sones.com/StreamedService/SetBinaryProperty" style="document"/>
+      <wsdl:input name="SetBinaryPropertyMessage">
+        <soap:header message="tns:SetBinaryPropertyMessage_Headers" part="PropertyName" use="literal"/>
+        <soap:header message="tns:SetBinaryPropertyMessage_Headers" part="SecurityToken" use="literal"/>
+        <soap:header message="tns:SetBinaryPropertyMessage_Headers" part="TransToken" use="literal"/>
+        <soap:header message="tns:SetBinaryPropertyMessage_Headers" part="VertexID" use="literal"/>
+        <soap:header message="tns:SetBinaryPropertyMessage_Headers" part="VertexTypeID" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="sonesBasic_GraphDSService" type="tns:GraphDSService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="CreateVertexType">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/CreateVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AlterVertexType">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/AlterVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AlterEdgeType">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/AlterEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVertexTypeByName">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetVertexTypeByName" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVertexTypeByID">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetVertexTypeByID" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BeginTransaction">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/BeginTransaction" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CommitTransaction">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/CommitTransaction" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RollbackTransaction">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/RollbackTransaction" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Shutdown">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/Shutdown" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Clear">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/Clear" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateEdgeType">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/CreateEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateEdgeTypes">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/CreateEdgeTypes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateIndex">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/CreateIndex" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateVertexTypes">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/CreateVertexTypes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/Delete" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DescribeIndex">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/DescribeIndex" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DescribeIndices">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/DescribeIndices" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DescribeIndicesByNames">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/DescribeIndicesByNames" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DropEdgeType">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/DropEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DropIndex">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/DropIndex" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DropVertexType">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/DropVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllEdgeTypes">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetAllEdgeTypes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllVertexTypes">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetAllVertexTypes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEdgeTypeByName">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetEdgeTypeByName" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEdgeTypeByID">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetEdgeTypeByID" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVertex">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetVertex" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVertexCount">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetVertexCount" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVerticesByType">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetVerticesByType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVerticesByExpression">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/GetVerticesByExpression" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Insert">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/Insert" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LogOff">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/LogOff" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LogOn">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/LogOn" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Query">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/Query" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/Update" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RebuildIndices">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/RebuildIndices" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TruncateVertexType">
+      <soap:operation soapAction="http://www.sones.com/GraphDSService/TruncateVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="sonesBasic_VertexTypeService" type="tns:VertexTypeService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetDescendantVertexTypes">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetDescendantVertexTypes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDescendantVertexTypesAndSelf">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetDescendantVertexTypesAndSelf" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAncestorVertexTypes">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetAncestorVertexTypes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAncestorVertexTypesAndSelf">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetAncestorVertexTypesAndSelf" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetKinsmenVertexTypes">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetKinsmenVertexTypes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetKinsmenVertexTypesAndSelf">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetKinsmenVertexTypesAndSelf" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChildrenVertexTypes">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/ChildrenVertexTypes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ParentVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/ParentVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsSealedByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/IsSealedByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasParentTypeByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasParentTypeByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasChildTypeByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasChildTypeByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsAncestorByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/IsAncestorByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsAncestorOrSelfByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/IsAncestorOrSelfByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsDescendantByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/IsDescendantByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsDescendantOrSelfByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/IsDescendantOrSelfByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasAttributeByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasAttributeByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAttributeDefinitionByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetAttributeDefinitionByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAttributeDefinitionByIDByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetAttributeDefinitionByIDByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasAttributesByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasAttributesByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAttributeDefinitionsByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetAttributeDefinitionsByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasPropertyByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasPropertyByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetPropertyDefinitionByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionByIDByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetPropertyDefinitionByIDByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasPropertiesByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasPropertiesByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionsByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetPropertyDefinitionsByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionsByNameListByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetPropertyDefinitionsByNameListByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasBinaryProperty">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasBinaryProperty" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBinaryPropertyDefinition">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetBinaryPropertyDefinition" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasBinaryProperties">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasBinaryProperties" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBinaryPropertyDefinitions">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetBinaryPropertyDefinitions" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasIncomingEdge">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasIncomingEdge" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetIncomingEdgeDefinition">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetIncomingEdgeDefinition" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasIncomingEdges">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasIncomingEdges" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetIncomingEdgeDefinitions">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetIncomingEdgeDefinitions" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasOutgoingEdgeByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasOutgoingEdgeByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingEdgeDefinitionByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetOutgoingEdgeDefinitionByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasOutgoingEdgesByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasOutgoingEdgesByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingEdgeDefinitionsByVertexType">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetOutgoingEdgeDefinitionsByVertexType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasUniqueDefinitions">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasUniqueDefinitions" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUniqueDefinitions">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetUniqueDefinitions" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasIndexDefinitions">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/HasIndexDefinitions" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetIndexDefinitions">
+      <soap:operation soapAction="http://www.sones.com/VertexTypeService/GetIndexDefinitions" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="sonesBasic_VertexInstanceService" type="tns:VertexInstanceService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="HasIncomingVertices">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/HasIncomingVertices" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllIncomingVertices">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetAllIncomingVertices" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetIncomingVertices">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetIncomingVertices" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasOutgoingEdgeByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/HasOutgoingEdgeByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllOutgoingEdges">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetAllOutgoingEdges" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllOutgoingHyperEdges">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetAllOutgoingHyperEdges" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllOutgoingSingleEdges">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetAllOutgoingSingleEdges" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingEdge">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetOutgoingEdge" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingHyperEdge">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetOutgoingHyperEdge" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingSingleEdge">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetOutgoingSingleEdge" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetPropertyByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasPropertyByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/HasPropertyByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCountOfPropertiesByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetCountOfPropertiesByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllPropertiesByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetAllPropertiesByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyAsStringByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetPropertyAsStringByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUnstructuredPropertyByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetUnstructuredPropertyByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasUnstructuredPropertyByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/HasUnstructuredPropertyByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCountOfUnstructuredPropertiesByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetCountOfUnstructuredPropertiesByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllUnstructuredPropertiesByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetAllUnstructuredPropertiesByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUnstructuredPropertyAsStringByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/GetUnstructuredPropertyAsStringByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CommentByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/CommentByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreationDateByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/CreationDateByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ModificationDateByVertexInstance">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/ModificationDateByVertexInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VertexStatistics">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/VertexStatistics" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PartitionID">
+      <soap:operation soapAction="http://www.sones.com/VertexInstanceService/PartitionID" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="sonesBasic_EdgeTypeService" type="tns:EdgeTypeService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetDescendantEdgeTypes">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetDescendantEdgeTypes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDescendantEdgeTypesAndSelf">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetDescendantEdgeTypesAndSelf" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAncestorEdgeTypes">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetAncestorEdgeTypes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAncestorEdgeTypesAndSelf">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetAncestorEdgeTypesAndSelf" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetKinsmenEdgeTypes">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetKinsmenEdgeTypes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetKinsmenEdgeTypesAndSelf">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetKinsmenEdgeTypesAndSelf" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChildrenEdgeTypes">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/ChildrenEdgeTypes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ParentEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/ParentEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsSealedByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/IsSealedByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasParentTypeByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/HasParentTypeByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasChildTypesByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/HasChildTypesByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsAncestorByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/IsAncestorByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsAncestorOrSelfByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/IsAncestorOrSelfByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsDescendantByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/IsDescendantByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsDescendantOrSelfByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/IsDescendantOrSelfByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasAttributeByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/HasAttributeByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAttributeDefinitionByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetAttributeDefinitionByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAttributeDefinitionByIDByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetAttributeDefinitionByIDByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasAttributesByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/HasAttributesByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAttributeDefinitionsByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetAttributeDefinitionsByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasProprtyByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/HasProprtyByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetPropertyDefinitionByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionByIDByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetPropertyDefinitionByIDByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasPropertiesByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/HasPropertiesByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionsByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetPropertyDefinitionsByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyDefinitionsByNameListByEdgeType">
+      <soap:operation soapAction="http://www.sones.com/EdgeTypeService/GetPropertyDefinitionsByNameListByEdgeType" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="sonesBasic_EdgeInstanceService" type="tns:EdgeInstanceService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetPropertyByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/GetPropertyByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasPropertyByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/HasPropertyByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCountOfPropertiesByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/GetCountOfPropertiesByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllPropertiesByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/GetAllPropertiesByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertyAsStringByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/GetPropertyAsStringByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUnstructuredPropertyByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/GetUnstructuredPropertyByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HasUnstructuredPropertyByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/HasUnstructuredPropertyByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCountOfUnstructuredPropertiesByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/GetCountOfUnstructuredPropertiesByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllUnstructuredPropertiesByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/GetAllUnstructuredPropertiesByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUnstructuredPropertyAsStringByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/GetUnstructuredPropertyAsStringByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CommentByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/CommentByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreationDateByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/CreationDateByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ModificationDateByEdgeInstance">
+      <soap:operation soapAction="http://www.sones.com/EdgeInstanceService/ModificationDateByEdgeInstance" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="RPCServiceContract">
+    <wsdl:port name="sonesStreamed_StreamedService" binding="tns:sonesStreamed_StreamedService">
+      <soap:address location="http://0.0.0.0:9970/rpc/streamed"/>
+    </wsdl:port>
+    <wsdl:port name="sonesBasic_GraphDSService" binding="tns:sonesBasic_GraphDSService">
+      <soap:address location="http://0.0.0.0:9970/rpc"/>
+    </wsdl:port>
+    <wsdl:port name="sonesBasic_VertexTypeService" binding="tns:sonesBasic_VertexTypeService">
+      <soap:address location="http://0.0.0.0:9970/rpc"/>
+    </wsdl:port>
+    <wsdl:port name="sonesBasic_VertexInstanceService" binding="tns:sonesBasic_VertexInstanceService">
+      <soap:address location="http://0.0.0.0:9970/rpc"/>
+    </wsdl:port>
+    <wsdl:port name="sonesBasic_EdgeTypeService" binding="tns:sonesBasic_EdgeTypeService">
+      <soap:address location="http://0.0.0.0:9970/rpc"/>
+    </wsdl:port>
+    <wsdl:port name="sonesBasic_EdgeInstanceService" binding="tns:sonesBasic_EdgeInstanceService">
+      <soap:address location="http://0.0.0.0:9970/rpc"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -31,7 +31,7 @@ using System.Runtime.Serialization;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts;
 using sones.Library.Commons.Security;
-using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MonoMEX;
+using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MEX;
 using System.Reflection;
 using System.IO;
 using System.Xml;
@@ -45,11 +45,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
     [ServiceBehavior(Namespace = sonesRPCServer.Namespace,  IncludeExceptionDetailInFaults = true)]
     public  class MonoMEX : IMonoMEX
     {
-
         public Stream GetWSDL()
         {
 
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MonoMEX.WSDL.xml");
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MEX.WSDL.xml");
      
             OutgoingWebResponseContext context = WebOperationContext.Current.OutgoingResponse;
             
@@ -59,7 +58,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
             context.ContentType = "application/xml";
             context.StatusCode = System.Net.HttpStatusCode.OK;
             return stream;
-
         }
     }
 }

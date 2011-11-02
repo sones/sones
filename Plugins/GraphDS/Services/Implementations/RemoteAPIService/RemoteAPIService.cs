@@ -85,9 +85,9 @@ namespace sones.GraphDS.Services.RemoteAPIService
                 _RunningTime.Start();
                 _RPCServer = new sonesRPCServer(_GraphDS, Address, Port, UriPattern, _IsSecure);
                 _RPCServer.StartServiceHost();
-                _description = "   * RemoteAPI Service is started at " + ((_IsSecure == true) ? "https://" : "http://") + Address + ":" + Port + Environment.NewLine +
+                _description = "   * RemoteAPI Service is started at " + _RPCServer.URI + Environment.NewLine +
                                "      * web service definition can be found at " + Environment.NewLine +
-                               "        " + ((_IsSecure == true) ? "https://" : "http://") + Address + ":" + Port + "/mex" + Environment.NewLine +
+                               "        " + _RPCServer.MexUri + "/wsdl" + Environment.NewLine +
                                "      * default username and passwort: test / test ";
             }
             catch (Exception Ex)
