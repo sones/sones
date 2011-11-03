@@ -148,10 +148,6 @@
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\GraphDS\Client\Implementations\GraphDSRemoteClient\GraphDSRemoteClient.csproj">
-      <Project>{64C46383-614C-4899-B1F4-9419F99BAE93}</Project>
-      <Name>GraphDSRemoteClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\GraphDS\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
       <Name>IGraphDS</Name>

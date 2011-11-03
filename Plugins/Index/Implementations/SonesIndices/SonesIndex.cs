@@ -153,16 +153,18 @@ namespace sones.Plugins.Index
         /// <param name="myKey">Search key</param>
         /// <param name="myVertexID">Associated vertexID</param>
         /// <param name="myIndexAddStrategy">Define what happens if key exists</param>
-        public override void Add(IComparable myKey, long myVertexID, 
+        public override void Add(IComparable myKey, long? myVertexID, 
             IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             if (!KeyNullSupportCheck(myKey))
             {
                 throw new NullKeysNotSupportedException("This index does not support >null< as key.");
             }
-            
+
             HashSet<Int64> values;
-            HashSet<Int64> newValues = new HashSet<long>() { myVertexID };
+            HashSet<Int64> newValues;
+            if (myVertexID == null) newValues = new HashSet<long>();
+            else newValues = new HashSet<long>() { (Int64)myVertexID };
 
             lock (_Lock)
             {

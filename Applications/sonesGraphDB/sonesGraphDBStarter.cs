@@ -83,60 +83,60 @@ namespace sones.sonesGraphDBStarter
 			
 			IGraphDB GraphDB;
 
-            if (Properties.Settings.Default.UsePersistence)
-            {
-                if (!quiet)
-                   Console.WriteLine("Initializing persistence layer...");
+			if (Properties.Settings.Default.UsePersistence)
+			{
+				if (!quiet)
+				   Console.WriteLine("Initializing persistence layer...");
  
-                Uri configuredLocation = new Uri(Properties.Settings.Default.PersistenceLocation, UriKind.RelativeOrAbsolute);
-                string configuredPageSize = Properties.Settings.Default.PageSize;
-                string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
-                string configuredUseVertexExtensions = Properties.Settings.Default.UseVertexExtensions;
+				Uri configuredLocation = new Uri(Properties.Settings.Default.PersistenceLocation, UriKind.RelativeOrAbsolute);
+				string configuredPageSize = Properties.Settings.Default.PageSize;
+				string configuredBufferSize = Properties.Settings.Default.BufferSizeInPages;
+				string configuredUseVertexExtensions = Properties.Settings.Default.UseVertexExtensions;
 				string configuredWriteStrategy = Properties.Settings.Default.WriteStrategy;
 				/* Configure the location */
 
-                Uri location = null;
+				Uri location = null;
 
-                if (configuredLocation.IsAbsoluteUri)
-                {
-                    location = configuredLocation;
-                }
-                else
-                {
-                    Uri rootPath = new Uri(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location);
-                    location = new Uri(rootPath, configuredLocation);
-                }
+				if (configuredLocation.IsAbsoluteUri)
+				{
+					location = configuredLocation;
+				}
+				else
+				{
+					Uri rootPath = new Uri(System.Reflection.Assembly.GetAssembly((typeof(sones.Library.Commons.VertexStore.IVertexStore))).Location);
+					location = new Uri(rootPath, configuredLocation);
+				}
 
-                 /* Configuration for the page size */
-                int pageSize = Int32.Parse(configuredPageSize);
+				 /* Configuration for the page size */
+				int pageSize = Int32.Parse(configuredPageSize);
 
 				/* Configuration for the buffer size */
 				int bufferSize = Int32.Parse(configuredBufferSize);
 
-                /* Configuration for using vertex extensions */
-                bool useVertexExtensions = Boolean.Parse(configuredUseVertexExtensions);
+				/* Configuration for using vertex extensions */
+				bool useVertexExtensions = Boolean.Parse(configuredUseVertexExtensions);
 
 				/* Make a new instance by applying the configuration */
 				try
 				{
 					//Make a new GraphDB instance
 					 GraphDB = new SonesGraphDB(new GraphDBPlugins(
-                        new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location },
+						new PluginDefinition("sones.pagedfsnonrevisionedplugin", new Dictionary<string, object>() { { "location", location },
 																													{ "pageSize", pageSize },
 																													{ "bufferSizePages", bufferSize },
 																													{ "writeStrategy", configuredWriteStrategy },
 																													{ "useVertexExtensions", useVertexExtensions } })), true, null, location.AbsolutePath);
 
 
-                    if (!quiet)
-                        Console.WriteLine("Persistence layer initialized.");
-                }
-                catch (Exception a)
-                {
-                    if (!quiet)
-                    { 
-                        Console.WriteLine(a.Message);
-                        Console.WriteLine(a.StackTrace);
+					if (!quiet)
+						Console.WriteLine("Persistence layer initialized.");
+				}
+				catch (Exception a)
+				{
+					if (!quiet)
+					{ 
+						Console.WriteLine(a.Message);
+						Console.WriteLine(a.StackTrace);
 
 						Console.Error.WriteLine("Could not access the data directory " + location.AbsoluteUri + ". Please make sure you that you have the right file access permissions!");
 						Console.Error.WriteLine("Using in memory storage instead.");
@@ -233,8 +233,9 @@ namespace sones.sonesGraphDBStarter
 			#region Remote API Service
 
 			Dictionary<string, object> RemoteAPIParameter = new Dictionary<string, object>();
-			RemoteAPIParameter.Add("IPAddress", IPAddress.Parse("127.0.0.1"));
+			RemoteAPIParameter.Add("IPAddress", IPAddress.Any);
 			RemoteAPIParameter.Add("Port", (ushort)9970);
+			RemoteAPIParameter.Add("IsSecure", true);
 
 			_dsServer.StartService("sones.RemoteAPIService", RemoteAPIParameter);
 			#endregion
