@@ -279,23 +279,19 @@ namespace sones.GraphDS.Services.RemoteAPIService
             _MexServiceHost.AddServiceEndpoint(MexService);
             _MexServiceHost.Description.Endpoints[0].Behaviors.Add(new System.ServiceModel.Description.WebHttpBehavior());
 
-            //ServiceMetadataBehavior metadataBehavior = new ServiceMetadataBehavior();
-            //Binding mexBinding;
-            //if (IsSecure == true)
-            //{
 
-            //    mexBinding = MetadataExchangeBindings.CreateMexHttpsBinding();
-            //    metadataBehavior.HttpsGetEnabled = true;
-            //}
-            //else
-            //{
-            //    mexBinding = MetadataExchangeBindings.CreateMexHttpBinding();
-            //    metadataBehavior.HttpGetEnabled = true;
-            //}
-            
+            //// auto generation
+            //ServiceMetadataBehavior metadataBehavior = new ServiceMetadataBehavior();
+            //metadataBehavior.HttpGetEnabled = true;
+            //Binding mexBinding = MetadataExchangeBindings.CreateMexHttpBinding();
+            //mexBinding.Namespace = Namespace;            
             //_ServiceHost.Description.Behaviors.Add(metadataBehavior);
-            //mexBinding.Namespace = Namespace;
-            //_ServiceHost.AddServiceEndpoint(typeof(IMetadataExchange), mexBinding, "mex");
+            //ServiceEndpoint mexEndpoint = _ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, mexBinding, "mex");
+            //foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
+            //{
+            //    //export just one file
+            //    endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
+            //} 
 
             #endregion
         }
