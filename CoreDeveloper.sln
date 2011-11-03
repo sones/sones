@@ -238,6 +238,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteAPIService", "Plugins
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphDSRemoteClient", "GraphDS\Client\Implementations\GraphDSRemoteClient\GraphDSRemoteClient.csproj", "{64C46383-614C-4899-B1F4-9419F99BAE93}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypesConnect", "Plugins\GraphQL\SonesGQL\Functions\Implementations\GraphAlgorithms\TypesConnect\TypesConnect.csproj", "{389C44F3-4DE8-4D29-85E7-69F48F02149E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -980,6 +982,16 @@ Global
 		{64C46383-614C-4899-B1F4-9419F99BAE93}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{64C46383-614C-4899-B1F4-9419F99BAE93}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{64C46383-614C-4899-B1F4-9419F99BAE93}.Release|x86.ActiveCfg = Release|Any CPU
+		{389C44F3-4DE8-4D29-85E7-69F48F02149E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{389C44F3-4DE8-4D29-85E7-69F48F02149E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{389C44F3-4DE8-4D29-85E7-69F48F02149E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{389C44F3-4DE8-4D29-85E7-69F48F02149E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{389C44F3-4DE8-4D29-85E7-69F48F02149E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{389C44F3-4DE8-4D29-85E7-69F48F02149E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{389C44F3-4DE8-4D29-85E7-69F48F02149E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{389C44F3-4DE8-4D29-85E7-69F48F02149E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{389C44F3-4DE8-4D29-85E7-69F48F02149E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{389C44F3-4DE8-4D29-85E7-69F48F02149E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1096,6 +1108,7 @@ Global
 		{2AC692FD-2E5E-45C1-A188-888064050D67} = {41587928-1808-442F-B7D3-49E192922A82}
 		{422CF815-6A94-424B-AD6B-DC41A88C6E61} = {A8847BC0-C0D2-406D-AAD0-8479CDD8ECB2}
 		{9E2BBF58-75A7-4C03-959C-A557F04927BA} = {A8847BC0-C0D2-406D-AAD0-8479CDD8ECB2}
+		{389C44F3-4DE8-4D29-85E7-69F48F02149E} = {A8847BC0-C0D2-406D-AAD0-8479CDD8ECB2}
 		{5A7B5A5F-289A-4109-AD1E-52C62F28DA51} = {D6189BBB-D9CA-4C30-9078-8541AAE9C229}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
