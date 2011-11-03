@@ -203,7 +203,7 @@ namespace TagExampleWithGraphMappingFramework
         public void Run()
         {
             
-            GraphDSClient = new GraphDS_RemoteClient(new Uri("http://localhost:9970/rpc"), true);
+            GraphDSClient = new GraphDS_RemoteClient(new Uri("https://localhost:9970/rpc"), true);
             SecToken = GraphDSClient.LogOn(new RemoteUserPasswordCredentials("test", "test"));
             TransToken = GraphDSClient.BeginTransaction(SecToken);
 

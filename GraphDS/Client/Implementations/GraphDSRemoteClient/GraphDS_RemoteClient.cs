@@ -75,9 +75,9 @@ namespace sones.GraphDS.GraphDSRemoteClient
 
             try
             {
-                //not suitable for checking secured connections
+                //request to test connection
                 var Request = HttpWebRequest.Create(myServiceAddress.ToString());
-                //var Response = Request.GetResponse();
+                var Response = Request.GetResponse();
             }
             catch (Exception ex)
             {
