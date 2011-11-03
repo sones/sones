@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{389C44F3-4DE8-4D29-85E7-69F48F02149E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FindPathType</RootNamespace>
+    <AssemblyName>FindPathType</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="bufferForFindPathShema.cs" />
+    <Compile Include="dataForFindPathShema.cs" />
+    <Compile Include="typesconnect.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeWithProperty.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\..\Applications\TagExample\TagExample.csproj">
+      <Project>{9DA95789-BE43-47EB-A2F7-9091FFF8D571}</Project>
+      <Name>TagExample</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dijkstra\Dijkstra.csproj">
+      <Project>{422CF815-6A94-424B-AD6B-DC41A88C6E61}</Project>
+      <Name>Dijkstra</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
+      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
+      <Name>IGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphDB\Implementations\SonesGraphDB\SonesGraphDB.csproj">
+      <Project>{1FC72801-4046-4CC7-BF83-8082FFD593BC}</Project>
+      <Name>SonesGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphDS\Client\IGraphDSClient\IGraphDSClient.csproj">
+      <Project>{89E70649-A81B-4A70-A9A1-B91EA96CE8A1}</Project>
+      <Name>IGraphDSClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphDS\Client\Implementations\GraphDSRESTClient\GraphDSRESTClient.csproj">
+      <Project>{20D600AA-CD60-423D-A8EE-BCD93F861879}</Project>
+      <Name>GraphDSRESTClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphDS\IGraphDS\IGraphDS.csproj">
+      <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
+      <Name>IGraphDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphDS\PluginManager\GraphDSPluginManager\GraphDSPluginManager.csproj">
+      <Project>{6C8C30F7-1F75-4FA4-B5E9-6FB9AC8FA4FB}</Project>
+      <Name>GraphDSPluginManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphDS\Server\IGraphDSServer\IGraphDSServer.csproj">
+      <Project>{1E30E203-20DE-4DA3-854A-18FEFADA6D7A}</Project>
+      <Name>IGraphDSServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphDS\Server\Implementations\GraphDSServer\GraphDSServer.csproj">
+      <Project>{2FB38C4B-C29D-4F34-B42C-7A82E79A0C14}</Project>
+      <Name>GraphDSServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphFS\IGraphFS\IGraphFS.csproj">
+      <Project>{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}</Project>
+      <Name>IGraphFS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphFS\Implementations\InMemoryNonRevisioned\InMemoryNonRevisioned.csproj">
+      <Project>{AB7C27CC-534F-472E-BA56-A1287973B7E2}</Project>
+      <Name>InMemoryNonRevisioned</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
+      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
+      <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphQL\Implementations\SonesGraphQueryLanguage\SonesGraphQueryLanguage.csproj">
+      <Project>{26BFEE62-82B9-4EFA-9F91-08FD947551A8}</Project>
+      <Name>SonesGraphQueryLanguage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\GraphQL\QueryResult\QueryResult.csproj">
+      <Project>{BE2A2669-CCDE-40A8-AEAB-673260D7260A}</Project>
+      <Name>QueryResult</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\External\BplusDotNet\BplusDotNet\BplusDotNet.csproj">
+      <Project>{45F6BE30-989A-4749-B6A0-69099C8661F4}</Project>
+      <Name>BplusDotNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\External\Irony\Irony.csproj">
+      <Project>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</Project>
+      <Name>Irony</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\External\NewFastSerializer\NewFastSerializer.csproj">
+      <Project>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</Project>
+      <Name>NewFastSerializer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\External\Newtonsoft.Json\Newtonsoft.Json.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+      <Name>Newtonsoft.Json</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\Arithmetics\Arithmetics\Arithmetics.csproj">
+      <Project>{E33D0E75-43A1-4643-928D-DA9E5D99E041}</Project>
+      <Name>Arithmetics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\BinaryStreamStructure\BinaryStreamStructure.csproj">
+      <Project>{9FD68FB4-3704-4B74-92B1-31623B0BC4A6}</Project>
+      <Name>BinaryStreamStructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\CollectionWrapper\CollectionWrapper.csproj">
+      <Project>{7748D9BA-FB40-42F9-9F51-F636F9F1DA8E}</Project>
+      <Name>CollectionWrapper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\Commons\Commons.csproj">
+      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
+      <Name>Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\Constants\Constants.csproj">
+      <Project>{41515EA3-7FC8-4D23-8C7A-B19FCAC4A723}</Project>
+      <Name>Constants</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\DataStructures\DataStructures.csproj">
+      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
+      <Name>DataStructures</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\DiscordianDate\DiscordianDate.csproj">
+      <Project>{8E0390D0-A7BF-46FE-900C-C411F762EFF2}</Project>
+      <Name>DiscordianDate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\Extensions\IGraphDBExtensions\IGraphDBExtensions.csproj">
+      <Project>{33A00226-6C65-49DF-AFCA-89440AF492E5}</Project>
+      <Name>IGraphDBExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\Extensions\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{E4A4B5FF-2203-48AA-99A9-41A52407452E}</Project>
+      <Name>LanguageExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
+      <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
+      <Name>IPluginable</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\Network\HttpServer\HttpServer.csproj">
+      <Project>{85072DC6-7356-449F-9081-939F87AC0CC5}</Project>
+      <Name>HttpServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\Network\Networking\Networking.csproj">
+      <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
+      <Name>Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\PluginDefinition\PluginDefinition.csproj">
+      <Project>{CE9BF2C2-C785-4661-8F4F-64266C697343}</Project>
+      <Name>PluginDefinition</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\Settings\Settings.csproj">
+      <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
+      <Name>Settings</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\SlimLogFramework\SlimLogFramework.csproj">
+      <Project>{4B3CB9D7-790C-46A3-B9E2-8E68D097D70D}</Project>
+      <Name>SlimLogFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\SystemInformation\SystemInformation.csproj">
+      <Project>{E123D4F4-1B0C-4A8D-BFE9-576E034403D1}</Project>
+      <Name>SystemInformation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\TypeCodes\TypeCodeDefinition.csproj">
+      <Project>{90D26D64-57EA-4796-A195-15D044FCAF1A}</Project>
+      <Name>TypeCodeDefinition</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\UserdefinedDataType\UserdefinedDataType.csproj">
+      <Project>{1A2B672E-DD8C-4948-8370-1483408E3B50}</Project>
+      <Name>UserdefinedDataType</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
+      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
+      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\GraphDS\DrainPipeLog\IDrainPipe\IDrainPipe.csproj">
+      <Project>{F51DA5BD-5808-409E-A907-4EF93B2C5E71}</Project>
+      <Name>IDrainPipe</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\GraphDS\DrainPipeLog\Implementations\AppendLog\DrainPipeLog.csproj">
+      <Project>{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}</Project>
+      <Name>DrainPipeLog %28Plugins\GraphDS\DrainPipeLog\Implementations\DrainPipeLog%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\GraphDS\DrainPipeLog\Implementations\QueryLog\QueryLog.csproj">
+      <Project>{1BC7DDCF-B048-4F55-B44F-6471AFB3DAC1}</Project>
+      <Name>QueryLog</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\GraphDS\IO\Implementations\HTML_IO\HTML_IO.csproj">
+      <Project>{80D5F893-014A-4FA4-AD9B-CADEDABF0874}</Project>
+      <Name>HTML_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\GraphDS\IO\Implementations\JSON_IO\JSON_IO.csproj">
+      <Project>{A820291C-1D86-42B7-9D97-F8C9A142E8D9}</Project>
+      <Name>JSON_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\GraphDS\IO\Implementations\TEXT_IO\TEXT_IO.csproj">
+      <Project>{171350FD-4A94-498F-A8F3-3758038A92CA}</Project>
+      <Name>TEXT_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\GraphDS\IO\Implementations\XML_IO\XML_IO.csproj">
+      <Project>{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}</Project>
+      <Name>XML_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\GraphDS\IO\IOInterface\IOInterface.csproj">
+      <Project>{991132D2-15E0-4BB7-8328-3A51646D4F01}</Project>
+      <Name>IOInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GQLFunctions\GQLFunctions.csproj">
+      <Project>{7E58D30B-4108-4941-BF85-A5C309F87536}</Project>
+      <Name>GQLFunctions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ShortestPathAlgorithms\ShortestPathAlgorithms.csproj">
+      <Project>{9E2BBF58-75A7-4C03-959C-A557F04927BA}</Project>
+      <Name>ShortestPathAlgorithms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\GraphDBExport\IGraphDBExport\IGraphDBExport.csproj">
+      <Project>{80934A33-3BCB-4732-AA2D-02D8925336C9}</Project>
+      <Name>IGraphDBExport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\GraphDBExport\Implementations\GraphDBExport\GraphDBExport.csproj">
+      <Project>{95295FE7-C0EB-45ED-88B0-2B66902BEE0C}</Project>
+      <Name>GraphDBExport %28Plugins\GraphQL\SonesGQL\GraphDBExport\Implementations\GraphDBExport%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\GraphDBImport\IGraphDBImport\ISonesGraphDBImport.csproj">
+      <Project>{3B43C10E-28AE-42E5-9B9B-08F2B4153951}</Project>
+      <Name>ISonesGraphDBImport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\GraphDBImport\Implementations\GraphDBImport\SonesGraphDBImport.csproj">
+      <Project>{51C8E5F7-F888-4500-B1EE-D20337FA451F}</Project>
+      <Name>SonesGraphDBImport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\GraphDBImport\Implementations\GraphMLImport\GraphMLImport.csproj">
+      <Project>{DFC1BC4B-F865-48C6-B8E1-64644D410748}</Project>
+      <Name>GraphMLImport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Aggregates\ISonesGQLAggregate\ISonesGQLAggregate.csproj">
+      <Project>{B70DCE72-B636-442A-8825-F3BE78D86D34}</Project>
+      <Name>ISonesGQLAggregate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ISonesGQLFunction\ISonesGQLFunction.csproj">
+      <Project>{CDAE254B-77D9-4E59-9C07-C18F0085F570}</Project>
+      <Name>ISonesGQLFunction</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Statements\IGQLStatementPlugin\IGQLStatementPlugin.csproj">
+      <Project>{47F01C51-E6DA-496D-8F78-F475727C8708}</Project>
+      <Name>IGQLStatementPlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\Index\Implementations\SonesIndices\SonesIndices.csproj">
+      <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>
+      <Name>SonesIndices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\Index\ISonesIndex\ISonesIndex.csproj">
+      <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
+      <Name>ISonesIndex</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
