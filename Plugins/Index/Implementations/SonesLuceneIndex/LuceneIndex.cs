@@ -2,14 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using Lucene.Net;
 using Lucene.Net.Store;
+using Lucene.Net.Search;
+using Lucene.Net.Index;
+using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Standard;
+using Lucene.Net.QueryParsers;
+using Lucene.Net.Util;
+using Lucene.Net.Documents;
 
 namespace sones.Plugins.Index.LuceneIdx
 {
-    class LuceneIndex
+    public class LuceneIndex
     {
         private String _IndexId;
-        private Lucene.Net.Index.IndexWriter _IndexWriter;
+        private IndexWriter _IndexWriter;
+        private Lucene.Net.Store.Directory _IndexDirectory;
 
         #region Constructor
 
@@ -26,12 +36,11 @@ namespace sones.Plugins.Index.LuceneIdx
         {
             _IndexId = myIndexId;
 
-            RAMDirectory idx = new RAMDirectory();
+            _IndexDirectory = new RAMDirectory();
 
-            Lucene.Net.Analysis.Analyzer analyzer = new
-            Lucene.Net.Analysis.Standard.StandardAnalyzer();
+            Analyzer analyzer = new Lucene.Net.Analysis.Standard.StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29);
 
-            _IndexWriter = new Lucene.Net.Index.IndexWriter(idx, analyzer, true); 
+            _IndexWriter = new IndexWriter(_IndexDirectory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
         }
 
         /// <summary>
@@ -47,12 +56,14 @@ namespace sones.Plugins.Index.LuceneIdx
         {
             _IndexId = myIndexId;
 
-            Lucene.Net.Store.Directory dir = Lucene.Net.Store.FSDirectory.GetDirectory(myPath, true);
+            _IndexDirectory = new SimpleFSDirectory(new DirectoryInfo(myPath));
+            _IndexDirectory.CreateOutput(myPath);
+            _IndexDirectory.OpenInput(myPath);
 
-            Lucene.Net.Analysis.Analyzer analyzer = new
-            Lucene.Net.Analysis.Standard.StandardAnalyzer();
+            Analyzer analyzer = new
+            StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29);
 
-            _IndexWriter = new Lucene.Net.Index.IndexWriter(myPath, analyzer, true);
+            _IndexWriter = new IndexWriter(_IndexDirectory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
         }
 
         #endregion
@@ -66,31 +77,31 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <exception cref="System.ArgumentNullException">
         ///		myEntry is NULL.
         /// </exception>
-        void AddEntry(LuceneEntry myEntry)
+        public void AddEntry(LuceneEntry myEntry)
         {
-            Lucene.Net.Documents.Document doc = new Lucene.Net.Documents.Document();
+            Document doc = new Document();
 
-            Lucene.Net.Documents.Field id =
-              new Lucene.Net.Documents.Field("id",
+            Field id =
+              new Field("id",
               myEntry.Id,
-              Lucene.Net.Documents.Field.Store.YES,
-              Lucene.Net.Documents.Field.Index.ANALYZED,
-              Lucene.Net.Documents.Field.TermVector.YES);
+              Field.Store.YES,
+              Field.Index.ANALYZED,
+              Field.TermVector.YES);
 
             doc.Add(id);
 
-            Lucene.Net.Documents.Field indexId =
-              new Lucene.Net.Documents.Field("indexId",
+            Field indexId =
+              new Field("indexId",
               myEntry.IndexId,
-              Lucene.Net.Documents.Field.Store.YES,
-              Lucene.Net.Documents.Field.Index.ANALYZED,
-              Lucene.Net.Documents.Field.TermVector.YES);
+              Field.Store.YES,
+              Field.Index.ANALYZED,
+              Field.TermVector.YES);
 
             doc.Add(indexId);
 
-            Lucene.Net.Documents.NumericField vertexId =
-              new Lucene.Net.Documents.NumericField("vertexId",
-              Lucene.Net.Documents.Field.Store.YES,
+            NumericField vertexId =
+              new NumericField("vertexId",
+              Field.Store.YES,
               false);
 
             vertexId.SetLongValue(myEntry.VertexId);
@@ -100,9 +111,9 @@ namespace sones.Plugins.Index.LuceneIdx
             if (myEntry.PropertyId != null)
             {
 
-                Lucene.Net.Documents.NumericField propertyId =
-                  new Lucene.Net.Documents.NumericField("propertyId",
-                  Lucene.Net.Documents.Field.Store.YES,
+                NumericField propertyId =
+                  new NumericField("propertyId",
+                  Field.Store.YES,
                   false);
              
                 propertyId.SetLongValue((long)myEntry.PropertyId);
@@ -110,16 +121,17 @@ namespace sones.Plugins.Index.LuceneIdx
                 doc.Add(propertyId);
             }
 
-            Lucene.Net.Documents.Field text =
-              new Lucene.Net.Documents.Field("text",
+            Field text =
+              new Field("text",
               myEntry.Text,
-              Lucene.Net.Documents.Field.Store.YES,
-              Lucene.Net.Documents.Field.Index.ANALYZED,
-              Lucene.Net.Documents.Field.TermVector.YES);
+              Field.Store.YES,
+              Field.Index.ANALYZED,
+              Field.TermVector.YES);
 
             doc.Add(text);
 
             _IndexWriter.AddDocument(doc);
+            _IndexWriter.Commit();
         }
 
         /// <summary>
@@ -135,7 +147,7 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <exception cref="System.ArgumentNullException">
         ///		myEntry is NULL.
         /// </exception>
-        Int32 DeleteEntry(LuceneEntry myEntry)
+        public Int32 DeleteEntry(LuceneEntry myEntry)
         {
             throw new NotImplementedException();
         }
@@ -155,7 +167,7 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <exception cref="System.ArgumentNullException">
         ///		myLuceneQuery is NULL.
         /// </exception>
-        Int32 DeleteEntry(String myLuceneQuery, Predicate<LuceneEntry> select = null)
+        public Int32 DeleteEntry(String myLuceneQuery, Predicate<LuceneEntry> select = null)
         {
             throw new NotImplementedException();
         }
@@ -178,7 +190,7 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <exception cref="System.ArgumentException">
         ///		myQuery is an empty string or contains only whitespace.
         /// </exception>
-        Boolean HasEntry(String myQuery, Predicate<LuceneEntry> select = null)
+        public Boolean HasEntry(String myQuery, Predicate<LuceneEntry> select = null)
         {
             throw new NotImplementedException();
         }
@@ -200,9 +212,40 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <exception cref="System.ArgumentException">
         ///		myQuery is an empty string or contains only whitespace.
         /// </exception>
-        IEnumerable<LuceneEntry> GetEntries(String myQuery, String myInnerQuery = null)
+        public IEnumerable<LuceneEntry> GetEntries(String myQuery, String myInnerQuery = null)
         {
-            throw new NotImplementedException();
+            var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "text", new StandardAnalyzer());
+            Query query = null;
+            try
+            {
+                query = queryparser.Parse(myQuery);
+            }
+            catch (ParseException)
+            {
+                yield break;
+            }
+
+            var _IndexSearcher = new IndexSearcher(_IndexDirectory, true);
+            var result = _IndexSearcher.Search(query);
+            var iterator = result.Iterator();
+            
+            if (result.Length() <= 0) yield break;
+
+            do
+            {
+                Hit curhit = (Hit)iterator.Current;
+                Document cur = curhit.GetDocument();
+
+                var entry = new LuceneEntry(
+                                    cur.GetField("indexId").StringValue(),
+                                    0,
+                                    cur.GetField("text").StringValue()
+                                    );
+
+                yield return entry;
+            } while (iterator.MoveNext());
+
+            _IndexSearcher.Close();
         }
 
         /// <summary>
@@ -223,7 +266,7 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <exception cref="System.ArgumentException">
         ///		myQuery is an empty string or contains only whitespace.
         /// </exception>
-        IEnumerable<LuceneEntry> GetEntriesInnerByField(String myQuery, String myInnerQuery, String myInnerField)
+        public IEnumerable<LuceneEntry> GetEntriesInnerByField(String myQuery, String myInnerQuery, String myInnerField)
         {
             throw new NotImplementedException();
         }
@@ -238,7 +281,7 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <returns>
         /// A collection with all keys; or an empty list if no entries are within the index
         /// </returns>
-        IEnumerable<String> GetKeys(Predicate<LuceneEntry> select = null)
+        public IEnumerable<String> GetKeys(Predicate<LuceneEntry> select = null)
         {
             throw new NotImplementedException();
         }
@@ -258,7 +301,7 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <dev_doc>
         /// TODO: the return value should be a simple IEnumerable(Of long)
         /// </dev_doc>
-        IEnumerable<ISet<long>> GetValues(Predicate<LuceneEntry> select = null)
+        public IEnumerable<ISet<long>> GetValues(Predicate<LuceneEntry> select = null)
         {
             throw new NotImplementedException();
         }

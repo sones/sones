@@ -6,7 +6,7 @@ using Lucene.Net;
 
 namespace sones.Plugins.Index.LuceneIdx
 {
-    class LuceneEntry
+    public class LuceneEntry
     {
         
 		#region Properties
