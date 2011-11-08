@@ -9,12 +9,35 @@ using sones.Plugins.Index.Fulltext;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.Index.Helper;
 
-namespace sones.Plugins.Index.Lucene
+namespace sones.Plugins.Index.LuceneIdx
 {
     public class SonesLuceneIndex : ASonesIndex, ISonesPersistentIndex, ISonesFulltextIndex, IPluginable
     {
-        #region ISonesPersistentIndex
+        #region Data
+
+        /// <summary>
+        /// The lucene index connector.
+        /// </summary>
+        private LuceneIndex _LuceneIndex;
+
+        #endregion
+
+        #region Constructor
         
+        public SonesLuceneIndex()
+        {
+
+        }
+        
+        public SonesLuceneIndex(String myIndexId, IList<Int64> myPropertyIDs = null)
+        {
+            _LuceneIndex = new LuceneIndex(myIndexId);
+        }
+
+        #endregion
+
+        #region ISonesPersistentIndex
+
         public void Dispose()
         {
             throw new NotImplementedException();
