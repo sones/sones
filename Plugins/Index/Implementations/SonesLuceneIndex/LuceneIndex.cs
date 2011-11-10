@@ -21,6 +21,8 @@ namespace sones.Plugins.Index.LuceneIdx
         private IndexWriter _IndexWriter;
         private Lucene.Net.Store.Directory _IndexDirectory;
 
+        private const int _hitsPerPage = 10;
+
         #region Constructor
 
         /// <summary>
@@ -215,10 +217,24 @@ namespace sones.Plugins.Index.LuceneIdx
         public IEnumerable<LuceneEntry> GetEntries(String myQuery, String myInnerQuery = null)
         {
             var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "text", new StandardAnalyzer());
+            Query outerquery = null;
+            Query innerquery = null;
             Query query = null;
             try
             {
-                query = queryparser.Parse(myQuery);
+                outerquery = queryparser.Parse(myQuery);
+                if (myInnerQuery != null)
+                {
+                    innerquery = queryparser.Parse(myInnerQuery);
+                    BooleanQuery boolquery = new BooleanQuery();
+                    boolquery.Add(outerquery, BooleanClause.Occur.MUST);
+                    boolquery.Add(innerquery, BooleanClause.Occur.MUST);
+                    query = (Query)boolquery;
+                }
+                else
+                {
+                    query = outerquery;
+                }
             }
             catch (ParseException)
             {
@@ -226,24 +242,22 @@ namespace sones.Plugins.Index.LuceneIdx
             }
 
             var _IndexSearcher = new IndexSearcher(_IndexDirectory, true);
-            var result = _IndexSearcher.Search(query);
-            var iterator = result.Iterator();
-            
-            if (result.Length() <= 0) yield break;
+            TopScoreDocCollector collector = TopScoreDocCollector.create(_hitsPerPage, true);
 
-            do
+            _IndexSearcher.Search(query, collector);
+            
+            foreach (var hit in collector.TopDocs().scoreDocs)
             {
-                Hit curhit = (Hit)iterator.Current;
-                Document cur = curhit.GetDocument();
+                Document cur = _IndexSearcher.Doc(hit.doc);
 
                 var entry = new LuceneEntry(
                                     cur.GetField("indexId").StringValue(),
-                                    0,
+                                    Convert.ToInt64(cur.GetField("vertexId").StringValue()),
                                     cur.GetField("text").StringValue()
                                     );
 
                 yield return entry;
-            } while (iterator.MoveNext());
+            }
 
             _IndexSearcher.Close();
         }
