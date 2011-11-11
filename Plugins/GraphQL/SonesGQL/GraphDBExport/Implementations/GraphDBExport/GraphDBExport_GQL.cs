@@ -462,7 +462,6 @@ namespace sones.Plugins.SonesGQL.DBExport
                     if (type == null)
                         throw new TypeDoesNotExistException(stringType, "");
 
-                    //typesToDumpHash.UnionWith(myDBContext.DBTypeManager.GetAllParentTypes(type, true, false));
                     AddEdgeTypeAndAttributesRecursivly(myGraphDB, 
                                                         mySecurityToken, 
                                                         myTransactionToken, 

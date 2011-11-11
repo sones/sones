@@ -112,17 +112,22 @@ namespace sones.GraphQL.StatementNodes.DML
             try
             {
                 result = myGraphDB.Insert<QueryResult>(
-                        mySecurityToken,
-                        myTransactionToken,
-                        CreateRequest(myPluginManager, 
-                                        myGraphDB, 
-                                        mySecurityToken, 
-                                        myTransactionToken),
-                        CreateQueryResult);
+                                        mySecurityToken,
+                                        myTransactionToken,
+                                        CreateRequest(myPluginManager, 
+                                                        myGraphDB, 
+                                                        mySecurityToken, 
+                                                        myTransactionToken),
+                                        CreateQueryResult);
             }
             catch (ASonesException e)
             {
-                result = new QueryResult(_queryString, SonesGQLConstants.GQL, 0, ResultType.Failed, null, e);
+                result = new QueryResult(_queryString, 
+                                            SonesGQLConstants.GQL, 
+                                            0, 
+                                            ResultType.Failed, 
+                                            null, 
+                                            e);
             }
 
             return result;
@@ -170,10 +175,10 @@ namespace sones.GraphQL.StatementNodes.DML
             var result = new RequestInsertVertex(_TypeName);
 
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
-                mySecurityToken,
-                myTransactionToken,
-                new RequestGetVertexType(_TypeName),
-                (stats, vtype) => vtype);
+                                            mySecurityToken,
+                                            myTransactionToken,
+                                            new RequestGetVertexType(_TypeName),
+                                            (stats, vtype) => vtype);
 
             #endregion
 
@@ -508,6 +513,5 @@ namespace sones.GraphQL.StatementNodes.DML
         }
 
         #endregion
-
     }
 }

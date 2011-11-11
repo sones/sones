@@ -29,6 +29,7 @@ namespace sones.Plugins.SonesGQL.DBExport
     {
         private String DumpType;
         private String Info;
+        private Exception InnerException;
 
 		/// <summary>
 		/// Initializes a new instance of the ExportFailedException class.
@@ -40,6 +41,7 @@ namespace sones.Plugins.SonesGQL.DBExport
         {
             DumpType = myDumpType;
             Info = myInfo;
+            InnerException = innerException;
 
             _msg = String.Format("Export failed, the Export{0} of GQLGrammar returned null.\n\n{1}", DumpType, Info);
         }

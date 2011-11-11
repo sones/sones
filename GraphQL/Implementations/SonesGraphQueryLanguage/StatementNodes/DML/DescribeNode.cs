@@ -71,7 +71,12 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.Readonly; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, 
+                                            IGraphQL myGraphQL, 
+                                            GQLPluginManager myPluginManager, 
+                                            String myQuery, 
+                                            SecurityToken mySecurityToken, 
+                                            Int64 myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
 
@@ -80,7 +85,10 @@ namespace sones.GraphQL.StatementNodes.DML
 
             try
             {
-                qresult = _DescribeDefinition.GetResult(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken);
+                qresult = _DescribeDefinition.GetResult(myPluginManager,
+                                                        myGraphDB, 
+                                                        mySecurityToken, 
+                                                        myTransactionToken);
             }
             catch (ASonesException e)
             {
@@ -89,7 +97,11 @@ namespace sones.GraphQL.StatementNodes.DML
 
             sw.Stop();
 
-            return new QueryResult(myQuery, "sones.gql", (ulong)sw.ElapsedMilliseconds, qresult != null ? qresult.TypeOfResult : ResultType.Failed, qresult != null ? qresult.Vertices : new IVertexView[0], error);
+            return new QueryResult(myQuery, 
+                                    SonesGQLConstants.GQL, 
+                                    (ulong)sw.ElapsedMilliseconds, 
+                                    qresult != null ? qresult.TypeOfResult : ResultType.Failed, 
+                                    qresult != null ? qresult.Vertices : new IVertexView[0], error);
         }
 
         #endregion

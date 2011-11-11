@@ -51,7 +51,10 @@ namespace sones.Plugins.SonesGQL.Functions
         /// <summary>
         /// Validates the workingBase, checks if it is valid for this function
         /// </summary>
-        public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override bool ValidateWorkingBase(Object myWorkingBase, 
+                                                    IGraphDB myGraphDB, 
+                                                    SecurityToken mySecurityToken, 
+                                                    Int64 myTransactionToken)
         {
             return myWorkingBase != null &&
                 myWorkingBase is IAttributeDefinition &&
@@ -61,7 +64,13 @@ namespace sones.Plugins.SonesGQL.Functions
         /// <summary>
         /// Executes the function on myCallingObject
         /// </summary>
-        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, 
+                                                Object myCallingObject, 
+                                                IVertex myDBObject, 
+                                                IGraphDB myGraphDB, 
+                                                SecurityToken mySecurityToken, 
+                                                Int64 myTransactionToken, 
+                                                params FuncParameter[] myParams)
         {
             var currentInnerEdgeType = ((IOutgoingEdgeDefinition)myAttributeDefinition).InnerEdgeType;
 
