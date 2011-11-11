@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Lucene.Net;
+using Lucene.Net.Documents;
 
 namespace sones.Plugins.Index.LuceneIdx
 {
@@ -97,6 +98,19 @@ namespace sones.Plugins.Index.LuceneIdx
             else
             {
                 this.Id = string.Format("{0}#{1}", this.IndexId ?? "", this.VertexId);
+            }
+        }
+
+        public LuceneEntry(Document myLuceneDocument)
+        {
+            this.IndexId = myLuceneDocument.GetField("indexId").StringValue();
+            this.VertexId = Convert.ToInt64(myLuceneDocument.GetField("vertexId").StringValue());
+            this.Text = myLuceneDocument.GetField("text").StringValue();
+
+            var propertyIdField = myLuceneDocument.GetField("propertyId");
+            if (propertyIdField != null)
+            {
+                this.PropertyId = Convert.ToInt64(propertyIdField.StringValue());
             }
         }
 

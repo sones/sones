@@ -21,8 +21,6 @@ namespace sones.Plugins.Index.LuceneIdx
         private IndexWriter _IndexWriter;
         private Lucene.Net.Store.Directory _IndexDirectory;
 
-        private const int _hitsPerPage = 10;
-
         #region Constructor
 
         /// <summary>
@@ -59,9 +57,7 @@ namespace sones.Plugins.Index.LuceneIdx
             _IndexId = myIndexId;
 
             _IndexDirectory = new SimpleFSDirectory(new DirectoryInfo(myPath));
-            _IndexDirectory.CreateOutput(myPath);
-            _IndexDirectory.OpenInput(myPath);
-
+            
             Analyzer analyzer = new
             StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29);
 
@@ -201,6 +197,13 @@ namespace sones.Plugins.Index.LuceneIdx
         /// Gets all entries matching the specified Lucene query and (optionally) inner Lucene query.
         /// </summary>
         /// 
+        /// <remarks>
+        /// You must call Close method of returned LuceneReturn class if no more usage is desired!
+        /// Furthermore check if return of method GetTotalHits of returned LuceneReturn class may
+        /// be bigger than given myMaxResultsCount --> means you are missing results not returned!
+        /// </remarks>
+        /// 
+        /// <param name="myMaxResultsCount">The count of maximum results to return (to limit the complexity).</param>
         /// <param name="myQuery">The query string.</param>
         /// <param name="myInnerQuery">The optional inner query string (to prefilter entries).</param>
         /// 
@@ -214,9 +217,9 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <exception cref="System.ArgumentException">
         ///		myQuery is an empty string or contains only whitespace.
         /// </exception>
-        public IEnumerable<LuceneEntry> GetEntries(String myQuery, String myInnerQuery = null)
+        public LuceneReturn GetEntries(int myMaxResultsCount, String myQuery, String myInnerQuery = null)
         {
-            var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "text", new StandardAnalyzer());
+            var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "text", new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
             Query outerquery = null;
             Query innerquery = null;
             Query query = null;
@@ -238,28 +241,15 @@ namespace sones.Plugins.Index.LuceneIdx
             }
             catch (ParseException)
             {
-                yield break;
+                return null;
             }
 
             var _IndexSearcher = new IndexSearcher(_IndexDirectory, true);
-            TopScoreDocCollector collector = TopScoreDocCollector.create(_hitsPerPage, true);
+            var _Collector = TopScoreDocCollector.create(myMaxResultsCount, true);
 
-            _IndexSearcher.Search(query, collector);
-            
-            foreach (var hit in collector.TopDocs().scoreDocs)
-            {
-                Document cur = _IndexSearcher.Doc(hit.doc);
+            _IndexSearcher.Search(query, _Collector);
 
-                var entry = new LuceneEntry(
-                                    cur.GetField("indexId").StringValue(),
-                                    Convert.ToInt64(cur.GetField("vertexId").StringValue()),
-                                    cur.GetField("text").StringValue()
-                                    );
-
-                yield return entry;
-            }
-
-            _IndexSearcher.Close();
+            return new LuceneReturn(_Collector, _IndexSearcher);
         }
 
         /// <summary>
@@ -318,6 +308,23 @@ namespace sones.Plugins.Index.LuceneIdx
         public IEnumerable<ISet<long>> GetValues(Predicate<LuceneEntry> select = null)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Closes the lucene index.
+        /// </summary>        
+        public void Close()
+        {
+            _IndexWriter.Close();
+        }
+
+        /// <summary>
+        /// Empties the whole lucene index.
+        /// </summary>        
+        public void Empty()
+        {
+            _IndexWriter.DeleteAll();
+            _IndexWriter.Commit();
         }
     }
 }
