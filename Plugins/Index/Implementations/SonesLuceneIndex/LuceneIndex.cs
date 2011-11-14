@@ -168,9 +168,50 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <exception cref="System.ArgumentNullException">
         ///		myLuceneQuery is NULL.
         /// </exception>
-        public Int32 DeleteEntry(String myLuceneQuery, Predicate<LuceneEntry> select = null)
+        public void DeleteEntry(String myLuceneQuery, Predicate<LuceneEntry> select = null)
         {
-            throw new NotImplementedException();
+            if (select != null)
+            {
+                // if predicate is given, we need to query first
+                LuceneReturn ret = null;
+
+                ret = GetEntries(1, myLuceneQuery);
+                if (ret.TotalHits > 1)
+                {
+                    ret.Close();
+                    ret = GetEntries(ret.TotalHits, myLuceneQuery);
+                }
+
+                List<Term> delterms = new List<Term>();
+
+                foreach (var entry in ret)
+                {
+                    if (select(entry))
+                    {
+                        delterms.Add(new Term("id", entry.Id));
+                    }
+                }
+                ret.Close();
+
+                _IndexWriter.DeleteDocuments(delterms.ToArray());
+            }
+            else
+            {
+                var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "text", new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
+                Query parsedquery;
+                try
+                {
+                    parsedquery = queryparser.Parse(myLuceneQuery);
+                }
+                catch (ParseException)
+                {
+                    return;
+                }
+
+                _IndexWriter.DeleteDocuments(parsedquery);
+            }
+
+            _IndexWriter.Commit();
         }
 
         /// <summary>
