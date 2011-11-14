@@ -93,16 +93,17 @@ namespace sones.Plugins.Index.LuceneIdx
 
             if (myPropertyId != null)
             {
-                this.Id = string.Format("{0}#{1}#{2}", this.IndexId ?? "", this.VertexId, this.PropertyId);
+                this.Id = string.Format("{0}_{1}_{2}", this.IndexId ?? "", this.VertexId, this.PropertyId);
             }
             else
             {
-                this.Id = string.Format("{0}#{1}", this.IndexId ?? "", this.VertexId);
+                this.Id = string.Format("{0}_{1}", this.IndexId ?? "", this.VertexId);
             }
         }
 
         public LuceneEntry(Document myLuceneDocument)
         {
+            this.Id = myLuceneDocument.GetField("id").StringValue();
             this.IndexId = myLuceneDocument.GetField("indexId").StringValue();
             this.VertexId = Convert.ToInt64(myLuceneDocument.GetField("vertexId").StringValue());
             this.Text = myLuceneDocument.GetField("text").StringValue();

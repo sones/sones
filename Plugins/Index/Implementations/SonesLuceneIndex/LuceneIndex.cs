@@ -145,9 +145,12 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <exception cref="System.ArgumentNullException">
         ///		myEntry is NULL.
         /// </exception>
-        public Int32 DeleteEntry(LuceneEntry myEntry)
+        public void DeleteEntry(LuceneEntry myEntry)
         {
-            throw new NotImplementedException();
+            Term delterm = new Term("id", myEntry.Id);
+            
+            _IndexWriter.DeleteDocuments(delterm);
+            _IndexWriter.Commit();
         }
 
         /// <summary>
