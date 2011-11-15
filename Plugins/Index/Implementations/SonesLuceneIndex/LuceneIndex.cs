@@ -390,13 +390,36 @@ namespace sones.Plugins.Index.LuceneIdx
         /// Gets all Lucene index keys (an index key is represented by LuceneEntry.Text).
         /// </summary>
         /// 
+        /// <remarks>
+        /// If enumeration of returned LuceneKeyList is finished, please call "Close" method
+        /// of LuceneKeyList to close all open handles.
+        /// </remarks>
+        /// 
+        /// <returns>
+        /// A collection with all keys; or an empty list if no entries are within the index
+        /// </returns>
+        public LuceneKeyList GetKeys()
+        {
+            return new LuceneKeyList(_IndexWriter.GetReader());
+        }
+
+        /// <summary>
+        /// Gets all Lucene index keys (an index key is represented by LuceneEntry.Text).
+        /// </summary>
+        /// 
+        /// <remarks>
+        /// This overload of GetKeys using a predicate is very slow as a query of the full
+        /// index is necessary. If predicated is not needed, better use overload without
+        /// parameters.
+        /// </remarks>
+        /// 
         /// <param name="select">A predicate which takes a LuceneEntry and returns whether a LuceneEntry should be taken into account when looking for keys.
         ///						 If this parameter is NULL, no Lucene entry is ignored.</param>
         /// 
         /// <returns>
         /// A collection with all keys; or an empty list if no entries are within the index
         /// </returns>
-        public IEnumerable<String> GetKeys(Predicate<LuceneEntry> select = null)
+        public IEnumerable<string> GetKeys(Predicate<LuceneEntry> select = null)
         {
             throw new NotImplementedException();
         }
