@@ -103,12 +103,12 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public LuceneEntry(Document myLuceneDocument)
         {
-            this.Id = myLuceneDocument.GetField("id").StringValue();
-            this.IndexId = myLuceneDocument.GetField("indexId").StringValue();
-            this.VertexId = Convert.ToInt64(myLuceneDocument.GetField("vertexId").StringValue());
-            this.Text = myLuceneDocument.GetField("text").StringValue();
+            this.Id = myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.ID]).StringValue();
+            this.IndexId = myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.INDEX_ID]).StringValue();
+            this.VertexId = Convert.ToInt64(myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.VERTEX_ID]).StringValue());
+            this.Text = myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.TEXT]).StringValue();
 
-            var propertyIdField = myLuceneDocument.GetField("propertyId");
+            var propertyIdField = myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.PROPERTY_ID]);
             if (propertyIdField != null)
             {
                 this.PropertyId = Convert.ToInt64(propertyIdField.StringValue());

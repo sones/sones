@@ -21,6 +21,16 @@ namespace sones.Plugins.Index.LuceneIdx
         private IndexWriter _IndexWriter;
         private Lucene.Net.Store.Directory _IndexDirectory;
 
+        public enum Fields { ID, INDEX_ID, VERTEX_ID, PROPERTY_ID, TEXT };
+        internal static Dictionary<Fields, String> FieldNames = new Dictionary<Fields, string>()
+        { 
+            { Fields.ID, "id" },
+            { Fields.INDEX_ID, "indexId" },
+            { Fields.VERTEX_ID, "vertexId" },
+            { Fields.PROPERTY_ID, "propertyId" },
+            { Fields.TEXT, "Text" }
+        };
+
         #region Constructor
 
         /// <summary>
@@ -80,7 +90,7 @@ namespace sones.Plugins.Index.LuceneIdx
             Document doc = new Document();
 
             Field id =
-              new Field("id",
+              new Field(FieldNames[Fields.ID],
               myEntry.Id,
               Field.Store.YES,
               Field.Index.ANALYZED,
@@ -89,7 +99,7 @@ namespace sones.Plugins.Index.LuceneIdx
             doc.Add(id);
 
             Field indexId =
-              new Field("indexId",
+              new Field(FieldNames[Fields.INDEX_ID],
               myEntry.IndexId,
               Field.Store.YES,
               Field.Index.ANALYZED,
@@ -97,30 +107,29 @@ namespace sones.Plugins.Index.LuceneIdx
 
             doc.Add(indexId);
 
-            NumericField vertexId =
-              new NumericField("vertexId",
+            Field vertexId =
+              new Field(FieldNames[Fields.VERTEX_ID],
+              myEntry.VertexId.ToString(),
               Field.Store.YES,
-              false);
-
-            vertexId.SetLongValue(myEntry.VertexId);
+              Field.Index.ANALYZED,
+              Field.TermVector.YES);
 
             doc.Add(vertexId);
 
             if (myEntry.PropertyId != null)
             {
-
-                NumericField propertyId =
-                  new NumericField("propertyId",
-                  Field.Store.YES,
-                  false);
-             
-                propertyId.SetLongValue((long)myEntry.PropertyId);
+                Field propertyId =
+                    new Field(FieldNames[Fields.PROPERTY_ID],
+                    myEntry.PropertyId.ToString(),
+                    Field.Store.YES,
+                    Field.Index.ANALYZED,
+                    Field.TermVector.YES);
 
                 doc.Add(propertyId);
             }
 
             Field text =
-              new Field("text",
+              new Field(FieldNames[Fields.TEXT],
               myEntry.Text,
               Field.Store.YES,
               Field.Index.ANALYZED,
@@ -147,7 +156,7 @@ namespace sones.Plugins.Index.LuceneIdx
         /// </exception>
         public void DeleteEntry(LuceneEntry myEntry)
         {
-            Term delterm = new Term("id", myEntry.Id);
+            Term delterm = new Term(LuceneIndex.FieldNames[LuceneIndex.Fields.ID], myEntry.Id);
             
             _IndexWriter.DeleteDocuments(delterm);
             _IndexWriter.Commit();
@@ -188,7 +197,7 @@ namespace sones.Plugins.Index.LuceneIdx
                 {
                     if (select(entry))
                     {
-                        delterms.Add(new Term("id", entry.Id));
+                        delterms.Add(new Term(LuceneIndex.FieldNames[LuceneIndex.Fields.ID], entry.Id));
                     }
                 }
                 ret.Close();
@@ -197,7 +206,7 @@ namespace sones.Plugins.Index.LuceneIdx
             }
             else
             {
-                var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "text", new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
+                var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, FieldNames[Fields.TEXT], new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
                 Query parsedquery;
                 try
                 {
@@ -296,7 +305,7 @@ namespace sones.Plugins.Index.LuceneIdx
         /// </exception>
         public LuceneReturn GetEntries(int myMaxResultsCount, String myQuery, String myInnerQuery = null)
         {
-            var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "text", new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
+            var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, FieldNames[Fields.TEXT], new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
             Query outerquery = null;
             Query innerquery = null;
             Query query = null;
@@ -333,6 +342,7 @@ namespace sones.Plugins.Index.LuceneIdx
         /// Gets all entries matching the specified Lucene query and inner field query.
         /// </summary>
         /// 
+        /// <param name="myMaxResultsCount">The count of maximum results to return (to limit the complexity).</param>
         /// <param name="myQuery">The query string.</param>
         /// <param name="myInnerQuery">The inner field query string (to prefilter entries).</param>
         /// <param name="myInnerField">Name of the field to use for inner field query.</param>
@@ -347,9 +357,33 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <exception cref="System.ArgumentException">
         ///		myQuery is an empty string or contains only whitespace.
         /// </exception>
-        public IEnumerable<LuceneEntry> GetEntriesInnerByField(String myQuery, String myInnerQuery, String myInnerField)
+        public LuceneReturn GetEntriesInnerByField(int myMaxResultsCount, String myQuery, String myInnerQuery, Fields myInnerField)
         {
-            throw new NotImplementedException();
+            var outerqueryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, FieldNames[Fields.TEXT], new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
+            var innerqueryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, FieldNames[myInnerField], new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
+            Query outerquery = null;
+            Query innerquery = null;
+            Query query = null;
+            try
+            {
+                outerquery = outerqueryparser.Parse(myQuery);
+                innerquery = innerqueryparser.Parse(myInnerQuery);
+                BooleanQuery boolquery = new BooleanQuery();
+                boolquery.Add(outerquery, BooleanClause.Occur.MUST);
+                boolquery.Add(innerquery, BooleanClause.Occur.MUST);
+                query = (Query)boolquery;
+            }
+            catch (ParseException)
+            {
+                return null;
+            }
+
+            var _IndexSearcher = new IndexSearcher(_IndexDirectory, true);
+            var _Collector = TopScoreDocCollector.create(myMaxResultsCount, true);
+
+            _IndexSearcher.Search(query, _Collector);
+
+            return new LuceneReturn(_Collector, _IndexSearcher);
         }
 
         /// <summary>
