@@ -234,7 +234,40 @@ namespace sones.Plugins.Index.LuceneIdx
         /// </exception>
         public Boolean HasEntry(String myQuery, Predicate<LuceneEntry> select = null)
         {
-            throw new NotImplementedException();
+            LuceneReturn ret = null;
+            if (select != null)
+            {
+                ret = GetEntries(1, myQuery);
+                ret.Close();
+                if (ret.TotalHits > 0)
+                {
+                    ret = GetEntries(ret.TotalHits, myQuery);
+
+                    foreach (var entry in ret)
+                    {
+                        if (select(entry))
+                        {
+                            ret.Close();
+                            return true;
+                        }
+                    }
+                }
+                ret.Close();
+                return false;
+            }
+            else
+            {
+                ret = GetEntries(1, myQuery);
+                ret.Close();
+                if (ret.TotalHits > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
         /// <summary>
