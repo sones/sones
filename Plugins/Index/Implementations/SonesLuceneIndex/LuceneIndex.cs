@@ -422,7 +422,7 @@ namespace sones.Plugins.Index.LuceneIdx
             }
             else
             {
-                throw new NotImplementedException();
+                return new LuceneValueList(_IndexWriter.GetReader(), select);
             }
         }
 
