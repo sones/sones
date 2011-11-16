@@ -87,6 +87,11 @@ namespace sones.Plugins.Index.LuceneIdx
         /// </exception>
         public void AddEntry(LuceneEntry myEntry)
         {
+            if (myEntry == null)
+            {
+                throw new InvalidOperationException("Parameter myEntry cannot be null!");
+            }
+            
             Document doc = new Document();
 
             Field id =
@@ -305,6 +310,16 @@ namespace sones.Plugins.Index.LuceneIdx
         /// </exception>
         public LuceneReturn GetEntries(int myMaxResultsCount, String myQuery, String myInnerQuery = null)
         {
+            if (myMaxResultsCount <= 0)
+            {
+                throw new InvalidOperationException("myMaxResultsCount cannot be <= 0 !");
+            }
+
+            if (myQuery == null)
+            {
+                throw new InvalidOperationException("myQuery cannot be null!");
+            }
+
             var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, FieldNames[Fields.TEXT], new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
             Query outerquery = null;
             Query innerquery = null;
