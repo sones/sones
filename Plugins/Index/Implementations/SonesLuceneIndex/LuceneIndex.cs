@@ -161,6 +161,11 @@ namespace sones.Plugins.Index.LuceneIdx
         /// </exception>
         public void DeleteEntry(LuceneEntry myEntry)
         {
+            if (myEntry == null)
+            {
+                throw new InvalidOperationException("myEntry parameter cannot be null!");
+            }
+
             Term delterm = new Term(LuceneIndex.FieldNames[LuceneIndex.Fields.ID], myEntry.Id);
             
             _IndexWriter.DeleteDocuments(delterm);
@@ -184,6 +189,11 @@ namespace sones.Plugins.Index.LuceneIdx
         /// </exception>
         public void DeleteEntry(String myLuceneQuery, Predicate<LuceneEntry> select = null)
         {
+            if (myLuceneQuery == null)
+            {
+                throw new InvalidOperationException("myLuceneQuery parameter cannot be null!");
+            }
+
             if (select != null)
             {
                 // if predicate is given, we need to query first
@@ -248,6 +258,11 @@ namespace sones.Plugins.Index.LuceneIdx
         /// </exception>
         public Boolean HasEntry(String myQuery, Predicate<LuceneEntry> select = null)
         {
+            if (myQuery == null)
+            {
+                throw new InvalidOperationException("myQuery cannot be null!");
+            }
+
             LuceneReturn ret = null;
             if (select != null)
             {
