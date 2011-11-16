@@ -8,14 +8,12 @@ namespace sones.Plugins.Index.LuceneIdx
 {
     public class LuceneValueListEnumerator : IEnumerator<long>
     {
-        private TermEnum _terms;
         private IndexReader _reader;
         private int _count;
         private int _pos = -1;
 
         public LuceneValueListEnumerator(IndexReader myReader)
         {
-            _terms = myReader.Terms();
             _reader = myReader;
             _count = myReader.NumDocs();
         }
@@ -59,7 +57,6 @@ namespace sones.Plugins.Index.LuceneIdx
 
     public class LuceneValueListPredicateEnumerator : IEnumerator<long>
     {
-        private TermEnum _terms;
         private IndexReader _reader;
         private int _count;
         private int _pos = -1;
@@ -67,7 +64,6 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public LuceneValueListPredicateEnumerator(IndexReader myReader, Predicate<LuceneEntry> myPredicate)
         {
-            _terms = myReader.Terms();
             _reader = myReader;
             _count = myReader.NumDocs();
             _predicate = myPredicate;

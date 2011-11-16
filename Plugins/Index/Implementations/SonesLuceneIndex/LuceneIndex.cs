@@ -398,9 +398,16 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <returns>
         /// A collection with all keys; or an empty list if no entries are within the index
         /// </returns>
-        public LuceneKeyList GetKeys()
+        public LuceneKeyList GetKeys(Predicate<LuceneEntry> select = null)
         {
-            return new LuceneKeyList(_IndexWriter.GetReader());
+            if (select == null)
+            {
+                return new LuceneKeyList(_IndexWriter.GetReader());
+            }
+            else
+            {
+                return new LuceneKeyList(_IndexWriter.GetReader(), select);
+            }
         }
 
         /// <summary>
