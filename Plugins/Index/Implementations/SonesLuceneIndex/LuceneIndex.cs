@@ -404,27 +404,6 @@ namespace sones.Plugins.Index.LuceneIdx
         }
 
         /// <summary>
-        /// Gets all Lucene index keys (an index key is represented by LuceneEntry.Text).
-        /// </summary>
-        /// 
-        /// <remarks>
-        /// This overload of GetKeys using a predicate is very slow as a query of the full
-        /// index is necessary. If predicated is not needed, better use overload without
-        /// parameters.
-        /// </remarks>
-        /// 
-        /// <param name="select">A predicate which takes a LuceneEntry and returns whether a LuceneEntry should be taken into account when looking for keys.
-        ///						 If this parameter is NULL, no Lucene entry is ignored.</param>
-        /// 
-        /// <returns>
-        /// A collection with all keys; or an empty list if no entries are within the index
-        /// </returns>
-        public IEnumerable<string> GetKeys(Predicate<LuceneEntry> select = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Gets all distinct values (values are the vertex IDs).
         /// </summary>
         /// 
@@ -435,13 +414,16 @@ namespace sones.Plugins.Index.LuceneIdx
         /// A collection containing a single set of Int64 values, representing the distinct vertex ids within the Lucene index;
         /// or a collection containing an empty set, if no entries are within the index.
         /// </returns>
-        /// 
-        /// <dev_doc>
-        /// TODO: the return value should be a simple IEnumerable(Of long)
-        /// </dev_doc>
-        public IEnumerable<ISet<long>> GetValues(Predicate<LuceneEntry> select = null)
+        public LuceneValueList GetValues(Predicate<LuceneEntry> select = null)
         {
-            throw new NotImplementedException();
+            if (select == null)
+            {
+                return new LuceneValueList(_IndexWriter.GetReader());
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         /// <summary>

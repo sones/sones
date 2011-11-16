@@ -47,6 +47,7 @@
     <Compile Include="LuceneIndex.cs" />
     <Compile Include="LuceneKeyList.cs" />
     <Compile Include="LuceneReturn.cs" />
+    <Compile Include="LuceneValueList.cs" />
     <Compile Include="SonesLuceneIndex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

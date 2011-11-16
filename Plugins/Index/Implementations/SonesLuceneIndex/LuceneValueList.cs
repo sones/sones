@@ -6,22 +6,25 @@ using Lucene.Net.Index;
 
 namespace sones.Plugins.Index.LuceneIdx
 {
-    public class LuceneKeyListEnumerator : IEnumerator<string>
+    public class LuceneValueListEnumerator : IEnumerator<long>
     {
-        private IndexReader _reader;
         private TermEnum _terms;
+        private IndexReader _reader;
+        private int _count;
+        private int _pos = -1;
 
-        public LuceneKeyListEnumerator(IndexReader myReader)
+        public LuceneValueListEnumerator(IndexReader myReader)
         {
             _terms = myReader.Terms();
             _reader = myReader;
+            _count = myReader.NumDocs();
         }
 
-        public string Current
+        public long Current
         {
             get
             {
-                return _terms.Term().Text();
+                return Convert.ToInt64(_reader.Document(_pos).Get(LuceneIndex.FieldNames[LuceneIndex.Fields.VERTEX_ID]));
             }
         }
 
@@ -31,24 +34,21 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public bool MoveNext()
         {
-            bool ret = false;
-            do
+            _pos++;
+
+            if (_pos >= _count)
             {
-                ret = _terms.Next();
-
-                if ((ret == true) && (_terms.Term().Field() == LuceneIndex.FieldNames[LuceneIndex.Fields.TEXT]))
-                {
-                    break;
-                }
-            } while (ret);
-
-            return ret;
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         public void Reset()
         {
-            _terms.Close();
-            _terms = _reader.Terms();
+            _pos = -1;
         }
 
         object System.Collections.IEnumerator.Current
@@ -56,19 +56,19 @@ namespace sones.Plugins.Index.LuceneIdx
             get { return this.Current; }
         }
     }
-    
-    public class LuceneKeyList : IEnumerable<string>
+
+    public class LuceneValueList : IEnumerable<long>
     {
         private IndexReader _reader;
 
-        public LuceneKeyList(IndexReader myReader)
+        public LuceneValueList(IndexReader myReader)
         {
             _reader = myReader;
         }
 
-        public IEnumerator<string> GetEnumerator()
+        public IEnumerator<long> GetEnumerator()
         {
-            return new LuceneKeyListEnumerator(_reader);
+            return new LuceneValueListEnumerator(_reader);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
