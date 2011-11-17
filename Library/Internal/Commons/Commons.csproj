@@ -89,7 +89,7 @@
     </ProjectReference>
     <ProjectReference Include="..\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager %28Library\Internal\PluginManager%29</Name>
+      <Name>PluginManager %28Dependencies\Library\Internal\PluginManager%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

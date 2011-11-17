@@ -29,9 +29,16 @@ namespace sones.Plugins.Index.LuceneIdx
 
         }
         
-        public SonesLuceneIndex(String myIndexId, IList<Int64> myPropertyIDs = null)
+        public SonesLuceneIndex(String myIndexId, String myPersistencePath = null, IList<Int64> myPropertyIDs = null)
         {
-            _LuceneIndex = new LuceneIndex(myIndexId);
+            if (myPersistencePath == null)
+            {
+                _LuceneIndex = new LuceneIndex(myIndexId);
+            }
+            else
+            {
+                _LuceneIndex = new LuceneIndex(myIndexId, myPersistencePath);
+            }
         }
 
         #endregion
