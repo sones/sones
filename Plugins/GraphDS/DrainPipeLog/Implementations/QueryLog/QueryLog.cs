@@ -80,7 +80,7 @@ namespace QueryLog
 
         #region IGraphDS Members
 
-        public QueryResult Query(SecurityToken mySecurityToken, Int64 myTransactionToken, string myQueryString, string myQueryLanguageName)
+        public IQueryResult Query(SecurityToken mySecurityToken, Int64 myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
             _logFile.WriteLine(myQueryString);
             _logFile.Flush();
@@ -275,7 +275,7 @@ namespace QueryLog
 
         #endregion
 
-        public void DrainQueryResult(QueryResult result)
+        public void DrainQueryResult(IQueryResult result)
         {
             DateTime now = DateTime.Now;
 
