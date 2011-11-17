@@ -53,13 +53,13 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
         #endregion
 
-        public override QueryResult GetResult(  GQLPluginManager myPluginManager,
+        public override IEnumerable<IVertexView> GetResult(
+                                                GQLPluginManager myPluginManager,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,
                                                 Int64 myTransactionToken)
         {
             var resultingVertices = new List<IVertexView>();
-            ASonesException error = null;
 
             if (!String.IsNullOrEmpty(_EdgeName))
             {
@@ -78,7 +78,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 }
                 else
                 {
-                    error = new EdgeTypeDoesNotExistException(_EdgeName);
+                    throw new EdgeTypeDoesNotExistException(_EdgeName);
                 }
 
                 #endregion
@@ -106,10 +106,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             }
 
-            if(error != null)
-                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Failed, resultingVertices, error);
-            else
-                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Successful, resultingVertices);
+            return resultingVertices;
         }
 
         #region Output

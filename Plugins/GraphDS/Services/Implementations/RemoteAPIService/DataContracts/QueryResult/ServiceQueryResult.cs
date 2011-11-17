@@ -35,7 +35,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
     [KnownType(typeof(ServicePropertyMultiplicity))]
     public class ServiceQueryResult
     {
-        public ServiceQueryResult(sones.GraphQL.Result.QueryResult myQueryResult)
+        public ServiceQueryResult(IQueryResult myQueryResult)
         {
             this.Duration = myQueryResult.Duration;
             if (myQueryResult.Error != null)

@@ -94,7 +94,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
 
         #region Generate Output from Query Result
 
-        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
+        public string GenerateOutputResult(IQueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             // root element...
             var _Query = new JObject();
@@ -142,7 +142,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
         /// </summary>
         /// <param name="queryresult">The query result.</param>
         /// <returns>The exception string.</returns>
-        private String HandleQueryExceptions(QueryResult queryresult)
+        private String HandleQueryExceptions(IQueryResult queryresult)
         {
             StringBuilder SB = new StringBuilder();
 
@@ -334,9 +334,9 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
 
         #endregion
 
-        #region Generate a QueryResult from JSON - not really needed right now
+        #region Generate a IQueryResult from JSON - not really needed right now
 
-        public QueryResult GenerateQueryResult(string myResult)
+        public IQueryResult GenerateQueryResult(string myResult)
         {
             throw new NotImplementedException();
         }

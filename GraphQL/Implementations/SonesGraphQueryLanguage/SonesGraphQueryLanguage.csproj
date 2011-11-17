@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\ImportFormatDoesNotExistsException.cs" />
     <Compile Include="ErrorHandling\InvalidBinaryExpressionIndexException.cs" />
     <Compile Include="ErrorHandling\InvalidEdgeListOperationException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />

@@ -98,7 +98,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, 
+        public override IQueryResult Execute(IGraphDB myGraphDB, 
                                             IGraphQL myGraphQL, 
                                             GQLPluginManager myPluginManager, 
                                             String myQuery, 
@@ -107,11 +107,11 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             _queryString = myQuery;
 
-            QueryResult result;
+            IQueryResult result;
 
             try
             {
-                result = myGraphDB.Insert<QueryResult>(
+                result = myGraphDB.Insert<IQueryResult>(
                                         mySecurityToken,
                                         myTransactionToken,
                                         CreateRequest(myPluginManager, 
@@ -143,13 +143,12 @@ namespace sones.GraphQL.StatementNodes.DML
         /// <param name="myStats">The stats of the request</param>
         /// <param name="myCreatedVertex">The vertex that has been created</param>
         /// <returns>The created query result</returns>
-        private QueryResult CreateQueryResult(IRequestStatistics myStats, IVertex myCreatedVertex)
+        private IQueryResult CreateQueryResult(IRequestStatistics myStats, IVertex myCreatedVertex)
         {
-            return new QueryResult(_queryString, 
+            return QueryResult.Success(_queryString, 
                                     SonesGQLConstants.GQL,
-                                    Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds), 
-                                    ResultType.Successful,
-                                    new List<IVertexView> {CreateAVertexView(myCreatedVertex)});
+                                    new List<IVertexView> { CreateAVertexView(myCreatedVertex) },
+                                    Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds));
         }
 
         private IVertexView CreateAVertexView(IVertex myCreatedVertex)

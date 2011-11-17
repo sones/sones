@@ -52,14 +52,13 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
         #endregion
 
-        public override QueryResult GetResult(
-                                                GQLPluginManager myPluginManager, 
-                                                IGraphDB myGraphDB, 
-                                                SecurityToken mySecurityToken, 
+        public override IEnumerable<IVertexView> GetResult(
+                                                GQLPluginManager myPluginManager,
+                                                IGraphDB myGraphDB,
+                                                SecurityToken mySecurityToken,
                                                 Int64 myTransactionToken)
         {
             var resultingVertices = new List<IVertexView>();
-            ASonesException error = null;
 
             if (!String.IsNullOrEmpty(_FuncName))
             {
@@ -69,23 +68,16 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 //aggregate is user defined z.b. sones.exist or another.exist
                 if (_FuncName.Contains("."))
                 {
-                    try
-                    {
-                        //get plugin
-                        var func = myPluginManager.GetAndInitializePlugin<IGQLFunction>(_FuncName);
+                    //get plugin
+                    var func = myPluginManager.GetAndInitializePlugin<IGQLFunction>(_FuncName);
 
-                        if (func != null)
-                        {
-                            resultingVertices = new List<IVertexView>() { GenerateOutput(func, _FuncName) };
-                        }
-                        else
-                        {
-                            error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "");
-                        }
-                    }
-                    catch (ASonesException e)
+                    if (func != null)
                     {
-                        error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "", e);
+                        resultingVertices = new List<IVertexView>() { GenerateOutput(func, _FuncName) };
+                    }
+                    else
+                    {
+                        throw new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "");
                     }
                 }
                 //try get function
@@ -102,30 +94,24 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                         }
                         else
                         {
-                            error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "");
+                            throw new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "");
                         }
                     }
                     catch (ASonesException e)
                     {
                         //maybe user forgot prefix 'sones.'
-                        try
-                        {
-                            //get plugin
-                            var func = myPluginManager.GetAndInitializePlugin<IGQLFunction>("SONES." + _FuncName);
+                        //get plugin
+                        var func = myPluginManager.GetAndInitializePlugin<IGQLFunction>("SONES." + _FuncName);
 
-                            if (func != null)
-                            {
-                                resultingVertices = new List<IVertexView>() { GenerateOutput(func, "SONES." + _FuncName) };
-                            }
-                            else
-                            {
-                                error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "");
-                            }
-                        }
-                        catch (ASonesException)
+                        if (func != null)
                         {
-                            error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "", e);
+                            resultingVertices = new List<IVertexView>() { GenerateOutput(func, "SONES." + _FuncName) };
                         }
+                        else
+                        {
+                            throw new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), _FuncName, "");
+                        }
+                        
                     }
                 }
 
@@ -141,23 +127,16 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 myPluginManager.GetPluginNameForType<IGQLFunction>();
                 foreach (var funcName in myPluginManager.GetPluginNameForType<IGQLFunction>())
                 {
-                    try
-                    {
-                        //get plugin
-                        var func = myPluginManager.GetAndInitializePlugin<IGQLFunction>(funcName);
+                    //get plugin
+                    var func = myPluginManager.GetAndInitializePlugin<IGQLFunction>(funcName);
 
-                        if (func != null)
-                        {
-                            resultingVertices.Add(GenerateOutput(func, funcName));
-                        }
-                        else
-                        {
-                            error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), funcName, "");
-                        }
-                    }
-                    catch (ASonesException e)
+                    if (func != null)
                     {
-                        error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), funcName, "", e);
+                        resultingVertices.Add(GenerateOutput(func, funcName));
+                    }
+                    else
+                    {
+                        throw new AggregateOrFunctionDoesNotExistException(typeof(IGQLFunction), funcName, "");
                     }
                 }
 
@@ -165,10 +144,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             }
 
-            if(error != null)
-                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Failed, resultingVertices, error);
-            else
-                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Successful, resultingVertices);
+            return resultingVertices;
         }
 
         #region Output

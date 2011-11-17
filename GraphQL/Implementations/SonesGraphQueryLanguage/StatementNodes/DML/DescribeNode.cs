@@ -71,7 +71,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.Readonly; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, 
+        public override IQueryResult Execute(IGraphDB myGraphDB, 
                                             IGraphQL myGraphQL, 
                                             GQLPluginManager myPluginManager, 
                                             String myQuery, 
@@ -80,28 +80,18 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             var sw = Stopwatch.StartNew();
 
-            QueryResult qresult = null;
-            ASonesException error = null;
-
             try
             {
-                qresult = _DescribeDefinition.GetResult(myPluginManager,
+                var result = _DescribeDefinition.GetResult(myPluginManager,
                                                         myGraphDB, 
                                                         mySecurityToken, 
                                                         myTransactionToken);
+                return QueryResult.Success(myQuery, SonesGQLConstants.GQL, result, Convert.ToUInt64(sw.ElapsedMilliseconds));
             }
-            catch (ASonesException e)
+            catch (ASonesException ex)
             {
-                error = e;
+                return QueryResult.Failure(myQuery, SonesGQLConstants.GQL, ex);
             }
-
-            sw.Stop();
-
-            return new QueryResult(myQuery, 
-                                    SonesGQLConstants.GQL, 
-                                    (ulong)sw.ElapsedMilliseconds, 
-                                    qresult != null ? qresult.TypeOfResult : ResultType.Failed, 
-                                    qresult != null ? qresult.Vertices : new IVertexView[0], error);
         }
 
         #endregion

@@ -167,7 +167,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
                     var selectManager = new SelectManager(myGraphDB, myPluginManager);
 
                     var selectDefinition = (tupleElement as SelectDefinition);
-                    QueryResult qresult = selectManager.ExecuteSelect(mySecurityToken, myTransactionToken, selectDefinition, String.Empty);
+                    IQueryResult qresult = selectManager.ExecuteSelect(mySecurityToken, myTransactionToken, selectDefinition, String.Empty);
                     if (qresult.Error != null)
                     {
                         throw qresult.Error;

@@ -92,7 +92,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override IQueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             _query = myQuery;
 
@@ -115,7 +115,7 @@ namespace sones.GraphQL.StatementNodes.DML
                     null, true);
 
             //TODO: do sth that is better than that: ew RequestDelete(new RequestGetVertices(_typeName, toBeDeletedVertices.Select(_ => _.VertexID))).
-            return myGraphDB.Delete<QueryResult>(
+            return myGraphDB.Delete<IQueryResult>(
                 mySecurityToken,
                 myTransactionToken,
                 new RequestDelete(new RequestGetVertices(_typeName, toBeDeletedVertices.Select(_ => _.VertexID))).AddAttributes(_toBeDeletedAttributes),
@@ -126,7 +126,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
         #region private helper
 
-        private QueryResult CreateQueryResult(IRequestStatistics myStats, IEnumerable<IComparable> myDeletedAttributes, IEnumerable<IComparable> myDeletedVertices)
+        private IQueryResult CreateQueryResult(IRequestStatistics myStats, IEnumerable<IComparable> myDeletedAttributes, IEnumerable<IComparable> myDeletedVertices)
         {
             var view = new List<VertexView>();
 
@@ -136,7 +136,7 @@ namespace sones.GraphQL.StatementNodes.DML
             if(myDeletedAttributes.Count() > 0)
                 view.Add(new VertexView(new Dictionary<String, Object> { { "deleted attributes", new ListCollectionWrapper(myDeletedAttributes) } }, null));
 
-            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds), ResultType.Successful, view);
+            return QueryResult.Success(_query, SonesGQLConstants.GQL, view, Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds));
         }
 
         #endregion

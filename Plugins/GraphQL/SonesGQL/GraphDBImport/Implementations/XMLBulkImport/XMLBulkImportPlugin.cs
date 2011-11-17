@@ -295,7 +295,7 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
 
         #region IGraphDBImport Members
 
-        public QueryResult Import(String myLocation,
+        public IEnumerable<IVertexView> Import(String myLocation,
 			IGraphDB myGraphDB,
 			IGraphQL myGraphQL,
 			SecurityToken mySecurityToken,
@@ -357,7 +357,7 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
                     else
                     {
                         _logger.Log(Level.SEVERE, "Location does not start with file:\\\\.");
-                        return new QueryResult("", PluginShortName, 0L, ResultType.Failed, GetResult(), new InvalidImportLocationException(myLocation, @"file:\\"));
+                        throw new InvalidImportLocationException(myLocation, @"file:\\");
                     }
 
                     #region Start import using the AGraphDBImport implementation and return the result
@@ -370,7 +370,7 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
                 {
                     //if something unexpected happens we log it and return a query result with failed.
                     _logger.Log(Level.SEVERE, "Exception thrown:\n", ex);
-                    return new QueryResult("", PluginShortName, 0L, ResultType.Failed, GetResult(), new ImportFailedException(ex));
+                    throw new ImportFailedException(ex);
                 }
                 finally
                 {
@@ -402,7 +402,7 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
             return filestream;
         }
 
-        private QueryResult Import()
+        private IEnumerable<IVertexView> Import()
         {
             Stopwatch sw = Stopwatch.StartNew();
 
@@ -417,7 +417,7 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
 
             _logger.Log(Level.INFO, "Import finished.");
 
-            return new QueryResult("", PluginShortName, Convert.ToUInt64(sw.Elapsed.TotalMinutes), ResultType.Successful, GetResult());
+            return GetResult();
         }
 
         private IEnumerable<VertexView> GetResult()
@@ -838,7 +838,7 @@ namespace sones.Plugins.SonesGQL.XMLBulkImport
         /// Logs the result of the import as Info.
         /// </summary>
         /// <param name="myResult"></param>
-        private void logQueryResult(QueryResult myResult)
+        private void logQueryResult(IQueryResult myResult)
         {
 
             throw new NotImplementedException();

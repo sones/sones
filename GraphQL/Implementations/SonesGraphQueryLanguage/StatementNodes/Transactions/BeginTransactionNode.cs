@@ -93,10 +93,10 @@ namespace sones.GraphQL.StatementNodes.Transactions
         }
 
         /// <summary>
-        /// The returned QueryResult contains vertices which are null if no Int64 is created,
+        /// The returned IQueryResult contains vertices which are null if no Int64 is created,
         /// otherwise they contain a vertexview with a property dictionary, where in first position is the created Int64
         /// </summary>
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override IQueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
 
@@ -117,7 +117,7 @@ namespace sones.GraphQL.StatementNodes.Transactions
 
             sw.Stop();
 
-            return new QueryResult(myQuery, "GQL", Convert.ToUInt64(sw.ElapsedMilliseconds), ResultType.Successful, new List<IVertexView> { view });
+            return QueryResult.Success(myQuery, SonesGQLConstants.GQL, new List<IVertexView> { view }, Convert.ToUInt64(sw.ElapsedMilliseconds));
         }
 
         #endregion
