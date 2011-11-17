@@ -175,7 +175,7 @@ namespace sones.GraphQL.StatementNodes.DML
             }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override IQueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
 
@@ -215,9 +215,9 @@ namespace sones.GraphQL.StatementNodes.DML
 
         #region Private Helpers
 
-        private QueryResult GenerateResult(double myElapsedTotalMilliseconds)
+        private IQueryResult GenerateResult(double myElapsedTotalMilliseconds)
         {
-            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myElapsedTotalMilliseconds), ResultType.Successful, new List<IVertexView>());
+            return QueryResult.Success(_query, SonesGQLConstants.GQL, new List<IVertexView>(), Convert.ToUInt64(myElapsedTotalMilliseconds));
         }
 
         private void ProcessUpdate(IEnumerable<IVertex> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, Int64 myTransactionToken)

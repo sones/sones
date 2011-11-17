@@ -9,7 +9,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
 {
     public partial class ServiceQueryResult
     {
-        internal QueryResult ToQueryResult(IServiceToken myServiceToken)
+        internal IQueryResult ToQueryResult(IServiceToken myServiceToken)
         {
             ResultType type;
             if (this.TypeOfResult == ServiceResultType.Successful)
@@ -26,7 +26,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
             }
             else
             {
-                return new QueryResult(this.Query, this.NameOfQueryLanguage, this.Duration, type, this.Vertices.Select(x => x.ToVertexView(myServiceToken)));
+                return new QueryResult(this.Query, this.NameOfQueryLanguage, this.Duration, type, this.Vertices.Select(x => x.ToVertexView(myServiceToken)), null);
             }
         }
     }

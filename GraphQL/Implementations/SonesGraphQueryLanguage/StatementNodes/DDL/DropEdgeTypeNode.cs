@@ -69,7 +69,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB,
+        public override IQueryResult Execute(IGraphDB myGraphDB,
                                             IGraphQL myGraphQL,
                                             GQLPluginManager myPluginManager,
                                             String myQuery,
@@ -88,7 +88,7 @@ namespace sones.GraphQL.StatementNodes.DDL
 
         #region helper
 
-        private QueryResult GenerateOutput(IRequestStatistics myStats,
+        private IQueryResult GenerateOutput(IRequestStatistics myStats,
                                             Dictionary<Int64, String> myDeletedTypeIDs)
         {
             var temp = new Dictionary<String, object>();
@@ -99,14 +99,13 @@ namespace sones.GraphQL.StatementNodes.DDL
                 temp.Add("RemovedTypeName", item.Value);
             }
 
-            return new QueryResult(_query,
+            return QueryResult.Success(_query,
                                     SonesGQLConstants.GQL,
-                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds),
-                                    ResultType.Successful,
-                                    new List<IVertexView> 
+                                    new IVertexView[]
                                     { 
                                         new VertexView( temp, null )
-                                    });
+                                    },
+                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds));
         }
 
         #endregion

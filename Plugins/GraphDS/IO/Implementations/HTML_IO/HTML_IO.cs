@@ -97,7 +97,7 @@ namespace sones.Plugins.GraphDS.IO
             return myString;
         }
 
-        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
+        public string GenerateOutputResult(IQueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             StringBuilder Output = new StringBuilder();
 
@@ -131,7 +131,7 @@ namespace sones.Plugins.GraphDS.IO
             return HTMLBuilder(myQueryResult,Output).ToString();
         }
 
-        private String HandleQueryExceptions(QueryResult queryresult)
+        private String HandleQueryExceptions(IQueryResult queryresult)
         {
             StringBuilder SB = new StringBuilder();
 
@@ -247,8 +247,8 @@ namespace sones.Plugins.GraphDS.IO
 
         #endregion
 
-        #region Generate a QueryResult from HTML - not really needed right now
-        public QueryResult GenerateQueryResult(string myResult)
+        #region Generate a IQueryResult from HTML - not really needed right now
+        public IQueryResult GenerateQueryResult(string myResult)
         {
             throw new NotImplementedException();
         }
@@ -261,7 +261,7 @@ namespace sones.Plugins.GraphDS.IO
 
         #region HTMLBuilder(myGraphDBName, myFunc)
 
-        public StringBuilder HTMLBuilder(QueryResult myQueryResult, StringBuilder Input)
+        public StringBuilder HTMLBuilder(IQueryResult myQueryResult, StringBuilder Input)
         {
             var _StringBuilder = new StringBuilder();
 

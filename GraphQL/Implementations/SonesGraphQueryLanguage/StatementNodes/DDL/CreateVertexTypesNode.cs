@@ -126,15 +126,15 @@ namespace sones.GraphQL.StatementNodes.DDL
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override IQueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             _query = myQuery;
 
-            QueryResult result;
+            IQueryResult result;
 
             try
             {
-                result = myGraphDB.CreateVertexTypes<QueryResult>(
+                result = myGraphDB.CreateVertexTypes<IQueryResult>(
                         mySecurityToken,
                         myTransactionToken,
                         new RequestCreateVertexTypes(GenerateVertexTypePredefinitions()),
@@ -157,10 +157,10 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// </summary>
         /// <param name="myStats">The statistics of the request</param>
         /// <param name="myCreatedVertexTypes">The created vertex types</param>
-        /// <returns>A QueryResult</returns>
-        private QueryResult CreateQueryResult(IRequestStatistics myStats, IEnumerable<IVertexType> myCreatedVertexTypes)
+        /// <returns>A IQueryResult</returns>
+        private IQueryResult CreateQueryResult(IRequestStatistics myStats, IEnumerable<IVertexType> myCreatedVertexTypes)
         {
-            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), ResultType.Successful, CreateVertexViews(myCreatedVertexTypes));
+            return QueryResult.Success(_query, SonesGQLConstants.GQL, CreateVertexViews(myCreatedVertexTypes), Convert.ToUInt64(myStats.ExecutionTime.Milliseconds));
         }
 
         /// <summary>

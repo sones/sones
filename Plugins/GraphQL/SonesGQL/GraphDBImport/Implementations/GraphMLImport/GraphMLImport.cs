@@ -214,7 +214,7 @@ namespace sones.Plugins.SonesGQL
 			_EdgeCount 		= 0;
 		}
 		
-		public QueryResult Import (string myLocation, 
+		public IEnumerable<IVertexView> Import (string myLocation, 
 			IGraphDB myGraphDB,
 			IGraphQL myGraphQL,
 			SecurityToken mySecurityToken,
@@ -230,22 +230,12 @@ namespace sones.Plugins.SonesGQL
 			
 			if (myGraphDB == null)
 			{
-				return new QueryResult("",
-                        PluginShortName, 
-						0, 
-						ResultType.Failed, 
-						null, 
-						new UnknownException(new ArgumentNullException("Missing GraphDB object")));
+				throw new UnknownException(new ArgumentNullException("Missing GraphDB object"));
 			}
 			
 			if(myLocation == null)
 			{
-				return new QueryResult("",
-                        PluginShortName, 
-						0, 
-						ResultType.Failed, 
-						null, 
-						new UnknownException(new ArgumentNullException("Missing Location object")));	
+				throw new UnknownException(new ArgumentNullException("Missing Location object"));	
 			}
 			
 //			if(mySecurityToken == null)
@@ -269,17 +259,12 @@ namespace sones.Plugins.SonesGQL
 			
 			if(myOptions == null)
 			{
-				return new QueryResult("",
-                        PluginShortName, 
-						0, 
-						ResultType.Failed, 
-						null, 
-						new UnknownException(
+				throw new UnknownException(
 					new ArgumentNullException(
 						String.Format("Missing Options {0}, {1}",
 							PARAM_VERTEXTYPENAME,
 							PARAM_EDGENAME
-						))));
+						)));
 			}
 			
 			_GraphDB 			= myGraphDB;
@@ -349,24 +334,19 @@ namespace sones.Plugins.SonesGQL
 	                    }
 	                }
 	            }
-	            catch (Exception ex)
-	            {
+                catch (Exception ex)
+                {
+					// drop vertex type in case of exception
+					DropVertexType();
+
+                    throw;
+	            }
+				finally
+				{
 					if(stream != null)
 					{
 						stream.Close();
 					}
-					// drop vertex type in case of exception
-					DropVertexType();
-					
-	                return new QueryResult("VertexType has been removed",
-                        PluginShortName, 
-						(ulong)sw.ElapsedMilliseconds, 
-						ResultType.Failed, 
-						null, 
-						new UnknownException(ex));
-	            }
-				finally
-				{
 					sw.Stop();
 				}
 
@@ -374,13 +354,8 @@ namespace sones.Plugins.SonesGQL
 			}
 			
 			#endregion
-			
-			return new QueryResult("",
-                PluginShortName, 
-				(ulong)sw.ElapsedMilliseconds, 
-				ResultType.Successful,
-				null, 
-				null);
+
+            return null;
 		}
 		
 		#endregion

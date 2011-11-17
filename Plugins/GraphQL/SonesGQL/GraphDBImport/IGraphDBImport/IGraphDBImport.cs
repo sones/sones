@@ -56,7 +56,7 @@ namespace sones.Plugins.SonesGQL.DBImport
     /// </summary>
     public interface IGraphDBImport : IPluginable
     {
-        QueryResult Import(String myLocation, 
+        IEnumerable<IVertexView> Import(String myLocation, 
 			IGraphDB myGraphDB, 
 			IGraphQL myGraphQL, 
 			SecurityToken mySecurityToken, 

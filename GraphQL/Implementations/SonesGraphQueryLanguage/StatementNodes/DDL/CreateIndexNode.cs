@@ -120,7 +120,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, 
+        public override IQueryResult Execute(IGraphDB myGraphDB, 
                                             IGraphQL myGraphQL, 
                                             GQLPluginManager myPluginManager, 
                                             String myQuery, 
@@ -148,22 +148,21 @@ namespace sones.GraphQL.StatementNodes.DDL
                 }
             }
 
-            return myGraphDB.CreateIndex<QueryResult>(mySecurityToken, myTransactionToken, new RequestCreateIndex(indexDef), GenerateResult);
+            return myGraphDB.CreateIndex<IQueryResult>(mySecurityToken, myTransactionToken, new RequestCreateIndex(indexDef), GenerateResult);
         }
 
         #endregion
 
-        private QueryResult GenerateResult(IRequestStatistics myStats, IIndexDefinition myIndexDefinition)
+        private IQueryResult GenerateResult(IRequestStatistics myStats, IIndexDefinition myIndexDefinition)
         {
-            return new QueryResult(Query, 
-                                    "sones.gql", 
-                                    Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds), 
-                                    ResultType.Successful, 
+            return QueryResult.Success(Query, 
+                                    SonesGQLConstants.GQL, 
                                     new List<IVertexView> { new VertexView(new Dictionary<String, object> { 
                                         {"CreatedIndex", myIndexDefinition}, 
                                         {"CreatedIndexTypeName", myIndexDefinition.IndexTypeName } 
                                     }, 
-                                    new Dictionary<String, IEdgeView>()) });
+                                    new Dictionary<String, IEdgeView>()) },
+                                    Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds));
         }
 
     }

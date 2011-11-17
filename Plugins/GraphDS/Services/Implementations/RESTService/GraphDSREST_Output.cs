@@ -81,7 +81,7 @@ namespace sones.GraphDS.Services.RESTService
 
 		#region GenerateResultOutput(myResult, myQuery)
 
-        public void GenerateResultOutput(QueryResult myResult, Dictionary<String, String> myParams)
+        public void GenerateResultOutput(IQueryResult myResult, Dictionary<String, String> myParams)
 		{
             List<ContentType> Types = new List<ContentType>();
 
@@ -156,7 +156,7 @@ namespace sones.GraphDS.Services.RESTService
 
         public void ExecuteGQL(String myQuery, Dictionary<String,String> myParams)
         {
-            QueryResult _QueryResult = null;
+            IQueryResult _QueryResult = null;
             try
             {
                 var transactionID = _GraphDS.BeginTransaction(null);

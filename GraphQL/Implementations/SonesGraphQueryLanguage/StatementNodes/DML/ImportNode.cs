@@ -33,6 +33,8 @@ using sones.Library.Commons.Transaction;
 using sones.Library.DataStructures;
 using sones.Plugins.SonesGQL.DBImport;
 using sones.GraphQL.Structure.Nodes.Misc;
+using sones.Library.ErrorHandling;
+using sones.GraphQL.GQL.ErrorHandling;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -83,7 +85,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, 
+        public override IQueryResult Execute(IGraphDB myGraphDB, 
 			IGraphQL myGraphQL,
 			GQLPluginManager myPluginManager,
 			String myQuery,
@@ -92,38 +94,39 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             var sw = Stopwatch.StartNew();
 
-            QueryResult result = null;
+            IEnumerable<IVertexView> result = null;
 
             var plugin = myPluginManager.GetAndInitializePlugin<IGraphDBImport>(ImportFormat.ToUpper());
 
             if (plugin != null)
             {
-                result = plugin.Import(SourceLocation, 
-					myGraphDB,
-					myGraphQL,
-					mySecurityToken,
-					myTransactionToken,
-					ParallelTasks,
-					Comments,
-					Offset,
-					Limit,
-					VerbosityType,
-					Options);
-            }
+                try
+                {
+                    result = plugin.Import(SourceLocation,
+                        myGraphDB,
+                        myGraphQL,
+                        mySecurityToken,
+                        myTransactionToken,
+                        ParallelTasks,
+                        Comments,
+                        Offset,
+                        Limit,
+                        VerbosityType,
+                        Options);
 
-            sw.Stop();
-
-            if(result != null)
-            {
-                return new QueryResult(myQuery,
-					ImportFormat,
-					(ulong)sw.ElapsedMilliseconds,
-					result.TypeOfResult,
-					result.Vertices,
-					result.Error);
+                    return QueryResult.Success(myQuery, SonesGQLConstants.GQL, result, (ulong)sw.ElapsedMilliseconds);
+                }
+                catch (ASonesException ex)
+                {
+                    return QueryResult.Failure(myQuery, SonesGQLConstants.GQL, ex, result, (ulong)sw.ElapsedMilliseconds);
+                }
+                catch (Exception ex)
+                {
+                    return QueryResult.Failure(myQuery, SonesGQLConstants.GQL, new UnknownException(ex), result, (ulong)sw.ElapsedMilliseconds);
+                }
             }
-            else
-                return null;
+            return QueryResult.Failure(myQuery, ImportFormat, new ImportFormatDoesNotExistsException(ImportFormat));
+
         }
 
         #endregion

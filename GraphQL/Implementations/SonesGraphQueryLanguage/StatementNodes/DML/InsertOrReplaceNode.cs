@@ -105,12 +105,12 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override IQueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             Stopwatch sw = Stopwatch.StartNew();
 
             _query = myQuery;
-            QueryResult result = null;
+            IQueryResult result = null;
             String myAction = "";
             List<IVertex> myToBeUpdatedVertices = new List<IVertex>();
             
@@ -167,7 +167,7 @@ namespace sones.GraphQL.StatementNodes.DML
             return GenerateResult(sw.ElapsedMilliseconds, result, myAction);
         }
 
-        private QueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        private IQueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             InsertNode insert = new InsertNode();
 
@@ -185,7 +185,7 @@ namespace sones.GraphQL.StatementNodes.DML
                                          (stats, attributes, vertices) => stats);
         }
 
-        private QueryResult GenerateResult(double myElapsedTotalMilliseconds, QueryResult myResult, String myAction)
+        private IQueryResult GenerateResult(double myElapsedTotalMilliseconds, IQueryResult myResult, String myAction)
         {
             List<IVertexView> view = new List<IVertexView>();
 
@@ -207,8 +207,7 @@ namespace sones.GraphQL.StatementNodes.DML
                 }
             }
 
-            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myElapsedTotalMilliseconds),
-                                   ResultType.Successful, view);
+            return QueryResult.Success(_query, SonesGQLConstants.GQL, view, Convert.ToUInt64(myElapsedTotalMilliseconds));
         }
 
         #endregion

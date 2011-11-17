@@ -50,7 +50,7 @@ namespace sones.Plugins.SonesGQL
 
         #region IGraphDBImport Members
 
-        public QueryResult Import(String myLocation,
+        public IEnumerable<IVertexView> Import(String myLocation,
             IGraphDB myGraphDB,
             IGraphQL myGraphQL,
             SecurityToken mySecurityToken,
@@ -62,9 +62,7 @@ namespace sones.Plugins.SonesGQL
             VerbosityTypes myVerbosityType = VerbosityTypes.Silent,
             Dictionary<string, string> myOptions = null)
         {
-            ASonesException error;
             Stream stream = null;
-            QueryResult result;
 
             #region Read querie lines from location
 
@@ -85,25 +83,15 @@ namespace sones.Plugins.SonesGQL
                 #endregion
                 else
                 {
-                    error = new InvalidImportLocationException(myLocation, @"file:\\", "http://");
-                    result = new QueryResult("", PluginShortName, 0L, ResultType.Failed, null, error);
-                    return result;
+                    throw new InvalidImportLocationException(myLocation, @"file:\\", "http://");
                 }
 
                 #region Start import using the AGraphDBImport implementation and return the result
 
-                result = Import(stream, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, myParallelTasks, myComments, myOffset, myLimit, myVerbosityType);
+                var result = Import(stream, myGraphDB, myGraphQL, mySecurityToken, myTransactionToken, myParallelTasks, myComments, myOffset, myLimit, myVerbosityType);
 
-                return new QueryResult(result.Query, result.NameOfQuerylanguage, result.Duration, result.TypeOfResult, null, result.Error);
+                return AggregateListOfListOfVertices(result);
 
-                #endregion
-            }
-            catch (Exception ex)
-            {
-                #region throw new exception
-                error = new ImportFailedException(ex);
-                result = new QueryResult("", PluginShortName, 0L, ResultType.Failed, null, error);
-                return result;
                 #endregion
             }
             finally
@@ -117,7 +105,7 @@ namespace sones.Plugins.SonesGQL
             #endregion
         }
 
-        private QueryResult Import(Stream myInputStream, IGraphDB myIGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, ulong? myOffset = null, ulong? myLimit = null, VerbosityTypes myVerbosityType = VerbosityTypes.Silent)
+        private IEnumerable<IEnumerable<IVertexView>> Import(Stream myInputStream, IGraphDB myIGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken, UInt32 myParallelTasks = 1U, IEnumerable<string> myComments = null, ulong? myOffset = null, ulong? myLimit = null, VerbosityTypes myVerbosityType = VerbosityTypes.Silent)
         {
             var lines = ReadLinesFromStream(myInputStream);
 
@@ -138,24 +126,22 @@ namespace sones.Plugins.SonesGQL
 
             #region Import queries
 
-            QueryResult queryResult;
+            IQueryResult queryResult;
             if (myParallelTasks > 1)
             {
-                queryResult = ExecuteAsParallel(lines, myGraphQL, mySecurityToken, myTransactionToken, myVerbosityType, myParallelTasks, myComments);
+                return ExecuteAsParallel(lines, myGraphQL, mySecurityToken, myTransactionToken, myVerbosityType, myParallelTasks, myComments);
             }
             else
             {
-                queryResult = ExecuteAsSingleThread(lines, myGraphQL, mySecurityToken, myTransactionToken, myVerbosityType, myComments);
+                return ExecuteAsSingleThread(lines, myGraphQL, mySecurityToken, myTransactionToken, myVerbosityType, myComments);
             }
 
             #endregion
-
-            return queryResult;
         }
 
 
 
-        private QueryResult ExecuteAsParallel(IEnumerable<String> myLines,
+        private IEnumerable<IEnumerable<IVertexView>> ExecuteAsParallel(IEnumerable<String> myLines,
                                                 IGraphQL myIGraphQL,
                                                 SecurityToken mySecurityToken,
                                                 Int64 myTransactionToken,
@@ -164,12 +150,9 @@ namespace sones.Plugins.SonesGQL
                                                 IEnumerable<String> comments = null)
         {
             #region data
-            QueryResult queryResult = new QueryResult(myLines.ToString(), PluginShortName, 0L, ResultType.Successful);
             Int64 numberOfLine = 0;
             var query = String.Empty;
             var aggregatedResults = new List<IEnumerable<IVertexView>>();
-            Stopwatch StopWatchLine = new Stopwatch();
-            Stopwatch StopWatchLines = new Stopwatch();
             #endregion
 
             #region Create parallel options
@@ -182,8 +165,6 @@ namespace sones.Plugins.SonesGQL
             #endregion
 
             #region check lines and execute query
-
-            StopWatchLines.Start();
 
             Parallel.ForEach(myLines, parallelOptions, (line, state) =>
             {
@@ -209,39 +190,21 @@ namespace sones.Plugins.SonesGQL
 
                     if (qresult.TypeOfResult != ResultType.Successful && myVerbosityType != VerbosityTypes.Silent)
                     {
-                        queryResult = new QueryResult(line, PluginShortName, Convert.ToUInt64(StopWatchLine.ElapsedMilliseconds), ResultType.Failed, qresult.Vertices, qresult.Error);
-
-                        state.Break();
+                        if (qresult.Error != null)
+                            throw qresult.Error;
+                        else
+                            throw new ImportFailedException(new UnknownException());
                     }
 
                     #endregion
                 }
             });
 
-            StopWatchLines.Stop();
-
+            return aggregatedResults;
             #endregion
-
-            //add the results of each query into the queryResult
-            if (queryResult != null)
-                queryResult = new QueryResult(myLines.ToString(),
-                                                PluginShortName,
-                                                Convert.ToUInt64(StopWatchLines.ElapsedMilliseconds),
-                                                queryResult.TypeOfResult,
-                                                AggregateListOfListOfVertices(aggregatedResults),
-                                                queryResult.Error);
-            else
-                queryResult = new QueryResult(myLines.ToString(),
-                                                PluginShortName,
-                                                Convert.ToUInt64(StopWatchLines.ElapsedMilliseconds),
-                                                ResultType.Successful,
-                                                AggregateListOfListOfVertices(aggregatedResults));
-
-            return queryResult;
-
         }
 
-        private QueryResult ExecuteAsSingleThread(IEnumerable<String> myLines,
+        private IEnumerable<IEnumerable<IVertexView>> ExecuteAsSingleThread(IEnumerable<String> myLines,
                                                     IGraphQL myIGraphQL,
                                                     SecurityToken mySecurityToken,
                                                     Int64 myTransactionToken,
@@ -251,17 +214,12 @@ namespace sones.Plugins.SonesGQL
 
             #region data
 
-            QueryResult queryResult = null;
             Int64 numberOfLine = 0;
             var aggregatedResults = new List<IEnumerable<IVertexView>>();
-            Stopwatch StopWatchLines = new Stopwatch();
 
             #endregion
 
             #region check lines and execute query
-
-            StopWatchLines.Reset();
-            StopWatchLines.Start();
 
             foreach (var _Line in myLines)
             {
@@ -294,9 +252,10 @@ namespace sones.Plugins.SonesGQL
 
                     if (myVerbosityType == VerbosityTypes.Errors)
                     {
-                        queryResult = new QueryResult(_Line, PluginShortName, 0L, ResultType.Failed, tempResult.Vertices, tempResult.Error);
-
-                        break;
+                        if (tempResult.Error != null)
+                            throw tempResult.Error;
+                        else
+                            throw new ImportFailedException(new UnknownException());
                     }
                 }
 
@@ -305,26 +264,10 @@ namespace sones.Plugins.SonesGQL
                 #endregion
             }
 
-            StopWatchLines.Stop();
+
+            return aggregatedResults;
 
             #endregion
-
-            //add the results of each query into the queryResult
-            if (queryResult != null)
-                queryResult = new QueryResult(myLines.ToString(),
-                                                PluginShortName,
-                                                Convert.ToUInt64(StopWatchLines.ElapsedMilliseconds),
-                                                queryResult.TypeOfResult,
-                                                AggregateListOfListOfVertices(aggregatedResults),
-                                                queryResult.Error);
-            else
-                queryResult = new QueryResult(myLines.ToString(),
-                                                PluginShortName,
-                                                Convert.ToUInt64(StopWatchLines.ElapsedMilliseconds),
-                                                ResultType.Successful,
-                                                AggregateListOfListOfVertices(aggregatedResults));
-
-            return queryResult;
 
         }
 
@@ -333,7 +276,7 @@ namespace sones.Plugins.SonesGQL
         /// </summary>
         /// <param name="myListOfListOfVertices"></param>
         /// <returns></returns>
-        private IEnumerable<IVertexView> AggregateListOfListOfVertices(List<IEnumerable<IVertexView>> myListOfListOfVertices)
+        private IEnumerable<IVertexView> AggregateListOfListOfVertices(IEnumerable<IEnumerable<IVertexView>> myListOfListOfVertices)
         {
             foreach (var _ListOfVertices in myListOfListOfVertices)
             {
@@ -354,7 +297,7 @@ namespace sones.Plugins.SonesGQL
             return comments.Any(c => myQuery.StartsWith(c));
         }
 
-        private QueryResult ExecuteQuery(String myQuery, IGraphQL myGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        private IQueryResult ExecuteQuery(String myQuery, IGraphQL myGraphQL, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             return myGraphQL.Query(mySecurityToken, myTransactionToken, myQuery);
         }
