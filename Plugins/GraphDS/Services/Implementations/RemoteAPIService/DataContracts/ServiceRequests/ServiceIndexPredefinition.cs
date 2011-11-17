@@ -80,7 +80,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 
         public IndexPredefinition ToIndexPredefinition()
         {
-            IndexPredefinition IndexPreDef = new IndexPredefinition(this.Name);
+            IndexPredefinition IndexPreDef = new IndexPredefinition(this.Name, this.VertexTypeName);
 
             IndexPreDef.SetComment(this.Comment);
             IndexPreDef.SetEdition(this.Edition);

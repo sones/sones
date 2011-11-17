@@ -2607,7 +2607,10 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         
         [System.NonSerializedAttribute()]
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
+
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string VertexTypeNameField;
+
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string CommentField;
         
@@ -2635,7 +2638,24 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
                 this.extensionDataField = value;
             }
         }
-        
+
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string VertexTypeName
+        {
+            get
+            {
+                return this.VertexTypeNameField;
+            }
+            set
+            {
+                if ((object.ReferenceEquals(this.VertexTypeName, value) != true))
+                {
+                    this.VertexTypeNameField = value;
+                    this.RaisePropertyChanged("VertexTypeName");
+                }
+            }
+        }
+
         [System.Runtime.Serialization.DataMemberAttribute()]
         public string Comment {
             get {

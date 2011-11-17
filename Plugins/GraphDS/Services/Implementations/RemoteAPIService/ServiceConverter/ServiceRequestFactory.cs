@@ -44,35 +44,53 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             var Request = new RequestAlterVertexType(myVertexType.Name);
 
             #region Add Attributes
-            
-            foreach (var toAdd in myChangeset.ToBeAddedProperties)
+
+            if (myChangeset.ToBeAddedProperties != null)
             {
-                Request.AddProperty(toAdd.ToPropertyPredefinition());
+                foreach (var toAdd in myChangeset.ToBeAddedProperties)
+                {
+                    Request.AddProperty(toAdd.ToPropertyPredefinition());
+                }
             }
 
-            foreach (var toAdd in myChangeset.ToBeAddedIncomingEdges)
+            if (myChangeset.ToBeAddedIncomingEdges != null)
             {
-                Request.AddIncomingEdge(toAdd.ToIncomingEdgePredefinition());
+                foreach (var toAdd in myChangeset.ToBeAddedIncomingEdges)
+                {
+                    Request.AddIncomingEdge(toAdd.ToIncomingEdgePredefinition());
+                }
             }
 
-            foreach (var toAdd in myChangeset.ToBeAddedOutgoingEdges)
+            if (myChangeset.ToBeAddedOutgoingEdges != null)
             {
-                Request.AddOutgoingEdge(toAdd.ToOutgoingEdgePredefinition());
+                foreach (var toAdd in myChangeset.ToBeAddedOutgoingEdges)
+                {
+                    Request.AddOutgoingEdge(toAdd.ToOutgoingEdgePredefinition());
+                }
             }
 
-            foreach (var toAdd in myChangeset.ToBeAddedUniques)
+            if (myChangeset.ToBeAddedUniques != null)
             {
-                Request.AddUnique(toAdd.ToUniquePredefinition());
+                foreach (var toAdd in myChangeset.ToBeAddedUniques)
+                {
+                    Request.AddUnique(toAdd.ToUniquePredefinition());
+                }
             }
 
-            foreach (var toAdd in myChangeset.ToBeAddedMandatories)
+            if (myChangeset.ToBeAddedMandatories != null)
             {
-                Request.AddMandatory(toAdd.ToMandatoryPredefinition());
+                foreach (var toAdd in myChangeset.ToBeAddedMandatories)
+                {
+                    Request.AddMandatory(toAdd.ToMandatoryPredefinition());
+                }
             }
 
-            foreach (var toAdd in myChangeset.ToBeAddedIndices)
+            if (myChangeset.ToBeAddedIndices != null)
             {
-                Request.AddIndex(toAdd.ToIndexPredefinition());
+                foreach (var toAdd in myChangeset.ToBeAddedIndices)
+                {
+                    Request.AddIndex(toAdd.ToIndexPredefinition());
+                }
             }
 
 
@@ -80,41 +98,62 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 
             #region Remove Attributes
 
-            foreach (var toDel in myChangeset.ToBeRemovedProperties)
+            if (myChangeset.ToBeRemovedProperties != null)
             {
-                Request.RemoveProperty(toDel);
+                foreach (var toDel in myChangeset.ToBeRemovedProperties)
+                {
+                    Request.RemoveProperty(toDel);
+                }
             }
 
-            foreach (var toDel in myChangeset.ToBeRemovedIncomingEdges)
+            if (myChangeset.ToBeRemovedIncomingEdges != null)
             {
-                Request.RemoveIncomingEdge(toDel);
+                foreach (var toDel in myChangeset.ToBeRemovedIncomingEdges)
+                {
+                    Request.RemoveIncomingEdge(toDel);
+                }
             }
 
-            foreach (var toDel in myChangeset.ToBeRemovedOutgoingEdges)
+            if (myChangeset.ToBeRemovedOutgoingEdges != null)
             {
-                Request.RemoveOutgoingEdge(toDel);
+                foreach (var toDel in myChangeset.ToBeRemovedOutgoingEdges)
+                {
+                    Request.RemoveOutgoingEdge(toDel);
+                }
             }
 
-            foreach (var toDel in myChangeset.ToBeRemovedUniques)
+            if (myChangeset.ToBeRemovedUniques != null)
             {
-                Request.RemoveUnique(toDel);
+                foreach (var toDel in myChangeset.ToBeRemovedUniques)
+                {
+                    Request.RemoveUnique(toDel);
+                }
             }
 
-            foreach (var toDel in myChangeset.ToBeRemovedMandatories)
+            if (myChangeset.ToBeRemovedMandatories != null)
             {
-                Request.RemoveMandatory(toDel);
+                foreach (var toDel in myChangeset.ToBeRemovedMandatories)
+                {
+                    Request.RemoveMandatory(toDel);
+                }
             }
 
-            foreach (var toDel in myChangeset.ToBeRemovedIndices)
+            if (myChangeset.ToBeRemovedIndices != null)
             {
-                Request.RemoveIndex(toDel.Key, toDel.Value);
+                foreach (var toDel in myChangeset.ToBeRemovedIndices)
+                {
+                    Request.RemoveIndex(toDel.Key, toDel.Value);
+                }
             }
 
             #endregion
 
             #region Rename Task
 
-            myChangeset.ToBeRenamedProperties.Select((tuple, key) => Request.RenameAttribute(tuple.Key, tuple.Value));
+            if (myChangeset.ToBeRenamedProperties != null)
+            {
+                myChangeset.ToBeRenamedProperties.Select((tuple, key) => Request.RenameAttribute(tuple.Key, tuple.Value));
+            }
             
             #endregion
 
@@ -136,26 +175,34 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 
             #region Add Attributes
 
-            foreach (var toAdd in myChangeset.ToBeAddedProperties)
+            if (myChangeset.ToBeAddedProperties != null)
             {
-                Request.AddProperty(toAdd.ToPropertyPredefinition());
+                foreach (var toAdd in myChangeset.ToBeAddedProperties)
+                {
+                    Request.AddProperty(toAdd.ToPropertyPredefinition());
+                }
             }
-            
             
             #endregion
 
             #region Remove Attributes
 
-            foreach (var toDel in myChangeset.ToBeRemovedProperties)
+            if (myChangeset.ToBeRemovedProperties != null)
             {
-                Request.RemoveProperty(toDel);
+                foreach (var toDel in myChangeset.ToBeRemovedProperties)
+                {
+                    Request.RemoveProperty(toDel);
+                }
             }
 
             #endregion
 
             #region Rename Task
 
-            myChangeset.ToBeRenamedProperties.Select((tuple, key) => Request.RenameAttribute(tuple.Key, tuple.Value));
+            if (myChangeset.ToBeRenamedProperties != null)
+            {
+                myChangeset.ToBeRenamedProperties.Select((tuple, key) => Request.RenameAttribute(tuple.Key, tuple.Value));
+            }
 
             #endregion
 
@@ -424,13 +471,17 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             if (myPayload.StructuredProperties != null)
             {
                 foreach (var toInsert in myPayload.StructuredProperties)
+                {
                     Request.AddStructuredProperty(toInsert.PropertyName, toInsert.PropertyValue as IComparable);
+                }
             }
 
             if (myPayload.UnstructuredProperties != null)
             {
                 foreach (var toInsert in myPayload.UnstructuredProperties)
+                {
                     Request.AddUnstructuredProperty(toInsert.PropertyName, toInsert.PropertyValue);
+                }
             }
 
             if (myPayload.Edges != null)
