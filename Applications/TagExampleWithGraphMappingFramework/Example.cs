@@ -575,7 +575,7 @@ namespace TagExampleWithGraphMappingFramework
         /// This private method analyses the QueryResult, shows the ResultType and Errors if existing.
         /// </summary>
         /// <param name="myQueryResult">The result of a query.</param>
-        private bool CheckResult(QueryResult myQueryResult)
+        private bool CheckResult(IQueryResult myQueryResult)
         {
             if (myQueryResult.Error != null)
             {
