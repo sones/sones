@@ -72,23 +72,19 @@ namespace sones.GraphQL.StatementNodes.DDL
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override IQueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
-            QueryResult qresult = null;
-            ASonesException error = null;
 
             try
             {
                 var stat = myGraphDB.DropIndex(mySecurityToken, myTransactionToken, new RequestDropIndex(_TypeName, _IndexName, _IndexEdition), (stats) => stats);
 
-                qresult = new QueryResult(myQuery, "sones.gql", Convert.ToUInt64(stat.ExecutionTime.Milliseconds), ResultType.Successful);
+                return QueryResult.Success(myQuery, SonesGQLConstants.GQL, null, Convert.ToUInt64(stat.ExecutionTime.Milliseconds));
             }
-            catch (ASonesException e)
+            catch (ASonesException ex)
             {
-                error = e;
+                return QueryResult.Failure(myQuery, SonesGQLConstants.GQL, ex);
             }
-
-            return new QueryResult(myQuery, "sones.gql", qresult.Duration, qresult.TypeOfResult, qresult.Vertices, error);
         }
 
         #endregion

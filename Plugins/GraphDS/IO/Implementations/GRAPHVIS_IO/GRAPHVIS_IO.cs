@@ -129,7 +129,7 @@ namespace sones.Plugins.GraphDS.IO
 
         #region IOInterface
 
-        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
+        public string GenerateOutputResult( IQueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             StringBuilder Output = new StringBuilder();
             bool bShowEdgeNames = false;
@@ -259,7 +259,7 @@ namespace sones.Plugins.GraphDS.IO
         /// <param name="Nodes">out parameter returning list of nodes</param>
         /// <param name="Links">out parameter returning list of NodeLink classes</param>
         /// </summary>
-        private void GenerateVisGraph(QueryResult myQueryResult, out List<string> Nodes, out List<NodeLink> Links)
+        private void GenerateVisGraph(IQueryResult myQueryResult, out List<string> Nodes, out List<NodeLink> Links)
         {
             GenerateNodeList(myQueryResult, out Nodes);
             GenerateLinkList(myQueryResult, Nodes, out Links);
@@ -270,11 +270,11 @@ namespace sones.Plugins.GraphDS.IO
         /// <param name="myQueryResult">The query result.</param>
         /// <param name="Nodes">out parameter returning list of nodes</param>
         /// </summary>
-        private void GenerateNodeList(QueryResult myQueryResult, out List<string> Nodes)
+        private void GenerateNodeList(IQueryResult myQueryResult, out List<string> Nodes)
         {
             Nodes = new List<string>();
 
-            GenerateNodeList_AnalyzeVertices(myQueryResult, ref Nodes);
+            GenerateNodeList_AnalyzeVertices(myQueryResult.Vertices, ref Nodes);
         }
 
         /// <summary>
@@ -312,13 +312,13 @@ namespace sones.Plugins.GraphDS.IO
         /// <param name="myQueryResult">The query result.</param>
         /// <param name="Links">out parameter returning list of NodeLink classes</param>
         /// </summary>
-        private void GenerateLinkList(QueryResult myQueryResult, List<string> Nodes, out List<NodeLink> Links)
+        private void GenerateLinkList( IQueryResult myQueryResult, List<string> Nodes, out List<NodeLink> Links)
         {
             Links = new List<NodeLink>();
 
             if (Nodes.Count() <= 0) return;
 
-            GenerateLinkList_AnalyzeVertices(myQueryResult, Nodes, ref Links);
+            GenerateLinkList_AnalyzeVertices(myQueryResult.Vertices, Nodes, ref Links);
         }
 
         /// <summary>
@@ -382,7 +382,7 @@ namespace sones.Plugins.GraphDS.IO
         /// </summary>
         /// <param name="queryresult">The query result.</param>
         /// <returns>The exception string.</returns>
-        private String HandleQueryExceptions(QueryResult queryresult)
+        private String HandleQueryExceptions( IQueryResult queryresult)
         {
             StringBuilder SB = new StringBuilder();
 
@@ -419,7 +419,7 @@ namespace sones.Plugins.GraphDS.IO
             return list.ToString();
         }
 
-        public QueryResult GenerateQueryResult(string myResult)
+        public IQueryResult GenerateQueryResult(string myResult)
         {
             throw new NotImplementedException();
         }

@@ -54,6 +54,6 @@ namespace sones.Plugins.GraphDS
         /// this method is called AFTER the query was completed.
         /// </summary>
         /// <param name="result">the result of the query</param>
-        void DrainQueryResult(QueryResult result);
+        void DrainQueryResult(IQueryResult result);
     }
 }

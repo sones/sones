@@ -58,7 +58,7 @@ namespace sones.Plugins.SonesGQL.DBExport
     {
         string ExporterName { get; }
 
-        QueryResult Export(String destination, 
+        IEnumerable<IVertexView> Export(String destination, 
                             IDumpable myGrammar, 
                             IGraphDB myGraphDB, 
                             IGraphQL myGraphQL, 

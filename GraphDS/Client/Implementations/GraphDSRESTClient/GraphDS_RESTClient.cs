@@ -127,9 +127,9 @@ namespace sones.GraphDS.GraphDSRESTClient
             //throw new NotImplementedException();
         }
 
-        public QueryResult Query(SecurityToken mySecurityToken, Int64 myTransactionToken, string myQueryString, string myQueryLanguageName)
+        public IQueryResult Query(SecurityToken mySecurityToken, Int64 myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
-            QueryResult result = null;
+            IQueryResult result = null;
             String resonseXML = FetchGraphDBOutput(myQueryString);
             result = _Parser.GenerateQueryResult(resonseXML);
             return result;

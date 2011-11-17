@@ -26,19 +26,19 @@ using System.Collections;
 
 namespace sones.GraphQL.Result
 {
-    public class QueryResultComparer : IEqualityComparer<QueryResult>, IEqualityComparer<IVertexView>, IEqualityComparer<IEdgeView>
+    public class QueryResultComparer : IEqualityComparer<IQueryResult>, IEqualityComparer<IVertexView>, IEqualityComparer<IEdgeView>
     {   
 
         #region IEqualityComparer<QueryResult> Members
 
-        public bool Equals(QueryResult x, QueryResult y)
+        public bool Equals(IQueryResult x, IQueryResult y)
         {
             if (x == null || y == null)
             {
                 return false;
             }
 
-            if (x.Count() != y.Count())
+            if (x.Vertices.Count() != y.Vertices.Count())
             {
                 return false;
             }
@@ -78,7 +78,7 @@ namespace sones.GraphQL.Result
 
         
 
-        public int GetHashCode(QueryResult obj)
+        public int GetHashCode(IQueryResult obj)
         {
             throw new NotImplementedException();
         }

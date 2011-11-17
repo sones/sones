@@ -110,11 +110,11 @@ namespace sones.GraphQL.StatementNodes.DDL
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override IQueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             _query = myQuery;
 
-            return myGraphDB.AlterVertexType<QueryResult>(
+            return myGraphDB.AlterVertexType<IQueryResult>(
                 mySecurityToken,
                 myTransactionToken,
                 CreateNewRequest(myGraphDB, myPluginManager, mySecurityToken, myTransactionToken),
@@ -415,9 +415,9 @@ namespace sones.GraphQL.StatementNodes.DDL
             return result;
         }
 
-        private QueryResult CreateOutput(IRequestStatistics myStats, IVertexType myALteredVertexType)
+        private IQueryResult CreateOutput(IRequestStatistics myStats, IVertexType myALteredVertexType)
         {
-            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), ResultType.Successful, CreateVertexViews(myALteredVertexType));
+            return QueryResult.Success(_query, SonesGQLConstants.GQL, CreateVertexViews(myALteredVertexType), Convert.ToUInt64(myStats.ExecutionTime.Milliseconds));
         }
 
         private IEnumerable<IVertexView> CreateVertexViews(IVertexType myALteredVertexType)

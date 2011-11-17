@@ -119,7 +119,7 @@ namespace sones.Plugins.GraphDS.IO
 
         #region Generate Output from Query Result
 
-        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
+        public string GenerateOutputResult( IQueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             StringBuilder Output = new StringBuilder();
             Dictionary<String, object> barchart;
@@ -405,7 +405,7 @@ namespace sones.Plugins.GraphDS.IO
         /// </summary>
         /// <param name="queryresult">The query result.</param>
         /// <returns>The exception string.</returns>
-        private String HandleQueryExceptions(QueryResult queryresult)
+        private String HandleQueryExceptions( IQueryResult queryresult)
         {
             StringBuilder SB = new StringBuilder();
 
@@ -437,11 +437,11 @@ namespace sones.Plugins.GraphDS.IO
         /// </summary>
         /// <param name="myQueryResult">query result</param>
         /// <returns>dictionary containing bar chart data</returns>
-        private Dictionary<String, object> GenerateBarChart(QueryResult myQueryResult)
+        private Dictionary<String, object> GenerateBarChart(IQueryResult myQueryResult)
         {
             Dictionary<String, object> barchart = new Dictionary<string, object>();
 
-            foreach (var aVertex in myQueryResult)
+            foreach (var aVertex in myQueryResult.Vertices)
             {
                 AnalyzeProperties(aVertex.GetAllProperties(), ref barchart);
                 AnalyzeEdges(aVertex.GetAllEdges(), ref barchart);
@@ -513,8 +513,8 @@ namespace sones.Plugins.GraphDS.IO
             }
         }
 
-        #region Generate a QueryResult from HTML - not really needed right now
-        public QueryResult GenerateQueryResult(string myResult)
+        #region Generate a IQueryResult from HTML - not really needed right now
+        public IQueryResult GenerateQueryResult(string myResult)
         {
             throw new NotImplementedException();
         }

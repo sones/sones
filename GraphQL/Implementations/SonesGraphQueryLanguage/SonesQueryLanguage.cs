@@ -124,98 +124,80 @@ namespace sones.GraphQL
 
         #region IGraphQL Members
 
-        public QueryResult Query(SecurityToken mySecurityToken, 
+        public IQueryResult Query(SecurityToken mySecurityToken,
                                     Int64 myTransactionToken,
                                     string myQueryString)
         {
             //tree-like representation of the query-string
             ParseTree aTree;
             //executeable statement
-            AStatement statement;   
-            QueryResult queryResult = new QueryResult(myQueryString, 
-                                                        SonesGQLConstants.GQL, 
-                                                        0L, 
-                                                        ResultType.Failed);
+            AStatement statement;
 
-            #region Input exceptions - null or empty query
-
-            if (myQueryString == null)
-            {
-                #region create error object
-                
-                queryResult.Error = new GqlSyntaxException("Error! Query was null!");
-
-                return queryResult;
-
-                #endregion
-            }
-
-            if (myQueryString.Length.Equals(0))
-            {
-                queryResult.Error = new GqlSyntaxException("Error! Query was empty!");
-
-                return queryResult;
-            }
-
-            #endregion
-
-            #region Parse query
-
-            lock (_parser)
-            {
-                aTree = this._parser.Parse(myQueryString);
-            }
-
-            #endregion
-
-            #region error handling
-
-            if (aTree == null)
-            {
-                queryResult.Error = new GqlSyntaxException("Error! Query could not be parsed!");
-
-                return queryResult;
-            }
-
-            if (aTree.HasErrors())
-            {
-                var error = aTree.ParserMessages.First();
-
-                queryResult.Error = new GQLParsingException(error, myQueryString);
-
-                return queryResult;
-            }
-
-            #endregion
-
-            #region Execution
-
-            //get the statement from the tree
-            statement = (AStatement)aTree.Root.AstNode;
 
             try
             {
-                queryResult = statement.Execute(_IGraphDBInstance, 
-                                                this, 
-                                                _GQLPluginManager,  
-                                                myQueryString, 
-                                                mySecurityToken, 
+
+                #region Input exceptions - null or empty query
+
+                if (myQueryString == null)
+                {
+                    throw new GqlSyntaxException("Error! Query was null!");
+                }
+
+                if (myQueryString.Length.Equals(0))
+                {
+                    throw new GqlSyntaxException("Error! Query was empty!");
+                }
+
+                #endregion
+
+                #region Parse query
+
+                lock (_parser)
+                {
+                    aTree = this._parser.Parse(myQueryString);
+                }
+
+                #endregion
+
+                #region error handling
+
+                if (aTree == null)
+                {
+                    throw new GqlSyntaxException("Error! Query could not be parsed!");
+                }
+
+                if (aTree.HasErrors())
+                {
+                    var error = aTree.ParserMessages.First();
+
+                    throw new GQLParsingException(error, myQueryString);
+                }
+
+                #endregion
+
+                #region Execution
+
+                //get the statement from the tree
+                statement = (AStatement)aTree.Root.AstNode;
+
+                return statement.Execute(_IGraphDBInstance,
+                                                this,
+                                                _GQLPluginManager,
+                                                myQueryString,
+                                                mySecurityToken,
                                                 myTransactionToken);
             }
-            catch (ASonesException ee)
+            catch (ASonesException ex)
             {
-                queryResult.Error = ee;
-                return queryResult;
+                return QueryResult.Failure(myQueryString, SonesGQLConstants.GQL, ex);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                queryResult.Error = new UnknownException(e);
-                return queryResult;
+                return QueryResult.Failure(myQueryString, SonesGQLConstants.GQL, new UnknownException(ex));
             }
 
             #endregion
-
-            return queryResult;
         }
 
         public IEnumerable<string> ExportGraphDDL(DumpFormats myDumpFormat, 
