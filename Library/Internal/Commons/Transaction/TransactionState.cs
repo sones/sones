@@ -25,29 +25,29 @@ namespace sones.Library.Commons.Transaction
     /// </summary>
     public enum TransactionState
     {
-        /// <summary>
-        /// The transaction is running currently
+		/// <summary>
+		/// The transaction is active.
         /// </summary>
-        Running,
+        Active,
 
         /// <summary>
-        /// The transaction commits currently
-        /// </summary>
-        Committing,
-
-        /// <summary>
-        /// The transaction is commited
+		/// The transaction has been comitted.
         /// </summary>
         Committed,
 
-        /// <summary>
-        /// The transaction is rolling back currently
-        /// </summary>
-        RollingBack,
+		/// <summary>
+		/// The transaction is in the process of comitting.
+		/// </summary>
+		Committing,
 
-        /// <summary>
-        /// The transaction has been rolled back
+		/// <summary>
+        /// The transaction has been aborted.
         /// </summary>
-        RolledBack
+        Aborted,
+
+		/// <summary>
+		/// The transaction is in the process of aborting.
+		/// </summary>
+		Aborting,
     }
 }
