@@ -33,6 +33,11 @@ namespace sones.Library.Commons.Transaction
         /// gets the id of the transaction.
         /// </summary>
         Int64 ID { get; }
+		
+		/// <summary>
+        /// gets the count of abort of the transaction
+        /// </summary>
+        UInt64 AbortCount { get; }
 
         /// <summary>
         /// Gets the state of the transaction.
