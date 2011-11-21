@@ -52,8 +52,6 @@ namespace sones.Plugins.SonesGQL.Functions.TypesConnect
 		
 		  var outEdges =  start.GetOutgoingEdgeDefinitions(true);
 		  var incEdges = start.GetIncomingEdgeDefinitions(true);
-
-
 		  
 		  foreach (IOutgoingEdgeDefinition vertexType in outEdges)
 		  {

@@ -44,6 +44,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             _count = 0;
 
         }
+
         public void Add(IVertex current_node, double current_distance, UInt64 current_depth, ISingleEdge current_edge,IOutgoingEdgeDefinition edgeType, IVertex father)
         {
             var id = current_node.VertexID;
