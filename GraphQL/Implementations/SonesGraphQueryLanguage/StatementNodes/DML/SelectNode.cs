@@ -256,7 +256,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.Readonly; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, 
+        public override IQueryResult Execute(IGraphDB myGraphDB, 
                                             IGraphQL myGraphQL, 
                                             GQLPluginManager myPluginManager, 
                                             String myQuery, 

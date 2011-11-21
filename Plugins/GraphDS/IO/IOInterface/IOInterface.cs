@@ -70,7 +70,7 @@ namespace sones.Plugins.GraphDS.IO
         /// <param name="myQueryResult">The result of an query.</param>
         /// <param name="myParams">Optional parameters to configure output.</param>
         /// <returns>The representation of the result as string.</returns>
-        String GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams);
+        String GenerateOutputResult(IQueryResult myQueryResult, Dictionary<String, String> myParams);
 
         #endregion
 
@@ -91,7 +91,7 @@ namespace sones.Plugins.GraphDS.IO
         /// </summary>
         /// <param name="myResult">The query result as string in a special format.</param>
         /// <returns>An query result.</returns>
-        QueryResult GenerateQueryResult(String myResult);
+        IQueryResult GenerateQueryResult(String myResult);
 
         #endregion
 

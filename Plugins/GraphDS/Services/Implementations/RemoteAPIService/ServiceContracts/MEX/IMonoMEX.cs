@@ -6,7 +6,7 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.IO;
 
-namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MonoMEX
+namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MEX
 {
     [ServiceContract(Namespace = sonesRPCServer.Namespace)]
     public interface IMonoMEX

@@ -39,7 +39,7 @@ namespace sones.GraphDS.GraphDSRemoteClient
         
         #region Constructor
 
-        public GraphDS_RemoteClient(Uri myServiceAddress)
+        public GraphDS_RemoteClient(Uri myServiceAddress, bool myIsSecure = false)
         {
             BasicHttpBinding BasicBinding = new BasicHttpBinding();
             BasicBinding.Name = "sonesBasic";
@@ -67,8 +67,15 @@ namespace sones.GraphDS.GraphDSRemoteClient
             StreamedBinding.MaxBufferSize = 4096;
             StreamedBinding.SendTimeout = new TimeSpan(1, 0, 0, 0);
 
+            if (myIsSecure == true)
+            {
+                BasicBinding.Security.Mode = BasicHttpSecurityMode.Transport;
+                StreamedBinding.Security.Mode = BasicHttpSecurityMode.Transport;
+            }
+
             try
             {
+                //request to test connection
                 var Request = HttpWebRequest.Create(myServiceAddress.ToString());
                 var Response = Request.GetResponse();
             }
@@ -192,7 +199,7 @@ namespace sones.GraphDS.GraphDSRemoteClient
 
         #region IGraphDSClient
 
-        public sones.GraphQL.Result.QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myQueryString, string myQueryLanguageName)
+        public IQueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
             return _GraphDSService.Query(mySecurityToken, myTransactionToken, myQueryString, myQueryLanguageName).ToQueryResult(this);
         }

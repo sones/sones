@@ -39,8 +39,6 @@ namespace sones.GraphQL.StatementNodes.DML
         #region Data
 
         private HashSet<String> _Types;
-        private String Query;
-        //private IEnumerable<IIndexDefinition> IndexDefinitions;
 
         #endregion
 
@@ -77,34 +75,28 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override IQueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
-            QueryResult qresult = null;
-            Query = myQuery;
-
             try
             {
                 var request = new RequestRebuildIndices(_Types);
 
-                qresult = myGraphDB.RebuildIndices<QueryResult>(mySecurityToken, myTransactionToken, request, GenerateOutput);
+                return myGraphDB.RebuildIndices<IQueryResult>(mySecurityToken, myTransactionToken, request, _=> GenerateOutput(myQuery, _));
             }
-            catch (ASonesException e)
+            catch (ASonesException ex)
             {
-                qresult.Error = e;
+                return QueryResult.Failure(myQuery, SonesGQLConstants.GQL, ex);
             }
-
-            return qresult;
         }
 
         #endregion
 
-        private QueryResult GenerateOutput(IRequestStatistics myStats)
+        private IQueryResult GenerateOutput(String myQuery, IRequestStatistics myStats)
         {
-            return new QueryResult(Query,
-                                    "sones.gql",
-                                    Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds),
-                                    ResultType.Successful,
-                                    new List<IVertexView>());
+            return QueryResult.Success(myQuery,
+                                    SonesGQLConstants.GQL,
+                                    new IVertexView[0],
+                                    Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds));
         }
     }
 }

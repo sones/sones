@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+* sones GraphDB - Community Edition - http://www.sones.com
+* Copyright (C) 2007-2011 sones GmbH
+*
+* This file is part of sones GraphDB Community Edition.
+*
+* sones GraphDB is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,90 +27,90 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 {
-    #region dataDijkstra
-    public class dataDijkstra
+    #region DataDijkstra
+
+    public class DataDijkstra
     {
 
-        Dictionary<long, Tuple<IVertex, double, ulong, Tuple<ISingleEdge,IOutgoingEdgeDefinition>, IVertex>> list;
+        private Dictionary<long, Tuple<IVertex, double, ulong, Tuple<ISingleEdge,IOutgoingEdgeDefinition>, IVertex>> _list;
+        private int _count;
+
         public int Count { get { return Count; } }
 
-        int count;
 
-        public dataDijkstra()
+        public DataDijkstra()
         {
-            list = new Dictionary<long, Tuple<IVertex, double, ulong, Tuple<ISingleEdge, IOutgoingEdgeDefinition>, IVertex>>();
-            count = 0;
+            _list = new Dictionary<long, Tuple<IVertex, double, ulong, Tuple<ISingleEdge, IOutgoingEdgeDefinition>, IVertex>>();
+            _count = 0;
 
         }
-        public void add(IVertex current_node, double current_distance, UInt64 current_depth, ISingleEdge current_edge,IOutgoingEdgeDefinition edgeType, IVertex father)
+        public void Add(IVertex current_node, double current_distance, UInt64 current_depth, ISingleEdge current_edge,IOutgoingEdgeDefinition edgeType, IVertex father)
         {
             var id = current_node.VertexID;
-            list.Add(id, Tuple.Create(current_node, current_distance, current_depth, Tuple.Create(current_edge,edgeType), father));
-            count++;
+            _list.Add(id, Tuple.Create(current_node, current_distance, current_depth, Tuple.Create(current_edge,edgeType), father));
+            _count++;
         }
 
 
-        public void set(IVertex value, double current_distance, ulong current_depth, ISingleEdge current_edge,IOutgoingEdgeDefinition edgeType, IVertex father)
+        public void Set(IVertex value, double current_distance, ulong current_depth, ISingleEdge current_edge,IOutgoingEdgeDefinition edgeType, IVertex father)
         {
             var key = value.VertexID;
-            list[key] = Tuple.Create(value, current_distance, current_depth, Tuple.Create(current_edge,edgeType), father);
+            _list[key] = Tuple.Create(value, current_distance, current_depth, Tuple.Create(current_edge,edgeType), father);
 
         }
 
-        public ulong getDepth(long current_vertex)
+        public ulong GetDepth(long current_vertex)
         {
 
-            return list[current_vertex].Item3;
+            return _list[current_vertex].Item3;
         }
 
-        public ulong getDepth(int current_vertexID)
+        public ulong GetDepth(int current_vertexID)
         {
 
-            return list.ElementAt(current_vertexID).Value.Item3;
+            return _list.ElementAt(current_vertexID).Value.Item3;
         }
 
-        public double getDistance(long current_vertex)
+        public double GetDistance(long current_vertex)
         {
 
-            return list[current_vertex].Item2;
+            return _list[current_vertex].Item2;
         }
 
-        public double getDistance(int current_vertexID)
+        public double GetDistance(int current_vertexID)
         {
 
-            return list.ElementAt(current_vertexID).Value.Item2;
+            return _list.ElementAt(current_vertexID).Value.Item2;
         }
 
-        public Tuple<IVertex, double, ulong, Tuple<ISingleEdge,IOutgoingEdgeDefinition>, IVertex> getElement(long key)
+        public Tuple<IVertex, double, ulong, Tuple<ISingleEdge,IOutgoingEdgeDefinition>, IVertex> GetElement(long key)
         {
             Tuple<IVertex, double, ulong, Tuple<ISingleEdge,IOutgoingEdgeDefinition>, IVertex> temp;
-            list.TryGetValue(key, out temp);
+            _list.TryGetValue(key, out temp);
             return temp;
         }
 
-        private Tuple<IVertex, double, ulong, Tuple<ISingleEdge, IOutgoingEdgeDefinition>, IVertex> getTuple(int key)
+        private Tuple<IVertex, double, ulong, Tuple<ISingleEdge, IOutgoingEdgeDefinition>, IVertex> GetTuple(int key)
         {
-            return this.list.ElementAt(key).Value;
+            return this._list.ElementAt(key).Value;
         }
 
-        private Tuple<IVertex, double, ulong, Tuple<ISingleEdge, IOutgoingEdgeDefinition>, IVertex> getTuple(long key)
+        private Tuple<IVertex, double, ulong, Tuple<ISingleEdge, IOutgoingEdgeDefinition>, IVertex> GetTuple(long key)
         {
-            return this.list[key];
+            return this._list[key];
         }
 
         public void Clear()
         {
-            list.Clear();
-            count = 0;
+            _list.Clear();
+            _count = 0;
         }
 
         private bool ConstainsKey(long key)
         {
-
-            return this.list.ContainsKey(key);
+            return this._list.ContainsKey(key);
         }
-
-
     }
+
     #endregion
 }

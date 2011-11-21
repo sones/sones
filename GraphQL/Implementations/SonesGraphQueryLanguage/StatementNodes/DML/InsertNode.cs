@@ -98,7 +98,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, 
+        public override IQueryResult Execute(IGraphDB myGraphDB, 
                                             IGraphQL myGraphQL, 
                                             GQLPluginManager myPluginManager, 
                                             String myQuery, 
@@ -107,22 +107,27 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             _queryString = myQuery;
 
-            QueryResult result;
+            IQueryResult result;
 
             try
             {
-                result = myGraphDB.Insert<QueryResult>(
-                        mySecurityToken,
-                        myTransactionToken,
-                        CreateRequest(myPluginManager, 
-                                        myGraphDB, 
-                                        mySecurityToken, 
-                                        myTransactionToken),
-                        CreateQueryResult);
+                result = myGraphDB.Insert<IQueryResult>(
+                                        mySecurityToken,
+                                        myTransactionToken,
+                                        CreateRequest(myPluginManager, 
+                                                        myGraphDB, 
+                                                        mySecurityToken, 
+                                                        myTransactionToken),
+                                        CreateQueryResult);
             }
             catch (ASonesException e)
             {
-                result = new QueryResult(_queryString, SonesGQLConstants.GQL, 0, ResultType.Failed, null, e);
+                result = new QueryResult(_queryString, 
+                                            SonesGQLConstants.GQL, 
+                                            0, 
+                                            ResultType.Failed, 
+                                            null, 
+                                            e);
             }
 
             return result;
@@ -138,13 +143,12 @@ namespace sones.GraphQL.StatementNodes.DML
         /// <param name="myStats">The stats of the request</param>
         /// <param name="myCreatedVertex">The vertex that has been created</param>
         /// <returns>The created query result</returns>
-        private QueryResult CreateQueryResult(IRequestStatistics myStats, IVertex myCreatedVertex)
+        private IQueryResult CreateQueryResult(IRequestStatistics myStats, IVertex myCreatedVertex)
         {
-            return new QueryResult(_queryString, 
+            return QueryResult.Success(_queryString, 
                                     SonesGQLConstants.GQL,
-                                    Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds), 
-                                    ResultType.Successful,
-                                    new List<IVertexView> {CreateAVertexView(myCreatedVertex)});
+                                    new List<IVertexView> { CreateAVertexView(myCreatedVertex) },
+                                    Convert.ToUInt64(myStats.ExecutionTime.TotalMilliseconds));
         }
 
         private IVertexView CreateAVertexView(IVertex myCreatedVertex)
@@ -170,10 +174,10 @@ namespace sones.GraphQL.StatementNodes.DML
             var result = new RequestInsertVertex(_TypeName);
 
             var vertexType = myGraphDB.GetVertexType<IVertexType>(
-                mySecurityToken,
-                myTransactionToken,
-                new RequestGetVertexType(_TypeName),
-                (stats, vtype) => vtype);
+                                            mySecurityToken,
+                                            myTransactionToken,
+                                            new RequestGetVertexType(_TypeName),
+                                            (stats, vtype) => vtype);
 
             #endregion
 
@@ -508,6 +512,5 @@ namespace sones.GraphQL.StatementNodes.DML
         }
 
         #endregion
-
     }
 }

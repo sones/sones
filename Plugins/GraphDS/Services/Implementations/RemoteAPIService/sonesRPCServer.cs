@@ -33,9 +33,10 @@ using WCFExtras.Wsdl;
 using sones.GraphDS.Services.RemoteAPIService.EdgeTypeService;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanceService;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceService;
-using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MonoMEX;
+using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.MEX;
 using sones.GraphDS.Services.RemoteAPIService.ServiceContracts.StreamedService;
 using System.Xml;
+using System.ServiceModel.Channels;
 
 namespace sones.GraphDS.Services.RemoteAPIService
 {
@@ -69,6 +70,11 @@ namespace sones.GraphDS.Services.RemoteAPIService
         public Boolean IsRunning { get; private set; }
 
         /// <summary>
+        /// Indicates wether the MEX service is delivering a single file
+        /// </summary>
+        public Boolean IsSingleFile { get; internal set; }
+
+        /// <summary>
         /// The current used Namespace
         /// </summary>
         public const String Namespace = "http://www.sones.com";
@@ -80,27 +86,33 @@ namespace sones.GraphDS.Services.RemoteAPIService
         public Uri URI { get; private set; }
 
         /// <summary>
+        /// The complete URI of the mex service
+        /// </summary>
+        public Uri MexUri { get; private set; }
+
+        /// <summary>
         /// The WCF Service Host
         /// </summary>
         private ServiceHost _ServiceHost;
 
         /// <summary>
-        /// The MEX Service Host
+        /// The Metadata Exchange Service Host
         /// </summary>
-        private ServiceHost _ServiceHost2;
+        private ServiceHost _MexServiceHost;
 
         #endregion
 
         #region C'tor
        
-        public sonesRPCServer(IGraphDS myGraphDS, IPAddress myIPAdress, ushort myPort, String myURI, Boolean myIsSecure, Boolean myAutoStart = false)
+        public sonesRPCServer(IGraphDS myGraphDS, IPAddress myIPAdress, ushort myPort, String myURI, Boolean myIsSecure, Boolean myAutoStart = false, Boolean myIsSingleFile = false)
         {
             this._GraphDS = myGraphDS;
             this.IsSecure = myIsSecure;
             this.ListeningIPAdress = myIPAdress;
             this.ListeningPort = myPort;
-            String CompleteUri = (myIsSecure == true ? "https://" : "http://") + myIPAdress.ToString() + ":" + myPort + "/" + myURI;
-            this.URI = new Uri(CompleteUri);
+            this.IsSingleFile = myIsSingleFile;
+            this.URI = new Uri((myIsSecure == true ? "https://" : "http://") + myIPAdress.ToString() + ":" + myPort + "/" + myURI);
+            this.MexUri = new Uri("http://" + myIPAdress.ToString() + ":" + (myPort + 1) + "/" + myURI);
 
             if (!this.URI.IsWellFormedOriginalString())
                 throw new Exception("The URI Pattern is not well formed!");
@@ -108,8 +120,9 @@ namespace sones.GraphDS.Services.RemoteAPIService
             InitializeServer();
 
             if (myAutoStart)
-                _ServiceHost.Open();
-
+            {
+                StartServiceHost();
+            }
         }
 
         #endregion
@@ -155,7 +168,7 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
             if (IsSecure)
             {
-                BasicBinding.Security.Mode = BasicHttpSecurityMode.Transport;
+                BasicBinding.Security.Mode = BasicHttpSecurityMode.Transport;               
                 StreamedBinding.Security.Mode = BasicHttpSecurityMode.Transport;
             }
             
@@ -198,9 +211,9 @@ namespace sones.GraphDS.Services.RemoteAPIService
             #endregion
             
             #region json
-            ServiceEndpoint APIServiceJson = new ServiceEndpoint(APIContract, WebBinding, new EndpointAddress(this.URI.ToString() + "/json"));
-            APIServiceJson.Behaviors.Add(new WebScriptEnablingBehavior());
-            _ServiceHost.AddServiceEndpoint(APIServiceJson);
+            //ServiceEndpoint APIServiceJson = new ServiceEndpoint(APIContract, WebBinding, new EndpointAddress(this.URI.ToString() + "/json"));
+            //APIServiceJson.Behaviors.Add(new WebScriptEnablingBehavior());
+            //_ServiceHost.AddServiceEndpoint(APIServiceJson);
             #endregion
 
             #endregion
@@ -247,56 +260,41 @@ namespace sones.GraphDS.Services.RemoteAPIService
             
             #region Metadata Exchange
 
-            // mono can't export automatic generated WSDL. Because of that, we must do that explicit
+            /*
+             * When using automatic wsdl generation, there are errors when not using C# Visual Studio:
+             *   - (server side) Mono does not yet support wsdl generation
+             *   - Java Stub generation using Axis causes the server to hang up
+             *   - Some importers may not support multiple markup files
+             *   
+             * Therefore, a static wsdl file is provided to the client.
+             */
 
-            WebHttpBinding MexWebBinding = new WebHttpBinding();
-            MexWebBinding.Namespace = Namespace;
-            var rpc = this.URI.Segments.Last();
-            var monoURI = this.URI.ToString().Replace(rpc, "");
+            _MexServiceHost = new ServiceHost(typeof(MonoMEX), MexUri);
+            _MexServiceHost.Description.Namespace = Namespace;
+            Binding MexBinding = new WebHttpBinding();
+            MexBinding.Namespace = Namespace;
 
-            _ServiceHost2 = new ServiceHost(typeof(MonoMEX), new Uri(monoURI));
-            _ServiceHost2.Description.Namespace = Namespace;
-
-            ContractDescription MonoMEX = ContractDescription.GetContract(typeof(IMonoMEX));
-
-
-            ServiceEndpoint MonoMEXeService = new ServiceEndpoint(MonoMEX, MexWebBinding, new EndpointAddress(new Uri(monoURI)));
-
-            _ServiceHost2.AddServiceEndpoint(MonoMEXeService);
-            _ServiceHost2.Description.Endpoints[0].Behaviors.Add(new System.ServiceModel.Description.WebHttpBehavior());
-
-
-            //the on-the-fly generation of the WSDL leads to several errors on client side (and crashes the server) - so a simple output is necessary
-
-            #region Automatic WCF WSDL Generator
-
-            ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
-            smb.HttpGetEnabled = true;
+            ContractDescription MexContract = ContractDescription.GetContract(typeof(IMonoMEX));
+            ServiceEndpoint MexService = new ServiceEndpoint(MexContract, MexBinding, new EndpointAddress(MexUri.ToString()));
+            _MexServiceHost.AddServiceEndpoint(MexService);
+            _MexServiceHost.Description.Endpoints[0].Behaviors.Add(new System.ServiceModel.Description.WebHttpBehavior());
 
 
-            _ServiceHost.Description.Behaviors.Add(smb);
-
-            // Add MEX endpoint
-
-            _ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, MetadataExchangeBindings.CreateMexHttpBinding(), "mex");
-            foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
-            {
-                //export just one file
-                endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
-
-            } 
+            //// auto generation
+            //ServiceMetadataBehavior metadataBehavior = new ServiceMetadataBehavior();
+            //metadataBehavior.HttpGetEnabled = true;
+            //Binding mexBinding = MetadataExchangeBindings.CreateMexHttpBinding();
+            //mexBinding.Namespace = Namespace;            
+            //_ServiceHost.Description.Behaviors.Add(metadataBehavior);
+            //ServiceEndpoint mexEndpoint = _ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, mexBinding, "mex");
+            //foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
+            //{
+            //    //export just one file
+            //    endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
+            //} 
 
             #endregion
-
-
-
-
-
-            #endregion
-
         }
-
-
 
         #endregion
 
@@ -306,9 +304,24 @@ namespace sones.GraphDS.Services.RemoteAPIService
         {
             if(!IsRunning)
             {
-                _ServiceHost.Open();
-                _ServiceHost2.Open();
-                IsRunning = true;
+                try
+                {
+                    _ServiceHost.Open();
+                    _MexServiceHost.Open();
+                    IsRunning = true;
+                }
+                catch (Exception e)
+                {
+                    if (_ServiceHost != null)
+                    {
+                        _ServiceHost.Close();
+                    }
+                    if (_MexServiceHost != null)
+                    {
+                        _MexServiceHost.Close();
+                    }
+                    throw e;
+                }
             }
         }
 
@@ -317,14 +330,11 @@ namespace sones.GraphDS.Services.RemoteAPIService
             if (IsRunning)
             {
                 _ServiceHost.Close();
-                _ServiceHost2.Close();
+                _MexServiceHost.Close();
                 IsRunning = false;
             }
         }
 
-
         #endregion
-
-
     }
 }

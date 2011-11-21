@@ -30,39 +30,53 @@ namespace sones.GraphQL.Result
     /// <summary>
     /// This class hold all the data that comes out of the database after a query is run
     /// </summary>
-    public sealed class QueryResult : IEnumerable<IVertexView>
+    public sealed class QueryResult : IQueryResult
     {
+        #region Creators
+
+        public static QueryResult Success(String myQuery, String myQLName, IEnumerable<IVertexView> myVertices, UInt64 myDuration = 0UL)
+        {
+            return new QueryResult(myQuery, myQLName, myDuration, ResultType.Successful, myVertices, null);
+        }
+
+        public static QueryResult Failure(String myQuery, String myQLName, ASonesException myError, IEnumerable<IVertexView> myVertices = null, UInt64 myDuration = 0UL)
+        {
+            return new QueryResult(myQuery, myQLName, myDuration, ResultType.Failed, myVertices, myError);
+        }
+
+        #endregion
+
         #region Data
 
         /// <summary>
         /// An error that occured during the query process
         /// </summary>
-        public ASonesException Error { get; set; }
+        public ASonesException Error { get; private set; }
 
         /// <summary>
-        /// The vertices that are contained in this QueryResult
+        /// The vertices that are contained in this IQueryResult
         /// </summary>
-        public IEnumerable<IVertexView> Vertices { get; set; }
+        public IEnumerable<IVertexView> Vertices { get; private set; }
 
         /// <summary>
         /// The query that has been executed
         /// </summary>
-        public readonly String Query;
+        public String Query { get; private set; }
 
         /// <summary>
         /// The name of the query language that has been executed
         /// </summary>
-        public readonly String NameOfQuerylanguage;
+        public String NameOfQuerylanguage { get; private set; }
 
         /// <summary>
         /// The time that was spent on executing the query
         /// </summary>
-        public readonly UInt64 Duration;
+        public UInt64 Duration { get; private set; }
 
         /// <summary>
         /// The ReasultType of the executed query
         /// </summary>
-        public readonly ResultType TypeOfResult;
+        public ResultType TypeOfResult { get; private set; }
 
         /// <summary>
         /// The number of affected vertices
@@ -92,7 +106,7 @@ namespace sones.GraphQL.Result
         /// <param name="myDuration">The time that was spent on executing the query</param>
         /// <param name="myVertices">The vertices that should be available within the query result</param>
         /// <param name="myError">The error which occured during execution</param>
-        public QueryResult(String myQuery, String myQLName, UInt64 myDuration, ResultType myResultType, IEnumerable<IVertexView> myVertices = null, ASonesException myError = null)
+        public QueryResult(String myQuery, String myQLName, UInt64 myDuration, ResultType myResultType, IEnumerable<IVertexView> myVertices, ASonesException myError)
         {
             TypeOfResult = myResultType;
             Vertices = myVertices ?? new List<IVertexView>();
@@ -100,24 +114,6 @@ namespace sones.GraphQL.Result
             NameOfQuerylanguage = myQLName;
             Duration = myDuration;
             Error = myError;
-        }
-
-        #endregion
-
-        #region IEnumerable<Vertex> Members
-
-        public IEnumerator<IVertexView> GetEnumerator()
-        {
-            return Vertices.GetEnumerator();
-        }
-
-        #endregion
-
-        #region IEnumerable Members
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return Vertices.GetEnumerator();
         }
 
         #endregion

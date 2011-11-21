@@ -166,7 +166,7 @@ namespace sones.Plugins.Index
         /// <param name="myKey">Search key</param>
         /// <param name="myVertexID">VertexID</param>
         /// <param name="myIndexAddStrategy">Define what happens, if the key already exists.</param>
-        void Add(IComparable myKey, Int64 myVertexID,
+        void Add(IComparable myKey, Int64? myVertexID,
             IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace sones.Plugins.Index
         /// </summary>
         /// <param name="myKeyValuePairs">Key-Value-Pairs</param>
         /// <param name="myIndexAddStrategy">Define what happens, if the key already exists.</param>
-        void AddRange(IEnumerable<KeyValuePair<IComparable, Int64>> myKeyValuePairs,
+        void AddRange(IEnumerable<KeyValuePair<IComparable, Int64?>> myKeyValuePairs,
             IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
 
         #endregion

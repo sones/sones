@@ -109,6 +109,7 @@ namespace TagExampleWithGraphMappingFramework
             Dictionary<string, object> RemoteAPIParameter = new Dictionary<string, object>();
             RemoteAPIParameter.Add("IPAddress", IPAddress.Parse("127.0.0.1"));
             RemoteAPIParameter.Add("Port", (ushort)9970);
+            RemoteAPIParameter.Add("IsSecure", true);
             _dsServer.StartService("sones.RemoteAPIService", RemoteAPIParameter);
             #endregion
 
@@ -202,7 +203,7 @@ namespace TagExampleWithGraphMappingFramework
         public void Run()
         {
             
-            GraphDSClient = new GraphDS_RemoteClient(new Uri("http://localhost:9970/rpc"));
+            GraphDSClient = new GraphDS_RemoteClient(new Uri("https://localhost:9970/rpc"), true);
             SecToken = GraphDSClient.LogOn(new RemoteUserPasswordCredentials("test", "test"));
             TransToken = GraphDSClient.BeginTransaction(SecToken);
 
@@ -574,7 +575,7 @@ namespace TagExampleWithGraphMappingFramework
         /// This private method analyses the QueryResult, shows the ResultType and Errors if existing.
         /// </summary>
         /// <param name="myQueryResult">The result of a query.</param>
-        private bool CheckResult(QueryResult myQueryResult)
+        private bool CheckResult(IQueryResult myQueryResult)
         {
             if (myQueryResult.Error != null)
             {

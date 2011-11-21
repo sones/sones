@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="sones.GraphQL.StatementNodes.AStatement">
+    <Position X="5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAQAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>StatementNodes\AStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphQL.StatementNodes.DML.UpdateNode">
+    <Position X="2.75" Y="4" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>IAABAAAAAAgEIAQgAAAAAAAAAgAAAggBAAACAgRAAAw=</HashCode>
+      <FileName>StatementNodes\DML\UpdateNode.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.GraphQL.StatementNodes.DML.DescribeNode">
+    <Position X="7.25" Y="4" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAQAAAAAAAAAAIAAAAAAAAACAABAAAA=</HashCode>
+      <FileName>StatementNodes\DML\DescribeNode.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.GraphQL.StatementNodes.DML.InsertNode">
+    <Position X="5" Y="4" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>IAAgAAAAAAABIAQgAACAAEAAAAAAAAYBAAACAABIAAA=</HashCode>
+      <FileName>StatementNodes\DML\InsertNode.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

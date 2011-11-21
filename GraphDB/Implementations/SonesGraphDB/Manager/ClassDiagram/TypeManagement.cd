@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="sones.GraphDB.Manager.TypeManagement.ATypeManager&lt;T&gt;" Collapsed="true">
-    <Position X="4" Y="0.5" Width="1.5" />
+    <Position X="4.75" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAkAwCiAABAAAQgAEEsAACAAAAgAAAEAAAAhBAAAkQE=</HashCode>
       <FileName>Manager\TypeManagement\ATypeManager.cs</FileName>
@@ -9,49 +9,85 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="sones.GraphDB.Manager.TypeManagement.AExecuteTypeManager&lt;T&gt;" Collapsed="true">
-    <Position X="1.75" Y="1.75" Width="1.5" />
+    <Position X="3.25" Y="5" Width="2" />
     <TypeIdentifier>
-      <HashCode>BCIAgACiBBCABwhgAAhEJLAIUAAAgEEQAEAhAQAAkSI=</HashCode>
+      <HashCode>BCIAggCiBBCABwhgAAhEJLAKUAAAhEEQAEAhAQAAkSI=</HashCode>
       <FileName>Manager\TypeManagement\AExecuteTypeManager.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="sones.GraphDB.Manager.TypeManagement.ACheckTypeManager&lt;T&gt;" Collapsed="true">
-    <Position X="6.25" Y="1.75" Width="1.5" />
+    <Position X="6" Y="5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAwACAFRAACQgAABgBAiAgYBAAAA1FAEkhAgAIlQA=</HashCode>
       <FileName>Manager\TypeManagement\ACheckTypeManager.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="sones.GraphDB.Manager.TypeManagement.CheckEdgeTypeManager" Collapsed="true">
-    <Position X="5.25" Y="3.25" Width="1.5" />
+    <Position X="5.75" Y="6.5" Width="2.25" />
+    <InheritanceLine Type="sones.GraphDB.Manager.TypeManagement.ACheckTypeManager&lt;T&gt;" FixedToPoint="true">
+      <Path>
+        <Point X="7" Y="5.691" />
+        <Point X="7" Y="6.066" />
+        <Point X="8.375" Y="6.066" />
+        <Point X="8.375" Y="6.875" />
+        <Point X="8" Y="6.875" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAgACAAAAAAQAAAAAAACAAQBAAAAVEAEAhAgAABAA=</HashCode>
+      <HashCode>AAAAgACAAAAAAQAAAAAAACAAQBAAAAVEAEEhAgAABAA=</HashCode>
       <FileName>Manager\TypeManagement\CheckEdgeTypeManager.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="sones.GraphDB.Manager.TypeManagement.CheckVertexTypeManager" Collapsed="true">
-    <Position X="7.5" Y="3.25" Width="1.5" />
+    <Position X="5.75" Y="7.5" Width="2.25" />
+    <InheritanceLine Type="sones.GraphDB.Manager.TypeManagement.ACheckTypeManager&lt;T&gt;" FixedToPoint="true">
+      <Path>
+        <Point X="7" Y="5.691" />
+        <Point X="7" Y="6.066" />
+        <Point X="8.375" Y="6.066" />
+        <Point X="8.375" Y="7.875" />
+        <Point X="8" Y="7.875" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAQgACAIBAAAQBgAAAAgCAAQBAAQAVEBEAhBgAABAA=</HashCode>
+      <HashCode>AAAQgACAIBAAAQBgAAAAgCAAQBAAQAVEBEEhBgAABAA=</HashCode>
       <FileName>Manager\TypeManagement\CheckVertexTypeManager.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="sones.GraphDB.Manager.TypeManagement.ExecuteEdgeTypeManager" Collapsed="true">
-    <Position X="0.75" Y="3.25" Width="1.5" />
+    <Position X="3.25" Y="7.5" Width="2.25" />
+    <InheritanceLine Type="sones.GraphDB.Manager.TypeManagement.AExecuteTypeManager&lt;T&gt;" ManuallyRouted="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.25" Y="5.691" />
+        <Point X="4.25" Y="6.125" />
+        <Point X="2.929" Y="6.125" />
+        <Point X="2.929" Y="7.875" />
+        <Point X="3.25" Y="7.875" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAgAADBAAAAQBAAAgAJCAIEAIIgQAQAEAhAQAAgSI=</HashCode>
+      <HashCode>AQAAgwADBAAAAQJAAAgAJCAMEEIIhQASAEAhAQAAgSI=</HashCode>
       <FileName>Manager\TypeManagement\ExecuteEdgeTypeManager.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="sones.GraphDB.Manager.TypeManagement.ExecuteVertexTypeManager" Collapsed="true">
-    <Position X="3" Y="3.25" Width="1.5" />
+    <Position X="3.25" Y="6.5" Width="2.25" />
+    <InheritanceLine Type="sones.GraphDB.Manager.TypeManagement.AExecuteTypeManager&lt;T&gt;" ManuallyRouted="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.25" Y="5.691" />
+        <Point X="4.25" Y="6.125" />
+        <Point X="2.929" Y="6.125" />
+        <Point X="2.929" Y="6.875" />
+        <Point X="3.25" Y="6.875" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AEAIgQADBIAAAwBAYkgAJCYYECIAgQoyAGAlAQAMkSI=</HashCode>
+      <HashCode>AEAIgwADBIAAAwBAYkgAJCYYECIAhQoyAGAlAQAMkSI=</HashCode>
       <FileName>Manager\TypeManagement\ExecuteVertexTypeManager.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="sones.GraphDB.TypeManagement.BaseType" Collapsed="true">
-    <Position X="2" Y="5" Width="1.5" />
+    <Position X="1.5" Y="11.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAg4YZAEFhEhgjAigABgAEQRAMABADDGQAAEAUSEEBA=</HashCode>
       <FileName>TypeManagement\BaseType.cs</FileName>
@@ -59,7 +95,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="sones.GraphDB.TypeManagement.EdgeType" Collapsed="true">
-    <Position X="3" Y="6.25" Width="1.5" />
+    <Position X="2.75" Y="13.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAACgAAAIACAmIBCAAAAAAIABAIAAAAAAAAAAAAA=</HashCode>
       <FileName>TypeManagement\EdgeType.cs</FileName>
@@ -67,7 +103,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="sones.GraphDB.TypeManagement.VertexType" Collapsed="true">
-    <Position X="0.75" Y="6.25" Width="1.5" />
+    <Position X="0.5" Y="13.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAABAAAEARAsQCQjBEEAICAQKIQDAJSAABSKABAAAhA=</HashCode>
       <FileName>TypeManagement\VertexType.cs</FileName>
@@ -75,56 +111,56 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="sones.GraphDB.TypeSystem.ATypePredefinition" Collapsed="true">
-    <Position X="11.5" Y="4" Width="1.5" />
+    <Position X="14.25" Y="9.25" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="sones.GraphDB.TypeSystem.EdgeTypePredefinition" Collapsed="true">
-    <Position X="12.5" Y="5.25" Width="1.5" />
+    <Position X="15.25" Y="10.5" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="sones.GraphDB.TypeSystem.VertexTypePredefinition" Collapsed="true">
-    <Position X="10.25" Y="5.25" Width="1.5" />
+    <Position X="13" Y="10.5" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Interface Name="sones.GraphDB.Manager.IManager" Collapsed="true">
-    <Position X="11.5" Y="1" Width="1.5" />
+    <Position X="4.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAgAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Manager\IManager.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="sones.GraphDB.Manager.IManagerOf&lt;T&gt;" Collapsed="true">
-    <Position X="10.25" Y="2.25" Width="1.5" />
+  <Interface Name="sones.GraphDB.Manager.IManagerOf&lt;T&gt;">
+    <Position X="3.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
       <FileName>Manager\IManagerOf.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="sones.GraphDB.Manager.TypeManagement.ITypeHandler&lt;T&gt;" Collapsed="true">
-    <Position X="12.5" Y="2.25" Width="1.5" />
+    <Position X="5.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAACAABAAAAgAAAgAAAAAAAAAAAEAAAAgAAAAkQA=</HashCode>
       <FileName>Manager\TypeManagement\ITypeHandler.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="sones.GraphDB.TypeSystem.IPropertyDefinition" Collapsed="true">
-    <Position X="6" Y="8" Width="1.5" />
+    <Position X="5.5" Y="10.25" Width="1.5" />
     <TypeIdentifier />
   </Interface>
   <Interface Name="sones.GraphDB.TypeSystem.IOutgoingEdgeDefinition" Collapsed="true">
-    <Position X="8.25" Y="8" Width="1.5" />
+    <Position X="7.75" Y="10.25" Width="1.5" />
     <TypeIdentifier />
   </Interface>
   <Interface Name="sones.GraphDB.TypeSystem.IIncomingEdgeDefinition" Collapsed="true">
-    <Position X="3.75" Y="8" Width="1.5" />
+    <Position X="3.25" Y="10.25" Width="1.5" />
     <TypeIdentifier />
   </Interface>
   <Interface Name="sones.GraphDB.TypeSystem.IBinaryPropertyDefinition" Collapsed="true">
-    <Position X="10.5" Y="8" Width="1.5" />
+    <Position X="10" Y="10.25" Width="1.5" />
     <TypeIdentifier />
   </Interface>
   <Interface Name="sones.GraphDB.TypeSystem.IAttributeDefinition" Collapsed="true">
-    <Position X="7.25" Y="6.75" Width="1.5" />
+    <Position X="6.75" Y="9" Width="1.5" />
     <TypeIdentifier />
   </Interface>
   <Font Name="Segoe UI" Size="9" />

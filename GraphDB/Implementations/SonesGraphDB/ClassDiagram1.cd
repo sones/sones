@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="sones.GraphDB.Manager.TypeManagement.ExecuteVertexTypeManager" Collapsed="true">
+    <Position X="2" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>BPIKwQAjBIAAAxBgYkEEBBZYRCIAAYYSAGAkAABEECA=</HashCode>
+      <FileName>Manager\TypeManagement\ExecuteVertexTypeManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Manager.TypeManagement.AVertexTypeManager" Collapsed="true">
+    <Position X="3.5" Y="3.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>ABkCgAgCAAAAAQgAAEMAAABABCgAAIQAAAAhBAAAQAE=</HashCode>
+      <FileName>Manager\TypeManagement\AVertexTypeManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.GraphDB.Manager.TypeManagement.ExecuteEdgeTypeManager" Collapsed="true">
+    <Position X="4.75" Y="7.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AQAAgwADBAAAAQJAAAgAJCAMEEIIhQASAEAhAQAAgSI=</HashCode>
+      <FileName>Manager\TypeManagement\ExecuteEdgeTypeManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.GraphDB.Manager.TypeManagement.EdgeTypeManager" Collapsed="true">
+    <Position X="2" Y="7.25" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAACgAAAAAAAAAAACAAAAAAAAAAAABEAAAABAACAA=</HashCode>
+      <FileName>Manager\TypeManagement\EdgeTypeManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.GraphDB.Manager.TypeManagement.CheckEdgeTypeManager" Collapsed="true">
+    <Position X="4.75" Y="6.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAgACAAAAAAQAAAAAAACAAQBAAAAVEAEEhAgAABAA=</HashCode>
+      <FileName>Manager\TypeManagement\CheckEdgeTypeManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.GraphDB.Manager.TypeManagement.CheckVertexTypeManager" Collapsed="true">
+    <Position X="4.75" Y="5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAQgACAIBAAAQBgAAAAgCAAQBAAQAVEBEEhBgAABAA=</HashCode>
+      <FileName>Manager\TypeManagement\CheckVertexTypeManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Manager.TypeManagement.VertexTypeManager" Collapsed="true">
+    <Position X="2" Y="6.25" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAACgAAAAAAAAAAACAAAAAAAAAAAABEAAAABAACAA=</HashCode>
+      <FileName>Manager\TypeManagement\VertexTypeManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="sones.GraphDB.Manager.IManager" Collapsed="true">
+    <Position X="3.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Manager\IManager.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.Manager.TypeManagement.IVertexTypeHandler" Collapsed="true">
+    <Position X="1.75" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ABACAAACAAAAAAAAAAAAAABABCAAAIQAAAAgAAAAAAA=</HashCode>
+      <FileName>Manager\TypeManagement\IVertexTypeHandler.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.Manager.TypeManagement.IEdgeTypeHandler" Collapsed="true">
+    <Position X="5.5" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAIAACBAAABAAA=</HashCode>
+      <FileName>Manager\TypeManagement\IEdgeTypeHandler.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.Manager.IManagerOf&lt;T&gt;">
+    <Position X="3.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>Manager\IManagerOf.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

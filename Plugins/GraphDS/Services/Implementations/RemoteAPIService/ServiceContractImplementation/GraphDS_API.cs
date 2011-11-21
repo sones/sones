@@ -40,7 +40,6 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.PayloadObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 using sones.GraphDS.Services.RemoteAPIService.ErrorHandling;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expression;
-using sones.GraphDS.GraphDSRemoteClient;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 {

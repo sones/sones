@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+* sones GraphDB - Community Edition - http://www.sones.com
+* Copyright (C) 2007-2011 sones GmbH
+*
+* This file is part of sones GraphDB Community Edition.
+*
+* sones GraphDB is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,11 +49,13 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             Parameters.Add(new ParameterValue("EdgeType",typeof(string)));
             
         }
+
         #endregion
+
         #region show all edges with target vertex 'vertexType' for 'vertexType'
 
 
-        private Dictionary<IOutgoingEdgeDefinition,Tuple<bool, long>> allEdgeWithTargetVertex(IVertexType vertexType)
+        private Dictionary<IOutgoingEdgeDefinition,Tuple<bool, long>> AllEdgeWithTargetVertex(IVertexType vertexType)
         {
             Dictionary<IOutgoingEdgeDefinition, Tuple<bool, long>> idList = new Dictionary<IOutgoingEdgeDefinition, Tuple<bool, long>>();
             var temp =   vertexType.GetOutgoingEdgeDefinitions(true);
@@ -56,7 +78,9 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             }
             return idList;
         }
+
         #endregion
+
         #region Parser from String to IOutgoingEdgeDefinition and check property edgeType.InnerEdgeType.HasProperty("Weight")
 
         private Dictionary<IOutgoingEdgeDefinition, Tuple<bool, long>> StringParser(String current_string,
@@ -112,6 +136,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             return idList;
         }
         #endregion
+
         #region ValidateWorkingBase
 
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
@@ -135,7 +160,9 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             }
         }
         #endregion
+
         #region ExecFunc
+
         public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition,
                                                 Object myCallingObject,
                                                 IVertex myStartVertex,
@@ -205,7 +232,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             {
                 if (edgeType.Contains("all edgeType"))
                 {
-                    edgeTypeID = this.allEdgeWithTargetVertex(myType);
+                    edgeTypeID = this.AllEdgeWithTargetVertex(myType);
                 }
                 else
                 {
@@ -229,13 +256,13 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
 
 
-            bufferDijkstra buf = new bufferDijkstra();
-            dataDijkstra lists = new dataDijkstra();
+            BufferDijkstra buf = new BufferDijkstra();
+            DataDijkstra lists = new DataDijkstra();
 
 
 
-            buf.add(myStartVertex, 0, 0);
-            lists.add(currentVertex, 0, 0, null,null, currentVertex);
+            buf.Add(myStartVertex, 0, 0);
+            lists.Add(currentVertex, 0, 0, null,null, currentVertex);
 
                       
 
@@ -306,7 +333,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
                             var current_singleEdge = AllsingleEdge.ElementAt(iCount).Item1;
 
-                            var TargetVertexID = lists.getElement(TargetVertex.VertexID);
+                            var TargetVertexID = lists.GetElement(TargetVertex.VertexID);
                           
                             if (TargetVertexID == null)
                             {
@@ -316,13 +343,13 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
 
 
-                                    buf.add(TargetVertex,
+                                    buf.Add(TargetVertex,
                                         current_distance + currentVertexDistance,
                                        currentVertexDepth + 1);
 
 
 
-                                    lists.add(TargetVertex,
+                                    lists.Add(TargetVertex,
                                         current_distance + currentVertexDistance,
                                         currentVertexDepth + 1,
                                         current_singleEdge,
@@ -338,12 +365,12 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
 
 
-                                        buf.add(TargetVertex,
+                                        buf.Add(TargetVertex,
                                        current_distance + currentVertexDistance,
                                       currentVertexDepth + 1);
 
 
-                                        lists.add(TargetVertex,
+                                        lists.Add(TargetVertex,
                                        current_distance + currentVertexDistance,
                                        currentVertexDepth + 1,
                                        current_singleEdge,
@@ -363,11 +390,11 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
 
 
-                                        buf.set(TargetVertexID.Item2,TargetVertex,
+                                        buf.Set(TargetVertexID.Item2,TargetVertex,
                                        current_distance + currentVertexDistance,
                                       currentVertexDepth + 1);
 
-                                        lists.set(TargetVertex,
+                                        lists.Set(TargetVertex,
                                        current_distance + currentVertexDistance,
                                        currentVertexDepth + 1,
                                        current_singleEdge,
@@ -385,11 +412,11 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                         endvertexDepth > currentVertexDepth + 1))
                                         {
 
-                                            buf.set(TargetVertexID.Item2,TargetVertex,
+                                            buf.Set(TargetVertexID.Item2,TargetVertex,
                                         current_distance + currentVertexDistance,
                                        currentVertexDepth + 1);
 
-                                            lists.set(TargetVertex,
+                                            lists.Set(TargetVertex,
                                        current_distance + currentVertexDistance,
                                        currentVertexDepth + 1,
                                        current_singleEdge,
@@ -405,11 +432,11 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
 
 
-                                        buf.set(TargetVertexID.Item2,TargetVertex,
+                                        buf.Set(TargetVertexID.Item2,TargetVertex,
                                              current_distance + currentVertexDistance,
                                             currentVertexDepth + 1);
 
-                                        lists.set(TargetVertex,
+                                        lists.Set(TargetVertex,
                                        current_distance + currentVertexDistance,
                                        currentVertexDepth + 1,
                                        current_singleEdge,
@@ -427,11 +454,11 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
 
 
-                                           buf.set(TargetVertexID.Item2,TargetVertex,
+                                           buf.Set(TargetVertexID.Item2,TargetVertex,
                                                 current_distance + currentVertexDistance,
                                                 currentVertexDepth + 1);
 
-                                            lists.set(TargetVertex,
+                                            lists.Set(TargetVertex,
                                        current_distance + currentVertexDistance,
                                        currentVertexDepth + 1,
                                        current_singleEdge,
@@ -448,7 +475,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
 
                                 endVertexFlag = true;
-                                var endNode = lists.getElement(endVertex.VertexID);
+                                var endNode = lists.GetElement(endVertex.VertexID);
                                 endVertexDistance = endNode.Item2;
                                 endvertexDepth = endNode.Item3;
 
@@ -470,7 +497,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                 else
                 {
 
-                    buf.remove(currentVertexDistance,currentVertex.VertexID);
+                    buf.Remove(currentVertexDistance,currentVertex.VertexID);
 
                 }
 
@@ -478,7 +505,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                 if (buf.Count != 0)
                 {
  
-                    var minVertex = buf.min();
+                    var minVertex = buf.Min();
                     currentVertex = minVertex.Item1;
                     currentVertexDistance = minVertex.Item2;
                     currentVertexDepth = minVertex.Item3;
@@ -497,7 +524,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             while (currentVertex != myStartVertex)
             {
 
-                var current_tuple = lists.getElement(currentVertex.VertexID);
+                var current_tuple = lists.GetElement(currentVertex.VertexID);
 
                 if (current_tuple == null)
                     throw new InvalidFunctionParameterException("MaxDepth", "Max depth to low or end node is not with start node connected, find't end node", maxDepth);
@@ -519,7 +546,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
 
 
-            var path = createVertexView(myPropertyID, VertexBuffer, distanceBuffer, edgeBuffer, depthBuffer);
+            var path = CreateVertexView(myPropertyID, VertexBuffer, distanceBuffer, edgeBuffer, depthBuffer);
 
             #endregion
 
@@ -552,7 +579,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
         /// <param name="mySecurityToken"></param>
         /// <param name="myTransactionToken"></param>
         /// <returns></returns>
-        private Tuple<IVertex, dataDijkstra> findShortPathToAll(IAttributeDefinition myAttributeDefinition,
+        private Tuple<IVertex, DataDijkstra> FindShortPathToAll(IAttributeDefinition myAttributeDefinition,
                                                 Object myCallingObject,
                                                 IVertex myStartVertex,
                                                 IGraphDB myGraphDB,
@@ -586,12 +613,12 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
             var edgeTypeDifinition = myType.GetOutgoingEdgeDefinition(myAttributeDefinition.Name);
 
-            dataDijkstra lists = new dataDijkstra();
-            bufferDijkstra buffer = new bufferDijkstra();
+            DataDijkstra lists = new DataDijkstra();
+            BufferDijkstra buffer = new BufferDijkstra();
 
 
-            buffer.add(myStartVertex, 0, 0);
-            lists.add(currentVertex, 0, 0, null,null, currentVertex);
+            buffer.Add(myStartVertex, 0, 0);
+            lists.Add(currentVertex, 0, 0, null,null, currentVertex);
 
 
             double currentVertexDistance = 0;
@@ -630,18 +657,18 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
                             var current_singleEdge = singleEdge.ElementAt(iCount);
 
-                            var TargetVertexID = lists.getElement(TargetVertex.VertexID);
+                            var TargetVertexID = lists.GetElement(TargetVertex.VertexID);
 
                             if (TargetVertexID == null)
                             {
 
-                                buffer.add(TargetVertex,
+                                buffer.Add(TargetVertex,
                                          current_distance + currentVertexDistance,
                                         currentVertexDepth + 1);
 
 
 
-                                lists.add(TargetVertex,
+                                lists.Add(TargetVertex,
                                     current_distance + currentVertexDistance,
                                     currentVertexDepth + 1,
                                     current_singleEdge,
@@ -654,11 +681,11 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                 {
 
 
-                                    buffer.set(TargetVertexID.Item2,TargetVertex,
+                                    buffer.Set(TargetVertexID.Item2,TargetVertex,
                                    current_distance + currentVertexDistance,
                                   currentVertexDepth + 1);
 
-                                    lists.set(TargetVertex,
+                                    lists.Set(TargetVertex,
                                    current_distance + currentVertexDistance,
                                    currentVertexDepth + 1,
                                    current_singleEdge,
@@ -674,11 +701,11 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                                     {
 
 
-                                        buffer.set(TargetVertexID.Item2,TargetVertex,
+                                        buffer.Set(TargetVertexID.Item2,TargetVertex,
                                              current_distance + currentVertexDistance,
                                             currentVertexDepth + 1);
 
-                                        lists.set(TargetVertex,
+                                        lists.Set(TargetVertex,
                                        current_distance + currentVertexDistance,
                                        currentVertexDepth + 1,
                                        current_singleEdge,
@@ -696,7 +723,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                     }
                 }
 
-                    buffer.remove(currentVertexDistance,currentVertex.VertexID);
+                    buffer.Remove(currentVertexDistance,currentVertex.VertexID);
 
                 
 
@@ -704,7 +731,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                     if (buffer.Count != 0)
                     {
 
-                        var minVertex = buffer.min();
+                        var minVertex = buffer.Min();
                         currentVertex = minVertex.Item1;
                         currentVertexDistance = minVertex.Item2;
                         currentVertexDepth = minVertex.Item3;
@@ -725,11 +752,11 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             return result;
         }
 
-        #endregion
-       
+        #endregion       
 
         #region create Vertex View
-        private VertexView createVertexView(long myPropertyID, List<IVertex> current_vertices,
+
+        private VertexView CreateVertexView(long myPropertyID, List<IVertex> current_vertices,
                                           List<double> current_distance, List<Tuple<ISingleEdge, IOutgoingEdgeDefinition>> edge, List<UInt64> current_depth)
         {
 
@@ -778,7 +805,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
                 if (current_vertices.Count != 0)
                 {
 
-                    singleEdges.Add(new SingleEdgeView(myPropertyTwo, createVertexView(myPropertyID, current_vertices, current_distance,
+                    singleEdges.Add(new SingleEdgeView(myPropertyTwo, CreateVertexView(myPropertyID, current_vertices, current_distance,
                          edge, current_depth)));
                 }
 
@@ -799,6 +826,7 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
         #endregion
 
         #region IPluginable member
+
         public override PluginParameters<Type> SetableParameters
         {
             get { return new PluginParameters<Type>(); }

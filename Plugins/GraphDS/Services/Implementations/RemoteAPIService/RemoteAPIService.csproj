@@ -109,7 +109,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteAPIService.cs" />
     <Compile Include="ServiceContractImplementation\StreamedService.cs" />
-    <Compile Include="ServiceContracts\MonoMEX\MonoMEX.cs" />
+    <Compile Include="ServiceContracts\MEX\MonoMEX.cs" />
     <Compile Include="ServiceContractImplementation\EdgeService.cs" />
     <Compile Include="ServiceContractImplementation\EdgeTypeService.cs" />
     <Compile Include="ServiceContractImplementation\GraphDS_API.cs" />
@@ -120,7 +120,7 @@
     <Compile Include="ServiceContracts\EdgeInstanceService\IEdgeService.cs" />
     <Compile Include="ServiceContracts\EdgeTypeServices\IEdgeTypeService.cs" />
     <Compile Include="ServiceContracts\IRPCServiceContract.cs" />
-    <Compile Include="ServiceContracts\MonoMEX\IMonoMEX.cs" />
+    <Compile Include="ServiceContracts\MEX\IMonoMEX.cs" />
     <Compile Include="ServiceContracts\StreamedService\IStreamedService.cs" />
     <Compile Include="ServiceContracts\VertexInstanceService\IVertexService.cs" />
     <Compile Include="ServiceContracts\VertexTypeServices\IVertexTypeService.cs" />
@@ -147,10 +147,6 @@
     <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\GraphDS\Client\Implementations\GraphDSRemoteClient\GraphDSRemoteClient.csproj">
-      <Project>{64C46383-614C-4899-B1F4-9419F99BAE93}</Project>
-      <Name>GraphDSRemoteClient</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\GraphDS\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
@@ -193,7 +189,7 @@
     <Folder Include="ServiceStatus\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ServiceContracts\MonoMEX\WSDL.xml">
+    <EmbeddedResource Include="ServiceContracts\MEX\WSDL.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
