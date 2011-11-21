@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+* sones GraphDB - Community Edition - http://www.sones.com
+* Copyright (C) 2007-2011 sones GmbH
+*
+* This file is part of sones GraphDB Community Edition.
+*
+* sones GraphDB is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,15 +28,16 @@ using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 
-namespace TypesConnect
+namespace sones.Plugins.SonesGQL.Functions.TypesConnect
 {
     public class TypeWithProperty
     {
-        public IVertexType type { get; set; }
-        public IPropertyDefinition propertyDifinition { get; set; }
+        public IVertexType Type { get; set; }
+        public IPropertyDefinition PropertyDefinition { get; set; }
 
 
         #region StringParser
+
         public List<TypeWithProperty> StringParser(String current_string, IGraphDB myDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             current_string = current_string.Replace(" ","");
@@ -58,8 +79,8 @@ namespace TypesConnect
                      if (property==null)
                          throw new InvalidFunctionParameterException("Property", "Property: " + propertyIDString + " not exist in VertexType:" + typeVertexString, "null");
                     TypeWithProperty value = new TypeWithProperty();
-                    value.propertyDifinition = property;
-                    value.type = typeVertex;
+                    value.PropertyDefinition = property;
+                    value.Type = typeVertex;
 
                     if (!list.Contains(value))
                         list.Add(value);
@@ -73,5 +94,5 @@ namespace TypesConnect
             return list;
         }
     }
-        #endregion
+    #endregion
 }
