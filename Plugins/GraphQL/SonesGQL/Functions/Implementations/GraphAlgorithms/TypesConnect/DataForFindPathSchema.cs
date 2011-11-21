@@ -22,40 +22,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.TypeSystem;
 
-namespace sones.Plugins.SonesGQL.Functions.Dijkstra
+namespace sones.Plugins.SonesGQL.Functions.TypesConnect
 {
-    #region DataDijkstra
+    #region DataDijkstraForFindPathSchema
 
-    public class DataDijkstra
+    public class DataForFindPathSchema
     {
 
-        private Dictionary<long, Tuple<IVertex, double, ulong, Tuple<ISingleEdge,IOutgoingEdgeDefinition>, IVertex>> _list;
+        private Dictionary<long, Tuple<IVertexType, double, ulong, long, IVertexType>> _list;
         private int _count;
 
         public int Count { get { return Count; } }
 
 
-        public DataDijkstra()
+        public DataForFindPathSchema()
         {
-            _list = new Dictionary<long, Tuple<IVertex, double, ulong, Tuple<ISingleEdge, IOutgoingEdgeDefinition>, IVertex>>();
+            _list = new Dictionary<long, Tuple<IVertexType, double, ulong, long, IVertexType>>();
             _count = 0;
 
         }
-        public void Add(IVertex current_node, double current_distance, UInt64 current_depth, ISingleEdge current_edge,IOutgoingEdgeDefinition edgeType, IVertex father)
+        public void Add(IVertexType current_node, double current_distance, UInt64 current_depth, long current_edge, IVertexType father)
         {
-            var id = current_node.VertexID;
-            _list.Add(id, Tuple.Create(current_node, current_distance, current_depth, Tuple.Create(current_edge,edgeType), father));
+            var id = current_node.ID;
+            _list.Add(id, Tuple.Create(current_node, current_distance, current_depth, current_edge, father));
             _count++;
         }
 
 
-        public void Set(IVertex value, double current_distance, ulong current_depth, ISingleEdge current_edge,IOutgoingEdgeDefinition edgeType, IVertex father)
+        public void Set(IVertexType value, double current_distance, ulong current_depth, long current_edge, IVertexType father)
         {
-            var key = value.VertexID;
-            _list[key] = Tuple.Create(value, current_distance, current_depth, Tuple.Create(current_edge,edgeType), father);
+            var key = value.ID;
+            _list[key] = Tuple.Create(value, current_distance, current_depth, current_edge, father);
 
         }
 
@@ -67,13 +66,11 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
 
         public ulong GetDepth(int current_vertexID)
         {
-
             return _list.ElementAt(current_vertexID).Value.Item3;
         }
 
         public double GetDistance(long current_vertex)
         {
-
             return _list[current_vertex].Item2;
         }
 
@@ -83,19 +80,19 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             return _list.ElementAt(current_vertexID).Value.Item2;
         }
 
-        public Tuple<IVertex, double, ulong, Tuple<ISingleEdge,IOutgoingEdgeDefinition>, IVertex> GetElement(long key)
+        public Tuple<IVertexType, double, ulong, long, IVertexType> GetElement(long key)
         {
-            Tuple<IVertex, double, ulong, Tuple<ISingleEdge,IOutgoingEdgeDefinition>, IVertex> temp;
+            Tuple<IVertexType, double, ulong, long, IVertexType> temp;
             _list.TryGetValue(key, out temp);
             return temp;
         }
 
-        private Tuple<IVertex, double, ulong, Tuple<ISingleEdge, IOutgoingEdgeDefinition>, IVertex> GetTuple(int key)
+        private Tuple<IVertexType, double, ulong, long, IVertexType> GetTuple(int key)
         {
             return this._list.ElementAt(key).Value;
         }
 
-        private Tuple<IVertex, double, ulong, Tuple<ISingleEdge, IOutgoingEdgeDefinition>, IVertex> GetTuple(long key)
+        private Tuple<IVertexType, double, ulong, long, IVertexType> GetTuple(long key)
         {
             return this._list[key];
         }
@@ -111,6 +108,5 @@ namespace sones.Plugins.SonesGQL.Functions.Dijkstra
             return this._list.ContainsKey(key);
         }
     }
-
     #endregion
 }
