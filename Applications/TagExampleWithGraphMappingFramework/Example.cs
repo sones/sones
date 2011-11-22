@@ -207,7 +207,6 @@ namespace TagExampleWithGraphMappingFramework
             SecToken = GraphDSClient.LogOn(new RemoteUserPasswordCredentials("test", "test"));
             TransToken = GraphDSClient.BeginTransaction(SecToken);
 
-            Tests();
             GraphDSClient.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
 
             #region create types, create instances and additional work using the GraphDB API
@@ -459,25 +458,6 @@ namespace TagExampleWithGraphMappingFramework
             Console.WriteLine("API operations finished...");
 
             #endregion
-        }
-        #endregion
-
-        #region Tests
-        private void Tests()
-        {
-            //GraphDSClient.Query(SecToken, TransToken, "create abstract vertex type Entity attributes(String Name) comment = 'base entity providing a Name'", "sones.gql");
-            //var result = GraphDSClient.Query(SecToken, TransToken, "create vertex type Album", "sones.gql");
-            //GraphDSClient.Query(SecToken, TransToken, "create vertex type Artist extends Entity attributes(Set<Album> Albums) comment = 'an artist of an album'", "sones.gql");
-            //GraphDSClient.Query(SecToken, TransToken, "create vertex type Genre extends Entity attributes(Set<Album> Albums) comment = 'a genre of an album'", "sones.gql");
-            //GraphDSClient.Query(SecToken, TransToken, "create vertex type Year attributes(UInt32 Value, Set<Album> Albums) unique(Value) comment = 'a year in which an album has been released'", "sones.gql");
-            //GraphDSClient.Query(SecToken, TransToken, "alter vertex type Album add incomingedges(Artist.Albums ProducedBy, Genre.Albums Genre, Year.Albums ReleasedIn)", "sones.gql");
-
-            //GraphDSClient.Query(SecToken, TransToken, "alter vertex type Album add incomingedges(Artist.Albums ProducedBy)", "sones.gql");
-
-            //result = GraphDSClient.Query(SecToken, TransToken, "describe vertex type Album", "sones.gql");
-
-            var result = GraphDSClient.Query(SecToken, TransToken, "create vertex type Ship attributes (String Name, String Class)", "sones.gql");
-            result = GraphDSClient.Query(SecToken, TransToken, "describe vertex type Ship", "sones.gql");
         }
         #endregion
 

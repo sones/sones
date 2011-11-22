@@ -178,7 +178,15 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContractImplementation
 
         public List<ServiceVertexInstance> GetVertices(SecurityToken mySecurityToken, Int64 myTransactionToken, ServiceVertexType myVertexType)
         {
-            var Request = ServiceRequestFactory.MakeRequestGetVertices(myVertexType);
+            RequestGetVertices Request;
+            if (myVertexType.Name == null)
+            {
+                Request = new RequestGetVertices(myVertexType.ID);
+            }
+            else
+            {
+                Request = ServiceRequestFactory.MakeRequestGetVertices(myVertexType);
+            }
             var Response = this.GraphDS.GetVertices<IEnumerable<IVertex>>(mySecurityToken, myTransactionToken, Request,
                 ServiceReturnConverter.ConvertOnlyVertices);
             return Response.Select(x => new ServiceVertexInstance(x)).ToList();

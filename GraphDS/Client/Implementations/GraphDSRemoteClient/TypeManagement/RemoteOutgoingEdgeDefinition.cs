@@ -15,8 +15,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.TypeManagement
         internal RemoteOutgoingEdgeDefinition(ServiceOutgoingEdgeDefinition myOutgoingEdgeDefinition, IServiceToken myServiceToken)
         {
             this.EdgeType = new RemoteEdgeType(myOutgoingEdgeDefinition.EdgeType, myServiceToken);
-            this.InnerEdgeType = new RemoteEdgeType(myOutgoingEdgeDefinition.InnerEdgeType, myServiceToken);
-            this.Multiplicity = (EdgeMultiplicity)myOutgoingEdgeDefinition.Multiplicity;
+            this.InnerEdgeType = (myOutgoingEdgeDefinition.InnerEdgeType == null) ?
+                null : new RemoteEdgeType(myOutgoingEdgeDefinition.InnerEdgeType, myServiceToken);
+            this.Multiplicity = ConvertHelper.ToEdgeMultiplicity(myOutgoingEdgeDefinition.Multiplicity);
             this.SourceVertexType = new RemoteVertexType(myOutgoingEdgeDefinition.SourceVertexType, myServiceToken);
             this.TargetVertexType = new RemoteVertexType(myOutgoingEdgeDefinition.TargetVertexType, myServiceToken);
             this.Name = myOutgoingEdgeDefinition.Name;

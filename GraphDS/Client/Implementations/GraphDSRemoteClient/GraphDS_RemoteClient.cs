@@ -388,6 +388,10 @@ namespace sones.GraphDS.GraphDSRemoteClient
             {
                 svcVertices = _GraphDSService.GetVerticesByType(mySecurityToken, myTransactionID, new ServiceVertexType(myRequestGetVertices.VertexTypeName));
             }
+            else if (myRequestGetVertices.VertexTypeID != null)
+            {
+                svcVertices = _GraphDSService.GetVerticesByType(mySecurityToken, myTransactionID, new ServiceVertexType(myRequestGetVertices.VertexTypeID));
+            }
             else
             {
                 svcVertices = _GraphDSService.GetVerticesByExpression(mySecurityToken, myTransactionID, ConvertHelper.ToServiceExpression(myRequestGetVertices.Expression));
