@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+* sones GraphDB - Community Edition - http://www.sones.com
+* Copyright (C) 2007-2011 sones GmbH
+*
+* This file is part of sones GraphDB Community Edition.
+*
+* sones GraphDB is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,26 +36,22 @@ using System.Collections;
 using sones.Plugins.SonesGQL.Functions;
 using sones.Library.CollectionWrapper;
 
-
-
-namespace TypesConnect
+namespace sones.Plugins.SonesGQL.Functions.TypesConnect
 {
    
-	 public sealed class typesconnect : ABaseFunction, IPluginable
-	{  
+	 public sealed class TypesConnect : ABaseFunction, IPluginable
+	 {  
 		
-		List<List<Tuple<long,long>>> path = new List<List<Tuple<long,long>>>();
-        List<Tuple<String, String>> stringPath = new List<Tuple<string, string>>();
+		private List<List<Tuple<long,long>>> _path = new List<List<Tuple<long,long>>>();
+        private List<Tuple<String, String>>  _stringPath = new List<Tuple<string, string>>();
 
 		#region depth-first search
-		void DFS(IVertexType start, IVertexType end, List<Tuple<long,long>> Parents)
 
+		void DFS(IVertexType start, IVertexType end, List<Tuple<long,long>> Parents)
 		{
 		
 		  var outEdges =  start.GetOutgoingEdgeDefinitions(true);
 		  var incEdges = start.GetIncomingEdgeDefinitions(true);
-
-
 		  
 		  foreach (IOutgoingEdgeDefinition vertexType in outEdges)
 		  {
@@ -45,8 +61,8 @@ namespace TypesConnect
 					 var current_parents =  Parents.ToList();
 					 Parents.Add(Tuple.Create(vertexType.TargetVertexType.ID,vertexType.ID));
 
-					 if (Parents.Last().Item1 == end.ID && !path.Contains(Parents))
-						 path.Add(Parents);
+					 if (Parents.Last().Item1 == end.ID && !_path.Contains(Parents))
+						 _path.Add(Parents);
 					 else
 					 {
 						 DFS(vertexType.TargetVertexType, end, Parents);
@@ -62,9 +78,9 @@ namespace TypesConnect
 				  Parents.Add(Tuple.Create(vertexType.RelatedEdgeDefinition.SourceVertexType.ID,vertexType.ID));
 
 				 
-				  if (Parents.Last().Item1 == end.ID && !path.Contains(Parents))
+				  if (Parents.Last().Item1 == end.ID && !_path.Contains(Parents))
 				  {
-					  path.Add(Parents);
+					  _path.Add(Parents);
 				  }
 				  else
 				  {
@@ -75,7 +91,9 @@ namespace TypesConnect
 		  }
 		}
 		#endregion
+
 		#region Dijkstra for VertexTypes
+
 		private Tuple<double, List<Tuple<long, long>>, IVertexType, IVertexType> ShortPath(IVertexType start, IVertexType end)
 		{
 			#region initialization
@@ -92,20 +110,16 @@ namespace TypesConnect
 
 
 
-			bufferForFindPathShema buf = new bufferForFindPathShema();
-			dataForFindPathShema lists = new dataForFindPathShema();
-
-
-
-			buf.add(start, 0, 0);
-			lists.add(start, 0, 0, 0, start);
-
-
-
+			BufferForFindPathSchema buf = new BufferForFindPathSchema();
+            DataForFindPathSchema lists = new DataForFindPathSchema();
+            
+			buf.Add(start, 0, 0);
+			lists.Add(start, 0, 0, 0, start);
 
 			bool endVertexFlag = false;
 
 			#endregion
+
 			#region Dijkstra algorithm
 
 
@@ -136,7 +150,7 @@ namespace TypesConnect
 
 						var current_Edge = hyperEdgeOut.ElementAt(iCount).ID;
 
-						var TargetVertexID = lists.getElement(TargetVertexType.ID);
+						var TargetVertexID = lists.GetElement(TargetVertexType.ID);
 
 						if (TargetVertexID == null)
 						{
@@ -146,13 +160,13 @@ namespace TypesConnect
 
 
 
-								buf.add(TargetVertexType,
+								buf.Add(TargetVertexType,
 									current_distance + currentVertexDistance,
 								   currentVertexDepth + 1);
 
 
 
-								lists.add(TargetVertexType,
+								lists.Add(TargetVertexType,
 									current_distance + currentVertexDistance,
 									currentVertexDepth + 1,
 									current_Edge,
@@ -167,12 +181,12 @@ namespace TypesConnect
 
 
 
-									buf.add(TargetVertexType,
+									buf.Add(TargetVertexType,
 								   current_distance + currentVertexDistance,
 								  currentVertexDepth + 1);
 
 
-									lists.add(TargetVertexType,
+									lists.Add(TargetVertexType,
 								   current_distance + currentVertexDistance,
 								   currentVertexDepth + 1,
 								   current_Edge,
@@ -191,11 +205,11 @@ namespace TypesConnect
 
 
 
-									buf.set(TargetVertexID.Item2, TargetVertexType,
+									buf.Set(TargetVertexID.Item2, TargetVertexType,
 								   current_distance + currentVertexDistance,
 								  currentVertexDepth + 1);
 
-									lists.set(TargetVertexType,
+									lists.Set(TargetVertexType,
 								   current_distance + currentVertexDistance,
 								   currentVertexDepth + 1,
 								   current_Edge,
@@ -212,11 +226,11 @@ namespace TypesConnect
 									endvertexDepth > currentVertexDepth + 1))
 									{
 
-										buf.set(TargetVertexID.Item2, TargetVertexType,
+										buf.Set(TargetVertexID.Item2, TargetVertexType,
 									current_distance + currentVertexDistance,
 								   currentVertexDepth + 1);
 
-										lists.set(TargetVertexType,
+										lists.Set(TargetVertexType,
 								   current_distance + currentVertexDistance,
 								   currentVertexDepth + 1,
 								   current_Edge,
@@ -231,11 +245,11 @@ namespace TypesConnect
 
 
 
-									buf.set(TargetVertexID.Item2, TargetVertexType,
+									buf.Set(TargetVertexID.Item2, TargetVertexType,
 										 current_distance + currentVertexDistance,
 										currentVertexDepth + 1);
 
-									lists.set(TargetVertexType,
+									lists.Set(TargetVertexType,
 								   current_distance + currentVertexDistance,
 								   currentVertexDepth + 1,
 								   current_Edge,
@@ -252,11 +266,11 @@ namespace TypesConnect
 
 
 
-										buf.set(TargetVertexID.Item2, TargetVertexType,
+										buf.Set(TargetVertexID.Item2, TargetVertexType,
 											 current_distance + currentVertexDistance,
 											 currentVertexDepth + 1);
 
-										lists.set(TargetVertexType,
+										lists.Set(TargetVertexType,
 								   current_distance + currentVertexDistance,
 								   currentVertexDepth + 1,
 								   current_Edge,
@@ -272,7 +286,7 @@ namespace TypesConnect
 
 
 							endVertexFlag = true;
-							var endNode = lists.getElement(end.ID);
+							var endNode = lists.GetElement(end.ID);
 							endVertexDistance = endNode.Item2;
 							endvertexDepth = endNode.Item3;
 
@@ -291,7 +305,7 @@ namespace TypesConnect
 
 						var current_Edge = hyperEdgeInc.ElementAt(iCount).ID;//.RelatedEdgeDefinition.EdgeType;
 
-						var TargetVertexID = lists.getElement(TargetVertexType.ID);
+						var TargetVertexID = lists.GetElement(TargetVertexType.ID);
 
 						if (TargetVertexID == null)
 						{
@@ -301,13 +315,13 @@ namespace TypesConnect
 
 
 
-								buf.add(TargetVertexType,
+								buf.Add(TargetVertexType,
 									current_distance + currentVertexDistance,
 								   currentVertexDepth + 1);
 
 
 
-								lists.add(TargetVertexType,
+								lists.Add(TargetVertexType,
 									current_distance + currentVertexDistance,
 									currentVertexDepth + 1,
 									current_Edge,
@@ -322,12 +336,12 @@ namespace TypesConnect
 
 
 
-									buf.add(TargetVertexType,
+									buf.Add(TargetVertexType,
 								   current_distance + currentVertexDistance,
 								  currentVertexDepth + 1);
 
 
-									lists.add(TargetVertexType,
+									lists.Add(TargetVertexType,
 								   current_distance + currentVertexDistance,
 								   currentVertexDepth + 1,
 								   current_Edge,
@@ -346,11 +360,11 @@ namespace TypesConnect
 
 
 
-									buf.set(TargetVertexID.Item2, TargetVertexType,
+									buf.Set(TargetVertexID.Item2, TargetVertexType,
 								   current_distance + currentVertexDistance,
 								  currentVertexDepth + 1);
 
-									lists.set(TargetVertexType,
+									lists.Set(TargetVertexType,
 								   current_distance + currentVertexDistance,
 								   currentVertexDepth + 1,
 								   current_Edge,
@@ -367,11 +381,11 @@ namespace TypesConnect
 									endvertexDepth > currentVertexDepth + 1))
 									{
 
-										buf.set(TargetVertexID.Item2, TargetVertexType,
+										buf.Set(TargetVertexID.Item2, TargetVertexType,
 									current_distance + currentVertexDistance,
 								   currentVertexDepth + 1);
 
-										lists.set(TargetVertexType,
+										lists.Set(TargetVertexType,
 								   current_distance + currentVertexDistance,
 								   currentVertexDepth + 1,
 								   current_Edge,
@@ -386,11 +400,11 @@ namespace TypesConnect
 
 
 
-									buf.set(TargetVertexID.Item2, TargetVertexType,
+									buf.Set(TargetVertexID.Item2, TargetVertexType,
 										 current_distance + currentVertexDistance,
 										currentVertexDepth + 1);
 
-									lists.set(TargetVertexType,
+									lists.Set(TargetVertexType,
 								   current_distance + currentVertexDistance,
 								   currentVertexDepth + 1,
 								   current_Edge,
@@ -407,11 +421,11 @@ namespace TypesConnect
 
 
 
-										buf.set(TargetVertexID.Item2, TargetVertexType,
+										buf.Set(TargetVertexID.Item2, TargetVertexType,
 											 current_distance + currentVertexDistance,
 											 currentVertexDepth + 1);
 
-										lists.set(TargetVertexType,
+										lists.Set(TargetVertexType,
 								   current_distance + currentVertexDistance,
 								   currentVertexDepth + 1,
 								   current_Edge,
@@ -427,7 +441,7 @@ namespace TypesConnect
 
 
 							endVertexFlag = true;
-							var endNode = lists.getElement(end.ID);
+							var endNode = lists.GetElement(end.ID);
 							endVertexDistance = endNode.Item2;
 							endvertexDepth = endNode.Item3;
 
@@ -449,7 +463,7 @@ namespace TypesConnect
 				else
 				{
 
-					buf.remove(currentVertexDistance, currentVertex.ID);
+					buf.Remove(currentVertexDistance, currentVertex.ID);
 
 				}
 
@@ -457,7 +471,7 @@ namespace TypesConnect
 				if (buf.Count != 0)
 				{
 
-					var minVertex = buf.min();
+					var minVertex = buf.Min();
 					currentVertex = minVertex.Item1;
 					currentVertexDistance = minVertex.Item2;
 					currentVertexDepth = minVertex.Item3;
@@ -465,9 +479,7 @@ namespace TypesConnect
 
 			}
 			#endregion
-
-
-
+            
 			#region create output
 
 			List<Tuple<long, long>> parents = new List<Tuple<long, long>>();
@@ -476,7 +488,7 @@ namespace TypesConnect
 			while (currentVertex != start)
 			{
 
-				var current_tuple = lists.getElement(currentVertex.ID);
+				var current_tuple = lists.GetElement(currentVertex.ID);
 
 				if (current_tuple == null)
 					return null;
@@ -500,12 +512,13 @@ namespace TypesConnect
 
 		}
 
-			#endregion
+        #endregion
+
 		#endregion
 
 		#region constructor
 
-		public typesconnect()
+		public TypesConnect()
 		{
 			Parameters.Add(new ParameterValue("Types", typeof(String)));
 			Parameters.Add(new ParameterValue("Method", typeof(bool)));
@@ -514,38 +527,40 @@ namespace TypesConnect
 		#endregion
 
         #region ValidateWorkingBase
+
         public override bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken)
 		{
 			return myWorkingBase == null;
 		}
+
         #endregion
 
         #region find all Path in the set of edges
         
-        private void helper(IGraphDB graph, SecurityToken sec, Int64 trans, List<TypeWithProperty> type_property_object, List<Tuple<long, long>> PATHShort)	
-     {
-         List<Tuple<String, String>> output = new List<Tuple<string, string>>();
-		   this.stringPath.Clear();
+        private void Helper(IGraphDB graph, SecurityToken sec, Int64 trans, List<TypeWithProperty> type_property_object, List<Tuple<long, long>> PATHShort)	
+        {
+           List<Tuple<String, String>> output = new List<Tuple<string, string>>();
+		   this._stringPath.Clear();
 		   var StartTypeLong =  PATHShort.Find(x => x.Item2 == 0);
 		   var StartType = graph.GetVertexType(sec,
 												trans, 
 												new sones.GraphDB.Request.RequestGetVertexType(StartTypeLong.Item1),
 													 (statistics, type) => type);
 
-           this.stringPath.Add(Tuple.Create("Starting VertexType for SELECT", StartType.Name));
+           this._stringPath.Add(Tuple.Create("Starting VertexType for SELECT", StartType.Name));
 			
 
 		   String str = StartType.Name;
 
-		   foreach (TypeWithProperty value in type_property_object.Where(x => x.type.ID == StartType.ID))
-			   this.stringPath.Add(Tuple.Create(StartType.Name + '.' + value.propertyDifinition.Name,StartType.Name + '.' + value.propertyDifinition.Name));
+		   foreach (TypeWithProperty value in type_property_object.Where(x => x.Type.ID == StartType.ID))
+			   this._stringPath.Add(Tuple.Create(StartType.Name + '.' + value.PropertyDefinition.Name,StartType.Name + '.' + value.PropertyDefinition.Name));
 			
-		   recurs(str, StartType, type_property_object, PATHShort);
+		   Recurs(str, StartType, type_property_object, PATHShort);
 
 		}
        
 
-		private String recurs(String str,IVertexType StartType, List<TypeWithProperty> type_property_object, List<Tuple<long, long>> PATHShortDSF)
+		private String Recurs(String str,IVertexType StartType, List<TypeWithProperty> type_property_object, List<Tuple<long, long>> PATHShortDSF)
 		{
 			var hyperEdgeOut = StartType.GetOutgoingEdgeDefinitions(true);
 			var hyperEdgeInc = StartType.GetIncomingEdgeDefinitions(true);
@@ -554,22 +569,22 @@ namespace TypesConnect
 			{
 				if (PATHShortDSF.Find(x => x.Item2 == value.ID) != null)
 				{
-					if (type_property_object.Where(x => x.type.ID == value.TargetVertexType.ID).Count() > 0)
+					if (type_property_object.Where(x => x.Type.ID == value.TargetVertexType.ID).Count() > 0)
 					{
 						var temp = str;
-						foreach (TypeWithProperty val in type_property_object.Where(x => x.type.ID == value.TargetVertexType.ID))
+						foreach (TypeWithProperty val in type_property_object.Where(x => x.Type.ID == value.TargetVertexType.ID))
 						{
-							stringPath.Add(Tuple.Create(val.type.Name+'.'+val.propertyDifinition.Name,str + '.' + value.Name + '.' + val.propertyDifinition.Name));
+							_stringPath.Add(Tuple.Create(val.Type.Name+'.'+val.PropertyDefinition.Name,str + '.' + value.Name + '.' + val.PropertyDefinition.Name));
 						}
 						 str = temp + '.' + value.Name;
-						recurs(str, value.TargetVertexType, type_property_object, PATHShortDSF);
+						Recurs(str, value.TargetVertexType, type_property_object, PATHShortDSF);
 						str = temp;
 					}
 					else
 					{
 						var temp = str;
 						str += '.' + value.Name;
-						recurs(str, value.TargetVertexType, type_property_object, PATHShortDSF);
+						Recurs(str, value.TargetVertexType, type_property_object, PATHShortDSF);
 						str = temp;
 					}
 				}
@@ -579,22 +594,22 @@ namespace TypesConnect
 			{
 				if (PATHShortDSF.Find(x => x.Item2 == value.ID) != null)
 				{
-					if (type_property_object.Where(x => x.type.ID == value.RelatedEdgeDefinition.SourceVertexType.ID).Count() > 0)
+					if (type_property_object.Where(x => x.Type.ID == value.RelatedEdgeDefinition.SourceVertexType.ID).Count() > 0)
 					{
 						var temp = str;
-						foreach (TypeWithProperty val in type_property_object.Where(x => x.type.ID == value.RelatedEdgeDefinition.SourceVertexType.ID))
+						foreach (TypeWithProperty val in type_property_object.Where(x => x.Type.ID == value.RelatedEdgeDefinition.SourceVertexType.ID))
 						{
-				          stringPath.Add(Tuple.Create(val.type.Name + '.' + val.propertyDifinition.Name, str + '.' + value.Name + '.' + val.propertyDifinition.Name));
+				          _stringPath.Add(Tuple.Create(val.Type.Name + '.' + val.PropertyDefinition.Name, str + '.' + value.Name + '.' + val.PropertyDefinition.Name));
                         }
 					str = temp + '.' + value.Name;
-						recurs(str, value.RelatedEdgeDefinition.SourceVertexType, type_property_object, PATHShortDSF);
+						Recurs(str, value.RelatedEdgeDefinition.SourceVertexType, type_property_object, PATHShortDSF);
 						str = temp;
 					}
 					else
 					{
 						var temp = str;
 						str += '.' + value.Name;
-						recurs(str, value.RelatedEdgeDefinition.SourceVertexType, type_property_object, PATHShortDSF);
+						Recurs(str, value.RelatedEdgeDefinition.SourceVertexType, type_property_object, PATHShortDSF);
 						str = temp;
 					}
 				}
@@ -602,8 +617,11 @@ namespace TypesConnect
 			str = "";
 			return null;
 		} 
+
         #endregion
+
 		#region ExecFunc
+
 		public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition,
 												Object myCallingObject,
 												IVertex myDBObject, 
@@ -636,19 +654,19 @@ namespace TypesConnect
 				foreach (TypeWithProperty vertexEnd in ObjectList)
 				{
 
-					if (vertexStart != vertexEnd && vertexStart.type.ID!=vertexEnd.type.ID)
+					if (vertexStart != vertexEnd && vertexStart.Type.ID!=vertexEnd.Type.ID)
 					{
 						if (method)
 						{
-							var output = this.ShortPath(vertexStart.type, vertexEnd.type);
+							var output = this.ShortPath(vertexStart.Type, vertexEnd.Type);
 							if (output != null)
 								all.Add(output);
 						}
 						else
 						{
 							List<Tuple<long, long>> value = new List<Tuple<long, long>>();
-							value.Add(Tuple.Create(vertexStart.type.ID, 0L));
-							this.DFS(vertexStart.type, vertexEnd.type, value);
+							value.Add(Tuple.Create(vertexStart.Type.ID, 0L));
+							this.DFS(vertexStart.Type, vertexEnd.Type, value);
 						}
 
 
@@ -664,7 +682,7 @@ namespace TypesConnect
 			{ 
                 #region DFS
                 #region path->allPath->PATH for better representation
-				foreach (List<Tuple<long, long>> value in path)
+				foreach (List<Tuple<long, long>> value in _path)
 				{
 					if (!allPath.ContainsKey(Tuple.Create(value.First().Item1, value.Last().Item1)))
 					{
@@ -713,7 +731,7 @@ namespace TypesConnect
 								{
 
 									var test = 0;
-									foreach (long wert in ObjectList.Select(x => x.type.ID))
+									foreach (long wert in ObjectList.Select(x => x.Type.ID))
 									{
 										if (PATH[iCount].Where(x => x.Item1 == wert).Count() > 0)
 											test++;
@@ -759,7 +777,7 @@ namespace TypesConnect
 
 					var test = 0;
 					test = 0;
-					foreach (long value in ObjectList.Select(x => x.type.ID))
+					foreach (long value in ObjectList.Select(x => x.Type.ID))
 					{
 						if (PATH[jCount].Where(x => x.Item1 == value).Count() > 0)
 							test++;
@@ -839,7 +857,7 @@ namespace TypesConnect
 
 				var minPATH = PATH.Min(x => x.Count);
 				var indexPATH = PATH.First(x => x.Count == minPATH);
-			    this.helper(myGraphDB, mySecurityToken, myTransactionToken, ObjectList, indexPATH);
+			    this.Helper(myGraphDB, mySecurityToken, myTransactionToken, ObjectList, indexPATH);
 
 			}
 				#endregion
@@ -880,7 +898,7 @@ namespace TypesConnect
 							{
 
 								var test = 0;
-								foreach (long wert in ObjectList.Select(x => x.type.ID))
+								foreach (long wert in ObjectList.Select(x => x.Type.ID))
 								{
 									if (PATHShort[iCount].Where(x => x.Item1 == wert).Count() > 0)
 										test++;
@@ -923,7 +941,7 @@ namespace TypesConnect
 
 					var test = 0;
 					test = 0;
-					foreach (long value in ObjectList.Select(x => x.type.ID))
+					foreach (long value in ObjectList.Select(x => x.Type.ID))
 					{
 						if (PATHShort[jCount].Where(x => x.Item1 == value).Count() > 0)
 							test++;
@@ -1004,16 +1022,16 @@ namespace TypesConnect
 
 				var minPATHShort = PATHShort.Min(x => x.Count);
 				var indexPATHShort = PATHShort.First(x => x.Count == minPATHShort);
-			       this.helper(myGraphDB, mySecurityToken, myTransactionToken, ObjectList,indexPATHShort);
+			       this.Helper(myGraphDB, mySecurityToken, myTransactionToken, ObjectList,indexPATHShort);
 			}
 			#endregion
                 #endregion
             #region Output
            
 		
-           var result = new ListCollectionWrapper(stringPath.Select(x => x.Item1+" = "+ x.Item2));
-            this.path.Clear();
-            this.stringPath.Clear();
+           var result = new ListCollectionWrapper(_stringPath.Select(x => x.Item1+" = "+ x.Item2));
+            this._path.Clear();
+            this._stringPath.Clear();
 			return new FuncParameter(result);
 			 #endregion
 		}
@@ -1033,7 +1051,7 @@ namespace TypesConnect
 
 		public override IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
 		{
-			return new typesconnect();
+			return new TypesConnect();
 		}
 
 		public override string PluginShortName
@@ -1060,6 +1078,4 @@ namespace TypesConnect
 
 		#endregion
 	}
-
-
  }

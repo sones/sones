@@ -106,7 +106,12 @@ namespace sones.GraphQL.Result
         /// <param name="myDuration">The time that was spent on executing the query</param>
         /// <param name="myVertices">The vertices that should be available within the query result</param>
         /// <param name="myError">The error which occured during execution</param>
-        public QueryResult(String myQuery, String myQLName, UInt64 myDuration, ResultType myResultType, IEnumerable<IVertexView> myVertices, ASonesException myError)
+        public QueryResult(String myQuery, 
+                            String myQLName, 
+                            UInt64 myDuration, 
+                            ResultType myResultType, 
+                            IEnumerable<IVertexView> myVertices, 
+                            ASonesException myError)
         {
             TypeOfResult = myResultType;
             Vertices = myVertices ?? new List<IVertexView>();
