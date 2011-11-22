@@ -31,8 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lucene.Net">
+    <Reference Include="Lucene.Net, Version=2.9.4.1, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Library\External\LuceneDotNet\Lucene.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.FastVectorHighlighter">
+      <HintPath>..\..\..\..\Library\External\LuceneDotNet\Lucene.Net.FastVectorHighlighter.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,12 +50,17 @@
     <Compile Include="LuceneEntry.cs" />
     <Compile Include="LuceneIndex.cs" />
     <Compile Include="LuceneKeyList.cs" />
+    <Compile Include="LuceneResult.cs" />
     <Compile Include="LuceneReturn.cs" />
     <Compile Include="LuceneValueList.cs" />
     <Compile Include="SonesLuceneIndex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>

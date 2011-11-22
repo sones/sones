@@ -8,6 +8,8 @@ using sones.Plugins.Index.Persistent;
 using sones.Plugins.Index.Fulltext;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.Index.Helper;
+using sones.Plugins.Index.LuceneIdx;
+using sones.Plugins.Index.ErrorHandling;
 
 namespace sones.Plugins.Index.LuceneIdx
 {
@@ -22,8 +24,27 @@ namespace sones.Plugins.Index.LuceneIdx
 
         #endregion
 
+        #region Settings
+
+        private const int _MaxResultsFirst = 100;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the id of this index within the Solr instance.
+        /// </summary>
+        public String IndexId
+        {
+            get;
+            private set;
+        }
+
+        #endregion
+
         #region Constructor
-        
+
         public SonesLuceneIndex()
         {
 
@@ -31,6 +52,9 @@ namespace sones.Plugins.Index.LuceneIdx
         
         public SonesLuceneIndex(String myIndexId, String myPersistencePath = null, IList<Int64> myPropertyIDs = null)
         {
+            if (myIndexId == null)
+                throw new ArgumentNullException("myIndexId");
+
             if (myPersistencePath == null)
             {
                 _LuceneIndex = new LuceneIndex(myIndexId);
@@ -39,6 +63,8 @@ namespace sones.Plugins.Index.LuceneIdx
             {
                 _LuceneIndex = new LuceneIndex(myIndexId, myPersistencePath);
             }
+
+            IndexId = myIndexId;
         }
 
         #endregion
@@ -47,12 +73,12 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void Shutdown()
         {
-            throw new NotImplementedException();
+            
         }
 
         #endregion
@@ -61,7 +87,17 @@ namespace sones.Plugins.Index.LuceneIdx
         
         public ISonesFulltextResult Query(string myQuery)
         {
-            throw new NotImplementedException();
+            var result = _LuceneIndex.GetEntries(_MaxResultsFirst, myQuery);
+
+            if (result.TotalHits > _MaxResultsFirst)
+            {
+                result = _LuceneIndex.GetEntries(result.TotalHits, myQuery);
+            }
+
+            var lucene_result =  new LuceneResult(result);
+            result.Close();
+
+            return lucene_result;
         }
 
         public long KeyCount(long myPropertyID)
@@ -164,7 +200,17 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override void Add(IComparable myKey, long? myVertexID, Helper.IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
-            throw new NotImplementedException();
+            if (myKey != null)
+            {
+                if (myVertexID == null)
+                {
+                    AddEntry(myKey, new HashSet<Int64>(), myIndexAddStrategy);
+                }
+                else
+                {
+                    AddEntry(myKey, new HashSet<Int64>() { (Int64)myVertexID }, myIndexAddStrategy);
+                }
+            }
         }
 
         public override bool TryGetValues(IComparable myKey, out IEnumerable<long> myVertexIDs)
@@ -204,7 +250,7 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override void Clear()
         {
-            throw new NotImplementedException();
+            _LuceneIndex.Empty();
         }
 
         public override bool SupportsNullableKeys
@@ -213,5 +259,97 @@ namespace sones.Plugins.Index.LuceneIdx
         }
 
         #endregion
+
+        #region Private Helper
+
+        /// <summary>
+        /// Adds an entry to the index.
+        /// </summary>
+        /// <param name="myKey">The key.</param>
+        /// <param name="myValues">The value.</param>
+        /// <param name="myIndexAddStrategy">The index add strategy.</param>
+        /// 
+        /// <exception cref="System.ArgumentNullException">
+        ///		myKey is NULL.
+        /// </exception>
+        private void AddEntry(IComparable myKey, ISet<Int64> myValues, IndexAddStrategy myIndexAddStrategy, long? myPropertyID = null)
+        {
+            if (myKey == null)
+                throw new ArgumentNullException("myKey");
+
+            string key = myKey.ToString();
+
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return;
+            }
+
+            switch (myIndexAddStrategy)
+            {
+                case IndexAddStrategy.MERGE:
+                    {
+                        foreach (var item in myValues)
+                        {
+                            _LuceneIndex.AddEntry(new LuceneEntry(IndexId, System.Convert.ToInt64(item), key, myPropertyID));
+                        }
+
+                        break;
+                    }
+                case IndexAddStrategy.REPLACE:
+                    {
+                        string luceneQuery = key;
+
+                        if (string.IsNullOrWhiteSpace(luceneQuery))
+                        {
+                            luceneQuery = "*:*";
+                        }
+
+                        var result = _LuceneIndex.GetEntries(_MaxResultsFirst, luceneQuery);
+                        if (result.TotalHits > _MaxResultsFirst)
+                        {
+                            result = _LuceneIndex.GetEntries(result.TotalHits, luceneQuery);
+                        }
+
+                        var entries = result.Where(entry => entry.Text == key).ToList();
+                        foreach (var entry in entries)
+                        {
+                            _LuceneIndex.DeleteEntry(entry);
+                        }
+
+                        foreach (var value in myValues)
+                        {
+                            _LuceneIndex.AddEntry(new LuceneEntry(IndexId, System.Convert.ToInt64(value), key, myPropertyID));
+                        }
+
+                        break;
+                    }
+                case IndexAddStrategy.UNIQUE:
+                    {
+                        bool hasKey = false;
+
+                        if (string.IsNullOrWhiteSpace(myKey.ToString()))
+                            hasKey = _LuceneIndex.GetKeys(entry => entry.IndexId == this.IndexId).Any(k => k == key);
+                        else
+                            hasKey = _LuceneIndex.HasEntry(key, entry => entry.IndexId == this.IndexId);
+
+                        if (hasKey)
+                        {
+                            throw new IndexKeyExistsException(String.Format("Index key {0} already exist.", key));
+                        }
+                        else
+                        {
+                            foreach (var value in myValues)
+                            {
+                                _LuceneIndex.AddEntry(new LuceneEntry(IndexId, System.Convert.ToInt64(value), key, myPropertyID));
+                            }
+                        }
+
+                        break;
+                    }
+            }
+        }
+
+        #endregion
+
     }
 }
