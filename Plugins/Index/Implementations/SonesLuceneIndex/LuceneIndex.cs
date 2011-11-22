@@ -18,8 +18,8 @@ namespace sones.Plugins.Index.LuceneIdx
     public class LuceneIndex
     {
         private String _IndexId;
-        private IndexWriter _IndexWriter;
         private Lucene.Net.Store.Directory _IndexDirectory;
+        private Analyzer _Analyzer;
 
         public enum Fields { ID, INDEX_ID, VERTEX_ID, PROPERTY_ID, TEXT };
         internal static Dictionary<Fields, String> FieldNames = new Dictionary<Fields, string>()
@@ -48,9 +48,7 @@ namespace sones.Plugins.Index.LuceneIdx
 
             _IndexDirectory = new RAMDirectory();
 
-            Analyzer analyzer = new Lucene.Net.Analysis.Standard.StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29);
-
-            _IndexWriter = new IndexWriter(_IndexDirectory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
+            _Analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29);
         }
 
         /// <summary>
@@ -68,13 +66,31 @@ namespace sones.Plugins.Index.LuceneIdx
 
             _IndexDirectory = new SimpleFSDirectory(new DirectoryInfo(myPath));
             
-            Analyzer analyzer = new
-            StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29);
-
-            _IndexWriter = new IndexWriter(_IndexDirectory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
+            _Analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29);
         }
 
         #endregion
+
+        private IndexWriter GetIndexWriter()
+        {
+            IndexWriter _IndexWriter;
+            try
+            {
+                _IndexWriter = new IndexWriter(_IndexDirectory, _Analyzer, false, IndexWriter.MaxFieldLength.UNLIMITED);
+            }
+            catch (IOException)
+            {
+                _IndexWriter = new IndexWriter(_IndexDirectory, _Analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
+            }
+            return _IndexWriter;
+        }
+
+        private void CloseIndexWriter(IndexWriter myWriter)
+        {
+            myWriter.Optimize();
+            myWriter.Close();
+            myWriter.Dispose();
+        }
 
         /// <summary>
         /// Adds the specified entry to the index.
@@ -99,7 +115,7 @@ namespace sones.Plugins.Index.LuceneIdx
               myEntry.Id,
               Field.Store.YES,
               Field.Index.ANALYZED,
-              Field.TermVector.YES);
+              Field.TermVector.NO);
 
             doc.Add(id);
 
@@ -108,7 +124,7 @@ namespace sones.Plugins.Index.LuceneIdx
               myEntry.IndexId,
               Field.Store.YES,
               Field.Index.ANALYZED,
-              Field.TermVector.YES);
+              Field.TermVector.NO);
 
             doc.Add(indexId);
 
@@ -117,7 +133,7 @@ namespace sones.Plugins.Index.LuceneIdx
               myEntry.VertexId.ToString(),
               Field.Store.YES,
               Field.Index.ANALYZED,
-              Field.TermVector.YES);
+              Field.TermVector.NO);
 
             doc.Add(vertexId);
 
@@ -128,7 +144,7 @@ namespace sones.Plugins.Index.LuceneIdx
                     myEntry.PropertyId.ToString(),
                     Field.Store.YES,
                     Field.Index.ANALYZED,
-                    Field.TermVector.YES);
+                    Field.TermVector.NO);
 
                 doc.Add(propertyId);
             }
@@ -138,12 +154,13 @@ namespace sones.Plugins.Index.LuceneIdx
               myEntry.Text,
               Field.Store.YES,
               Field.Index.ANALYZED,
-              Field.TermVector.YES);
+              Field.TermVector.WITH_POSITIONS_OFFSETS);
 
             doc.Add(text);
 
-            _IndexWriter.AddDocument(doc);
-            _IndexWriter.Commit();
+            var writer = GetIndexWriter();
+            writer.AddDocument(doc);
+            CloseIndexWriter(writer);
         }
 
         /// <summary>
@@ -167,9 +184,10 @@ namespace sones.Plugins.Index.LuceneIdx
             }
 
             Term delterm = new Term(LuceneIndex.FieldNames[LuceneIndex.Fields.ID], myEntry.Id);
-            
-            _IndexWriter.DeleteDocuments(delterm);
-            _IndexWriter.Commit();
+
+            var writer = GetIndexWriter();
+            writer.DeleteDocuments(delterm);
+            CloseIndexWriter(writer);
         }
 
         /// <summary>
@@ -194,6 +212,8 @@ namespace sones.Plugins.Index.LuceneIdx
                 throw new InvalidOperationException("myLuceneQuery parameter cannot be null!");
             }
 
+            var writer = GetIndexWriter();
+
             if (select != null)
             {
                 // if predicate is given, we need to query first
@@ -217,7 +237,7 @@ namespace sones.Plugins.Index.LuceneIdx
                 }
                 ret.Close();
 
-                _IndexWriter.DeleteDocuments(delterms.ToArray());
+                writer.DeleteDocuments(delterms.ToArray());
             }
             else
             {
@@ -232,10 +252,10 @@ namespace sones.Plugins.Index.LuceneIdx
                     return;
                 }
 
-                _IndexWriter.DeleteDocuments(parsedquery);
+                writer.DeleteDocuments(parsedquery);
             }
 
-            _IndexWriter.Commit();
+            CloseIndexWriter(writer);
         }
 
         /// <summary>
@@ -335,7 +355,8 @@ namespace sones.Plugins.Index.LuceneIdx
                 throw new InvalidOperationException("myQuery cannot be null!");
             }
 
-            var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, FieldNames[Fields.TEXT], new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
+            var analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29);
+            var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, FieldNames[Fields.TEXT], analyzer);
             Query outerquery = null;
             Query innerquery = null;
             Query query = null;
@@ -365,7 +386,7 @@ namespace sones.Plugins.Index.LuceneIdx
 
             _IndexSearcher.Search(query, _Collector);
 
-            return new LuceneReturn(_Collector, _IndexSearcher);
+            return new LuceneReturn(_Collector, _IndexSearcher, query, analyzer);
         }
 
         /// <summary>
@@ -389,8 +410,9 @@ namespace sones.Plugins.Index.LuceneIdx
         /// </exception>
         public LuceneReturn GetEntriesInnerByField(int myMaxResultsCount, String myQuery, String myInnerQuery, Fields myInnerField)
         {
-            var outerqueryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, FieldNames[Fields.TEXT], new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
-            var innerqueryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, FieldNames[myInnerField], new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
+            var analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29);
+            var outerqueryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, FieldNames[Fields.TEXT], analyzer);
+            var innerqueryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, FieldNames[myInnerField], analyzer);
             Query outerquery = null;
             Query innerquery = null;
             Query query = null;
@@ -413,7 +435,7 @@ namespace sones.Plugins.Index.LuceneIdx
 
             _IndexSearcher.Search(query, _Collector);
 
-            return new LuceneReturn(_Collector, _IndexSearcher);
+            return new LuceneReturn(_Collector, _IndexSearcher, query, analyzer);
         }
 
         /// <summary>
@@ -430,13 +452,18 @@ namespace sones.Plugins.Index.LuceneIdx
         /// </returns>
         public LuceneKeyList GetKeys(Predicate<LuceneEntry> select = null)
         {
+            var searcher = new IndexSearcher(_IndexDirectory, true);
+            var reader = searcher.GetIndexReader();
+            
             if (select == null)
             {
-                return new LuceneKeyList(_IndexWriter.GetReader());
+                var ret = new LuceneKeyList(reader);
+                return ret;
             }
             else
             {
-                return new LuceneKeyList(_IndexWriter.GetReader(), select);
+                var ret = new LuceneKeyList(reader, select);
+                return ret;
             }
         }
 
@@ -453,22 +480,19 @@ namespace sones.Plugins.Index.LuceneIdx
         /// </returns>
         public LuceneValueList GetValues(Predicate<LuceneEntry> select = null)
         {
+            var searcher = new IndexSearcher(_IndexDirectory, true);
+            var reader = searcher.GetIndexReader();
+
             if (select == null)
             {
-                return new LuceneValueList(_IndexWriter.GetReader());
+                var ret = new LuceneValueList(reader);
+                return ret;
             }
             else
             {
-                return new LuceneValueList(_IndexWriter.GetReader(), select);
+                var ret = new LuceneValueList(reader, select);
+                return ret;
             }
-        }
-
-        /// <summary>
-        /// Closes the lucene index.
-        /// </summary>        
-        public void Close()
-        {
-            _IndexWriter.Close();
         }
 
         /// <summary>
@@ -476,8 +500,9 @@ namespace sones.Plugins.Index.LuceneIdx
         /// </summary>        
         public void Empty()
         {
-            _IndexWriter.DeleteAll();
-            _IndexWriter.Commit();
+            var writer = GetIndexWriter();
+            writer.DeleteAll();
+            CloseIndexWriter(writer);
         }
     }
 }
