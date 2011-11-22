@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Lucene.Net;
 using Lucene.Net.Search;
+using Lucene.Net.Analysis;
+using Lucene.Net.Index;
+using Lucene.Net.Search.Vectorhighlight;
 
 namespace sones.Plugins.Index.LuceneIdx
 {
@@ -12,12 +16,18 @@ namespace sones.Plugins.Index.LuceneIdx
         TopDocs _docs;
         int _pos = -1;
         int _doccount = 0;
+        FastVectorHighlighter _highlighter;
+        Analyzer _analyzer;
+        Query _query;
 
-        public LuceneReturnEnumerator(TopDocs myDocuments, IndexSearcher myIndexSearcher)
+        public LuceneReturnEnumerator(TopDocs myDocuments, IndexSearcher myIndexSearcher, FastVectorHighlighter myHighlighter, Analyzer myAnalyzer, Query myQuery)
         {
             _IndexSearcher = myIndexSearcher;
             _docs = myDocuments;
-            _doccount = _docs.scoreDocs.Count();
+            _doccount = _docs.ScoreDocs.Count();
+            _highlighter = myHighlighter;
+            _analyzer = myAnalyzer;
+            _query = myQuery;
         }
 
         public LuceneEntry Current
@@ -26,8 +36,13 @@ namespace sones.Plugins.Index.LuceneIdx
             {
                 if (_pos < 0) MoveNext();
 
-                var docnum = _docs.scoreDocs.ElementAt(_pos).doc;
-                return new LuceneEntry(_IndexSearcher.Doc(docnum));
+                var docnum = _docs.ScoreDocs[_pos].doc;
+                var entry = new LuceneEntry(_IndexSearcher.Doc(docnum));
+                
+                FieldQuery fieldquery = _highlighter.GetFieldQuery(_query);
+                entry.Highlights = _highlighter.GetBestFragments(fieldquery, _IndexSearcher.GetIndexReader(), docnum, LuceneIndex.FieldNames[LuceneIndex.Fields.TEXT], 100, 3);
+
+                return entry;
             }
         }
 
@@ -65,13 +80,21 @@ namespace sones.Plugins.Index.LuceneIdx
         private TopScoreDocCollector _Collector;
         private bool bOpen = false;
         TopDocs _docs;
+        FastVectorHighlighter _highlighter;
+        Analyzer _analyzer;
+        Query _query;
 
-        public LuceneReturn(TopScoreDocCollector myCollector, IndexSearcher myIndexSearcher)
+        public LuceneReturn(TopScoreDocCollector myCollector, IndexSearcher myIndexSearcher, Query myQuery, Analyzer myAnalyzer)
         {
             _Collector = myCollector;
             _IndexSearcher = myIndexSearcher;
             _docs = _Collector.TopDocs();
             bOpen = true;
+
+            _highlighter = new FastVectorHighlighter();
+            _analyzer = myAnalyzer;
+            _query = myQuery;
+
         }
 
         public IEnumerator<LuceneEntry> GetEnumerator()
@@ -81,7 +104,7 @@ namespace sones.Plugins.Index.LuceneIdx
                 throw new InvalidOperationException("This LuceneReturn Enumerator has already been closed!");
             }
 
-            return new LuceneReturnEnumerator(_docs, _IndexSearcher);
+            return new LuceneReturnEnumerator(_docs, _IndexSearcher, _highlighter, _analyzer, _query);
         }
 
         public void Close()

@@ -57,10 +57,19 @@ namespace sones.Plugins.Index.LuceneIdx
             set;
         }
 
+        /// <summary>
+        /// Gets or sets the highlights.
+        /// </summary>
+        public string[] Highlights
+        {
+            get;
+            set;
+        }
+
 		#endregion
 
         /// <summary>
-        /// Gets or sets the score. (Set only by Solr.Net)
+        /// Gets or sets the score.
         /// </summary>
         public double? Score 
         { 
