@@ -26,12 +26,27 @@ using System.Runtime.Serialization;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
+using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests.Expression;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceUpdateChangeset
     {
+        // getvertexrequest
+        [DataMember]
+        public String VertexTypeName;
+
+        [DataMember]
+        public Int64 VertexTypeID;
+
+        [DataMember]
+        public List<Int64> VertexIDs;
+
+        [DataMember]
+        public ServiceBaseExpression Expression;
+
+        // updaterequest
         [DataMember]
         public String Comment;
 
@@ -55,9 +70,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects
 
         [DataMember]
         public Dictionary<String, IComparable> UpdatedStructuredProperties;
-
-        //[DataMember]
-        //public IDictionary<String, Stream> UpdatedBinaryProperties;
 
         [DataMember]
         public List<ServiceEdgePredefinition> UpdatedOutgoingEdges;

@@ -322,8 +322,6 @@ namespace sones.GraphDS.GraphDSRemoteClient
             var svcVertices = _GraphDSService.Update(
                 mySecurityToken,
                 myTransactionID,
-                new ServiceVertexType(myRequestUpdate.GetVerticesRequest.VertexTypeName),
-                myRequestUpdate.GetVerticesRequest.VertexIDs.ToList(),
                 new ServiceUpdateChangeset(myRequestUpdate));
             var vertices = svcVertices.Select(x => new RemoteVertex(x, this));
             RunningTime.Stop();

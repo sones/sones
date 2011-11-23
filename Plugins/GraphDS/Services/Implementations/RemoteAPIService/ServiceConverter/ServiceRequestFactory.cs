@@ -343,9 +343,28 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             return Request;
         }
 
-        public static RequestGetVertices MakeRequestGetVertices(ServiceVertexType myVertexType)
+        public static RequestGetVertices MakeRequestGetVertices(String myVertexTypeName, IEnumerable<Int64> myVertexIDs = null)
         {
-            return new RequestGetVertices(myVertexType.Name);
+            if (myVertexIDs == null)
+            {
+                return new RequestGetVertices(myVertexTypeName);
+            }
+            else
+            {
+                return new RequestGetVertices(myVertexTypeName, myVertexIDs);
+            }
+        }
+
+        public static RequestGetVertices MakeRequestGetVertices(Int64 myVertexTypeID, IEnumerable<Int64> myVertexIDs = null)
+        {
+            if (myVertexIDs == null)
+            {
+                return new RequestGetVertices(myVertexTypeID);
+            }
+            else
+            {
+                return new RequestGetVertices(myVertexTypeID, myVertexIDs);
+            }
         }
 
         public static RequestGetVertices MakeRequestGetVertices(ServiceBaseExpression myExpression)
@@ -362,18 +381,25 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             return Request;
         }
 
-        public static RequestUpdate MakeRequestUpdate(ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs, ServiceUpdateChangeset myUpdateChangeset)
+        public static RequestUpdate MakeRequestUpdate(ServiceUpdateChangeset myUpdateChangeset)
         {
             #region PreRequest
 
             RequestGetVertices PreRequest = null;
-            if (myVertexIDs != null)
+            if (myUpdateChangeset.Expression == null)
             {
-                PreRequest = new RequestGetVertices(myVertexType.Name, myVertexIDs);
+                if (myUpdateChangeset.VertexTypeName != null)
+                {
+                    PreRequest = MakeRequestGetVertices(myUpdateChangeset.VertexTypeName, myUpdateChangeset.VertexIDs);
+                }
+                else
+                {
+                    PreRequest = MakeRequestGetVertices(myUpdateChangeset.VertexTypeID, myUpdateChangeset.VertexIDs);
+                }
             }
             else
             {
-                PreRequest = new RequestGetVertices(myVertexType.Name);
+                PreRequest = MakeRequestGetVertices(myUpdateChangeset.Expression);
             }
 
             RequestUpdate Request = new RequestUpdate(PreRequest);
@@ -389,24 +415,36 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
             
             #region element collection
 
-            foreach (var element in myUpdateChangeset.AddedElementsToCollectionProperties)
+            if (myUpdateChangeset.AddedElementsToCollectionProperties != null)
             {
-                Request.AddElementsToCollection(element.Key, element.Value);
+                foreach (var element in myUpdateChangeset.AddedElementsToCollectionProperties)
+                {
+                    Request.AddElementsToCollection(element.Key, element.Value);
+                }
             }
 
-            foreach (var element in myUpdateChangeset.RemovedElementsFromCollectionProperties)
+            if (myUpdateChangeset.RemovedElementsFromCollectionProperties != null)
             {
-                Request.RemoveElementsFromCollection(element.Key, element.Value);
+                foreach (var element in myUpdateChangeset.RemovedElementsFromCollectionProperties)
+                {
+                    Request.RemoveElementsFromCollection(element.Key, element.Value);
+                }
             }
 
-            foreach (var element in myUpdateChangeset.AddedElementsToCollectionEdges)
+            if (myUpdateChangeset.AddedElementsToCollectionEdges != null)
             {
-                Request.AddElementsToCollection(element.Key, element.Value.ToEdgePredefinition());
+                foreach (var element in myUpdateChangeset.AddedElementsToCollectionEdges)
+                {
+                    Request.AddElementsToCollection(element.Key, element.Value.ToEdgePredefinition());
+                }
             }
 
-            foreach (var element in myUpdateChangeset.RemovedElementsFromCollectionEdges)
+            if (myUpdateChangeset.RemovedElementsFromCollectionEdges != null)
             {
-                Request.RemoveElementsFromCollection(element.Key, element.Value.ToEdgePredefinition());
+                foreach (var element in myUpdateChangeset.RemovedElementsFromCollectionEdges)
+                {
+                    Request.RemoveElementsFromCollection(element.Key, element.Value.ToEdgePredefinition());
+                }
             }
 
             #endregion
@@ -414,42 +452,59 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 
             #region Properties
 
-            foreach (var item in myUpdateChangeset.UpdatedStructuredProperties)
+            if (myUpdateChangeset.UpdatedStructuredProperties != null)
             {
-                Request.UpdateStructuredProperty(item.Key, item.Value);
-            }
-            
-            foreach (var item in myUpdateChangeset.UpdatedUnstructuredProperties)
-            {
-                Request.UpdateUnstructuredProperty(item.Key, item.Value);
+                foreach (var item in myUpdateChangeset.UpdatedStructuredProperties)
+                {
+                    Request.UpdateStructuredProperty(item.Key, item.Value);
+                }
             }
 
-            foreach (var item in myUpdateChangeset.UpdatedUnknownProperties)
-            {
-                Request.UpdateUnknownProperty(item.Key, item.Value);
+            if (myUpdateChangeset.UpdatedUnstructuredProperties != null)
+            { 
+                foreach (var item in myUpdateChangeset.UpdatedUnstructuredProperties)
+                {
+                    Request.UpdateUnstructuredProperty(item.Key, item.Value);
+                }
             }
 
+            if (myUpdateChangeset.UpdatedUnknownProperties != null)
+            {
+                foreach (var item in myUpdateChangeset.UpdatedUnknownProperties)
+                {
+                    Request.UpdateUnknownProperty(item.Key, item.Value);
+                }
+            }
 
             #endregion
 
 
             #region Update Edges
 
-            foreach (var Edge in myUpdateChangeset.UpdatedOutgoingEdges)
+            if (myUpdateChangeset.UpdatedOutgoingEdges != null)
             {
-                Request.UpdateEdge(Edge.ToEdgePredefinition());
+                foreach (var Edge in myUpdateChangeset.UpdatedOutgoingEdges)
+                {
+                    Request.UpdateEdge(Edge.ToEdgePredefinition());
+                }
             }
 
-            foreach (var Edge in myUpdateChangeset.UpdateOutgoingEdgesProperties)
+            if (myUpdateChangeset.UpdateOutgoingEdgesProperties != null)
             {
-                Request.UpdateEdge(Edge.ToSingleEdgeUpdateDefinition());
+                foreach (var Edge in myUpdateChangeset.UpdateOutgoingEdgesProperties)
+                {
+                    Request.UpdateEdge(Edge.ToSingleEdgeUpdateDefinition());
+                }
             }
             
             #endregion          
 
-            foreach (var item in myUpdateChangeset.RemovedAttributes)
+            if (myUpdateChangeset.RemovedAttributes != null)
             {
-                Request.RemoveAttribute(item);
+                foreach (var item in myUpdateChangeset.RemovedAttributes)
+                {
+                    Request.RemoveAttribute(item);
+                }
             }
 
             return Request;
