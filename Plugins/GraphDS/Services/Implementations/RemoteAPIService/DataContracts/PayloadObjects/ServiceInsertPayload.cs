@@ -31,6 +31,9 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InsertPayload
     public class ServiceInsertPayload
     {
         [DataMember]
+        public String VertexTypeName;
+
+        [DataMember]
         public List<StructuredProperty> StructuredProperties;
 
         [DataMember]

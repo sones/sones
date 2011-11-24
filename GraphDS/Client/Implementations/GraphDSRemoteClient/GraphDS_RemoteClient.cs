@@ -199,7 +199,7 @@ namespace sones.GraphDS.GraphDSRemoteClient
 
         #region IGraphDSClient
 
-        public sones.GraphQL.Result.QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myQueryString, string myQueryLanguageName)
+        public IQueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, long myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
             return _GraphDSService.Query(mySecurityToken, myTransactionToken, myQueryString, myQueryLanguageName).ToQueryResult(this);
         }
@@ -322,8 +322,6 @@ namespace sones.GraphDS.GraphDSRemoteClient
             var svcVertices = _GraphDSService.Update(
                 mySecurityToken,
                 myTransactionID,
-                new ServiceVertexType(myRequestUpdate.GetVerticesRequest.VertexTypeName),
-                myRequestUpdate.GetVerticesRequest.VertexIDs.ToList(),
                 new ServiceUpdateChangeset(myRequestUpdate));
             var vertices = svcVertices.Select(x => new RemoteVertex(x, this));
             RunningTime.Stop();
@@ -387,6 +385,10 @@ namespace sones.GraphDS.GraphDSRemoteClient
             if (myRequestGetVertices.VertexTypeName != null)
             {
                 svcVertices = _GraphDSService.GetVerticesByType(mySecurityToken, myTransactionID, new ServiceVertexType(myRequestGetVertices.VertexTypeName));
+            }
+            else if (myRequestGetVertices.VertexTypeID != null)
+            {
+                svcVertices = _GraphDSService.GetVerticesByType(mySecurityToken, myTransactionID, new ServiceVertexType(myRequestGetVertices.VertexTypeID));
             }
             else
             {

@@ -62,7 +62,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
         #region public methods
 
-        public QueryResult ExecuteSelect(SecurityToken mySecurityToken, Int64 myTransactionToken, SelectDefinition selectDefinition, String myQuery)
+        public IQueryResult ExecuteSelect(SecurityToken mySecurityToken, Int64 myTransactionToken, SelectDefinition selectDefinition, String myQuery)
         {
             #region Data
 
@@ -110,7 +110,7 @@ namespace sones.GraphQL.GQL.Manager.Select
 
             sw.Stop();
 
-            return new QueryResult(myQuery, SonesGQLConstants.GQL, Convert.ToUInt64(sw.Elapsed.TotalMilliseconds), ResultType.Successful, AggregateListOfVertices(_ListOfVertices1));
+            return QueryResult.Success(myQuery, SonesGQLConstants.GQL, AggregateListOfVertices(_ListOfVertices1), Convert.ToUInt64(sw.Elapsed.TotalMilliseconds));
         }
 
         #endregion

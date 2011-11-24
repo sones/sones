@@ -35,10 +35,14 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
         public ServiceOutgoingEdgeDefinition(IOutgoingEdgeDefinition myOutgoingEdgeDefinition)
             : base(myOutgoingEdgeDefinition)
         {
-            this.EdgeType = new ServiceEdgeType(myOutgoingEdgeDefinition.EdgeType);
-            this.InnerEdgeType = new ServiceEdgeType(myOutgoingEdgeDefinition.InnerEdgeType);
-            this.SourceVertexType = new ServiceVertexType(myOutgoingEdgeDefinition.SourceVertexType);
-            this.TargetVertexType = new ServiceVertexType(myOutgoingEdgeDefinition.TargetVertexType);
+            this.EdgeType = (myOutgoingEdgeDefinition.EdgeType == null)
+                ? null : new ServiceEdgeType(myOutgoingEdgeDefinition.EdgeType);
+            this.InnerEdgeType = (myOutgoingEdgeDefinition.InnerEdgeType == null)
+                ? null : new ServiceEdgeType(myOutgoingEdgeDefinition.InnerEdgeType);
+            this.SourceVertexType = (myOutgoingEdgeDefinition.SourceVertexType == null)
+                ? null : new ServiceVertexType(myOutgoingEdgeDefinition.SourceVertexType);
+            this.TargetVertexType = (myOutgoingEdgeDefinition.TargetVertexType == null)
+                ? null : new ServiceVertexType(myOutgoingEdgeDefinition.TargetVertexType);
             this.Multiplicity = ConvertHelper.ToServiceEdgeMultiplicity(myOutgoingEdgeDefinition.Multiplicity);
         }
 

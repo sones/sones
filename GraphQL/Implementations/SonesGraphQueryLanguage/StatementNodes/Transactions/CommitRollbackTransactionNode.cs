@@ -92,7 +92,7 @@ namespace sones.GraphQL.StatementNodes.Transactions
             get { return TypesOfStatements.Readonly; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override IQueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
 
@@ -113,7 +113,7 @@ namespace sones.GraphQL.StatementNodes.Transactions
             _ReturnValues.Add("Name", Name == null ? "" : Name);
             _ReturnValues.Add("ASync", ASync);
 
-            return new QueryResult(myQuery, "GQL", Convert.ToUInt64(sw.ElapsedMilliseconds), ResultType.Successful, new List<IVertexView> { new VertexView(_ReturnValues, null) } );
+            return QueryResult.Success(myQuery, SonesGQLConstants.GQL, new List<IVertexView> { new VertexView(_ReturnValues, null) }, Convert.ToUInt64(sw.ElapsedMilliseconds));
         }
 
         #endregion

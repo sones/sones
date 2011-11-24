@@ -180,8 +180,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         //List<ServiceVertexInstance>Traverse(SecurityToken mySecToken, Int64 myTransactionToken);
 
         [OperationContract]
-        List<ServiceVertexInstance> Update(SecurityToken mySecurityToken, Int64 myTransactionToken, ServiceVertexType myVertexType, IEnumerable<Int64> myVertexIDs,
-            ServiceUpdateChangeset myUpdateChangeset);
+        List<ServiceVertexInstance> Update(SecurityToken mySecurityToken, Int64 myTransactionToken, ServiceUpdateChangeset myUpdateChangeset);
 
         [OperationContract]
         void RebuildIndices(SecurityToken mySecurityToken, Int64 myTransactionToken, IEnumerable<String> myVertexTypeNames);

@@ -66,7 +66,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
         #region IOInterface
 
-        public string GenerateOutputResult(QueryResult myQueryResult, Dictionary<String, String> myParams)
+        public string GenerateOutputResult(IQueryResult myQueryResult, Dictionary<String, String> myParams)
         {
             var result = new SchemaToClassesGenerator.Result();
 
@@ -76,7 +76,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
             List<SchemaToClassesGenerator.VertexView> vertices = new List<SchemaToClassesGenerator.VertexView>();
 
-            foreach (var aVertex in myQueryResult)
+            foreach (var aVertex in myQueryResult.Vertices)
             {
                 vertices.Add(GenerateVertexView(aVertex));
             }
@@ -360,7 +360,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
         #endregion
 
-        public QueryResult GenerateQueryResult(string myResult)
+        public IQueryResult GenerateQueryResult(string myResult)
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(myResult);
@@ -470,7 +470,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
         /// </summary>
         /// <param name="queryresult">The query result.</param>
         /// <returns>The exception string.</returns>
-        private String HandleQueryExceptions(QueryResult queryresult)
+        private String HandleQueryExceptions(IQueryResult queryresult)
         {
             StringBuilder SB = new StringBuilder();
 

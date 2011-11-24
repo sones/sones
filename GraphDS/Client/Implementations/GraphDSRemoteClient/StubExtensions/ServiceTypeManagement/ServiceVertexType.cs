@@ -12,6 +12,11 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
         {
         }
 
+        internal ServiceVertexType(Int64 myID)
+        {
+            this.ID = myID;
+        }
+
         internal ServiceVertexType(IVertexType myVertexType) : base(myVertexType.Name)
         {
         }

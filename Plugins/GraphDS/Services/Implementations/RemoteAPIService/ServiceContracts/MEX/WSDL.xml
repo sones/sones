@@ -30,6 +30,17 @@
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="AGraphElement" nillable="true" type="tns:AGraphElement"/>
+      <xsd:complexType name="ServiceSingleEdgeInstance">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ServiceEdgeInstance">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="HyperEdgeSourceVertex" nillable="true" type="tns:ServiceVertexInstance"/>
+              <xsd:element minOccurs="0" name="TargetVertex" nillable="true" type="tns:ServiceVertexInstance"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="ServiceSingleEdgeInstance" nillable="true" type="tns:ServiceSingleEdgeInstance"/>
       <xsd:complexType name="ServiceEdgeInstance">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:AGraphElement">
@@ -42,6 +53,22 @@
         </xsd:complexContent>
       </xsd:complexType>
       <xsd:element name="ServiceEdgeInstance" nillable="true" type="tns:ServiceEdgeInstance"/>
+      <xsd:complexType name="ServiceHyperEdgeInstance">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ServiceEdgeInstance">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="SingleEdges" nillable="true" type="tns:ArrayOfServiceSingleEdgeInstance"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="ServiceHyperEdgeInstance" nillable="true" type="tns:ServiceHyperEdgeInstance"/>
+      <xsd:complexType name="ArrayOfServiceSingleEdgeInstance">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="ServiceSingleEdgeInstance" nillable="true" type="tns:ServiceSingleEdgeInstance"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="ArrayOfServiceSingleEdgeInstance" nillable="true" type="tns:ArrayOfServiceSingleEdgeInstance"/>
       <xsd:element name="GetBinaryPropertyResponse">
         <xsd:complexType>
           <xsd:sequence>
@@ -807,22 +834,48 @@
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ArrayOfServiceVertexInstance" nillable="true" type="tns:ArrayOfServiceVertexInstance"/>
-      <xsd:complexType name="ServiceBinaryExpression">
+      <xsd:simpleType name="ServiceUnaryLogicOperator">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Not"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:element name="ServiceUnaryLogicOperator" nillable="true" type="tns:ServiceUnaryLogicOperator"/>
+      <xsd:complexType name="ServicePropertyExpression">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceBaseExpression">
             <xsd:sequence>
-              <xsd:element minOccurs="0" name="Left" nillable="true" type="tns:ServiceBaseExpression"/>
-              <xsd:element minOccurs="0" name="Operator" type="tns:ServiceBinaryOperator"/>
-              <xsd:element minOccurs="0" name="Right" nillable="true" type="tns:ServiceBaseExpression"/>
+              <xsd:element minOccurs="0" name="Edition" nillable="true" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="NameOfProperty" nillable="true" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="NameOfVertexType" nillable="true" type="xsd:string"/>
             </xsd:sequence>
           </xsd:extension>
         </xsd:complexContent>
       </xsd:complexType>
-      <xsd:element name="ServiceBinaryExpression" nillable="true" type="tns:ServiceBinaryExpression"/>
+      <xsd:element name="ServicePropertyExpression" nillable="true" type="tns:ServicePropertyExpression"/>
       <xsd:complexType name="ServiceBaseExpression">
         <xsd:sequence/>
       </xsd:complexType>
       <xsd:element name="ServiceBaseExpression" nillable="true" type="tns:ServiceBaseExpression"/>
+      <xsd:complexType name="ServiceSingleLiteralExpression">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ServiceBaseExpression">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Constant" nillable="true" type="xsd:anyType"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="ServiceSingleLiteralExpression" nillable="true" type="tns:ServiceSingleLiteralExpression"/>
+      <xsd:complexType name="ServiceCollectionLiteralExpression">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ServiceBaseExpression">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="CollectionLiteral" nillable="true" type="q55:ArrayOfanyType" xmlns:q55="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="ServiceCollectionLiteralExpression" nillable="true" type="tns:ServiceCollectionLiteralExpression"/>
       <xsd:simpleType name="ServiceBinaryOperator">
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="Equals"/>
@@ -849,12 +902,18 @@
         </xsd:complexContent>
       </xsd:complexType>
       <xsd:element name="ServiceUnaryExpression" nillable="true" type="tns:ServiceUnaryExpression"/>
-      <xsd:simpleType name="ServiceUnaryLogicOperator">
-        <xsd:restriction base="xsd:string">
-          <xsd:enumeration value="Not"/>
-        </xsd:restriction>
-      </xsd:simpleType>
-      <xsd:element name="ServiceUnaryLogicOperator" nillable="true" type="tns:ServiceUnaryLogicOperator"/>
+      <xsd:complexType name="ServiceBinaryExpression">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ServiceBaseExpression">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="Left" nillable="true" type="tns:ServiceBaseExpression"/>
+              <xsd:element minOccurs="0" name="Operator" type="tns:ServiceBinaryOperator"/>
+              <xsd:element minOccurs="0" name="Right" nillable="true" type="tns:ServiceBaseExpression"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="ServiceBinaryExpression" nillable="true" type="tns:ServiceBinaryExpression"/>
       <xsd:complexType name="ServiceRangeLiteralExpression">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceBaseExpression">
@@ -867,38 +926,6 @@
         </xsd:complexContent>
       </xsd:complexType>
       <xsd:element name="ServiceRangeLiteralExpression" nillable="true" type="tns:ServiceRangeLiteralExpression"/>
-      <xsd:complexType name="ServiceSingleLiteralExpression">
-        <xsd:complexContent mixed="false">
-          <xsd:extension base="tns:ServiceBaseExpression">
-            <xsd:sequence>
-              <xsd:element minOccurs="0" name="Constant" nillable="true" type="xsd:anyType"/>
-            </xsd:sequence>
-          </xsd:extension>
-        </xsd:complexContent>
-      </xsd:complexType>
-      <xsd:element name="ServiceSingleLiteralExpression" nillable="true" type="tns:ServiceSingleLiteralExpression"/>
-      <xsd:complexType name="ServicePropertyExpression">
-        <xsd:complexContent mixed="false">
-          <xsd:extension base="tns:ServiceBaseExpression">
-            <xsd:sequence>
-              <xsd:element minOccurs="0" name="Edition" nillable="true" type="xsd:string"/>
-              <xsd:element minOccurs="0" name="NameOfProperty" nillable="true" type="xsd:string"/>
-              <xsd:element minOccurs="0" name="NameOfVertexType" nillable="true" type="xsd:string"/>
-            </xsd:sequence>
-          </xsd:extension>
-        </xsd:complexContent>
-      </xsd:complexType>
-      <xsd:element name="ServicePropertyExpression" nillable="true" type="tns:ServicePropertyExpression"/>
-      <xsd:complexType name="ServiceCollectionLiteralExpression">
-        <xsd:complexContent mixed="false">
-          <xsd:extension base="tns:ServiceBaseExpression">
-            <xsd:sequence>
-              <xsd:element minOccurs="0" name="CollectionLiteral" nillable="true" type="q55:ArrayOfanyType" xmlns:q55="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
-            </xsd:sequence>
-          </xsd:extension>
-        </xsd:complexContent>
-      </xsd:complexType>
-      <xsd:element name="ServiceCollectionLiteralExpression" nillable="true" type="tns:ServiceCollectionLiteralExpression"/>
       <xsd:element name="GetVerticesByExpression">
         <xsd:complexType>
           <xsd:sequence>
@@ -933,6 +960,7 @@
           <xsd:element minOccurs="0" name="StructuredProperties" nillable="true" type="tns:ArrayOfStructuredProperty"/>
           <xsd:element minOccurs="0" name="UUID" nillable="true" type="xsd:long"/>
           <xsd:element minOccurs="0" name="UnstructuredProperties" nillable="true" type="tns:ArrayOfUnstructuredProperty"/>
+          <xsd:element minOccurs="0" name="VertexTypeName" nillable="true" type="xsd:string"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ServiceInsertPayload" nillable="true" type="tns:ServiceInsertPayload"/>
@@ -1019,6 +1047,14 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <xsd:complexType name="ServiceVertexView">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="HyperEdges" nillable="true" type="q61:ArrayOfTupleOfstringServiceHyperEdgeView7AF3f8r2" xmlns:q61="http://schemas.datacontract.org/2004/07/System"/>
+          <xsd:element minOccurs="0" name="Properties" nillable="true" type="q62:ArrayOfTupleOfstringanyType" xmlns:q62="http://schemas.datacontract.org/2004/07/System"/>
+          <xsd:element minOccurs="0" name="SingleEdges" nillable="true" type="q63:ArrayOfTupleOfstringServiceSingleEdgeView7AF3f8r2" xmlns:q63="http://schemas.datacontract.org/2004/07/System"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="ServiceVertexView" nillable="true" type="tns:ServiceVertexView"/>
       <xsd:complexType name="ServiceHyperEdgeView">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceEdgeView">
@@ -1031,7 +1067,7 @@
       <xsd:element name="ServiceHyperEdgeView" nillable="true" type="tns:ServiceHyperEdgeView"/>
       <xsd:complexType name="ServiceEdgeView">
         <xsd:sequence>
-          <xsd:element minOccurs="0" name="PropertyList" nillable="true" type="q61:ArrayOfTupleOfstringanyType" xmlns:q61="http://schemas.datacontract.org/2004/07/System"/>
+          <xsd:element minOccurs="0" name="PropertyList" nillable="true" type="q64:ArrayOfTupleOfstringanyType" xmlns:q64="http://schemas.datacontract.org/2004/07/System"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ServiceEdgeView" nillable="true" type="tns:ServiceEdgeView"/>
@@ -1051,14 +1087,6 @@
         </xsd:complexContent>
       </xsd:complexType>
       <xsd:element name="ServiceSingleEdgeView" nillable="true" type="tns:ServiceSingleEdgeView"/>
-      <xsd:complexType name="ServiceVertexView">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" name="HyperEdges" nillable="true" type="q62:ArrayOfTupleOfstringServiceHyperEdgeView7AF3f8r2" xmlns:q62="http://schemas.datacontract.org/2004/07/System"/>
-          <xsd:element minOccurs="0" name="Properties" nillable="true" type="q63:ArrayOfTupleOfstringanyType" xmlns:q63="http://schemas.datacontract.org/2004/07/System"/>
-          <xsd:element minOccurs="0" name="SingleEdges" nillable="true" type="q64:ArrayOfTupleOfstringServiceSingleEdgeView7AF3f8r2" xmlns:q64="http://schemas.datacontract.org/2004/07/System"/>
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:element name="ServiceVertexView" nillable="true" type="tns:ServiceVertexView"/>
       <xsd:element name="Query">
         <xsd:complexType>
           <xsd:sequence>
@@ -1111,26 +1139,28 @@
           <xsd:sequence>
             <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q66:SecurityToken" xmlns:q66="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransactionToken" type="xsd:long"/>
-            <xsd:element minOccurs="0" name="myVertexType" nillable="true" type="tns:ServiceVertexType"/>
-            <xsd:element minOccurs="0" name="myVertexIDs" nillable="true" type="q67:ArrayOflong" xmlns:q67="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
             <xsd:element minOccurs="0" name="myUpdateChangeset" nillable="true" type="tns:ServiceUpdateChangeset"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:complexType name="ServiceUpdateChangeset">
         <xsd:sequence>
-          <xsd:element minOccurs="0" name="AddedElementsToCollectionEdges" nillable="true" type="q68:ArrayOfKeyValueOfstringServiceEdgePredefinition7AF3f8r2" xmlns:q68="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
-          <xsd:element minOccurs="0" name="AddedElementsToCollectionProperties" nillable="true" type="q69:ArrayOfKeyValueOfstringArrayOfanyTypety7Ep6D1" xmlns:q69="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="AddedElementsToCollectionEdges" nillable="true" type="q67:ArrayOfKeyValueOfstringServiceEdgePredefinition7AF3f8r2" xmlns:q67="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="AddedElementsToCollectionProperties" nillable="true" type="q68:ArrayOfKeyValueOfstringArrayOfanyTypety7Ep6D1" xmlns:q68="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
           <xsd:element minOccurs="0" name="Comment" nillable="true" type="xsd:string"/>
           <xsd:element minOccurs="0" name="Edition" nillable="true" type="xsd:string"/>
-          <xsd:element minOccurs="0" name="RemovedAttributes" nillable="true" type="q70:ArrayOfstring" xmlns:q70="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
-          <xsd:element minOccurs="0" name="RemovedElementsFromCollectionEdges" nillable="true" type="q71:ArrayOfKeyValueOfstringServiceEdgePredefinition7AF3f8r2" xmlns:q71="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
-          <xsd:element minOccurs="0" name="RemovedElementsFromCollectionProperties" nillable="true" type="q72:ArrayOfKeyValueOfstringArrayOfanyTypety7Ep6D1" xmlns:q72="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="Expression" nillable="true" type="tns:ServiceBaseExpression"/>
+          <xsd:element minOccurs="0" name="RemovedAttributes" nillable="true" type="q69:ArrayOfstring" xmlns:q69="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="RemovedElementsFromCollectionEdges" nillable="true" type="q70:ArrayOfKeyValueOfstringServiceEdgePredefinition7AF3f8r2" xmlns:q70="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="RemovedElementsFromCollectionProperties" nillable="true" type="q71:ArrayOfKeyValueOfstringArrayOfanyTypety7Ep6D1" xmlns:q71="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
           <xsd:element minOccurs="0" name="UpdateOutgoingEdgesProperties" nillable="true" type="tns:ArrayOfServiceSingleEdgeUpdateDefinition"/>
           <xsd:element minOccurs="0" name="UpdatedOutgoingEdges" nillable="true" type="tns:ArrayOfServiceEdgePredefinition"/>
-          <xsd:element minOccurs="0" name="UpdatedStructuredProperties" nillable="true" type="q73:ArrayOfKeyValueOfstringanyType" xmlns:q73="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
-          <xsd:element minOccurs="0" name="UpdatedUnknownProperties" nillable="true" type="q74:ArrayOfKeyValueOfstringanyType" xmlns:q74="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
-          <xsd:element minOccurs="0" name="UpdatedUnstructuredProperties" nillable="true" type="q75:ArrayOfKeyValueOfstringanyType" xmlns:q75="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="UpdatedStructuredProperties" nillable="true" type="q72:ArrayOfKeyValueOfstringanyType" xmlns:q72="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="UpdatedUnknownProperties" nillable="true" type="q73:ArrayOfKeyValueOfstringanyType" xmlns:q73="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="UpdatedUnstructuredProperties" nillable="true" type="q74:ArrayOfKeyValueOfstringanyType" xmlns:q74="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="VertexIDs" nillable="true" type="q75:ArrayOflong" xmlns:q75="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+          <xsd:element minOccurs="0" name="VertexTypeID" type="xsd:long"/>
+          <xsd:element minOccurs="0" name="VertexTypeName" nillable="true" type="xsd:string"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ServiceUpdateChangeset" nillable="true" type="tns:ServiceUpdateChangeset"/>
@@ -1522,6 +1552,16 @@
         </xsd:complexContent>
       </xsd:complexType>
       <xsd:element name="ServiceOutgoingEdgeDefinition" nillable="true" type="tns:ServiceOutgoingEdgeDefinition"/>
+      <xsd:complexType name="ServiceIncomingEdgeDefinition">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ServiceAttributeDefinition">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="RelatedEdgeDefinition" nillable="true" type="tns:ServiceOutgoingEdgeDefinition"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="ServiceIncomingEdgeDefinition" nillable="true" type="tns:ServiceIncomingEdgeDefinition"/>
       <xsd:complexType name="ServicePropertyDefinition">
         <xsd:complexContent mixed="false">
           <xsd:extension base="tns:ServiceAttributeDefinition">
@@ -1537,16 +1577,6 @@
         </xsd:complexContent>
       </xsd:complexType>
       <xsd:element name="ServicePropertyDefinition" nillable="true" type="tns:ServicePropertyDefinition"/>
-      <xsd:complexType name="ServiceIncomingEdgeDefinition">
-        <xsd:complexContent mixed="false">
-          <xsd:extension base="tns:ServiceAttributeDefinition">
-            <xsd:sequence>
-              <xsd:element minOccurs="0" name="RelatedEdgeDefinition" nillable="true" type="tns:ServiceOutgoingEdgeDefinition"/>
-            </xsd:sequence>
-          </xsd:extension>
-        </xsd:complexContent>
-      </xsd:complexType>
-      <xsd:element name="ServiceIncomingEdgeDefinition" nillable="true" type="tns:ServiceIncomingEdgeDefinition"/>
       <xsd:element name="GetAttributeDefinitionByIDByVertexType">
         <xsd:complexType>
           <xsd:sequence>
@@ -2137,33 +2167,6 @@
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ArrayOfServiceHyperEdgeInstance" nillable="true" type="tns:ArrayOfServiceHyperEdgeInstance"/>
-      <xsd:complexType name="ServiceHyperEdgeInstance">
-        <xsd:complexContent mixed="false">
-          <xsd:extension base="tns:ServiceEdgeInstance">
-            <xsd:sequence>
-              <xsd:element minOccurs="0" name="SingleEdges" nillable="true" type="tns:ArrayOfServiceSingleEdgeInstance"/>
-            </xsd:sequence>
-          </xsd:extension>
-        </xsd:complexContent>
-      </xsd:complexType>
-      <xsd:element name="ServiceHyperEdgeInstance" nillable="true" type="tns:ServiceHyperEdgeInstance"/>
-      <xsd:complexType name="ArrayOfServiceSingleEdgeInstance">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" maxOccurs="unbounded" name="ServiceSingleEdgeInstance" nillable="true" type="tns:ServiceSingleEdgeInstance"/>
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:element name="ArrayOfServiceSingleEdgeInstance" nillable="true" type="tns:ArrayOfServiceSingleEdgeInstance"/>
-      <xsd:complexType name="ServiceSingleEdgeInstance">
-        <xsd:complexContent mixed="false">
-          <xsd:extension base="tns:ServiceEdgeInstance">
-            <xsd:sequence>
-              <xsd:element minOccurs="0" name="HyperEdgeSourceVertex" nillable="true" type="tns:ServiceVertexInstance"/>
-              <xsd:element minOccurs="0" name="TargetVertex" nillable="true" type="tns:ServiceVertexInstance"/>
-            </xsd:sequence>
-          </xsd:extension>
-        </xsd:complexContent>
-      </xsd:complexType>
-      <xsd:element name="ServiceSingleEdgeInstance" nillable="true" type="tns:ServiceSingleEdgeInstance"/>
       <xsd:element name="GetAllOutgoingSingleEdges">
         <xsd:complexType>
           <xsd:sequence>
@@ -2921,7 +2924,7 @@
           <xsd:sequence>
             <xsd:element minOccurs="0" name="mySecurityToken" nillable="true" type="q182:SecurityToken" xmlns:q182="http://schemas.datacontract.org/2004/07/sones.Library.Commons.Security"/>
             <xsd:element minOccurs="0" name="myTransToken" type="xsd:long"/>
-            <xsd:element minOccurs="0" name="myGraphElement" nillable="true" type="tns:ServiceEdgeInstance"/>
+            <xsd:element minOccurs="0" name="myEdge" nillable="true" type="tns:ServiceEdgeInstance"/>
             <xsd:element minOccurs="0" name="myPropertyID" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -3249,27 +3252,6 @@
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="TupleOflongArrayOflongty7Ep6D1" nillable="true" type="tns:TupleOflongArrayOflongty7Ep6D1"/>
-      <xsd:complexType name="ArrayOfTupleOfstringanyType">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" maxOccurs="unbounded" name="TupleOfstringanyType" nillable="true" type="tns:TupleOfstringanyType"/>
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:element name="ArrayOfTupleOfstringanyType" nillable="true" type="tns:ArrayOfTupleOfstringanyType"/>
-      <xsd:complexType name="TupleOfstringanyType">
-        <xsd:annotation>
-          <xsd:appinfo>
-            <GenericType Name="TupleOf{0}{1}{#}" Namespace="http://schemas.datacontract.org/2004/07/System" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
-              <GenericParameter Name="string" Namespace="http://www.w3.org/2001/XMLSchema"/>
-              <GenericParameter Name="anyType" Namespace="http://www.w3.org/2001/XMLSchema"/>
-            </GenericType>
-          </xsd:appinfo>
-        </xsd:annotation>
-        <xsd:sequence>
-          <xsd:element name="m_Item1" nillable="true" type="xsd:string"/>
-          <xsd:element name="m_Item2" nillable="true" type="xsd:anyType"/>
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:element name="TupleOfstringanyType" nillable="true" type="tns:TupleOfstringanyType"/>
       <xsd:complexType name="ArrayOfTupleOfstringServiceHyperEdgeView7AF3f8r2">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="TupleOfstringServiceHyperEdgeView7AF3f8r2" nillable="true" type="tns:TupleOfstringServiceHyperEdgeView7AF3f8r2"/>
@@ -3291,6 +3273,27 @@
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="TupleOfstringServiceHyperEdgeView7AF3f8r2" nillable="true" type="tns:TupleOfstringServiceHyperEdgeView7AF3f8r2"/>
+      <xsd:complexType name="ArrayOfTupleOfstringanyType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="TupleOfstringanyType" nillable="true" type="tns:TupleOfstringanyType"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="ArrayOfTupleOfstringanyType" nillable="true" type="tns:ArrayOfTupleOfstringanyType"/>
+      <xsd:complexType name="TupleOfstringanyType">
+        <xsd:annotation>
+          <xsd:appinfo>
+            <GenericType Name="TupleOf{0}{1}{#}" Namespace="http://schemas.datacontract.org/2004/07/System" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+              <GenericParameter Name="string" Namespace="http://www.w3.org/2001/XMLSchema"/>
+              <GenericParameter Name="anyType" Namespace="http://www.w3.org/2001/XMLSchema"/>
+            </GenericType>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="m_Item1" nillable="true" type="xsd:string"/>
+          <xsd:element name="m_Item2" nillable="true" type="xsd:anyType"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="TupleOfstringanyType" nillable="true" type="tns:TupleOfstringanyType"/>
       <xsd:complexType name="ArrayOfTupleOfstringServiceSingleEdgeView7AF3f8r2">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="TupleOfstringServiceSingleEdgeView7AF3f8r2" nillable="true" type="tns:TupleOfstringServiceSingleEdgeView7AF3f8r2"/>

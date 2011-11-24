@@ -57,14 +57,13 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
 
 
-        public override QueryResult GetResult(
+        public override IEnumerable<IVertexView> GetResult(
                                                 GQLPluginManager myPluginManager,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,
                                                 Int64 myTransactionToken)
         {
             IEnumerable<IVertexView> resultingVertices = new List<IVertexView>();
-            ASonesException error = null;
 
             #region Specific index
 
@@ -83,7 +82,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             if (indices == null)
             {
-                error = new IndexTypeDoesNotExistException(_TypeName, _IndexName);
+                throw new IndexTypeDoesNotExistException(_TypeName, _IndexName);
             }
 
             if (String.IsNullOrEmpty(_IndexEdition))
@@ -93,12 +92,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             resultingVertices = GenerateOutput(indices, _IndexName);
 
+            return resultingVertices;
+
             #endregion
 
-            if(error != null)
-                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Failed, resultingVertices, error);
-            else
-                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Successful, resultingVertices);
         }
 
         #region Output

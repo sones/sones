@@ -134,9 +134,9 @@ namespace sones.GraphQL.StatementNodes.DML
         }
 
         /// <summary>
-        /// Executes the statement and returns a QueryResult.
+        /// Executes the statement and returns a IQueryResult.
         /// </summary>
-        public override QueryResult Execute(IGraphDB myGraphDB, 
+        public override IQueryResult Execute(IGraphDB myGraphDB, 
                                             IGraphQL myGraphQL, 
                                             GQLPluginManager myPluginManager, 
                                             String myQuery, 
@@ -653,7 +653,7 @@ namespace sones.GraphQL.StatementNodes.DML
                                          attributeAssignOrUpdateValue.Value);
         }
 
-        private QueryResult GenerateOutput(IRequestStatistics myStats, 
+        private IQueryResult GenerateOutput(IRequestStatistics myStats, 
                                             IEnumerable<IVertex> myVertices)
         {
             List<IVertexView> list = new List<IVertexView>();
@@ -667,11 +667,10 @@ namespace sones.GraphQL.StatementNodes.DML
                                             }, null));
             }
 
-            return new QueryResult(Query,
+            return QueryResult.Success(Query,
                                     SonesGQLConstants.GQL,
-                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds),
-                                    ResultType.Successful,
-                                    list);
+                                    list,
+                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds));
         }
 
         #endregion

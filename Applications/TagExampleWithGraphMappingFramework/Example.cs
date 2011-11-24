@@ -109,7 +109,6 @@ namespace TagExampleWithGraphMappingFramework
             Dictionary<string, object> RemoteAPIParameter = new Dictionary<string, object>();
             RemoteAPIParameter.Add("IPAddress", IPAddress.Parse("127.0.0.1"));
             RemoteAPIParameter.Add("Port", (ushort)9970);
-            RemoteAPIParameter.Add("IsSecure", true);
             _dsServer.StartService("sones.RemoteAPIService", RemoteAPIParameter);
             #endregion
 
@@ -203,11 +202,10 @@ namespace TagExampleWithGraphMappingFramework
         public void Run()
         {
             
-            GraphDSClient = new GraphDS_RemoteClient(new Uri("https://localhost:9970/rpc"), true);
+            GraphDSClient = new GraphDS_RemoteClient(new Uri("http://localhost:9970/rpc"));
             SecToken = GraphDSClient.LogOn(new RemoteUserPasswordCredentials("test", "test"));
             TransToken = GraphDSClient.BeginTransaction(SecToken);
 
-            Tests();
             GraphDSClient.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
 
             #region create types, create instances and additional work using the GraphDB API
@@ -462,25 +460,6 @@ namespace TagExampleWithGraphMappingFramework
         }
         #endregion
 
-        #region Tests
-        private void Tests()
-        {
-            //GraphDSClient.Query(SecToken, TransToken, "create abstract vertex type Entity attributes(String Name) comment = 'base entity providing a Name'", "sones.gql");
-            //var result = GraphDSClient.Query(SecToken, TransToken, "create vertex type Album", "sones.gql");
-            //GraphDSClient.Query(SecToken, TransToken, "create vertex type Artist extends Entity attributes(Set<Album> Albums) comment = 'an artist of an album'", "sones.gql");
-            //GraphDSClient.Query(SecToken, TransToken, "create vertex type Genre extends Entity attributes(Set<Album> Albums) comment = 'a genre of an album'", "sones.gql");
-            //GraphDSClient.Query(SecToken, TransToken, "create vertex type Year attributes(UInt32 Value, Set<Album> Albums) unique(Value) comment = 'a year in which an album has been released'", "sones.gql");
-            //GraphDSClient.Query(SecToken, TransToken, "alter vertex type Album add incomingedges(Artist.Albums ProducedBy, Genre.Albums Genre, Year.Albums ReleasedIn)", "sones.gql");
-
-            //GraphDSClient.Query(SecToken, TransToken, "alter vertex type Album add incomingedges(Artist.Albums ProducedBy)", "sones.gql");
-
-            //result = GraphDSClient.Query(SecToken, TransToken, "describe vertex type Album", "sones.gql");
-
-            var result = GraphDSClient.Query(SecToken, TransToken, "create vertex type Ship attributes (String Name, String Class)", "sones.gql");
-            result = GraphDSClient.Query(SecToken, TransToken, "describe vertex type Ship", "sones.gql");
-        }
-        #endregion
-
 
         #region Graph Query Language
         /// <summary>
@@ -575,7 +554,7 @@ namespace TagExampleWithGraphMappingFramework
         /// This private method analyses the QueryResult, shows the ResultType and Errors if existing.
         /// </summary>
         /// <param name="myQueryResult">The result of a query.</param>
-        private bool CheckResult(QueryResult myQueryResult)
+        private bool CheckResult(IQueryResult myQueryResult)
         {
             if (myQueryResult.Error != null)
             {

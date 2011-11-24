@@ -43,7 +43,7 @@ namespace sones.GraphQL.StatementNodes
 
         #region abstract Methods
 
-        public abstract QueryResult Execute(IGraphDB myGraphDB, 
+        public abstract IQueryResult Execute(IGraphDB myGraphDB, 
                                             IGraphQL myGraphQL, 
                                             GQLPluginManager myPluginManager, 
                                             String myQuery, 

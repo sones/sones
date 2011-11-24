@@ -7,6 +7,7 @@ using sones.GraphDB.TypeSystem;
 using sones.GraphDS.GraphDSRemoteClient.GraphElements;
 using sones.GraphDS.GraphDSRemoteClient.TypeManagement;
 using sones.GraphDB.Expression;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDS.GraphDSRemoteClient
 {
@@ -36,6 +37,20 @@ namespace sones.GraphDS.GraphDSRemoteClient
                 result = new RemoteEdgeType((ServiceEdgeType)myBaseType, myServiceToken);
             }
             return result;
+        }
+
+        internal static ServiceEdgeInstance ToServiceEdgeInstance(IEdge myEdge)
+        {
+            ServiceEdgeInstance svcEdge;
+            if (myEdge is ISingleEdge)
+            {
+                svcEdge = new ServiceSingleEdgeInstance((ISingleEdge)myEdge);
+            }
+            else
+            {
+                svcEdge = new ServiceHyperEdgeInstance((IHyperEdge)myEdge);
+            }
+            return svcEdge;
         }
 
         internal static IAttributeDefinition ToAttributeDefinition(ServiceAttributeDefinition mySvcAttributeDefinition, IServiceToken myServiceToken)

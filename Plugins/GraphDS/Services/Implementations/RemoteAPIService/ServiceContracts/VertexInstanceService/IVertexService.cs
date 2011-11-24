@@ -35,6 +35,9 @@ using sones.GraphDS.Services.RemoteAPIService.DataContracts.PayloadObjects;
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.VertexInstanceService
 {
     [ServiceContract(Namespace = sonesRPCServer.Namespace, Name = "VertexInstanceService")]
+    [ServiceKnownType(typeof(ServiceVertexInstance))]
+    [ServiceKnownType(typeof(ServiceSingleEdgeInstance))]
+    [ServiceKnownType(typeof(ServiceHyperEdgeInstance))]
     public interface IVertexService
     {
 

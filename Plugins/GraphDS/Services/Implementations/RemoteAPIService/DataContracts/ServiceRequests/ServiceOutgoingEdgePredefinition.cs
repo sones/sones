@@ -81,6 +81,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 
             OutgoingEdgePreDef.SetAttributeType(this.AttributeType);
             OutgoingEdgePreDef.SetComment(this.Comment);
+            OutgoingEdgePreDef.SetEdgeType(this.EdgeType);
             OutgoingEdgePreDef.InnerEdgeType = this.InnerEdgeType;
 
             if (this.Multiplicity == ServiceEdgeMultiplicity.HyperEdge)

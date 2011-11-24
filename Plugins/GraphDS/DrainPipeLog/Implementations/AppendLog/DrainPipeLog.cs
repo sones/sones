@@ -31,6 +31,7 @@ using sones.Library.VersionedPluginManager;
 using sones.Plugins.GraphDS.DrainPipeLog.Storage;
 using System.Threading;
 using System.IO;
+using sones.GraphQL.Result;
 
 namespace sones.Plugins.GraphDS.DrainPipeLog
 {
@@ -197,7 +198,7 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         /// <summary>
         /// This will receive a query and store it to the log
         /// </summary>
-        public sones.GraphQL.Result.QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionID, string myQueryString, string myQueryLanguageName)
+        public IQueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionID, string myQueryString, string myQueryLanguageName)
         {
             byte[] Part1,Part2,Part3,Part4 = null;
             System.IO.MemoryStream stream = new System.IO.MemoryStream();
@@ -459,7 +460,7 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
 
         #endregion
 
-        public void DrainQueryResult(GraphQL.Result.QueryResult result)
+        public void DrainQueryResult(IQueryResult result)
         {
             
         }

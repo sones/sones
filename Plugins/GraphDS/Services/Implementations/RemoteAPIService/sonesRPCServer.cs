@@ -179,17 +179,6 @@ namespace sones.GraphDS.Services.RemoteAPIService
             _ServiceHost = new ServiceHost(ContractInstance, this.URI);
             _ServiceHost.Description.Namespace = Namespace;
 
-
-            #region Global Service Interface
-
-            //ContractDescription RPCServiceContract = ContractDescription.GetContract(typeof(IRPCServiceContract));
-            //RPCServiceContract.Namespace = Namespace;
-            //ServiceEndpoint RPCServiceService = new ServiceEndpoint(RPCServiceContract, BasicBinding, new EndpointAddress(this.URI.AbsoluteUri));
-            //_ServiceHost.AddServiceEndpoint(RPCServiceService);
-
-            #endregion
-
-
             #region Streamed Contract
 
             ContractDescription StreamedContract = ContractDescription.GetContract(typeof(IStreamedService));
@@ -280,18 +269,18 @@ namespace sones.GraphDS.Services.RemoteAPIService
             _MexServiceHost.Description.Endpoints[0].Behaviors.Add(new System.ServiceModel.Description.WebHttpBehavior());
 
 
-            //// auto generation
-            //ServiceMetadataBehavior metadataBehavior = new ServiceMetadataBehavior();
-            //metadataBehavior.HttpGetEnabled = true;
-            //Binding mexBinding = MetadataExchangeBindings.CreateMexHttpBinding();
-            //mexBinding.Namespace = Namespace;            
-            //_ServiceHost.Description.Behaviors.Add(metadataBehavior);
-            //ServiceEndpoint mexEndpoint = _ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, mexBinding, "mex");
-            //foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
-            //{
-            //    //export just one file
-            //    endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
-            //} 
+            // auto generation
+            ServiceMetadataBehavior metadataBehavior = new ServiceMetadataBehavior();
+            metadataBehavior.HttpGetEnabled = true;
+            Binding mexBinding = MetadataExchangeBindings.CreateMexHttpBinding();
+            mexBinding.Namespace = Namespace;
+            _ServiceHost.Description.Behaviors.Add(metadataBehavior);
+            ServiceEndpoint mexEndpoint = _ServiceHost.AddServiceEndpoint(ServiceMetadataBehavior.MexContractName, mexBinding, "mex");
+            foreach (ServiceEndpoint endpoint in _ServiceHost.Description.Endpoints)
+            {
+                //export just one file
+                endpoint.Behaviors.Add(new WsdlExtensions(new WsdlExtensionsConfig() { SingleFile = true }));
+            } 
 
             #endregion
         }
