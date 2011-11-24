@@ -93,12 +93,13 @@ namespace sones.Plugins.Index.LuceneIdx
 		/// <param name="myIndexId">The index id.</param>
 		/// <param name="myVertexId">The vertex id.</param>
 		/// <param name="myText">The text.</param>
-        public LuceneEntry(String myIndexId, long myVertexId, String myText, long? myPropertyId = null)
+        public LuceneEntry(String myIndexId, long myVertexId, String myText, long? myPropertyId = null, float? myScore = null)
         {
 			this.IndexId = myIndexId;
             this.VertexId = myVertexId;
 			this.Text = myText;
             this.PropertyId = myPropertyId;
+            this.Score = myScore;
 
             if (myPropertyId != null)
             {
@@ -110,13 +111,14 @@ namespace sones.Plugins.Index.LuceneIdx
             }
         }
 
-        public LuceneEntry(Document myLuceneDocument)
+        public LuceneEntry(Document myLuceneDocument, float? myScore = null)
         {
             this.Id = myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.ID]).StringValue();
             this.IndexId = myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.INDEX_ID]).StringValue();
             this.VertexId = Convert.ToInt64(myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.VERTEX_ID]).StringValue());
             this.Text = myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.TEXT]).StringValue();
-
+            this.Score = myScore;
+            
             var propertyIdField = myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.PROPERTY_ID]);
             if (propertyIdField != null)
             {

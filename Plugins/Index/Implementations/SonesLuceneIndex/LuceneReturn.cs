@@ -37,7 +37,7 @@ namespace sones.Plugins.Index.LuceneIdx
                 if (_pos < 0) MoveNext();
 
                 var docnum = _docs.ScoreDocs[_pos].doc;
-                var entry = new LuceneEntry(_IndexSearcher.Doc(docnum));
+                var entry = new LuceneEntry(_IndexSearcher.Doc(docnum), _docs.ScoreDocs[_pos].score);
                 
                 FieldQuery fieldquery = _highlighter.GetFieldQuery(_query);
                 entry.Highlights = _highlighter.GetBestFragments(fieldquery, _IndexSearcher.GetIndexReader(), docnum, LuceneIndex.FieldNames[LuceneIndex.Fields.TEXT], 100, 3);
