@@ -90,11 +90,10 @@ namespace sones.Plugins.Index.LuceneIdx
             _IndexSearcher = myIndexSearcher;
             _docs = _Collector.TopDocs();
             bOpen = true;
-
-            _highlighter = new FastVectorHighlighter();
+            
+            _highlighter = new FastVectorHighlighter(true, true, new SimpleFragListBuilder(), new SimpleFragmentsBuilder());
             _analyzer = myAnalyzer;
             _query = myQuery;
-
         }
 
         public IEnumerator<LuceneEntry> GetEnumerator()
@@ -117,6 +116,14 @@ namespace sones.Plugins.Index.LuceneIdx
         {
             get {
                 return _Collector.GetTotalHits();
+            }
+        }
+
+        public float MaxScore
+        {
+            get
+            {
+                return _docs.GetMaxScore();
             }
         }
 

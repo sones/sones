@@ -11,8 +11,7 @@ namespace sones.Plugins.Index.LuceneIdx
     {
         private List<LuceneResultEntry> _entries;
         private double? _MaxScore = null;
-        IDictionary<string, Object> _statistics = null;
-
+        
         public LuceneResult(LuceneReturn result)
         {
             _entries = new List<LuceneResultEntry>();
@@ -27,8 +26,7 @@ namespace sones.Plugins.Index.LuceneIdx
                 _entries.Add(newentry);
             }
 
-            //TODO _statistics = result.Stats.ToDictionary(kvp => kvp.Key as string, kvp => kvp.Value as Object);
-            //TODO _MaxScore = result.MaxScore;
+            _MaxScore = result.MaxScore;
         }
 
         public IEnumerable<ISonesFulltextResultEntry> Entries
@@ -38,7 +36,7 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public IDictionary<string, object> AdditionalParameters
         {
-            get { return _statistics; }
+            get { throw new NotImplementedException(); }
         }
 
         public Double? MaxScore

@@ -385,7 +385,7 @@ namespace sones.Plugins.Index.LuceneIdx
             var _Collector = TopScoreDocCollector.create(myMaxResultsCount, true);
 
             _IndexSearcher.Search(query, _Collector);
-
+            
             return new LuceneReturn(_Collector, _IndexSearcher, query, analyzer);
         }
 
