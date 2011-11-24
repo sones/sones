@@ -201,7 +201,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 
             if (myChangeset.ToBeRenamedProperties != null)
             {
-                myChangeset.ToBeRenamedProperties.Select((tuple, key) => Request.RenameAttribute(tuple.Key, tuple.Value));
+                foreach(var item in myChangeset.ToBeRenamedProperties)
+                {
+                    Request.RenameAttribute(item.Key, item.Value);
+                }
             }
 
             #endregion
@@ -211,7 +214,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
                 Request.SetComment(myChangeset.Comment);
 
             if (myChangeset.NewTypeName != null)
-                Request.RenameType(myChangeset.Comment);
+                Request.RenameType(myChangeset.NewTypeName);
                         
             //todo add unknown attribute
 
