@@ -102,12 +102,18 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public long KeyCount(long myPropertyID)
         {
-            throw new NotImplementedException();
+            return _LuceneIndex.GetKeys(entry => entry.IndexId == this.IndexId).Count();
         }
 
         public IEnumerable<IComparable> Keys(long myPropertyID)
         {
-            throw new NotImplementedException();
+            var result = _LuceneIndex.GetEntriesInnerByField(_MaxResultsFirst, "*", myPropertyID.ToString(), LuceneIndex.Fields.PROPERTY_ID);
+            if (result.TotalHits > _MaxResultsFirst)
+            {
+                result = _LuceneIndex.GetEntriesInnerByField(result.TotalHits, "*", myPropertyID.ToString(), LuceneIndex.Fields.PROPERTY_ID);
+            }
+
+            return result.Select<LuceneEntry, IComparable>((e) => (e.Text));
         }
 
         public IDictionary<long, Type> GetKeyTypes()
@@ -180,7 +186,12 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override long KeyCount()
         {
-            throw new NotImplementedException();
+            var keys = _LuceneIndex.GetKeys(entry => entry.IndexId == this.IndexId);
+            var groupedkeys = keys.GroupBy(s => s);
+            var count = groupedkeys.Count();
+            keys.Close();
+
+            return count;
         }
 
         public override long ValueCount()
@@ -190,7 +201,19 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override IEnumerable<IComparable> Keys()
         {
-            throw new NotImplementedException();
+            var keys_withdoubles = _LuceneIndex.GetKeys(entry => entry.IndexId == this.IndexId);
+            var keys_grouped = keys_withdoubles.GroupBy(s => s);
+
+            // unforunately we have to breakup Lazy as interface does not support closing
+            List<String> keys = new List<String>();
+            foreach (var group in keys_grouped)
+            {
+                keys.Add(group.ElementAt(0));
+            }
+
+            keys_withdoubles.Close();
+
+            return keys;
         }
 
         public override Type GetKeyType()
