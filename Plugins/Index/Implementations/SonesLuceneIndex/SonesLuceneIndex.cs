@@ -185,7 +185,71 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public bool TryGetValues(IEnumerable<ICompoundIndexKey> myKeys, out IEnumerable<long> myVertexIDs)
         {
-            throw new NotImplementedException();
+            var results_compound = new List<Tuple<long, IComparable, long>>();
+            foreach (var key in myKeys)
+            {
+                var results = _LuceneIndex.GetEntriesInnerByField(_MaxResultsFirst, key.Key as String, key.PropertyID.ToString(), LuceneIndex.Fields.PROPERTY_ID);
+                if (results.TotalHits > _MaxResultsFirst)
+                {
+                    results = _LuceneIndex.GetEntriesInnerByField(results.TotalHits, key.Key as String, key.PropertyID.ToString(), LuceneIndex.Fields.PROPERTY_ID);
+                }
+                results_compound
+                    .AddRange(
+                         results
+                             .Where((e) => e.PropertyId != null)
+                             .Select((e) => new Tuple<long, IComparable, long>((long)e.PropertyId, e.Text, e.VertexId))
+                             );
+            }
+
+            var grouped = from myresults in results_compound group myresults by myresults.Item3;
+
+            if (grouped.Count() > 0)
+            {
+                var _myVertexIDs = grouped
+                    .Where((myGroup) =>
+                    {
+                        var join =
+                            from entry in myGroup
+                            join key in myKeys
+                            on new
+                            {
+                                JoinField1 = entry.Item2,
+                                JoinField2 = entry.Item1
+                            }
+                            equals new
+                            {
+                                JoinField1 = key.Key,
+                                JoinField2 = key.PropertyID
+                            }
+                            select entry;
+
+                        if (join.Count() == myKeys.Count())
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    })
+                    .Select<IGrouping<long, Tuple<long, IComparable, long>>, long>((g) => g.Key);
+
+                if (_myVertexIDs.Count() > 0)
+                {
+                    myVertexIDs = _myVertexIDs;
+                    return true;
+                }
+                else
+                {
+                    myVertexIDs = null;
+                    return false;
+                }
+            }
+            else
+            {
+                myVertexIDs = null;
+                return false;
+            }
         }
 
         public bool TryGetValuesPartial(IEnumerable<ICompoundIndexKey> myKeys, out IEnumerable<long> myVertexIDs)
