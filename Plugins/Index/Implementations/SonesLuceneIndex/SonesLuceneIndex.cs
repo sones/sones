@@ -13,6 +13,28 @@ using sones.Plugins.Index.ErrorHandling;
 
 namespace sones.Plugins.Index.LuceneIdx
 {
+    public class LuceneCompoundKey : ICompoundIndexKey
+    {
+        private long _PropertyID;
+        private String _Key;
+
+        public LuceneCompoundKey(long myPropertyID, String myKey)
+        {
+            _PropertyID = myPropertyID;
+            _Key = myKey;
+        }
+
+        public long PropertyID
+        {
+            get { return _PropertyID; }
+        }
+
+        public IComparable Key
+        {
+            get { return _Key; }
+        }
+    }
+
     public class SonesLuceneIndex : ASonesIndex, ISonesPersistentIndex, ISonesFulltextIndex, IPluginable
     {
         #region Data
