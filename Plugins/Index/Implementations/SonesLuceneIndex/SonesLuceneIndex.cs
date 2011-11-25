@@ -124,18 +124,34 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public long KeyCount(long myPropertyID)
         {
-            return _LuceneIndex.GetKeys(entry => entry.IndexId == this.IndexId).Count();
+            var keys = _LuceneIndex.GetKeys(entry => (entry.IndexId == this.IndexId) && (entry.PropertyId == myPropertyID));
+            var groupedkeys = keys.GroupBy(s => s);
+            var count = groupedkeys.Count();
+            keys.Close();
+
+            return count;
         }
 
         public IEnumerable<IComparable> Keys(long myPropertyID)
         {
-            var result = _LuceneIndex.GetEntriesInnerByField(_MaxResultsFirst, "*", myPropertyID.ToString(), LuceneIndex.Fields.PROPERTY_ID);
+            var result = _LuceneIndex.GetEntriesInnerByField(_MaxResultsFirst, "*:*", myPropertyID.ToString(), LuceneIndex.Fields.PROPERTY_ID);
             if (result.TotalHits > _MaxResultsFirst)
             {
-                result = _LuceneIndex.GetEntriesInnerByField(result.TotalHits, "*", myPropertyID.ToString(), LuceneIndex.Fields.PROPERTY_ID);
+                result.Close();
+                result = _LuceneIndex.GetEntriesInnerByField(result.TotalHits, "*:*", myPropertyID.ToString(), LuceneIndex.Fields.PROPERTY_ID);
             }
 
-            return result.Select<LuceneEntry, IComparable>((e) => (e.Text));
+            // unforunately we have to breakup Lazy as interface does not support closing
+            List<IComparable> ret = new List<IComparable>();
+
+            foreach (var entry in result.Select<LuceneEntry, IComparable>((e) => (e.Text)))
+            {
+                ret.Add(entry);
+            }
+
+            result.Close();
+
+            return ret;
         }
 
         public IDictionary<long, Type> GetKeyTypes()
@@ -150,7 +166,13 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public void AddRange(IEnumerable<KeyValuePair<IEnumerable<ICompoundIndexKey>, long>> myKeysValuePairs, Helper.IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
         {
-            throw new NotImplementedException();
+            foreach (var kvp in myKeysValuePairs)
+            {
+                foreach (var key in kvp.Key)
+                {
+                    AddEntry(key.Key, new HashSet<long>() { kvp.Value }, myIndexAddStrategy, key.PropertyID);
+                }
+            }
         }
 
         public bool TryGetValues(IEnumerable<ICompoundIndexKey> myKeys, out IEnumerable<long> myVertexIDs)
