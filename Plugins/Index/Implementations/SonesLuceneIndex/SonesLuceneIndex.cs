@@ -166,7 +166,10 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public void Add(IEnumerable<ICompoundIndexKey> myKeys, long myVertexID, Helper.IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
         {
-            throw new NotImplementedException();
+            foreach (var key in myKeys)
+            {
+                AddEntry(key.Key, new HashSet<long>() { myVertexID }, myIndexAddStrategy, key.PropertyID);
+            }
         }
 
         public void AddRange(IEnumerable<KeyValuePair<IEnumerable<ICompoundIndexKey>, long>> myKeysValuePairs, Helper.IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
