@@ -156,7 +156,12 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public IDictionary<long, Type> GetKeyTypes()
         {
-            throw new NotImplementedException();
+            var retdict = new Dictionary<Int64, Type>();
+            foreach (var propId in _PropertyIDs)
+            {
+                retdict.Add(propId, typeof(string));
+            }
+            return retdict;
         }
 
         public void Add(IEnumerable<ICompoundIndexKey> myKeys, long myVertexID, Helper.IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
