@@ -303,27 +303,58 @@ namespace sones.Plugins.Index.LuceneIdx
         
         public string PluginName
         {
-            get { throw new NotImplementedException(); }
+            get { return "sones.sonesindexlucene"; }
         }
 
         public string PluginShortName
         {
-            get { throw new NotImplementedException(); }
+            get { return "sones.sonesidxluc"; }
         }
 
         public string PluginDescription
         {
-            get { throw new NotImplementedException(); }
+            get { return "An index which represents a 1:n key:value relationship using SOLR."; }
         }
 
         public PluginParameters<Type> SetableParameters
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return new PluginParameters<Type>
+				{ 
+                    { "LucenePersistent", typeof(bool) },
+					{ "LuceneDirectory", typeof(String) }
+				};
+            }
         }
 
         public IPluginable InitializePlugin(string UniqueString, Dictionary<string, object> myParameters = null)
         {
-            throw new NotImplementedException();
+            String directory = null;
+            bool bPersistent = false;
+
+            if (myParameters != null && myParameters.ContainsKey("LucenePersistent"))
+            {
+                bPersistent = (bool)myParameters["LucenePersistent"];
+
+                if (myParameters != null && myParameters.ContainsKey("LuceneDirectory"))
+                {
+                    directory = (String)myParameters["LuceneDirectory"];
+                }
+                else
+                {
+                    bPersistent = false;
+                }
+            }
+
+            if (bPersistent)
+            {
+                return new SonesLuceneIndex(UniqueString, directory);
+            }
+            else
+            {
+                return new SonesLuceneIndex(UniqueString);
+            }
         }
 
         #endregion
