@@ -378,14 +378,11 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override long ValueCount()
         {
-            var valueCount = 0L;
-
-            foreach (var key in Keys())
-            {
-                valueCount += this[key].LongCount();
-            }
-
-            return valueCount;
+            var ret = _LuceneIndex.GetValues();
+            var retgrouped = ret.GroupBy(l => l);
+            var count = retgrouped.Count();
+            ret.Close();
+            return count;
         }
 
         public override IEnumerable<IComparable> Keys()
@@ -432,7 +429,28 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override IEnumerable<long> this[IComparable myKey]
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                if (myKey == null)
+                {
+                    return null;
+                }
+
+                string query = System.Convert.ToString(myKey);
+
+                if (string.IsNullOrWhiteSpace(query))
+                {
+                    throw new ArgumentException(String.Format("Key {0} was not valid ", myKey));
+                }
+
+                var ret = _LuceneIndex.GetEntriesInnerByField(_MaxResultsFirst, query, IndexId, LuceneIndex.Fields.INDEX_ID);
+                if (ret.TotalHits > _MaxResultsFirst)
+                {
+                    ret = _LuceneIndex.GetEntriesInnerByField(ret.TotalHits, query, IndexId, LuceneIndex.Fields.INDEX_ID);
+                }
+
+                return ret.Select(entry => entry.VertexId);
+            }
         }
 
         public override bool ContainsKey(IComparable myKey)
