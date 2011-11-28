@@ -363,7 +363,7 @@ namespace sones.Plugins.Index.LuceneIdx
         
         public override string IndexName
         {
-            get { throw new NotImplementedException(); }
+            get { return "sonesindexpersistentsolr"; }
         }
 
         public override long KeyCount()
@@ -378,7 +378,14 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override long ValueCount()
         {
-            throw new NotImplementedException();
+            var valueCount = 0L;
+
+            foreach (var key in Keys())
+            {
+                valueCount += this[key].LongCount();
+            }
+
+            return valueCount;
         }
 
         public override IEnumerable<IComparable> Keys()
