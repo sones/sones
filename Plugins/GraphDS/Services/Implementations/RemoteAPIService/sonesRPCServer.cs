@@ -63,6 +63,11 @@ namespace sones.GraphDS.Services.RemoteAPIService
         /// Indicates wether the Server uses SSL 
         /// </summary>
         public Boolean IsSecure { get; private set; }
+
+        /// <summary>
+        /// Indicates wether the Server provides the streamed binding
+        /// </summary>
+        public Boolean UseStreaming { get; private set; }
         
         /// <summary>
         /// Indicates wether the Server is running
@@ -104,8 +109,14 @@ namespace sones.GraphDS.Services.RemoteAPIService
 
         #region C'tor
        
-        public sonesRPCServer(IGraphDS myGraphDS, IPAddress myIPAdress, ushort myPort, String myURI, Boolean myIsSecure, Boolean myAutoStart = false, Boolean myIsSingleFile = false)
+        public sonesRPCServer(IGraphDS myGraphDS, IPAddress myIPAdress, ushort myPort, String myURI, Boolean myIsSecure, Boolean myUseStreaming = false, Boolean myAutoStart = false, Boolean myIsSingleFile = false)
         {
+
+            #if __MonoCS__
+            this.UseStreaming = false;
+            #else
+            this.UseStreaming = myUseStreaming;
+            #endif
             this._GraphDS = myGraphDS;
             this.IsSecure = myIsSecure;
             this.ListeningIPAdress = myIPAdress;
@@ -113,6 +124,8 @@ namespace sones.GraphDS.Services.RemoteAPIService
             this.IsSingleFile = myIsSingleFile;
             this.URI = new Uri((myIsSecure == true ? "https://" : "http://") + myIPAdress.ToString() + ":" + myPort + "/" + myURI);
             this.MexUri = new Uri("http://" + myIPAdress.ToString() + ":" + (myPort + 1) + "/" + myURI);
+
+            
 
             if (!this.URI.IsWellFormedOriginalString())
                 throw new Exception("The URI Pattern is not well formed!");
@@ -148,27 +161,29 @@ namespace sones.GraphDS.Services.RemoteAPIService
             readerQuotas.MaxArrayLength = 2147483647;
             BasicBinding.ReaderQuotas = readerQuotas;
 
+            
             BasicHttpBinding StreamedBinding = new BasicHttpBinding();
             StreamedBinding.Name = "sonesStreamed";
             StreamedBinding.Namespace = Namespace;
             StreamedBinding.MessageEncoding = WSMessageEncoding.Text;
             StreamedBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
-            StreamedBinding.TransferMode = TransferMode.Streamed;
-            StreamedBinding.MaxReceivedMessageSize = 2147483648;
-            StreamedBinding.MaxBufferSize = 4096;
+            StreamedBinding.MaxReceivedMessageSize = 2147483647;
+            StreamedBinding.MaxBufferSize = (UseStreaming == true) ? 4096 : 2147483647;
             StreamedBinding.SendTimeout = new TimeSpan(1, 0, 0, 0);
             StreamedBinding.ReceiveTimeout = new TimeSpan(1, 0, 0, 0);
+            if (UseStreaming == true)
+            {
+                StreamedBinding.TransferMode = TransferMode.Streamed;
+            }
 
             WebHttpBinding WebBinding = new WebHttpBinding();
             WebBinding.Name = "sonesWeb";
             WebBinding.Namespace = Namespace;
             WebBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
             
-            
-
             if (IsSecure)
             {
-                BasicBinding.Security.Mode = BasicHttpSecurityMode.Transport;               
+                BasicBinding.Security.Mode = BasicHttpSecurityMode.Transport;
                 StreamedBinding.Security.Mode = BasicHttpSecurityMode.Transport;
             }
             
