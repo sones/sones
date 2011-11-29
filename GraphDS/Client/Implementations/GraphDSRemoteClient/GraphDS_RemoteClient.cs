@@ -33,14 +33,22 @@ namespace sones.GraphDS.GraphDSRemoteClient
         private StreamedService _StreamedService;
         private SecurityToken _SecurityToken;
         private Int64 _TransactionToken;
+
+        public Boolean UseStreaming { get; private set; }
         
         #endregion
 
         
         #region Constructor
 
-        public GraphDS_RemoteClient(Uri myServiceAddress, bool myIsSecure = false)
+        public GraphDS_RemoteClient(Uri myServiceAddress, bool myIsSecure = false, bool myUseStreaming = false)
         {
+            #if __MonoCS__
+            UseStreaming = false;
+            #else
+            UseStreaming = myUseStreaming;
+            #endif
+
             BasicHttpBinding BasicBinding = new BasicHttpBinding();
             BasicBinding.Name = "sonesBasic";
             BasicBinding.MessageEncoding = WSMessageEncoding.Text;
@@ -62,10 +70,13 @@ namespace sones.GraphDS.GraphDSRemoteClient
             StreamedBinding.Name = "sonesStreamed";
             StreamedBinding.MessageEncoding = WSMessageEncoding.Text;
             StreamedBinding.HostNameComparisonMode = HostNameComparisonMode.StrongWildcard;
-            StreamedBinding.TransferMode = TransferMode.Streamed;
-            StreamedBinding.MaxReceivedMessageSize = 2147483648;
-            StreamedBinding.MaxBufferSize = 4096;
+            StreamedBinding.MaxReceivedMessageSize = 2147483647;
+            StreamedBinding.MaxBufferSize = (UseStreaming == true) ? 4096 : 2147483647;
             StreamedBinding.SendTimeout = new TimeSpan(1, 0, 0, 0);
+            if (UseStreaming == true)
+            {
+                StreamedBinding.TransferMode = TransferMode.Streamed;
+            }
 
             if (myIsSecure == true)
             {
