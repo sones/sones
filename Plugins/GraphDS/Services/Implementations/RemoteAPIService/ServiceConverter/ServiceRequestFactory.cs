@@ -148,21 +148,43 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 
             #endregion
 
+            #region define / undefine
+
+            if (myChangeset.ToBeDefinedAttributes != null)
+            {
+                foreach (var toDefine in myChangeset.ToBeDefinedAttributes)
+                {
+                    Request.DefineAttribute(toDefine.ToUnknownAttributePredefinition());
+                }
+            }
+
+            if (myChangeset.ToBeUndefinedAttributes != null)
+            {
+                foreach (var toUndefine in myChangeset.ToBeUndefinedAttributes)
+                {
+                    Request.UndefineAttribute(toUndefine);
+                }
+            }
+
+            #endregion
+
             #region Rename Task
 
             if (myChangeset.ToBeRenamedProperties != null)
             {
-                myChangeset.ToBeRenamedProperties.Select((tuple, key) => Request.RenameAttribute(tuple.Key, tuple.Value));
+                foreach (var toRename in myChangeset.ToBeRenamedProperties)
+                {
+                    Request.RenameAttribute(toRename.Key, toRename.Value);
+                }
             }
             
             #endregion
-
 
             if (myChangeset.Comment != null)
                 Request.SetComment(myChangeset.Comment);
 
             if (myChangeset.NewTypeName != null)
-                Request.RenameType(myChangeset.Comment);
+                Request.RenameType(myChangeset.NewTypeName);
             
             //todo add unknown attribute
 

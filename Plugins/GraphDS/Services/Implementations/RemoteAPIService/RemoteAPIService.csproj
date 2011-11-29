@@ -87,6 +87,7 @@
     <Compile Include="DataContracts\ServiceRequests\ServiceOutgoingEdgePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServicePropertyPredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceUniquePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceUnknownAttributePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceVertexTypePredefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeType.cs" />
