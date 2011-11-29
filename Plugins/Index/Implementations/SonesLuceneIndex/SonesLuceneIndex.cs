@@ -478,7 +478,17 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override bool Remove(IComparable myKey)
         {
-            throw new NotImplementedException();
+            if (myKey == null)
+            {
+                return false;
+            }
+
+            var deleted = -1;
+            if (ContainsKey(myKey))
+            {
+                deleted = _LuceneIndex.DeleteEntry(System.Convert.ToString(myKey), entry => entry.IndexId == this.IndexId);
+            }
+            return (deleted > 0);
         }
 
         public override void RemoveRange(IEnumerable<IComparable> myKeys)
@@ -493,7 +503,6 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override void Optimize()
         {
-            throw new NotImplementedException();
         }
 
         public override void Clear()
