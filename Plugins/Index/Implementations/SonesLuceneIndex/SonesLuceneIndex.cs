@@ -463,7 +463,17 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override bool ContainsKey(IComparable myKey)
         {
-            throw new NotImplementedException();
+            if (myKey == null)
+            {
+                return false;
+            }
+
+            string query = System.Convert.ToString(myKey);
+
+            if (string.IsNullOrWhiteSpace(query))
+                return false;
+
+            return _LuceneIndex.HasEntry(query, entry => entry.IndexId == this.IndexId);
         }
 
         public override bool Remove(IComparable myKey)
