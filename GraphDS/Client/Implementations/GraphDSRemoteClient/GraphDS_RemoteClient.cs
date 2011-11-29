@@ -84,16 +84,16 @@ namespace sones.GraphDS.GraphDSRemoteClient
                 StreamedBinding.Security.Mode = BasicHttpSecurityMode.Transport;
             }
 
-            try
-            {
-                //request to test connection
-                var Request = HttpWebRequest.Create(myServiceAddress.ToString());
-                var Response = Request.GetResponse();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("The GraphDB remote service is unreachable! Maybe the service was not started.", ex);
-            }
+            //try
+            //{
+            //    //request to test connection
+            //    var Request = HttpWebRequest.Create(myServiceAddress.ToString());
+            //    var Response = Request.GetResponse();
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new Exception("The GraphDB remote service is unreachable! Maybe the service was not started.", ex);
+            //}
 
             try
             {
