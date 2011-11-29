@@ -493,7 +493,10 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override void RemoveRange(IEnumerable<IComparable> myKeys)
         {
-            throw new NotImplementedException();
+            foreach (var key in myKeys)
+            {
+                Remove(key);
+            }
         }
 
         public override bool TryRemoveValue(IComparable myKey, long myValue)
