@@ -74,5 +74,11 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ChangesetObjects
 
         [DataMember]
         public Dictionary<String, String> ToBeRenamedProperties;
+
+        [DataMember]
+        public List<ServiceUnknownAttributePredefinition> ToBeDefinedAttributes;
+
+        [DataMember]
+        public List<String> ToBeUndefinedAttributes;
     }
 }

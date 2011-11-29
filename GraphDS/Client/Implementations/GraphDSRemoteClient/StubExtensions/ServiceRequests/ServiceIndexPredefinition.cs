@@ -11,7 +11,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
         internal ServiceIndexPredefinition(IndexPredefinition myIndexPredefinition)
         {
             this.Edition = myIndexPredefinition.Edition;
-            this.TypeName = myIndexPredefinition.TypeName;
+            this.IndexTypeName = myIndexPredefinition.TypeName;
             this.Name = myIndexPredefinition.Name;
             this.IndexOptions = myIndexPredefinition.IndexOptions;
             this.Properties = myIndexPredefinition.Properties.ToList();

@@ -23,29 +23,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-using sones.GraphDB.Request;
 using sones.GraphDB.TypeSystem;
-
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
-    public class ServiceUniquePredefinition
+    public class ServiceUnknownAttributePredefinition : ServiceAttributePredefinition
     {
-        /// <summary>
-        /// The set of properties that will be unique together.
-        /// </summary>
         [DataMember]
-        public List<String> Properties;
+        public String Multiplicity;
 
-        public UniquePredefinition ToUniquePredefinition()
+        [DataMember]
+        public String DefaultValue;
+
+        [DataMember]
+        public String EdgeType;
+
+        [DataMember]
+        public String InnerEdgeType;
+
+        [DataMember]
+        public bool IsMandatory;
+
+        [DataMember]
+        public bool IsUnique;
+
+        public UnknownAttributePredefinition ToUnknownAttributePredefinition()
         {
-            var uniquepredefinition = new UniquePredefinition();
-            foreach (var Property in this.Properties)
+            var attributePredef = new UnknownAttributePredefinition(this.AttributeName, this.AttributeType);
+            attributePredef.SetMultiplicity(this.Multiplicity);
+            attributePredef.SetDefaultValue(this.DefaultValue);
+            attributePredef.SetEdgeType(this.EdgeType);
+            attributePredef.SetInnerEdgeType(this.InnerEdgeType);
+            if (this.IsMandatory == true)
             {
-                uniquepredefinition.AddPropery(Property);
+                attributePredef.SetAsMandatory();
             }
-            return uniquepredefinition;
+            if (this.IsUnique == true)
+            {
+                attributePredef.SetAsUnique();
+            }
+            return attributePredef;
         }
     }
 }

@@ -36,6 +36,10 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
             this.ToBeRemovedMandatories = (myRequestAlterVertexType.ToBeRemovedMandatories == null)
                 ? null : myRequestAlterVertexType.ToBeRemovedMandatories.ToList();
             this.ToBeRenamedProperties = myRequestAlterVertexType.ToBeRenamedProperties;
+            this.ToBeDefinedAttributes = (myRequestAlterVertexType.ToBeDefinedAttributes == null)
+                ? null : myRequestAlterVertexType.ToBeDefinedAttributes.Select(x => new ServiceUnknownAttributePredefinition(x)).ToList();
+            this.ToBeUndefinedAttributes = (myRequestAlterVertexType.ToBeUndefinedAttributes == null)
+                ? null : myRequestAlterVertexType.ToBeUndefinedAttributes.ToList();
         }
     }
 }

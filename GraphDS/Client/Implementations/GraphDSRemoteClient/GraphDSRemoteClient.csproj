@@ -93,6 +93,7 @@
     <Compile Include="StubExtensions\ServiceRequests\ServicePropertyPredefinition.cs" />
     <Compile Include="StubExtensions\ServiceRequests\ServiceSingleEdgeUpdateDefinition.cs" />
     <Compile Include="StubExtensions\ServiceRequests\ServiceUniquePredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServiceUnknownAttributePredefinition.cs" />
     <Compile Include="StubExtensions\ServiceRequests\ServiceVertexTypePredefinition.cs" />
     <Compile Include="StubExtensions\ServiceTypeManagement\ServiceBaseType.cs" />
     <Compile Include="StubExtensions\ServiceTypeManagement\ServiceEdgeType.cs" />

@@ -56,19 +56,22 @@ namespace sones.GraphDS.GraphDSRemoteClient
         internal static IAttributeDefinition ToAttributeDefinition(ServiceAttributeDefinition mySvcAttributeDefinition, IServiceToken myServiceToken)
         {
             IAttributeDefinition AttributeDefinition = null;
-            switch(mySvcAttributeDefinition.Kind)
+            if (mySvcAttributeDefinition != null)
             {
-                case ServiceAttributeType.Property:
-                    AttributeDefinition = new RemotePropertyDefinition((ServicePropertyDefinition)mySvcAttributeDefinition, myServiceToken);
-                    break;
-                case ServiceAttributeType.BinaryProperty:
-                    throw new NotImplementedException();
-                case ServiceAttributeType.IncomingEdge:
-                    AttributeDefinition = new RemoteIncomingEdgeDefinition((ServiceIncomingEdgeDefinition)mySvcAttributeDefinition, myServiceToken);
-                    break;
-                case ServiceAttributeType.OutgoingEdge:
-                    AttributeDefinition = new RemoteOutgoingEdgeDefinition((ServiceOutgoingEdgeDefinition)mySvcAttributeDefinition, myServiceToken);
-                    break;
+                switch (mySvcAttributeDefinition.Kind)
+                {
+                    case ServiceAttributeType.Property:
+                        AttributeDefinition = new RemotePropertyDefinition((ServicePropertyDefinition)mySvcAttributeDefinition, myServiceToken);
+                        break;
+                    case ServiceAttributeType.BinaryProperty:
+                        throw new NotImplementedException();
+                    case ServiceAttributeType.IncomingEdge:
+                        AttributeDefinition = new RemoteIncomingEdgeDefinition((ServiceIncomingEdgeDefinition)mySvcAttributeDefinition, myServiceToken);
+                        break;
+                    case ServiceAttributeType.OutgoingEdge:
+                        AttributeDefinition = new RemoteOutgoingEdgeDefinition((ServiceOutgoingEdgeDefinition)mySvcAttributeDefinition, myServiceToken);
+                        break;
+                }
             }
             return AttributeDefinition;
         }
