@@ -404,7 +404,7 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override Type GetKeyType()
         {
-            throw new NotImplementedException();
+            return typeof(IComparable);
         }
 
         public override void Add(IComparable myKey, long? myVertexID, Helper.IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
@@ -424,7 +424,15 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override bool TryGetValues(IComparable myKey, out IEnumerable<long> myVertexIDs)
         {
-            throw new NotImplementedException();
+            if (myKey == null)
+            {
+                myVertexIDs = null;
+                return false;
+            }
+
+
+            myVertexIDs = this[myKey];
+            return myVertexIDs.Count() > 0;
         }
 
         public override IEnumerable<long> this[IComparable myKey]
