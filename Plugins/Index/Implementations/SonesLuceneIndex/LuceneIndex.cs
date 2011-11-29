@@ -12,6 +12,7 @@ using Lucene.Net.Analysis.Standard;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Util;
 using Lucene.Net.Documents;
+using System.Collections;
 
 namespace sones.Plugins.Index.LuceneIdx
 {
@@ -84,12 +85,23 @@ namespace sones.Plugins.Index.LuceneIdx
             }
             return _IndexWriter;
         }
-
+                
         private void CloseIndexWriter(IndexWriter myWriter)
         {
             myWriter.Optimize();
             myWriter.Close();
             myWriter.Dispose();
+        }
+
+        private IndexReader GetIndexReader()
+        {
+            return IndexReader.Open(_IndexDirectory);
+        }
+
+        private void CloseIndexReader(IndexReader myReader)
+        {
+            myReader.Close();
+            myReader.Dispose();
         }
 
         /// <summary>
@@ -176,7 +188,7 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <exception cref="System.ArgumentNullException">
         ///		myEntry is NULL.
         /// </exception>
-        public void DeleteEntry(LuceneEntry myEntry)
+        public int DeleteEntry(LuceneEntry myEntry)
         {
             if (myEntry == null)
             {
@@ -185,9 +197,11 @@ namespace sones.Plugins.Index.LuceneIdx
 
             Term delterm = new Term(LuceneIndex.FieldNames[LuceneIndex.Fields.ID], myEntry.Id);
 
-            var writer = GetIndexWriter();
-            writer.DeleteDocuments(delterm);
-            CloseIndexWriter(writer);
+            var reader = GetIndexReader();
+            int count = reader.DeleteDocuments(delterm);
+            CloseIndexReader(reader);
+
+            return count;
         }
 
         /// <summary>
@@ -205,57 +219,37 @@ namespace sones.Plugins.Index.LuceneIdx
         /// <exception cref="System.ArgumentNullException">
         ///		myLuceneQuery is NULL.
         /// </exception>
-        public void DeleteEntry(String myLuceneQuery, Predicate<LuceneEntry> select = null)
+        public int DeleteEntry(String myLuceneQuery, Predicate<LuceneEntry> select = null)
         {
+            int count = 0;
+
             if (myLuceneQuery == null)
             {
                 throw new InvalidOperationException("myLuceneQuery parameter cannot be null!");
             }
 
-            var writer = GetIndexWriter();
+            var reader = GetIndexReader();
 
-            if (select != null)
+            LuceneReturn ret = null;
+
+            ret = GetEntries(1, myLuceneQuery);
+            if (ret.TotalHits > 1)
             {
-                // if predicate is given, we need to query first
-                LuceneReturn ret = null;
-
-                ret = GetEntries(1, myLuceneQuery);
-                if (ret.TotalHits > 1)
-                {
-                    ret.Close();
-                    ret = GetEntries(ret.TotalHits, myLuceneQuery);
-                }
-
-                List<Term> delterms = new List<Term>();
-
-                foreach (var entry in ret)
-                {
-                    if (select(entry))
-                    {
-                        delterms.Add(new Term(LuceneIndex.FieldNames[LuceneIndex.Fields.ID], entry.Id));
-                    }
-                }
                 ret.Close();
-
-                writer.DeleteDocuments(delterms.ToArray());
+                ret = GetEntries(ret.TotalHits, myLuceneQuery);
             }
-            else
+
+            foreach (var entry in ret)
             {
-                var queryparser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, FieldNames[Fields.TEXT], new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
-                Query parsedquery;
-                try
+                if ((select == null) || select(entry))
                 {
-                    parsedquery = queryparser.Parse(myLuceneQuery);
+                    count += reader.DeleteDocuments(new Term(LuceneIndex.FieldNames[LuceneIndex.Fields.ID], entry.Id));
                 }
-                catch (ParseException)
-                {
-                    return;
-                }
-
-                writer.DeleteDocuments(parsedquery);
             }
+            ret.Close();
 
-            CloseIndexWriter(writer);
+            CloseIndexReader(reader);
+            return count;
         }
 
         /// <summary>
@@ -454,7 +448,7 @@ namespace sones.Plugins.Index.LuceneIdx
         {
             var searcher = new IndexSearcher(_IndexDirectory, true);
             var reader = searcher.GetIndexReader();
-            
+
             if (select == null)
             {
                 var ret = new LuceneKeyList(reader);
