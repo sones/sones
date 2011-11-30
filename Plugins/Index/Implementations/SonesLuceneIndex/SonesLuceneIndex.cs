@@ -294,7 +294,18 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public IEnumerable<long> this[IEnumerable<ICompoundIndexKey> myKeys]
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                IEnumerable<long> myVertexIDs = null;
+                if (TryGetValues(myKeys, out myVertexIDs))
+                {
+                    return myVertexIDs;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         #endregion
