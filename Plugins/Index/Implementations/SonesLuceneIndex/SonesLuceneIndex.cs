@@ -501,7 +501,19 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override bool TryRemoveValue(IComparable myKey, long myValue)
         {
-            throw new NotImplementedException();
+            if (myKey == null)
+            {
+                return false;
+            }
+
+            if (_LuceneIndex.DeleteEntry(myKey as String, (e) => (e.VertexId == myValue)) > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public override void Optimize()
