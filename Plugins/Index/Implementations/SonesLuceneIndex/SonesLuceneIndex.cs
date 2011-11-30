@@ -528,7 +528,10 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override bool SupportsNullableKeys
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return false;
+            }
         }
 
         #endregion
