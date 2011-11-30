@@ -518,6 +518,7 @@ namespace sones.Plugins.Index.LuceneIdx
 
         public override void Optimize()
         {
+            _LuceneIndex.Optimize();
         }
 
         public override void Clear()

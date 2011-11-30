@@ -86,9 +86,9 @@ namespace sones.Plugins.Index.LuceneIdx
             return _IndexWriter;
         }
                 
-        private void CloseIndexWriter(IndexWriter myWriter)
+        private void CloseIndexWriter(IndexWriter myWriter, bool bOptimize=false)
         {
-            myWriter.Optimize();
+            if (bOptimize) myWriter.Optimize();
             myWriter.Close();
             myWriter.Dispose();
         }
@@ -102,6 +102,19 @@ namespace sones.Plugins.Index.LuceneIdx
         {
             myReader.Close();
             myReader.Dispose();
+        }
+
+        /// <summary>
+        /// Optimizes the index for fastest search.
+        /// </summary>
+        /// 
+        /// <exception cref="System.ArgumentNullException">
+        ///		myEntry is NULL.
+        /// </exception>
+        public void Optimize()
+        {
+            var writer = GetIndexWriter();
+            CloseIndexWriter(writer, true);
         }
 
         /// <summary>
