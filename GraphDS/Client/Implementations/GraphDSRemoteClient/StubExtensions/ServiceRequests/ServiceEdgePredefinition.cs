@@ -17,7 +17,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
                 ? null : myEdgePredefinition.ContainedEdges.Select(x => new ServiceEdgePredefinition(x)).ToList();
 
             this.VertexIDsByID = (myEdgePredefinition.VertexIDsByVertexTypeID == null)
-                ? null : myEdgePredefinition.VertexIDsByVertexTypeID.Select(x => new Tuple<Int64, List<Int64>>(x.Key, x.Value.ToList())).ToList();
+                ? null : myEdgePredefinition.VertexIDsByVertexTypeID.ToDictionary(x => x.Key, x => x.Value.ToList());
 
             this.StructuredProperties = (myEdgePredefinition.StructuredProperties == null)
                 ? null : myEdgePredefinition.StructuredProperties.Select(x => new StructuredProperty(x.Key, x.Value)).ToList();
