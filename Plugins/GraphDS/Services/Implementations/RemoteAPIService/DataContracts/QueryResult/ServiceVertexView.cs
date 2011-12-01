@@ -32,35 +32,36 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
     [KnownType(typeof(ServicePropertyMultiplicity))]
+    [KnownType(typeof(ServiceEdgeView))]
     public class ServiceVertexView
     {
         public ServiceVertexView(IVertexView myVertexView)
         {
             var singleEdges = myVertexView.GetAllSingleEdges();
-            SingleEdges = (singleEdges == null) ? null : singleEdges.Select(x => new Tuple<string, ServiceSingleEdgeView>(x.Item1, new ServiceSingleEdgeView(x.Item2))).ToList();
+            SingleEdges = (singleEdges == null) ? null : singleEdges.ToDictionary(x => x.Item1, x => new ServiceSingleEdgeView(x.Item2));
             var hyperEdges = myVertexView.GetAllHyperEdges();
-            HyperEdges = (hyperEdges == null) ? null : hyperEdges.Select(x => new Tuple<string, ServiceHyperEdgeView>(x.Item1, new ServiceHyperEdgeView(x.Item2))).ToList();
+            HyperEdges = (hyperEdges == null) ? null : hyperEdges.ToDictionary(x => x.Item1, x => new ServiceHyperEdgeView(x.Item2));
             var properties = myVertexView.GetAllProperties();
             if (properties == null)
                 Properties = null;
             else
-                Properties = properties.Select(x =>
+                Properties = properties.ToDictionary(x => x.Item1, x =>
                 {
                     object value = ConvertHelper.ToServiceObject(x.Item2);
                     if (value != null)
-                        return new Tuple<string, object>(x.Item1, value);
+                        return value;
                     else
-                        return x;
-                }).ToList();
+                        return x.Item2;
+                });
         }
 
         [DataMember]
-        public List<Tuple<string, ServiceSingleEdgeView>> SingleEdges;
+        public Dictionary<string, ServiceSingleEdgeView> SingleEdges;
 
         [DataMember]
-        public List<Tuple<string, ServiceHyperEdgeView>> HyperEdges;
+        public Dictionary<string, ServiceHyperEdgeView> HyperEdges;
 
         [DataMember]
-        public List<Tuple<string, object>> Properties;
+        public Dictionary<string, object> Properties;
     }
 }

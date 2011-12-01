@@ -14,17 +14,17 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
             Dictionary<String, IEdgeView> egdes = new Dictionary<string,IEdgeView>();
             foreach (var item in this.Properties)
             {
-                object value = ConvertHelper.ToDsObject(item.Item2, myServiceToken);
+                object value = ConvertHelper.ToDsObject(item.Value, myServiceToken);
                 if (value != null)
-                    properties.Add(item.Item1, value);
+                    properties.Add(item.Key, value);
                 else
-                    properties.Add(item.Item1, item.Item2);
+                    properties.Add(item.Key, item.Value);
             }
 
             foreach(var item in this.SingleEdges)
-                egdes.Add(item.Item1, item.Item2.ToSingleEdgeView(myServiceToken));
+                egdes.Add(item.Key, item.Value.ToSingleEdgeView(myServiceToken));
             foreach(var item in this.HyperEdges)
-                egdes.Add(item.Item1, item.Item2.ToHyperEdgeView(myServiceToken));
+                egdes.Add(item.Key, item.Value.ToHyperEdgeView(myServiceToken));
             return new sones.GraphQL.Result.VertexView(properties, egdes);
         }
     }
