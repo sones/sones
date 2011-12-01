@@ -114,7 +114,10 @@ namespace sones.Plugins.Index
         /// <param name="myPropertyIDs">
         /// A list of indexed propertyIDs
         /// </param>
-        void Init(IList<Int64> myPropertyIDs);
+        /// <param name="bReinit">
+        /// forces reinitialization (index should be cleared first or otherwise could become inconsistent)
+        /// </param>
+        void Init(IList<Int64> myPropertyIDs, bool bReinit = false);
 
         #endregion
 

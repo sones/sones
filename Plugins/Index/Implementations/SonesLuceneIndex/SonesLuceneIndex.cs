@@ -10,6 +10,7 @@ using sones.Library.VersionedPluginManager;
 using sones.Plugins.Index.Helper;
 using sones.Plugins.Index.LuceneIdx;
 using sones.Plugins.Index.ErrorHandling;
+using sones.Library.CollectionWrapper;
 
 namespace sones.Plugins.Index.LuceneIdx
 {
@@ -462,13 +463,23 @@ namespace sones.Plugins.Index.LuceneIdx
                     throw new ArgumentException(String.Format("Key {0} was not valid ", myKey));
                 }
 
-                var ret = _LuceneIndex.GetEntriesInnerByField(_MaxResultsFirst, query, IndexId, LuceneIndex.Fields.INDEX_ID);
-                if (ret.TotalHits > _MaxResultsFirst)
+                var values_withdoubles = _LuceneIndex.GetEntriesInnerByField(_MaxResultsFirst, query, IndexId, LuceneIndex.Fields.INDEX_ID);
+                if (values_withdoubles.TotalHits > _MaxResultsFirst)
                 {
-                    ret = _LuceneIndex.GetEntriesInnerByField(ret.TotalHits, query, IndexId, LuceneIndex.Fields.INDEX_ID);
+                    values_withdoubles = _LuceneIndex.GetEntriesInnerByField(values_withdoubles.TotalHits, query, IndexId, LuceneIndex.Fields.INDEX_ID);
                 }
 
-                return ret.Select(entry => entry.VertexId);
+                var values_grouped = values_withdoubles.GroupBy(e => e.VertexId);
+                
+                // Unfortunately we have to breakup Lazy here as index interface doesn't support close (GRAPHDB-544)
+                List<LuceneEntry> values = new List<LuceneEntry>();
+                foreach (var group in values_grouped)
+                {
+                    values.Add(group.ElementAt(0));
+                }
+                values_withdoubles.Close();
+
+                return values.Select(entry => entry.VertexId);
             }
         }
 
@@ -565,7 +576,7 @@ namespace sones.Plugins.Index.LuceneIdx
                 throw new ArgumentNullException("myKey");
 
             string key = myKey.ToString();
-
+            
             if (string.IsNullOrWhiteSpace(key))
             {
                 return;

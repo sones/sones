@@ -93,9 +93,9 @@ namespace sones.Plugins.Index.LuceneIdx
             myWriter.Dispose();
         }
 
-        private IndexReader GetIndexReader()
+        private IndexReader GetIndexReader(bool bReadOnly = true)
         {
-            return IndexReader.Open(_IndexDirectory);
+            return IndexReader.Open(_IndexDirectory, bReadOnly);
         }
 
         private void CloseIndexReader(IndexReader myReader)
@@ -210,7 +210,7 @@ namespace sones.Plugins.Index.LuceneIdx
 
             Term delterm = new Term(LuceneIndex.FieldNames[LuceneIndex.Fields.ID], myEntry.Id);
 
-            var reader = GetIndexReader();
+            var reader = GetIndexReader(false);
             int count = reader.DeleteDocuments(delterm);
             CloseIndexReader(reader);
 
@@ -241,7 +241,7 @@ namespace sones.Plugins.Index.LuceneIdx
                 throw new InvalidOperationException("myLuceneQuery parameter cannot be null!");
             }
 
-            var reader = GetIndexReader();
+            var reader = GetIndexReader(false);
 
             LuceneReturn ret = null;
 
