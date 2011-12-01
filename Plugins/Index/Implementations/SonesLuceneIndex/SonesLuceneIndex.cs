@@ -605,6 +605,7 @@ namespace sones.Plugins.Index.LuceneIdx
                         var result = _LuceneIndex.GetEntries(_MaxResultsFirst, luceneQuery);
                         if (result.TotalHits > _MaxResultsFirst)
                         {
+                            result.Close();
                             result = _LuceneIndex.GetEntries(result.TotalHits, luceneQuery);
                         }
 
@@ -613,6 +614,7 @@ namespace sones.Plugins.Index.LuceneIdx
                         {
                             _LuceneIndex.DeleteEntry(entry);
                         }
+                        result.Close();
 
                         foreach (var value in myValues)
                         {
