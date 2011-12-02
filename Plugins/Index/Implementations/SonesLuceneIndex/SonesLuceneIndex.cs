@@ -88,6 +88,11 @@ namespace sones.Plugins.Index.LuceneIdx
             }
 
             IndexId = myIndexId;
+
+            if (myPropertyIDs != null)
+            {
+                Init(myPropertyIDs);
+            }
         }
 
         #endregion
@@ -359,13 +364,21 @@ namespace sones.Plugins.Index.LuceneIdx
                 }
             }
 
+            object oPropIds = null;
+            List<long> PropIds = null;
+            if (myParameters.TryGetValue("idx_property_ids", out oPropIds))
+            {
+                PropIds = (List<long>)oPropIds;
+            }
+            
+
             if (bPersistent)
             {
-                return new SonesLuceneIndex(UniqueString, directory);
+                return new SonesLuceneIndex(UniqueString, directory, PropIds);
             }
             else
             {
-                return new SonesLuceneIndex(UniqueString);
+                return new SonesLuceneIndex(UniqueString, null, PropIds);
             }
         }
 
@@ -375,7 +388,7 @@ namespace sones.Plugins.Index.LuceneIdx
         
         public override string IndexName
         {
-            get { return "sonesindexpersistentsolr"; }
+            get { return "sonesindexlucene"; }
         }
 
         public override long KeyCount()

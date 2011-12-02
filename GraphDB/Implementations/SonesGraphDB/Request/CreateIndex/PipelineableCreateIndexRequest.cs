@@ -62,7 +62,7 @@ namespace sones.GraphDB.Request.CreateIndex
             {
                 throw new InvalidIndexAttributeException(_request.IndexDefinition.Name, "");
             }
-            else if (string.IsNullOrWhiteSpace(_request.IndexDefinition.Name))
+            else if (string.IsNullOrWhiteSpace(_request.IndexDefinition.TypeName))
             {
                 throw new InvalidIndexAttributeException(_request.IndexDefinition.TypeName, "");
             }
