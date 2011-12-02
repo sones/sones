@@ -206,15 +206,9 @@ namespace TagExampleWithGraphMappingFramework
             SecToken = GraphDSClient.LogOn(new RemoteUserPasswordCredentials("test", "test"));
             TransToken = GraphDSClient.BeginTransaction(SecToken);
 
-            GraphDSClient.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
-
             #region create types, create instances and additional work using the GraphDB API
 
             GraphDSClient.Clear<IRequestStatistics>(SecToken, TransToken, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
-
-            Console.WriteLine("Press enter to start example");
-            Console.ReadLine();
-
             GraphDBRequests();
 
             #endregion

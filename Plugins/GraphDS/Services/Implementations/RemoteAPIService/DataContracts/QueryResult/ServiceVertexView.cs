@@ -43,8 +43,11 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
             HyperEdges = (hyperEdges == null) ? null : hyperEdges.ToDictionary(x => x.Item1, x => new ServiceHyperEdgeView(x.Item2));
             var properties = myVertexView.GetAllProperties();
             if (properties == null)
+            {
                 Properties = null;
+            }
             else
+            {
                 Properties = properties.ToDictionary(x => x.Item1, x =>
                 {
                     object value = ConvertHelper.ToServiceObject(x.Item2);
@@ -53,6 +56,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
                     else
                         return x.Item2;
                 });
+            }
         }
 
         [DataMember]

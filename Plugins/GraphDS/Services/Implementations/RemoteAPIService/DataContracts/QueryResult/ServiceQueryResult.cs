@@ -32,7 +32,6 @@ using sones.Library.ErrorHandling;
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
-    [KnownType(typeof(ServicePropertyMultiplicity))]
     public class ServiceQueryResult
     {
         public ServiceQueryResult(IQueryResult myQueryResult)

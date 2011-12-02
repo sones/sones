@@ -16,9 +16,13 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
             {
                 object value = ConvertHelper.ToDsObject(item.Value, myServiceToken);
                 if (value != null)
+                {
                     properties.Add(item.Key, value);
+                }
                 else
+                {
                     properties.Add(item.Key, item.Value);
+                }
             }
 
             foreach(var item in this.SingleEdges)
