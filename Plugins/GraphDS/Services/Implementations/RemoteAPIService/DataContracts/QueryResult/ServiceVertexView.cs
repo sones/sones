@@ -38,11 +38,11 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
         public ServiceVertexView(IVertexView myVertexView)
         {
             var singleEdges = myVertexView.GetAllSingleEdges();
-            SingleEdges = (singleEdges == null) ? null : singleEdges.ToDictionary(x => x.Item1, x => new ServiceSingleEdgeView(x.Item2));
+            SingleEdges = (singleEdges == null || singleEdges.Count() == 0) ? null : singleEdges.ToDictionary(x => x.Item1, x => new ServiceSingleEdgeView(x.Item2));
             var hyperEdges = myVertexView.GetAllHyperEdges();
-            HyperEdges = (hyperEdges == null) ? null : hyperEdges.ToDictionary(x => x.Item1, x => new ServiceHyperEdgeView(x.Item2));
+            HyperEdges = (hyperEdges == null || hyperEdges.Count() == 0) ? null : hyperEdges.ToDictionary(x => x.Item1, x => new ServiceHyperEdgeView(x.Item2));
             var properties = myVertexView.GetAllProperties();
-            if (properties == null)
+            if (properties == null || properties.Count() == 0)
             {
                 Properties = null;
             }
@@ -60,12 +60,12 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
         }
 
         [DataMember]
+        public Dictionary<string, object> Properties;
+
+        [DataMember]
         public Dictionary<string, ServiceSingleEdgeView> SingleEdges;
 
         [DataMember]
         public Dictionary<string, ServiceHyperEdgeView> HyperEdges;
-
-        [DataMember]
-        public Dictionary<string, object> Properties;
     }
 }

@@ -12,23 +12,38 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
         {
             Dictionary<String, Object> properties = new Dictionary<string,object>();
             Dictionary<String, IEdgeView> egdes = new Dictionary<string,IEdgeView>();
-            foreach (var item in this.Properties)
+            if (Properties != null)
             {
-                object value = ConvertHelper.ToDsObject(item.Value, myServiceToken);
-                if (value != null)
+                foreach (var item in Properties)
                 {
-                    properties.Add(item.Key, value);
-                }
-                else
-                {
-                    properties.Add(item.Key, item.Value);
+                    object value = ConvertHelper.ToDsObject(item.Value, myServiceToken);
+                    if (value != null)
+                    {
+                        properties.Add(item.Key, value);
+                    }
+                    else
+                    {
+                        properties.Add(item.Key, item.Value);
+                    }
                 }
             }
 
-            foreach(var item in this.SingleEdges)
-                egdes.Add(item.Key, item.Value.ToSingleEdgeView(myServiceToken));
-            foreach(var item in this.HyperEdges)
-                egdes.Add(item.Key, item.Value.ToHyperEdgeView(myServiceToken));
+            if (SingleEdges != null)
+            {
+                foreach (var item in this.SingleEdges)
+                {
+                    egdes.Add(item.Key, item.Value.ToSingleEdgeView(myServiceToken));
+                }
+            }
+
+            if (HyperEdges != null)
+            {
+                foreach (var item in HyperEdges)
+                {
+                    egdes.Add(item.Key, item.Value.ToHyperEdgeView(myServiceToken));
+                }
+            }
+            
             return new sones.GraphQL.Result.VertexView(properties, egdes);
         }
     }
