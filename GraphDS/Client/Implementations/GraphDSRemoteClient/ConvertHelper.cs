@@ -7,6 +7,7 @@ using sones.GraphDB.TypeSystem;
 using sones.GraphDS.GraphDSRemoteClient.GraphElements;
 using sones.GraphDS.GraphDSRemoteClient.TypeManagement;
 using sones.GraphDB.Expression;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDS.GraphDSRemoteClient
 {
@@ -38,22 +39,39 @@ namespace sones.GraphDS.GraphDSRemoteClient
             return result;
         }
 
+        internal static ServiceEdgeInstance ToServiceEdgeInstance(IEdge myEdge)
+        {
+            ServiceEdgeInstance svcEdge;
+            if (myEdge is ISingleEdge)
+            {
+                svcEdge = new ServiceSingleEdgeInstance((ISingleEdge)myEdge);
+            }
+            else
+            {
+                svcEdge = new ServiceHyperEdgeInstance((IHyperEdge)myEdge);
+            }
+            return svcEdge;
+        }
+
         internal static IAttributeDefinition ToAttributeDefinition(ServiceAttributeDefinition mySvcAttributeDefinition, IServiceToken myServiceToken)
         {
             IAttributeDefinition AttributeDefinition = null;
-            switch(mySvcAttributeDefinition.Kind)
+            if (mySvcAttributeDefinition != null)
             {
-                case ServiceAttributeType.Property:
-                    AttributeDefinition = new RemotePropertyDefinition((ServicePropertyDefinition)mySvcAttributeDefinition, myServiceToken);
-                    break;
-                case ServiceAttributeType.BinaryProperty:
-                    throw new NotImplementedException();
-                case ServiceAttributeType.IncomingEdge:
-                    AttributeDefinition = new RemoteIncomingEdgeDefinition((ServiceIncomingEdgeDefinition)mySvcAttributeDefinition, myServiceToken);
-                    break;
-                case ServiceAttributeType.OutgoingEdge:
-                    AttributeDefinition = new RemoteOutgoingEdgeDefinition((ServiceOutgoingEdgeDefinition)mySvcAttributeDefinition, myServiceToken);
-                    break;
+                switch (mySvcAttributeDefinition.Kind)
+                {
+                    case ServiceAttributeType.Property:
+                        AttributeDefinition = new RemotePropertyDefinition((ServicePropertyDefinition)mySvcAttributeDefinition, myServiceToken);
+                        break;
+                    case ServiceAttributeType.BinaryProperty:
+                        throw new NotImplementedException();
+                    case ServiceAttributeType.IncomingEdge:
+                        AttributeDefinition = new RemoteIncomingEdgeDefinition((ServiceIncomingEdgeDefinition)mySvcAttributeDefinition, myServiceToken);
+                        break;
+                    case ServiceAttributeType.OutgoingEdge:
+                        AttributeDefinition = new RemoteOutgoingEdgeDefinition((ServiceOutgoingEdgeDefinition)mySvcAttributeDefinition, myServiceToken);
+                        break;
+                }
             }
             return AttributeDefinition;
         }

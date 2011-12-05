@@ -40,7 +40,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
         /// The name of the index type.
         /// </summary>
         [DataMember]
-        public string TypeName;
+        public string IndexTypeName;
         
         /// <summary>
         /// The name of the index
@@ -53,14 +53,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
         /// </summary>
         [DataMember]
         public Dictionary<String, Object> IndexOptions;
-
-        /// <summary>
-        /// The options that will be passed to the index instance
-        /// </summary>
-        [DataMember]
-        public String IndexType;
-
-        
 
         /// <summary>
         /// The set of properties that will be indexed.
@@ -80,11 +72,10 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
 
         public IndexPredefinition ToIndexPredefinition()
         {
-            IndexPredefinition IndexPreDef = new IndexPredefinition(this.Name);
-
+            IndexPredefinition IndexPreDef = new IndexPredefinition(this.Name, this.VertexTypeName);
             IndexPreDef.SetComment(this.Comment);
             IndexPreDef.SetEdition(this.Edition);
-            IndexPreDef.SetIndexType(this.IndexType);
+            IndexPreDef.SetIndexType(this.IndexTypeName);
             if (this.IndexOptions != null)
             {
                 IndexPreDef.AddOptions(this.IndexOptions);

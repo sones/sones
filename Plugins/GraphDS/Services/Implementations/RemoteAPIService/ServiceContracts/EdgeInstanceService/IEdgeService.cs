@@ -21,7 +21,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceContracts.EdgeInstanceS
         /// <param name="myPropertyID">The ID of the interesing property</param>
         /// <returns>A Property</returns>
         [OperationContract(Name = "GetPropertyByEdgeInstance")]
-        object GetProperty(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myGraphElement, Int64 myPropertyID);
+        object GetProperty(SecurityToken mySecurityToken, Int64 myTransToken, ServiceEdgeInstance myEdge, Int64 myPropertyID);
 
 
         /// <summary>

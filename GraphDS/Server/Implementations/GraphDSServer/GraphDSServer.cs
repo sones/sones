@@ -328,7 +328,7 @@ namespace sones.GraphDSServer
             }
         }
 
-        public QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, string myQueryString, string myQueryLanguageName)
+        public IQueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, Int64 myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
             IGraphQL queryLanguage;
 
@@ -340,7 +340,7 @@ namespace sones.GraphDSServer
                     _drainpipe.Value.Query(mySecurityToken, myTransactionToken, myQueryString, myQueryLanguageName);
                 }
 
-                QueryResult result = queryLanguage.Query(mySecurityToken, myTransactionToken, myQueryString);
+                IQueryResult result = queryLanguage.Query(mySecurityToken, myTransactionToken, myQueryString);
 
                 // drain every query result (after the query)
                 foreach (KeyValuePair<String, IDrainPipe> _drainpipe in _DrainPipes)

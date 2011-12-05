@@ -87,6 +87,7 @@
     <Compile Include="DataContracts\ServiceRequests\ServiceOutgoingEdgePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServicePropertyPredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceUniquePredefinition.cs" />
+    <Compile Include="DataContracts\ServiceRequests\ServiceUnknownAttributePredefinition.cs" />
     <Compile Include="DataContracts\ServiceRequests\ServiceVertexTypePredefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeDefinition.cs" />
     <Compile Include="DataContracts\ServiceTypeManagement\ServiceAttributeType.cs" />
@@ -192,11 +193,6 @@
     <EmbeddedResource Include="ServiceContracts\MEX\WSDL.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

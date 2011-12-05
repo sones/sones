@@ -114,6 +114,7 @@
     <Compile Include="Result\Edge\IHyperEdgeView.cs" />
     <Compile Include="Result\Edge\ISingleEdgeView.cs" />
     <Compile Include="Result\IGraphElementView.cs" />
+    <Compile Include="Result\IQueryResult.cs" />
     <Compile Include="Result\QueryResult.cs" />
     <Compile Include="Result\ResultType.cs" />
     <Compile Include="Result\Vertex\IVertexView.cs" />

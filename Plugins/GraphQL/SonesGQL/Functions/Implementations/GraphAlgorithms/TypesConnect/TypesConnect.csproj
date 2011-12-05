@@ -40,10 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="bufferForFindPathShema.cs" />
-    <Compile Include="dataForFindPathShema.cs" />
-    <Compile Include="typesconnect.cs" />
+    <Compile Include="BufferForFindPathSchema.cs" />
+    <Compile Include="DataForFindPathSchema.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypesConnect.cs" />
     <Compile Include="TypeWithProperty.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -192,7 +192,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.GraphElements
         public IEnumerable<IIndexDefinition> GetIndexDefinitions(bool myIncludeAncestorDefinitions)
         {
             return _ServiceToken.VertexTypeService.GetIndexDefinitions(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, new ServiceVertexType(this), myIncludeAncestorDefinitions)
-                .Select(x => new RemoteIndexDefinition(x, _ServiceToken));
+                .Select(x => new RemoteIndexDefinition(x, _ServiceToken)).ToList();
         }
 
         #endregion
@@ -321,9 +321,8 @@ namespace sones.GraphDS.GraphDSRemoteClient.GraphElements
 
         public override IPropertyDefinition GetPropertyDefinition(string myPropertyName)
         {
-            var bla = _ServiceToken.VertexTypeService.GetPropertyDefinitionByVertexType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, this.Name, myPropertyName);
             return new RemotePropertyDefinition(
-                bla,
+                _ServiceToken.VertexTypeService.GetPropertyDefinitionByVertexType(_ServiceToken.SecurityToken, _ServiceToken.TransactionToken, this.Name, myPropertyName),
                 _ServiceToken);
         }
 

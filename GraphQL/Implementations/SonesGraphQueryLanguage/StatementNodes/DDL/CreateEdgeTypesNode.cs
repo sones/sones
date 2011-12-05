@@ -121,7 +121,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB,
+        public override IQueryResult Execute(IGraphDB myGraphDB,
                                             IGraphQL myGraphQL,
                                             GQLPluginManager myPluginManager,
                                             String myQuery,
@@ -130,11 +130,11 @@ namespace sones.GraphQL.StatementNodes.DDL
         {
             _query = myQuery;
 
-            QueryResult result;
+            IQueryResult result;
 
             try
             {
-                result = myGraphDB.CreateEdgeTypes<QueryResult>(
+                result = myGraphDB.CreateEdgeTypes<IQueryResult>(
                         mySecurityToken,
                         myTransactionToken,
                         new RequestCreateEdgeTypes(_TypePredefinitions),
@@ -162,15 +162,14 @@ namespace sones.GraphQL.StatementNodes.DDL
         /// </summary>
         /// <param name="myStats">The statistics of the request</param>
         /// <param name="myCreatedVertexTypes">The created vertex types</param>
-        /// <returns>A QueryResult</returns>
-        private QueryResult CreateQueryResult(IRequestStatistics myStats,
+        /// <returns>A IQueryResult</returns>
+        private IQueryResult CreateQueryResult(IRequestStatistics myStats,
                                                 IEnumerable<IEdgeType> myCreatedEdgeTypes)
         {
-            return new QueryResult(_query,
+            return QueryResult.Success(_query,
                                     SonesGQLConstants.GQL,
-                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds),
-                                    ResultType.Successful,
-                                    CreateVertexViews(myCreatedEdgeTypes));
+                                    CreateVertexViews(myCreatedEdgeTypes),
+                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds));
         }
 
         /// <summary>

@@ -59,13 +59,12 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <summary>
         /// <seealso cref=" ADescribeDefinition"/>
         /// </summary>
-        public override QueryResult GetResult(GQLPluginManager myPluginManager,
+        public override IEnumerable<IVertexView> GetResult(GQLPluginManager myPluginManager,
                                                 IGraphDB myGraphDB,
                                                 SecurityToken mySecurityToken,
                                                 Int64 myTransactionToken)
         {
             var resultingVertices = new List<IVertexView>();
-            ASonesException error = null;
 
             if (!String.IsNullOrEmpty(_TypeName))
             {
@@ -81,7 +80,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 }
                 else
                 {
-                    error = new VertexTypeDoesNotExistException(_TypeName, "");
+                    throw new VertexTypeDoesNotExistException(_TypeName, "");
                 }
 
                 #endregion
@@ -103,11 +102,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                 #endregion
             }
 
-            if (error != null)
-                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Failed, resultingVertices, error);
-            else
-                return new QueryResult("", SonesGQLConstants.GQL, 0L, ResultType.Successful, resultingVertices);
-
+            return resultingVertices;
         }
 
         #endregion

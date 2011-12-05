@@ -126,7 +126,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                                             SecurityToken mySecurityToken)
         {
             GetType(myTypeName, myTransactionToken, mySecurityToken);
-            
+
             if (IsTypeBaseType(myTypeName))
                 throw new InvalidTypeException("[BaseType] " + myTypeName, "userdefined type");
         }
@@ -275,7 +275,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypePredefinition">The vertex type predefinition to be checked.</param>
         protected abstract void CheckSealedAndAbstract(ATypePredefinition myTypePredefinition);
-        
+
         #endregion
 
         /// <summary>
@@ -347,6 +347,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 myTypePredefinitions.CheckNull("Element in myTypePredefinitions");
 
+                CheckAttributeNames(typePredefinition);
+
                 ConvertUnknownAttributes(typePredefinition);
                 ConvertPropertyUniques(typePredefinition);
                 CheckSealedAndAbstract(typePredefinition);
@@ -364,6 +366,33 @@ namespace sones.GraphDB.Manager.TypeManagement
                 CheckDefaultValue(typePredefinition);
                 CheckUniques(typePredefinition);
                 CheckIndices(typePredefinition);
+            }
+        }
+
+        /// <summary>
+        /// Checks that the attribute names of the UnknownAttributes and Properties are not null or empty.
+        /// </summary>
+        /// <param name="myTypePredefinition">The type predefinition which holds the attributes.</param>
+        protected static void CheckAttributeNames(ATypePredefinition myTypePredefinition)
+        {
+            if (myTypePredefinition.UnknownAttributes != null)
+            {
+                if (myTypePredefinition
+                        .UnknownAttributes
+                        .Any(_ => (_ == null) || (String.IsNullOrWhiteSpace(_.AttributeName))))
+                    throw new EmptyAttributeNameException("Attrbutename on type "
+                                                            + myTypePredefinition.TypeName +
+                                                            "is null!");
+            }
+
+            if (myTypePredefinition.Properties != null)
+            {
+                if (myTypePredefinition
+                         .Properties
+                         .Any(_ => (_ == null) || (String.IsNullOrWhiteSpace(_.AttributeName))))
+                    throw new EmptyAttributeNameException("Attrbutename on type "
+                                                            + myTypePredefinition.TypeName +
+                                                            "is null!");
             }
         }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="2QB6017qDCN6TeKHICCl4beoAp4=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="k9nJ4cIsJwlB5p87P6tcKiHg2ik=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="sonesBasic_VertexTypeService">
       <properties>
@@ -657,10 +657,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="sonesStreamed_StreamedService" contract="sonesGraphDSRemoteAPI.StreamedService" bindingType="basicHttpBinding" address="http://127.0.0.1:9970/rpc/streamed" bindingConfiguration="sonesStreamed_StreamedService">
+    <endpoint name="sonesStreamed_StreamedService" contract="sonesGraphDSRemoteAPI.StreamedService" bindingType="basicHttpBinding" address="http://0.0.0.0:9970/rpc/streamed" bindingConfiguration="sonesStreamed_StreamedService">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://127.0.0.1:9970/rpc/streamed</serializedValue>
+          <serializedValue>http://0.0.0.0:9970/rpc/streamed</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
@@ -742,10 +742,10 @@
         </property>
       </properties>
     </endpoint>
-    <endpoint name="sonesBasic_GraphDSService" contract="sonesGraphDSRemoteAPI.GraphDSService" bindingType="basicHttpBinding" address="http://127.0.0.1:9970/rpc" bindingConfiguration="sonesBasic_GraphDSService">
+    <endpoint name="sonesBasic_GraphDSService" contract="sonesGraphDSRemoteAPI.GraphDSService" bindingType="basicHttpBinding" address="http://0.0.0.0:9970/rpc" bindingConfiguration="sonesBasic_GraphDSService">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://127.0.0.1:9970/rpc</serializedValue>
+          <serializedValue>http://0.0.0.0:9970/rpc</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
@@ -827,10 +827,10 @@
         </property>
       </properties>
     </endpoint>
-    <endpoint name="sonesBasic_VertexTypeService" contract="sonesGraphDSRemoteAPI.VertexTypeService" bindingType="basicHttpBinding" address="http://127.0.0.1:9970/rpc" bindingConfiguration="sonesBasic_VertexTypeService">
+    <endpoint name="sonesBasic_VertexTypeService" contract="sonesGraphDSRemoteAPI.VertexTypeService" bindingType="basicHttpBinding" address="http://0.0.0.0:9970/rpc" bindingConfiguration="sonesBasic_VertexTypeService">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://127.0.0.1:9970/rpc</serializedValue>
+          <serializedValue>http://0.0.0.0:9970/rpc</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
@@ -912,10 +912,10 @@
         </property>
       </properties>
     </endpoint>
-    <endpoint name="sonesBasic_VertexInstanceService" contract="sonesGraphDSRemoteAPI.VertexInstanceService" bindingType="basicHttpBinding" address="http://127.0.0.1:9970/rpc" bindingConfiguration="sonesBasic_VertexInstanceService">
+    <endpoint name="sonesBasic_VertexInstanceService" contract="sonesGraphDSRemoteAPI.VertexInstanceService" bindingType="basicHttpBinding" address="http://0.0.0.0:9970/rpc" bindingConfiguration="sonesBasic_VertexInstanceService">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://127.0.0.1:9970/rpc</serializedValue>
+          <serializedValue>http://0.0.0.0:9970/rpc</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
@@ -997,10 +997,10 @@
         </property>
       </properties>
     </endpoint>
-    <endpoint name="sonesBasic_EdgeTypeService" contract="sonesGraphDSRemoteAPI.EdgeTypeService" bindingType="basicHttpBinding" address="http://127.0.0.1:9970/rpc" bindingConfiguration="sonesBasic_EdgeTypeService">
+    <endpoint name="sonesBasic_EdgeTypeService" contract="sonesGraphDSRemoteAPI.EdgeTypeService" bindingType="basicHttpBinding" address="http://0.0.0.0:9970/rpc" bindingConfiguration="sonesBasic_EdgeTypeService">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://127.0.0.1:9970/rpc</serializedValue>
+          <serializedValue>http://0.0.0.0:9970/rpc</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
@@ -1082,10 +1082,10 @@
         </property>
       </properties>
     </endpoint>
-    <endpoint name="sonesBasic_EdgeInstanceService" contract="sonesGraphDSRemoteAPI.EdgeInstanceService" bindingType="basicHttpBinding" address="http://127.0.0.1:9970/rpc" bindingConfiguration="sonesBasic_EdgeInstanceService">
+    <endpoint name="sonesBasic_EdgeInstanceService" contract="sonesGraphDSRemoteAPI.EdgeInstanceService" bindingType="basicHttpBinding" address="http://0.0.0.0:9970/rpc" bindingConfiguration="sonesBasic_EdgeInstanceService">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://127.0.0.1:9970/rpc</serializedValue>
+          <serializedValue>http://0.0.0.0:9970/rpc</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />

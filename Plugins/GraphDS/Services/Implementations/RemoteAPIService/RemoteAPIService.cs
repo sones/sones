@@ -82,8 +82,12 @@ namespace sones.GraphDS.Services.RemoteAPIService
                 if (myStartParameter != null && myStartParameter.ContainsKey("Port"))
                     Port = (ushort)Convert.ChangeType(myStartParameter["Port"], typeof(ushort));
 
+                bool UseStreaming = false;
+                if (myStartParameter != null && myStartParameter.ContainsKey("UseStreaming"))
+                    UseStreaming = (bool)Convert.ChangeType(myStartParameter["UseStreaming"], typeof(bool));
+
                 _RunningTime.Start();
-                _RPCServer = new sonesRPCServer(_GraphDS, Address, Port, UriPattern, _IsSecure);
+                _RPCServer = new sonesRPCServer(_GraphDS, Address, Port, UriPattern, _IsSecure, UseStreaming);
                 _RPCServer.StartServiceHost();
                 _description = "   * RemoteAPI Service is started at " + _RPCServer.URI + Environment.NewLine +
                                "      * web service definition can be found at " + Environment.NewLine +

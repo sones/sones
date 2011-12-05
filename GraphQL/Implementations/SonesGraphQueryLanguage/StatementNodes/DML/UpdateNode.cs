@@ -132,9 +132,9 @@ namespace sones.GraphQL.StatementNodes.DML
         }
 
         /// <summary>
-        /// Executes the statement and returns a QueryResult.
+        /// Executes the statement and returns a IQueryResult.
         /// </summary>
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override IQueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             Query = myQuery;
 
@@ -700,7 +700,7 @@ namespace sones.GraphQL.StatementNodes.DML
             result.UpdateUnknownProperty(attributeAssignOrUpdateValue.AttributeIDChain.ContentString , attributeAssignOrUpdateValue.Value);
         }
 
-        private QueryResult GenerateOutput(IRequestStatistics myStats, IEnumerable<IVertex> myVertices)
+        private IQueryResult GenerateOutput(IRequestStatistics myStats, IEnumerable<IVertex> myVertices)
         {
             List<IVertexView> list = new List<IVertexView>();
 
@@ -713,11 +713,10 @@ namespace sones.GraphQL.StatementNodes.DML
                                             }, null));
             }
 
-            return new QueryResult(Query, 
-                                    "GQL", 
-                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), 
-                                    ResultType.Successful,
-                                    list);
+            return QueryResult.Success(Query, 
+                                    SonesGQLConstants.GQL,
+                                    list,
+                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds));
         }
 
         #endregion

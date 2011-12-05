@@ -33,14 +33,16 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
     {
         public ServiceIndexDefinition(IIndexDefinition myIndexDefinition)
         {
-            this.Edition = myIndexDefinition.Edition;
+            this.Name = myIndexDefinition.Name;
             this.ID = myIndexDefinition.ID;
             this.IndexTypeName = myIndexDefinition.IndexTypeName;
-            this.IsRange = myIndexDefinition.IsRange;
+            this.Edition = myIndexDefinition.Edition;
             this.IsUserdefined = myIndexDefinition.IsUserdefined;
-            this.IsVersioned = myIndexDefinition.IsVersioned;
-            this.Name = myIndexDefinition.Name;
             this.IndexedProperties = myIndexDefinition.IndexedProperties.Select(x => x.Name).ToList();
+            this.VertexType = new ServiceVertexType(myIndexDefinition.VertexType);
+            this.SourceIndex = (myIndexDefinition.SourceIndex == null) ? null : new ServiceIndexDefinition(myIndexDefinition.SourceIndex);
+            this.IsRange = myIndexDefinition.IsRange;
+            this.IsVersioned = myIndexDefinition.IsVersioned;            
         }
 
         [DataMember]

@@ -65,6 +65,8 @@
     <Compile Include="StubExtensions\ChangesetObjects\ServiceAlterVertexChangeset.cs" />
     <Compile Include="StubExtensions\ChangesetObjects\ServiceUpdateChangeset.cs" />
     <Compile Include="StubExtensions\InstanceObjects\ServiceEdgeInstance.cs" />
+    <Compile Include="StubExtensions\InstanceObjects\ServiceHyperEdgeInstance.cs" />
+    <Compile Include="StubExtensions\InstanceObjects\ServiceSingleEdgeInstance.cs" />
     <Compile Include="StubExtensions\InstanceObjects\ServiceVertexInstance.cs" />
     <Compile Include="StubExtensions\PayloadObjects\ServiceDeletePayload.cs" />
     <Compile Include="StubExtensions\PayloadObjects\ServiceInsertPayload.cs" />
@@ -91,6 +93,7 @@
     <Compile Include="StubExtensions\ServiceRequests\ServicePropertyPredefinition.cs" />
     <Compile Include="StubExtensions\ServiceRequests\ServiceSingleEdgeUpdateDefinition.cs" />
     <Compile Include="StubExtensions\ServiceRequests\ServiceUniquePredefinition.cs" />
+    <Compile Include="StubExtensions\ServiceRequests\ServiceUnknownAttributePredefinition.cs" />
     <Compile Include="StubExtensions\ServiceRequests\ServiceVertexTypePredefinition.cs" />
     <Compile Include="StubExtensions\ServiceTypeManagement\ServiceBaseType.cs" />
     <Compile Include="StubExtensions\ServiceTypeManagement\ServiceEdgeType.cs" />

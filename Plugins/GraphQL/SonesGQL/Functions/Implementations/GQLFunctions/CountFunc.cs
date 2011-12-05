@@ -69,7 +69,13 @@ namespace sones.Plugins.SonesGQL.Functions
 
         #region execute
 
-        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, Object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, Int64 myTransactionToken, params FuncParameter[] myParams)
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, 
+                                                Object myCallingObject, 
+                                                IVertex myDBObject, 
+                                                IGraphDB myGraphDB, 
+                                                SecurityToken mySecurityToken, 
+                                                Int64 myTransactionToken, 
+                                                params FuncParameter[] myParams)
         {
             if (myCallingObject is IHyperEdge)
             {

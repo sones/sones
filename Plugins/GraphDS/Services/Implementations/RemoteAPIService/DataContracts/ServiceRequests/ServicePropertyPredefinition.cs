@@ -76,6 +76,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
                 property.SetAsMandatory();
             if (this.IsUnique)
                 property.SetAsUnique();
+            if (this.DefaultValue != null)
+                property.SetDefaultValue(this.DefaultValue);
 
             if (this.Multiplicity.Equals(ServicePropertyMultiplicity.List))
                 property.SetMultiplicityToList();

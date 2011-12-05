@@ -36,6 +36,8 @@ using sones.GraphQL.ErrorHandling;
 using sones.Library.DataStructures;
 using System.Diagnostics;
 using sones.Plugins.SonesGQL.DBExport;
+using sones.Library.ErrorHandling;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -91,7 +93,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.Readonly; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, 
+        public override IQueryResult Execute(IGraphDB myGraphDB, 
                                             IGraphQL myGraphQL, 
                                             GQLPluginManager myPluginManager, 
                                             String myQuery, 
@@ -100,50 +102,47 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             var sw = Stopwatch.StartNew();
 
-            QueryResult result = null;
-
-            if (_DumpFormat.ToString().ToUpper().Equals("GQL"))
+            try
             {
-                var plugin = myPluginManager.GetAndInitializePlugin<IGraphDBExport>("GQLEXPORT");
-
-                if (plugin != null)
+                if (_DumpFormat.ToString().ToUpper().Equals("GQL"))
                 {
-                    result = plugin.Export(_DumpDestination, 
-                                            _DumpableGrammar, 
-                                            myGraphDB, 
-                                            myGraphQL, 
-                                            mySecurityToken, 
-                                            myTransactionToken, 
-                                            _TypesToDump, 
-                                            null,
-                                            _DumpType);
+                    var plugin = myPluginManager.GetAndInitializePlugin<IGraphDBExport>("GQLEXPORT");
+
+                    if (plugin != null)
+                    {
+                        var result = plugin.Export(_DumpDestination,
+                                                _DumpableGrammar,
+                                                myGraphDB,
+                                                myGraphQL,
+                                                mySecurityToken,
+                                                myTransactionToken,
+                                                _TypesToDump,
+                                                null,
+                                                _DumpType);
+
+                        return QueryResult.Success(myQuery, SonesGQLConstants.GQL, result, Convert.ToUInt64(sw.ElapsedMilliseconds));
+                    }
                 }
+                return QueryResult.Failure(myQuery, SonesGQLConstants.GQL, new InvalidDumpFormatException(_DumpFormat.ToString(), string.Empty));
             }
-
-            sw.Stop();
-
-            if (result != null)
+            catch (ASonesException ex)
             {
-                return new QueryResult(myQuery, 
-                                        _DumpFormat.ToString(), 
-                                        (ulong)sw.ElapsedMilliseconds, 
-                                        result.TypeOfResult, 
-                                        result.Vertices, 
-                                        result.Error);
+                return QueryResult.Failure(myQuery, SonesGQLConstants.GQL, ex);
             }
-            else
-                return null;
+            catch (Exception ex)
+            {
+                return QueryResult.Failure(myQuery, SonesGQLConstants.GQL, new UnknownDBException(ex));
+            }
         }
 
         #endregion
 
-        private QueryResult GenerateOutput(IRequestStatistics myStats)
+        private IQueryResult GenerateOutput(IRequestStatistics myStats)
         {
-            return new QueryResult(_Query, 
-                                    "GQL", 
-                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds), 
-                                    ResultType.Successful, 
-                                    new List<IVertexView>());
+            return QueryResult.Success(_Query, 
+                                    SonesGQLConstants.GQL,
+                                    new List<IVertexView>(), 
+                                    Convert.ToUInt64(myStats.ExecutionTime.Milliseconds));
         }
     }
 }

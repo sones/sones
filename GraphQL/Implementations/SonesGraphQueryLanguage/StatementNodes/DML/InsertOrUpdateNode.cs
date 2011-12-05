@@ -112,11 +112,11 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        public override IQueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             var sw = Stopwatch.StartNew();
             
-            QueryResult result = null;
+            IQueryResult result = null;
             _query = myQuery;
             String myAction = "";
             IEnumerable<IVertex> myToBeUpdatedVertices = null;
@@ -165,7 +165,7 @@ namespace sones.GraphQL.StatementNodes.DML
             return GenerateResult(sw.Elapsed.TotalMilliseconds, result, myAction);
         }
 
-        private QueryResult GenerateResult(double myElapsedTotalMilliseconds, QueryResult myResult, String myAction)
+        private IQueryResult GenerateResult(double myElapsedTotalMilliseconds, IQueryResult myResult, String myAction)
         {
             List<IVertexView> view = new List<IVertexView>();
 
@@ -187,10 +187,10 @@ namespace sones.GraphQL.StatementNodes.DML
                 }
             }
 
-            return new QueryResult(_query, SonesGQLConstants.GQL, Convert.ToUInt64(myElapsedTotalMilliseconds), ResultType.Successful, view);
+            return QueryResult.Success(_query, SonesGQLConstants.GQL, view, Convert.ToUInt64(myElapsedTotalMilliseconds));
         }
 
-        private QueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        private IQueryResult ProcessInsert(IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             InsertNode insert = new InsertNode();
             insert.Init(_Type, _AttributeAssignList);
@@ -198,7 +198,7 @@ namespace sones.GraphQL.StatementNodes.DML
             return insert.Execute(myGraphDB, null, myPluginManager, _query, mySecurityToken, myTransactionToken);
         }
 
-        private QueryResult ProcessUpdate(IEnumerable<IVertex> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, Int64 myTransactionToken)
+        private IQueryResult ProcessUpdate(IEnumerable<IVertex> myVertexIDs, IGraphDB myGraphDB, GQLPluginManager myPluginManager, SecurityToken mySecurityToken, Int64 myTransactionToken)
         {
             UpdateNode update = new UpdateNode();
             update.Init(_Type, _AttributeAssignList, myVertexIDs);

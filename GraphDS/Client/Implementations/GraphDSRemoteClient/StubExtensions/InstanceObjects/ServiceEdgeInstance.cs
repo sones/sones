@@ -7,7 +7,7 @@ using sones.GraphDS.GraphDSRemoteClient.GraphElements;
 
 namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
 {
-    public partial class ServiceEdgeInstance
+    public abstract partial class ServiceEdgeInstance
     {
         public ServiceEdgeInstance(IEdge myEdge)
         {

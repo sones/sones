@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BufferDijkstra.cs" />
-    <Compile Include="dataDijkstra.cs" />
+    <Compile Include="DataDijkstra.cs" />
     <Compile Include="Dijkstra.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

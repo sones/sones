@@ -72,7 +72,7 @@ namespace sones.Plugins.SonesGQL.DBExport
             get { return "GQLEXPORT"; }
         }
 
-        public QueryResult Export(string destination, 
+        public IEnumerable<IVertexView> Export(string destination, 
                                     IDumpable myGrammar, 
                                     IGraphDB myGraphDB, 
                                     IGraphQL myGraphQL, 
@@ -83,24 +83,18 @@ namespace sones.Plugins.SonesGQL.DBExport
                                     DumpTypes myDumpType)
         {
             _Destination = destination;
-            ASonesException error = null;
-
-            #region Open destination
 
             try
             {
+                #region Open destination
+
                 OpenStream(destination);
-            }
-            catch (ASonesException e)
-            {
-                error = e;
-            }
 
-            #endregion
+                #endregion
 
-            #region Start export using the AGraphDBExport implementation
+                #region Start export using the AGraphDBExport implementation
 
-            var result = Export(myGrammar, 
+                return Export(myGrammar, 
                                 myGraphDB, 
                                 myGraphQL, 
                                 mySecurityToken, 
@@ -115,28 +109,19 @@ namespace sones.Plugins.SonesGQL.DBExport
                                                 myEdgeTypes),
                                 myDumpType);
 
-            #endregion
-
-            #region Close destination
-
-            try
+                #endregion
+            }
+            finally
             {
+                #region Close destination
+
                 CloseStream();
-            }
-            catch (ASonesException e)
-            {
-                error = e;
-            }
-            
-            #endregion
 
-            if(error != null)
-                return new QueryResult("", PluginShortName, 0L, ResultType.Failed, result.Vertices, error);
-            else
-                return new QueryResult("", PluginShortName, 0L, result.TypeOfResult, result.Vertices);
+                #endregion
+            }
         }
 
-        private QueryResult Export(IDumpable myGrammar, 
+        private IEnumerable<IVertexView> Export(IDumpable myGrammar, 
                                     IGraphDB myGraphDB, 
                                     IGraphQL myGraphQL, 
                                     SecurityToken mySecurityToken, 
@@ -146,7 +131,6 @@ namespace sones.Plugins.SonesGQL.DBExport
                                     DumpTypes myDumpType)
         {
             var dumpReadout = new Dictionary<String, Object>();
-            ASonesException error = null;
 
             #region dump gddl
             if ((myDumpType & DumpTypes.GDDL) == DumpTypes.GDDL)
@@ -164,14 +148,7 @@ namespace sones.Plugins.SonesGQL.DBExport
 
                 dumpReadout.Add("GDDL", new ListCollectionWrapper(graphDDL));
 
-                try
-                {
-                    Write(DumpTypes.GDDL, graphDDL);
-                }
-                catch (ASonesException e)
-                {
-                    error = e;
-                }
+                Write(DumpTypes.GDDL, graphDDL);
 
             } 
             #endregion
@@ -192,23 +169,12 @@ namespace sones.Plugins.SonesGQL.DBExport
 
                 dumpReadout.Add("GDML", new ListCollectionWrapper(graphDML));
 
-                try
-                {
-                    Write(DumpTypes.GDML, graphDML);
-                }
-                catch (ASonesException e)
-                {
-                    error = e;
-                }
+                Write(DumpTypes.GDML, graphDML);
 
             } 
             #endregion
 
-            return new QueryResult("", 
-                                    PluginShortName,
-                                    0L,
-                                    ResultType.Successful, 
-                                    new List<IVertexView> { new VertexView(dumpReadout, null) }, error);
+            return new IVertexView[] { new VertexView(dumpReadout, null) };
         }
 
         #endregion
@@ -462,7 +428,6 @@ namespace sones.Plugins.SonesGQL.DBExport
                     if (type == null)
                         throw new TypeDoesNotExistException(stringType, "");
 
-                    //typesToDumpHash.UnionWith(myDBContext.DBTypeManager.GetAllParentTypes(type, true, false));
                     AddEdgeTypeAndAttributesRecursivly(myGraphDB, 
                                                         mySecurityToken, 
                                                         myTransactionToken, 

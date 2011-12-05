@@ -29,6 +29,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.InstanceObjects
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
     [KnownType(typeof(ServiceEdgeInstance))]
+    [KnownType(typeof(ServiceSingleEdgeInstance))]
+    [KnownType(typeof(ServiceHyperEdgeInstance))]
     [KnownType(typeof(ServiceVertexInstance))]
     public abstract class AGraphElement
     {

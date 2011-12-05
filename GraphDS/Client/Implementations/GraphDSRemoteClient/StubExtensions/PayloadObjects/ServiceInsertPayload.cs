@@ -10,6 +10,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
     {
         internal ServiceInsertPayload(RequestInsertVertex myRequestInsertVertex)
         {
+            this.VertexTypeName = myRequestInsertVertex.VertexTypeName;
             this.UUID = myRequestInsertVertex.VertexUUID;
             this.Comment = myRequestInsertVertex.Comment;
             this.Edition = myRequestInsertVertex.Edition;

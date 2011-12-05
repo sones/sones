@@ -32,7 +32,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.TypeManagement
             this.ID = mySvcIndexDefinition.ID;
             this.IsRange = mySvcIndexDefinition.IsRange;
             this.IsVersioned = mySvcIndexDefinition.IsVersioned;
-            this.SourceIndex = new RemoteIndexDefinition(mySvcIndexDefinition.SourceIndex, myServiceToken);
+            this.SourceIndex = (mySvcIndexDefinition.SourceIndex == null) ? null : new RemoteIndexDefinition(mySvcIndexDefinition.SourceIndex, myServiceToken);
         }
 
         #endregion

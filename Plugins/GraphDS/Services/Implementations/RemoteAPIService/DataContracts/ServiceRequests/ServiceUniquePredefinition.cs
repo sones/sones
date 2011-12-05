@@ -32,7 +32,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
     [DataContract(Namespace = sonesRPCServer.Namespace)]
     public class ServiceUniquePredefinition
     {
-       
         /// <summary>
         /// The set of properties that will be unique together.
         /// </summary>
@@ -47,8 +46,6 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceRequests
                 uniquepredefinition.AddPropery(Property);
             }
             return uniquepredefinition;
-        
         }
-       
     }
 }

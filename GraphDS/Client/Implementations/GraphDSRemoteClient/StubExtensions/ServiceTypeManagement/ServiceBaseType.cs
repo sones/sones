@@ -11,5 +11,8 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
         {
             this.Name = myName;
         }
+
+        internal ServiceBaseType()
+        {}
     }
 }
