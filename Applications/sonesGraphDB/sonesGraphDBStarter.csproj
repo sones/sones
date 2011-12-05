@@ -248,6 +248,10 @@
       <Project>{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}</Project>
       <Name>SonesIndices</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\Index\Implementations\SonesLuceneIndex\SonesLuceneIndex.csproj">
+      <Project>{AB36C13B-C715-494E-A291-BC11FEB321CE}</Project>
+      <Name>SonesLuceneIndex</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="sonesIcon.ico" />

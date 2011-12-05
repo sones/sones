@@ -60,10 +60,12 @@ namespace sones.Plugins.Index.Abstract
         /// <summary>
         /// Sets the propertyID for internal processing
         /// </summary>
+        /// 
         /// <param name="myPropertyID">ID of the indexed property</param>
-        public void Init(IList<Int64> myPropertyIDs)
+        /// <param name="bReinit">forces reinitialization (index should be cleared first or otherwise could become inconsistent)</param>
+        public void Init(IList<Int64> myPropertyIDs, bool bReinit = false)
         {
-            if (_PropertyIDs != null)
+            if ((!bReinit) && (_PropertyIDs != null))
             {
                 throw new InvalidOperationException("Init Method has already been called for this index or propertyIDs have been set in constructor!");
             }
@@ -84,11 +86,23 @@ namespace sones.Plugins.Index.Abstract
         public virtual void Add(IVertex myVertex,
             IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
-            var key = CreateIndexEntry(_PropertyIDs, myVertex);
-
-            if (KeyNullSupportCheck(key))
+            if (_PropertyIDs.Count() > 1)
             {
-                Add(key, myVertex.VertexID, myIndexAddStrategy);
+                var keys = CreateIndexEntries(_PropertyIDs, myVertex);
+
+                AddRange(keys, myIndexAddStrategy);
+            }
+            else if (_PropertyIDs.Count() == 1)
+            {
+                var key = CreateIndexEntry(_PropertyIDs[0], myVertex);
+
+                if (KeyNullSupportCheck(key))
+                {
+                    Add(key, myVertex.VertexID, myIndexAddStrategy);
+                }
+            } else
+            {
+                throw new ArgumentException("No property IDs have been registered for indexing using Init.");
             }
         }
 
@@ -126,14 +140,41 @@ namespace sones.Plugins.Index.Abstract
         /// <returns>True, if the vertexID has been removed from the index.</returns>
         public virtual bool Remove(IVertex myVertex)
         {
-            var key = CreateIndexEntry(_PropertyIDs, myVertex);
-
-            if (!KeyNullSupportCheck(key))
+            if (_PropertyIDs.Count() > 1)
             {
-                return false;
-            }
+                bool bFail = false;
+                var keys = CreateIndexEntries(_PropertyIDs, myVertex);
 
-            return TryRemoveValue(key, myVertex.VertexID);
+                foreach (var key in keys)
+                {
+                    if (!KeyNullSupportCheck(key.Key))
+                    {
+                        bFail = true;
+                        continue;
+                    }
+                    if (!TryRemoveValue(key.Key, myVertex.VertexID))
+                    {
+                        bFail = true;
+                    }
+                }
+
+                return !bFail;
+            }
+            else if (_PropertyIDs.Count() == 1)
+            {
+                var key = CreateIndexEntry(_PropertyIDs[0], myVertex);
+
+                if (!KeyNullSupportCheck(key))
+                {
+                    return false;
+                }
+
+                return TryRemoveValue(key, myVertex.VertexID);
+            }
+            else
+            {
+                throw new ArgumentException("No property IDs have been registered for indexing using Init.");
+            }
         }
 
         /// <summary>
@@ -158,31 +199,37 @@ namespace sones.Plugins.Index.Abstract
         /// <param name="myIndexedProperties">Indexed properties</param>
         /// <param name="myVertex">Vertex which shall be stored in the index.</param>
         /// <returns>A search key for that index</returns>
-        private static IComparable CreateIndexEntry(IList<Int64> myIndexedProperties, IVertex myVertex)
+        private static IComparable CreateIndexEntry(Int64 myIndexedProperty, IVertex myVertex)
         {
-            if (myIndexedProperties.Count > 1)
+            if (myVertex.HasProperty(myIndexedProperty))
             {
-                var values = new List<IComparable>(myIndexedProperties.Count);
+                return myVertex.GetProperty(myIndexedProperty);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Creates a search key by checking which properties are indexed.
+        /// </summary>
+        /// <param name="myIndexedProperties">Indexed properties</param>
+        /// <param name="myVertex">Vertex which shall be stored in the index.</param>
+        /// <returns>A search key for that index</returns>
+        private static IEnumerable<KeyValuePair<IComparable,long?>> CreateIndexEntries(IList<Int64> myIndexedProperties, IVertex myVertex)
+        {
+            if (myIndexedProperties.Count > 0)
+            {
+                var values = new List<KeyValuePair<IComparable,long?>>();
                 for (int i = 0; i < myIndexedProperties.Count; i++)
                 {
                     if (myVertex.HasProperty(myIndexedProperties[i]))
                     {
-                        values[i] = myVertex.GetProperty(myIndexedProperties[i]);
+                        values.Add(new KeyValuePair<IComparable,long?>(myVertex.GetProperty(myIndexedProperties[i]), myVertex.VertexID));
                     }
                 }
-                return new ListCollectionWrapper(values);
-            }
-            else if (myIndexedProperties.Count == 1)
-            {
-                if (myVertex.HasProperty(myIndexedProperties[0]))
-                {
-                    return myVertex.GetProperty(myIndexedProperties[0]);
-                }
-                return null;
+                return values;
             }
             throw new ArgumentException("A unique definition must contain at least one element.");
         }
-
         
 
         #endregion
