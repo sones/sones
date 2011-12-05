@@ -117,6 +117,11 @@ namespace sones.Plugins.Index.LuceneIdx
         {
             var result = _LuceneIndex.GetEntries(_MaxResultsFirst, myQuery);
 
+            if (result == null)
+            {
+                throw new ArgumentException("Query string is not valid.");
+            }
+
             if (result.TotalHits > _MaxResultsFirst)
             {
                 result = _LuceneIndex.GetEntries(result.TotalHits, myQuery);
