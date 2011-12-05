@@ -18,7 +18,7 @@ namespace sones.Plugins.Index.LuceneIdx
 		public long VertexId
 		{
 			get;
-			set;
+			private set;
 		}
  
 		/// <summary>
@@ -27,7 +27,7 @@ namespace sones.Plugins.Index.LuceneIdx
 		public string Text
 		{
 			get;
-			set;
+			private set;
 		}	
  
 		/// <summary>
@@ -36,7 +36,7 @@ namespace sones.Plugins.Index.LuceneIdx
 		public string Id
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
@@ -45,7 +45,7 @@ namespace sones.Plugins.Index.LuceneIdx
 		public string IndexId
 		{
 			get;
-			set;
+			private set;
 		}
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace sones.Plugins.Index.LuceneIdx
         public long? PropertyId
         {
             get;
-            set;
+            private set;
         }
 
         /// <summary>
@@ -74,7 +74,16 @@ namespace sones.Plugins.Index.LuceneIdx
         public double? Score 
         { 
             get; 
-            set; 
+            private set; 
+        }
+
+        /// <summary>
+        /// Gets or sets the document number.
+        /// </summary>
+        public int? DocNum
+        {
+            get;
+            private set;
         } 
 
 		#region Constructors
@@ -93,13 +102,14 @@ namespace sones.Plugins.Index.LuceneIdx
 		/// <param name="myIndexId">The index id.</param>
 		/// <param name="myVertexId">The vertex id.</param>
 		/// <param name="myText">The text.</param>
-        public LuceneEntry(String myIndexId, long myVertexId, String myText, long? myPropertyId = null, float? myScore = null)
+        public LuceneEntry(String myIndexId, long myVertexId, String myText, long? myPropertyId = null, float? myScore = null, int? myDocNum = null)
         {
 			this.IndexId = myIndexId;
             this.VertexId = myVertexId;
 			this.Text = myText;
             this.PropertyId = myPropertyId;
             this.Score = myScore;
+            this.DocNum = myDocNum;
 
             if (myPropertyId != null)
             {
@@ -111,13 +121,14 @@ namespace sones.Plugins.Index.LuceneIdx
             }
         }
 
-        public LuceneEntry(Document myLuceneDocument, float? myScore = null)
+        internal LuceneEntry(Document myLuceneDocument, float? myScore = null, int? myDocNum = null)
         {
             this.Id = myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.ID]).StringValue();
             this.IndexId = myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.INDEX_ID]).StringValue();
             this.VertexId = Convert.ToInt64(myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.VERTEX_ID]).StringValue());
             this.Text = myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.TEXT]).StringValue();
             this.Score = myScore;
+            this.DocNum = myDocNum;
             
             var propertyIdField = myLuceneDocument.GetField(LuceneIndex.FieldNames[LuceneIndex.Fields.PROPERTY_ID]);
             if (propertyIdField != null)

@@ -256,7 +256,12 @@ namespace sones.Plugins.Index.LuceneIdx
             {
                 if ((select == null) || select(entry))
                 {
-                    count += reader.DeleteDocuments(new Term(LuceneIndex.FieldNames[LuceneIndex.Fields.ID], entry.Id));
+                    if (entry.DocNum != null)
+                    {
+                        int docnum = (int)entry.DocNum;
+                        reader.DeleteDocument(docnum);
+                        count++;
+                    }
                 }
             }
             ret.Close();
