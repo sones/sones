@@ -11,9 +11,15 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
         internal ISingleEdgeView ToSingleEdgeView(IServiceToken myServiceToken)
         {
             Dictionary<String, Object> properties = new Dictionary<string,object>();
-            foreach(var item in this.PropertyList)
-                properties.Add(item.Item1, item.Item2);
-            return new SingleEdgeView(properties, this.TargetVertex.ToVertexView(myServiceToken));
+            if (PropertyList != null)
+            {
+                foreach (var item in PropertyList)
+                {
+                    properties.Add(item.Item1, item.Item2);
+                }
+            }
+            
+            return new SingleEdgeView(properties, TargetVertex.ToVertexView(myServiceToken));
         }
     }
 }

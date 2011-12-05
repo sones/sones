@@ -11,9 +11,22 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
         internal IHyperEdgeView ToHyperEdgeView(IServiceToken myServiceToken)
         {
             Dictionary<String, Object> properties = new Dictionary<string, object>();
-            foreach (var item in this.PropertyList)
-                properties.Add(item.Item1, item.Item2);
-            return new HyperEdgeView(properties, this.Edges.Select(x => x.ToSingleEdgeView(myServiceToken)));
+            List<ISingleEdgeView> edges = new List<ISingleEdgeView>();
+            if (PropertyList != null)
+            {
+                foreach (var item in PropertyList)
+                {
+                    properties.Add(item.Item1, item.Item2);
+                }
+            }
+            if (Edges != null)
+            {
+                foreach(var item in Edges)
+                {
+                    edges.Add(item.ToSingleEdgeView(myServiceToken));
+                }
+            }
+            return new HyperEdgeView(properties, edges);
         }
     }
 }
