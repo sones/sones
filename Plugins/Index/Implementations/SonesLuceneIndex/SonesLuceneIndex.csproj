@@ -31,8 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lucene.Net, Version=2.9.4.1, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Lucene.Net">
       <HintPath>..\..\..\..\Library\External\LuceneDotNet\Lucene.Net.dll</HintPath>
     </Reference>
     <Reference Include="Lucene.Net.FastVectorHighlighter">

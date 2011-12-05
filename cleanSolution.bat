@@ -1,7 +1,7 @@
 @echo off
 echo Backing up ITestPlugins
 md .temp
-copy .\Tests\TestLibrary\PluginManager\ITestPluginDLLs\*.dll .\.temp\*.safe
+copy .\Library\External\LuceneDotNet\*.dll .\.temp\*.safe
 echo Cleaning Solution...
 cd Applications
 del /S /Q *.pidb *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt
@@ -19,6 +19,6 @@ cd ..\Plugins
 del /S /Q *.pidb *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt
 cd ..
 echo Restoring ITestPlugins
-copy .\.temp\*.safe .\Tests\TestLibrary\PluginManager\ITestPluginDLLs\*.dll
+copy .\.temp\*.safe .\Library\External\LuceneDotNet\*.dll
 del .\.temp\*.safe
 rd .temp
