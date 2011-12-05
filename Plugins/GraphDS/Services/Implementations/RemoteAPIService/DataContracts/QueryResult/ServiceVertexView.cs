@@ -27,12 +27,15 @@ using sones.GraphQL.Result;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDS.Services.RemoteAPIService.ServiceConverter;
+using sones.Library.CollectionWrapper;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
     [KnownType(typeof(ServicePropertyMultiplicity))]
     [KnownType(typeof(ServiceEdgeView))]
+    [KnownType(typeof(ServiceIndexDefinition))]
+    [KnownType(typeof(ListCollectionWrapper))]
     public class ServiceVertexView
     {
         public ServiceVertexView(IVertexView myVertexView)

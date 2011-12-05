@@ -30,6 +30,7 @@ using sones.GraphDB.TypeSystem;
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
     [DataContract(Namespace = sonesRPCServer.Namespace)]
+    [KnownType(typeof(ServicePropertyMultiplicity))]
     public class ServiceHyperEdgeView : ServiceEdgeView
     {
         public ServiceHyperEdgeView(IHyperEdgeView myEdgeView) : base(myEdgeView.GetAllProperties())
