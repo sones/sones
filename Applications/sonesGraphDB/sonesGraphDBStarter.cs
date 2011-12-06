@@ -344,7 +344,7 @@ namespace sones.sonesGraphDBStarter
 			{
 				DiscordianDate ddate = new DiscordianDate();
 
-				Console.WriteLine("sones GraphDB version 2.1-beta-1 - " + ddate.ToString());
+				Console.WriteLine("sones GraphDB version 2.1-beta-2 - " + ddate.ToString());
 				Console.WriteLine("(C) sones GmbH 2007-2011 - http://www.sones.com");
 				Console.WriteLine("-----------------------------------------------");
 				Console.WriteLine();
