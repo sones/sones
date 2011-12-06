@@ -36,7 +36,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
         public ServiceHyperEdgeView(IHyperEdgeView myEdgeView) : base(myEdgeView.GetAllProperties())
         {
             var edges = myEdgeView.GetAllEdges();
-             Edges = (edges == null || edges.Count() == 0) ? null : edges.Select(x => new ServiceSingleEdgeView(x)).ToList();
+            Edges = (edges == null || edges.Count() == 0) ? null : edges.Select(x => new ServiceSingleEdgeView(x)).ToList();
         }
 
         [DataMember]

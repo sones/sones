@@ -1081,7 +1081,7 @@
       <xsd:element name="ServiceHyperEdgeView" nillable="true" type="tns:ServiceHyperEdgeView" />
       <xsd:complexType name="ServiceEdgeView">
         <xsd:sequence>
-          <xsd:element xmlns:q62="http://schemas.datacontract.org/2004/07/System" minOccurs="0" name="PropertyList" nillable="true" type="q62:ArrayOfTupleOfstringanyType" />
+          <xsd:element xmlns:q62="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="Properties" nillable="true" type="q62:ArrayOfKeyValueOfstringanyType" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="ServiceEdgeView" nillable="true" type="tns:ServiceEdgeView" />
@@ -3253,27 +3253,6 @@
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="TupleOfArrayOfanyTypeArrayOfanyType0dMmj3_Sh" nillable="true" type="tns:TupleOfArrayOfanyTypeArrayOfanyType0dMmj3_Sh" />
-      <xsd:complexType name="ArrayOfTupleOfstringanyType">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" maxOccurs="unbounded" name="TupleOfstringanyType" nillable="true" type="tns:TupleOfstringanyType" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:element name="ArrayOfTupleOfstringanyType" nillable="true" type="tns:ArrayOfTupleOfstringanyType" />
-      <xsd:complexType name="TupleOfstringanyType">
-        <xsd:annotation>
-          <xsd:appinfo>
-            <GenericType Name="TupleOf{0}{1}{#}" Namespace="http://schemas.datacontract.org/2004/07/System" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
-              <GenericParameter Name="string" Namespace="http://www.w3.org/2001/XMLSchema" />
-              <GenericParameter Name="anyType" Namespace="http://www.w3.org/2001/XMLSchema" />
-            </GenericType>
-          </xsd:appinfo>
-        </xsd:annotation>
-        <xsd:sequence>
-          <xsd:element name="m_Item1" nillable="true" type="xsd:string" />
-          <xsd:element name="m_Item2" nillable="true" type="xsd:anyType" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:element name="TupleOfstringanyType" nillable="true" type="tns:TupleOfstringanyType" />
       <xsd:complexType name="ArrayOfTupleOflonglongArrayOfServiceVertexInstancegXhDpTc1">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="TupleOflonglongArrayOfServiceVertexInstancegXhDpTc1" nillable="true" type="tns:TupleOflonglongArrayOfServiceVertexInstancegXhDpTc1" />
@@ -3318,6 +3297,27 @@
         </xsd:sequence>
       </xsd:complexType>
       <xsd:element name="TupleOflonganyType" nillable="true" type="tns:TupleOflonganyType" />
+      <xsd:complexType name="ArrayOfTupleOfstringanyType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="TupleOfstringanyType" nillable="true" type="tns:TupleOfstringanyType" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="ArrayOfTupleOfstringanyType" nillable="true" type="tns:ArrayOfTupleOfstringanyType" />
+      <xsd:complexType name="TupleOfstringanyType">
+        <xsd:annotation>
+          <xsd:appinfo>
+            <GenericType Name="TupleOf{0}{1}{#}" Namespace="http://schemas.datacontract.org/2004/07/System" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+              <GenericParameter Name="string" Namespace="http://www.w3.org/2001/XMLSchema" />
+              <GenericParameter Name="anyType" Namespace="http://www.w3.org/2001/XMLSchema" />
+            </GenericType>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="m_Item1" nillable="true" type="xsd:string" />
+          <xsd:element name="m_Item2" nillable="true" type="xsd:anyType" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="TupleOfstringanyType" nillable="true" type="tns:TupleOfstringanyType" />
     </xsd:schema>
     <xsd:schema xmlns:tns="http://schemas.datacontract.org/2004/07/System.IO" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/System.IO">
       <xsd:complexType name="Stream">

@@ -37,9 +37,13 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
         {
             var _Vertices = myEdgeView.GetTargetVertices();
             if (_Vertices.Count() > 0)
+            {
                 TargetVertex = new ServiceVertexView(_Vertices.First());
+            }
             else
+            {
                 TargetVertex = null;
+            }
         }
 
         [DataMember]

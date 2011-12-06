@@ -12,11 +12,19 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
         {
             Dictionary<String, Object> properties = new Dictionary<string, object>();
             List<ISingleEdgeView> edges = new List<ISingleEdgeView>();
-            if (PropertyList != null)
+            if (Properties != null)
             {
-                foreach (var item in PropertyList)
+                foreach (var item in Properties)
                 {
-                    properties.Add(item.Item1, item.Item2);
+                    var value = ConvertHelper.ToDsObject(item.Value, myServiceToken);
+                    if (value != null)
+                    {
+                        properties.Add(item.Key, value);
+                    }
+                    else
+                    {
+                        properties.Add(item.Key, item.Value);
+                    }
                 }
             }
             if (Edges != null)

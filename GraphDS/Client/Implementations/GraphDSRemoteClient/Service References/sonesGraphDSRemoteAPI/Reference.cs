@@ -11,6 +11,7 @@
 namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     using System.Runtime.Serialization;
     using System;
+    using sones.Library.CollectionWrapper;
     
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -1531,12 +1532,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.MarshalByRefObject))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, object>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.IO.Stream))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
@@ -2152,12 +2153,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.MarshalByRefObject))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, object>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.IO.Stream))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
@@ -2354,12 +2355,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.MarshalByRefObject))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, object>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.IO.Stream))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
@@ -2675,12 +2676,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.MarshalByRefObject))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, object>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.IO.Stream))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
@@ -3073,12 +3074,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.MarshalByRefObject))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, object>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.IO.Stream))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
@@ -3243,12 +3244,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.MarshalByRefObject))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, object>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.IO.Stream))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
@@ -3415,7 +3416,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Collections.Generic.List<System.Tuple<string, object>> PropertyListField;
+        private System.Collections.Generic.Dictionary<string, object> PropertiesField;
         
         [global::System.ComponentModel.BrowsableAttribute(false)]
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
@@ -3428,14 +3429,14 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Collections.Generic.List<System.Tuple<string, object>> PropertyList {
+        public System.Collections.Generic.Dictionary<string, object> Properties {
             get {
-                return this.PropertyListField;
+                return this.PropertiesField;
             }
             set {
-                if ((object.ReferenceEquals(this.PropertyListField, value) != true)) {
-                    this.PropertyListField = value;
-                    this.RaisePropertyChanged("PropertyList");
+                if ((object.ReferenceEquals(this.PropertiesField, value) != true)) {
+                    this.PropertiesField = value;
+                    this.RaisePropertyChanged("Properties");
                 }
             }
         }
@@ -3553,6 +3554,7 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="ServiceQueryResult", Namespace="http://www.sones.com")]
+    [System.Runtime.Serialization.KnownType(typeof(ServicePropertyMultiplicity))]
     [System.SerializableAttribute()]
     public partial class ServiceQueryResult : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
         
@@ -4578,12 +4580,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.MarshalByRefObject))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<long, object>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Tuple<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.IO.Stream))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
     [System.Runtime.Serialization.KnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
@@ -5108,12 +5110,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, System.IO.Stream>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.MarshalByRefObject))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, object>))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.IO.Stream))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
@@ -5181,6 +5183,9 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         sones.Library.Commons.Security.SecurityToken LogOn(sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceUserPasswordCredentials myUserCredentials);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/Query", ReplyAction="http://www.sones.com/GraphDSService/QueryResponse")]
+        [System.ServiceModel.ServiceKnownType(typeof(ServicePropertyMultiplicity))]
+        [System.ServiceModel.ServiceKnownType(typeof(ServiceIndexDefinition))]
+        [System.ServiceModel.ServiceKnownType(typeof(ListCollectionWrapper))]
         sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceQueryResult Query(sones.Library.Commons.Security.SecurityToken mySecToken, long myTransactionToken, string myQueryString, string myLanguage);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.sones.com/GraphDSService/Update", ReplyAction="http://www.sones.com/GraphDSService/UpdateResponse")]
@@ -5829,12 +5834,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.MarshalByRefObject))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, object>))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.IO.Stream))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
@@ -5960,12 +5965,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.MarshalByRefObject))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, object>))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.IO.Stream))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
@@ -6460,12 +6465,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.MarshalByRefObject))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, object>))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.IO.Stream))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]
@@ -6589,12 +6594,12 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, System.IO.Stream>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.MarshalByRefObject))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<System.Collections.Generic.List<object>, System.Collections.Generic.List<object>>))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
-        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, long, System.Collections.Generic.List<sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI.ServiceVertexInstance>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<long, object>>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<long, object>))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<System.Tuple<string, object>>))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Tuple<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.IO.Stream))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.Dictionary<string, object>))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Collections.Generic.List<string>))]

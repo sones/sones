@@ -26,6 +26,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDS.Services.RemoteAPIService.ServiceConverter;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
@@ -35,10 +36,25 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
     {
         public ServiceEdgeView(IEnumerable<Tuple<string, object>> myPropertyList)
         {
-            PropertyList = myPropertyList.ToList();
+            if (myPropertyList != null)
+            {
+                Properties = new Dictionary<string, object>();
+                foreach (var item in myPropertyList)
+                {
+                    var value = ConvertHelper.ToServiceObject(item.Item2);
+                    if (value != null)
+                    {
+                        Properties.Add(item.Item1, value);
+                    }
+                    else
+                    {
+                        Properties.Add(item.Item1, item.Item2);
+                    }
+                }
+            }
         }
 
         [DataMember]
-        public List<Tuple<string, object>> PropertyList;
+        public Dictionary<string, object> Properties;
     }
 }
