@@ -36,7 +36,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
     {
         public ServiceEdgeView(IEnumerable<Tuple<string, object>> myPropertyList)
         {
-            if (myPropertyList != null)
+            if (myPropertyList != null && myPropertyList.Count() > 0)
             {
                 Properties = new Dictionary<string, object>();
                 foreach (var item in myPropertyList)

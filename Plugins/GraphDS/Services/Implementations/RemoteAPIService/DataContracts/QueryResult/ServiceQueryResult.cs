@@ -48,7 +48,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
                 this.TypeOfResult = ServiceResultType.Successful;
             else if (myQueryResult.TypeOfResult == ResultType.Failed)
                 this.TypeOfResult = ServiceResultType.Failed;
-            this.Vertices = myQueryResult.Vertices.Select(x => new ServiceVertexView(x)).ToList();
+            this.Vertices = (myQueryResult.Vertices == null || myQueryResult.Vertices.Count() == 0) ? null : myQueryResult.Vertices.Select(x => new ServiceVertexView(x)).ToList();
         }
 
         [DataContract(Namespace = sonesRPCServer.Namespace)]
