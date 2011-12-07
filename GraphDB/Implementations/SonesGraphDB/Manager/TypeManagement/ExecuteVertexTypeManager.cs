@@ -2163,6 +2163,18 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                     var defaultValue = property.DefaultValue;
 
+                    var mandatoryConstraintUpdate = new VertexUpdateDefinition(null,
+                                                                                new StructuredPropertiesUpdate(
+                                                                                new Dictionary<long, IComparable> 
+                                                                                    { { (long)AttributeDefinitions.PropertyDotIsMandatory, 
+                                                                                            true } }));
+
+                    _vertexManager.ExecuteManager.VertexStore.UpdateVertex(mySecurityToken,
+                                                                                myTransactionToken,
+                                                                                property.ID,
+                                                                                (long)BaseTypes.Property,
+                                                                                mandatoryConstraintUpdate);
+
                     //get new mandatory value and set it
                     if (aMandatory.DefaultValue != null)
                     {
