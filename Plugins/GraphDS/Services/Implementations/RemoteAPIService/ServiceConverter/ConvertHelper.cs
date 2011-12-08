@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
 using sones.GraphDB.TypeSystem;
+using sones.Library.CollectionWrapper;
+using System.Collections;
 
 namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
 {
@@ -12,13 +14,51 @@ namespace sones.GraphDS.Services.RemoteAPIService.ServiceConverter
         public static object ToServiceObject(object myObject)
         {
             if (myObject is PropertyMultiplicity)
+            {
                 return ToServicePropertyMultiplicity((PropertyMultiplicity)myObject);
+            }
             else if (myObject is EdgeMultiplicity)
+            {
                 return ToServiceEdgeMultiplicity((EdgeMultiplicity)myObject);
+            }
             else if (myObject is IIndexDefinition)
+            {
                 return new ServiceIndexDefinition((IIndexDefinition)myObject);
+            }
             else
+            {
                 return null;
+            }
+        }
+
+        public static List<object> ToServiceObjectList(IEnumerable myList)
+        {
+            var list = new List<object>();
+            foreach (var item in myList)
+            {
+                object value = ConvertHelper.ToServiceObject(item);
+                if (value == null)
+                {
+                    value = item;
+                }
+                list.Add(value);
+            }
+            return list;
+        }
+
+        public static List<object> ToServiceObjectList(ListCollectionWrapper myList)
+        {
+            var list = new List<object>();
+            foreach (var item in myList)
+            {
+                object value = ConvertHelper.ToServiceObject(item);
+                if (value == null)
+                {
+                    value = item;
+                }
+                list.Add(value);
+            }
+            return list;
         }
 
         public static ServiceAttributeDefinition ToServiceAttributeDefinition(IAttributeDefinition myAttributeDefinition)

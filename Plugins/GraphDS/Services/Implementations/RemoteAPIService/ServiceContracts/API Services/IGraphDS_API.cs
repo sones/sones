@@ -173,7 +173,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.API_Services
         [ServiceKnownType(typeof(ServicePropertyMultiplicity))]
         [ServiceKnownType(typeof(ServiceIndexDefinition))]
         [ServiceKnownType(typeof(ServiceEdgeMultiplicity))]
-        [ServiceKnownType(typeof(ListCollectionWrapper))]
+        [ServiceKnownType(typeof(Dictionary<String, List<Object>>))]
         ServiceQueryResult Query(SecurityToken mySecToken, Int64 myTransactionToken, String myQueryString, String myLanguage);
 
         //[OperationContract] There is no plan to implement the Travers method yet, because there is no way to transport traverser logic from the client

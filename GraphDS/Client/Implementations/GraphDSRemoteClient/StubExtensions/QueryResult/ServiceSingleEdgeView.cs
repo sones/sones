@@ -15,15 +15,20 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
             {
                 foreach (var item in Properties)
                 {
-                    var value = ConvertHelper.ToDsObject(item.Value, myServiceToken);
-                    if (value != null)
+                    object value = ConvertHelper.ToDsObject(item.Value, myServiceToken);
+                    if (value == null)
                     {
-                        properties.Add(item.Key, value);
+                        value = item.Value;
                     }
-                    else
-                    {
-                        properties.Add(item.Key, item.Value);
-                    }
+                    properties.Add(item.Key, value);
+                }
+            }
+
+            if (ListProperties != null)
+            {
+                foreach (var item in ListProperties)
+                {
+                    properties.Add(item.Key, item.Value.Select(x => ConvertHelper.ToDsObject(x, myServiceToken) ?? x));
                 }
             }
             

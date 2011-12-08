@@ -27,6 +27,8 @@ using System.ServiceModel;
 using sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManagement;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDS.Services.RemoteAPIService.ServiceConverter;
+using System.Collections;
+using sones.Library.CollectionWrapper;
 
 namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 {
@@ -36,19 +38,40 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
     {
         public ServiceEdgeView(IEnumerable<Tuple<string, object>> myPropertyList)
         {
+            Properties = null;
+            ListProperties = null;
             if (myPropertyList != null && myPropertyList.Count() > 0)
             {
-                Properties = new Dictionary<string, object>();
                 foreach (var item in myPropertyList)
                 {
-                    var value = ConvertHelper.ToServiceObject(item.Item2);
-                    if (value != null)
+                    if (item.Item2 != null && item.Item2.GetType().IsGenericType && item.Item2 is IEnumerable)
                     {
-                        Properties.Add(item.Item1, value);
+                        if (ListProperties == null)
+                        {
+                            ListProperties = new Dictionary<string, List<object>>();
+                        }
+                        ListProperties.Add(item.Item1, ConvertHelper.ToServiceObjectList(item.Item2 as IEnumerable));
+                    }
+                    else if (item.Item2 != null && item.Item2 is ListCollectionWrapper)
+                    {
+                        if (ListProperties == null)
+                        {
+                            ListProperties = new Dictionary<string, List<object>>();
+                        }
+                        ListProperties.Add(item.Item1, ConvertHelper.ToServiceObjectList(item.Item2 as ListCollectionWrapper));
                     }
                     else
                     {
-                        Properties.Add(item.Item1, item.Item2);
+                        if (Properties == null)
+                        {
+                            Properties = new Dictionary<string, object>();
+                        }
+                        object value = ConvertHelper.ToServiceObject(item.Item2);
+                        if (value == null)
+                        {
+                            value = item.Item2;
+                        }
+                        Properties.Add(item.Item1, value);
                     }
                 }
             }
@@ -56,5 +79,8 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.QueryResult
 
         [DataMember]
         public Dictionary<string, object> Properties;
+
+        [DataMember]
+        public Dictionary<String, List<object>> ListProperties;
     }
 }

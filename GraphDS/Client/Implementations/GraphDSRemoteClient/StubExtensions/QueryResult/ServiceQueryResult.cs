@@ -20,14 +20,14 @@ namespace sones.GraphDS.GraphDSRemoteClient.sonesGraphDSRemoteAPI
             {
                 type = ResultType.Failed;
             }
-            if (!String.IsNullOrEmpty(this.Error))
-            {
-                return new QueryResult(this.Query, this.NameOfQueryLanguage, this.Duration, type, this.Vertices.Select(x => x.ToVertexView(myServiceToken)), new RemoteException(this.Error));
-            }
-            else
-            {
-                return new QueryResult(this.Query, this.NameOfQueryLanguage, this.Duration, type, this.Vertices.Select(x => x.ToVertexView(myServiceToken)), null);
-            }
+
+            return new QueryResult(
+                this.Query,
+                this.NameOfQueryLanguage,
+                this.Duration,
+                type,
+                (this.Vertices == null || this.Vertices.Count() == 0) ? null : this.Vertices.Select(x => x.ToVertexView(myServiceToken)),
+                (String.IsNullOrEmpty(this.Error)) ? null : new RemoteException(this.Error));
         }
     }
 }
