@@ -125,9 +125,9 @@ namespace sones.Plugins.Index
         /// Returns all keys currently stored in the index
         /// </summary>
         /// <returns>All stored keys</returns>
-        public override IEnumerable<IComparable> Keys()
+        public override ICloseableEnumerable<IComparable> Keys()
         {
-            return _Index.Keys;
+            return new CloseableEnumerable<IComparable>(_Index.Keys);
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace sones.Plugins.Index
         /// <param name="myKey">Search key</param>
         /// <param name="myVertexIDs">Associated values</param>
         /// <returns>True, if the key exists</returns>
-        public override bool TryGetValues(IComparable myKey, out IEnumerable<long> myVertexIDs)
+        public override bool TryGetValues(IComparable myKey, out ICloseableEnumerable<long> myVertexIDs)
         {
             if (!KeyNullSupportCheck(myKey))
             {
@@ -219,7 +219,7 @@ namespace sones.Plugins.Index
 
             var values = new HashSet<long>();
             var done = _Index.TryGetValue(myKey, out values);
-            myVertexIDs = values;
+            myVertexIDs = new CloseableEnumerable<long>(values);
             return done;
         }
 
@@ -231,7 +231,7 @@ namespace sones.Plugins.Index
         /// </summary>
         /// <param name="myKey">Search key</param>
         /// <returns>All values associated to the key.</returns>
-        public override IEnumerable<long> this[IComparable myKey]
+        public override ICloseableEnumerable<long> this[IComparable myKey]
         {
             get
             {
@@ -243,7 +243,7 @@ namespace sones.Plugins.Index
                 HashSet<Int64> values;
                 if (_Index.TryGetValue(myKey, out values))
                 {
-                    return values;
+                    return new CloseableEnumerable<Int64>(values);
                 }
                 else
                 {

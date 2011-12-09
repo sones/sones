@@ -617,7 +617,7 @@ namespace sones.GraphDB.Manager.Index
 
         public ISonesIndex GetIndex(string myIndexName, SecurityToken mySecurity, Int64 myTransaction)
         {
-            IEnumerable<long> values;
+            ICloseableEnumerable<long> values;
 
             _ownIndex.TryGetValues(myIndexName, out values);
 

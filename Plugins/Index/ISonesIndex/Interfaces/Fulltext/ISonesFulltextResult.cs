@@ -24,7 +24,7 @@ namespace sones.Plugins.Index.Fulltext
         /// <value>
         /// The entries.
         /// </value>
-        IEnumerable<ISonesFulltextResultEntry> Entries { get; }
+        ICloseableEnumerable<ISonesFulltextResultEntry> Entries { get; }
 
         /*
          * TODO: place for additional functionality

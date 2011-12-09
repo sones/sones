@@ -37,7 +37,7 @@ namespace sones.Plugins.Index.Versioned
         /// Returns all stored keys at a given version
         /// </summary>
         /// <returns>Search keys associated with a given version.</returns>
-        IEnumerable<IComparable> Keys(Int64 myVersion);
+        ICloseableEnumerable<IComparable> Keys(Int64 myVersion);
 
         #endregion
 
@@ -59,7 +59,7 @@ namespace sones.Plugins.Index.Versioned
         /// </param>
         /// <param name="myVersion">The version</param>
         bool TryGetValues(IComparable myKey, 
-            out IEnumerable<Int64> myVertexIDs,
+            out ICloseableEnumerable<Int64> myVertexIDs,
             Int64 myVersion);
 
         #endregion
@@ -76,7 +76,7 @@ namespace sones.Plugins.Index.Versioned
         /// <param name="myKey">The search key</param>
         /// <param name="myVersion">The version</param>
         /// <returns>Values associated with the key at a given version</returns>
-        IEnumerable<Int64> this[IComparable myKey, Int64 myVersion] { get; }
+        ICloseableEnumerable<Int64> this[IComparable myKey, Int64 myVersion] { get; }
 
         #endregion
 

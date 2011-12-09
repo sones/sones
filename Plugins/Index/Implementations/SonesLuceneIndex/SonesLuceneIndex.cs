@@ -143,7 +143,7 @@ namespace sones.Plugins.Index.LuceneIdx
             return count;
         }
 
-        public IEnumerable<IComparable> Keys(long myPropertyID)
+        public ICloseableEnumerable<IComparable> Keys(long myPropertyID)
         {
             var result = _LuceneIndex.GetEntriesInnerByField(_MaxResultsFirst, "*:*", myPropertyID.ToString(), LuceneIndex.Fields.PROPERTY_ID);
             if (result.TotalHits > _MaxResultsFirst)
@@ -152,17 +152,7 @@ namespace sones.Plugins.Index.LuceneIdx
                 result = _LuceneIndex.GetEntriesInnerByField(result.TotalHits, "*:*", myPropertyID.ToString(), LuceneIndex.Fields.PROPERTY_ID);
             }
 
-            // Unfortunately we have to breakup Lazy here as index interface doesn't support close (GRAPHDB-544)
-            List<IComparable> ret = new List<IComparable>();
-
-            foreach (var entry in result.Select<LuceneEntry, IComparable>((e) => (e.Text)))
-            {
-                ret.Add(entry);
-            }
-
-            result.Close();
-
-            return ret;
+            return new CloseableEnumerable<IComparable>(result.Select<LuceneEntry, IComparable>((e) => (e.Text)), result.Close);
         }
 
         public IDictionary<long, Type> GetKeyTypes()
@@ -194,7 +184,7 @@ namespace sones.Plugins.Index.LuceneIdx
             }
         }
 
-        public bool TryGetValues(IEnumerable<ICompoundIndexKey> myKeys, out IEnumerable<long> myVertexIDs)
+        public bool TryGetValues(IEnumerable<ICompoundIndexKey> myKeys, out ICloseableEnumerable<long> myVertexIDs)
         {
             LuceneReturn results = null;
             var results_compound = new List<Tuple<long, IComparable, long>>();
@@ -206,15 +196,10 @@ namespace sones.Plugins.Index.LuceneIdx
                     results.Close();
                     results = _LuceneIndex.GetEntriesInnerByField(results.TotalHits, key.Key as String, key.PropertyID.ToString(), LuceneIndex.Fields.PROPERTY_ID);
                 }
-                
-                // Unfortunately we have to breakup Lazy here as index interface doesn't support close (GRAPHDB-544)
-                foreach (var entry in results
+
+                results_compound.AddRange(results
                              .Where((e) => e.PropertyId != null)
-                             .Select((e) => new Tuple<long, IComparable, long>((long)e.PropertyId, e.Text, e.VertexId)))
-                {
-                    results_compound.Add(entry);
-                }
-                results.Close();
+                             .Select((e) => new Tuple<long, IComparable, long>((long)e.PropertyId, e.Text, e.VertexId)));
             }
 
             var grouped = from myresults in results_compound group myresults by myresults.Item3;
@@ -252,7 +237,7 @@ namespace sones.Plugins.Index.LuceneIdx
 
                 if (_myVertexIDs.Count() > 0)
                 {
-                    myVertexIDs = _myVertexIDs;
+                    myVertexIDs = new CloseableEnumerable<long>(_myVertexIDs, results.Close);
                     return true;
                 }
                 else
@@ -268,7 +253,7 @@ namespace sones.Plugins.Index.LuceneIdx
             }
         }
 
-        public bool TryGetValuesPartial(IEnumerable<ICompoundIndexKey> myKeys, out IEnumerable<long> myVertexIDs)
+        public bool TryGetValuesPartial(IEnumerable<ICompoundIndexKey> myKeys, out ICloseableEnumerable<long> myVertexIDs)
         {
             LuceneReturn results = null;
             var results_compound = new List<Tuple<long, IComparable, long>>();
@@ -281,19 +266,14 @@ namespace sones.Plugins.Index.LuceneIdx
                     results = _LuceneIndex.GetEntriesInnerByField(_MaxResultsFirst, key.Key as String, key.PropertyID.ToString(), LuceneIndex.Fields.PROPERTY_ID);
                 }
                 
-                // Unfortunately we have to breakup Lazy here as index interface doesn't support close (GRAPHDB-544)
-                foreach (var entry in results.Where((e) => e.PropertyId != null).Select((e) => new Tuple<long, IComparable, long>((long)e.PropertyId, e.Text, e.VertexId)))
-                {
-                    results_compound.Add(entry);
-                }
-                results.Close();
+                results_compound.AddRange(results.Where((e) => e.PropertyId != null).Select((e) => new Tuple<long, IComparable, long>((long)e.PropertyId, e.Text, e.VertexId)));
             }
 
             var grouped = from myresults in results_compound group myresults by myresults.Item3;
 
             if (grouped.Count() > 0)
             {
-                myVertexIDs = grouped.Select<IGrouping<long, Tuple<long, IComparable, long>>, long>((g) => g.Key);
+                myVertexIDs = new CloseableEnumerable<long>(grouped.Select<IGrouping<long, Tuple<long, IComparable, long>>, long>((g) => g.Key), results.Close);
                 return true;
             }
             else
@@ -303,11 +283,11 @@ namespace sones.Plugins.Index.LuceneIdx
             }
         }
 
-        public IEnumerable<long> this[IEnumerable<ICompoundIndexKey> myKeys]
+        public ICloseableEnumerable<long> this[IEnumerable<ICompoundIndexKey> myKeys]
         {
             get
             {
-                IEnumerable<long> myVertexIDs = null;
+                ICloseableEnumerable<long> myVertexIDs = null;
                 if (TryGetValues(myKeys, out myVertexIDs))
                 {
                     return myVertexIDs;
@@ -415,21 +395,13 @@ namespace sones.Plugins.Index.LuceneIdx
             return count;
         }
 
-        public override IEnumerable<IComparable> Keys()
+        public override ICloseableEnumerable<IComparable> Keys()
         {
             var keys_withdoubles = _LuceneIndex.GetKeys(entry => entry.IndexId == this.IndexId);
             var keys_grouped = keys_withdoubles.GroupBy(s => s);
-
-            // Unfortunately we have to breakup Lazy here as index interface doesn't support close (GRAPHDB-544)
-            List<String> keys = new List<String>();
-            foreach (var group in keys_grouped)
-            {
-                keys.Add(group.ElementAt(0));
-            }
-
-            keys_withdoubles.Close();
-
-            return keys;
+            var keys = keys_grouped.Select<IGrouping<string, string>, string>((g) => g.ElementAt(0));
+           
+            return new CloseableEnumerable<IComparable>(keys, keys_withdoubles.Close);
         }
 
         public override Type GetKeyType()
@@ -452,7 +424,7 @@ namespace sones.Plugins.Index.LuceneIdx
             }
         }
 
-        public override bool TryGetValues(IComparable myKey, out IEnumerable<long> myVertexIDs)
+        public override bool TryGetValues(IComparable myKey, out ICloseableEnumerable<long> myVertexIDs)
         {
             if (myKey == null)
             {
@@ -465,7 +437,7 @@ namespace sones.Plugins.Index.LuceneIdx
             return myVertexIDs.Count() > 0;
         }
 
-        public override IEnumerable<long> this[IComparable myKey]
+        public override ICloseableEnumerable<long> this[IComparable myKey]
         {
             get
             {
@@ -488,16 +460,9 @@ namespace sones.Plugins.Index.LuceneIdx
                 }
 
                 var values_grouped = values_withdoubles.GroupBy(e => e.VertexId);
-                
-                // Unfortunately we have to breakup Lazy here as index interface doesn't support close (GRAPHDB-544)
-                List<LuceneEntry> values = new List<LuceneEntry>();
-                foreach (var group in values_grouped)
-                {
-                    values.Add(group.ElementAt(0));
-                }
-                values_withdoubles.Close();
+                var values = values_grouped.Select<IGrouping<long, LuceneEntry>, long>((g) => g.ElementAt(0).VertexId);
 
-                return values.Select(entry => entry.VertexId);
+                return new CloseableEnumerable<long>(values, values_withdoubles.Close);
             }
         }
 

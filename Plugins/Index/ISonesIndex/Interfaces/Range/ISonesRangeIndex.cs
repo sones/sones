@@ -30,7 +30,7 @@ namespace sones.Plugins.Index.Range
         /// <param name="myIncludeKey">
         /// True if the values associated with the upper bound shall be returned, too.
         /// </param>
-        IEnumerable<Int64> LowerThan(IComparable myKey, bool myIncludeKey = true);
+        ICloseableEnumerable<Int64> LowerThan(IComparable myKey, bool myIncludeKey = true);
 
         /// <summary>
         /// Returns all vertexIDs that are greater than (or equal to) to the given key.
@@ -44,7 +44,7 @@ namespace sones.Plugins.Index.Range
         /// <param name="myIncludeKey">
         /// True if the values associated with the lower bound shall be returned, too.
         /// </param>
-        IEnumerable<Int64> GreaterThan(IComparable myKey, bool myIncludeKey = true);
+        ICloseableEnumerable<Int64> GreaterThan(IComparable myKey, bool myIncludeKey = true);
 
         /// <summary>
         /// Returns all vertexID ids that are in a given key range.
@@ -61,7 +61,7 @@ namespace sones.Plugins.Index.Range
         /// <param name='myIncludeToKey'>
         /// True, if the upper bound shall be included in the range.
         /// </param>
-        IEnumerable<Int64> Between(IComparable myFromKey,
+        ICloseableEnumerable<Int64> Between(IComparable myFromKey,
             IComparable myToKey,
             bool myIncludeFromKey = true,
             bool myIncludeToKey = true);
