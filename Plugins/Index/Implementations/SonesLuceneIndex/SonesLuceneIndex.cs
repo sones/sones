@@ -128,7 +128,6 @@ namespace sones.Plugins.Index.LuceneIdx
             }
 
             var lucene_result =  new LuceneResult(result);
-            result.Close();
 
             return lucene_result;
         }
