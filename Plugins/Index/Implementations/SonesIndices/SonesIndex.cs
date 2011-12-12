@@ -219,7 +219,14 @@ namespace sones.Plugins.Index
 
             var values = new HashSet<long>();
             var done = _Index.TryGetValue(myKey, out values);
-            myVertexIDs = new CloseableEnumerable<long>(values);
+            if (values == null)
+            {
+                myVertexIDs = null;
+            }
+            else
+            {
+                myVertexIDs = new CloseableEnumerable<long>(values);
+            }
             return done;
         }
 
