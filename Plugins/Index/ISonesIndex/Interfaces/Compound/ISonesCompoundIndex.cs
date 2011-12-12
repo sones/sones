@@ -37,7 +37,7 @@ namespace sones.Plugins.Index.Compound
         /// </summary>
         /// <param name="myPropertyID">The propertyID of the keys to be returned</param>
         /// <returns>All keys associated with the given propertyID.</returns>
-        IEnumerable<IComparable> Keys(Int64 myPropertyID);
+        ICloseableEnumerable<IComparable> Keys(Int64 myPropertyID);
 
         #endregion
 
@@ -88,7 +88,7 @@ namespace sones.Plugins.Index.Compound
         /// <param name="myVertexIDs">
         ///  Stores the vertexIDs if a matching for all keys was found.
         /// </param>
-        bool TryGetValues(IEnumerable<ICompoundIndexKey> myKeys, out IEnumerable<Int64> myVertexIDs);
+        bool TryGetValues(IEnumerable<ICompoundIndexKey> myKeys, out ICloseableEnumerable<Int64> myVertexIDs);
 
         #endregion
 
@@ -106,7 +106,7 @@ namespace sones.Plugins.Index.Compound
         /// <param name="myVertexIDs">
         /// Stores the vertexIDs if a matching for 1-n keys was found.
         /// </param>
-        bool TryGetValuesPartial(IEnumerable<ICompoundIndexKey> myKeys, out IEnumerable<Int64> myVertexIDs);
+        bool TryGetValuesPartial(IEnumerable<ICompoundIndexKey> myKeys, out ICloseableEnumerable<Int64> myVertexIDs);
 
         #endregion
 
@@ -118,7 +118,7 @@ namespace sones.Plugins.Index.Compound
         /// </summary>
         /// <param name="myKeys">A collection of search keys</param>
         /// <returns>Associated values</returns>
-        IEnumerable<Int64> this[IEnumerable<ICompoundIndexKey> myKeys] { get; }
+        ICloseableEnumerable<Int64> this[IEnumerable<ICompoundIndexKey> myKeys] { get; }
 
         #endregion
     }

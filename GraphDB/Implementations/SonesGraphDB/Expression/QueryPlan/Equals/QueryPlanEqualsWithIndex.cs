@@ -85,7 +85,7 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         protected override IEnumerable<long> GetValues(ISonesIndex myIndex, IComparable myIComparable)
         {
-            IEnumerable<long> values;
+            ICloseableEnumerable<long> values;
 
             myIndex.TryGetValues(myIComparable, out values);
 

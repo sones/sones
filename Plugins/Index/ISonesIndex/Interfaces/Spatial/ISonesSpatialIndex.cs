@@ -27,7 +27,7 @@ namespace sones.Plugins.Index.Spatial
         /// <param name="myGeometry">Search space</param>
         /// <param name="myVertexIDs">Stores found vertexIDs</param>
         /// <returns>True, if at least one object has been found at the given point or in the space.</returns>
-        bool TryGetValues(IGeometry myGeometry, out IEnumerable<Int64> myVertexIDs);
+        bool TryGetValues(IGeometry myGeometry, out ICloseableEnumerable<Int64> myVertexIDs);
 
         #endregion
 
@@ -41,7 +41,7 @@ namespace sones.Plugins.Index.Spatial
         /// <param name="myVertexIDs">Stores found vertexIDs</param>
         /// <param name="myMaximumDistance">Defines an optional search boundary</param>
         /// <returns>True, if at least one neighbour has been found.</returns>
-        bool TryGetValuesNear(IPoint myCentralPoint, Int32 myK, out IEnumerable<Int64> myVertexIDs, double? myMaximumDistance);
+        bool TryGetValuesNear(IPoint myCentralPoint, Int32 myK, out ICloseableEnumerable<Int64> myVertexIDs, double? myMaximumDistance);
 
         #endregion
 

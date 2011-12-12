@@ -74,7 +74,7 @@ namespace sones.Plugins.Index.LuceneIdx
     }
     
 
-    public class LuceneReturn : IEnumerable<LuceneEntry>
+    public class LuceneReturn : ICloseableEnumerable<LuceneEntry>
     {
         private IndexSearcher _IndexSearcher;
         private TopScoreDocCollector _Collector;
@@ -110,6 +110,11 @@ namespace sones.Plugins.Index.LuceneIdx
         {
             _IndexSearcher.Close();
             bOpen = false;
+        }
+
+        public void Dispose()
+        {
+            Close();
         }
 
         public int TotalHits

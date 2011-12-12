@@ -28,16 +28,16 @@ namespace sones.Plugins.Index.Abstract
 
         public abstract long ValueCount();
 
-        public abstract IEnumerable<IComparable> Keys();
+        public abstract ICloseableEnumerable<IComparable> Keys();
 
         public abstract Type GetKeyType();
 
         public abstract void Add(IComparable myKey, long? myVertexID, 
             IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
 
-        public abstract bool TryGetValues(IComparable myKey, out IEnumerable<long> myVertexIDs);
+        public abstract bool TryGetValues(IComparable myKey, out ICloseableEnumerable<long> myVertexIDs);
 
-        public abstract IEnumerable<long> this[IComparable myKey] { get; }
+        public abstract ICloseableEnumerable<long> this[IComparable myKey] { get; }
 
         public abstract bool ContainsKey(IComparable myKey);
 

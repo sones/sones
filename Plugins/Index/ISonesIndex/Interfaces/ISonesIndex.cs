@@ -100,7 +100,7 @@ namespace sones.Plugins.Index
         /// Returns all stored keys.
         /// </summary>
         /// <returns>All stored keys</returns>
-        IEnumerable<IComparable> Keys();
+        ICloseableEnumerable<IComparable> Keys();
 
         #endregion
 
@@ -198,7 +198,7 @@ namespace sones.Plugins.Index
         /// <param name="myVertexIDs">
         /// Stores the vertexIDs if the key has been found.
         /// </param>
-        bool TryGetValues(IComparable myKey, out IEnumerable<Int64> myVertexIDs);
+        bool TryGetValues(IComparable myKey, out ICloseableEnumerable<Int64> myVertexIDs);
 
         #endregion
 
@@ -213,7 +213,7 @@ namespace sones.Plugins.Index
         /// </summary>
         /// <param name="myKey">The search key</param>
         /// <returns>Associated values</returns>
-        IEnumerable<Int64> this[IComparable myKey] { get; }
+        ICloseableEnumerable<Int64> this[IComparable myKey] { get; }
 
         #endregion
 
