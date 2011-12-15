@@ -56,7 +56,7 @@ namespace sones.GraphDS.Services.RemoteAPIService.DataContracts.ServiceTypeManag
         public ServicePropertyMultiplicity Multiplicity;
 
         [DataMember]
-        public IComparable DefaultValue;
+        public Object DefaultValue;
 
         [DataMember]
         public List<String> InIndices; 
