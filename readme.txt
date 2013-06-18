@@ -10,9 +10,7 @@ within a large scale social network, but we are much more interested to know whi
 watched last summer and thought that they were amazing. In the near future we will provide a large framework of 
 graph algorithms for these problems and usage scenarios. 
 
-To build this package you want to follow the instructions on: 
-
-http://developers.sones.de/wiki/doku.php?id=quickreference:installationguide
+To build this package you want to follow the instructions in /Documentation / quickreference / installationguide
 
 1. Running sones GraphDB precompiled binary
 
@@ -28,13 +26,4 @@ built by running the build_solution.sh script. The sample application can be sta
 by running the run_sonesGraphDB.sh script.
 
 Additional parameters can be configured using the .config file in the sonesGraphDB directory.
-
-2. Comments and Notes
-
-If you want to leave us a comment, question or bug-report please use the following tools:
-
-Forum: http://forum.sones.de
-Bugtracker: http://jira.sones.de
-Wiki and Documentation: http://developers.sones.de
-
 
