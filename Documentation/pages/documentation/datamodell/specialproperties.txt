@@ -1,0 +1,44 @@
+====== Special Properties ======
+
+===== Basic VERTEX Properties =====
+
+  * **VertexID**
+This is the unique identifier of a vertex instance. This must be unique through the complete vertex hierarchie (within a type). It might be set during the [[documentation:database:querylanguage:stmt:insertstmt:latest|INSERT]] with a user defined //String// or //Integer// value or if not specified the system will create a unique id. 
+
+  * **VertexTypeID**
+This is the unique identifier of a type. This must be unique through the complete type hierarchie (within the hole database). It is specified by the system. 
+
+  * **VertexTypeName**
+This is the name of the type.
+
+  * **REVISION**
+The Revision id of a vertex.
+
+  * **EDITION**
+The edition identifier of a vertex.
+
+  * **CreationDate**
+The binary DateTime value of the creation date of the vertex.
+
+  * **ModificationDate**
+The binary DateTime value of the last modification of the vertex.
+
+  * **Comment**
+The Comment of the vertex.
+
+===== Basic EDGE Properties =====
+
+  * **EdgeTypeID**
+This is the unique identifier of a type. This must be unique through the complete type hierarchie (within the hole database). It is specified by the system. 
+
+  * **EdgeTypeName**
+This is the name of the type.
+
+  * **CreationDate**
+The binary DateTime value of the creation date of the edge.
+
+  * **ModificationDate**
+The binary DateTime value of the last modification of the edge.
+
+  * **Comment**
+The Comment of the edge.

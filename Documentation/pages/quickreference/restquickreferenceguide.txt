@@ -1,0 +1,44 @@
+====== REST Quick Reference Guide ======
+[[:start|back]]
+
+The GraphDS comes with a REST connector. In order to use it you must start it using following code (PassValidator is a implementation of the abstract class System.IdentityModel.Selectors.UserNamePasswordValidator):
+<code csharp>
+var _HttpSecurity = new HTTPSecurity()
+{
+    CredentialType = HttpClientCredentialType.Basic,
+    UserNamePasswordValidator = new PassValidator()
+};
+
+// Start a REST service on localhost port 9975
+var _RESTService      = _GraphDSSharp.StartREST(IPAddress.Any, 9975, _HttpSecurity);
+</code>
+
+Now you can access the REST connector using [[http://localhost:9975/]].
+
+===== WebShell =====
+You can send queries via the WebShell to the database and get the response in different formats. The URL to access the WebShell is [[http://localhost:9975/WebShell]] - replace all following ~ placeholders with the host (http://localhost:9975/) where you started the REST connector.
+
+^WebShell ^^
+|**Start:**| ~/WebShell|
+|**Queries:**| any valid [[documentation:graphql]] query |
+
+^WebShell special commands ^^
+|**help [command]**| displays help text |
+|**license**| displays license information |
+|**clear**| clear the screen |
+|**format [xml|json|text]**| sets the output-format of query results default is json  |
+
+===== REST requests =====
+You can directly access the database using GET requests via REST.
+
+^GraphQL query^^
+|**Request:**| ''~/gql?{QueryString_URLEncoded}&transaction={TransactionId}'' |
+|**Accept-Header:**| ''application/xml or application/json or text/html'' |
+|**Response (JSON):**|''{\\ "query" : "<query string>",\\   "result"  : "Successful" or "Failed",\\ "duration"    : <query processing time>\\ "warnings"      : [...],\\ "errors"      : [...],\\ "results" : [ { <Vertex1> }, { <Vertex2> }, ... , { <VertexN> } ],\\ }\\ '' |
+|**using curl:**| curl -H Accept:application/json ''~/gql?{QueryString_URLEncoded}&transaction={TransactionId}'' |
+
+^Get the last loglines. ^^
+|**Request:**| ~/logfile |
+|**Accept-Header:**| text/plain |
+|**Response:**|{timestamp} {graphqlquery}\\ {timestamp} {queryresultstatus}\\ |
+

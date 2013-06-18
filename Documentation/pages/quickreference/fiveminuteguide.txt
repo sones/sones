@@ -1,0 +1,383 @@
+====== Five minute guide ======
+This is a walkthrough to get started with the sones GraphDS. If you never heard about graphs and what it is about the sones GraphDS please read the introduction about [[documentation:datamodel:graph|graph models]].
+
+After reading (and following) this guide you will know how to use the GraphDB to create a graph like in the following image:
+
+{{:quickreference:vertices-nodes02.gif|Social network graph}}
+
+In addition to the [[documentation:datamodel:graph|graph models]] you will find a parent abstract vertex "Entity". This vertex type has the restriction that you can't create any node (a specific instance of a vertex) ([[documentation:database:querylanguage:stmt:insertstmt:latest|insert]]). All vertices which inherit an other vertex will have all attributes like the usual inheritance.
+The second addition is the [[documentation:database:querylanguage:backwardEdgeAttribute|BackwardEdge attribute]] "StudiesAt" from the student node to the university vertex. This backward edge is automatically created by the database and might be used to travers through the graph.
+
+====== 1. Download and installation ======
+Please follow the [[quickreference:installation guide]] on how to download, build and install your instance.
+
+====== 2.a Create a new project ======
+If you want to start quickly you can just use the [[quickreference:fiveminuteguide#b_using_the_sones_example_from_the_ose|sones example project]] coming with the OSE to start creating you first graph.
+
+Otherwise follow the steps of the [[quickreference:createcharpapisample|create CSharpAPI project]] guide (please follow the REST version) to create your own sample application and proceed with [[quickreference:fiveminuteguide#creating_the_example_graph|creating the sample graph]].
+
+
+====== 2.b Using the sones example from the OSE ======
+If you want to start quickly you can just use the sones example project coming with the OSE to start creating you first graph.
+Just compile the sonesExample.csproj and execute the sonesExample.exe. This will start a REST service at port 9975 and within a "WebShell" to execute queries using any browser by opening [[http://localhost:9975/WebShell]] and use "test" as username and "test" as password.
+
+====== 3. Creating the example graph ======
+The next steps will show you how to create the graph from the image at the beginning. These queries are run using the WebShell and the results are in the JSON format.
+
+===== 3.1. Create the vertex types =====
+The first step is the creation of the vertex types using the [[documentation:database:querylanguage:stmt:createverticesstmt:latest|CREATE VERTICES]] statement. With the help of the bulk creation you can define the edges before you created the vertex type of the destination. 
+
+The following query will create:
+
+  * The abstract vertex "Entity" which all other vertices will extend. This vertex is marked as abstract (no [[documentation:database:querylanguage:stmt:insertstmt:latest|INSERT]] allowed) and has one attribute - the string property "Name".
+
+  * The "University" vertex extends the vertex "Entity" (and with it the property "Name") and has one edge attribute "Students". This edge will store all connections made between a "Univerity" node (a specific instance of a vertex) and one or more "Student" vertices.
+
+  * The "City" vertex extends the abstract vertex "Entity" as well and will have one edge attribute "Universities" which is a hyperedge from a "City" node to one or more "University" nodes.
+
+  * The vertex "Student" extends the "Entity" as well. In addition to the "Name" it has the property "Age" of type //Integer// and a special edge - the backwardedge "StudiesAt". This BackwardEdge is a hyperedge containing all implicit created edges between a "University" node and a "Student" node. For each edge from "University" to a "Student" the "Student" will get an edge back to the "Students" attribute of the vertex "University".
+
+<code>
+CREATE VERTICES 
+   ABSTRACT Entity ATTRIBUTES (String Name),
+   University EXTENDS Entity ATTRIBUTES(SET<Student> Students),
+   City EXTENDS Entity ATTRIBUTES(SET<University> Universities),
+   Student EXTENDS Entity ATTRIBUTES(Integer Age) BACKWARDEDGES(University.Students StudiesAt)
+</code>
+
+
+You will get a result like:
+<code>
+{
+  "query": "CREATE VERTICES ABSTRACT Entity ATTRIBUTES (String Name), City EXTENDS Entity ATTRIBUTES(SET Universities), University EXTENDS Entity ATTRIBUTES(SET Students), Student EXTENDS Entity ATTRIBUTES(Integer Age) BACKWARDEDGES(University.Students StudiesAt)",
+  "result": "Successful",
+  "duration": [
+    660,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": [
+    {
+      "DBType": "Entity",
+      "UUID": "f1cf505d-3dc9-4ec0-b777-ca1c0075d835",
+      "REVISION": "20102110.124020.0492167(8edd08775ce5754581140b203163f93d)",
+      "EDITION": "DefaultEdition"
+    },
+    {
+      "DBType": "City",
+      "UUID": "89dc4d40-2046-4c0b-8599-6c0665ae62a5",
+      "REVISION": "20102110.124020.1952135(8edd08775ce5754581140b203163f93d)",
+      "EDITION": "DefaultEdition"
+    },
+    {
+      "DBType": "University",
+      "UUID": "274f1216-7ba0-409d-b466-668157b2a6ee",
+      "REVISION": "20102110.124020.3592086(8edd08775ce5754581140b203163f93d)",
+      "EDITION": "DefaultEdition"
+    },
+    {
+      "DBType": "Student",
+      "UUID": "7dec86d3-c62d-49cc-840a-93203bb821dc",
+      "REVISION": "20102110.124020.5402167(8edd08775ce5754581140b203163f93d)",
+      "EDITION": "DefaultEdition"
+    }
+  ]
+}
+</code>
+
+
+===== 3.2. Insert new nodes =====
+As soon as the vertex type definitions are done we can proceed with inserting some nodes (a specific instance of a vertex). Due to the fact that we are facing the same issue that we can't create the "City" node without having the destination "University" we must start with the "Student" vertices.
+
+==== "Student" nodes ====
+The following statement will create one instance of the "Student" vertex.
+<code>
+INSERT INTO Student VALUES(Name = 'José', Age = 26, Haircolor = 'Brown')
+</code>
+
+You might wonder what is about the property "Haircolor"? This is a undefined attribute and there is no need to define it when you create the vertex type definition. You can add any attribute you want to a vertex at any time and with any simple value. Please keep in mind that you can not use these kind of attributes to create subgraphs based on this attribute or use it as an edge to other vertices but you can always [[documentation:database:querylanguage:stmt:insertstmt:latest|SELECT]] it.
+
+You will get a result like:
+<code>
+{
+  "query": "INSERT INTO Student VALUES(Name = 'José', Age = 26, Haircolor = 'Brown')",
+  "result": "Successful",
+  "duration": [
+    43,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": [
+    {
+      "Name": "José",
+      "Age": "26",
+      "Haircolor": "Brown",
+      "UUID": "1a80b8b2-32ea-4921-b4d6-aceb86cc7a1a",
+      "REVISION": "20102110.124316.3442025(8edd08775ce5754581140b203163f93d)"
+    }
+  ]
+}
+</code>
+
+Now, we will create all other "Student" nodes:
+<code>
+INSERT INTO Student VALUES(Name = 'Ashley', Age = 35)
+INSERT INTO Student VALUES(Name = 'Nanami', Age = 24, Nick = 'Nan', Weight = 63.5)
+INSERT INTO Student VALUES(Name = 'Emily', Age = 26, Hobby = 'Cycling')
+</code>
+
+
+==== "University" node ====
+The following statement will create the "University" node. Like the "Student" vertex the "University" has a undefined attribute as well. In this case it is a collection of string.
+<code>
+INSERT INTO University VALUES(Name = 'Stanford University', Buildings = LISTOF('House A', 'House B', 'House C'))
+</code>
+
+You will get a result like:
+<code>
+{
+  "query": "INSERT INTO University VALUES(Name = 'Stanford University', Buildings = LISTOF('House A', 'House B', 'House C'))",
+  "result": "Successful",
+  "duration": [
+    21,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": [
+    {
+      "Name": "Stanford University",
+      "Buildings": [
+        "House A",
+        "House B",
+        "House C"
+      ],
+      "UUID": "f6d967c2-a4bb-4775-9f81-d9ce4a784115",
+      "REVISION": "20102110.130836.0402024(8edd08775ce5754581140b203163f93d)"
+    }
+  ]
+}
+</code>
+
+
+==== "City" node ====
+At last we will create one "City" node using the following statement. In opposite to the "University" node (where we need to add the student references later) we will add the reference from "City" to the "University" when we create the node with the INSERT statement.
+
+<code>
+INSERT INTO City VALUES(Name = 'Stanford', Universities = SETOF(Name = 'Stanford University'))
+</code>
+
+You will get a result like:
+<code>
+{
+  "query": "INSERT INTO City VALUES(Name = 'Stanford', Universities = SETOF(Name = 'Stanford University'))",
+  "result": "Successful",
+  "duration": [
+    304,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": [
+    {
+      "Name": "Stanford",
+      "Universities": [
+        "f6d967c2-a4bb-4775-9f81-d9ce4a784115"
+      ],
+      "UUID": "6f849645-c383-4bcb-8295-c120fd55feb5",
+      "REVISION": "20102110.131745.6852025(8edd08775ce5754581140b203163f93d)"
+    }
+  ]
+}
+</code>
+
+
+==== Add references from "University" to the "Student" vertices ====
+To make the graph complete we need to set the references coming from the vertex "University" to each "Student" node (a specific instance of a "Student" vertex).
+
+<code>
+UPDATE University SET(Students += SETOF(Name = 'Emily', Name = 'Nanami', Name = 'Ashley', Name = 'José')) WHERE Name = 'Stanford University'
+</code>
+
+You will get a result like:
+<code>
+{
+  "query": "UPDATE University SET(Students  = SETOF(Name = 'Emily', Name = 'Nanami', Name = 'Ashley', Name = 'José')) WHERE Name = 'Stanford University'",
+  "result": "Successful",
+  "duration": [
+    156,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": [
+    {
+      "Students": [
+        "8ff39e30-af2c-40a4-90d7-21a82ed55111",
+        "ce2f4ce9-40c9-44a3-af8b-6259b6d5086f",
+        "e70cec01-550b-467b-a47a-be4c6ea9fd5b",
+        "1a80b8b2-32ea-4921-b4d6-aceb86cc7a1a"
+      ],
+      "UUID": "f6d967c2-a4bb-4775-9f81-d9ce4a784115",
+      "REVISION": "20102110.132802.6632018(8edd08775ce5754581140b203163f93d)"
+    }
+  ]
+}
+</code>
+
+====== 4. Extract information from the graph ======
+The simplest way is selecting a complete node out of the graph:
+<code sql>
+FROM University SELECT *
+</code>
+
+This will result in the following output:
+<code>
+{
+  "query": "FROM University SELECT *",
+  "result": "Successful",
+  "duration": [
+    0,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": [
+    {
+      "Name": "Stanford University",
+      "Students": {
+        "hyperedgelabel": {},
+        "vertices": [
+          {
+            "attributes": {
+              "UUID": "8ff39e30-af2c-40a4-90d7-21a82ed55111",
+              "TYPE": "Student"
+            }
+          },
+          {
+            "attributes": {
+              "UUID": "ce2f4ce9-40c9-44a3-af8b-6259b6d5086f",
+              "TYPE": "Student"
+            }
+          },
+          {
+            "attributes": {
+              "UUID": "e70cec01-550b-467b-a47a-be4c6ea9fd5b",
+              "TYPE": "Student"
+            }
+          },
+          {
+            "attributes": {
+              "UUID": "1a80b8b2-32ea-4921-b4d6-aceb86cc7a1a",
+              "TYPE": "Student"
+            }
+          }
+        ]
+      },
+      "Buildings": [
+        "House A",
+        "House B",
+        "House C"
+      ]
+    }
+  ]
+}
+</code>
+In the result you will find beside the usual information like //query//, //errors// and //warnings// all attributes of the "University" node you have had previously inserted. There is the "Name" property, the "Students" edge with the four references and the undefined attribute "Buildings" with the list of string.
+
+===== Access the edge information =====
+Beside using * to get all attributes of a node you can access each attribute directly via the name. No matter whether it is a property, an edge or an undefined attribute.
+<code sql>
+FROM University SELECT Name, Students.Name, Students.Age, Students.Weight WHERE Students.Age < 25
+</code>
+
+<code>
+{
+  "query": "FROM University SELECT Name, Students.Name, Students.Age, Students.Weight WHERE Students.Age < 25",
+  "result": "Successful",
+  "duration": [
+    27,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": [
+    {
+      "Name": "Stanford University",
+      "Students": {
+        "hyperedgelabel": {},
+        "vertices": [
+          {
+            "attributes": {
+              "Name": "Nanami",
+              "Age": "24",
+              "Weight": "63,5"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+</code>
+
+===== Edges and Functions =====
+Even selects across multiple nodes will give you the opportunity to get a subgraph with all information.
+<code>
+FROM City SELECT Name, Universities.Name, Universities.Students.TOP(1) DEPTH 2
+</code>
+
+<code>
+{
+  "query": "FROM City SELECT Name, Universities.Name, Universities.Students.TOP(1) DEPTH 2",
+  "result": "Successful",
+  "duration": [
+    0,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": [
+    {
+      "Name": "Stanford",
+      "Universities": {
+        "hyperedgelabel": {},
+        "vertices": [
+          {
+            "attributes": {
+              "Name": "Stanford University",
+              "Students": {
+                "hyperedgelabel": {},
+                "vertices": [
+                  {
+                    "attributes": {
+                      "Name": "Emily",
+                      "Age": "26",
+                      "StudiesAt": {
+                        "hyperedgelabel": {},
+                        "vertices": [
+                          {
+                            "attributes": {}
+                          }
+                        ]
+                      },
+                      "Hobby": "Cycling"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+</code>
+
+====== Conclusion ======
+Now you should be able to start working with a GraphDS. 
+
+ =====

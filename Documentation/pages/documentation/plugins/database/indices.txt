@@ -1,0 +1,380 @@
+===== sones Index Structure (affects sones GraphDB 2.1) =====
+
+//"A database index is a data structure that improves the speed of data retrieval operations on a database table at the cost of slower writes and increased storage space."// [Wikipedia, [[http://en.wikipedia.org/wiki/Index_%28database%29|Index (Database)]]]
+
+In case of a graph database an index improves the access to vertices by indexing its properties.
+
+The following documentation describes the sones index structure and shows how it can be used to implement custom indices and use them in the sones GraphDB 2.1.
+
+Code documentation can be found in the source code, which is located here: [[https://github.com/sones/sones|sones GraphDB at github]].
+
+{{:documentation:plugins:database:indexinterfaces_overview.png?direct&675|}}
+
+==== ISonesIndex ====
+
+{{:documentation:plugins:database:isonesindex.png?direct&150 |}}
+
+//ISonesIndex// is the top index interface which provides typical index operations, like adding, removing or searching for keys. Any index implementation in the sones GraphDB has to support these methods.
+
+Like all derived interfaces, the //ISonesIndex// is a **non-generic** interface. In the sones GraphDB, indices are always used with implementations of the //[[http://msdn.microsoft.com/en-us/library/system.icomparable.aspx|System.IComparable]]// interface as **key** and the **value** is always of type //[[http://msdn.microsoft.com/en-us/library/system.int64.aspx|System.Int64]]//, the same type how vertices and edges are identified in the sones GraphDB.
+
+An //ISonesIndex// supports 1:1 key-value mapping or 1:n key-value mapping. This means that there can be more than one value assigned to one key. An access on an index key always returns a collection of values.
+
+In the course of the latter definition, it is necessary to define different **strategies** when adding new key-value pairs to the index. Existing values can be merged with or replaced by the new values. In case of a unique strategy a primary key index structure can be realized.
+
+{{ :documentation:plugins:database:indexaddstrategy.png?direct&150|}}
+
+There are some public properties stored at any index which are used during query processing in the sones GraphDB:
+
+  * **SupportsNullableKeys** in some cases it can be useful to store keys which are null. This means the value (vertex) does not have the indexed property.
+  * **IndexName** is the case-insensitive name of the index which is used by the GQL to create an index on a property. 
+
+==== ISonesPersistentIndex ====
+
+{{:documentation:plugins:database:isonespersistentindex.png?direct&200 |}}
+
+The //ISonesPersistentIndex// represents indices which can be stored on some kind if permanent storage device. Because of that, it is necessary that these indices can be disposed or shut down if they are not in use anymore (mostly in case of a database shutdown).
+
+Typical indices which were designed for persistence are [[http://en.wikipedia.org/wiki/B-tree|B Trees]] and all shapes of that page-oriented index structure.
+
+==== ISonesRangeIndex ====
+
+{{:documentation:plugins:database:isonesrangeindex.png?direct&200 |}}
+
+An //ISonesRangeIndex// is optimized for querying keys which are in a specified range or which are lower or greater than a given key. A typical GQL query which would profit of such an index structure is the following:
+<code sql>
+FROM Person p SELECT p.Name WHERE p.Age >= 10 AND p.Age <= 20
+</code>
+
+This query selects all persons which are at the age of 10 or older, but not older than 20. When keys (in this case it's the age) are stored in natural order, these queries can be efficently answered by an index.
+
+So the index supports three special kinds of queries:
+
+  * **between** two keys
+  * **greater than [or equal to]** a key
+  * **lower than [or equal to]** a key
+
+Typical indices which implement these functionality are [[http://en.wikipedia.org/wiki/B%2B_tree|B+ Trees]] or B* Trees.
+
+==== ISonesSpatialIndex ====
+
+{{:documentation:plugins:database:isonesspatialindex.png?direct&200 |}}
+
+An //ISonesSpatialIndex// supports and is optimized for querying objects in multi-dimensional spaces. These objects can be defined as points or any other geometry. Currently our interface and corresponding geometries are designed for 2-dimensional queries.
+
+Typical index implementations of spatial indices are [[http://en.wikipedia.org/wiki/R-tree|R Trees]] and all shapes (R+, R*, ...), [[http://en.wikipedia.org/wiki/Grid_%28spatial_index%29|Grid Files]] or [[http://en.wikipedia.org/wiki/Kd-tree|kd Trees]] (there are of course many more).
+
+Our first spatial index interface supports three different types of queries:
+
+  * **exact match** by defining a //Point//
+  * **region match** by defining a //Rectangle// or //Circle//
+  * **k-nearest neighbours match** by defining a //Point// and number k of nearest neighbours to lookup
+
+{{ :documentation:plugins:database:geometries.png?direct&600 |}}
+
+==== ISonesTransactionalIndex ====
+
+{{:documentation:plugins:database:isonestransactionalindex.png?direct&200 |}}
+
+An //ISonesTransactionalIndex// can be used in an [[http://en.wikipedia.org/wiki/ACID|ACID]] environment where transactions are an essential characteristic.
+
+An transactional index supports reverting of one or more operations. Committing to this index means, that all operations since the last commit are [maybe persistent] written to the index.
+
+==== ISonesVersionedIndex ====
+
+{{:documentation:plugins:database:isonesversionedindex.png?direct&200 |}}
+
+The //ISonesVersionedIndex// represents indices which can handle different views on the index. A view is defined by a timestamp which is of type //Int64//. These indices could be used in a optimistic [[http://en.wikipedia.org/wiki/Multiversion_concurrency_control|MVCC]] concurrency control environment.
+
+The interface overloads the //ISonesIndex// members with additional parameters to define a view of the index. Omitting the timestamp always returns the latest version of the index.
+
+==== ISonesCompoundIndex ====
+
+{{:documentation:plugins:database:isonescompoundindex.png?direct&200 |}}
+
+An //ISonesCompoundIndex// defines a multi-dimensional index where multiple keys can be defined to search for stored values. The index supports exact matches and partial matches. In the first case, the values have to match all given keys, in the second case "partial" matches are also valid matches.
+
+{{ :documentation:plugins:database:icompoundindexkey.png?direct&200|}}
+
+The mapping between the indexed property ID and the key is done by an //ISonesCompoundIndexKey//.
+
+==== ISonesFulltextIndex ====
+
+{{:documentation:plugins:database:isonesfulltextindex.png?direct&200 |}}
+
+The //ISonesFulltextIndex// was defined in close relation to existing full text search engines like [[http://lucene.apache.org/java/docs/index.html|Apache Lucene]] or the full featured search server [[http://lucene.apache.org/solr/|Apache Solr]].
+Both search services use a query language for querying documents. So we decided to implement a //Query(String fulltextQuery)// method which can handle Lucene / Solr based query-strings and returns a collection of //ISonesFulltextResultEntry//.
+
+{{ :documentation:plugins:database:isonesfulltextresultentry.png?direct&200|}}
+
+An //ISonesFulltextResultEntry// respresents a document which is indexed by p.e. Lucene / Solr. Each document represents a Vertex in the sones GraphDB, so a document has to store a //VertexID//. Typical fulltext features like highlighting, scoring or similar results are represented by this interface. In our opinion these are features any full text index should support.
+
+
+
+
+
+
+
+
+
+
+===== Implementing a custom index =====
+
+The following tutorial shows how easy it is to integrate a custom index into the sones GraphDB. For that reason, we implemented an elementary index: the **[[http://en.wikipedia.org/wiki/Binary_search_tree|binary search tree]]**.
+
+The source for this index implementation is available on [[https://github.com/sones/sones-bstindex-tutorial|github]] and can be used to follow the tutorial and as a template for your own index implementation.
+
+Discussions and questions can be placed in our [[http://forum.sones.com/|community forum]].
+
+==== Setting up the environment ====
+
+The first thing you need to do (if you do not already have) is a clone of the sones GraphDB Community Edition. You can clone the source from [[https://github.com/sones/sones|github]].
+
+The next step is to set up your index project using your favourite IDE / Editor / Console. We used Visual Studio for that, so if you are on Windows and do not have Visual Studio, you can download the Express Edition at [[http://www.microsoft.com/germany/express/|Microsoft]]. If you are working on linux and compile your stuff with mono, you can use [[http://monodevelop.com/|Monodevelop]] to get the work done.
+
+In Visual Studio you have to create a new project using the //class library// project template. You now have to add some references to existing projects in your community edition. To do that, you have to add "Existing Projects" to your solution. This can be done by right clicking the solution and use "Add -> Existing Project". The projects you need in any case are:
+
+{{ :documentation:plugins:database:solution_explorer_good_quali.jpg?direct&|}}
+
+  * CommunityEdition/Plugins/Index/ISonesIndex/ISonesIndex.csproj (Contains the index interfaces described above)
+  * CommunityEdition/Library/Internal/ErrorHandling/ErrorHandling.csproj (Needed for database exceptions)
+  * CommunityEdition/Library/Internal/IPluginable/IPluginable.csproj (Needed to make our index pluginable)
+  * CommunityEdition/Library/Internal/PropertyHypergraph/PropertyHypergraph.csproj (Some logic for handling vertices)
+  * the other projects are needed for testing the index implementation
+
+If you want to use one assembly file (dll), you can use the [[https://github.com/sones/sones-assemblymerger|Assembly Merger]] to create one dll file and add this file to your project.
+
+Ok, that's all you have to do for setting up your project. In the next part we will start implementing the index interfaces.
+
+==== Chosing the right interface ====
+
+The next big step is to decide which interface you want to implement. In our example we only chose the base interface //ISonesIndex//, because a binary search tree is not optimized for any special requirements like spatial searches or range queries.
+
+Every index has the ability for handling vertex instances. To understand this behaviour we need a short digression on vertex properties:
+
+**A vertex and its properties**
+
+A vertex stores its properties as key-value-pairs. Each value can be retrieved by a unique propertyID of type //Int64//. The  uniqueness of that ID refers to the scope of the corresponding vertex type. The value of the property equates to the index key and the ID of the vertex is the associated value which is stored in the index.
+
+A short example:
+
+A vertex type //User// has two properties: //Name// and //Age//. The property ID for //Name// is 1L, and for //Age// it's 2L. We want to create an index on the //Age// property so our indexed propertyID is? .. 2L, correct!
+
+You have to tell the index which propertyIDs refer to the indexed properties. Without this information, the index can indeed handle adding key-value-pairs (//Add(Key, Value)//), but **NOT** adding of vertex instances (//Add(IVertex)//).
+
+
+**Back to the topic**
+
+Now that we know the basics of property handling at vertices we present you the abstract class //ASonesIndex// which can be found in the ISonesIndex project. 
+This class has some methods for extracting the indexed properties of a given vertex. In our case, this default extraction handling is great, so we don't want to implement it on our own way. Therefore, we chose to extend the abstract class, which itselves derives from the base interface //ISonesIndex//:
+
+<code csharp>
+public class BinaryTreeIndex : ASonesIndex
+{
+    // silence is golden
+}
+</code>
+
+In the next part of this tutorial, we will go through the index members.
+
+==== Implement the index interface ====
+
+We will now tell important facts about the implementations and give some hints which have to be considered during the implementation to avoid errors during the runtime of the database.
+
+=== Constructors ===
+
+You can have as many constructors as you want but as soon as you define a parameterized constructur, you have to create also a constructor which **MUST NOT** take any parameters. This is important for the Plugin Manger while loading your index.
+
+In our implementation the constructors look like this:
+
+<code csharp>
+/// <summary>
+/// Empty Constructor for the PluginManager
+/// </summary>
+public BinaryTreeIndex()
+{
+    _KeyCount = 0L;
+    _ValueCount = 0L;
+}
+
+/// <summary>
+/// Initializes the binary tree index and assigns
+/// a list of propertyIDs to the internal member.
+/// </summary>
+/// <param name="myPropertyIDs">A list of indexed propertyIDs</param>
+public BinaryTreeIndex(IList<Int64> myPropertyIDs) : this()
+{
+    _PropertyIDs = myPropertyIDs;
+}
+</code>
+
+The second constructor is responsible for assigning the list of indexed properties to the protected member of the //ASonesIndex// class. This constructor is used during the //InitializePlugin// method, which will be explained later.
+
+=== Index name ===
+
+A very important member of the index is its name. The index name is used in the GraphQL to define the indextype on a property. 
+
+<code csharp>
+public override string IndexName
+{
+    get { return "binarytree"; }
+}
+</code>
+
+In our case the index is called "binarytree" which means that in GraphQL, the index is also known as "bInArYtReE" in any case. A sample query could look like this:
+
+<code sql>
+CREATE INDEX bintree_age_idx ON VERTEX TYPE User (Age) INDEXTYPE binarytree
+</code>
+
+=== Add / ContainsKey / Remove ===
+
+These typical index methods don't need any further explanation. One important hint is that while defining the interfaces we thought about supporting keys that can be null. This has some pracital relevance when semi structured data is handled and you want to select all vertices which do NOT have the indexed property.
+Because of that, the index has to handle keys which are null. If your implementation supports this, everything is fine, but if your implementation does not, there is an Exception called //NullKeysNotSupportedException// which can be thrown when the key is null.
+
+<code csharp>
+ public override void Add(IComparable myKey, long myVertexID, 
+    IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
+ {
+    if (myKey == null) // uh, tree does not support null keys
+    {
+        throw new NullKeysNotSupportedException("binarytree index does not support null as key");
+    }
+    
+    // ...
+}
+</code>
+
+To check this behaviour BEFORE trying to insert null as a key, we defined a property called //SupportsNullableKeys// at the //ISonesIndex// interface. Using this property, you can tell the outer world what your implementation can do or can not do.
+
+<code csharp>
+public override bool SupportsNullableKeys
+{
+    get { return false; }
+}
+</code>
+
+==== Implement the plugin interface ====
+
+The implentation of the //IPluginable// interface is necessary if you want to use your index implementation in the sones GraphDB.
+
+At first, make the index implement the interface:
+
+<code csharp>
+public class BinaryTreeIndex : ASonesIndex, IPluginable
+{
+}
+</code>
+
+In the next step, we present the few members you have to implement for being "pluginable".
+
+=== Names ===
+
+A plugin is identified by its name and shortname:
+
+<code csharp>
+/// <summary>
+/// Name of the plugin
+/// </summary>
+public string PluginName
+{
+    get { return "sones.binarytreeindex"; }
+}
+
+/// <summary>
+/// Short name of the plugin
+/// </summary>
+public string PluginShortName
+{
+    get { return "sones.bintreeidx"; }
+}
+</code>
+
+Plugins written by sones and shipped together with the Community- or EnterpriseEdition are named like "sones.<plugin-name>". You can name your plugin like "<your-name>.<plugin-name>".
+
+=== Initialize Plugin ===
+
+The most important method for plugins is the //InitializePlugin// method derived from //IPluginable//. This method is called by the PluginManager to Create and Reload your plugin. 
+
+<code csharp>
+/// <summary>
+/// This method is called by the plugin manager when the plugin is loaded.
+/// 
+/// It loads the indexed propertyIDs out of the parameter dictionary and
+/// initializes the index with these propertyIDs
+/// </summary>
+/// <param name="UniqueString"></param>
+/// <param name="myParameters"></param>
+/// <returns>An instance of the binary tree index</returns>
+public IPluginable InitializePlugin(string UniqueString, Dictionary<string, object> myParameters = null)
+{
+    if (myParameters != null && myParameters.ContainsKey(IndexConstants.PROPERTY_IDS_OPTIONS_KEY))
+    {
+        return new BinaryTreeIndex((IList<Int64>)myParameters[IndexConstants.PROPERTY_IDS_OPTIONS_KEY]);
+    }
+    else
+    {
+         throw new ArgumentException("{0} were not set for initializing binary tree index",
+                IndexConstants.PROPERTY_IDS_OPTIONS_KEY);
+    }
+}
+</code>
+In our sample implementation, this method just loads the list of indexed propertyIDs out of the parameter dictionary and initializes a new instance of the index using this list. Normally, there is no need to do more than this, so you can just copy/paste this into your own index.
+
+==== First test-run in GraphDB ====
+
+When you have finished your implementation and you are sure that everything works fine, you can integrate your plugin into the sones GraphDB.
+
+If you want to use the index in your GraphDB Application, you only have to add the assembly as reference to your project. In the sample we used the //SonesGraphDBStarter// Application located in the CommunityEdition. To load the assembly just follow these steps in Visual Studio:
+
+  * in SonesGraphDBStarter hit right mouse on //References// -> "Add Reference..."
+  * Category "Assemblies"
+  * //Browse// for your <index>.dll, in our case this is the "BinaryTreeIndex.dll"
+  * //Add//
+  * //Close//
+  * That's all
+
+If you already have your own application built, you just have to copy the assembly file into your GraphDB working directory. In addition, you can use the Assembly Merger to build one assembly.
+
+Now the index assembly will be copied in the output folder of our GraphDBStarter and during startup of the application, the index will be loaded by the PluginManager.
+
+=== GraphQL ===
+
+To check if your plugin was loaded correctly, you can try to - guess what - create an index. To do so, use the webshell or one of our remote clients to perform the following statements:
+
+<code sql>
+CREATE VERTEX TYPE UserProfile ATTRIBUTES (String Name, Int32 Age)
+</code>
+
+Now we created a vertex type which is defined by two properties. We now want to use our custom index on the //Age// attribute. To do this, we have to perform the following query:
+
+<code sql>
+CREATE INDEX bintree_age_idx ON VERTEX TYPE UserProfile (Age) INDEXTYPE binarytree
+</code>
+
+Note that "binarytree" is our index name and "bintree_age_idx" is a user-defined name for that index on "Age".
+
+If you see something like the following, everything went fine and you just wrote your own index for a database system.
+
+{{ :documentation:plugins:database:create_index2.jpg?direct& |}}
+
+==== Finally ====
+
+If you have any questions concerning this tutorial or you need more in-depth information feel free to use our [[http://forum.sones.com|Forum]].
+
+Just some links at the end:
+
+  * [[https://github.com/sones/sones|sones GraphDB Community Edition at github]]
+  * [[http://en.wikipedia.org/wiki/Binary_search_tree|Binary Search Tree on Wikipedia.org]]
+  * [[https://github.com/sones/sones-bstindex-tutorial|The source code for this tutorial]]
+  * [[https://github.com/downloads/sones/sones/GQL_cheatsheet_latest.pdf|GraphQL Cheat Sheet]]
+  * [[https://github.com/sones/sones-assemblymerger|Sones Assembly Merger]]
+
+===== Existing Index Plugins =====
+==== Lucene Fulltext Index Plugin ====
+Lucene Fulltext Index Plugin is available in Community Edition. It offers the functionality to search in text properties fulltext using Lucene queries using a local Lucene Index. It supports compound indices and result scores. Read about it [[documentation:plugins:database:indices:lucene|here]]
+==== SOLR Fulltext Index Plugin ====
+SOLR Fulltext Index Plugin is available only in Enterprise Edition. It offers the functionality to search in text properties fulltext using SOLR queries using a SOLR server. Furthermore it supports compound indices and result scores. Read about it [[documentation:plugins:database:indices:solr|here]]
+
+
+ --- //[[martin.junghans@sones.com|Martin 's1ck' Junghanns]] 2011/09/08 15:50//

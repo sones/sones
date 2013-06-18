@@ -1,0 +1,8 @@
+====== Attribute manipulation======
+
+  * How to assign an attribute
+    * [[documentation:database:querylanguage:attributeassign:latest|Attribute assignment]]
+  * How to remove an attribute
+    * [[documentation:database:querylanguage:attributeremove|Attribute removal]]
+  * How to adapt SET/LIST attributes
+    * [[documentation:database:querylanguage:attributesetlistmanipulation|Adaption of LIST/SET attributes]]

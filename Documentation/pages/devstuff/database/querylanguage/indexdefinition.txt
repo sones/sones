@@ -1,0 +1,1 @@
+moved to [[documentation:database:querylanguage:indexdefinition:1.1|index definition]]

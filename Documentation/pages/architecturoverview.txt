@@ -1,0 +1,83 @@
+====== GraphDB software architecture overview ======
+
+When we started development on the 2.0 version of sones GraphDB we had some basic ideas we wanted to implement with this major release:
+
+  - [[Property Hypergraph]]
+  - extended pluginability
+  - Performance optimizations through less overhead
+  - easier to use interfaces
+
+The software architecture that allows us to deliver on all of these ideas looks like this:
+
+===== Architecture Overview =====
+
+Here is the overview image of the 2.0 version architecture - everything with a grey background is either a plug-in interface or plug-in:
+
+{{ :software_architecture_2.0_customer_ready_.png?direct | Software Architecture Overview}}
+
+==== GraphDS ====
+
+GraphDS - or Graph Data Storage - is the layer most users will work with. It's the home of [[connectors:|all network and programming interfaces and language bindings (such as C#, Java, ...]])
+
+{{ :graphds_2.png?direct | GraphDS}}
+
+Many things in the GraphDS layer concentrate in the GraphDS Server Plug-Ins. These plugins allow complete customizability of the services GraphDS is hosting. For example the REST Service is a plug-in for GraphDS which makes use of the GraphDB and Query Language API. 
+
+The REST Services itself comes with it's own plug-in interfaces like Input/Output Plug-Ins (XML, JSON, Text, HTML,...).
+
+A very important Plug-In Interface and API is the Query Language API. The GraphDS layer can host a virtually unlimited number of Query Language Plug-Ins. GraphDB comes with the popular GraphQL plug-in and at any time a developer can use the Query Language API to implement another query language (like SPARQL, SQL, ...).
+
+At the very bottom of the GraphDS layer a plug-in interface called DrainPipe comes into play. DrainPipe plug-ins are there to allow every query and query result (so before and after a query) to be derived. To keep things simple: A DrainPipe plug-in get's called before a query is executed (handing it the querystring) and after a query was executed (handing it the result). Whatever the plug-in decides to do in between is possible here. As an example the Community Edition comes with at least two DrainPipe plug-in implementations: One writes every incoming query asyncronously to a log file. The other one writes every result with some statistics to another log file.
+
+This constitutes the GraphDS layer - when we go further down in the layer stack we see that GraphDS only uses two APIs to communicate with the other layers. The GraphDB API and the Query Language API. The Query Language will be the next to take a look at.
+
+
+==== Query Languages ====
+
+As mentioned before GraphDS can host virtually unlimited numbers of query languages. A query language is used to run ad-hoc queries on the nodes and vertices stored by GraphDB. sones GraphDB already is equipped with an easy to use query language called GraphQL. You can find [[documentation:graphql:|further documentation here]].
+
+{{ :graphql.png?direct& |}}
+
+As you can see a query language plug-in uses the QL API to communicate with the layer above (GraphDS) and the GraphDB API to communicate with the layer below (GraphDB). A query language is handed the query itself and expected to deliver a query result. Beside the many possible query languages the GraphQL (GraphQL) offers a lot of plug-in interfaces itself. The GraphQL can be extended by:
+
+  * User-defined-Functions and Algorithms
+    * e.g. a Breadth-First-Search, Dijkstra, ...
+  * Aggregate Functions
+    * e.g. SUM, COUNT, MAX, MIN, AVG, ...
+  * Integrated Functions
+    * e.g. TOP, MAXWEIGHT, ...
+  * Import and Export Plug-Ins
+    * Import and Export GraphQL, XML, CSV, ...
+
+As you can see the possibilities are limitless - even when GraphQL may not suffice for your use-case you can even create your own query language (which even isn't very hard to do, learn from our example: GraphQL)
+
+==== GraphDB ====
+
+The "inner-core" of the architecture is the GraphDB layer. Many things are coming together there, like Vertex and Edge Management, Type Management, Index Management, Transaction Management, Traversers and Storage Management.
+
+{{ :graphdb_2_.png?direct& |}}
+
+As you can see the GraphDB layer like the others use specific interfaces to communicate with other layers. In this case the GraphDB API allows above layers to access the inner functionality of GraphDB. Many of the things in the GraphDB layer are plug-in interfaces:
+
+  * Logic Expression Optimizer:
+    * optimizing the execution of logic expressions is crucial to the performance of every database - this optimization steps are exposed using this plug-in interface and can be implemented right to the needs of the use-case
+  * Security Manager:
+    * when security like for example ACL is needed this is the place to put the functionality in - a security manager plug-in brings all the logic needed to do authentification and access right handling
+  * Transaction Manager:
+    * when Transactions are needed this is the place to implement a Transaction Manager
+  * Index Manager:
+    * all indices to access and for example do full-text searches are managed here
+  * Storage Manager:
+    * Everything needs to be stored at some time - this Storage Manager is using the GraphFS API to interact with the GraphFS layer below to read or write data objects (nodes, edges, attributes, ...)
+
+The advantage of all this flexibility: Even though all these interfaces are there to be used they can also be left alone. If your use-case does not need any security handling and query language, you do not need to have any of these plug-ins loaded in. This means that there is no unnecessary overhead and that GraphDB can be tailored just right for your needs.
+
+==== GraphFS ====
+
+There are many options to store the data GraphDB supports. The Community Edition of GraphDB comes with the option to use an In-Memory optimized plug-in to store data. In-Memory means: it's not persistent on disk and because disk-latency is not an issue it's blazingly fast in everything it does.
+
+On-Disk Persistency is available for the Enterprise Edition of GraphDB with a sophisticated paged filesystem implementation.
+
+{{ :graphfs.png?direct& |}}
+
+An unlimited number of storages devices can be implemented with the given GraphFS API. This API abstracts all the operations of the above layer so they can be handled by a storage system. And as for all other layers there is always the option to get rid of unnecessary overhead: If you do not need versioning you don't need to have it in your persistency layer. Everything will work perfectly and as fast as possible - only the versioning functionality will be gone when a NonRevisioned version of the persistency plug-in is used.

@@ -1,0 +1,15 @@
+===== SIMPLENETWORK benchmark import plugin =====
+The "SIMPLENETWORK" import plugin creates a simple scale-free network. There is only one vertex type which is called . "User" It defines attributes: 
+  * Name (String)
+  * Age (Int32) (indexed)
+  * Friends (edge to user-vertices)
+
+If there are no options given, 100000 user-vertices are inserted. Each "User"-vertex consists of the following attribues:
+  * Name: "User" + _counter
+  * Age: prng.Next(18, 90)
+  * Friends: prng.Next(20,30) edges to user-vertices that have been created in previous. The lower and upper limit of the edge-count is configurable via the minCountOfEdges and maxCountOfEdges option.
+
+==== Options ====
+  * countOfUsers: count of "User"-vertices
+  * minCountOfEdges: minimum count of "Friends"-edges
+  * maxCountOfEdges: maximun count of "Friends"-edges

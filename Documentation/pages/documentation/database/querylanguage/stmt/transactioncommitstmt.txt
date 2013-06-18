@@ -1,0 +1,9 @@
+This statement commit the current transaction.
+
+<code>
+COMMIT TRANSACTION [Name=transact_name] | ASYNC       
+</code>
+
+The call of the statement with an name, commit this transaction.
+The parameter async commit the transaction at a later date. In this case the user receipt a information if the transaction is commited.
+The default behaviour is that the user must wait until the transaction commit.

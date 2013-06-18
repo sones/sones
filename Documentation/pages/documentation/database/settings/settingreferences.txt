@@ -1,0 +1,25 @@
+===== Setting invalid reference handling =====
+
+This setting set the handling on invalid references. For example if you select the friends of a //User// and the friend does not exist.
+
+===== Values =====
+
+<code>
+ignore    -- ignores missing references
+log,      -- log occured errors(currently not implemented)
+error,    -- throws an error
+</code>
+
+===== Default =====
+
+The default value is set to ignore.
+
+===== Examples =====
+
+<code sql>
+SETTING TYPE User SET('INVALIDREFERENCEHANDLING'='error')
+</code>
+
+If the setting is set to this value, then an selection of none exisiting reference throws an error.
+
+

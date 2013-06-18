@@ -1,0 +1,102 @@
+====== GraphDS REST Connector ======
+
+[[:connectors|back]]
+
+The GraphDS REST Connector is designed for easy interaction with your remote GraphDS instance. Below follows a list of ways to interact. You can also get a [[https://wadl.dev.java.net/wadl20090202.pdf|WADL description]] of the connector service via the location "~/GraphDSREST.wadl".
+
+[[quickreference:restquickreferenceguide|REST Quick Reference Guide]] and the [[quickreference:rest-cheatsheet|REST Cheat Sheet]]
+
+To interact with the JSON interface you must explicitly set request header Accept:application/json for those requests that responds with data. You should also set header Content-Type:application/json if your request sends data, for example when you're creating a relationship.
+
+The default representation is json, both for responses and for data sent with POST/PUT requests.
+
+
+==== /WebShell ====
+
+Invoke a JavaScript WebShell to be used within your browser.
+
+**Examples:**
+<code>
+  http://localhost:9975/WebShell
+</code>
+
+
+
+==== /gql ====
+Invoke a GraphQL query to the underlying database.\\
+The //QueryString// has to be a valid GraphQL query and must be encoded via URLEncoding.\\
+The __optional__ //TransactionId// must be provided to link this query to an ongoing transaction.
+
+**Request:**
+<code>
+ ~/gql?{urlencoded_QueryString}&transaction={TransactionId}
+</code>
+
+**Response (JSON):**
+<code>
+ {
+   "Query"       : <The query string>,
+   "ResultType"  : [Successful|Failed],
+   "Errors"      : [...],
+   "QueryResult" : [ { <DBObject1> }, { <DBObject2> }, ... ],
+   "Duration"    : "<The query processing time>"
+ }
+</code>
+
+**Examples:**
+<code>
+
+ curl -H Accept:application/json http://localhost:9975/gql?FROM+Website+w+SELECT+*+WHERE+w.Name+%3d+%27xkcd%27"
+ {
+   "Query": "FROM Website w SELECT * WHERE w.Name = 'xkcd'",
+   "ResultType": "Successful",
+   "Errors": [],
+   "QueryResult": [
+     {
+       "Name": "xkcd",
+       "URL":  "http://xkcd.com/",
+       "Tags": "not resolved"
+     }
+   ],
+   "Duration": "15"
+ }
+
+ curl -H Accept:application/xml http://localhost:9975/gql?FROM+Website+w+SELECT+*+WHERE+w.Name+%3d+%27xkcd%27"
+ <QueryResult>
+   <Query ResultType="Successful">FROM Website w SELECT * WHERE w.Name = 'xkcd'</Query>
+   <DBObject>
+     <Attribute Name="Name" Type="String">xkcd</Attribute>
+     <Attribute Name="URL"  Type="String">http://xkcd.com/</Attribute>
+     <Attribute Name="Tags" Type="reference">not resolved</Attribute>
+   </DBObject>
+   <Duration resolution="ms">17</Duration>
+ </QueryResult>
+
+</code>
+
+
+
+
+==== /Logfile====
+Returns the last loglines. The response will always be formated as text/plain!
+
+**Request:**
+<code>
+ ~/logfile
+</code>
+
+**Response:**
+<code>
+ {timestamp} {gqlquery}
+ {timestamp} {queryresultstatus}
+</code>
+
+**Examples:**
+<code>
+
+ curl http://localhost:9975/logfile
+
+ 26.05.2010 - 12:55 FROM Website w SELECT * WHERE w.Name = 'xkcd'
+ 26.05.2010 - 12:55 OK
+
+</code>

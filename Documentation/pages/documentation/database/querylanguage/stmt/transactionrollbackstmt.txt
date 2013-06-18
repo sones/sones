@@ -1,0 +1,6 @@
+The rollback statement revoke all changes that was made inside the transaction.
+
+<code>ROLLBACK TRANSACTION [Name=transact_name] | ASYNC</code>
+
+The statement call with the parameter name, revokes all changes that made inside this transaction.
+If you call the statement with the option ASYNC then the changes will be revoked at a later date. in this case the user will receipt an information if the changes will revoked. The default behaviour is that the user must wait until the changes revoked.

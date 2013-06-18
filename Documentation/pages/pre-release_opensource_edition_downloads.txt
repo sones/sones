@@ -1,0 +1,6 @@
+====== Download ======
+
+You can download the current release candidate here:
+
+  * Binary Dump (Windows): {{:sones_graphdb_opensource_edition_-_webdav_and_social_graph_examples_r2.zip|}}
+  * Source Code (Windows, Linux): {{:sonesose_1.1_r4-prerelease_source.tar.gz|}}

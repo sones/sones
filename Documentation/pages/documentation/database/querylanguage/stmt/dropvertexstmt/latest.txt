@@ -1,0 +1,36 @@
+====== DROP VERTEX ======
+Will remove the vertex and all containing nodes (vertex objects).
+
+===== Syntax =====
+DROP VERTEX <vertex_name>
+
+===== QueryResult =====
+The QueryResult of the DROP VERTEX query will contain
+  * The executed query
+  * The result: Successful | PartialSuccessful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The warnings (if result is //PartialSuccessful//)
+  * The errors (if result is //Failed//)
+  * An empty result
+
+sample json output:
+<code json>
+{
+  "query": "DROP VERTEX test",
+  "result": "Successful",
+  "duration": [
+    8,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": []
+}
+</code>
+
+===== Examples =====
+<code sql>
+DROP VERTEX User
+</code>
+Deletes the vertex definition "User" and all instances, indices, references etc.
+

@@ -1,0 +1,1 @@
+moved to [[documentation:database:querylanguage:stmt:rebuildindicesstmt:latest|rebuild indices]]

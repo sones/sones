@@ -1,0 +1,265 @@
+====== GraphDSSharp Reference Guide - master ======
+The sones GraphDB can directly be instantiated and used within a .NET programming language via C# API. An advantage of such a solution is a higher performance since there is no client-server data exchange necessary.\\ 
+The C# API is also available as client-server solution. The client part is currently adapted in C# and [[http://developers.sones.de/wiki/doku.php?id=connectors:javaclient|JAVA]]. Later on, further language - plug-ins are planned.\\ 
+This document does not describe all functions of the API but gives a general overview how to work with it.
+The documentation’s sample code is written in C#.\\ 
+
+===== Init local variables =====
+Within an application, the database-handler (GraphDSSharp) object is for example held in a variable.\\
+<code csharp>
+#region Data
+AGraphDSSharp _AGraphDSSharp;
+#endregion
+</code>
+
+===== DB Creation or startup =====
+To initialize the database multiple variables have to be set, e.g. DB-name and credentials.\\
+Another one might be the used GraphFS file system (that decides either to setup the DB in RAM or on hard disk) or some cache settings.\\
+^ ParameterName ^ Description ^ 
+| DatabaseName | Database name, e.g. \\ \\ = “DBName”; | 
+| Username | User name \\ \\ = “dbuser"; | 
+| Password | Password \\ \\ = “password"; | 
+| SimpleFS1 – file system – available in EnterpriseEdition only – needs additional DLL || 
+| IGraphFSParameters | Set the size of the ObjectCache. \\ In case of a dedicated server for graph DB, the parameter should be appr. 25-50% of the RAM. \\ In case the in memory instance is used the parameter doesn’t need to be set. \\ \\ = new { IObjectCache = new ESObjectCache(500000000) } |
+| StorageLocation | Path to directory where the file system saves DB data. \\ \\ = “c:\GraphDB\SampleDatabase"; |
+| GraphFSImplementation | Initialize file system. \\ In case the in-memory file system shall be used the parameter doesn’t need to be set. \\ \\ = “SimpleFS1"; |
+
+<code csharp>
+public void StartDB()
+{
+    _AGraphDSSharp = new GraphDSSharp()
+    {
+        DatabaseName    = "GraphDSSharpTest.fs",
+        Username        = "Dr.Falken",
+        Password        = "Joshua"
+    };
+</code>
+
+When the GraphDSSharp object is initialized, the DB either can be created or loaded.\\ 
+The boolean parameter at CreateDatabase(true||false) decides whether or not an existing file system should be removed.\\ 
+
+<code csharp>
+...
+    _GraphDSSharp.CreateDatabase(true)
+// opt   .FailedAction(ex => { throw new  GraphDSSharpException(ex.GetIErrorsAsString()); });
+</code>
+
+<code csharp>
+...
+    _GraphDSSharp.OpenDatabase();
+// opt   .FailedAction(ex => { throw new  GraphDSSharpException(ex.GetIErrorsAsString()); });
+</code>
+
+==== ErrorHandling with Exceptionals ====
+
+Both CreateDatabase(..) and OpenDatabase() return an exceptional object.  This concept is used universally within the sones GraphDB. An exceptional object contains status information about the executed functionality and – if existing - returned values.\\ \\ 
+In case of creating or opening the database we recommend to handle the returned exceptional like an error: convert it to an exception and throw it. Therefore within our library the FailedAction(..) extension already exists and can be used.
+
+===== GraphDS - Start some services (REST, WebDAV) =====
+To enable access from external applications, the REST service and e.g. WebDAV interfaces can be activated as described in the code snippet below.\\ 
+<code csharp>
+using sones.GraphDS.Connectors.REST;
+using sones.GraphDS.Connectors.WebDAV;
+
+            var _HttpSecurity = new HTTPSecurity()
+                {
+                    CredentialType            = HttpClientCredentialType.Basic,
+                    UserNamePasswordValidator = new PassValidator()
+                };
+
+            // Start a REST service on localhost port 9975
+            var _RESTService      = _GraphDSSharp.StartREST(IPAddress.Any, 9975, _HttpSecurity);
+            
+
+            // Start a WebDAV service on localhost port 9978
+            var _WebDAVService    = _GraphDSSharp.StartWebDAV(IPAddress.Any, 9978, _HttpSecurity);
+
+</code>
+
+Hostname, port and credentials can be specified individually for each interface.\\ 
+
+
+
+
+===== GraphQL - queries =====
+To execute GraphQL queries on the GraphDS you will use the //Query// method:
+<code csharp>
+#region sample query
+QueryResult _QueryResult = _AGraphDSSharp.Query("FROM User SELECT count(*) as Number")
+    .FirstOrDefault().GetProperty("Number")));
+#endregion
+</code>
+Within a ResultSet the following information can be accessed: \\ 
+  * State of the query,  occurred errors and additional information or in case of success, \\ 
+  * the selected Node properties and edges (and its subsequent properties) can be evaluated. \\ 
+
+==== Error handling ====
+To find out if the query was successful, request: bool QueryResult.Success, or vice versa QueryResult.Failed. \\ 
+More information about an error is accessible via: queryResult.GetIErrorsAsString(); \\ 
+
+==== ResultSet iteration ====
+The ResultSet is an enumeration that can be processed, e.g. via LINQ or foreach.
+
+^ Function ^ Description ^
+| GetProperty(String attributeName) | Returns an object that can be casted to the data type of the attribute. |
+| GetNeighbours(String edgeName) | Returns all existing edges with the specified name. |
+
+**Important!**
+Only data that is within the selected ResultSet can be accessed here. \\ 
+E.g. for a  “DEPTH 1” query the 2.-level edges are not available – although they are in the DB. \\ \\ 
+A more detailed description can be found under: [[http://developers.sones.de/wiki/doku.php?id=documentation:database:queryresult:latest|Documentation]] \\ 
+
+===== Fluent Interface Extension =====
+The fluent interface enables the programmer to add nodes, edges and data to the DB schema. \\ 
+When the fluent interface is included the GraphDSSharp object offers additional functions therefore. \\ 
+
+==== Create vertices ====
+The function CreateVertices(..) adds one or multiple nodes to the DB. \\ \\ 
+These previously have to be defined via the CreateVertex function. It creates a CreateVertexQuery-object where all attributes and other characteristics (like ABSTRACT, EXTENDS, etc.) can be configured. \\ 
+Existing data classes can be used, in case they extend the Vertex class. \\ \\ 
+
+Alternatively to CreateVertices(..) function, a CreatVertexQuery - object directly can be inserted by executing the Execute() function.
+
+<code csharp>
+    public class University : Vertex
+    {
+        [Indexed(DBIndexTypes.HashTable)]
+        public String Name { get; set; }
+        public String EMail { get; set; }
+
+        [BackwardEdge("Authors")]  // Backwardedges to attribute tags of type Website
+        public Set<Document> Writtings { get; set; }
+
+        public Author() { }
+    }
+</code>
+
+<code csharp>
+var _Entity = _AGraphDSSharp.CreateVertex("Entity")
+    .AddString("Name", mandatory: true)
+    .AddIndex("Name");
+
+// extends first one
+var _Group = _AGraphDSSharp
+    .CreateVertex("Group")
+    .Extends(_Entity);
+
+var _User = _AGraphDSSharp
+    .CreateVertex("User")
+    .Extends(_Entity)
+    .AddInteger("Age", mandatory: true);
+
+// add nodes into DB
+_AGraphDSSharp.CreateVertices(_Entity, _Group, _University, _User);
+</code>
+
+The following functions are available:
+^ Function ^ Description ^
+| Extends() | … in case the node type extends an existing one. |
+| AddAttribute(..) \\ Some DateType specific new attribute : \\  * AddInteger(..) \\  * AddString(..) \\  * AddDateTime(..) | … add a new property. |
+| AddEdge(..) | … add a new edge. |
+| Unique(..) | … create a unique attribute |
+| AddBackwardEdge(..) | … add a backward edge |
+| AddIndex(..) | … add an index. |
+
+==== Alter  Vertex ====
+The Alter Vertex functionality is basically the same like CREATE Vertex, but offers some additional functions. \\ 
+
+^ Function ^ Description ^
+| RenameBackwardEdge(..) | … rename an existing BackwardEdge |
+| DropIndices(..) | … drop an existing index. |
+| DropUnique() | … drop a unique property. |
+| Drop Mandatory() | … drop a mandatory property. |
+| RenameType(String myTypeName) | … rename an edge type. |
+| RenameAttribute(..) | … rename an existing property. |
+| DropAttribute(String attrName) | … drop an existing property. |
+| DropBackwardEdge(String backwardEdgeName) | … drop an existing BackwardEdge. |
+
+<code csharp>
+alterTypeQuery = _AGraphDSSharp
+    .AlterVertex(typeQueryUser)
+    .AddDateTime("Birthday");
+
+query = alterTypeQuery.Execute();
+</code>
+
+==== Create Edges ====
+To set edges later on, the AddEdges function can be used. \\ \\ 
+The concept is similar to CreateVertices. \\
+ At first the edges are created and afterwards added to DB via GraphDSSharp handler. \\
+
+<code csharp>
+#region add edges
+var _friend_of = _AGraphDSSharp
+    .CreateEdge("friend_of")
+    .From(_User).ToMultiple(_User)
+    .AddDateTime("since");
+
+var _in_love_in = _AGraphDSSharp
+    .CreateEdge("in_love_with")
+    .From(_User).To(_User);
+
+var _member_of = _AGraphDSSharp
+    .CreateEdge("member_of")
+    .From(_User).ToMultiple(_Group);
+
+var _studies_at = _AGraphDSSharp
+    .CreateEdge("studies_at")
+    .From(_User).ToMultiple(_University);
+
+// add edges to db
+_AGraphDSSharp.CreateEdges(_friend_of, _in_love_in, _member_of, _studies_at);
+#endregion
+</code>
+
+==== Create Index ====
+On existing vertices, indexes can be added.
+<code csharp>
+var indexQuery = _AGraphDSSharp
+    .CreateIndex()
+    .OnVertex("User")
+    . Attribute("Name");
+
+indexQuery.Execute();
+</code>
+
+==== Add and connecting data ====
+<code csharp>
+#region add data to db – via anonymous classes
+_AGraphDSSharp.Insert(CheckResult, _User,_Alice);
+_AGraphDSSharp.Insert(CheckResult, _User, new { Name = "Bob", Age = 23 });
+_AGraphDSSharp.Insert(CheckResult, _User, new { Name = "Carol", Age = 23 });
+_AGraphDSSharp.Insert(CheckResult, _University, new { Name = "TU Berlin" });
+_AGraphDSSharp.Insert(CheckResult, _University, new { Name = "TU Ilmenau" });
+_AGraphDSSharp.Insert(CheckResult, _Group, new { Name = "Theatre", City = "Berlin" });
+_AGraphDSSharp.Insert(CheckResult, _Group, new { Name = "Fencing" });
+#endregion
+
+#region (in this case the anonymous classes are held in variables)
+_AGraphDSSharp.Link(CheckResult, _Alice, _studies_at,  _TUIlmenau);
+_AGraphDSSharp.Link(CheckResult, _Alice, _member_of, _Fencing, _Theatre);
+#endregion
+
+</code>
+The Insert(..) command creates new nodes. \\ 
+The Link(..) command creates an edge from a source node to one or multiple target nodes. \\ \\ 
+The first parameter is an C#-Action Delegate to evaluate the QueryResult in a dedicated function, e.g. \\ 
+<code csharp>
+protected void CheckResult(QueryResult myQueryResult)
+{
+    if (!qr.Success) 
+    {
+        Console.WriteLine(qr.GetIErrorsAsString());
+    }
+}
+</code>
+
+===== DB-shutdown =====
+Shutting down the database can be done with a simple command. \\ 
+In case the DB should not be deleted, the Boolean parameter has to be set to false. \\ \\ 
+Currently, a persistent DB is only available in the Enterprise version. \\ 
+
+<code csharp>
+_AGraphDSSharp.Shutdown(false);
+// opt   .FailedAction(ex => { throw new  GraphDSSharpException(ex.GetIErrorsAsString()); });
+</code>

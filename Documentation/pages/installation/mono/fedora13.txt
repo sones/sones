@@ -1,0 +1,89 @@
+====== How-To compile and install sones GraphDB 1.1 on Fedora 13 ======
+
+This short how-to will show how one can compile and install the sones GraphDB on a plain vanilla Fedora 13 installation.
+
+===== Installing Mono =====
+
+Currently you need to compile your own version of Mono - the .NET Runtime environment for linux. To do this you can start by installing the latest stable version of Mono (when this is written it's the 2.6.4 version)
+
+To download the latest stable version of Mono on Fedora you should do this (as root):
+
+  * on x64
+<code>
+yum install mono-core.x86_64
+</code>
+  * on x86
+<code>
+yum install mono-core
+</code>
+
+===== Installing Pre-Requisites =====
+
+You will need several tools to be installed in order to successfully compile Mono and sones GraphDB on your machine. You will need to have:
+
+  * you need some tools to successfully compile Mono:
+    * //autoconf//, * //make// (or //automake//), //g++// (or //gcc-c++//), //libtool//, //bison//, //gettext//, //perl-XML-Parser//, //git-core//
+      * use the commandline (as root): 
+<code>
+yum install autoconf automake make g++ gcc gcc-c++ libtool bison gettext perl-XML-Parster git-core
+</code>
+
+
+===== Compiling Mono from Source =====
+
+  * You need to get the source code from the Mono source server. The Mono project uses GitHub (GIT) for this purpose
+    * To download the current Mono trunk source code from their source code server use this command:
+<code>
+git clone git://github.com/mono/mono.git
+</code>
+  * before compilation you want to create a directory where the new compiled mono drop will be installed - for example:
+<code>mkdir /opt/mono </code>
+  * After you successfully downloading the source code you need to go to the //mono// directory and run the 
+  * following command to start the configuration process:
+    * the parameters //with-large-heap// and //with-profile4// are necessary for sones GraphDS
+    * the parameter //prefix// controls where the successful compiled mono will be installed, you can virtually set it to any directory you want 
+<code>./autogen.sh --with-large-heap=yes --with-profile4=yes --prefix=/opt/mono</code>
+  * After the successful completion of the configuration process you need to start the compiling process by running the simple command:
+<code>make</code>
+    * In some rare cases it might be necessary to use this command line to build mono:
+      * http://code.google.com/p/mono-sh4/issues/detail?id=13
+<code>make ASSEMBLED_DOCS= ; make ASSEMBLED_DOCS= install</code>
+  * After the successful completion of the compiling process you can install Mono into the specified directory on your system by typing (eventually using sudo):
+<code>make install</code>
+
+  * in order to make use of this newest compiled version of Mono you need to set some environmental variables correctly, this can be done using a small shell script. You basically run this script before you compile or run the sones GraphDB in the next steps:
+    * as you can see below the current Mono prefix is set to /opt/mono (as suggested above) - you need to change that to the path you installed mono in
+<code>
+#!/bin/bash
+
+MONO_PREFIX=/opt/mono
+GNOME_PREFIX=/usr
+export DYLD_LIBRARY_FALLBACK_PATH=$MONO_PREFIX/lib:$DYLD_LIBRARY_FALLBACK_PATH
+export LD_LIBRARY_PATH=$MONO_PREFIX/lib:$LD_LIBRARY_PATH
+export C_INCLUDE_PATH=$MONO_PREFIX/include:$GNOME_PREFIX/include
+export ACLOCAL_PATH=$MONO_PREFIX/share/aclocal
+export PKG_CONFIG_PATH=$MONO_PREFIX/lib/pkgconfig:$GNOME_PREFIX/lib/pkgconfig
+export PATH=$MONO_PREFIX/bin:$PATH
+PS1="[mono] \w @ "
+bash
+</code>
+
+===== Compiling sones GraphDB with Mono =====
+
+You have several options which source code of the sones GraphDB you want to use. Option number 1 is you use the current GitHub repository by using this command line: 
+
+<code>
+git clone git://github.com/sones/sones.git
+</code>
+
+This command line will download all current source code from the sones Git (which is a source control software) Repository. After downloading you run the above script to change the environment variables so use the new mono build and after that you can use the //./build_Solution.sh// script to actually build the sones GraphDB on your machine.
+
+The other option would be to download a source code tar.gz file which contains all source code necessary. These files are available [[http://github.com/sones/sones/downloads|here]].
+
+===== Running with Mono =====
+
+In order to run a compiled assembly you need to pass the version of the framework Mono should use on the command line. Like this:
+
+<code>
+ mono --runtime=v4.0.30319 sonesExample.exe
+</code>

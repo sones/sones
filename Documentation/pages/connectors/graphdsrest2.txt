@@ -1,0 +1,118 @@
+====== GraphDB RESTful Interface ======
+
+==== Introduction ====
+
+This document describes the REST interface of the sones GraphDB(v2.0).
+
+In addition to the large number of database interfaces (e.g. Java, C#, PHP, WebShell,...), a REST service
+is also provided by the GraphDB. This makes it easy to interact with a state-of-the-art web technologie.
+You just need one REST commmand to execute a CRUD (create-read-update-delete) operation directly on the database. So the REST API can be used to run GraphQL queries. The query is encaspulated into the URL(URL encoded). For further information take a glace at http://en.wikipedia.org/wiki/Representational_State_Transfer
+You can simply implement your own clients or test the interface in the browser.
+By the way: The clients, provided by sones also use the mighty REST interface.
+
+===== Structure of a REST request =====
+
+To get a REST request running you just need a Http header in this form:
+
+^HTTP Header^^
+|****| ''GET /gql?{QueryString_URLEncoded <- the requested GraphQL query (URL encoded)'' |
+|**Accept:**| ''application/format; utf-8 <- see [[connectors:graphdsrest2#Usable output formats|usable output formats]] '' |
+|**Host:**|''databaseserver.domain <- Server-Hostname'' |
+|**Port:**|''9975 <- the default port setting in the Community Edition''|
+|**Authentication:**|''Basic q6te7sjsnv <- a Base64 encoded (username:password)''|
+
+
+This is the most simplest form for a Http header. As you see, a "Basic" authentication is mandatory for the request. You don't need the Port field, if the REST interface is running under port 80.
+
+
+A simple example header could be this:
+
+^HTTP Header^^
+|****| ''GET /gql?CREATE+VERTEX+TYPE+Car'' |
+|**Accept:**| ''application/xml; utf-8'' |
+|**Host:**|''localhost'' |
+|**Port:**|''9975'' |
+|**Authentication:**|''Basic q6te7sjsnv''|
+
+If you need further information on how to build a correct Http header, take a glance on the several clients.
+**Important:** If you want to experiment, make sure that the database is running. To check this you can perform a REST request in your browser or in our WebShell.
+  
+
+===== Usable output formats =====
+
+The following outputformats are ready to use:
+
+   * xml (application/xml)
+   * json (application/json)
+   * html (application/html)
+   * text (application/text)
+   * barchart (application/x-sones-barchart)
+   * graphvis (application/x-sones-graphvis)
+
+Beyond this you can get a completly customized output or outputformat. You just have to implement an IO plugin witch fits to your requirements.
+
+==== Output Format Configuration Options ====
+
+Each outputformat may offer options to be configured. Which options are offered by each of the output formats can be requested using the REST service at http://servername:port/availableoutputformatparams using the appropriate document type.
+
+These options are not set permanently on the server but must be transmitted inside each REST query as cookies. An easy way when using a website with AJAX to connect to the REST service is to store the options as cookies, each AJAX request will then send all cookies to the REST service automatically.
+
+For example, sones webshell offers command "formatoption" to set an option or (when not using any parameter) request available options for current output format.
+
+===== Visualization =====
+The output formats "barchart" and "graphvis" are able to visualize any query result using the [[http://mbostock.github.com/d3/|D3.js framework]].
+
+Returned text is valid Javascript Code that, when executed e.g. by adding it as script node to the document, adds a HTML5 SVG Node to the first existing DOM node with the name "output".
+
+To enable the visualization, the website/javascript application where the visualization should be embedded, should include at least d3.js (for BarChart Visualization) resp. d3.layout.js, d3.geom.js and d3.js (for Graph Visualization).
+==== BarChart Visualization ====
+To enable BarChart Visualization, it is necessary to use the alias x and y inside the GQL query. Every vertex returned that has the properties x and y will be used for barchart visualization (x property as x value and y property as y value).
+
+Example: from SimpsonProfile select Freunde.Name as x, Freunde.Freunde.Count() as y where Name = "Homer Simpson"
+
+{{ :connectors:barchart.png?direct& |}}
+
+Furthermore BarChart Output Format offers following configuration options:
+
+orientation=[horizontal|vertical] Set Orientation of BarChart
+==== Graph Visualization ====
+To enable Graph Visualization, it is necessary to use aliases containing the word "node" inside the GQL query. Every vertex that has a property with a name consisting of at least the word "node" will be used for the visualization.
+
+Example: from SimpsonProfile select Name as Node, Freunde.Name as Node where Name="Homer Simpson"
+
+{{ :connectors:graphvis.png?direct& |}}
+
+Furthermore GraphVis Output Format offers following configuration options:
+
+edgenames=[show|hide] Show Edge Names
+
+===== REST with your Browser =====
+
+==== A GraphQL statement performed by the Browser ====
+
+Of course, it is possible to perform a simple Http request by the Browser on the REST interface of the GraphDB. The address is http://YOURHOST:YOURPORT/gql?YOURGraphQL(URLencoded). For example: 
+    
+         http://localhost:9975/gql?CREATE+VERTEX+TYPE+Car
+         
+As usual the Browser requests by 'Accept: application/html' (in the Http header)! Therefore you'll get a Html page with the current query result. Thats really useful for test purposes.
+
+==== A GraphQL statement performed by the WebShell ====
+
+The WebShell is a unix-like javascript shell in the Browser, which allows the user to interact with the current GraphDB instance. It based on well-known web technologies and libraries like Html, JavaScript, JQuery and the REST interface of the GraphDB. Authentication is mandatory, as well.  
+
+The WebShell is reachable under the address: http://YOURHOST:YOURPORT/WebShell (e.g. http://localhost:9975/Webshell)
+
+^WebShell ^^
+|**Start:**| ~/WebShell|
+|**Queries:**| any valid [[documentation:graphql]] query |
+
+^WebShell special commands ^^
+|**help [command]**| displays help text |
+|**license**| displays license information |
+|**clear**| clear the screen |
+|**format [xml|json|text]**| sets the output-format of query results default is json  |
+
+
+
+
+

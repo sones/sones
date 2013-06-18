@@ -1,0 +1,19 @@
+
+  * Datamodel
+    * [[documentation:datamodell:propertygraph|Property Graph Modell]]
+    * [[documentation:datamodell:propertygraphextensions|Extensions to the Property Graph Modell]]
+    * [[documentation:datamodell:SpecialProperties|Special Properties]]
+    * [[documentation:Edges|Edges]]
+    * [[documentation:AdvancedGraphModelling|Advanced Graph Modelling]]
+    * [[documentation:database:adbbaseobjects|Basic Datatypes]]
+
+  * Query Languages and Graph Traversals 
+    * Graph Query Language (sones GraphQL)
+      * [[documentation:GraphQL|GraphQL Overview]]
+      * [[:documentation:GraphQL:GDDL|Graph Data Definition Language]]
+      * [[:documentation:GraphQL:GDML|Graph Data Manipulation Language]]
+      * [[documentation:database:functions|Functions]]
+      * [[documentation:database:aggregates|Aggregates]]
+    * [[documentation:SPARQL|SPARQL]]
+    * [[documentation:Gremlin|Gremlin]]
+    * [[documentation:Transactions|Transactions]]

@@ -1,0 +1,488 @@
+====== Functions ======
+Functions works on any attributes of types. In addition to the usual typeAttribute dependent functions there are some type independent functions.
+
+===== TypeAttribute dependent functions =====
+These types of functions always have a dependent attribute like ''User.Friends.COUNT()''. This is the main difference between them and the aggregates. In the most cases the type of the attribute is defined by the function. Due to this you can't use the ''COUNT()'' funtion on non-edges or the ''CONCAT()'' function on edges.
+
+===== Base Scheme =====
+<code sql>
+CREATE VERTEX TYPE User ATTRIBUTES (String Name, Int64 Age, SET<User(Weighted)> Friends, 
+                                                            SET<User> Enemies)
+
+INSERT INTO User VALUES (Name = 'Hans', Age = 12)
+INSERT INTO User VALUES (Name = 'Jens', Age = 13, Friends = SETOF(Name = 'Hans' : (Weight=1)))
+INSERT INTO User VALUES (Name = 'Jenny', Age = 14, Friends = SETOF(Name = 'Jens' : (Weight=2), 
+                                                                   Name = 'Hans' : (Weight=3)))
+INSERT INTO User VALUES (Name = 'Steffi', Age = 15, Friends = SETOF(Name = 'Jenny' : (Weight=4), 
+                                                                    Name = 'Jens' : (Weight=5), 
+                                                                    Name = 'Hans' : (Weight=6)))
+INSERT INTO User VALUES (Name = 'Bernd', Age = 15, Friends = SETOF(Name = 'Jenny' : (Weight=7)))
+
+UPDATE User SET (Enemies = SETOF(Name = 'Bernd')) WHERE Name = 'Hans'
+</code>
+
+===== Current functions =====
+Currently we provide following functions:
+
+==== Concat ====
+This function concatenates a set of strings to one single string. It takes a variable number of parameters of type string (or base types).
+<code sql>FROM User U SELECT U.Name.CONCAT(' -> Age: ', U.Age) AS 'Name' WHERE Name = 'Hans'</code>
+Result:
+  * "Name": "Hans -> Age: 12"
+==== CurrentDate ====
+Returns the current date and time. It takes no parameters.
+<code sql>FROM User U SELECT U.Name, CURRENTDATE() WHERE Name = 'Jenny'</code>
+Result: 
+  * "Name": "Jenny", "CURRENTDATE()": "26.07.2011 15:57:04"
+==== MaxWeight ====
+This function works on [[documentation:database:edges:edgetypeweighted|WeightedLists]] and returns the maximum weight of the weighted edges. It takes no parameter:
+<code sql>FROM User U SELECT U.Name, U.Friends.MAXWEIGHT() WHERE U.Name = 'Steffi'</code>
+Result: 
+  * "Name": "Steffi", "Friends": "6"
+==== Substring ====
+This function implements the so well known substring function on string attributes. It takes 2 parameter:
+  - the zero-based starting character position
+  - the number of characters
+
+<code sql>FROM User U SELECT U.Name.SUBSTRING(1, 2) WHERE Name = 'Jens'</code>
+This will substract the part of the U.Name starting with the 2nd character with a length of 3.\\
+Result: 
+  * "Name": "en"
+
+==== Insert ====
+This function implements the insert function on string attributes. It takes 2 parameter:
+  - the zero-based starting (insert) position
+  - the characters which should be inserted
+
+<code sql>FROM User U SELECT U.Name.Insert(0, "Name: ") WHERE Name = 'Jens'</code>
+This will substract the part of the U.Name starting with the 2nd character with a length of 3.\\
+Result: 
+  * "Name": "Name: Jens"
+
+==== Top ====
+This will return the top edges of any [[documentation:database:edges:alistedgetype|AListEdgeType]] implementation. It will take 1 parameters:
+  - the number of entries
+Notice: If the edge type of the edge - on which this function is called - is of type "Weighted", the top results are sorted by the attribute "Weight" (DESC).
+<code sql>FROM User U SELECT Name, U.Friends.TOP(2) Depth 1</code>
+Result:
+  * "Hans", no "Friends"
+  * "Jens", "Friends" { "Name": "Hans" }
+  * "Jenny", "Friends" { "Name": "Hans", "Name": "Jens" }
+  * "Steffi", "Friends" { "Name": "Hans", "Name": "Jens" }
+  * "Bernd", "Friends" { "Name": "Jenny" }
+==== ToUpper ====
+Returns the value of the attribute converted to uppercase. It takes no parameter:
+<code sql>FROM User U SELECT U.Name.TOUPPER() WHERE Name = 'Jens'</code>
+Result: 
+  * "Name": "JENS"
+
+==== ToLower ====
+Returns the value of the attribute converted to lowercase. It takes no parameter:
+<code sql>FROM User U SELECT U.Name.TOLOWER() WHERE Name = 'Jens'</code>
+Result: 
+  * "Name": "jens"
+==== Exists ====
+This function checks if a value is actually stored on an attribute.
+<code sql>FROM User U SELECT U.Name WHERE U.Age.EXISTS()</code>
+Result: 
+  * "Name": "Hans"
+  * "Name": "Jens"
+  * "Name": "Jenny"
+  * "Name": "Steffi"
+  * "Name": "Bernd"
+==== ToUnixDate ====
+GraphQL Function $UInt64.ToUNIXDate() or $Int64.ToUNIXDate() or $DateTime.ToUNIXDate().
+<code sql>FROM User U SELECT CURRENTDATE().TOUNIXDATE()</code>
+Result:
+  * "CURRENTDATE()": "13116990882515186"
+
+==== FromUnixDate ====
+GraphQL Function $UInt64.FromUNIXDate() or $Int64.FromUNIXDate().
+<code sql>FROM User U SELECT CURRENTDATE(), CURRENTDATE().TOUNIXDATE().FROMUNIXDATE() as 'converted'</code>
+Result:
+  * "CURRENTDATE()": "26.07.2011 16:52:37", "converted": "26.07.2011 16:52:37"
+
+
+==== Count ====
+GraphQL Function Count which count the elements of the selected collection.
+<code sql>FROM User U SELECT U.Name, U.Friends.Count() as 'count' WHERE Name = 'Jenny'</code>
+Result:
+  * "Name": "Jenny", "count": "2"
+
+
+===== Concatenated functions =====
+You can use the ouput of functions to call other functions or even further graph traversal.
+<code sql>FROM User U SELECT U.Friends.TOP(3).Name</code>
+This query will return all names of the first 3 friends of each user.
+
+----
+
+<code sql>FROM User U SELECT U.Friends.TOP(3).Enemies.TOP(1).Name</code>
+This query will return the name of the top enemie of the first 3 friends of each user.
+
+
+----
+<code sql>FROM User U SELECT U.Friends.TOP(1).Name.CONCAT(' is the first!')</code>
+This query will return all names + ' is the first!' of the best friend of each user.
+
+
+
+===== Userdefined Functions definition =====
+To create your own function you need to create a public class which derives from //ABaseFunction// and //IPluginable//. All classes marked as private won't be added to the Database as function. 
+  
+You have to implement following properties and methods:
+  * *String GetDescribeOutput()* - is used for the describe statement
+  * *PluginParameters<Type> SetableParameters* - results which parameters are used
+  * *IPluginable InitializePlugin(String myUniqueString, Dictionary<String,Object> myParameters = null)* - initializes the plug-in
+  * *bool ValidateWorkingBase(Object myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)* - inside this functon you should check if the working base is valid, to avoid errors during the execution of the function.
+  * *FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, object myCallingObject, IVertex myDBObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)* - inside this function you can add your operations
+==== PluginName====
+<code csharp>string PluginName</code>
+This is the name of the plug-in.
+
+==== FunctionName ====
+<code csharp>string FunctionName</code>
+This is the name of the function.
+
+==== Parameters ====
+<code csharp>List<ParameterValue> Parameters </code>
+This is the name of the function.
+
+==== GetDescribeOutput ====
+<code csharp>String GetDescribeOutput()</code>
+This method will return the information about the function, which is used for the describe statement.
+
+==== GetReturnType (optional) ====
+<code csharp>Type GetReturnType()</code>
+This method will return the information about the returning type.
+
+**If you do not override this method you can't use any attribute nor function on the result of an function!**
+
+==== Constructor ====
+<code csharp>[Constructor]()</code>
+In the constructor you define the parameters of the function. Just add them to the ''_Parameters'' list.
+<code>
+// An int64 parameter 
+_Parameters.Add(new ParameterValue("MaxDepth", typeof(Int64))); 
+// An string parameter which number is variable from 0 to n
+_Parameters.Add(new ParameterValue("StringPart", typeof(String, true))); 
+</code>
+You can define arbitrary type of parameters. Alongside the [[documentation:database:adbbaseobjects|base types]] you have the DBTypeAttribute which pass you an attribute.
+
+<code>FROM User.Friends.SAMPLEFUNC(24, 'something')</code>
+This would be a sample function call of the above parameter definition.
+
+==== ValidateWorkingBase ====
+<code csharp>bool ValidateWorkingBase(Object myWorkingBase, 
+                             IGraphDB myGraphDB, 
+                             SecurityToken mySecurityToken, 
+                             TransactionToken myTransactionToken)</code>
+This will validate the working base for this function. This will prevent edge function to be executed on non edges. The first parameter is the type attribute of the function calling attribute. With the parameter workingBase you will have all information you need to decide whether this function call is valid or not. If this parameter is NULL it means, that function was NOT executed on an attribute, so it is type independent. 
+[[documentation:database:iobject|IObject]] can be one of the following Types/Basetypes:
+  * myWorkingBase: The function was called on an TypeAttribute. The useful information on the TypeAttribute workingBase is alongside the DBType, and the RelatedDBType is the EdgeType. This will give you information about the kind of the edge.
+  
+This will validate the working base for this function. This will prevent edge function to be executed on non edges.
+With the parameter //workingBase// you will have all information you need to decide whether this function call is valid or not. If this parameter is ''NULL'' it means, that function was NOT executed on an attribute, so it is type independent. The next useful information on the TypeAttribute //workingBase// is alongside the DBType, and the RelatedDBType is the EdgeType. This will give you information about the kind of the [[documentation:database:edges:latest|edge]].
+
+==== ExecFunc ====
+<code csharp>public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition,
+                                                Object myCallingObject,
+                                                IVertex myStartVertex,
+                                                IGraphDB myGraphDB,
+                                                SecurityToken mySecurityToken,
+                                                TransactionToken myTransactionToken,
+                                                params FuncParameter[] myParams)</code>
+This will be invoked at the time, the function need to be evaluated. The passed ''myParams'' parameters needs to be evaluated by the base class at the beginning of the method by using ''var result = base.ExecFunc(myParams);''. The return value is a ''FuncParameter'' which contains the value and the type of the attribute.
+
+=== FuncParameter ===
+This is the return value of the func and can be either an [[documentation:database:adbbaseobjects|basic datatype]] or an [[documentation:database:edges:latest|edge]]. If you return some objects using an [[documentation:database:edges:latest|edge]] you need to set the correct type attribute of this edge using the second constructor parameter.
+
+==== InitializePlugin ====
+This method is called from the plug-in manager by loading all or initializing a specific plug-in.
+<code>IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)</code>
+
+==== Dispose ===
+This method is needed to free all reserved ressources. It is called during the shutdown of the SonesGraphDB.
+<code>public void Dispose()</code>
+
+        
+===== Userdefined functions examples =====
+
+==== Breadth-First-Search PATH ====
+
+[[documentation:graphalgorithms|Look here for more details.
+]]
+==== Userdefined functions on a reference edge - SIMPLEPATH - ====
+This is a sample implementation of a simple path. You use this in a select in the following way:
+<code sql>
+FROM User U SELECT U.Friends.SIMPLEPATH(Name = 'The target user', 2) WHERE U.Name = 'The starting username'
+</code>
+
+The function will be called for each DB object which fullfill the where expression.
+
+<code csharp>
+public class SimplePathFunc : ABaseFunction, IPluginable
+    {
+        public override string FunctionName
+        {
+            get { return "MY.SIMPLEPATH"; } // The name of the function which is the same you use in the select
+        }
+    
+        public override string FunctionName
+        {
+            get { return "SIMPLEPATH"; } // The name of the function which is the same you use in the select
+        }
+
+        public override String GetDescribeOutput()
+        {
+            return "Just a simple path function. It does nothing."; // This is the output of the describe functions query
+        }
+
+        public SimplePathFunc()
+        {
+            Parameters.Add(new ParameterValue("TargetDBO", typeof(IVertex))); // a target DB object
+            Parameters.Add(new ParameterValue("MaxDepth", typeof(Int64))); // a int64 parameter for the max depth
+        }
+        
+        public override bool ValidateWorkingBase(Object myWorkingBase, 
+                                                 IGraphDB myGraphDB, 
+                                                 SecurityToken mySecurityToken, 
+                                                 TransactionToken myTransactionToken)
+        {
+            if (myWorkingBase is IAttributeDefinition)
+            {
+                var workingTypeAttribute = myWorkingBase as IAttributeDefinition;
+
+                if (workingTypeAttribute.Kind == AttributeType.OutgoingEdge)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition,
+                                                Object myCallingObject,
+                                                IVertex myStartVertex,
+                                                IGraphDB myGraphDB,
+                                                SecurityToken mySecurityToken,
+                                                TransactionToken myTransactionToken,
+                                                params FuncParameter[] myParams)
+        {
+            var pResult = new Exceptional<FuncParameter>();
+
+            // The edge we starting of (Friends)
+            var typeAttribute = myAttributeDefinition;
+
+            // Get the source Objects from the CallingObject, 
+            // if this is not a reference this function is used in a wrong context and return a error
+            IVertex sourceDBO = null;
+            if (myStartVertex != null)
+            {
+                sourceDBO = myStartVertex;
+            }
+            else
+            {
+                throw new GraphDBException("The specified start vertex is null / not found!");
+            }
+
+            // The destination DBObject which is passed with the first parameter
+            var destDBO = (myParams[0].Value as IVertex);
+            if (destDBO == null)
+            {
+                throw new GraphDBException("The destination vertex is null / not found");
+            }
+
+            // The depth which is passed as the second parameter
+            Int64 mayDepth = Convert.ToInt64(myParams[1].Value);
+
+            // Call your own implementation of a path function and return the result, 
+            // in this case it is a list of DB objects (VertexIDs)
+            var resultOfPathFunction = new List<VertexID>();
+            
+            pResult.Value = new FuncParameter(new resultOfPathFunction);
+
+            return pResult;
+        }
+
+        public override PluginParameters<Type> SetableParameters
+        {
+            get { return new PluginParameters<Type>(); }
+        }
+
+        public override IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
+        {
+            return new SimplePathFunc();
+        }
+
+        public void Dispose()
+        { }        
+    }
+</code>
+
+
+==== Userdefined Functions without a working base - CURRENTDATE - ====
+This method will return the current date and is type independent. You can't use this function an any attribute in select.
+
+<code csharp>
+public class CurrentDateFunc : ABaseFunction, IPluginable
+    {
+        public override string FunctionName
+        {
+            get { return "sones.CURRENTDATE"; } // The name of the function which is the same you use in the select
+        }
+        
+        public override string FunctionName
+        {
+            get { return "CURRENTDATE"; } // The name of the function which is the same you use in the select
+        }
+
+        public override String GetDescribeOutput()
+        {
+            return "Returns the current date and time.";
+        }
+
+        public CurrentDateFunc()
+        {         
+        }
+
+        public override bool ValidateWorkingBase(Object myWorkingBase, 
+                                                 IGraphDB myGraphDB, 
+                                                 SecurityToken mySecurityToken, 
+                                                 TransactionToken myTransactionToken)
+        {
+            return myWorkingBase == null;
+        }
+
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition,  
+                                               Object myCallingObject, 
+                                               IVertex myDBObject, 
+                                               IGraphDB myGraphDB, 
+                                               SecurityToken mySecurityToken, 
+                                               TransactionToken myTransactionToken, 
+                                               params FuncParameter[] myParams)
+        {
+            return new FuncParameter(DateTime.Now);
+        }
+        
+        public override PluginParameters<Type> SetableParameters
+        {
+            get { return new PluginParameters<Type>(); }
+        }
+
+        public override IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
+        {
+            return new CurrentDateFunc();
+        }
+
+        public void Dispose()
+        { }
+    }
+</code>
+
+
+==== Userdefined Functions with optional working base - CONCAT - ====
+The ''CONCAT'' function can work either on an attribute (working base) or completly type independent.
+<code>FROM User SELECT Name.CONCAT(' is ', Age, ' years old')</code>
+<code>FROM User SELECT CONCAT('just', ' a ', ' string')</code>
+
+<code csharp>
+
+    public class ConcatFunc : ABaseFunction, IPluginable
+    {
+        public override string FunctionName
+        {
+            get { return "sones.CONCAT"; }
+        }
+    
+        public override string FunctionName
+        {
+            get { return "CONCAT"; }
+        }
+
+        public override String GetDescribeOutput()
+        {
+            return @"This will concatenate some strings. 
+                     This function can be used as type independent to concatenate string values 
+                     or as type dependent to concatenate an attribute output with other strings.";
+        }
+        
+        public ConcatFunc()
+        {
+            Parameters.Add(new ParameterValue("StringPart", typeof(String), true));
+        }
+
+        public override bool ValidateWorkingBase(Object myWorkingBase, 
+                                                 IGraphDB myGraphDB, 
+                                                 SecurityToken mySecurityToken, 
+                                                 TransactionToken myTransactionToken)
+        {
+            if (myWorkingBase == typeof(String) || 
+                ((myWorkingBase is IAttributeDefinition) && 
+                 (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && 
+                 (myWorkingBase as IPropertyDefinition).BaseType.Name.Equals("String")))
+            {
+                return true; // valid for string
+            }
+            else if (myWorkingBase == null)
+            {
+                return true; // valid without a workingBase
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override FuncParameter ExecFunc(IAttributeDefinition myAttributeDefinition, 
+                                               Object myCallingObject, 
+                                               IVertex myDBObject, 
+                                               IGraphDB myGraphDB, 
+                                               SecurityToken mySecurityToken, 
+                                               TransactionToken myTransactionToken, 
+                                               params FuncParameter[] myParams)
+        {
+            StringBuilder resString = new StringBuilder();
+
+            if (myCallingObject != null)
+            {
+                if (myCallingObject is string)
+                {
+                    resString.Append(myCallingObject as String);
+                }
+            }
+
+            foreach (FuncParameter fp in myParams)
+            {
+                resString.Append(fp.Value.ToString());
+            }
+
+            return new FuncParameter(resString.ToString());
+        }
+        
+        public override Type GetReturnType()
+        {
+            return typeof(String);
+        }
+        
+        public override PluginParameters<Type> SetableParameters
+        {
+            get { return new PluginParameters<Type>(); }
+        }
+
+        public override IPluginable InitializePlugin(String myUniqueString, Dictionary<string, object> myParameters = null)
+        {
+            return new ConcatFunc();
+        }
+
+        public void Dispose()
+        { }
+    }
+</code>

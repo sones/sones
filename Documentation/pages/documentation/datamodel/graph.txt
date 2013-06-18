@@ -1,0 +1,56 @@
+====== Graph Model ======
+"In mathematics, a graph  is an abstract representation of a set of objects where some pairs of the objects are connected by links. The interconnected objects are represented by mathematical abstractions called vertices, and the links that connect some pairs of vertices are called edges."
+
+You can find a more abstract information about graphs on [[http://en.wikipedia.org/wiki/Graph_%28mathematics%29|wikipedia]].
+
+If you want to know what is about the GraphDS and how it handles graphs you should check out the [[quickreference:fiveminuteguide|five minute guide]],
+
+===== Vertex =====
+
+"In graph theory, a vertex (plural vertices) or node is the fundamental unit out of which graphs are formed: an undirected graph  consists of a set of vertices and a set of edges (unordered pairs of vertices), while a directed graph consists of a set of vertices and a set of arcs (ordered pairs of vertices)." [[http://en.wikipedia.org/wiki/Vertex_%28graph_theory%29|wiki vertex definition]]
+
+
+The graph which you can create using the GraphDS and GraphDB consists of connected vertices. The connection between vertices is called edge. In addition to the edges a vertex may have some properties. 
+The edges and properties of a vertex are called //attributes//.
+
+===== Attributes =====
+Each vertex has some attributes which are key-value pairs. The key is the //name// and the value is either a //property// (a [[documentation:database:adbbaseobjects|simple value]]) or an [[documentation:database:edges:latest|edge]] to other //vertices//.
+
+==== Properties ====
+Properties are key-value pairs where the key is the //name// and the value is a simple type like //String//, //Integer//, //List<String>//, //Set<Integer>// etc. 
+In addition to the predefined properties (at the time of //CREATE/ALTER vertex//) you can add undefined properties when you create a new instance of an vertex using the //INSERT// command. Currently, you can't create //INDICES// for undefined properties.
+
+=== Special properties ===
+Each vertex has some [[documentation:datamodell:specialproperties|special properties]] which will automatically be set by the GraphDS. Somes attributes (like UUID) may be set with a userdefined value. 
+
+==== Edges ====
+As described above edges are the connection between vertices.
+Edges are key-value pairs where the key is the name and the value contains the target //vertices//. The user always creates directed edges from a source vertex to one or more target vertices. The database will always create an internal backward edge which points from the target vertex back to the source vertex. They can be used for traversings (by activating them with the create/alter vertex query) but you can't change them and they won't have any properties neither.
+
+Beside the standard edge you can use [[documentation:edges|special edges]] with properties (like a weight) and a customized add/remove behavior.
+
+===== Example =====
+
+The following image "vertices-nodes" shows a simple structure of a graph you would  create with the GraphDS. The graph contains 6 //vertices// of 3 different types. 
+  * Vertex City
+  * Vertex University
+  * Vertex Student
+
+Each //vertex// definition is identified by a type name ("City", "University", "Student"), a //String// property "Name" and some other properties like "Age" and edges like "Universities" or "Students". These predefined attributes make sure that all instances of these vertices are type safe and provides some functions and traversion of the graph.
+
+{{:documentation:datamodel:vertices-nodes2.gif|}}
+
+==== Vertex University ====
+
+=== Predefined attributes/properties ===
+
+Each instance of this vertex may have a "Name" property of type String and a "Students" property with a set of edges to vertex instances of the type "Student". 
+There is an additional internal edge (called BackwardEdge) which contains a set of edges to all "City" vertices which references to this "University" instance. These attributes are defined via [[documentation:database:querylanguage:stmt:createvertexstmt:latest|CREATE VERTEX]], [[documentation:database:querylanguage:stmt:createverticesstmt:latest|CREATE VERTICES]], or [[documentation:database:querylanguage:stmt:altervertexstmt:latest|ALTER VERTEX]] and can be set/changed using [[documentation:database:querylanguage:stmt:insertstmt:latest|INSERT]] or [[documentation:database:querylanguage:stmt:updatestmt:latest|UPDATE]].
+
+The “Stanford University” vertex instance (from the example) has the property “Name” of the type //String//, the edge //Students//. The implicit created backward edge to the "City" vertex is currently not visible to the user.
+
+=== Undefined properties  ===
+
+In addition to these typed attributes it may have other key-value properties of any known basic type like //String//, //Integer//, //List<String>//, etc. Due to the fact that they are not predefined you cannot use them (currently) in ''WHERE'' clauses etc. but you can [[documentation:database:querylanguage:stmt:selectstmt:versions|SELECT]] them.
+
+The "Stanford University" vertex instance (from the example) has the undefined attribute "Buildings" containing a //List<String>// (green colored).

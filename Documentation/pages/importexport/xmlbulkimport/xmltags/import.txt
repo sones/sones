@@ -1,0 +1,8 @@
+====== Import tag ======
+
+===== Description =====
+Represents a bunch of vertices to be inserted. It is allowed to have multiple import tags. Each import tag must come after [[importexport:xmlbulkimport:xmltags:PrePhase|PrePhase]] and before [[importexport:xmlbulkimport:xmltags:PostPhase|PostPhase]].
+
+|**Parent tags:  **| [[importexport:xmlbulkimport:xmltags:BulkImport|BulkImport]] |
+|**Children tags:**| [[importexport:xmlbulkimport:xmltags:Insert|Insert]] |
+|**Attributes:   **| No attributes. |

@@ -1,0 +1,36 @@
+====== GreenCouch ======
+
+[[connectors:greencouch|back]]
+
+===== Working with Databases =====
+
+|Create DB|curl -X PUT http://127.0.0.1:5984/contacts|{"ok":true}|{"error":"file_exists","reason":"The database could not be created, the file already exists."}|
+| ::: |_GraphDS.CreateDatabase("contacts")| ::: | ::: |
+| ::: |_GraphDS.CreateDatabase("contacts")| ::: | ::: |
+|Delete DB|curl -X DELETE http://127.0.0.1:5984/contacts|...|...|
+| ::: |_GraphDS.DeleteDatabase("contacts")| ::: | ::: |
+
+
+
+==== List Databases ====
+
+**Request:**
+<code>
+curl http://127.0.0.1:5984/_all_dbs
+</code>
+<code>
+GetFilteredDirectoryListing(new ObjectLocation(_IGraphDBSession.DatabaseRootPath),
+                            ..., new List<String>() { DBConstants.DBTYPESTREAM },...).
+</code>
+
+
+**Response:**
+<code>
+HTTP/1.1 200 OK
+Date: Thu, 17 Aug 2006 05:39:28 +0000GMT
+Content-Length: 37
+Content-Type: application/json
+Connection: close
+
+["somedatabase", "anotherdatabase"]
+</code>

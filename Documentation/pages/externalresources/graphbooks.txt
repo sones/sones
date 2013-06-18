@@ -1,0 +1,4 @@
+==== Books on Graphs and Graph Databases ====
+
+
+  * [[http://code.google.com/p/graph-theory-algorithms-book/|Graph Theory Algorithms Book]]

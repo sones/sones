@@ -1,0 +1,27 @@
+====== IdOrFunc ======
+
+The IdOrFunc term specifies an interesting attribute (i.e. U.Age, the age of the type alias U) or a certain function (U.Friends.//Count()//). Furthermore it is possible to define a list of concatenated IDs to traverse the edges of the graph.
+
+===== Syntax =====
+
+IDorFUNC = ID [. ID | . [[documentation:database:functions|FUNCTION]] ]
+
+===== Examples =====
+
+FROM User SELECT * WHERE //Age// > 10
+
+FROM User U SELECT * WHERE //U.Age// > 10
+
+These IDorFuncs (//Age// and //U.Age//) define the attribute Age on a certain type. The second one directly specifies the type.
+
+----
+
+FROM User U DELETE WHERE //U.Friends.Friends.Age// > 10
+
+As mentioned above it is possible to traverse multiple eges via the IDorFUNC term. In this case every User object will be deleted where any friends of its friends are older than 10 years.
+
+----
+
+FROM User SELECT //U.Enemies.Count()//
+
+In contrast to the previous examples this IDorFUNC is not in the context of an expression. So this case illustrates the usage as a selection of certain attributes or results of functions on attributes.

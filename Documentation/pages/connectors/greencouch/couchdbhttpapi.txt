@@ -1,0 +1,33 @@
+====== GreenCouch ======
+
+[[connectors:greencouch|back]]
+
+===== CouchDB HTTP API =====
+
+==== HTTP-Headers ====
+
+**Request:**
+<code>
+Content-Type : application/json
+Accept       : application/json
+Etag         : $RevisionID
+</code>
+
+**Reply:**
+<code>
+Content-Type : application/json
+Etag         : $RevisionID
+</code>
+
+
+==== Get MOTD and Version ====
+
+**Request:**
+<code>
+curl http://127.0.0.1:5984/
+</code>
+**Response:**
+<code>
+{"couchdb":"Welcome","version":"0.9.0"}
+</code>
+

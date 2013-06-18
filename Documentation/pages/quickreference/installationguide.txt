@@ -1,0 +1,16 @@
+==== Installation and Execution Guide ====
+
+=== Installation Scenarios ===
+
+The sones GraphDB software covers manifold usage scenarios. Therefore there is not one single installation procedure. Instead, the installation covers multiple scenarios, beginning with the integration into a software project as a library, to multi-tier client-server architectures. \\ 
+The options are described here: [[quickreference:installation:scenarios|Installation scenarios]] \\ 
+
+=== Installation ===
+So you have downloaded the sones GraphDS and you want to build or run it. This is what you need for your platform:
+
+  * [[:Installation:Windows|Installation using Windows and Microsoft .NET Framework]]
+  * [[:Installation:Mono|Installation using MONO (Linux, MacOSX, Solaris)]]
+
+
+
+[[:start|back]]

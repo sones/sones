@@ -1,0 +1,43 @@
+====== DROP INDEX ======
+Will delete an index identified by the name and an optional edition.
+
+===== Syntax =====
+FROM vertex_name DROP INDEX <index_name> [EDITION <index_edition>]
+
+===== QueryResult =====
+The QueryResult of the DROP INDEX query will contain
+  * The executed query
+  * The result: Successful | PartialSuccessful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The warnings (if result is //PartialSuccessful//)
+  * The errors (if result is //Failed//)
+  * An empty result
+
+sample json output:
+<code json>
+{
+  "query": "FROM UserProfile DROP INDEX IDX_Lang",
+  "result": "Successful",
+  "duration": [
+    10,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": []
+}
+</code>
+
+===== Examples =====
+<code sql>
+FROM User DROP INDEX Idx_Name
+</code>
+Deletes the index "Idx_Name" from vertex "User"
+
+
+
+<code sql>
+FROM User DROP INDEX Idx_Name EDITION CaseInsensitive
+</code>
+Deletes the "CaseInsensitive" edition index "Idx_Name" from vertex "User"
+

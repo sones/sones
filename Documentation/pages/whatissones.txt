@@ -1,0 +1,9 @@
+====== What is sones GraphDB ======
+
+GraphDB development started in 2007 in Germany with the goal to create an enterprise graph database management system which allows users to handle large graph datasets on standard hardware using an easy to learn and easy to use [[documentation:graphql:|Graph Query Language (GraphQL)]].
+
+//"A graph database is a kind of NoSQL database that uses graph structures with nodes, edges, and properties to represent and store information."// ([[http://en.wikipedia.org/wiki/Graph_database|Wikipedia]])
+
+GraphDB is written entirely in C# and comes with many plug-ins, access protocols (such as REST) and client libraries for many programming languages such as C#, Java, JavaScript, PHP, and growing.
+
+With the release of version 2.0 of GraphDB the number of available plug-in interfaces where expanded largely due to a completely new [[architecturoverview|software architecture]].

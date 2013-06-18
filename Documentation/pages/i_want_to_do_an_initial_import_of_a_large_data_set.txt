@@ -1,0 +1,13 @@
+====== I want to do an initial import of a large data set... ======
+
+Let's say you have a dataset of over 1 million nodes and you want to get them all into a GraphDB instance. To solve that task you have two options:
+
+===== use GraphQL to import the data =====
+
+Using GraphQL is the easiest and unoptimized way to import large data sets. GraphQL is mainly targeted and optimized on Ad-Hoc querying and fast data retrieval. 
+
+Of course you can safely use GraphQL to import any large set of data you like - it's just that parsing a query language, checking and executing takes some precious time away of each operation that might not be actually necessary: If you don't have to check on anything, just inserting data, you might not even need the power of a full-blown query language. If that's the case the bulk-import scenario is the right scenario for you.
+
+==== Use a bulk-import method to import the data as fast as possible ====
+
+tbd.

@@ -1,0 +1,97 @@
+====== GEXF ======
+
+GEXF (Graph Exchange XML  Format) is a language for describing complex networks structures, their associated data and dynamics. Started in 2007 at [[http://gephi.org/|Gephi]] project by different actors, deeply involved in graph exchange issues, the gexf specifications are mature enough to claim being both extensible and [[http://books.xmlschemata.org/relaxng/relax-CHP-12-SECT-2.html|open]], and suitable for real specific applications.
+(from: [[http://gexf.net/format/index.html]])
+
+==== Planned support ====
+
+  * I/O-QL: ''IMPORT FROM ... FORMAT GEXF ...''
+  * I/O-QL: ''EXPORT ALL ... AS GEXF ...''
+  * GraphDSREST Accept-Header/Outputformat: ''Content-Type text/GEXF''
+
+
+
+===== Resources ====
+
+  * [[http://gexf.net/format/index.html|GEXF format]]
+  * [[http://github.com/jmcampanini/gexf4js|GEXF JavaScript Visualization]]
+  * [[http://gexf.net/explorer/|GEXF Adobe Flash Visualization]] [[http://github.com/jacomyal/GexfExplorer/|GitHub]]
+  * [[http://github.com/jmcampanini/gexf4j-core|GEXF Java Library]]
+  * [[http://jmcampanini.posterous.com/|Blog on gexf4js development]]
+
+
+==== Examples ====
+Basic graph:
+<code>
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.1draft" version="1.1">
+    <meta lastmodifieddate="2009-03-20">
+        <creator>Gexf.net</creator>
+        <description>A hello world! file</description>
+    </meta>
+    <graph mode="static" defaultedgetype="directed">
+        <nodes>
+            <node id="0" label="Hello" />
+            <node id="1" label="Word" />
+        </nodes>
+        <edges>
+            <edge id="0" source="0" target="1" />
+        </edges>
+    </graph>
+</gexf>
+</code>
+
+Data:
+<code>
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.1draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.1draft http://www.gexf.net/1.1draft/gexf.xsd" version="1.1">
+    <meta lastmodifieddate="2009-03-20">
+        <creator>Gephi.org</creator>
+        <description>A Web network</description>
+    </meta>
+    <graph defaultedgetype="directed">
+        <attributes class="node">
+            <attribute id="0" title="url" type="string"/>
+            <attribute id="1" title="indegree" type="float"/>
+            <attribute id="2" title="frog" type="boolean">
+                <default>true</default>
+            </attribute>
+        </attributes>
+        <nodes>
+            <node id="0" label="Gephi">
+                <attvalues>
+                    <attvalue for="0" value="http://gephi.org"/>
+                    <attvalue for="1" value="1"/>
+                </attvalues>
+            </node>
+            <node id="1" label="Webatlas">
+                <attvalues>
+                    <attvalue for="0" value="http://webatlas.fr"/>
+                    <attvalue for="1" value="2"/>
+                </attvalues>
+            </node>
+            <node id="2" label="RTGI">
+                <attvalues>
+                    <attvalue for="0" value="http://rtgi.fr"/>
+                    <attvalue for="1" value="1"/>
+                </attvalues>
+            </node>
+            <node id="3" label="BarabasiLab">
+                <attvalues>
+                    <attvalue for="0" value="http://barabasilab.com"/>
+                    <attvalue for="1" value="1"/>
+                    <attvalue for="2" value="false"/>
+                </attvalues>
+            </node>
+        </nodes>
+        <edges>
+            <edge id="0" source="0" target="1"/>
+            <edge id="1" source="0" target="2"/>
+            <edge id="2" source="1" target="0"/>
+            <edge id="3" source="2" target="1"/>
+            <edge id="4" source="0" target="3"/>
+        </edges>
+    </graph>
+</gexf>
+</code>
+

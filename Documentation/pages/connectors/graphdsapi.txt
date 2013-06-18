@@ -1,0 +1,484 @@
+====== GraphDB API Interface ======
+
+==== Introduction ====
+This document describes the C# API for the sones GraphDB(v2.0) database. 
+
+With the new GraphDB in version 2.0 are a handful clients available. 
+Well, there is additionally an api. 
+This api library gives you the power to rapidly build applications "on top" of the sones GraphDB. 
+It is very easy to use and to include in existing projects. 
+Everyone who wants to use the GraphDB as data basis in large solutions running on the same host, should use this programming interface. 
+It provides the whole functionality of the database and fits to all purposes. 
+Beside the ability to program direct on the GraphDB layer it is also possible to execute GraphQL statements. 
+The ordinary result type is a QueryResult, which represents the return value of the executed action. 
+So it is very easy to gather the requested information and get direct access to the database. 
+Beyond this, the Client is part of the Community Edition of our GraphDB and you can take glance at the operation of the library and add or manipulate functionality.
+ 
+Please note the section [[quickreference:assemblyreferences|Assembly References]] to see which assembly references are at least necessary to use the API and create your own project using the sones GraphDB.
+To read more about creating your own project please refer to the [[tutorials:tagexample|TagExample (C#)]].
+==== Feature List ====
+
+The C# GraphDB API provides the largest range of functions. This is because of the fact that this programming interface is really deep-wired into the GraphDB. It is not necessary to use the GraphQL, but possible. There are a few things that are hard to realize with sones' graphql in applications (travers the graph, search algorithms). In such cases, it is recommended to use our API.
+
+The general abilities are:
+
+  * Create vertex types
+  * Create edge types
+  * Alter vertex types
+  * Alter edge types
+  * Drop vertex types
+  * Drop edge types
+  * Insert instances
+  * Link / unlink vertices
+  * Create indices
+  * much more....
+
+Special abilities are:
+
+  * Traverse the property hyper graph
+  * Search within the property hyper graph
+      * Breadth-first search
+      * Bidirectional Breadth-first search
+  * Code integrated analyses
+  * Furthermore: C# features for enumerable collections and enumerators 
+===== First Steps =====
+
+==== Where to find? ====
+
+You can find the C# GraphDB API as a part of the Solution in the CommunityEdition. You have to instantiate a sones GraphDB and will get the API as public methods of your GraphDB instance.
+
+**Important:** You don't need to instantiate an API object or somthing similar!
+
+
+==== Embed into project ====
+
+It is really easy to integrate a GraphDB instance in your project.
+
+===== GraphDB datatypes and datastructures =====
+
+==== VertexTypePredefinition ====
+A VertexTypePredefinition represents a userdefined type before he is created inside the DB, so it holds the defined attributes and further informations (like counter of the properties, references to parent and child types and variables to check f.e. if the type is abstract or userdefined). 
+In this definition you have the posibility to set and read out following attributes and characteristics:
+   *new VertexTypePredefinition("NameOfType")
+   *AddProperty([[connectors:graphdsapi#propertypredefinition|PropertyPredefinition]])
+   *AddBinaryProperty([[connectors:graphdsapi#binarypropertypredefinition|BinaryPropertyPredefintion]])
+   *AddUnknownAttribute([[connectors:graphdsapi#unknownattributepredefinition|UnknownAttributePredefintion]])
+   *AddUnique([[connectors:graphdsapi#uniquepredefinition|UniquePredefintion]])
+   *AddIndex([[connectors:graphdsapi#indexpredefinition|IndexPredefintion]])
+   *AddOutgoingegde([[connectors:graphdsapi#outgoingedgepredefinition|OutgoingEdgePredefintion]])
+   *AddIncomingedge([[connectors:graphdsapi#incomingedgepredefinition|IncomingEdgePredefintion]])
+   *MarkAsAbstract()
+   *MarkAsSealed()
+   *ResetUnknown()
+   *SetComment(myComment:String)
+   *SetSuperTypeName(MyParentTypeName:String)
+
+Example - [[connectors:graphdsapi#create_vertex_type_predefinition_and_uses|Create vertex type predefinition and uses]]
+==== EdgeTypePredefinition ====
+A **EdgeTypePredefinition** represents a userdefined edge type before he is created inside the DB, so it holds the defined properties, references to parent and child types and variables to check f.e. if the type is sealed or userdefined). 
+In this definition you have the posibility to set and read out following attributes and characteristics:
+   *new EdgeTypePredefinition(NameOfType:String)
+   *AddProperty([[connectors:graphdsapi#propertypredefinition|PropertyPredefinition]])
+   *AddUnknownAttribute([[connectors:graphdsapi#unknownattributepredefinition|UnknownAttributePredefintion]])
+   *MarkAsSealed()
+   *ResetUnknown()
+   *SetComment(myComment:String)
+   *SetSuperTypeName(mySuperTypeName:String)
+
+==== PropertyPredefinition ====
+A PropertyPredefinition represents a property before it is created inside the DB, so it holds the defined informations (like name of the property, type, multiplicity, comment aso.). 
+In this definition you have the posibility to set and read out follwoing attributes and characteristics:
+   *new PropertyPredefinition(NameOfProperty:String, PropertyType:String)
+   *SetAsIndexed()
+   *SetAsMandatory()
+   *SetAsUnique()
+   *SetAttributeType(myAttributeType:String)
+   *SetComment(myComment:String)
+   *SetDefaultValue(myDefault:String)
+   *SetMultiplicityToSet()
+   *SetMultiplicityToList()
+
+==== BinaryPropertyPredefinition ====
+A BinaryPropertyPredefinition represents a binary property (Stream) before it is created inside the DB, so it holds the defined informations (like name of the property, type, multiplicity, comment aso.). 
+In this definition you have the posibility to set and read out follwoing attributes and characteristics:
+   *new PropertyPredefinition(NameOfProperty:String, PropertyType:String[Deafult="Stream"])
+   *SetComment(myComment:String)
+   
+==== OutgoingEdgePredefinition ====
+A OutgoingEdgePredefinition represents an outgoing edge before it is created inside the DB, so it holds the defined informations (like name of the property, type, multiplicity, comment aso.). 
+In this definition you have the posibility to set and read out follwoing attributes and characteristics:
+   *new OutgoingEdgePredefinition(NameOfOutgoingEdge:String, TargetType:String)
+   *SetAttributeType(myAttributeType:String)
+   *SetComment(myComment:String)
+   *SetEdgeType(myEdgeType:String)
+   *SetEdgeTypeAsWeighted()
+   *SetEdgeTypeAsOrdered()
+   *SetMultilicityAsHyperEdge()
+   *SetMultilicityAsMultiEdge()
+
+==== IncomingEdgePredefinition ====
+A IncomingEdgePredefinition represents an incoming (backward-) edge before it is created inside the DB, so it holds the defined informations (like name of the edge, the referenced outgoing edge aso.). 
+In this definition you have the posibility to set and read out follwoing attributes and characteristics:
+   *new IncomingEdgePredefinition("NameOfIncomingEdge", "SourceType", "OutgoingEdgeName")  /  AttributeName, source type and the name of the corresponding outgoing edge
+   *SetComment(myComment:String)
+   *SetOutgoingEdge(myOutgoingEdgeName:String)
+
+==== IndexPredefinition ====
+A IndexPredefinition represents an index before it is created inside the DB, so it holds the defined informations (like name, index type, indexed attributes aso.). 
+In this definition you have the posibility to set and read out follwoing attributes and characteristics:
+   *new IndexPredefinition (NameOfIndex:String)
+   *AddProperty(myPropertyName:String)
+   *SetComment(myComment:String)
+   *SetEdition(myEdition:String)
+   *SetIndexType(myIndexType:String)
+   *SetVertexType(myVertexTypeName:String)
+
+==== UnknownAttributePredefinition ====
+A UnknownAttributePredefinition represents a unknown attribute before it is created inside the DB, so it holds the defined informations (like name of the attribute, type, multiplicity, comment aso.). It means the attribute gets converted inside the GraphDB into a property, egde aso..
+In this definition you have the posibility to set and read out follwoing attributes and characteristics:
+   *new UnknownAttributePredefinition("NameOfAttribute", "AttributeType")
+   *SetMultiplicity(myMultiplicity:String)
+   *SetMultiplicityAsSet()
+   *SetMultiplicityAsList()
+   *SetDefaultValue(myDefault:String)
+   *SetAsMandatory()
+   *SetAsUnique()
+   *SetInnerEdgeType(myInnerEdgeType:String)
+   *SetEdgeType(myEdgeType:String)
+   *SetAttributeType(myAttributeType:String)
+
+==== UniquePredefinition ====
+A UniquePredefinition represents an unique property before it is created inside the DB, so it holds the defined informations (like name, index type, indexed attributes aso.). 
+In this definition you have the posibility to set and read out follwoing attributes and characteristics:
+   *new UniquePredefinition()
+   *new UniquePredefinition(NameOfProperty:String)
+   *AddProperty(myPropertyName:String)
+   *AddProperty(myPropertyNames:IEnumerable<String>)
+   
+===== Usage and examples =====
+
+The following section is about how to use the sones GraphDB API. This documentation goes along with the TagExample in the CommunityEdition. If you'd like to take a glance on the complete example, see the application folder in the CommunityEdition of the sones GraphDB or the Tutorial at [[http://developers.sones.de/wiki/doku.php?id=tutorials:tagexample| TagExample]].
+
+**Important:** If you want to get these examples working, you have to see the step by step manual of the TagExample.  
+
+==== Create vertex type predefinition and uses ====
+
+Every vertex type and vertex property needs to be declared by a related pre-definition. This pre-definition contains all requested attributes and has to dump into the GraphDB by invoking of the related API procedure.
+For further pre-definition information see [[http://developers.sones.de/wiki/doku.php?id=connectors:graphdsapi&#graphdb_datatypes_and_datastructures|GraphDB datatypes and datastructures]].
+
+**Important:** Predefinitions are just a surface impression of the corresponding vertex types and attributes. Just after the related request methods of the GraphDB was called, the database validates the request and will execute it, if the validation was successful.
+
+== Creates vertex type predefinition ==
+
+Creates the pre-definition of a simple vertex type.
+
+<code csharp>VertexTypePredefinition Tag_VertexTypePredefinition = new VertexTypePredefinition("Tag");</code>
+
+Create the predefinition of a abstract vertex type.
+
+<code csharp>VertexTypePredefinition Personal_VertexTypePredefinition = new VertexTypePredefinition("User")
+                                                                        .MarkAsAbstract()
+                                                                        .SetComment("Abstract user type");</code>
+
+== Create a property predefinition ==
+
+This is a property on type 'Tag' with name 'Name' and is of type 'String'.
+
+<code csharp>PropertyPredefinition PropertyName = new PropertyPredefinition("Name", "String")
+                                                  .SetComment("Simple property 'Name'");</code>
+
+                                            
+
+This is a property with special attributes like [UNIQUE] and [MANDATORY]
+
+<code csharp>PropertyPredefinition PropertyPersonalID = new PropertyPredefinition("PersonalID", "Int64")
+                                                        .SetAsMandatory()
+                                                        .SetAsUnique()
+                                                        .SetComment("The unique personal id");</code>
+
+== Add a property to a vertex type predefinition ==
+
+This adds the recently created property 'PropertyName' to the vertex type definition 'Tag_VertexTypePredefinition'
+
+<code csharp>Tag_VertexTypePredefinition.AddProperty(PropertyName)</code>
+
+== Create an outgoing edge ==
+
+Create an outgoing hyper edge to "Website" 
+
+<code csharp>OutgoingEdgePredefinition OutgoingEdgesTaggedWebsites = new OutgoingEdgePredefinition("TaggedWebsites", "Website")
+                                                                     .SetMultiplicityAsMultiEdge();</code>
+                                          
+Furthermore it is possible to set a **HyperEdge** similar to **SingleEdge** as weighted using the Method **SetEdgeTypeAsWeighted**:
+<code csharp>OutgoingEdgePredefinition OutgoingEdgesTaggedWebsites = new OutgoingEdgePredefinition("TaggedWebsites", "Website")
+                                                                     .SetMultiplicityAsMultiEdge()
+                                                                     .SetEdgeTypeAsWeighted();</code>
+                                                                 
+Additionally we can set all **SingleEdges** inside the **HyperEdge** as weighted if we use the parameter "Weighted" inside the **SetMultiplicityAsMultiEdge("Weighted")** method.
+Doing this we specifie an **InnerEdgeType**, which means that each SingleEdge inside the HyperEdge is a edge of type "Weighted":
+<code csharp>OutgoingEdgePredefinition OutgoingEdgesTaggedWebsites = new OutgoingEdgePredefinition("TaggedWebsites", "Website")
+                                                                     .SetMultiplicityAsMultiEdge("Weighted");</code>
+
+== Create an incoming edge ==
+
+Create an incoming edge from "Tag". This incoming edge is the backward edge version for the 'OutgoingEdgesTaggedWebsites' edge. 'IncomingEdgePredefinition' is used for Graph Data Definition.
+
+<code csharp>IncomingEdgePredefinitionIncomingEdgesTaggedWebsites = new IncomingEdgePredefinition("Tags", "Tag", "TaggedWebsites");</code>
+
+== Add an edge ==
+
+Add an outgoing edge to a vertex type.
+
+<code csharp>Tag_VertexTypePredefinition.AddOutgoingEdge(OutgoingEdgesTaggedWebsites);</code>
+
+Add an incoming edge to a vertex type. This creates an incoming edge as backward edge version of the incoming edge 'Tags' on the recent created 'Tag_VertexTypePredefinition'.
+
+<code csharp>Website_VertexTypePredefinition.AddIncomingEdge(new IncomingEdgePredefinition("Tags", "Tag", "TaggedWebsites"));</code>
+
+'IncomingEdgePredefinition' is used for Graph Data Definition.
+
+==== Create edge type predefinition and uses ====
+Every edge type and his properties needs to be declared by a related pre-definition. This pre-definition contains all requested attributes and has to dump into the GraphDB by invoking of the related API procedure.
+For further pre-definition information see [[http://developers.sones.de/wiki/doku.php?id=connectors:graphdsapi&#graphdb_datatypes_and_datastructures|GraphDB datatypes and datastructures]].
+
+**Important:** Predefinitions are just a surface impression of the corresponding edge types and properties. Just after the related request methods of the GraphDB was called, the database validates the request and will execute it, if the validation was successful.
+
+== Creates edge type predefinition ==
+
+Creates the pre-definition of a simple edge type.
+
+<code csharp>EdgeTypePredefinition Street_EdgeTypePredefinition = new EdgeTypePredefinition("Street")
+                                                                  .SetComment("edge type named Street");</code>
+
+== Create a property predefinition ==
+
+This is a property on type 'Street' with name 'Name' and is of type 'String'.
+
+<code csharp>PropertyPredefinition PropertyName = new PropertyPredefinition("Name", "String")
+                                                  .SetComment("Simple property 'Name'");</code>
+
+== Add a property to a vertex type predefinition ==
+
+This adds the recently created property 'PropertyName' to the edge type definition 'Street_EdgeTypePredefinition'
+
+<code csharp>Street_EdgeTypePredefinition.AddProperty(PropertyName)</code>
+
+== Create vertex type with multi edge of user-defined type ==
+Now we create a vertex type with a simple property 'Name' and an outgoing multi edge of type 'Street'.
+<code csharp>
+VertexTypePredefinition City_VertexTypePredefinition = new VertexTypePredefinition("City");
+PropertyPredefinition PropertyNameCity = new PropertyPredefinition("Name", "String")
+                                         .SetComment("Simple property 'Name'");
+City_VertexTypePredefinition.AddProperty(PropertyNameCity);
+PropertyPredefinition PropertyNameStreet = new PropertyPredefinition("Name", "String")
+                                           .SetComment("Simple property 'Name'");
+PropertyPredefinition PropertyLengthStreet = new PropertyPredefinition("Length", "String")
+                                             .SetComment("Simple property 'Length'");
+OutgoingEdgePredefinition OutgoingEdgeStreets = new OutgoingEdgePredefinition("Streets", "City")
+                                                .SetMultiplicityAsMultiEdge("Street")
+                                                .AddProperty(PropertyNameStreet)
+                                                .AddProperty(PropertyLengthStreet);
+City_VertexTypePredefinition.AddOutgoingEdge(OutgoingEdgeStreets);
+</code>
+First we create a vertex type predefinition named 'City'. This type gets a property 'Name' and an outgoing egde 'Streets'.
+This outgoing edge is a multi edge, which means it contains multiple single edges. These single edges are of type 'Street' which causes the method SetMultiplicityAsMultiEdge("Street").
+By inserting some cities we are now able to add some edges and fill the properties 'Name' and 'Length' of each street.
+                                                    
+==== Create and add an Index for predefinitions ====
+
+There are two index types available:
+      * SingleValueIndex
+      * MultipleValueIndex
+
+There are three ways to set an index!
+
+**Important:** Use just one way to create an index on an property!
+
+== 1. Create an index predefinition ==
+
+Create an index predefinition and specifie the property- and type name.
+
+<code csharp>IndexPredefinition MyIndex = new IndexPredefinition("MyIndex")
+                                          .SetIndexType("MultipleValueIndex")
+                                          .AddProperty("Name")
+                                          .SetVertexType("Website");</code>
+                                
+With the SetIndexType('SingleValueIndex'|'MultipleValueIndex')method you have to set the index type.
+After that, you have to attach the index predefiniton to the vertex predefinition.
+
+<code csharp>Website_VertexTypePredefinition.AddIndex((IndexPredefinition)MyIndex);</code>
+
+== 2. Call the SetAsIndexed() method ==
+
+Create an index by calling the SetAsIndexed() method on creating the property definition:
+
+<code csharp>PropertyPredefinition PropertyName = new PropertyPredefinition("Name", "String")
+                                                  .SetAsIndexed();</code>
+
+In this case, GarphDB will create an **MultipleValueIndex** on the specified property!
+
+== 3. Invoke a create index request ==
+
+**Important:** This statement must be execute **AFTER** the vertex type you want to attach the index is created.
+
+<code csharp>var MyIndex = GraphDSServer.CreateIndex<IIndexDefinition>([SecToken], [TransactionID],
+                                       new RequestCreateIndex( new IndexPredefinition("MyIndex")
+                                       .SetIndexType("MultipleValueIndex")
+                                       .AddProperty("Name")
+                                       .SetVertexType("Website")), (Statistics, Index) => Index);</code>
+==== Create instances ====
+
+Only after you are sending an request to the GraphDB, they will validate and execute the request. The RequestCreateVertexType gets a VertexTypePredefinition, which are defined before. As result of the request we will get a list or an entity of created GraphDB VertexTypes. Like in GraphQL there are two possibilities to create types: on the one hand you can use 'create vertex type ..' and on the other 'create vertex types ..' as creation statement. In the same way we are using the GraphDB API!
+
+**Important:** Creating types at the same time has an important background. Sometimes types depend on each other. In this case it is necessary to create this vertex types at the same time. Well, the you have to use //GraphDSServer.CreateVertexTypes()// otherwise //GraphDSServer.CreateVertexType()// is possible, of course.
+
+== Create a single vertex type ==
+
+This will create a single vertex type by the given vertex type predefinition. It is equivalent to the 'CREATE VERTEX TYPE' GraphQL statement. The parameter list includes the following:
+
+       * Security token
+       * Transaction id
+       * A RequestCreateVertexType (created through the vertex predefinition)
+       * A CreateVertexTypeResultConverter
+
+<code csharp>var Website = GraphDSServer.CreateVertexType<IVertexType>([SecToken],[TransactionID],
+                                new RequestCreateVertexType(Website_VertexTypePredefinition),
+                                (Statistics, VertexType) => VertexType);</code>
+                                
+== Create multiple vertex types ==
+
+This will create multiple vertices at one go through a list of vertex predefinitions. It is equivalent to the 'CREATE VERTEX TYPES' GraphQL statement. The parameter list includes the following:
+
+       * Security token
+       * Transaction id
+       * A RequestCreateVertexTypes (created through the vertex predefinitions)
+       * A CreateVertexTypeResultConverter 
+
+
+<code csharp>var DBTypes = GraphDSServer.CreateVertexTypes<IEnumerable<IVertexType>>([SecToken],[TransactionID], 
+                  new RequestCreateVertexTypes(
+                      new List<VertexTypePredefinition> { Tag_VertexTypePredefinition,
+                        Website_VertexTypePredefinition }),(Statistics, VertexTypes) => VertexTypes);</code>
+                        
+The 'RequestCreateVertexTypes' takes a List of 'VertexTypePredefinition'. Use this method, if you need to create vertices which depend on each other.
+
+==== Insert data ====
+
+With the GraphDB API it is really easy to insert data on the basis of the recent created vertex types.
+Inserting data always need a request, as well. Once you made the request, the GraphDB will validate and execute the required task.
+
+== Insert simple vertex data ==
+
+This insert request contains some simple data, inserted by //AddStructuredProperty()// for known properties and //AddUnknownProperty()// for unknown properties, that means the property isn't defined before.
+
+<code csharp>var test = GraphDSServer.Insert<IVertex>(SecToken, TransactionID, new RequestInsertVertex("Website")
+                             .AddStructuredProperty("Name", "Test")
+                             .AddStructuredProperty("URL", "")
+                             .AddUnknownProperty("Unknown", "unknown property"),(Statistics, Result) => Result);</code>
+                             
+Again, you have to invoke your request by sending a 'RequestInsertVertex' instance which takes the name of an vertex in the database.
+
+== Insert vertex data including an edge ==
+
+<code csharp>var good = GraphDSServer.Insert<IVertex>(SecToken, TransactionID, new RequestInsertVertex("Tag")
+                           .AddStructuredProperty("Name", "good")
+                           .AddEdge(new EdgePredefinition("TaggedWebsites")
+                                       .AddVertexID(Website.ID, cnn.VertexID)
+                                       .AddVertexID(Website.ID, xkcd.VertexID)),
+                           (Statistics, Result) => Result);</code>
+                           
+'EdgePredefinition' is used for Graph Data Manipulation.
+
+== Insert a weight on a weighted outgoing hyper edge ==
+If you have created a type with an weighted outgoing hyper edge like described above:
+<code>new OutgoingEdgePredefinition("TaggedWebsites")
+                  .SetAttributeType("Website")
+                  .SetMultiplicityAsMultiEdge()
+                  .SetEdgeTypeAsWeighted();</code>
+..you can insert a value into the "Weight" attribute defined on the hyper edge:<code csharp>var good = GraphDSServer.Insert<IVertex>(SecToken, TransactionID, new RequestInsertVertex("Tag")
+                           .AddStructuredProperty("Name", "good")
+                           .AddEdge(new EdgePredefinition("TaggedWebsites")
+                                       .AddStructuredProperty("Weight", 300)
+                                       .AddVertexID(Website.ID, cnn.VertexID)
+                                       .AddVertexID(Website.ID, xkcd.VertexID)),
+                           (Statistics, Result) => Result);</code>
+..doing this the hyper edge now has a property "Weight" with the value "300" which is standardly of type double.
+
+== Insert a weight on a weighted single edge inside an outgoing hyper edge ==
+If you have created a type with an outgoing hyper edge which contains weighted single edges like described above:
+<code>new OutgoingEdgePredefinition("TaggedWebsites")
+                  .SetAttributeType("Website")
+                  .SetMultiplicityAsMultiEdge("Weighted");</code>
+..you can insert a value into the "Weight" attribute defined on the hyper edge:
+<code csharp>var good = GraphDSServer.Insert<IVertex>(SecToken, TransactionID, new RequestInsertVertex("Tag")
+                           .AddStructuredProperty("Name", "good")
+                           .AddEdge(new EdgePredefinition("TaggedWebsites")
+                                       .AddEdge(new EdgePredefinition()
+                                           .AddVertexID(Website.ID, cnn.VertexID)
+                                           .AddStructuredProperty("Weight", 200))
+                                       .AddEdge(new EdgePredefinition()
+                                           .AddVertexID(Website.ID, xkcd.VertexID)
+                                           .AddStructuredProperty("Weight", 100))
+                           (Statistics, Result) => Result);</code>
+..doing this we have to create an EdgePredefinition which represents the hyper edge.
+Aditionally we must create two more EdgePredefinitions which represents the contained single edges.
+These two are added to the hyper edge by using the method **AddEdge**. The single edges now get both a value for there attribute "Weight".
+
+==== Select vertices ====
+
+Like every previous task, you can request everything by using GraphQL or API methods. So it is also possible to request resources out of the database by using sones GraphQL and the API methods. 
+
+== Select a vertex type ==
+
+To select a vertex type it is necessary to know its Id or Name. In the 'RequestGetVertexType()' you have to pass this over.
+
+<code csharp>var TagDBType = GraphDSServer.GetVertexType<IVertexType>(SecToken, TransactionID, new RequestGetVertexType("Tag"),
+                                                                                     (Statistics, Type) => Type);</code>
+
+The result is a 'VertexType' which can be used for further tasks.
+
+----
+
+It is also possible to request a resource with sones GraphQL.
+
+<code csharp>var Types = GraphQL.Query(SecToken, TransactionID,
+@"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites),
+Website ATTRIBUTES (String Name, String URL)
+INCOMINGEDGES(Tag.TaggedWebsites Tags)
+INDICES (MyIndex INDEXTYPE MultipleValueIndex ON ATTRIBUTES Name)");</code>
+
+
+----
+
+To get some information about the properties of the vertex type, you have to store an object and invoke the related //GetPropertyDefinition(String PropertyName)// methods.
+
+<code csharp>var propName = TagDBType.GetPropertyDefinition("Name");</code>
+
+
+== Select a vertex instance ==
+
+There are two ways to select a specified vertex instance. Basically it is necessary to know a characteristic attribute of this vertex instance to get exactly the wanted one.
+
+Select a vertex by passing the vertex id. You get the vertex id every time you insert a vertex instance. Of course, you have to store this vertex id to select the specified vertex instance.
+
+<code csharp>var WebsiteInstance = GraphDB.GetVertex(SecToken, TransactionID,
+                            new RequestGetVertex "Website",myWebsiteInstance.ID), (Statistics, Vertex) => Vertex);</code>
+
+----
+
+The second way is really similar to the GraphQL statement. First of all, you have to select all instances and constrain the range by passing an expression.
+
+<code csharp>var WebsiteInstance = GraphDB.GetVertices(SecToken, TransactionID,
+             new RequestGetVertices(new BinaryExpression(new PropertyExpression("Website", "URL"),
+             BinaryOperator.Equals, new SingleLiteralExpression("www.sones.com"))), (Statistics, Vertices) => Vertices);</code>
+
+**Important:** The return value is IEnumerable<IVertex>, that means you get a list of vertices. It could be that more than one vertex matches to your expression. If you filter in unique properties, that should't happen.
+
+
+== Select all instances of a vertex type ==
+
+To get all instances of a type from the DB you just have to know the Id or Name of the vertex type and pass it in the 'RequestGetVertices()' object.
+
+<code csharp>var TagInstances = GraphDSServer.GetVertices(SecToken, TransactionID,
+                                         new RequestGetVertices("Tag"), (Statistics, Vertices) => Vertices);</code>
+===== Code documentation  =====

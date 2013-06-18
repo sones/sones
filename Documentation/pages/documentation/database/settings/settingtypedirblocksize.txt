@@ -1,0 +1,19 @@
+===== Setting typedir block size =====
+
+This setting define the file system blocksize of the type directory in Byte.
+
+===== Values =====
+
+All positive numbers starting at 0.
+
+===== Default =====
+
+The default value is set to 1000000 Byte.
+
+===== Examples =====
+
+<code sql>
+SETTING DB SET('TYPEDIRBLOCKSIZE'=2000000)
+</code>
+
+Set the current blocksize to 2000000 Byte.

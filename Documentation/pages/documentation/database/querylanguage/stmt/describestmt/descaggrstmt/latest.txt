@@ -1,0 +1,2 @@
+This statement show all implemented aggregates an informations about them.
+<code>DESCRIBE AGGREGATES</code>

@@ -1,0 +1,76 @@
+[[documentation:graphql:gddl|Back to: Graph Data Definition Language Overview]]
+
+====== CREATE INDEX ======
+
+This statement creates an index on a database type. It is possible to create indices on single attributes as well as on multiple ones. Additionally it is possible to assign a special EDITION or set a special INDEXTYPE. By setting the UNIQUE tag each value of an index key cannot contain more than one object references. It is not allowed to assign an index name on more than one index with the same attribute constellation. The INDEXTYPE determines the kind of structure that realizes the index. Possible values are BPlusTree, HashTable (default) or any other plug-in index. 
+
+===== Syntax =====
+
+CREATE INDEX [ indexName ] 
+ON VERTEX TYPE typeName ( attributeName [, attributeName ] ) 
+[ INDEXTYPE (SingleValueIndex | MultipleValueIndex | SingleValuePersitent | MultipleValuePersistent) ]
+
+===== QueryResult =====
+The QueryResult of the CREATE VERTICES query will contain
+  * The executed query
+  * The result: Successful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The errors (if result is //Failed//)
+  * The results contains
+    * INDEXTYPE: The type of the index (SingleValueIndex | MultiValueIndex)
+    * Properties
+    * Edges
+
+sample json output:
+<code json>
+{
+  "Query": "CREATE INDEX IDX_Lang ON VERTEX TYPE User(Name) INDEXTYPE SingleValueIndex",
+  "Result": "Successful",
+  "Duration": [
+    110,
+    "ms"
+  ],
+  "Results": [
+    [
+      {
+        "Properties": {
+          "CreatedIndex": "sones.GraphDB.Index.IndexDefinition"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ]
+  ]
+}</code>
+
+===== Examples =====
+
+CREATE INDEX User_Name ON User ( Name )
+
+Creates an index on type User and attribute Name called User_Name.
+
+----
+
+CREATE INDEX User_Name ON User ( Name ) INDEXTYPE SingleValueIndex
+
+Like the previous example an index on User/Name is created. In Contrast this statement specifies the INDEXTYPE to be a SingleValueIndex.
+
+----
+
+CREATE INDEX User_Name EDITION User_Name_BPlus ON User ( Name ) INDEXTYPE MultipleValueIndex
+This statement creates an index with an EDITION and INDEXTYPE specified. Additionally this statement can be combined with the previous one (another EDITION and another INDEXTYPE).
+
+----
+
+CREATE INDEX User_Name_Address ON User ( Name, Address )
+
+Creates an index on more than one attribute. Their order is important.
+
+===== Return on success =====
+
+  * name of the new index
+  * edition
+  * related database type
+  * index type
+  * used attributes

@@ -1,0 +1,157 @@
+====== Benchmarking sones GraphDB ======
+
+For many scenarios it's important to know how a database performs. Especially these days when the number of databases seem to grow by the day and a choice is hard to make.
+
+To demonstrate how sones GraphDB performs at given use-cases we created a benchmark framework and tool which basically divides benchmarking into two steps:
+
+  - Generate and/or Import use-case specific data and measure the performance
+  - Execute use-case specific algorithms on the graph and measure the performance
+
+Because there are many different use-cases these both steps are made up by plug-ins which can be adressed using the commandline which is integrated into the benchmark tool.
+
+The framework, tool and plug-ins are released as AGPLv3 licensed OpenSource software and can be downloaded [[https://github.com/sones/benchmark|here]].
+
+We distribute the source code mainly because it's the best way for you to reproduce the results and take a look at what actually is being tested, the other main cause is that we want everybody to be able to benchmark and test their own algorithms on GraphDB.
+
+===== How to download and compile =====
+
+Of course there is a binary distribution of the sourcecode, which you can download for Windows and Non-Windows operating systems [[https://github.com/sones/benchmark/downloads|here]].
+
+In order to successfully compile the benchmark project you will need the following dependencies:
+
+  * MONO 2.10.2 (mono-complete or mono-core & mono-wcf) or .NET Framework 4.0
+  * sones GraphDB Community Edition (in ./GraphDB folder)
+
+In order to download the necessary dependencies you need to get the source-code of the benchmark project first with this command-line:
+
+<code>
+git clone git://github.com/sones/benchmark.git
+</code>
+
+Now you should see something similar to this:
+
+<code>
+Cloning into benchmark...
+remote: Counting objects: 68, done.
+remote: Compressing objects: 100% (45/45), done.
+remote: Total 68 (delta 36), reused 52 (delta 20)
+Receiving objects: 100% (68/68), 26.94 KiB, done.
+Resolving deltas: 100% (36/36), done.
+</code>
+
+Now you need to retrieve the necessary submodules by running the command line in the benchmark source code folder:
+
+<code>
+git submodule init 
+</code>
+
+And you should get an output similar to:
+
+<code>
+Submodule 'GraphDB' (git://github.com/sones/sones.git) registered for path 'GraphDB'
+</code>
+
+The next step is to actually download the dependencies source-code:
+
+<code>
+git submodule update
+</code>
+
+And you should get a similar to this output:
+
+<code>
+Cloning into GraphDB...
+remote: Counting objects: 29982, done.
+remote: Compressing objects: 100% (8398/8398), done.
+remote: Total 29982 (delta 19895), reused 29623 (delta 19540)
+Receiving objects: 100% (29982/29982), 12.82 MiB | 784 KiB/s, done.
+Resolving deltas: 100% (19895/19895), done.
+Submodule path 'GraphDB': checked out '3cf12e18262e15ba6db74b7800c69c670439cce0'
+</code>
+
+You then need to compile the .sln file in the ./GraphDB folder. This will compile GraphDB and create some assembly (.dll) files. In the ./GraphDB/Applications/sonesGraphDB/bin folder will either a Debug or a Release folder exist. The contents of this directory need to be copied to the ./GraphDBBenchmark/Dependencies folder in order to compile the benchmark.sln file in the benchmark folder.
+
+The buildBenchmark.sh script will do the above for you and build the Benchmark tool (on Mono). This buildBenchmark script has a help built-in which can be displayed by running
+
+<code>
+buildBenchmark.sh -h
+</code>
+
+Output:
+
+<code>
+sones GraphDB Benchmark Build Script (C) sones GmbH 2007-2011
+-r build a release
+-d build with debug symbols
+-p build partially (can be combined with -r and -d)
+</code>
+
+To run the benchmark project just run the compile result of GraphDB or use the ./run_benchmark.sh script (with appending -d or -r parameters)
+
+===== How to use the benchmark tool =====
+
+{{ :benchmark-tool.png?direct&200 |}}
+
+After you started the benchmark tool you are welcome by a short command overview and a command-line interface.
+
+By typing
+
+<code>
+LIST
+</code>
+
+You will get a list of all available import and benchmark plug-in modules. For example you could create a simple social network with default values by running this command:
+
+<code>
+IMPORT 'SIMPLENETWORK'
+</code>
+
+more IMPORT Examples:
+
+<code>
+IMPORT 'SIMPLENETWORK' OPTIONS (countOfUsers = 300000, minCountOfEdges = 50, maxCountOfEdges = 100)
+IMPORT 'SUPERNODES' OPTIONS (countOfUsers = 5000000)
+</code>
+
+At any time you can use the integrated WebShell to access the GraphDB behind the benchmark (for example: http://localhost:9975/WebShell)
+
+After importing / creating some data you can run the actual benchmark on that data:
+
+<code>
+BENCHMARK 'VTPS_PARTITIONEDPARALLEL' ITERATIONS = 10
+</code>
+
+or: 
+
+<code>
+BENCHMARK 'SUPERNODES' ITERATIONS = 10
+</code>
+
+For a deeper documentation of each import and benchmark plug-in please read the wiki article: http://developers.sones.de/wiki/doku.php?id=benchmarks
+
+===== Available Import and Benchmark plug-ins =====
+
+  * Import Plug-Ins
+    * [[Benchmarks:Import:SIMPLENETWORK|SIMPLENETWORK]]
+    * [[Benchmarks:Import:SUPERNODES|SUPERNODES]]
+  * Benchmark Plug-Ins
+    * [[Benchmarks:Benchmark:VTPS_SINGLETHREADED|VTPS_SINGLETHREADED]]
+    * [[Benchmarks:Benchmark:VTPS_PARTITIONEDPARALLE|VTPS_PARTITIONEDPARALLEL]]
+    * [[Benchmarks:Benchmark:VTPS_PARALLEL|VTPS_PARALLEL]]
+    * [[Benchmarks:Benchmark:VTPS_PLINQ|VTPS_PLINQ]]
+    * [[Benchmarks:Benchmark:SUPERNODES|SUPERNODES]]
+
+===== Benchmark Results =====
+
+Results we had will be documented on a separate page which can be found here: [[benchmarks:results|Benchmark Results]]
+
+
+===== Known problems =====
+
+Mono-SGEN from MONO 2.10.2 and 2.10.3 - monos simple generational garbage collector - will crash while importing data into GraphDB. Please use the standard BOEHM-GC.
+
+===== Discussion and Contact =====
+
+Discussion Thread: http://forum.sones.de/phpbb/viewtopic.php?f=6&t=5&start=0
+
+Any bug found can be reported here: http://jira.sones.de

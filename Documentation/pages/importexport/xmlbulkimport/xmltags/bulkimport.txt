@@ -1,0 +1,8 @@
+====== BulkImport tag ======
+
+===== Description =====
+The start tag of each import file. This tag must be the contained in every valid import file.
+
+|**Parent tags:  **| No parent tags. |
+|**Children tags:**| [[importexport:xmlbulkimport:xmltags:Import|Import]], [[importexport:xmlbulkimport:xmltags:PostPhase|PostPhase]], [[importexport:xmlbulkimport:xmltags:PrePhase|PrePhase]], [[importexport:xmlbulkimport:xmltags:Options|Options]], |
+|**Attributes:   **| No attributes. |

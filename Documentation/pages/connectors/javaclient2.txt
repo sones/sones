@@ -1,0 +1,186 @@
+====== Java GraphDB Client ======
+
+==== Introduction =====
+
+This document describes the Java Client for the sones GraphDB(v2.0) database.
+
+The Java client gives you the ability to establish a connection to the database, send GraphQL-Queries and parse the result. It is also very easy to use and to include in existing projects.
+Everyone who wants to use the sones GraphDB as data basis in ANY java application, needs a suitable data transmission interface between the application and the database. This is the precisely purpose of the Java GraphDB(v2.0) client. It performs all tasks to deliver and parse the graph out of the database into a query result object. The client uses the already known REST Port of the data storage. To set up a connection, there is only the host and the credentials necessary. In this way it is possible to create any numbers of clients to talk to any numbers of GraphDB instances.
+Every GraphQL-Query gets a result. The Java GraphDB client is able to parse the “QueryResult” and represents the graph in vertex-/ , single-edge and hyper-edgeobjects. So it is very easy to fetch the requested information. The client uses the jdom XML-Framework to parse the query-result. The used version is part of the delivered package.  
+Beyond this, the client is part of the Community Edition of our GraphDB(v2.0) and you can take a look at the operation of the library and add or manipulate functionality. All code is located at http://www.github.com/sones.
+
+==== Feature List ====
+
+There are a lot of features already implemented; these include the REST client which handles the communication to the service and the provision of the credentials (not urgent necessary). Furthermore there is the result parser, which iterates over the result document and returns known objects to hold a propertygraph in a Java environment. Additional, there are the feature to handle some metadata about the request process and the actual result.
+
+Here a short summary of the features :
+
+    * simple connection to a GraphDB REST service based on given URI and credentials
+    * possibility to easily send GraphQL-Queries to the service
+    * parsing methods to create a QueryResult out of the XML-Response (using JDOM)
+    * API to handle vertices, single- /hyperedges and some result meta data
+    * compatibility to refactored output
+
+And the also contained Demo:
+
+    * a simple Demo shows the usage of the current client
+    * cli based output
+    * located at ../Demo/ with source code and runnable archiv
+
+
+===== First Steps =====
+
+==== Source of supply =====
+
+=== Download from Github === 
+
+Since the Java GraphDB client was released, it is reachable at github. You can download it for free at: https://github.com/sones/sones-javaclient . Just click on “Download” and get the source. You can choose between *.zip or *.tar.gz. After you extracted the code, you are able to use the client. 
+{{:connectors:java_git.jpg|}}
+
+=== Pull the sources with git form github ===
+
+If you want to browse the source use this guide to import the javaclient into the Eclipse IDE. There is also a demo-class included, which contains some examples of how to use the javaclient.
+At first there will be explained how to install [[http://www.eclipse.org/egit/|EGit]] in Eclipse and then how to import the javaclient as an existing java-project. EGit is an Eclipse Team provider for the Git version control system.
+
+=== Install EGit ===
+
+If you want to use Eclipse and EGit as Git Team Provider use the following description.
+
+  * If you don't have Eclipse, get it from [[http://www.eclipse.org/|here]]
+  * Open Eclipse and switch to Marketplace: Help -> Eclipse Marketplace
+  * Select "Eclipse Marketplace" -> //Next//
+  * Search for "egit"
+  * Select "EGit - Git Team Provider" -> //Install//
+  * Check all boxes -> //Next//
+  * Accept the license agreement -> //Finish//
+  * Restart Eclipse
+
+=== Configure SSH2 in Eclipse ===
+
+To use Git SSH2 authentication you must add your private key to the Eclipse SSH2 configuration. If you don't have any experience with git and ssh check [[http://help.github.com/working-with-key-passphrases/|this]].
+
+  * In Eclipse: Window -> Preferences -> General -> Network Connections -> SSH2
+  * Add your private key -> //OK//
+{{:connectors:ssh2.jpg|}}
+
+=== Import JavaClient ===
+
+The following description is about cloning the master branch using the Import-Assistant of Eclipse.
+
+  * In Project Explorer: RMB -> Import
+  * Select Git -> Projects from Git 
+  {{:connectors:import_step_1.jpg|}}
+  * //Next//
+  * Select //Clone//
+  * Clone menu
+    * URI: "git@github.com:sones/sones-javaclient.git"
+    * Protocol: ssh
+    * User: git
+    * Password: leave blank
+  {{:connectors:import_step_2.jpg|}}
+  * //Next//
+  * Select "master" -> //Next//
+  {{:connectors:import_step_3.jpg|}}
+  * Select local project directory and the desired branch -> //Next//
+  {{:connectors:import_step_4.jpg|}}
+  * Select repository "sones-javaclient - <your directory>\.git" -> //Next//
+  {{:connectors:import_step_5.jpg|}}
+  * Import Dialog
+    * Method for project creation: Import Existing Project
+    * Method for sharing projects after project creation: Try to share newly created projects automaticall 
+  {{:connectors:import_step_6.jpg|}}
+  * //Next//
+  * Check "sones-javaclient" -> //Finish//
+  {{:connectors:import_step_7.jpg|}}
+  * Done
+
+
+==== Embed into projects ====
+
+You need just the archive file to get the client working, but you are also able to use the plain java source code from the "src" folder. Just import the GraphDBClient and you are able to use.
+The package also contains the demo 
+
+=== Create an Instance ===
+
+          GraphDBClient _client  = new GraphDBClient("localhost","test","test",9975);
+       
+The first argument identifies the Host where the REST service is listening (this could be an IP or an alias). The second argument is the username and the third the password. The last one is an optional parameter - the port. The Community Edition's default port is the 9975. If the port was changed to another one, you have to pass this here. 
+
+=== Sending a Query ===
+
+To send a query you just have to call the query() method with a GraphQL-Query as string-Parameter, like that: 
+
+          QueryResult _result = _client.Query("CREATE VERTEX TYPE Car");
+          
+Check the [[http://developers.sones.de/wiki/doku.php?id=documentation:gql|GraphQL-Documentation]] to see more GraphQL-Examples. 
+The return value is an Object of “QueryResult”. This query result contains all information about the last query. It is really useful to evaluate the query status, whether it was successful or faulty! The most important functions of QueryResult are:
+
+VertexViewList:
+        * getVertexViewList() – returns an list of vertices from the result
+
+Query meta:
+        * getQueryString() – returns the query string, which was executed
+        * getQueryLanguage() - returns the current query language
+        * getDuration() - returns the execution duration
+        * ...
+
+There are some other functions to evaluate the result in the returned objects. As you have seen, it at the is really easy to use the Java GraphDB client. 
+For visualization examples, see the Demo.
+
+===== Walkthrough the Demo =====
+
+==== What is the Demo? ====
+
+The Demo comes with the source code located at "src" and a runnable java archive located at "demo".
+It is a small CLI tool with a pseudo graphical output of the query result. The Demo uses the Community Edition of the GraphDB, because all parameters are already set. You can try it on Windows (cmd/powershell):
+
+          java -jar "%Path%/Demo/DemoClient.jar"
+          
+There is also a batch file, to start the DemoClient (make sure, there is no space in your path string).
+
+==== The visualization of the “QueryResult” ====
+
+The demo class "GraphDSClientDemo.java" contains 3 functions (the first one is main).
+
+      * printQueryResult(...) - the general 
+      * printVertex(...) - the procedure with prints every vertex, including properties and edges   (single/hyper)
+
+
+
+First of all, we want to print some query meta:
+
+		System.out.println("The current QueryResult contains the following data:");
+		System.out.println(myResult.getQueryLanguage() + ": " + myResult.getQueryString());
+		System.out.println("Duartion: " + myResult.getDuration());
+		System.out.println("ResultType: " + myResult.getResultType().toString());
+		System.out.println("Error: " + myResult.getErrorMessage());
+		
+The queryresult contains a list of vertices. You can iterate through that list like that: 
+
+               List<Vertex> vertexviewlist = myResult.getVertexViewList();
+		
+               for (Vertex vertex : vertexviewlist) {
+			printvertex(vertex, vertexviewlist.indexOf(vertex),0);
+               }	
+               
+For the edges and properties it is really similar:
+
+          List<Property> properties = myVertex.getProperties();
+               
+		for (Property property : properties) {
+			System.out.println(tabs + " |   *" + property.getId() + ": " + property.getValue());
+		}	
+
+
+There are a lot of other functions, which helps you to get special information, for instance neighborhood. For further information, see the code documentation.
+
+===== Get involved at github =====
+
+The complete Community Edition of our sones GraphDB(v2.0) is provided at: http://www.github.com/sones. At this location, there are the database and some other projects available.
+
+
+
+
+
+
+          

@@ -1,0 +1,9 @@
+====== Use-Cases for GraphDB ======
+
+  * large graph processing
+    * Graph clustering (MCL, peer pressure)
+    * Subgraph / submatrix indexing
+    * Shortest path calculations
+    * Betweenness centrality
+    * Graph contraction
+    * Cycle detection

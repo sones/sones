@@ -1,0 +1,41 @@
+====== Benchmark results ======
+
+By using our GraphDB benchmarking tool we did some runs:
+
+  * Hardware: Intel Core i7 920 + 12GB DDR3 RAM
+    * number of vertices: 300.000
+    * number of edges: ~22.500.000
+      * import line: import 'simplenetwork' options (countOfUsers = 300000, minCountOfEdges = 50, maxCountOfEdges = 100)
+        * Executed simpleNetwork import in 225,9208683 seconds.
+      * benchmark 'vtps_partitionedparallel' iterations = 10
+        * Executed the vtps_partitionedparallel benchmark in 3,7105205 seconds.
+        * Traversed 61448969,6953831 edges per second
+      * benchmark 'vtps_parallel' iterations = 10
+        * Executed the vtps_parallel benchmark in 3,6801524 seconds.
+        * Traversed 62026216,1607756 edges per second
+      * benchmark 'vtps_singlethreaded' iterations = 10
+        * Executed the vtps_singlethreaded benchmark in 3,7087827 seconds.
+        * Traversed 61586045,1276888 edges per second
+      * benchmark 'vtps_plinq' iterations = 10
+        * Executed the vtps_plinq benchmark in 3,7458806 seconds.
+        * Traversed 60933058,6655799 edges per second
+  * Hardware: Intel Core i7 870 (2.93 Ghz) + 8 GB DDR3 RAM
+    * number of vertices: 300.000
+    * number of edges: ~22.500.000
+      * import line: import 'simplenetwork' options (countOfUsers = 300000, minCountOfEdges = 50, maxCountOfEdges = 100)
+        * Executed simpleNetwork import in 215,4555038 seconds.
+      * benchmark 'vtps_partitionedparallel' iterations = 10
+        * Executed the vtps_partitionedparallel benchmark in 3,5572188 seconds.
+        * Traversed 22334398 edges. Average: 65047616,2478662TPS Median: 67189539,6605679TPS StandardDeviation 5389000,04581175TPS
+      * benchmark 'vtps_parallel' iterations = 10
+        * Executed the vtps_parallel benchmark in 3,491024 seconds.
+        * Traversed 22334398 edges. Average: 65254620,8737501TPS Median: 64761335,714208TPS StandardDeviation 2014194,44919042TPS
+      * benchmark 'vtps_singlethreaded' iterations = 10
+        * Executed the vtps_singlethreaded benchmark in 3,4641082 seconds.
+        * Traversed 22334398 edges. Average: 65778599,5716552TPS Median: 66364526,4494181TPS StandardDeviation 2297741,40238942TPS
+      * benchmark 'vtps_plinq' iterations = 10
+        * Executed the vtps_plinq benchmark in 3,4415549 seconds.
+        * Traversed 22334398 edges. Average: 66174936,6287976TPS Median: 66729297,4364715TPS StandardDeviation 2064676,29998167TPS
+      * benchmark 'vtps_plinq' iterations = 100
+        * Executed the vtps_plinq benchmark in 33,9842017 seconds.
+        * Traversed 22334398 edges. Average: 65882673,4853699TPS Median: 66039068,697799TPS StandardDeviation 1707116,32745458TPS

@@ -1,0 +1,29 @@
+====== Setting statement ======
+
+With settings you are able to affect the behaviour of the database. Settings can be set for the database, sessions or user defined types and this attributes. Settings follow an object oriented concept. 
+
+This means you can set an setting for the complete database. That has the effect, that all sessions and user defined types have the same value for this setting. 
+
+The settings are designed as plugins and will be loaded at the start time of the database. Therby it is possible to create new plugins by users and use them at the runtime by derive the base type //ADBSettingsBase//.
+
+
+        * [[documentation:database:querylanguage:stmt:settingstmt:DBSettings:latest|Settings on DB]]
+        * [[documentation:database:querylanguage:stmt:settingstmt:SesssionSettings:latest|Settings on Session]]
+        * [[documentation:database:querylanguage:stmt:settingstmt:TypeSettings:latest|Settings on Type]]
+        * [[documentation:database:querylanguage:stmt:settingstmt:AttrSettings:latest|Settings on Type Attributes]]
+
+        * Currently available Settings
+              * [[documentation:database:settings:settingdepth|Depth]]
+              * [[documentation:database:settings:settingdefaultonmandatory|DefaultOnMandatory]]          
+              * [[documentation:database:settings:settingreferences|Invalidreferencehandling]]      
+              * [[documentation:database:settings:settingtimeout|SelectTimeOut]]
+              * [[documentation:database:settings:settingtypedirblocksize|TypeDirBlocksize]]
+              * [[documentation:database:settings:settingshowcrtime|ShowCreationTime]]
+              * [[documentation:database:settings:settingshowdeltime|ShowDeletionTime]]
+              * [[documentation:database:settings:settingshowedition|ShowEdition]]
+              * [[documentation:database:settings:settingshoweditions|ShowEditions]]
+              * [[documentation:database:settings:settingshowlastaccesstime|ShowLastAccessTime]]          
+              * [[documentation:database:settings:settingshowlastmodetime|ShowLastModifictionTime]]
+              * [[documentation:database:settings:settingshowrevision|ShowRevision]]
+              * [[documentation:database:settings:settingshowuuid|ShowUUID]]
+              * [[documentation:database:settings:settingreadonly|Readonly]]

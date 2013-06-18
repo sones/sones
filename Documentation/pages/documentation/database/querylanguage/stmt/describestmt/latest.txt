@@ -1,0 +1,22 @@
+====== DESCRIBE statements ======
+        * [[documentation:database:querylanguage:stmt:describestmt:descaggrstmt:latest|Describe Aggregates]]
+        * [[documentation:database:querylanguage:stmt:describestmt:descedgestmt:latest|Describe Edges]]
+        * [[documentation:database:querylanguage:stmt:describestmt:descfuncstmt:latest|Describe Functions]]
+        * [[documentation:database:querylanguage:stmt:describestmt:descsettstmt:latest|Describe Settings]]
+        * [[documentation:database:querylanguage:stmt:describestmt:descidxstmt:latest|Describe Indices]]
+====== Describe ======
+<code>
+DESCRIBE 
+TYPES // shows all available types
+| TYPE identifier
+| EDGES // shows all available edges
+| EDGE identifier
+| FUNCTIONS // shows all available functions
+| FUNCTION identifier
+| AGGREGATES // shows all available aggregates
+| AGGREGATE identifier
+| SETTINGS [ON TYPE identifier | ON ATTRIBUTE attr_definition | ON DB | ON SESSION] // shows all available settings
+| SETTING identifier [ON TYPE identifier | ON ATTRIBUTE attr_definition | ON DB | ON SESSION]
+| INDICES // shows all available indices
+| INDEX attr_definition [edition]
+</code>

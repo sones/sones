@@ -1,0 +1,17 @@
+To add a new data-export just derive from the base type //AGraphDBExport//.
+
+<code csharp>
+public class GraphDBExport : AGraphDBExport
+    {
+        public override string ExportFormat
+        {
+            get { return "...."; } // this is the format you will chosse in the export query
+        }
+
+        public override Exceptional Export(DBContext myDBContext, IDumpable myGrammar, IEnumerable<TypeManagement.GraphDBType> myTypes, DumpTypes myDumpType, VerbosityTypes verbosityType = VerbosityTypes.Errors)
+        {
+            ......
+        } 
+    }
+        
+</code>

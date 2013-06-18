@@ -1,0 +1,5 @@
+====== Create Vertex Statement Versions ======
+Since version 1.1 the CREATE TYPE was renamed to CREATE VERTEX. You will get a warning if you still use CREATE TYPE for versions later than 1.1
+
+  * [[documentation:database:querylanguage:stmt:createvertexstmt:1.1|CREATE TYPE Statement 1.1]]
+  * [[documentation:database:querylanguage:stmt:createvertexstmt:latest|CREATE VERTEX Statement latest]]

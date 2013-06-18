@@ -1,0 +1,71 @@
+====== vertex type predefinition ======
+
+Vertex is a term for an Object in an Graph. You can find more information about Vertex and Graphs in section [[documentation:datamodel:graph|Graph Model]].
+
+The type predefinition of a vertex characterizes a database vertex.
+
+===== Syntax =====
+
+typeName\\
+[ EXTENDS typeName ]\\
+[ ATTRIBUTES ( typeName attributeName[=DefaultValue] [, typeName attributeName[=DefaultValue] ] ) ]\\
+[ BACKWARDEDGES (typeName.attributeName attributeName [, typeName.attributeName attributeName ]) ]\\ 
+[ UNIQUE ( uniqueAttribute [, uniqueAttribute ] ) ]\\
+[ MANDATORY ( mandatoryAttribute [, mandatoryAttribute ] ) ]\\
+[ INDICES ( [[documentation:database:querylanguage:indexdefinition:latest|INDEXDEFINITION ]] [, [[documentation:database:querylanguage:indexdefinition:latest|INDEXDEFINITION]] ] ) ]\\
+[ COMMENT = commentString ]\\
+
+==== typeName ====
+
+The name of the vertex.
+
+==== EXTENDS ====
+
+[ EXTENDS typeName ]
+
+The name of the parent vertex type. All attributes wil be derived from this vertex. For more information about vertices check out the [[documentation:datamodel:graph|graph datamodel]].
+
+==== ATTRIBUTES ====
+
+[ ATTRIBUTES ( typeName attributeName[=DefaultValue] [, typeName attributeName[=DefaultValue] ] ) ]
+
+A list of attribute definitions with at least one member. The first part of the definition is the type of the attribute (i.e. Integer, String, User, SET<User>...) and the second part represents the name of the attribute.
+
+To use a special [[documentation:edges|edge implementation]] you can define the type of the special edge as a generic parameter to the SET. In the case of a [[documentation:database:edges:edgetypeweighted|weighted set]] you will pass the base type as the first parameter. There are two more optional parameters default value and the sortdirection.
+<code>
+SET<WEIGHTED(double, 2.1, 'desc')<Product>> OrderedProducts
+</code> 
+
+=== Default Value ===
+
+Default value for the attribute. If a default value is set for the attribute, then it is automatically marked as mandatory. Default values are only allowed on non reference types.
+
+==== BACKWARDEDGES ====
+
+[ BACKWARDEDGES (typeName.attributeName attributeName [, typeName.attributeName attributeName ]) ]
+
+A list of [[documentation:database:querylanguage:backwardEdgeAttribute|backward edge]] attributes with at least one member. The first part of a backward edge definition consists of a type - attribute combination. Analogous to the Attributes clause the second part represents the name of the [[documentation:database:querylanguage:backwardEdgeAttribute|backward edge]].
+
+==== UNIQUE ====
+
+[ UNIQUE ( uniqueAttribute [, uniqueAttribute ] ) ]
+
+Defines at least one attributes that has to be unique for each database object of the specified type.
+
+==== MANDATORY ====
+
+[ MANDATORY ( mandatoryAttribute [, mandatoryAttribute ] ) ]
+
+Defines at least one attribute that has to be set on each database object of the specified type.
+
+==== INDICES ====
+
+[ INDICES ( [[documentation:database:querylanguage:indexdefinition:latest|INDEXDEFINITION ]] [, [[documentation:database:querylanguage:indexdefinition:latest|INDEXDEFINITION]] ] ) ]
+
+Defines at least one index for the specified type.
+
+==== COMMENT ====
+
+[ COMMENT = commentString ]
+
+A comment that is stored on the defined type.

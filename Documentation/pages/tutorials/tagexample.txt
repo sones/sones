@@ -1,0 +1,513 @@
+======= TagExample (C#) =======
+
+This is an Example wich describes and shows the simplicity of setting up a GraphDB by using the sones GraphDB [[https://github.com/sones/sones|CommunityEdition]].
+It shows you how to create your own Database by using the sones GraphDB C# API. 
+We want to show two ways to use the GraphDB for creating your own scheme
+  - by sending GraphDB Requests and   
+  - by sending queries over the sones GraphQueryLanguage. 
+Here you can find the hole [[https://github.com/sones/sones/tree/master/Applications/TagExample|source code of the TagExample]].
+ 
+If you are using the SonesQueryLanguage please read our [[https://github.com/downloads/sones/sones/GQL_cheatsheet_latest.pdf|GraphQL Cheatsheet]]
+there you can find the description of all available statements and some additional examples.
+
+In this Example we show how to:
+    - create user defined types, add structured properties, add unknown properties
+    - create outgoing and incoming edges on a type
+    - create an index on a specified property in 3 different ways
+    - set constraints on properties (like "unique" and "mandatory")
+    - set up queries and analyse them
+    - use Function and Aggregates in a query
+
+----
+====== Primary Note ======
+In [[connectors:graphdsapi|GraphDB API Interface]] you can find some principles and introductory informations about the GraphDB API, there you can find some further informations which are not explained in this tutorial.
+Before we start to create our own types using the GraphDB, of course we need some GraphDB specific datatypes and datastructures. 
+They are explained in [[http://developers.sones.de/wiki/doku.php?id=connectors:graphdsapi&#graphdb_datatypes_and_datastructures|GraphDB datatypes and datastructures]]. 
+Please read this section before starting this Tutorial.
+Furthermore you need to add some assembly references to use the GraphDB API, they are shown here [[quickreference:assemblyreferences|Assembly References]]. In this section you will also find a short description what each assembly contains.
+----
+
+====== How to ... ======
+... set up a sones GraphDB, create userdefined types, add properties, create indices, insert data and read out the inserted DB datas.
+We want to use the sones **GraphDSServer** API to have a powerful interface which provides an internal connection to a GraphDB and GraphQL instance.
+So we have the ability to do the hole work of this example using the GraphDSServer, additionally we could create a **GraphDSRestClient** and use the **Webshell** to sent queries by using the browser.
+Doing that you can do all the work with the GraphDB by using the QueryLanguage although your GraphDB instance is running on another Computer.
+
+==== Aim ====
+What do we want to do. We want to create two types named "Tag" and "Website", both will get some attributes:
+  - "Tag" 
+          * a Property named "Name" of type String with the comment "This is a property on type 'Tag' with name 'Name' and is of type 'String'"
+          * an outgoing edge named "TaggedWebsites", which points to a set of "Website" vertices and the comment "This is an outgoing edge on type 'Tag' wich points to the type 'Website' (the AttributeType) and is defined as 'MultiEdge', which means that this edge can contain multiple single edges"
+  - "Website"  
+          * a Property named "Name" of type String with the comment "This is a property on type 'Website' with name 'Name' and is of type 'String'"
+          * a Property named "URL" of type String
+          * an incoming edge named "Tags" which has an related type, the ougoing edge "Tag.TaggedWebsites"; by following this it is very easy to find out which vertices are pointing to the actual
+          * an index with an optional name "MyIndex" on property "Name" of type "SingleValueIndex"
+
+After that we want to insert some datasets into the DB.
+  - "Tag"
+          * named 'good', should point to the "Website" vertices 'CNN' and 'xkcd'
+          * named 'funny' should point to the "Website" vertices 'xkcd' and 'onion'
+  - "Website"
+          * named 'CNN' with the URL <nowiki>'http://cnn.com/'</nowiki>
+          * named 'xkcd' with the URL <nowiki>'http://xkcd.com/'</nowiki>
+          * named 'onion' with the URL <nowiki>'http://theonion.com/'</nowiki>
+          * named 'Test' with an empty URL and an unknown attribute named 'unknown property'
+
+----
+
+
+==== Preparation ====
+
+Here you can see the entire **TagExample** class definition, whose elements will be explained in the next steps.
+
+You can see the important variables which are needed in every method and will follow us through the entire example. 
+A **GraphDSServer** a **SecurityToken** and an **TransactionID**. Also you can see the method names of each method, which are made to capsulate the different API usage's.
+<code csharp>
+public class TagExample
+{
+   #region public DATA
+
+   //GraphDSServer instance
+   IGraphDS GraphDSServer;
+
+   //SecurityToken and TransactionID
+   SecurityToken SecToken;
+   Int64 TransactionID;
+
+   #endregion
+   
+   //constructor
+   public TagExample()
+   
+   static void Main(string[] args)
+   
+   //Starts the example, including creation of types "Tag" and "Website", insert some data and make some selects.
+   public void Run()
+   
+   //Describes how to define a type with user defined properties and indices and create some instances by using GraphDB requests.
+   private void GraphDBRequests()
+   
+   //Describes how to send queries using the GraphQL.
+   private void GraphQLQueries()
+   
+   //Executes some select statements.
+   private void SELECTS()
+   
+   //This private method analyses the QueryResult, shows the ResultType and Errors if existing.
+   private bool CheckResult(QueryResult myQueryResult)
+}
+</code>
+
+----
+
+==== public TagExample() ====
+
+The constructor, here we create a **SonesGraphDB**, a **GraphDSServer** instance and get a security and transaction token. 
+<code csharp>
+//Make a new GraphDB instance
+var graphDB = new SonesGraphDB();
+
+#region Configure PlugIns
+// Plugins are loaded by the GraphDS with their according PluginDefinition and only if they are listed
+// below - there is no auto-discovery for plugin types in GraphDS (!)
+
+// the GraphQL Query Language Plugin needs the GraphDB instance as a parameter
+List<PluginDefinition> QueryLanguages = new List<PluginDefinition>();
+Dictionary<string, object> GQL_Parameters = new Dictionary<string, object>();
+GQL_Parameters.Add("GraphDB", graphDB);
+
+QueryLanguages.Add(new PluginDefinition("sones.gql", GQL_Parameters));
+
+#endregion
+
+//adding the QueryLanguage as a GraphDSPlugin
+GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(null, QueryLanguages);
+
+//creating credentials
+var credentials = new UserPasswordCredentials("User", "test");
+
+//create an instance
+GraphDSServer = new GraphDS_Server(graphDB, (ushort)9975, "User", "test", IPAddress.Any, PluginsAndParameters);
+GraphDSServer.LogOn(credentials);
+
+//get a SecurityToken and an TransactionID
+SecToken = GraphDB.LogOn(new UserPasswordCredentials("root", "1111"));
+TransationID = GraphDB.BeginTransaction(SecToken);
+</code>
+
+=== load Plug-ins ===
+As default the SonesGraphDB uses an InMemoryFileSystem, which means that all datas which are created during a session are lost if we shutdown the GraphDB. It is also possible to specifie a list of **PluginDefinitions** inside the SonesGraphDB constructor, 
+f.e. the **sones PagedFSPlugin** wich is part of the EnterpriseEdition:
+<code csharp>
+graphDB = new SonesGraphDB(
+              new GraphDBPlugins(
+                  new PluginDefinition("sones.pagedfsnonrevisionedplugin", 
+                                       new Dictionary<string, object>() { { "location", location } })));
+</code>
+To set a plugin you have to create a new PluginDefinition where the first parameter is the **PluginName** and the second are setable parameters for the plugin. More about creating your own plugin using the **sones IPluginable** interface can be found in section ... .
+\\ \\
+Additional it is possible to define Plug-ins, which are loaded during the creation of a GraphDSServer. 
+The code below shows how to define the Plug-in for the sones GraphQueryLanguage. This definition now has to be attached to a datastructure named **GraphDSPlugins**, wich is one optional parameter of the GraphDSServer constructor.
+<code csharp>
+#region Configure PlugIns
+// Plugins are loaded by the GraphDS with their according PluginDefinition and only if they are listed
+// below - there is no auto-discovery for plugin types in GraphDS (!)
+
+// the GraphQL Query Language Plugin needs the GraphDB instance as a parameter
+List<PluginDefinition> QueryLanguages = new List<PluginDefinition>();
+Dictionary<string, object> GQL_Parameters = new Dictionary<string, object>();
+GQL_Parameters.Add("GraphDB", graphDB);
+
+QueryLanguages.Add(new PluginDefinition("sones.gql", GQL_Parameters));
+
+#endregion
+
+//adding the QueryLanguage as a GraphDSPlugin
+GraphDSPlugins PluginsAndParameters = new GraphDSPlugins(null, QueryLanguages);
+
+//create an instance
+GraphDSServer = new GraphDS_Server(graphDB, (ushort)9975, "User", "test", IPAddress.Any, PluginsAndParameters);
+</code>
+----
+
+==== private void GraphDBRequests() ====
+In this section we describe how to define types and add some properties using GraphDB requests.
+
+=== Type Definition and Creation ===
+At first we need a **VertexTypePredefinition** to create a new type.
+The creation of the userdefined type "Tag":
+<code csharp>
+var Tag_VertexTypePredefinition = new VertexTypePredefinition("Tag");
+</code>
+
+In the next steps we can create attributes (like properties, edges, binary properties aso.) and add them to the VertexTypePredefinition.
+We have to create a **PropertyPredefinition** and a **OutgoingEdgePredefinition** to create a new property and outgoing edge:
+<code csharp>
+//create property
+var PropertyName = new PropertyPredefinition("Name", "String")
+                               .SetComment("This is a property on type 'Tag' named 'Name' and is of type 'String'");
+//add property                               
+Tag_VertexTypePredefinition.AddProperty(PropertyName);
+
+//create outgoing edge
+var OutgoingEdgesTaggedWebsites = new OutgoingEdgePredefinition("TaggedWebsites", "Website")
+                                                    .SetMultiplicityAsMultiEdge()
+                                                    .SetComment(@"This is an outgoing edge on type 'Tag' wich points to the type 
+                                                                  'Website' (the AttributeType) and is defined as 'MultiEdge',
+                                                                  which means that this edge can contain multiple single edges");
+//add outgoing edge
+Tag_VertexTypePredefinition.AddOutgoingEdge(OutgoingEdgesTaggedWebsites);
+</code>
+
+Same steps by creating the type "Website":
+<code csharp>
+//create the VertexTypePredefinition
+var Website_VertexTypePredefinition = new VertexTypePredefinition("Website");
+
+//create properties "Name" and "URL"
+PropertyName = new PropertyPredefinition("Name", "String")
+                           .SetComment("This is a property on type 'Website' named 'Name' and is of type 'String'");
+
+var PropertyUrl = new PropertyPredefinition("URL", "String")
+                              .SetAsMandatory();
+
+//add properties to the predefinition
+Website_VertexTypePredefinition.AddProperty(PropertyName);
+Website_VertexTypePredefinition.AddProperty(PropertyUrl);
+</code>
+
+Now we want to create an index on the Property "Name" of the type "Website". There are three different ways to create an index on a property.
+
+  - Create an index definition and specifie the property- and type name and and add the definition to the VertexTypePredefinition.<code csharp>
+    var MyIndex = new IndexPredefinition("MyIndex")
+                           .SetIndexType("MultipleValueIndex")
+                           .AddProperty("Name")
+                           .SetVertexType("Website");
+
+    Website_VertexTypePredefinition.AddIncomingEdge(new IncomingEdgePredefinition("Tags")
+                                                                    .SetOutgoingEdge("Tag", "TaggedWebsites"));</code> 
+  - On creating the property definition of property "Name" call the SetAsIndexed() method, the GraphDB will create the index.<code csharp>
+    PropertyName = new PropertyPredefinition("Name", "String")
+                               .SetComment("This is a property on type 'Website' named 'Name' and is of type 'String'")
+                               .SetAsIndexed();</code>
+  - Make a create index request, like creating a type. **BEWARE:** This statement must be execute AFTER the type "Website" is created.<code csharp>
+    var MyIndex = GraphDSServer.CreateIndex<IIndexDefinition>(SecToken,
+                                                              TransactionID,
+                                                              new RequestCreateIndex(
+                                                                         new IndexPredefinition("MyIndex")
+                                                                                  .SetIndexType("MultipleValueIndex")
+                                                                                  .AddProperty("Name")
+                                                                                  .SetVertexType("Website")), 
+                                                              (Statistics, Index) => Index);</code>
+                                                           
+Now there is one of the first really interesting points, we are sending an request via the GraphDSServer to the GraphDB wich will validate and execute the request.
+The **RequestCreateVertexTypes** gets a list of VertexTypePredefinitions, which are defined before. 
+As result of the request we will get a list of created GraphDB **VertexType's**.
+Like in our GraphQL Cheatsheet explained there are two possibilities to create types, we can use the "create vertex type .." or "create vertex types .." statement. 
+In the Same way we are using the GraphDB, beware creating types at the same time has an important background. 
+Like in this example, sometimes types depend on each other. 
+The type "Tag" has an outgoing edge to type "Website" (depends of type "Website") and on the other hand the type "Website" has an incoming edge of type "Tag" (depends of type "Tag").
+Assumed we would create the types in sequence, we would get an error during validation beacause there is a reference to a not existing type.
+That is the reason why we have to create them at the same time.
+<code csharp>
+var DBTypes = GraphDSServer.CreateVertexTypes<IEnumerable<IVertexType>>(SecToken,
+                                                                        TransactionID,
+                                                                        new RequestCreateVertexTypes(
+                                                                                   new List<VertexTypePredefinition> { 
+                                                                                           Tag_VertexTypePredefinition, 
+                                                                                           Website_VertexTypePredefinition }),
+                                                                        (Statistics, VertexTypes) => VertexTypes);
+</code>
+As result of the request we get a list of the created GraphDB VertexType's.
+
+=== Insert data / Create instances of the created types ===
+Now after we have created our types we can start to insert some data into the GraphDB. Again we are doing this by sending requests, an **RequestInsertVertex** request.
+This request contains the type name in wich we want to insert the dataset and holds a list of attributes which should be inserted (like structured property, unknown property, comment aso.).
+As result we will get a GraphDB **Vertex** wich represents the inserted dataset.
+<code csharp>
+var cnn = GraphDSServer.Insert<IVertex>(SecToken, 
+                                        TransactionID, 
+                                        new RequestInsertVertex("Website")
+                                                   .AddStructuredProperty("Name", "CNN")
+                                                   .AddStructuredProperty("URL", "http://cnn.com/"),
+                                        (Statistics, Result) => Result);
+
+var xkcd = GraphDSServer.Insert<IVertex>(SecToken, 
+                                         TransactionID, 
+                                         new RequestInsertVertex("Website")
+                                                    .AddStructuredProperty("Name", "xkcd")
+                                                    .AddStructuredProperty("URL", "http://xkcd.com/"),
+                                         (Statistics, Result) => Result);
+
+var onion = GraphDSServer.Insert<IVertex>(SecToken, 
+                                          TransactionID, 
+                                          new RequestInsertVertex("Website")
+                                                     .AddStructuredProperty("Name", "onion")
+                                                     .AddStructuredProperty("URL", "http://theonion.com/"),
+                                          (Statistics, Result) => Result);
+</code>
+Now we want to add a value in a property which doesn't exist. Such a property is called "UnknownProperty".
+To do that we have to use the "AddUnknownProperty" method.
+**BEWARE:** if you use the "AddStructuredProperty" method to add a value to an unknown property will throw an exception.
+Now we add a value "unknown property" to an unknown property of name "Unknown":
+<code csharp>
+var test = GraphDSServer.Insert<IVertex>(SecToken, 
+                                         TransactionID, 
+                                         new RequestInsertVertex("Website")
+                                                    .AddStructuredProperty("Name", "Test")
+                                                    .AddStructuredProperty("URL", "")
+                                                    .AddUnknownProperty("Unknown", "unknown property"),
+                                         (Statistics, Result) => Result);
+</code>
+
+Insert some "Tag's"
+<code csharp>
+var good = GraphDSServer.Insert<IVertex>(SecToken, 
+                                         TransactionID, 
+                                         new RequestInsertVertex("Tag")
+                                                    .AddStructuredProperty("Name", "good")
+                                                    .AddEdge(new EdgePredefinition("TaggedWebsites")
+                                                                     .AddVertexID(Website.ID, cnn.VertexID)
+                                                                     .AddVertexID(Website.ID, xkcd.VertexID)),
+                                         (Statistics, Result) => Result);
+
+var funny = GraphDSServer.Insert<IVertex>(SecToken, 
+                                          TransactionID, 
+                                          new RequestInsertVertex("Tag")
+                                                     .AddStructuredProperty("Name", "funny")
+                                                     .AddEdge(new EdgePredefinition("TaggedWebsites")
+                                                                      .AddVertexID(Website.ID, xkcd.VertexID)
+                                                                      .AddVertexID(Website.ID, onion.VertexID)),
+                                          (Statistics, Result) => Result);
+</code>
+
+=== Read out types and vertices of GraphDB ===
+To read out a VertexType we use the **RequestGetVertexType** where we give in the "ID" or "Name" of the type we want to get:
+<code csharp>
+var TagDBType = GraphDSServer.GetVertexType<IVertexType>(SecToken, 
+                                                         TransactionID, 
+                                                         new RequestGetVertexType(Tag.ID), 
+                                                         (Statistics, Type) => Type);
+</code>
+
+Now we can read out all informations saved on this type:
+<code csharp>
+//type name
+var typeName = TagDBType.Name;
+//are there other types wich extend the type "Tag"
+var hasChildTypes = TagDBType.HasChildTypes;
+//get the definition of the property "Name"
+var propName = TagDBType.GetPropertyDefinition("Name");
+</code>
+
+We will have all instances (a list of Vertices) of this type using the **RequestGetVertices**:
+<code csharp>
+var TagInstances = GraphDB.GetVertices(SecToken, 
+                                       TransactionID, 
+                                       new RequestGetVertices(TagDBType.ID), 
+                                       (Statistics, Vertices) => Vertices);
+</code>
+To get the value of a specific property:
+<code csharp>
+//the "propName" is saved before, we got the property definition from the type 
+//and using the ID to get the value of this property from a vertex
+var name = TagInstances.First().GetPropertyAsString(propName.ID);
+</code>
+
+----
+
+==== private void GraphQLQueries() ====
+In this section we want to do the same things as in the section //private void GraphDBRequests()// with the difference that we want to use the **SonesQueryLanguage**, 
+instead of sending requests to the GraphDB we want to send queries to the GraphQL (please look at the [[https://github.com/downloads/sones/sones/GQL_cheatsheet_latest.pdf|GraphQL Cheatsheet]] for more informations about the statements and syntax). \\
+Furthermore note the section [[documentation:database:queryresult:2.0|Query Result - accessing results]] to learn more about content and structre of our query results.
+Again we are using the GraphDSServer API, now to sent queries, the **Query(SecurityToken, TransactionID, Query, QueryLanguageName)** method gives us this ability.
+
+=== Type Definition and Creation ===
+We create the two types "Tag" and "Website", define properties and edges. 
+Note: We create them at the same time in a 'create vertex types ..' statement because of the circular dependencies.
+<code csharp>
+var Types = GraphDSServer.Query(SecToken, 
+                                TransactionID, 
+                                @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+                                                      Website ATTRIBUTES (String Name, String URL) 
+                                                             INCOMINGEDGES (Tag.TaggedWebsites Tags), 
+                                SonesGQLConstants.GQL");
+</code>
+Again there are three ways to create an index on property "Name" on type "Website":
+  - Create an index definition and specifie the property name and index type while creating the types.<code csharp>
+var Types = GraphDSServer.Query(SecToken, 
+                                TransactionID, 
+                                @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+                                                      Website ATTRIBUTES (String Name, String URL) 
+                                                              INCOMINGEDGES (Tag.TaggedWebsites Tags) 
+                                                              INDICES (MyIndex INDEXTYPE MultipleValueIndex ON ATTRIBUTES Name), 
+                                SonesGQLConstants.GQL");</code>
+  - On creating the type with the property "Name", just define the property "Name" under INDICES.<code csharp>
+var Types = GraphDSServer.Query(SecToken, 
+                                TransactionID, 
+                                @"CREATE VERTEX TYPES Tag ATTRIBUTES (String Name, SET<Website> TaggedWebsites), 
+                                                      Website ATTRIBUTES (String Name, String URL) 
+                                                              INCOMINGEDGES (Tag.TaggedWebsites Tags) 
+                                                              INDICES (Name), 
+                                SonesGQLConstants.GQL");</code>
+  - Make a create index query.<code csharp>
+var MyIndex = GraphDSServer.Query(SecToken, 
+                                  TransactionID, 
+                                  "CREATE INDEX MyIndex ON VERTEX TYPE Website (Name) INDEXTYPE MultipleValueIndex", 
+                                  SonesGQLConstants.GQL);</code>
+    
+=== Insert data / Create instances of the created types ===
+Insert datasets inside the DB and specified types
+
+<code csharp>
+var cnnResult = GraphDSServer.Query(SecToken, 
+                                    TransactionID, 
+                                    "INSERT INTO Website VALUES (Name = 'CNN', URL = 'http://cnn.com/')", 
+                                    SonesGQLConstants.GQL);
+
+var xkcdResult = GraphDSServer.Query(SecToken, 
+                                     TransactionID, 
+                                     "INSERT INTO Website VALUES (Name = 'xkcd', URL = 'http://xkcd.com/')", 
+                                     SonesGQLConstants.GQL);
+
+var onionResult = GraphDSServer.Query(SecToken, 
+                                      TransactionID, 
+                                      "INSERT INTO Website VALUES (Name = 'onion', URL = 'http://theonion.com/')", 
+                                      SonesGQLConstants.GQL);
+</code>
+
+Adding an unknown property within an query is very easy, you can add the property name and value inside the query without doing something else.
+**BEWARE:** That also means that you won't get an error if you make clerical mistakes while typing an specified property, the query will execute and insert your property as unknown.
+<code csharp>
+var unknown = GraphDSServer.Query(SecToken, 
+                                  TransactionID, 
+                                  "INSERT INTO Website VALUES (Name = 'Test', URL = '', Unknown = 'unknown property')", 
+                                  SonesGQLConstants.GQL);
+</code>
+
+Insert some "Tag's"
+<code csharp>
+var goodResult = GraphDSServer.Query(SecToken, 
+                                     TransactionID, 
+                                     "INSERT INTO Tag VALUES (Name = 'good', TaggedWebsites = SETOF(Name = 'CNN', Name = 'xkcd'))", 
+                                     SonesGQLConstants.GQL);
+
+var funnyResult = GraphDSServer.Query(SecToken, 
+                                      TransactionID, 
+                                      "INSERT INTO Tag VALUES (Name = 'funny', TaggedWebsites = SETOF(Name = 'xkcd', Name = 'onion'))", 
+                                      SonesGQLConstants.GQL);
+</code>
+
+=== Read out types and vertices of GraphDB ===
+To read datasets out of the GraphDB by using the SonesQueryLanguage via the GraphDSServer we are using the **SELECT** statement. 
+This statement allows us to get access to a variable number of datasets, specified by different functions and expressions. We can restrict a large number of results by set a **WHERE** expression, a **GROUP** clause, to group some datasets by using the same attribute or a **HAVING** clause to restrict the already restricted resultset.
+
+  - We want to find out the names of the "Tag" vertices which are tagging the "Website" 'xkcd'<code csharp>
+var _xkcdtags = GraphDSServer.Query(SecToken, 
+                                    TransactionID, 
+                                    "FROM Website w SELECT w.Tags WHERE w.Name = 'xkcd' DEPTH 1", 
+                                    SonesGQLConstants.GQL);</code>As result we get a QueryResult with two vertices, the "Tag's" with the names 'good' and 'funny'.
+  - Next wo want to get each vertex of type "Website" and want to know how many "Tag's" are pointing to each<code csharp>
+var _taggedsites = GraphDSServer.Query(SecToken, 
+                                       TransactionID, 
+                                       "FROM Website w SELECT w.Name, w.Tags.Count() AS Counter", 
+                                       SonesGQLConstants.GQL);</code>The QueryResult now contains three vertices, each vertex has only two properties ("Name" and "Counter"), the values are 'CNN' --> 1; 'xkcd' --> 2, 'onion' --> 1.
+  - Now lets select the names of the vertices of type "Tag", using those outgoing edges to the type "Website" to find out the URL's of the websites<code csharp>
+var _urls = GraphDSServer.Query(SecToken, 
+                                TransactionID, 
+                                "FROM Tag t SELECT t.Name, t.TaggedWebsites.URL", 
+                                SonesGQLConstants.GQL);</code>We will get two vertices inside the result (the two tags), each of them has an outgoing hyper edge whose target vertices are the websites, of which we are selecting there "URL" propertey. The 'good' tag will have an outgoing edge to 'CNN' and 'xkcd' and the 'funny' tag to 'xkcd' and 'onion'. <nowiki>So we get the 'good' tag with 'http://cnn.com/' and  and 'http://xkcd.com/' and the 'funny' tag with 'http://xkcd.com/' and  'http://theonion.com/'</nowiki>.
+
+----
+
+==== private bool CheckResult(QueryResult myQueryResult) ====
+
+This method schould be explained without showing any code here, beacause inside this method is just checked if there happend any errors during the query execution.
+If this happens the error is shown inside the console.
+
+----
+
+==== static void Main(string[] args) & public void Run() ====
+
+Now we are close to finish this tutorial. 
+We already finished the explanation of creating two types with different attributes like properties and edges. 
+We inserted some datas inside the two types and connected them by using the outgoing and incoming edges. 
+Furthermore we read out the datas, used functions and expressions to restrict the reault set and have shown the simplicity of selecting properties of multiple types by using the GraphDB **OutgoingEdges** and **IncomingEdges**.
+Done this we have to do following things inside the Main method:
+<code csharp>
+static void Main(string[] args)
+{
+   //creating a new example instance
+   var MyTagExample = new TagExample();
+
+   //call the Run() method
+   MyTagExample.Run();
+
+   //shutdown the GraphDB
+   MyTagExample.Shutdown();
+}
+</code>
+
+Inside the Run() method are just called the before explained methods:
+<code csharp>
+public void Run()
+{
+   GraphDBRequests();
+
+   //we have to clear the DB (delete all created types) to create them again using the QueryLanguage
+   GraphDSServer.Clear<IRequestStatistics>(SecToken, TransactionID, new RequestClear(), (Statistics, DeletedTypes) => Statistics);
+
+   GraphQLQueries();
+
+   SELECTS();
+}
+</code>
+
+----
+
+===== Conclusion =====
+As you hopefully saw and noticed, it is pretty simple to create a new **SonesGraphDB** using there API, to create a userdefined scheme and fill up the DB with your datasets.
+Using the GraphDSServer as universal API lets you use all the functions defined in the GraphDB and the GraphQL, so you need just two instances a **SonesGraphDB** (with or an InMemory or PagedFS) and a **GraphDSServer** to handle all possible operations.
+The **IPluginable** interface provides the powerful ability to implement your own plugins and use them with the GraphDB API. 
+Furthermore you can develop your own graph algorithms or DB functions and aggregates by using the **IGQLFunction** and **IGQLAggregate** interfaces.

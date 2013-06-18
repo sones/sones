@@ -1,0 +1,10 @@
+This statement show all implemented settings and informations about them.
+<code>DESCRIBE SETTINGS</code>
+
+This statement show all active settings and informations about them on a type an attribute or on session or on the database.
+<code>DESCRIBE SETTINGS
+ON TYPE + TypeList                  |
+ON ATTRIBUTE + id_TypeAndAttribute  | 
+ON DB                               |
+ON SESSION
+</code>

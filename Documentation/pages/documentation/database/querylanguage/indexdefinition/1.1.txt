@@ -1,0 +1,35 @@
+====== Index definition ======
+
+The definition of an attribute index during type creation via [[documentation:database:querylanguage:stmt:createvertexstmt:1.1|CREATE TYPE]] or [[documentation:database:querylanguage:stmt:createverticesstmt:1.1|CREATE TYPES]].
+
+===== Syntax =====
+
+[ indexName ] [ UNIQUE ] [ EDITION editionName ] [ INDEXTYPE indexTypeName ] ON TYPE ( attributeName [, attributeName ] )
+
+**alternate:**
+
+( attributeName [, attributeName ] )
+
+----
+
+[ indexName ]
+
+The name of the new index. If it is empty a name would be generated.
+
+----
+
+[ UNIQUE ]
+
+The index has to be unique which means an index key cannot have more than one reference.
+
+----
+
+[ EDITION editionName ]
+
+Sets the edition of an index which is used to allow multiple indices on (a) defined attribue(s) with different INDEXTYPES.
+
+----
+
+[ INDEXTYPE indexTypeName ]
+
+Sets the type of the underlying index structure. Possible values are HashTable (default), BPlusTree or any other plug-in index.

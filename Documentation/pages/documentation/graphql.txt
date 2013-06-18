@@ -1,0 +1,9 @@
+====== GraphQL Overview ======
+
+The sones Graph Query Lan­guage (GraphQL) allows you to cre­ate, mod­ify, and query a graph (data­base) and invoke admin­stra­tive com­mands. This domain spe­cific lan­guage (DSL) was cre­ated in order to sim­plify your switch-over from clas­si­cal rela­tional and object ori­en­tated data­bases, but also to max­i­mize the porta­bil­ity and main­tain­abilty of both our and your source code.
+
+    * Graph Query Language (sones GraphQL)
+      * [[:documentation:GraphQL:GDDL|Graph Data Definition Language]]
+      * [[:documentation:GraphQL:GDML|Graph Data Manipulation Language]]
+      * [[documentation:database:functions|Functions]]
+      * [[documentation:database:aggregates|Aggregates]]

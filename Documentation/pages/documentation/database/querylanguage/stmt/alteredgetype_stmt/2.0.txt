@@ -1,0 +1,98 @@
+[[documentation:graphql:gdml|Back to: Graph Data Manipulation Language Overview]]
+
+====== ALTER EDGE TYPE ======
+The alter edge type statement allows you to manipulate user-defined-types.
+
+If you want to know what is about the GraphDS and how it handles graphs you should check out the [[quickreference:fiveminuteguide|five minute guide]],
+
+===== Syntax =====
+
+ALTER EDGE TYPE [[documentation:database:querylanguage:stmt:alteredgetype_stmt:2.0#TypeName]] [ [[documentation:database:querylanguage:stmt:alteredgetype_stmt:2.0#AlterEdgeTypeCommand]] ]
+
+==== TypeName ====
+
+The name of the type that is to be manipulate. 
+
+
+==== AlterEdgeTypeCommand ====
+
+Types of alter type commands.
+
+  * ADD ATTRIBUTES ( [[documentation:database:querylanguage:edgeattributedefinition:latest|edge_attr_definition]] [, [[documentation:database:querylanguage:edgeattributedefinition:latest|edge_attr_definition]] ] ) | \\
+  * DROP ATTRIBUTES ( Identifier [,Identifier] ) | \\
+  * RENAME ATTRIBUTE Identifier TO Identifier | \\
+  * RENAME TO Identifier | \\
+  * COMMENT = ''
+----
+
+===== QueryResult =====
+The QueryResult of the ALTER EDGE query will contain
+  * The executed query
+  * The result: Successful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The errors (if result is //Failed//)
+  * The results contains **for each** alter command
+    * Properties
+
+sample json output:
+<code json>
+{
+  "Query": "ALTER Edge TYPE MyEdge ADD ATTRIBUTES (String Name)",
+  "Result": "Successful",
+  "Duration": [
+    12,
+    "ms"
+  ],
+  "Results": [
+    [
+      {
+        "Properties": {
+          "EdgeType": "MyEdge",
+          "EdgeTypeID": "-9223372036854775807"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ]
+  ]
+}
+</code>
+
+===== Examples =====
+
+
+----
+
+
+ALTER EDGE TYPE Street ADD ATTRIBUTES (Int32 Distance, SET<Int64> HouseNumbers) \\
+
+This example adds two attributes to type //Street//. The attribute Distance of type Integer  and the attribute HouseNumbers, which is is a list of Integer. \\
+
+----
+
+ALTER EDGE TYPE Street DROP ATTRIBUTES (HouseNumbers)
+
+Drop the attribute HouseNumbers from type //Street//. \\
+
+----
+
+ALTER VERTEX TYPE Street RENAME ATTRIBUTES Distance TO DistanceInKM \\
+
+Rename attribute Distance of the type //Street// to DistanceInKM. \\
+
+
+----
+
+ALTER VERTEX TYPE Street RENAME TO EdgeStreet \\
+
+Rename type //Street// to //EdgeStreet//. Its only an renaming of the type Street to EdgeStreet. All type characteristics are retained. \\ 
+
+
+----
+
+
+Return on success
+
+The return value depends on the altertype command.
+

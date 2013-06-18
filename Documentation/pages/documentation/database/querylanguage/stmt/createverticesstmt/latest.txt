@@ -1,0 +1,99 @@
+====== CREATE VERTICES ======
+
+The CREATE VERTICES statement creates multiple database vertices which can consist of various attributes. Additionally it is possible to tag a type as abstract or let it inherit from any other user defined type. Another advantage of using this command instead of the [[documentation:database:querylanguage:stmt:createvertexstmt:latest|CREATE VERTEX]] statement is the possibility of creating vertices that define circular dependencies.
+
+For more information about vertices check out the [[documentation:datamodel:graph|graph datamodel]].
+
+===== Syntax =====
+
+CREATE VERTICES [ ABSTRACT ] [[documentation:database:querylanguage:vertexdefinition:latest|VERTEXDEFINITION]] [, [[documentation:database:querylanguage:vertexdefinition:latest|VERTEXDEFINITION]] ]
+
+===== QueryResult =====
+The QueryResult of the CREATE VERTICES query will contain
+  * The executed query
+  * The result: Successful | PartialSuccessful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The warnings (if result is //PartialSuccessful//)
+  * The errors (if result is //Failed//)
+  * The results contains **for each vertex**
+    * DBType: The name of the vertex type
+    * UUID: The unique identifier of the vertex type
+    * REVISION: The revision timestamp
+    * EDITION: The edition
+
+sample json output:
+<code json>
+{
+  "query": "CREATE VERTICES UserProfile ....",
+  "result": "Successful",
+  "duration": [
+    164,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": [
+    {
+      "DBType": "UserProfile",
+      "UUID": "492004b1-8867-4a09-a283-85a78f85980d",
+      "REVISION": "20102610.134536.2742554(1f29e05314ed3c4bafa830c4f1c440a3)",
+      "EDITION": "DefaultEdition"
+    },
+    {
+      ...
+    },
+    ...
+  ]
+}
+</code>
+
+===== Examples =====
+
+==== Creating vertices ====
+
+CREATE VERTICES User
+
+Creates a single type that is called User and consists of noting but the [[documentation:datamodell:specialproperties|special properties]].
+
+----
+
+CREATE VERTICES User, Car, Flower
+
+Creates the vertices User, Car and Flower analogous to the previous example.
+
+----
+
+CREATE VERTICES User ATTRIBUTES ( String Name, SET<User> Friends ), Car ATTRIBUTES ( String TypeName, Integer HorsePower )
+
+This example creates multiple vertices with corresponding attributes. In contrast it would be possible to execute two [[documentation:database:querylanguage:stmt:createvertexstmt:latest|CREATE VERTEX]] statements.
+
+----
+
+==== Creating derived vertices ====
+
+CREATE VERTICES User ATTRIBUTES ( String Name, Integer Age ), Employee EXTENDS User ATTRIBUTES ( Double Wage , SET<Employee> Colleagues), Chief EXTENDS Employee ATTRIBUTES ( SET<Employee> Worker ), Worker EXTENDS Employee ATTRIBUTES ( Chief Boss )
+
+This example executes the four steps of the analogous [[documentation:database:querylanguage:stmt:createvertexstmt:latest#creating_a_derived_type|Creating a derived vertex]] example in one step.
+
+----
+
+CREATE VERTICES Employee EXTENDS User ATTRIBUTES ( Double Wage , SET<Employee> Colleagues), Worker EXTENDS Employee ATTRIBUTES ( Chief Boss ), User ATTRIBUTES ( String Name, Integer Age ), Chief EXTENDS Employee ATTRIBUTES ( SET<Employee> Worker )
+
+This example shows that it is irrelevant in which order the vertices are defined within the statement.
+
+==== Creating abstract vertices ====
+
+CREATE VERTICES ABSTRACT Car ATTRIBUTES ( String Name, Integer HorsePower ), Volkswagen EXTENDS Car, Mercedes EXTENDS Car
+
+This example executes the four steps of the analogous [[documentation:database:querylanguage:stmt:createvertexstmt:latest#creating_an_abstract_type|Creating an abstract vertex]] example in one step.
+
+==== Creating circular dependecies ====
+
+CREATE VERTICES User ATTRIBUTES ( SET<Car> Cars ), CAR ATTRIBUTES ( User Owner )
+
+This statements demonstrates the possibility to create/solve circular attribute references within a single statement.
+
+===== Return on success =====
+
+  * The name of the TYPEs that have been created
+  * The [[documentation:datamodell:specialproperties|special properties]]

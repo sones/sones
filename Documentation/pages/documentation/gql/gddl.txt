@@ -1,0 +1,22 @@
+[[documentation:graphql|Back to: GraphQL Overview]]
+
+====== Graph Data Definition Language ======
+
+The GraphQL pro­vides the fol­low­ing GDDL state­ments for defin­ing the datatypes of a graph (latest version is GraphDB v2.0)
+
+===== Statements =====
+
+^ GraphQL statement ^description^
+|[[documentation:database:querylanguage:stmt:createvertextype_stmt:2.0|CREATE VERTEX TYPE]]|Creates a new user-defined vertex type |
+|[[documentation:database:querylanguage:stmt:createvertextypes_stmt:2.0|CREATE VERTEX TYPES]]|Creates one or more vertex types at once |
+|[[documentation:database:querylanguage:stmt:createedgetype_stmt:2.0|CREATE EDGE TYPE]]|Creates a new user-defined edge type |
+|[[documentation:database:querylanguage:stmt:createedgetypes_stmt:2.0|CREATE EDGE TYPES]]|Creates one or more user-defined edge types at once |
+|[[documentation:database:querylanguage:stmt:altervertextype_stmt:2.0|ALTER VERTEX TYPE]]| Manipulates a user-defined vertex type |
+|[[documentation:database:querylanguage:stmt:alteredgetype_stmt:2.0|ALTER EDGE TYPE]]| Manipulates a user-defined edge type |
+|[[documentation:database:querylanguage:stmt:dropvertextype_stmt:2.0|DROP VERTEX TYPE]]| Deletes a user-defined vertex type |
+|[[documentation:database:querylanguage:stmt:dropedgetype_stmt:2.0|DROP EDGE TYPE]]| Deletes a user-defined edge type |
+|[[documentation:database:querylanguage:stmt:createindex_stmt:2.0|CREATE INDEX]]| Creates an index on a user-defined vertex type |
+|[[documentation:database:querylanguage:stmt:dropindex_stmt:2.0|DROP INDEX]]| Creates an index on a user-defined vertex type |
+===== Result =====
+Each statement will return a queryresult containing the requested or changed data.
+        * [[documentation:database:queryresult:latest|Query Result]]

@@ -1,0 +1,17 @@
+====== GreenCouch ======
+
+[[:connectors|back]]
+
+Implementing the CouchDB REST interface to support easy replication of data between CouchDB and sones GraphDS.\\
+Later use the GraphQL to define graph indices.
+
+  * [[connectors:greencouch:CouchDBHTTPAPI|CouchDB HTTP API]]
+  * [[connectors:greencouch:WorkingWithDatabases|Working with databases]]
+  * [[connectors:greencouch:WorkingWithDocuments|Working with documents]]
+  * [[connectors:greencouch:WorkingWithAttachments|Working with attachments]]
+  * [[connectors:greencouch:WorkingWithGraphQL|Working with the Graph Query Language]]
+
+External documentation:
+  * [[http://wiki.apache.org/couchdb/HTTP_database_API|CouchDB HTTP API]]
+  * [[http://wiki.apache.org/couchdb/API_Cheatsheet|CouchDB API Cheatsheet]]
+

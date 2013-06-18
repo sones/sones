@@ -1,0 +1,8 @@
+====== VertexType attribute ======
+
+===== Description =====
+The name of a vertex type contained in the current database schema.
+
+|**Containing tags: **| [[importexport:xmlbulkimport:xmltags:Insert|Insert]], [[importexport:xmlbulkimport:xmltags:Link|Link]] |
+|**Value Type:      **| [[http://www.w3.org/TR/xmlschema-2/#string|String]]|
+

@@ -1,0 +1,6 @@
+====== Talks and Presentations ======
+
+=== 2010 ===
+  * [[http://developers.sones.de/2010/10/08/nosql-frankfurt-the-graphdb-landscape-and-sones/|NoSQL-Frankfurt 2010]]
+  * [[DatabasePro Powerdays]] Graph Daten in der Cloud mit .NET beherrschen
+

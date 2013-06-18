@@ -1,0 +1,44 @@
+====== Availability ======
+
+The functionality described here is **not** available in version 1.1. 
+
+====== IMPORT Statement ======
+This statement will import any type of provided format into the GraphDB. On any error the import will break immediatly.
+You can choose following parameters:
+  * Paralleltasks: The default value is 1 (single thread). The import won't use more tasks than CPUs. Any queries with dependencies might fail on more than 1 task.
+  * Comments: Define some comment strings. Each query which start with this string will be skipped.
+  * Offest: The first queries defined by the offset will be skipped
+  * Limit: Only as much as queries defined by the limit will be executed.
+  * Verbosity: The default is Errors. On silent you won't get any info about the executed queries. On ''Full'' wou will get in addition to the errors one SelectionResultSet for each query output.
+
+===== Syntax =====
+IMPORT FROM //location// FORMAT //importFormat// [PARALLELTASKS(<number>)] [COMMENTS(<string> [,<string>])] [OFFSET <number>] [LIMIT <number>] [VERBOSITY //verbosityType//]
+
+location = Any location. Currently [file:\\] for any local ressource and [http:<nowiki>//</nowiki>] is supported. eg. ''file:\\/usr/local/queries.gql'' or ''file:\\c:\temp\queries.gql'' or ''http:<nowiki>//</nowiki>192.168.1.1:80/queries.gql''
+
+importFormat = GQL
+
+verbosityType = Silent, Errors, Full
+
+===== Examples =====
+
+All queries from file [queries.gql] will be executed as GraphQL queries, with a maximum of 4 parallel tasks. The first 10 will be skipped and only 100 queries will be executed. The result will contains no results but all errors and warnings.
+<code sql>
+IMPORT FROM 'file:\\queries.gql' FORMAT GQL PARALLELTASKS(4) COMMENTS('#') OFFSET 10 LIMIT 100 VERBOSITY Errors
+</code>
+
+All queries from the file [abstract.gql] in the subfolder [scripts] are executed by running this statement:
+
+<code sql>
+IMPORT FROM 'file:\\scripts/abstract.gql' FORMAT GQL
+</code>
+
+
+----
+
+
+This will execute all queries found at the specified location as GQL queries and report each query result in a seperate SelectResultSet.
+<code sql>
+IMPORT FROM 'http://127.0.0.1:9993/queries.gql' FORMAT GQL VERBOSITY Full
+</code>
+

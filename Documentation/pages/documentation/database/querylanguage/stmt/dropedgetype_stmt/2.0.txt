@@ -1,0 +1,45 @@
+[[documentation:graphql:gddl|Back to: Graph Data Definition Language Overview]]
+
+====== DROP EDGE TYPE ======
+Will remove the edge type and all existing edges of this type.
+
+===== Syntax =====
+DROP EDGE TYPE <edge_name>
+
+===== QueryResult =====
+The QueryResult of the DROP EDGE TYPE query will contain
+  * The executed query
+  * The result: Successful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The errors (if result is //Failed//)
+  
+sample json output:
+<code json>
+{
+  "Query": "DROP EDGE TYPE MyEdge",
+  "Result": "Successful",
+  "Duration": [
+    83,
+    "ms"
+  ],
+  "Results": [
+    [
+      {
+        "Properties": {
+          "RemovedTypeID": "-9223372036854775808",
+          "RemovedTypeName": "MyEdge"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ]
+  ]
+}</code>
+
+===== Examples =====
+<code sql>
+DROP EDGE TYPE MyEdge
+</code>
+Deletes the edge definition "MyEdge" and all edges of this type.
+

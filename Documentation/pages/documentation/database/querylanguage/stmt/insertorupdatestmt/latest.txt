@@ -1,0 +1,61 @@
+====== INSERTORUPDATE ======
+
+The INSERTORUPDATE statement updates attributes of database objects. Attributes, that aren't mentioned in the statement aren't changed. If the desired objects don't exist they are inserted with the given attributes. In general it works similar to the [[documentation:database:querylanguage:stmt:insertstmt:latest|INSERT]] statement ([[documentation:database:querylanguage:attributeremove|attribute removal]] and [[documentation:database:querylanguage:attributesetlistmanipulation|adaption of LIST/SET attributes]] are not allowed). The selection of a database object is realized via an optional [[documentation:database:querylanguage:expression|EXPRESSION]] clause. If the selection returns more than one object an error would be returned.
+
+===== Syntax =====
+
+INSERTORUPDATE [[documentation:database:querylanguage:typewrapper:latest|type]] VALUES ( [[documentation:database:querylanguage:attributeassign:latest|attributeAssign]] [, [[documentation:database:querylanguage:attributeassign:latest|attributeAssign]] ] ) [ WHERE [[documentation:database:querylanguage:expression|expression]] ]
+
+===== QueryResult =====
+The QueryResult of the INSERTORUPDATE query will contain
+  * The executed query
+  * The result: Successful | PartialSuccessful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The warnings (if result is //PartialSuccessful//)
+  * The errors (if result is //Failed//)
+  * The results contains all inserted or updated attributes with its name and new value and the created REVISION timestamp
+
+sample json output:
+<code json>
+{
+  "query": "INSERTORUPDATE UserProfile VALUES (Username = 'User1', Age = 40) WHERE Username = 'User1'",
+  "result": "Successful",
+  "duration": [
+    260,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": [
+    {
+      "Username": "User1",
+      "Age": "40",
+      "UUID": "2944dc9e-6e72-4268-8153-a72e6a1515e7",
+      "REVISION": "20102610.155409.4302500(271de081e50fec46ad2413575b608edf)"
+    }
+  ]
+}
+</code>
+
+===== Examples =====
+
+INSERTORUPDATE User VALUES( IsInteresting = false )
+
+A new User object is inserted.
+
+----
+
+INSERTORUPDATE User VALUES( IsInteresting = true ) WHERE Age > 20
+
+If there is more than one User object an error would be returned. Otherwise the object would be updated.
+
+----
+
+INSERTORUPDATE User VALUES( Name = 'Horst', Age = 32, UndefinedHorstAttribute = 'Horsts undefined attribute content' ) WHERE Name = 'Horst'
+
+This statement tries to find a User object with Name = 'Horst'. If this object doesn't exist it would be inserted. Otherwise it would be updated.
+
+===== Return on success =====
+
+  * The attributes that have been defined within the VALUES section
+  * The [[documentation:datamodell:specialproperties|special properties]] with their current values

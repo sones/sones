@@ -1,0 +1,47 @@
+===== Settings manipulation =====
+
+===== Syntax =====
+
+settingmanipulation ( string_literal [= settingValue [, settingValue]] )
+
+settingmanipulation = SET | GET | REMOVE
+
+settingValue = number | DEFAULT | string_literal
+
+===== Syntax for setting assignment ====
+
+SET ( string_literal = settingValue )
+
+===== Example ====
+
+<code sql>
+SETTING TYPE User SET('DEPTH'=1)
+</code>
+
+Set the request depth for the type //User// to the value 1.
+
+===== Syntax for get a setting value ====
+
+GET ( string_literal )
+
+===== Example ====
+
+<code sql>
+SETTING TYPE User GET('DEPTH')
+</code>
+
+Return the value for the setting depth on type //User//.
+
+===== Syntax to remove setting value ====
+
+REMOVE ( string_literal )
+
+===== Example ====
+
+<code sql>
+SETTING TYPE User REMOVE('DEPTH')
+</code>
+
+Removes the setting depth from type //User//.
+
+

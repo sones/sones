@@ -1,0 +1,43 @@
+===== Settings for type attributes =====
+
+Type attributes are only effective for this attribute and not for other objects.
+
+With this statement you can set the //depth// for an request.
+
+===== Syntax =====
+
+SETTING ATTRIBUTE ATTRNAME [[documentation:database:querylanguage:stmt:settingstmt:settingmanipulation:latest|SETTINGMANIPULATION]]
+
+===== Examples =====
+
+
+===== Set a attribute setting =====
+
+<code sql>
+SETTING ATTRIBUTE User.Friends SET('DEPTH'=3)
+</code>
+
+==== Return on success ====
+
+  * The scope of the setting (ATTRIBUTE)
+  * The attribute that has been configured
+    * The corresponding type
+    * The setting itself and its value
+
+===== Get a attribute setting =====
+
+The statement 
+<code sql>
+SETTING ATTRIBUTE User.Friends GET('DEPTH')
+</code>
+gives you information about the setting //depth//.
+
+===== Remove a attribute setting =====
+
+To remove the //depth// setting from attribute friends type the following statement
+<code sql>
+SETTING ATTRIBUTE User.Friends REMOVE('DEPTH')
+</code>
+
+
+

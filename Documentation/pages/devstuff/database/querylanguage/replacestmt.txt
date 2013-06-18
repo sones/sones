@@ -1,0 +1,24 @@
+====== REPLACE ======
+
+The REPLACE statement replaces attributes of already existing database objects. It works similar to the [[documentation:database:querylanguage:stmt:insertstmt:latest|INSERT]] statement ([[documentation:database:querylanguage:attributeremove|attribute removal]] and [[documentation:database:querylanguage:attributesetlistmanipulation|adaption of LIST/SET attributes]] are not allowed). The selection of the to be replaced database object is realized via an [[documentation:database:querylanguage:expression|WHERE EXPRESSION]] clause.
+
+===== Syntax =====
+
+REPLACE [[documentation:database:querylanguage:typewrapper:latest|type]] VALUES ( [[documentation:database:querylanguage:attributeassign:latest|attributeAssign]] [, [[documentation:database:querylanguage:attributeassign:latest|attributeAssign]] ] ) WHERE [[documentation:database:querylanguage:expression|expression]]
+
+===== Examples =====
+
+REPLACE User VALUES( IsInteresting = true ) WHERE Age > 20
+
+If there is more than one User object with Age > 20 an error would be returned. Otherwise the object would be replaced.
+
+----
+
+REPLACE User VALUES( Name = 'Horst', Age = 32, UndefinedHorstAttribute = 'Horsts undefined attribute content' ) WHERE Name = 'Horst' 
+
+This statement tries to find a User object with Name = 'Horst'. If this object doesn't exist a warning would be returned . Otherwise it would be replaced. 
+
+===== Return on success =====
+
+  * The attributes that have been defined within the VALUES section
+  * The [[documentation:datamodell:specialproperties|special properties]] with their current values

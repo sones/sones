@@ -1,0 +1,119 @@
+[[documentation:graphql:gddl|Back to: Graph Data Definition Language Overview]]
+
+====== CREATE VERTEX TYPES ======
+
+The CREATE VERTEX TYPES statement creates multiple database vertex types which can consist of various attributes. Additionally it is possible to tag a type as abstract or let it inherit from any other user defined type. Another advantage of using this command instead of the [[documentation:database:querylanguage:stmt:createvertextype_stmt:2.0|CREATE VERTEX TYPE]] statement is the possibility of creating vertices that define circular dependencies.
+
+For more information about vertices check out the [[documentation:datamodel:graph|graph datamodel]].
+
+===== Syntax =====
+
+CREATE VERTEX TYPES [ ABSTRACT ] [[documentation:database:querylanguage:vertexdefinition:latest|VertexTypePredefinition]] [, [ ABSTRACT ] [[documentation:database:querylanguage:vertexdefinition:latest|VertexTypePredefinition]] ]
+
+===== QueryResult =====
+The QueryResult of the CREATE VERTEX TYPES query will contain
+  * The executed query
+  * The result: Successful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The errors (if result is //Failed//)
+  * The results contains **for each vertex**
+    * Properties
+    * Edges
+
+sample json output:
+<code json>
+{
+  "Query": "CREATE VERTEX TYPES User, Car, Flower",
+  "Result": "Successful",
+  "Duration": [
+    25,
+    "ms"
+  ],
+  "Results": [
+    [
+      {
+        "Properties": {
+          "VertexType": "User",
+          "VertexTypeID": "-9223372036854775796"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ],
+    [
+      {
+        "Properties": {
+          "VertexType": "Car",
+          "VertexTypeID": "-9223372036854775795"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ],
+    [
+      {
+        "Properties": {
+          "VertexType": "Flower",
+          "VertexTypeID": "-9223372036854775794"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ]
+  ]
+}
+</code>
+
+===== Examples =====
+
+==== Creating vertices ====
+
+CREATE VERTEX TYPES User
+
+Creates a single type that is called User and consists of noting but the [[documentation:datamodell:specialproperties|special properties]].
+
+----
+
+CREATE VERTEX TYPES User, Car, Flower
+
+Creates the vertices User, Car and Flower analogous to the previous example.
+
+----
+
+CREATE VERTEX TYPES User ATTRIBUTES ( String Name, SET<User> Friends ), Car ATTRIBUTES ( String TypeName, Int64 HorsePower )
+
+This example creates multiple vertices with corresponding attributes. In contrast it would be possible to execute two [[documentation:database:querylanguage:stmt:createvertextype_stmt:2.0|CREATE VERTEX TYPE]] statements.
+
+----
+
+==== Creating derived vertices ====
+
+CREATE VERTEX TYPES User ATTRIBUTES ( String Name, Int64 Age ), Employee EXTENDS User ATTRIBUTES ( Double Wage , SET<Employee> Colleagues), Chief EXTENDS Employee ATTRIBUTES ( SET<Employee> Worker ), Worker EXTENDS Employee ATTRIBUTES ( Chief Boss )
+
+This example executes the four steps of the analogous [[documentation:database:querylanguage:stmt:createvertextype_stmt:2.0#creating_a_derived_vertex|Creating a derived vertex]] example in one step.
+
+----
+
+CREATE VERTEX TYPES Employee EXTENDS User ATTRIBUTES ( Double Wage , SET<Employee> Colleagues), Worker EXTENDS Employee ATTRIBUTES ( Chief Boss ), User ATTRIBUTES ( String Name, Int64 Age ), Chief EXTENDS Employee ATTRIBUTES ( SET<Employee> Worker )
+
+This example shows that it is irrelevant in which order the vertices are defined within the statement.
+
+==== Creating abstract vertices ====
+
+CREATE VERTEX TYPES ABSTRACT Car ATTRIBUTES ( String Name, Int64 HorsePower ), ABSTRACT Volkswagen EXTENDS Car, ABSTRACT Mercedes EXTENDS Car
+
+This example executes the four steps of the analogous [[documentation:database:querylanguage:stmt:createvertextype_stmt:2.0#creating_an_abstract_vertex|Creating an abstract vertex]] example in one step.
+
+==== Creating circular dependecies ====
+
+CREATE VERTEX TYPES User ATTRIBUTES ( SET<Car> Cars ), CAR ATTRIBUTES ( User Owner )
+
+This statements demonstrates the possibility to create/solve circular attribute references within a single statement.
+
+===== Return on success =====
+
+  * The name of the VERTEX TYPEs that have been created
+  * The [[documentation:datamodell:specialproperties|special properties]]

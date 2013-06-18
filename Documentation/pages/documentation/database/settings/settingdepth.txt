@@ -1,0 +1,18 @@
+===== Setting depth =====
+This setting set the depth of an request.
+
+===== Values =====
+
+All positive numbers starting at 0.
+
+===== Default =====
+
+The default value is set to 0.
+
+===== Examples =====
+
+<code sql>
+SETTING DB SET('DEPTH'=2)
+</code>
+
+This setting set the depth for all select queries that are requested.

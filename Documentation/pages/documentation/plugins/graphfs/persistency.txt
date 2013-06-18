@@ -1,0 +1,131 @@
+====== Enterprise Edition Persistency PlugIn ======
+
+===== Features and Limitations =====
+
+  * transparent Persistency of Nodes and Edges
+    * stores information in a host file system (like ntfs, hfs+, ext4, reiserfs,...)
+    * each object and additional information is stored in a separate set of files
+  * underlying file system limitations apply depending on the used file system (e.g. half a billion objects per ntfs volume) 
+  * configurable using the GraphDS instance in source code
+
+
+===== Important Notes =====
+
+As of the 1st of October sones is providing Enterprise Edition functionality as a plugin module to the freely available Open Source Edition of the sones GraphDB.
+
+Until the general availability of version 1.2 of the sones GraphDB the most recent build (or code as in master branch/trunk) shall be used to enable the Persistency PlugIn functionality.
+
+===== Prerequisites =====
+
+This is what is needed to get the Persistency PlugIn running:
+
+  * a runable OSE version later or equal the master version from the 18.10.2010
+  * the Persistency PlugIn itself
+    * currently not available in the OpenSource Edition, though we are planning to release it as OSS
+    * can be downloaded as a free trial from sones - just [[http://www.sones.com/kontakt|contact us]].
+  * on Microsoft Windows
+    * installed and updated Microsoft .NET 4.0 Framework
+  * on Linux, Mac OS X or any other unixoid operating system
+    * installed Mono Framework version 2.8
+
+===== Getting Persistency up and running =====
+
+=== Check the sones GraphDB Open Source Edition compiles on your setup ===
+Download and check that the sones GraphDB Open Source Edition compiles on your setup
+    * [[installation:windows|On Windows check this tutorial]]
+    * [[installation:mono|On any other operating system (Linux, Mac OS X, ...) check this tutorial]]
+
+=== Add the PlugIn dlls ===
+Add the previously downloaded PlugIn dlls  as references to your project
+    * AKeyValueFS.dll
+    * AShardedKeyValueFS.dll 
+    * SimpleFS.dll
+Edit the project file (e.g. sonesExample.csproj) and add following lines to the <ItemGroup> tag holding all the references (replace [path to the dll] with the absolute or relative path to where you copied the dlls. The path is either relativ to the csproj file or absolute using the correct PathSeperator chars.
+<code xml>
+    <Reference Include="AKeyValueFS">
+      <HintPath>[path to the dll]AKeyValueFS.dll</HintPath>
+    </Reference>
+    <Reference Include="AShardedKeyValueFS">
+      <HintPath>[path to the dll]AShardedKeyValueFS.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleFS">
+      <HintPath>[path to the dll]SimpleFS.dll</HintPath>
+    </Reference>
+</code>
+
+Using the Visual Studio you can easily add the references using the "Add Reference" functionality on the Project References.
+
+=== Enable the Persistency PlugIn in the GraphDS ===
+
+Add the following references to your using block of your main file (or where ever you instantiate your GraphDS).
+<code csharp>
+using sones.GraphFS;
+using sones.GraphFS.Settings;
+using sones.GraphFS.SimpleFS;
+</code>
+
+At the point when the GraphDSSharp is instantiated set some more properties:
+<code csharp>
+var _GraphDSSharp = new GraphDSSharp()
+{
+ ...
+ #region Persistency
+ // This has to be an absolute path in your underlying filesystem
+ StorageLocation = Environment.CurrentDirectory + Path.DirectorySeparatorChar + "Persistency",
+ // This is the persistency implementation - currently SimpleFS1
+ GraphFSImplementation = typeof(SimpleFS1).Name,
+ // The ObjectCache used by the FS - this implementation will free the RAM depending on the Capacity setting
+ IGraphFSParameters = new { IObjectCache = new ESObjectCache() },
+ #endregion
+}
+</code>
+
+Set some settings like the CacheSize(in Bytes):
+<code csharp>
+  #region Set ESObjectCacheSize
+  _GraphDSSharp.GraphAppSettings.Set<ObjectCacheCapacitySetting>("10000000");
+  #endregion
+</code>
+The ObjectsDirectoryShards(any valid UInt16 value):
+For a large number of DB entries you should use higher values. For a small amount (10.000) you can use the default value "10".
+<code csharp>
+  #region Set ObjectsDirectoryShards
+  _GraphDSSharp.GraphAppSettings.Set<ObjectsDirectoryShardsSetting>("500");
+  #endregion
+</code>
+The AttributeIdxShards(any valid UInt16 value):
+For a large number of DB entries you should use higher values. For a small amount (10.000) you can use the default value "10".
+<code csharp>
+  #region Set AttributeIdxShards
+  _GraphDSSharp.GraphAppSettings.Set<AttributeIdxShardsSetting>("500");
+  #endregion
+</code>
+
+=== (Re)Using the GraphDS with the Persistency PlugIn ===
+
+If you use the sonesExample project or you are already familiar with the GraphDS, you always created a new and fresh Database with it. Since using the Persistency PlugIn you can reuse the GraphDS Database by changing following lines:
+
+Replace the CreateDatabase with the OpenDatabase as soon as you have created a database and wants to open it again. 
+    * To initialize the DB use:
+<code csharp>
+  _GraphDSSharp.CreateDatabase(true)
+    .FailedAction(exceptional => { throw new GraphDSSharpException(exceptional.GetIErrorsAsString()); });
+</code>
+    * To open an existing DB use:
+<code csharp>
+  _GraphDSSharp.OpenDatabase()
+    .FailedAction(exceptional => { throw new GraphDSSharpException(exceptional.GetIErrorsAsString()); });
+</code>
+
+
+At the time you shutdown the GraphDS you can decide with the boolean parameter whether you want to wipe the GraphDS data or not:
+  * As long as you want your data to be persistent (open the database later on) use "false" as the parameter!
+
+<code csharp>
+  _GraphDSSharp.Shutdown(false);
+</code>
+
+  * Use this if you want to clean up everything. You can't open the database again!
+<code csharp>
+  _GraphDSSharp.Shutdown();
+</code>

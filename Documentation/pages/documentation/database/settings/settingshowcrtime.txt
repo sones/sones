@@ -1,0 +1,26 @@
+===== Setting show creation time =====
+
+This setting return the creation time of an object on insert statements.
+
+===== Values =====
+
+The boolean values true or false.
+
+===== Default =====
+
+The default value is set to false.
+
+===== Examples =====
+
+<code sql>
+SETTING SESSION SET('CREATIONTIME'='true')
+</code>
+
+Show the creation time of an object on an all insert statements in the current session.
+
+
+
+
+
+
+

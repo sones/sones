@@ -1,0 +1,28 @@
+To add a new data import just derive the base type AGraphDBImport.
+
+<code csharp>
+public class GraphDBImport_GraphQL : AGraphDBImport
+{
+
+    public override string ImportFormat
+    {
+        get { return "..."; } // the format which will be used in the import query
+    }
+
+    /// <summary>
+    /// Import GraphQL queries
+    /// </summary>
+    /// <param name="myLines">The GraphQL queries</param>
+    /// <param name="myIGraphDBSession">The DBSession reference to work with transactions</param>
+    /// <param name="myDBContext">The current DBContext</param>
+    /// <param name="parallelTasks">The number of parallel tasks</param>
+    /// <param name="comments">The comments identifier</param>
+    /// <param name="offset">Offset to start with</param>
+    /// <param name="limit">Limit of GraphQL query lines</param>
+    /// <param name="verbosityTypes">Report all errors and/or warnings or nothing</param>
+    /// <returns></returns>
+    public override QueryResult Import(IEnumerable<String> myLines, IGraphDBSession myIGraphDBSession, DBContext myDBContext, UInt32 parallelTasks = 1, IEnumerable<String> comments = null, ulong? offset = null, ulong? limit = null, VerbosityTypes verbosityTypes = VerbosityTypes.Errors)
+    {
+        .....
+    }
+</code>

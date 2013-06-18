@@ -1,0 +1,28 @@
+====== AListReferenceEdgeType ======
+
+This class should be derived for any implementation of [[documentation:database:edges:latest|EdgeTypes]] on list reference attributes like //Friends// etc. In addition to the abstract classes [[documentation:database:edges:alistedgetype|AListEdgeType]] and [[documentation:database:edges:aedgetype|AEdgeType]] it defines following Methods:
+
+===== Methods =====
+<code csharp>IEnumerable<ObjectUUID> GetAllUUIDs()</code>
+Returns alls edge destinations.
+
+<code csharp>List<DBObjectReadout> GetReadouts(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)</code>
+This will be invoked by the select. With the help of the delegate ''GetAllAttributesFromDBO'' you can retrieve the automtically generated readout from the database (by passing each edge destination ObjectUUID) and add your information afterwards.
+
+<code csharp>ObjectUUID FirstOrDefault()</code>
+Returns the first edge destination or null.
+
+<code csharp>void AddRange(HashSet<ObjectUUID> hashSet, params ADBBaseObject[] myParameters)</code>
+This method will add a set of edges. The dynamic params definition allows you to pass any kind and number of [[documentation:database:edges:edgetypeparam|EdgeTypeParam]]. With these parameters you can handle the edges in your way. 
+
+<code csharp>void Add(ObjectUUID myValue, params ADBBaseObject[] myParameters)</code>
+This method will add a single edge. The dynamic params definition allows you to pass any kind and number of [[documentation:database:edges:edgetypeparam|EdgeTypeParam]]. With these parameters you can handle the edge in your way. 
+
+<code csharp>void RemoveWhere(Predicate<ObjectUUID> match)</code>
+Removes all elements that match the conditions defined by the specified predicate.
+
+<code csharp>Boolean Remove(ObjectUUID myValue)</code>
+Removes one single edge and returns true if the element was removed; otherwise, false.
+
+<code csharp>Boolean Contains(ObjectUUID myValue)</code>
+Determines whether the edges contains the specified element.

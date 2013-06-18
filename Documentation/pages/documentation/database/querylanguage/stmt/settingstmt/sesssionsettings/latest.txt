@@ -1,0 +1,39 @@
+===== Settings for sessions =====
+
+The setting for session is global for the whole session. For the userdefined types and all its attributes. All settings for the current session are only for the current session and not for others. If the session is closed, then all settings are revoked.
+
+===== Syntax =====
+
+SETTING SESSION [[documentation:database:querylanguage:stmt:settingstmt:settingmanipulation:latest|SETTINGMANIPULATION]]
+
+===== Examples =====
+
+===== Set a session setting  =====
+
+An global depth setting for the current session can be set by the following statement.
+
+<code sql>
+SETTING SESSION SET('DEPTH'=1)
+</code>
+
+==== Return on success ====
+
+  * The scope of the setting (SESSION)
+  * The setting itself and its value
+
+===== Get a session setting  =====
+The statement 
+
+<code sql>
+SETTING SESSION GET('DEPTH')
+</code>
+
+return the value for the session setting depth.
+
+===== Remove a session setting  =====
+
+To remove the current depth setting from the session, type the following statement.
+
+<code sql>
+SETTING SESSION REMOVE('DEPTH')
+</code>

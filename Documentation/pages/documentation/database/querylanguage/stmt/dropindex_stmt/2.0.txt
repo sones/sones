@@ -1,0 +1,37 @@
+[[documentation:graphql:gddl|Back to: Graph Data Definition Language Overview]]
+
+====== DROP INDEX ======
+Will delete an index identified by the name and an optional edition.
+
+===== Syntax =====
+FROM [[documentation:database:querylanguage:typewrapper:latest|vertexType]] DROP INDEX <index_name> [ EDITION edition_identifier ]
+===== QueryResult =====
+The QueryResult of the DROP INDEX query will contain
+  * The executed query
+  * The result: Successful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The errors (if result is //Failed//)
+  * An empty result
+
+sample json output:
+<code json>
+{
+  "Query": "FROM User DROP INDEX IDX_lang",
+  "Result": "Successful",
+  "Duration": [
+    10,
+    "ms"
+  ],
+  "Results": []
+}</code>
+
+===== Examples =====
+<code sql>
+FROM User DROP INDEX Idx_Name
+</code>
+Deletes the index "Idx_Name" from vertex "User"
+
+
+
+
+

@@ -1,0 +1,22 @@
+[[documentation:graphql:gdml|Back to: Graph Data Manipulation Language Overview]]
+
+====== REBUILD INDICES ======
+
+The rebuild indices statement clears and rebuild the indices of userdefined types.
+
+====== Syntax ======
+
+REBUILD INDICES [ [[documentation:database:querylanguage:typewrapper:latest|type]] [, [[documentation:database:querylanguage:typewrapper:latest|type]] ] ]
+
+====== Examples ======
+
+<code sql>
+REBUILD INDICES
+</code>
+
+Rebuild the indices of all userdefined types.
+
+<code sql>
+REBUILD INDICES User, Car
+</code>
+Rebuilds the indices of the types //User// and //Car//.

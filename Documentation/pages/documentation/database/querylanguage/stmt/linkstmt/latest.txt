@@ -1,0 +1,40 @@
+====== Availability ======
+
+The functionality described here is **not** available in version 1.1. 
+
+====== LINK ======
+
+The link command connect two nodes via an edge.
+
+===== Syntax =====
+
+LINK [[documentation:database:querylanguage:typeWrapper:latest|type]] ( [[documentation:database:querylanguage:expression|expression]] [, [[documentation:database:querylanguage:expression|expression]] ]) VIA edge TO [[documentation:database:querylanguage:typeWrapper:latest|type]] ( [[documentation:database:querylanguage:expression|expression]] )
+
+LINK [[documentation:database:querylanguage:typeWrapper:latest|type]] ( [[documentation:database:querylanguage:expression|expression]] [, [[documentation:database:querylanguage:expression|expression]] ]) TO [[documentation:database:querylanguage:typeWrapper:latest|type]] ( [[documentation:database:querylanguage:expression|expression]] ) VIA edge
+
+
+edge = any edge attribute of the source vertex
+
+===== Examples =====
+
+<code sql>
+LINK User(Name = 'Fry') VIA Friends TO User(Name = 'Amy')
+</code>
+
+Connect Fry and Amy over the edge friends. This means Amy is a friend of Fry.
+
+<code sql>
+LINK User(Name = 'Fry') TO User(Name = 'Amy') VIA Friends
+</code>
+
+This example differs with the example above only in the syntax.
+
+There are two styles for the link command. The first style is the semantic web style and the second is a human language style. 
+You can decide which style you use.
+
+
+<code sql>
+LINK User(Name = 'Hermes', Name = 'Amy', Name='Farnsworth') VIA Friends TO User(UserID = 12, UserID = 13, UserID = 14)
+</code>
+
+You can also connect one or more sources with one ore more targets. This example set the friends for Hermes, Amy and Fry.

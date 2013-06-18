@@ -1,0 +1,8 @@
+====== VertexID attribute ======
+
+===== Description =====
+The vertex-id of the referenced vertex.
+
+|**Containing tags: **| [[importexport:xmlbulkimport:xmltags:Insert|Insert]], [[importexport:xmlbulkimport:xmltags:Link|Link]] |
+|**Value Type:      **| [[http://www.w3.org/TR/xmlschema-2/#long|long]]|
+

@@ -1,0 +1,3 @@
+====== IObject ======
+
+{{:developer:database:types:iobject.gif|}}

@@ -1,0 +1,2 @@
+This statement show all types of edges and informations about them.
+<code>DESCRIBE EDGES</code>

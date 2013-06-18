@@ -1,0 +1,8 @@
+====== AttributeName attribute ======
+
+===== Description =====
+Represents a name of an attribute. This can be a outgoing edge name in case of [[importexport:xmlbulkimport:xmltags:MultiLink|MultiLink]] and [[importexport:xmlbulkimport:xmltags:SingleLink|SingleLink]] or a property name in case of [[importexport:xmlbulkimport:xmltags:SetValue|SetValue]].
+
+|**Containing tags: **| [[importexport:xmlbulkimport:xmltags:MultiLink|MultiLink]], [[importexport:xmlbulkimport:xmltags:SetValue|SetValue]], [[importexport:xmlbulkimport:xmltags:SingleLink|SingleLink]] |
+|**Value Type:      **| [[http://www.w3.org/TR/xmlschema-2/#string|String]]|
+

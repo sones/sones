@@ -1,0 +1,20 @@
+====== sones GraphDB on Microsoft Windows Azure platform ======
+
+===== What is Microsoft Windows Azure? =====
+
+Azure Services Platform is an application platform in the cloud that allows applications to be hosted and run at Microsoft datacenters. It provides a cloud operating system called Windows Azure that serves as a runtime for the applications and provides a set of services that allows development, management and hosting of applications off-premises. All Azure Services and applications built using them run on top of Windows Azure.
+Windows Azure has three core components: Compute, Storage and Fabric. As the names suggest, Compute provides computation environment with Web Role and Worker Role while Storage focuses on providing scalable storage (Blobs, Tables, Queue, Drives) for large scale needs.
+
+===== Why is the sones GraphDB a perfect fit? =====
+
+The sones GraphDB is the first graph database which is available on Microsoft Windows Azure. Since the sones GraphDB is written in C# and based upon Microsoft .NET it can run as an Azure Service in it's natural environment. No Wrapping, no glue-code. It's the performance and scalability a customer can get from a on-premise hosted solution paired with the elasticity of a cloud platform.
+
+===== How can I access/buy it? =====
+
+**The sones GraphDB 1.1 for Windows Azure is available now!**
+
+{{:azure.png?400|}}
+
+This edition brings all the features from the Open Source and Enterprise Edition to the Windows Azure cloud.
+
+If you are interested in evaluating or buying this edition of the sones GraphDB please [[http://www.sones.com/kontakt|contact us!]]

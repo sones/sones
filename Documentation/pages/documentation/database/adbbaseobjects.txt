@@ -1,0 +1,74 @@
+====== Basic datatypes ======
+
+
+The GraphDB comes with a bunch of datatypes you can use as type for your attributes type definition.
+Usable are following .NET base types.
+
+===== Char =====
+''Char'' is usable for all characters marked with ' .
+<code csharp>
+CREATE VERTEX TYPE myType ATTRIBUTES (String Name, Char Sign)
+INSERT INTO myType VALUES (Name = 'new name', Sign = 'N')
+</code>
+
+=====  String =====
+''String'' is useable for all text marked with ' .
+<code csharp>
+CREATE VERTEX TYPE myType ATTRIBUTES (String Name)
+INSERT INTO myType VALUES (Name = 'new name')
+</code>
+
+===== Byte =====
+''Byte'' is useable for numbers. It's an 8-bit unsigned integer.
+<code csharp>
+CREATE VERTEX TYPE myType ATTRIBUTES (Byte Difference)
+INSERT INTO myType VALUES (Difference = 20)
+</code>
+
+===== Single =====
+''Single'' is useable for single-precision floating-point number.
+<code csharp>
+CREATE VERTEX TYPE myType ATTRIBUTES (Single Number)
+INSERT INTO myType VALUES (Number = 1.5)
+</code>
+
+===== Int16 / Int32 / Int64 =====
+''Integer'' is useable for all numbers.
+<code csharp>
+CREATE VERTEX TYPE myType ATTRIBUTES (Int64 Difference)
+INSERT INTO myType VALUES (Difference = -20)
+</code>
+Beside //Int64// also //Int32//, //Int16// are useable.
+
+
+===== UInt16 / UInt32 / UInt64 =====
+''UnsignedInteger'' is useable for all positive numbers.
+<code csharp>
+CREATE VERTEX TYPE myType ATTRIBUTES (UInt64 Age)
+INSERT INTO myType VALUES (Age = 832847937252)
+</code>
+Beside //UInt64// also //UInt32//, //UInt16// are useable.
+
+=====  Double =====
+''Double'' is useable for all floating point numbers.
+<code csharp>
+CREATE VERTEX TYPE myType ATTRIBUTES (Double Size)
+INSERT INTO myType VALUES (Size = 12.6)
+</code>
+
+
+=====  DateTime =====
+''DateTime'' is useable for all datetime values. 
+On insert use the en-us format mm/dd/yyyy hh:mm:ss.
+<code csharp>
+CREATE TYPE myType ATTRIBUTES (DateTime Born)
+INSERT INTO myType VALUES (Born = '12/31/2009 10:05:00')
+</code>
+
+
+=====  Boolean =====
+''Boolean'' is useable for all truth values and flags.
+<code csharp>
+CREATE VERTEX TYPE myType ATTRIBUTES (Boolean IsSet)
+INSERT INTO myType VALUES (IsSet = 'true')
+</code>

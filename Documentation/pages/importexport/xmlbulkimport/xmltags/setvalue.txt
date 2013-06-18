@@ -1,0 +1,8 @@
+====== SetValue tag ======
+
+===== Description =====
+Represents a key-value pair. It is used to set properties on vertices or edges. The attribute [[importexport:xmlbulkimport:xmlattr:Key|AttributeName]] references to the name of the attribute and [[importexport:xmlbulkimport:xmlattr:Value|Value]] is a base-64 encoded string.
+
+|**Parent tags:  **| [[importexport:xmlbulkimport:xmltags:Insert|Insert]], [[importexport:xmlbulkimport:xmltags:Link|Link]] |
+|**Children tags:**| No children. |
+|**Attributes:   **| [[importexport:xmlbulkimport:xmlattr:Key|AttributeName]], [[importexport:xmlbulkimport:xmlattr:Value|Value]] |

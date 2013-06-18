@@ -1,0 +1,73 @@
+====== The first graph ======
+
+[[:start|back]]
+
+This doc­u­ment will guide you through your very first graph data­base. It assumes that you’re famil­iar with the basic con­cepts of graphs and rela­tional data­base pro­gram­ming using SQL.
+
+
+
+The given graph is a sim­ple graph con­nect­ing a sin­gle type of ver­tices – comic char­ac­ters – using a sin­gle type of edges – their friend­ships. In this doc­u­ment we will use the Graph Query Lan­guage to cre­ate the user-defined types aswell as insert­ing, updat­ing and query­ing data into/from the graph.
+
+
+== Cre­at­ing the “Comic­Cha­r­ac­ter” ver­tex type ==
+
+For the cre­ation of sin­gle ver­tex type we use the CREATE VERTEX TYPE state­ment. In order to store data within a ver­tex or to con­nect two ver­tices we add attrib­utes to the def­i­n­i­tion of a ver­tex type. These attrib­utes are strongly-typed and can either be basic value types like **String**, **Int64**, etc. or a user-defined ref­er­ence types. Ref­er­ence types are the edges of our graph and the out-going edges of a spe­cific vertex.
+
+Both value and ref­er­ence types can have a valence of one or greater one. To store a sin­gle string value within the attribute “Name” you would write “String Name“, but to store mul­ti­ple string val­ues you have to add the key­word “List<…>“, e.g. “List<String> Favourite­Food” to the attribute definition.
+
+In the given graph the attrib­utes “Name“, “UserID” and “Age” are sin­gle value basic types, whereas the attribute “Friends” is a mul­ti­value ref­er­ence type. The result­ing GraphQL state­ment is the following:
+<code>
+CREATE VERTEX TYPE ComicCharacter
+  ATTRIBUTES (
+      String  Name,
+      Int64 UserID,
+      Int64 Age,
+      Set<ComicCharacter> Friends
+  )
+</code>
+
+== Insert­ing vertices ==
+For insert­ing ver­tices we use the INSERT state­ment. Within an insert state­ment all attrib­utes are optional by default, thus there is no need to store null–val­ues.
+
+<code>
+INSERT INTO ComicCharacter VALUES (Name = 'Fry', UserID = 12, Age = 22)
+INSERT INTO ComicCharacter VALUES (Name = 'Lila', UserID = 13, Age = 22)
+INSERT INTO ComicCharacter VALUES (Name = 'Bender', UserID = 14, Age = 300)
+INSERT INTO ComicCharacter VALUES (Name = 'Farnsworth', UserID = 15, Age = 129)
+INSERT INTO ComicCharacter VALUES (Name = 'Hermes', UserID = 16)
+</code>
+
+You will notice that the INSERT state­ment will fail if an unknown attribute was given or the type of a given attribute value is invalid. This might be expected, but some­times it might be unwanted not to val­i­date the unique­ness of an attribute value nor their pres­ence. To solve this you can add addi­tional checks to the insert state­ment using the “MANDATORY” or the “UNIQUE” sec­tions of an “CREATE VERTEY TYPE” or “ALTER VERTEX TYPE” state­ment.
+
+The fol­low­ing state­ments will check the pres­ence of the given attrib­utes within every INSERT state­ment. The given attrib­utes are now “manda­tory” and there­fore no longer optional.
+
+<code>
+ALTER VERTEX TYPE ComicCharacter MANDATORY(Name)
+ALTER VERTEX TYPE ComicCharacter MANDATORY(Name, UserID)
+</code>
+
+The sec­ond state­ments will check the unique­ness of the given attrib­utes within every INSERT state­ment. The given attrib­utes are now marked as “unique” and you can no longer insert data vio­lat­ing this con­straint. This fea­ture will auto­mat­i­cally add an index onto the given attributes.
+
+<code>
+ALTER VERTEX TYPE ComicCharacter UNIQUE(Name)
+ALTER VERTEX TYPE ComicCharacter UNIQUE(Name, UserID)
+</code>
+
+== Insert­ing edges ==
+…
+<code>
+UPDATE ComicCharacter SET (Friends += SETOF (Name = 'Lila') ) WHERE Name = 'Fry'
+UPDATE ComicCharacter SET (Friends += SETOF (Name = 'Fry')  ) WHERE Name = 'Lila'
+</code>
+
+Insert­ing ver­tices and edges simultaneously
+…
+<code>
+INSERT INTO ComicCharacter  VALUES (Name = 'Zoidberg', UserID  = 17, Friends = SETOF (Name = 'Fry', Name = 'Lila', Name = 'Bender', Name = 'Farnsworth', Name = 'Hermes'))
+</code>
+
+== querying ==
+
+<code>
+from ComicCharacter select Friends.Name where Name = "Zoidberg"
+</code>

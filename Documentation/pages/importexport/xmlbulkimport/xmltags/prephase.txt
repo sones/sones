@@ -1,0 +1,8 @@
+====== PrePhase tag ======
+
+===== Description =====
+Contains commands that will be executed before all imports. Reserved for later use.
+
+|**Parent tags:  **| [[importexport:xmlbulkimport:xmltags:BulkImport|BulkImport]] |
+|**Children tags:**| No children. |
+|**Attributes:   **| No attributes. |

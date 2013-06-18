@@ -1,0 +1,19 @@
+===== Setting default on mandatory =====
+
+Set the behaviour for mandatory attributes on insert statements. 
+
+===== Values =====
+
+The boolean values true or false.
+
+===== Default =====
+
+The default value is set to false.
+
+===== Examples =====
+
+<code sql>
+SETTING DB SET ('USE_DEFAULTS_ON_MANDATORY'='true')
+</code>
+
+Use default values for mandatory attributes on insert, if the attribute is not denoted in the query.

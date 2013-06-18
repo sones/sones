@@ -1,0 +1,8 @@
+====== Insert tag ======
+
+===== Description =====
+Represents one vertex to be inserted. It is allowed to have multiple insert tags in an [[importexport:xmlbulkimport:xmltags:Import|Import]] tag. The attribute [[importexport:xmlbulkimport:xmlattr:VertexType|VertexType]] assigns the vertex type and the attribute [[importexport:xmlbulkimport:xmlattr:VertexID|VertexID]] assigns the vertex id of the new vertex. Both attributes are mandatory and can be used to reference this vertex in a [[importexport:xmlbulkimport:xmltags:Link|Link]] tag.
+
+|**Parent tags:  **| [[importexport:xmlbulkimport:xmltags:Import|Import]] |
+|**Children tags:**| [[importexport:xmlbulkimport:xmltags:MultiLink|MultiLink]], [[importexport:xmlbulkimport:xmltags:SetValue|SetValue]], [[importexport:xmlbulkimport:xmltags:SingleLink|SingleLink]] |
+|**Attributes:   **| [[importexport:xmlbulkimport:xmlattr:VertexType|VertexType]], [[importexport:xmlbulkimport:xmlattr:VertexID|VertexID]] |

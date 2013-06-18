@@ -1,0 +1,17 @@
+====== ASingleEdgeType ======
+
+This class should be derived for any implementation of [[documentation:database:edges:latest|EdgeTypes]] on single reference attributes like //BestFriend// etc.
+It defines following Methods:
+
+===== Methods =====
+<code csharp>ObjectUUID GetUUID()</code>
+This will return the destination of the edge - in fact that we are an single reference attribute we have on ObjectUUID as destiniation
+
+<code csharp>void Set(Object myValue, params ADBBaseObject[] myParameters)</code>
+This will set the edge. The dynamic params definition allows you to pass any kind and number of [[documentation:database:edges:edgetypeparam|EdgeTypeParam]]. With these parameters you can handle the edge in your way.
+
+<code csharp>void Merge(ASingleEdgeType mySingleEdgeType)</code>
+This will merge an existing edge with another edge. You have to implement the way of merging...
+
+<code csharp>DBObjectReadout GetReadout(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)</code>
+This will be invoked by the select. With the help of the delegate ''GetAllAttributesFromDBO'' you can retrieve the automtically generated readout from the database and add your information afterwards.

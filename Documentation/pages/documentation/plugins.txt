@@ -1,0 +1,24 @@
+====== Plug-Ins and Extensions ======
+
+The plugin system of the GraphDS will give you the opportunity to add new functions, indices etc. at any time. Currently, they will be loaded during the start-up time of the GraphDS – changes during the lifetime won’t be reflected.
+Currently, each .dll and .exe file from the startup directory will be picked up and searched for any listed base type and interface. To add a new plugin just copy the .dll into the start-up directory and start the GraphDS.
+
+**Please note that the base type or interface you implement must match the version of the GraphDS which will use the plugin!**
+
+
+  * Extending the Graph Database Logic
+    * [[documentation:database:edges:latest|Edges]]
+    * [[documentation:PlugIns:database:Export]]
+    * [[documentation:PlugIns:database:Import]]
+    * [[documentation:database:functions|GraphQL Functions]]
+      * [[documentation:PlugIns:database:GraphAlgorithms|Graph Algorithms]]
+    * [[documentation:database:aggregates|GraphQL Aggregates]]
+    * [[documentation:database:querylanguage:stmt:settingstmt:latest|Settings]]
+    * [[documentation:PlugIns:database:Indices|GraphDB Indices]]
+      * [[documentation:PlugIns:database:Indices:SOLR|SOLR Fulltext Index Plugin]]
+      * [[documentation:PlugIns:database:Indices:Lucene|Lucene Fulltext Index Plugin]]
+
+  * Extending the Persistency Layer
+    * [[documentation:PlugIns:GraphFS:persistency|Enterprise Edition Persistency PlugIn]]
+    * StorageEngines
+

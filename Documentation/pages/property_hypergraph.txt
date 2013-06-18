@@ -1,0 +1,10 @@
+====== Property Hypergraph ======
+
+sones GraphDB is a graph database whose data structure is build by a property hypergraph. This property hypergraph represents vertices of different vertex types and edges of different edge types. Any types, vertex and edge, can have multiple user defineable attributes. Vertices (instances of a vertex type) can have binary properties (unstructured data). Additionally schema-less types are possible.
+ There are some standard edge types like the single-edge: an edge between two vertices, the multi-edge: an edge splitting up into single-edges of the same edge type pointing towards the same vertex type. The most flexible edge type is the hyper edge: an edge to a subgraph if you will.
+
+The 2.0 revision of the sones GraphDB architecture explicitly focused on the availability of easy to use plug-in interfaces. Every underlined item in the architectural overview is indeed a plug-in of some kind which can be extended and even replaced.
+
+{{ :property_hypergraph_1.png?direct&300 |}}
+
+{{ :property_hypergraph_2.png?direct&400 |}}

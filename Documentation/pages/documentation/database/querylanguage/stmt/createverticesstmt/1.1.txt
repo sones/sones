@@ -1,0 +1,58 @@
+====== CREATE TYPES ======
+
+The CREATE TYPES statement creates multiple database types which can consist of various attributes. Additionally it is possible to tag a type as abstract or let it inherit from any other user defined type ([[:DevStuff:Database:ontology|Ontology type system]]). Another advantage of using this command instead of the [[documentation:database:querylanguage:stmt:createvertexstmt:1.1|CREATE TYPE]] statement is the possibility of creating types that define circular dependencies.
+
+===== Syntax =====
+
+CREATE TYPES [ ABSTRACT ] [[documentation:database:querylanguage:vertexdefinition:1.1|TYPEDEFINITION]] [, [[documentation:database:querylanguage:vertexdefinition:1.1|TYPEDEFINITION]] ]
+
+===== Examples =====
+
+==== Creating types ====
+
+CREATE TYPES User
+
+Creates a single type that is called User and consists of noting but the [[documentation:datamodell:specialproperties|special properties]].
+
+----
+
+CREATE TYPES User, Car, Flower
+
+Creates the types User, Car and Flower analogous to the previous example.
+
+----
+
+CREATE TYPES User ATTRIBUTES ( String Name, SET<User> Friends ), Car ATTRIBUTES ( String TypeName, Integer HorsePower )
+
+This example creates multiple types with corresponding attributes. In contrast it would be possible to execute two [[documentation:database:querylanguage:stmt:createvertexstmt:1.1|CREATE TYPE]] statements.
+
+----
+
+==== Creating derived types ====
+
+CREATE TYPES User ATTRIBUTES ( String Name, Integer Age ), Employee EXTENDS User ATTRIBUTES ( Double Wage , SET<Employee> Colleagues), Chief EXTENDS Employee ATTRIBUTES ( SET<Employee> Worker ), Worker EXTENDS Employee ATTRIBUTES ( Chief Boss )
+
+This example executes the four steps of the analogous [[documentation:database:querylanguage:stmt:createvertexstmt:1.1#creating_a_derived_type|Creating a derived type]] example in one step.
+
+----
+
+CREATE TYPES Employee EXTENDS User ATTRIBUTES ( Double Wage , SET<Employee> Colleagues), Worker EXTENDS Employee ATTRIBUTES ( Chief Boss ), User ATTRIBUTES ( String Name, Integer Age ), Chief EXTENDS Employee ATTRIBUTES ( SET<Employee> Worker )
+
+This example shows that it is irrelevant in which order the types are defined within the statement.
+
+==== Creating abstract types ====
+
+CREATE TYPES ABSTRACT Car ATTRIBUTES ( String Name, Integer HorsePower ), Volkswagen EXTENDS Car, Mercedes EXTENDS Car
+
+This example executes the four steps of the analogous [[documentation:database:querylanguage:stmt:createvertexstmt:1.1#creating_an_abstract_type|Creating an abstract type]] example in one step.
+
+==== Creating circular dependecies ====
+
+CREATE TYPES User ATTRIBUTES ( SET<Car> Cars ), CAR ATTRIBUTES ( User Owner )
+
+This statements demonstrates the possibility to create/solve circular attribute references within a single statement.
+
+===== Return on success =====
+
+  * The name of the TYPEs that have been created
+  * The [[documentation:datamodell:specialproperties|special properties]] with their current values

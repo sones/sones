@@ -1,0 +1,2 @@
+This statement show all implemented functions and informations about them.
+<code>DESCRIBE FUNCTIONS</code>

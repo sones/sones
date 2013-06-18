@@ -1,0 +1,42 @@
+====== DUMP ======
+
+This will create a complete logical dump of all data. This is not a binary backup of the database. If you choose "GQL" as dumptype you will get all INSERT commands to recreate the database.
+
+<code sql>
+DUMP 
+   [TYPES <typename> [, <typename>] ]
+   [GDDL | GDML | ALL | empty] // dumptype
+   [AS GQL | empty]       // dumpformat
+   [TO '<location>']
+   
+location = <prefix><pathAndFilename>
+prefix = 'file:\\' or 'http://'
+pathAndFilename = Any valid location.
+
+</code>
+
+You will find both dumptype outputs in the first vertex of the [[documentation:database:queryresult:latest|QueryResult]] in the properties "GDDL" and "GDML" where both are List<String>.
+
+===== DUMP TYPES =====
+Using the first optional parameter you can limit the dump to certain types. However, the dump will always create a complete graph and resolve all type references and dump them as well. So, if you want to dump only the type 'User' and any of the attribute refers to an other type 'Car' all data of type 'Car' will be dumped as well.
+
+===== Dump Type =====
+You can choose either GDDL or GDML as dump type. In case of no type definition the dump statement will create both. After executing the query, you will find the type in the QueryResult of the query as key and the complete dump as value.
+
+<code>
+QueryResult.First().GetProperty<List<String>>("GDDL")[0] => "CREATE ...."
+</code>
+Will create the graphql to get a copy of the complete DB structure incl. all indices, backwardedges etc.
+
+
+<code>
+QueryResult.First().GetProperty<List<String>>("GDML")[0] => "INSERT INTO ...."
+QueryResult.First().GetProperty<List<String>>("GDML")[1] => "UPDATE ...."
+</code>
+Will create all insert queries to get a copy of all data incl. all properties, edges and undefined attributes.
+
+===== Dump Format =====
+Currently, GQL is the one and only output format.
+
+===== Dump Location =====
+You can define a dump location. The location must start with a prefix like 'file:\\' or 'http:<nowiki>//</nowiki>'.

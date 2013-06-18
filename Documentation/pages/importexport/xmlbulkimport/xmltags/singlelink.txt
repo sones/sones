@@ -1,0 +1,8 @@
+====== SingleLink tag ======
+
+===== Description =====
+Represents a single-edge. It contains one [[importexport:xmlbulkimport:xmltags:Link|Link]] tags that will be stored under the outgoing edge attribute, that is referenced with [[importexport:xmlbulkimport:xmlattr:Key|AttributeName]].
+
+|**Parent tags:  **| [[importexport:xmlbulkimport:xmltags:Insert|Insert]] |
+|**Children tags:**| [[importexport:xmlbulkimport:xmltags:Link|Link]] |
+|**Attributes:   **| [[importexport:xmlbulkimport:xmlattr:Key|AttributeName]] |

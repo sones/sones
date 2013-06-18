@@ -1,0 +1,31 @@
+====== Windows Requirements ======
+
+To use the sones GraphDB on Windows you need to have the current version of the Microsoft .NET Framework installed. The current version is **.NET Framework 4.0** and it [[http://www.microsoft.com/downloads/details.aspx?FamilyID=9cfb2d51-5ff4-4491-b0e5-b386f32c0992&displaylang=en|can be downloaded here.]]
+
+===== Running sones GraphDB =====
+
+After the successful installation of the .NET Framework you should be able to run the executable files of the binary package without any further change. 
+
+===== Building the sones GraphDS on Windows =====
+
+Download the current source code from [[http://www.github.com/sones/sones|GitHub]] by clicking on "Download".
+
+{{:installation:download-sones.png|}}
+
+==== Commandline ====
+
+To build sones GraphDS on Windows you need to download the sourcecode and extract it to a folder. Go to this folder inside a command line and use the command:
+
+<code>
+C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe "CoreDeveloper.sln"
+</code>
+
+{{:installation:build_windows.png?400|}}
+
+==== Using Visual Studio (Express Edition) 2010 ====
+
+At least you need Visual Studio 2010 Express Edition ([[http://www.microsoft.com/express/Downloads/Download-2010.aspx|which can be downloaded freely here]]) to compile sones GraphDS.
+
+When you have Visual Studio 2010 installed you just need to open the solution (.sln) file and click "Build" (or F6 if you use the standard hotkey scheme)
+
+{{:installation:vs2010_build.png?400|}}

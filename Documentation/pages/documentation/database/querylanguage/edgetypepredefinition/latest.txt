@@ -1,0 +1,48 @@
+====== edge type predefinition ======
+
+Edge is a term for an Object in an Graph. You can find more information about Edge and Graphs in section [[documentation:datamodel:graph|Graph Model]].
+
+The type predefinition of a edge characterizes a database edge type.
+
+===== Syntax =====
+
+typeName\\
+[ EXTENDS typeName ]\\
+[ ATTRIBUTES ( attrType attributeName[=DefaultValue] [, baseTypeName attributeName[=DefaultValue] ] ) ]\\
+[ COMMENT = commentString ]\\
+
+==== typeName ====
+
+The name of the vertex.
+
+==== attrType ====
+
+The type of the attribute.
+
+LIST<baseTypeName> | baseTypeName
+
+==== baseTypeName ====
+
+The name of a base attribute type (like String, Int64, Double ...).
+
+==== EXTENDS ====
+
+[ EXTENDS typeName ]
+
+The name of the parent edge type. All attributes wil be derived from this edge.
+
+==== ATTRIBUTES ====
+
+[ ATTRIBUTES ( attrType attributeName[=DefaultValue] [, attrType attributeName[=DefaultValue] ] ) ]
+
+A list of attribute definitions with at least one member. The first part of the definition is the type of the attribute (i.e. Integer, String, LIST<Int64>...) and the second part represents the name of the attribute.
+
+=== Default Value ===
+
+Default value for the attribute.
+
+==== COMMENT ====
+
+[ COMMENT = commentString ]
+
+A comment that is stored on the defined type.

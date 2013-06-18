@@ -1,0 +1,168 @@
+As part of our Enterprise Edition, we offer an index plugin to enable fulltext search inside GraphDB. The plugin offers the following features:
+  * fulltext indexing of vertex properties
+  * use of all possible SOLR/Lucene query strings
+  * compound indices to add one index that combines multiple properties of a vertex (only with API)
+  * returns SOLR/Lucene score values for further usage
+  * forwards highlighting returned from SOLR/Lucene server
+
+====== SOLR Server Installation and Configuration ======
+  - Download SOLR Server: http://www.apache.org/dyn/closer.cgi/lucene/solr/
+  - Install SOLR Server to same server as the GraphDB Server or any other server. If installing SOLR Server to another server machine, be sure that GraphDB has the rights to access the SOLR Server Port on the machine where SOLR Server is running. (Port of SOLR Server can be configured in "[SOLR_INSTALL_PATH]/etc/jetty.xml")
+  - To be able to use the SOLR Server as fulltext indexer for sones GraphDB it is mandatory to use a [[http://schema.sones.com/sones-solr-2-1-schema.xml|defined Scheme for GraphDB SOLR Plugin Version 2.1]]. Please rename it to schema.xml and put it into the folder "[SOLR_INSTALL_PATH]/solr/conf/"
+  - Be sure that newest Java Runtime Environment (JRE) is installed or [[http://www.java.com/download/|download]] and install it.
+  - Run the SOLR Server using the following command: java -Xms128M -Xmx512M -jar start.jar
+
+
+====== Plugin Usage with GQL ======
+===== Add a SOLR Fulltext Index =====
+
+To add a Fulltext Index using GQL, use the command CREATE INDEX in the following way:
+
+CREATE INDEX //IndexName// ON VERTEX TYPE //VertexTypeName//(//Property Name//, [//Property Name//], ...) INDEXTYPE multiplevaluepersistentsolr OPTIONS (Location='URL to SOLR Server')
+
+So, if you want to add an index with the name "MyFulltextIndex" on a vertex type "MyVertexType" that indexes the property "MyProperty" and your SOLR server is installed on "http://mysolr.server:8080/solr" the command would be:
+
+CREATE INDEX MyFulltextIndex ON VERTEX TYPE MyVertexType(MyProperty) INDEXTYPE multiplevaluepersistentsolr OPTIONS (Location='URL to SOLR Server')
+
+===== Rebuild the Index =====
+
+To fill the index with values (if you already inserted vertices into the GraphDB before adding the index) use the following command:
+
+REBUILD INDICES
+
+Every time you add a vertex to the DB or change any indexed property, the fulltext index is updated automatically (no more REBUILD INDICES is necessary).
+===== Query using the Index =====
+To query vertices using a SOLR query string, just use the standard FROM ... SELECT command adding a WHERE clause with desired PropertyName set to the query string:
+
+FROM //VertexType// SELECT //PropertyNames or *// WHERE //PropertyName// = ‘//SOLR Query String//'
+
+So if you want to query all properties of vertex type "MyVertexType" where the property "MyProperty" starts with the word "MySearchWord" use the following command:
+
+FROM MyVertexType SELECT * WHERE MyProperty = ‘MySearchWord*'
+
+For more information about SOLR search query string see [[http://wiki.apache.org/solr/SolrQuerySyntax|SOLR Wiki]]
+
+====== Plugin Usage with API ======
+===== Create SOLR Fulltext Index =====
+For each SOLR index to be used, an instance of SonesIndexPersistenSolr class (part of SOLR Index Plugin) is needed. The constructor SonesIndexPersistentSolr(String myLocation, String myIndexId, IList<Int64> myPropertyIDs = null) has to be used for this.
+
+Following parameters have to be set:
+  * myLocation: URL of SOLR Server
+  * myIndexId: unique ID of the Index
+  * myPropertyIDs: list of Int64 values with property IDs of to be indexed properties (needed for compound indices, if single index is to be created set to //null//)
+===== Add Values to Index =====
+==== single indexed property ====
+To add one or more values to the index, following methods are offered:
+  * void Add(IComparable myKey, long? myVertexID, IndexAddStrategy myIndexAddStrategy)  
+    * adds exactly one key and one vertex ID to the Index
+    * **parameter myKey:** is the key (so the string to be used for the SOLR Fulltext Search Index), has to be of type string
+    * **parameter myVertexID:** the ID of the Vertex Instance where the indexed property contains the key, has to be of type long
+    * **parameter myIndexAddStrategy:** either 
+      * IndexAddStrategy.REPLACE (replaces all indexed values with the same key by the given key and vertex ID pair)
+      * IndexAddStrategy.MERGE (adds the given key and vertex ID pair to the index and keeps other indexed IDs with given key in the index)
+      * IndexAddStrategy.UNIQUE (checks, of the given key is unique in the index, fails if this is not the case)
+  * void AddRange(IEnumerable<KeyValuePair<IComparable, long?>> myKeyValuePairs, IndexAddStrategy, myIndexAddStrategy = IndexAddStrategy.MERGE)
+    * Adds an IEnumerable of Key and VertexID pairs in one call (important for IndexAddStrategy.REPLACE as this function replaces the stored values by all the given values)
+    * **parameter myKeyValuePairs:** IEnumerable (e.g. as List) of KeyValuePairs, each Key in the KeyValuePair must be as string with the fulltext index key, the appropriate long is the VertexID of the Vertex Instance which should be index with the given key string
+    * **parameter myIndexAddStrategy:** same as in Add Method (see above)
+==== compound index (multiple properties) ====
+Compound indices are indices that combine multiple properties on one vertex.
+
+To add a compound index, use one of the following methods:
+  * void Add(IEnumerable<ICompoundIndexKey> myKeys, Int64 myVertexID, IndexAddStrategy myIndexAddStrategy)
+    * adds a list of CompoundIndexKeys for a given VertexID to the index
+    * **parameter myKeys:** IEnumerable (e.g. List) of any classes that implement ICompoundIndexKey
+      * the plugin already offers a class //SolrCompoundKey// that can be instantiated for this purpose
+      * constructor of SolrCompoundKey is SolrCompoundKey(long myPropertyID, String myKey)
+      * **parameter myPropertyID:** PropertyID of property for which to index the given key (long)
+      * **parameter myKey:** the key to be indexed for the given PropertyID as part of the compound index (string)
+    * **parameter myVertexID:** the VertexID for which to add the compound key to the index
+    * **parameter myIndexAddStrategy:** the add strategy (same as for single index add methods, see above)
+  * void AddRange(IEnumerable<KeyValuePair<IEnumerable<ICompoundIndexKey>, Int64>> myKeysValuePairs,        IndexAddStrategy myIndexAddStrategy)
+    * adds a list of key value pairs with a list of compound index keys as key and a vertex ID as value at once
+    * **parameter myKeysValuePairs**: list of key value pairs
+      * key: List of ICompoundIndexKey implementations, the SolrIndex Plugin already offers the class SolrCompoundKey (see above for more information)
+      * value: Int64 with VertexID for which to index the given compound keys
+    * **parameter myIndexAddStrategy:** the add strategy (same as for single index add methods, see above)
+===== Remove Values from Index =====
+To remove values from the SOLR Index, you can use one of the following methods:
+
+  * bool Remove(IComparable myKey)
+    * removes all indexed values that match the given key
+    * **parameter myKey:** the key for which all values should be removed from the index (string)
+    * returns true if index entries have been removed, false if not
+  * void RemoveRange(IEnumerable<IComparable> myKeys)
+    * removes all indexed values that match one or more of the keys given in the list of keys
+    * **parameter myKeys:** IEnumerable of keys (e.g. List) that specify the entries to delete from the index
+  * bool TryRemoveValue(IComparable myKey, Int64 myValue)
+    * tries to remove all indexed entries that match the given key and VertexId value
+    * **parameter myKey:** string with key to match
+    * **parameter myValue:** VertexID to match
+
+
+===== Retrieve values from the SOLR index =====
+==== SolrResult class ====
+SolrIndex Plugin offers a class that implements ISonesFulltextResult interface. The class contains following properties:
+
+  * **Entries:** List of SolrResultEntry instances
+  * **AdditionalParameters:** Dictionary of type <string, object>, currently only returning some statistics about SOLR query
+  * **MaxScore:** the highest score of all returned entries
+==== SolrResultEntry class ====
+SolrResultEntry class is a implementation of ISonesFulltextResultEntry interface offered by the SOLR index plugin. The class contains following properties:
+
+  * **VertexID:** VertexID of the vertex instance that is represented by the returned index entry
+  * **Highlights:** Dictionary of type <long,string>
+    * key: PropertyID of property, where the key has been found (long)
+    * value: String with value of the property including <em>...</em> tags used to highlight the position where the search query matches the property value
+  * **Score:** Score of the entry, a higher score matches the search query more than a lower score
+==== Query Method ====
+The method **Query(string myQuery)** can be used to perform a custom query on the SOLR Fulltext Index. It requires just the SOLR query as **myQuery** parameter and returns an instance of **SolrResult** class.
+
+
+==== TryGetValues Methods ====
+The SolrIndex Plugin offers following methods to retrieve VertexID values from the SOLR index. If more detailed information is needed about the Query Result, use the query method (see above).
+  * bool TryGetValues(IComparable myKey, out IEnumerable<long> myVertexIDs)
+    * returns a list of VertexIDs that match the given key
+    * **parameter myKey:** string containing the key to search (or SOLR query including e.g. wildcards)
+    * **out parameter myVertexIDs:** list of VertexIDs that match the given key
+  * bool TryGetValues(IEnumerable<ICompoundIndexKey> myKeys, out IEnumerable<Int64> myVertexIDs)
+    * returns a list of VertexIDs that match all the given compound keys
+    * **parameter myKeys:** list of compound keys to search for
+    * **out parameter myVertexIDs:** list of VertexIDs that match the given key
+  * bool TryGetValuesPartial(IEnumerable<ICompoundIndexKey> myKeys, out IEnumerable<Int64> myVertexIDs)
+    * returns a list of VertexIDs that match at least one of the given compound keys
+    * **parameter myKeys:** list of compound keys to search for
+    * **out parameter myVertexIDs:** list of VertexIDs that match the given key
+
+==== Additional methods ====
+  * void Clear()
+    * completely clears the index (deletes all entries)
+  * bool ContainsKey(IComparable myKey)
+    * returns true, if the index contains any entry that matches the given key
+    * **parameter myKey:** string containing the key to query
+  * Type GetKeyType()
+    * returns the type of the keys used by the FullTextIndex plugin, SolrIndex Plugin always returns string as not other key type is allowed
+  * IEnumerable<IComparable> Keys()
+    * returns a list of all keys used in the index
+  * long KeyCount()
+    * returns the count of keys in the index as long
+  * long ValueCount()
+    * returns the count of values in the index as long
+  * long KeyCount(long myPropertyID)
+    * returns the count of keys for given PropertyID (only makes sense when using compound indices)
+    * **parameter myPropertyID:** propertyID to count keys for
+  * IEnumerable<IComparable> Keys(Int64 myPropertyID)
+    * returns the keys stored in the index for a given propertyID
+    * **parameter myPropertyID:** propertyID for which to return the indexed keys
+
+ --- //[[philipp.schleizer@sones.com|Philipp Schleizer]] 2011/11/04 16:16//
+
+
+
+
+
+
+
+
+
+

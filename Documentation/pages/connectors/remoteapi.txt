@@ -1,0 +1,129 @@
+====== GraphDB Remote API ======
+
+==== Introduction ====
+Sones GraphDB RemoteAPI Service Plugin provides a RPC style web service to access a GraphDB instance. 
+
+The plugin is based on .NET 4.0 Windows Communication Foundation (WCF) and maps a server side GraphDS API to a service orientated interface available via soap. Web service description metadata is provided to allow custom client side implementations to access this RemoteAPI.
+
+==== GraphDS RemoteAPI Service Plugin ====
+RemoteAPI Service Plugin can be added to a GraphDB via the plugin system, see [[:plugins|Plug-Ins and Extensions]] for details.
+
+Once the plugin is properly loaded at GraphDB startup, you can configure and launch the RemoteAPI Service as part of a GraphDSServer as seen below. Because this service is selfhosting, you don't need a dedicated web server.
+
+<code csharp>
+IGraphDSServer dsServer = new GraphDS_Server(graphDB, pluginsAndParameters);
+
+Dictionary<string, object> remoteAPIParameter = new Dictionary<string, object>();
+remoteAPIParameter.Add("IPAddress", IPAddress.Parse("0.0.0.0"));
+remoteAPIParameter.Add("Port", (ushort)9970);
+remoteAPIParameter.Add("IsSecure", true);
+
+dsServer.StartService("sones.RemoteAPIService", remoteAPIParameter);
+</code>
+
+Configuration can be done by adding entries that contain the parameter name and value to a dictionary that is passed to the StartService() method. Possible parameter are:
+  * **IPAddress**: IP address that the service is listening at, default is 0.0.0.0 which means that the service is listening at all interfaces.
+  ***Port**: Port that the service is listening at, default is 9970. Note that the metadata exchange (MEX) endpoint will listen at this given port + 1 (so default 9971), automatically.
+  ***IsSecure**: Describes whether or not SSL encryption security is used by the service. Note that if this option is true, all service uri patterns (except MEX) will change from %%http://%% to %%https://%%.
+
+The base uri of the service host itself will ne determined by the following pattern:
+
+%%<http or https>://<your ip>:<your port>/rpc%%
+
+The MEX endpoint will be available at the following uri:
+
+%%http://<your ip>:<your port + 1>/rpc/wsdl%%
+
+
+==== GraphDS RemoteClient ====
+The easiest way to access RemoteAPI is to use GraphDS RemoteClient. It encapsulates RemoteAPI and implements IGraphDSClient interface. A client application that uses an existing GraphDSClient can switch the underlying implementation to RemoteClient without the need to change code.
+
+<code csharp>
+var graphDSClient = new GraphDS_RemoteClient(new Uri("https://yourserver:9970/rpc"), true);
+secToken = graphDSClient.LogOn(new RemoteUserPasswordCredentials("test", "test"));
+</code>
+
+To use the RemoteClient, you just need to create a new instance of GraphDS_RemoteClient and pass it the address of the service to use and whether you want SSL encryption security to be enabled.
+
+==== Client Side Usage Without GraphDS RemoteClient ====
+If you don’t want to use RemoteClient, it is also possible to directly access the RemoteAPI service. Therefore six services are published by the server plugin:
+    ***GraphDSService** - Maps functions of IGraphDS interface to the web service.
+    ***VertexTypeService** - Maps functions of IVertexType interface.
+    ***EdgeTypeService** - Maps functions of IEdgeType interface.
+    ***VertexService** - Maps functions of IVertex interface. (except functions using binary objects)
+    ***EdgeService** - Maps functions of IEdge interface.
+    ***StreamedService** - Maps functions of various interfaces that use binary objects (streams).
+
+To use these services, it is recommended to generate a client side method stub from web service metadata. Various platforms offer different degrees of support for stub generation from wsdl (Web Service Description Language). Most natural support offers .NET IDE Visual Studio (who would have thought!) to create client stubs in all programming languages supported by .NET, other languages like Java offer various generators, too.
+
+=== C# Example ===
+In order to generate a method stub in Visual Studio, make sure your server is running and the metadata exchange endpoint is available, then add a service by defining the wsdl’s location (per default "%%http://yourserver:9971/rpc/wsdl%%"). Under Services you should see “RPCServiceContract” and when expanding this point, you should also see the six services mentioned above.
+
+For further documentation on how to create service references see http://msdn.microsoft.com/en-us/library/bb628652.aspx.
+
+To actually use the services, it is necessary to create a channel via ServiceModel.ChannelFactory as seen below:
+<code csharp>
+var address = new EndpointAddress("http://yourserver:9970/rpc");
+var binding = new BasicHttpBinding();
+GraphDSService api = ChannelFactory<GraphDSService>.CreateChannel(binding, address);
+ 
+var credentials = new ServiceUserPasswordCredentials()
+    { _login = "test", _passwordHash = "test".GetHashCode() };
+api.LogOn(credentials);
+</code>
+
+The "binding" property allows further connection and transfer configuration, for example to set buffer size and timeouts. After establishing the connection, it is possible to call methods on "api" object, such as "LogOn" as seen above. The same way, the other services can be created and used.
+
+For an example application, see [[https://github.com/sones/sones-RemoteTagExample/tree/master/csharp|sones Remote Tag Exmaple]] at github.
+
+=== Java Example ===
+The generate a client stub in Java, it is recommanded to use [[http://download.oracle.com/javase/6/docs/technotes/tools/share/wsimport.html|wsimport]]. You may aquire the needed wsdl directly from server or from a local file.
+
+To use this method stub, you need to instantiate the RPCServiceContract class and then create the actual service endpoints.
+
+<code java>
+RPCServiceContract serviceContract = new RPCServiceContract();
+GraphDSService graphDSService = serviceContract.getSonesBasicGraphDSService();
+ServiceUserPasswordCredentials cred = new ServiceUserPasswordCredentials();
+cred.setLogin("test");
+cred.setPasswordHash("test".hashCode());
+SecurityToken secToken = graphDSService.logOn(cred);
+</code>
+
+The server address and service uri pattern are generated to the client stub from wsdl. Easiest way to change the target server address is to edit the wsdl file and generate the method stub again.
+
+For an example application, see [[https://github.com/sones/sones-RemoteTagExample/tree/master/java|sones Remote Tag Example]] at github.
+
+==== Streaming ====
+The StreamedService Endpoint maps all GraphDS functions that receive or return binary objects, for example file streams. Because these streams can easily reach significant size, it can be a problem to send them via standard buffered transfer, for the servers memory may reach it's limits. Therefore the StreamedService offers the possibility to send the data in a row of smaller parts, to stream them.
+
+To enable streaming, it is necessary to create a separate binding and pass it when creating the StreamedService:
+
+<code csharp>
+var address = new EndpointAddress("http://yourserver:9970/rpc/streamed");
+var streamedBinding = new BasicHttpBinding();
+streamedBinding.Name = "sonesStreamed";
+streamedBinding.TransferMode = TransferMode.Streamed;
+streamedBinding.MaxReceivedMessageSize = 2147483648;
+streamedBinding.SendTimeout = new TimeSpan(1, 0, 0, 0);
+streamedBinding.ReceiveTimeout = new TimeSpan(1, 0, 0, 0);
+streamedService = ChannelFactory<StreamedService>.CreateChannel(streamedBinding, address);
+</code>
+
+It is recommanded to configure //MaxReceivedMessageSize//, //SendTimeout// and //ReceiveTimeout// so that it is possible to transfer large binary objects. Also note that the endpoint address is different from the other services, ending with "/streamed".
+
+To retrieve a binary object from the server, just call //_StreamedService.GetBinaryProperty()// like any other service function.
+
+<code csharp>
+Stream BinObject = _StreamedService.GetBinaryProperty(SecurityToken, TransactionToken, ServiceVertexInstance, myPropertyID);
+</code>
+
+To send a binary object to the server is a bit different due to technological restrictions. When calling //_StreamedService.SetBinaryProperty()// it is necessary to create a //SetBinaryPropertyMessage// instance. This is a WCF MessageContract and defines that all passed properties should be part of the inital http header and the stream object to be the only item in the message body.
+
+<code csharp>
+var message = new SetBinaryPropertyMessage(propertyName, securityToken, transactionToken, vertexID, typeID, stream);
+streamedService.SetBinaryProperty(message);
+</code>
+
+
+Currenty this feature supports only .NET WCF clients. For further information on streaming with WCF take a look at [[http://msdn.microsoft.com/en-gb/library/ms733742.aspx|MSDN]]

@@ -1,0 +1,6 @@
+====== GraphQL Cheatsheet ======
+
+The purpose of this document is to give developers and users a quick reference they can print on one page (front+back).
+
+Download the current GraphQL Cheatsheet (v1.1) here: 
+{{:quickreference:gqlcheatsheet-1.1.pdf|GraphQL Cheat Sheet v1.1}}

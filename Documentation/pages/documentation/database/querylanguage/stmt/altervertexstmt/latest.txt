@@ -1,0 +1,202 @@
+====== ALTER VERTEX ======
+The alter type statement allows you to manipulate user-defined-types.
+
+If you want to know what is about the GraphDS and how it handles graphs you should check out the [[quickreference:fiveminuteguide|five minute guide]],
+
+===== Syntax =====
+
+ALTER VERTEX [[documentation:database:querylanguage:stmt:altervertexstmt:latest#typename]] [ [[documentation:database:querylanguage:stmt:altervertexstmt:latest#altertypecommand]] ]
+
+==== typeName ====
+
+The name of the type that is to be manipulate. 
+
+
+==== AlterTypeCommand ====
+
+Types of alter type commands.
+
+  * ADD ATTRIBUTES([[documentation:database:querylanguage:attributedefinition:latest|attr_definition]] [, [[documentation:database:querylanguage:attributedefinition:latest|attr_definition]] ]) | \\
+  * DROP ATTRIBUTES (Identifier [,Identifier]) | \\
+  * ADD BACKWARDEDGES (BackwardEdge [,BackwardEdge]) | \\
+  * DROP BACKWARDEDGES (Identifier [,Identifier]) | \\
+  * ADD INDICES ( [[documentation:database:querylanguage:indexdefinition:latest|IndexDefinition]] [,   [[documentation:database:querylanguage:indexdefinition:latest|IndexDefinition]] ] ) | \\
+  * DROP INDICES ( (IndexDrop)[,(IndexDrop]) ) | \\
+  * RENAME ATTRIBUTE Identifier TO Identifier | \\
+  * RENAME BACKWARDEDGE Identifier TO Identifier | \\
+  * RENAME TO Identifier | \\
+  * DEFINE ATTRIBUTES ([[documentation:database:querylanguage:attributedefinition:latest|attr_definition]] [, [[documentation:database:querylanguage:attributedefinition:latest|attr_definition]]]) | \\
+  * UNDEFINE ATTRIBUTES (Identifier [, Identifier]) | \\
+  * DROP UNIQUE | \\
+  * DROP MANDATORY | \\
+  * UNIQUE (Identifier [,Identifier]) | \\
+  * MANDATORY(Identifier [,Identifier])
+
+----
+
+IndexCreation =
+
+([Identifier] [EDITION Identifier] [INDEXVERTEX Identifier] ON ATTRIBUTES IndexAttributeList) | \\
+([Identifier] [EDITION Identifier] [INDEXVERTEX Identifier] ON IndexAttributeList) | \\
+(IndexAttributeList)
+
+----
+
+IndexAttributeList =
+
+Identifier | id_typeAndAttribute
+
+
+----
+
+
+IndexDrop =
+
+(Identifier [EDITION Identifier])[, (Identifier [EDITION Identifier])] 
+
+
+----
+
+===== QueryResult =====
+The QueryResult of the ALTER VERTEX query will contain
+  * The executed query
+  * The result: Successful | PartialSuccessful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The warnings (if result is //PartialSuccessful//)
+  * The errors (if result is //Failed//)
+  * The results contains **for each** alter command
+    * TYPE: The name of the vertex type
+    * ACTION: The name of the command
+    * some detailed informations depending on the ACTION
+
+sample json output:
+<code json>
+{
+  "query": "ALTER VERTEX UserProfile ....",
+  "result": "Successful",
+  "duration": [
+    1,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": [
+    {
+      "TYPE": "UserProfile",
+      "ACTION": "ADD ATTRIBUTES",
+      "ATTRIBUTES": {
+        "hyperedgelabel": {},
+        "vertices": [
+          {
+            "attributes": {
+              "NAME": "Enemies",
+              "TYPE": "UserProfile"
+            }
+          },
+          ...
+        ]
+      }
+
+    },
+    {
+      "TYPE": "UserProfile",
+      "ACTION": "RENAME ATTRIBUTE",
+      "FROM": "Friends",
+      "TO": "AllFriends"
+    },
+    {
+      "TYPE": "UserProfile",
+      "ACTION": "CHANGE COMMENT",
+      "NEW COMMENT": "The UserProfile vertex"
+    },
+    
+    ....
+    
+  ]
+}
+</code>
+
+==== Examples ====
+
+
+----
+
+
+ALTER VERTEX User ADD ATTRIBUTES (Integer Age, SET<User> Friends) \\ \\
+This example add the two attributes to type User. The attribute Age of type Integer  and the attribute Friends of type User. \\
+
+----
+
+ALTER VERTEX User DROP ATTRIBUTES (Age, Friends) \\ \\
+Drop the two attributes Age and Friends from type User. \\
+
+----
+
+ALTER VERTEX User ADD BACKWARDEDGES (User.Friends BestFriend) \\ \\
+Add the backwardedge BestFriend to the type User.
+
+----
+
+ALTER VERTEX User DROP BACKWARDEDGES (BestFriend) \\ \\
+Drop Backwardedge BestFriend from type User. \\
+
+----
+
+ALTER VERTEX User ADD INDICES ( (IDX_Name EDITION EDTName INDEXVERTEX BPlusTree ON ATTRIBUTES Name), (Age) ) \\ \\
+Add indices for the attributes Name and Age to the type User. The index for the attribute Name has the name IDX_Name and the edition EDTName and is from index type BPlusTree. \\
+
+
+----
+
+ALTER VERTEX User DROP INDICES( (IDX_Name EDITION EDTName),(Idx_Age) )  \\ \\
+Drop the indices IDX_Name and Idx_Age from the attributes Name and Age of the type User. \\
+
+
+----
+
+ALTER VERTEX User RENAME ATTRIBUTE Name TO FirstName \\ \\
+Rename the attribute Name of the type User to FirstName. \\
+
+
+----
+
+ALTER VERTEX User RENAME BACKWARDEDGE BestFriend TO IsFriend \\ \\
+Rename the backwardedge BestFriend of the type User IsFriend. \\
+
+
+----
+
+ALTER VERTEX User RENAME TO Person \\ \\
+Rename the type User to Person. Its only an renaming of the type User to Person. All type characteristics are retained. \\ 
+
+
+----
+
+ALTER VERTEX User DEFINE ATTRIBUTES(String Name, Integer Age) \\ \\
+Define undefined attributes and convert the content to the given type. \\
+
+
+----
+
+ALTER VERTEX User UNDEFINE ATTRIBUTES(Name, Age) \\ \\
+Undefine the defined attributes of the type Use. The content of the attributes converted to an undefined content. After the conversion the attributes Name and Age are not available. \\
+
+
+----
+
+ALTER VERTEX User UNIQUE(Name) \\ \\
+Define the attribute Name of the type User as unique. All inserted values must be unique. \\
+
+
+----
+
+ALTER VERTEX User MANDATORY(Age) \\ \\
+Define the attribute Age to mandatory. The attribute must be set on every insert or update statement. \\
+
+
+----
+
+Return on success
+
+The return value depends on the altertype command.
+

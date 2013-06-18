@@ -1,0 +1,45 @@
+[[documentation:graphql:gddl|Back to: Graph Data Definition Language Overview]]
+
+====== DROP VERTEX TYPE ======
+Will remove the vertex type and all containing nodes (vertex objects).
+
+===== Syntax =====
+DROP VERTEX TYPE <vertex_name>
+
+===== QueryResult =====
+The QueryResult of the DROP VERTEX TYPE query will contain
+  * The executed query
+  * The result: Successful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The errors (if result is //Failed//)
+  
+sample json output:
+<code json>
+{
+  "Query": "DROP VERTEX TYPE UserProfile",
+  "Result": "Successful",
+  "Duration": [
+    301,
+    "ms"
+  ],
+  "Results": [
+    [
+      {
+        "Properties": {
+          "RemovedTypeID": "-9223372036854775797",
+          "RemovedTypeName": "UserProfile"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ]
+  ]
+}</code>
+
+===== Examples =====
+<code sql>
+DROP VERTEX TYPE UserProfile
+</code>
+Deletes the vertex definition "User" and all instances, indices, references etc.
+

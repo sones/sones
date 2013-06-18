@@ -1,0 +1,8 @@
+====== EdgeTypeParam ======
+This class defines one parameter for the //ApplyParams// method of an [[documentation:database:edges:latest|EdgeType]] implementation. Currently there are following different ParamTypes provided
+<code>PandoraType,Value,DefaultValueDef,Sort</code>
+
+  * **Value** is any kind of object which could not be passed as any of the other ''ParamTypes'' e.g. StringLiteral, NumberLiteral, etc
+  * **PandoraType** is any kind of [[documentation:database:DBBaseTypes|DBBaseTypes]] like ''Integer'', ''String'', ''DateTime'' etc.
+  * **DefaultValueDef** is a default value definition like ''DEFAULT=[StringLiteral|NumberLiteral|...]''
+  * **Sort** is a sort definition whith any value of enum ''SortDirection''

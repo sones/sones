@@ -1,0 +1,44 @@
+===== Documentation =====
+
+  * Overview
+    * [[WhatIsSones|What is sones GraphDB?]]
+    * [[ArchitecturOverview|Architecture Overview of sones GraphDB]]
+    * [[DifferencesBetweenOSEandEE|What differentiates the Open Source Edition from the Enterprise Edition?]]
+
+
+  * GraphDB Data Model
+    * [[property_hypergraph|Property Hypergraph]]
+    * [[documentation:datamodell:SpecialProperties|Special Properties]]
+    * [[documentation:Edges|Edges]]
+    * [[documentation:database:adbbaseobjects|Basic Datatypes]]
+
+  * Query Languages and Graph Traversals 
+    * Graph Query Language (sones GraphQL)
+      * [[documentation:GraphQL|GraphQL Overview]]
+      * [[:documentation:GraphQL:CorrectEscaping|Correct String Escaping]]
+      * [[:documentation:GraphQL:GDDL|Graph Data Definition Language]]
+      * [[:documentation:GraphQL:GDML|Graph Data Manipulation Language]]
+      * [[documentation:Transactions|Transactions]]
+      * [[documentation:database:functions|Functions]]
+      * [[documentation:database:aggregates|Aggregates]]
+      * [[documentation:database:import|Import]]
+
+  * Graph and Semantic Algorithms
+    * [[documentation:GraphAlgorithms|Graph Algorithms]]
+    * [[documentation:GraphPartitioning|Graph Partitioning]]
+
+  * Event/Notification System
+    * [[documentation:NotificationSystem|Overview and Architecture]]
+
+  * Connectors, Im- und Export
+    * [[Connectors:GraphDSREST|REST connector]]
+    * [[Connectors:GraphDSWebDAV|WebDAV connector]]
+    * [[Connectors:JavaClient|Javaclient (REST)]] 
+    * [[ImportExport:CSV|CSV Im-/Export]]
+    * [[ImportExport:GEXF|GEXF Im-/Export]]    *
+    * [[Connectors|mehr...]]
+
+  * [[documentation:plugins|Plug-Ins and Extensions]]
+    * [[documentation:plugins:database:indices:solr|SOLR Fulltext Index Plugin]]
+
+  * [[BestPractices|GraphDB best practices]]

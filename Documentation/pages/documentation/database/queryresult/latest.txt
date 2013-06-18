@@ -1,0 +1,229 @@
+====== Query Result (latest version) - accessing results =====
+
+Each statement returns a QueryResult instance, which contains a set of informations:
+  * **Duration** (Determines how long it took to execute the query in the database - in milliseconds.)
+  * **Errors** (A set of errors.)
+  * **Failed** (Determines whether or not the query produced any errors.)
+  * **PartialSuccess** (Determines whether or not the query produced any warnings but **no** errors.)
+  * **Query** (The query that was executed)
+  * **Result type** (Determines whether the statement was successful or not)
+    * Failed (There is any error)
+    * Partial successful (The statement executed partially successful. There is at least one warning.)
+    * Successful (The statement executed successful. There are no errors or warnings.)  
+  * **Success** (Is true if there was no error neither warning.)
+  * **Vertices** (An enumerable of [[documentation:database:queryresult:2.0#Vertex|vertex]] - one for each selected object. Every vertex has attributes that can be accessed in various ways.)
+  * **Warnings** (A set of warnings.)
+
+===== Vertex =====
+The Vertex contains all data including properties and edges to other vertices.
+
+==== Properties ====
+Properties are simple values and may be accessed via:
+  * **HasProperty**(String myPropertyName): Returns //true// if the vertex has a property value for this key
+  * **GetProperty**(String myPropertyName): Returns the value as //Object// if the vertex has a property value for this key otherwise //NULL//
+  * **GetProperty<T>**(String myPropertyName): Returns the value as type //T// if the vertex has a property value for this key otherwise //NULL//. If  the value is not of type T a cast exception will be thrown.
+  * **GetProperties**(): Returns all properties of this vertex as Object. You can pass a filter as optional parameter
+
+
+==== Neighbours ====
+Neighbours are all direct connected vertices - including all edge types and backward edges.
+
+  * **GetNeighbor**(String myEdgeName): Returns the neighbour vertex with the attribute name. If there are more than one neighbour for this attribute the first will be returned.
+  * **GetNeighbors**(String myEdgeName): Returns all neighbour vertices with the attribute name. 
+
+==== Edges ====
+Similar to the Neighbours the Edges contains all connections from the source vertex to target vertices via the attribute.
+
+  * **GetEdge**(String myEdgeName): Returns the egde for with the given attribute.
+
+Different to the //GetNeighbors// you will find in the edge the source vertex in addition to the target vertices. 
+
+===== Accessing the QueryResult attributes, vertices, edges and properties in different levels =====
+
+
+==== Access to vertices within level 0 ====
+
+<code csharp>QueryResult.FirstOrDefault()</code>
+Access to the first vertex.
+
+<code csharp>
+foreach (var aVertex in QueryResult)
+{
+   //do sth with the vertex
+   
+}</code>
+Access to any vertex within level 0.
+
+==== Access to properties of vertices within level 0 ====
+Given the following statement:
+<code sql>FROM User U SELECT U.Name</code>
+
+There are various ways of accessing the resulting vertices.
+
+<code csharp>QueryResult.FirstOrDefault().GetProperty("Name")</code>
+Access to the property "Name" of the first object.
+
+<code csharp>
+String vertexName = null;
+foreach (var aVertex in QueryResult)
+{
+   vertexName = aVertex.GetProperty<String>("Name");
+   
+   var properties = aVertex.GetAllProperties(); // get all properties from this vertex
+}</code>
+Access to the property "Name" of all vertices within level 0.
+
+==== Access to neighbors of vertices ====
+Given the following statement:
+
+<code sql>FROM User U SELECT U.Name, U.Friends.Name</code>
+
+There are several way accessing the neighbors of vertices (in this case level 0 vertices):
+
+<code csharp>QueryResult.FirstOrDefault().GetNeighbor("Friends")</code>
+Access to the first neighbor of the "Friends" [[documentation:database:queryresult:hyperedge|hyperedge]].
+
+<code csharp>IEnumerable<Vertex> neighbors = aResult.FirstOrDefault().GetNeighbors("Friends")</code>
+Access to all neighbors of the "Friends" [[documentation:database:queryresult:hyperedge|hyperedge]]. The attributes of each vertex can be accessed by the functions (i.e. GetProperty) which have been mentioned above.
+
+   
+<code csharp>IEdge edge = aResult.First().GetEdge("Friends");</code>
+Get the "Friends" [[documentation:database:queryresult:hyperedge|hyperedge]] containing the source vertex (//First()//) and the target vertices.
+
+==== Access to edges of vertices ====
+
+Given the following statement:
+
+<code sql>FROM User U SELECT U.Name, U.Friends.Name</code>
+
+There are several way accessing the edges of vertices (in this case level 0 vertices):
+
+<code sql>IEdge friendsHyperEdge = QueryResult.FirstOrDefault().GetEdge("Friends")</code>
+Access to the [[documentation:database:queryresult:hyperedge|hyperedge]] "Friends" of the first vertex.
+
+<code sql>IEnumerable<IEdge> allHyperEdges = QueryResult.FirstOrDefault().GetAllEdges</code>
+Access to all [[documentation:database:queryresult:hyperedge|hyperedges]] of the first vertex.
+
+==== Asterisk on multi types ====
+
+<code sql>FROM User U, Car C SELECT *</code>
+This statement creates a QueryResult that consists of vertices of type "User" and "Car" which contain all their attributes (projection of both types).
+
+==== Asterisk on one type ====
+
+<code sql>FROM User U, Car C SELECT U</code>
+In contrast to the last example only one type ("User") is going to be projected by this statement (including all unstructured data of each vertex).
+
+==== Attribute selections on multiple types ====
+
+<code sql>FROM User U, Car C SELECT U.Name, C.Color</code>
+This statment creates a QueryResult that consists of both "User" and "Car" vertices. Because of the selected attributes "Name" (on type "User") and "Color" (on type "Car") the resulting vertices contain nothing but the requested attributes (depending on the type of the vertex).
+
+==== Higher level selections ====
+
+<code sql>FROM User U SELECT U.Friends.Name</code>
+The resulting QueryResult looks like this:
+<code csharp>
+QueryResult[0]["Friends", [0]["Name", "NameOfFriend1"]]
+                          [1]["Name", "NameOfFriend2"]]
+                          [2]["Name", "NameOfFriend3"]]
+                          [3]["Name", "NameOfFriend4"]]
+</code>
+The first level in the QueryResult consists of a single vertex with just ONE attribute ("Friends"). So one can access the names of all Users that are friends of other Users via:
+<code csharp>
+IEnumerable<String> friendsNames = 
+    QueryResult.FirstOrDefault().GetNeighbors("Friends").Select(aNeighbor => aNeighbor.GetProperty<String>("Name"));</code>
+
+==== Lower and Higher level selection ====
+<code sql>FROM User U SELECT U.Age, U.Friends.Name</code>
+
+This example shows the consequences of a mixed selection of "U.Age" (level 0) and "U.Friends.Name" (level 1). So every User that has friends has to be resolved in the result.
+
+The result looks like this:
+<code sql>
+QueryResult[0]["Age", 20]
+              ["Friends", [0]["Name", "NameOfFriend1"]]
+                          [1]["Name", "NameOfFriend2"]]
+                          
+           [1]["Age", 22]
+              ["Friends", [0]["Name", "NameOfFriend3"]]
+                            
+           [2]["Age", 23]
+              ["Friends", [0]["Name", "NameOfFriend4"]]
+</code>
+The QueryResult contains an enumeration of vertices with a "Age" and a "Friends" attribute. "Friends" is resolved in each level zero vertex to show the "Name" of every friend.
+
+==== Non Resolved Neighbors ====
+
+<code sql>FROM User U SELECT U.Friends</code>
+
+This query requests the "Friends" neighbors of every User vertex but should not resolve them.
+
+<code sql>
+QueryResult[0]["Friends", [0]["UUID", 1]]
+                             ["TYPE", "User"]]
+                          [1]["UUID", 2]]
+                             ["TYPE", "User"]]
+           [1]["Friends", [0]["UUID", 3]]
+                             ["TYPE", "User"]]
+           [2]["Friends", [0]["UUID", 4]]
+                             ["TYPE", "User"]]
+</code>
+In this case, one would get n User vertices containing the "Friends" attribute (if the vertex has a "Friends" hyperedge). If there was a "DEPTH >0" the "Friends" edge would be resolved.
+
+==== Functions on attributes ====
+All [[documentation:database:functions|functions]] are based on an attribute (same like in OOP). Each function implementation (a class which inherit the abstract class ABaseFunction) will have a 
+  * CallingObject: This is the payload of a TypeAttribute. In the below sample it would be a [[documentation:database:edges:edgetypesetofreferences|EdgeTypeSet]].
+  * CallingAttribute: Is the TypeAttribute definition. In the below sample 'Friends'
+  * CallingDBObjectStream: Is the DBObject which called the function. In the below sample each User DBObject which have a Friends Edge.
+
+<code sql>FROM User U SELECT U.Friends.TOP(1) DEPTH 1</code>
+
+The result will have the same format like a usual select without the function. If you want to select an attribute with a funtion AND without than you have to use the AS parameter. The QueryResult looks like this:
+<code sql>
+QueryResult[0]["Friends", ... ]
+</code>
+
+Please keep in mind, that the type of the attribute value could change with a function like "MAXWEIGHT()".
+<code sql>
+FROM User U SELECT U.Friends.MAXWEIGHT() DEPTH 1
+QueryResult[0]["Friends", 5.3]
+</code>
+
+Using the AS will create a quite better result:
+<code sql>
+FROM User U SELECT U.Friends.MAXWEIGHT() as MaxWeight, U.Friends DEPTH 1
+QueryREsult[0]["MaxWeight", 5.3]
+              ["Friends", ...]
+</code>
+
+==== Functions without parameters ====
+There are some functions which you can't call from an attribute in a OOP way. This would be for example the "CurrentDate" function.
+
+<code sql>FROM User U SELECT U.Friends, CURRENTDATE() as 'CurrentDate' DEPTH 0</code>
+<code sql>
+QueryResult[0]["Friends", ...]
+           [1]["Friends", ...]
+           [2]["Friends", ...]
+           [3]["CurrentDate", "2010/04/29"]
+</code>
+
+==== Aggregates ====
+Even if they look like functions the [[documentation:database:aggregates|aggregates]] are different with some restrictions:
+  * They have only one parameter and are called directly.
+  * The parameter must not be an edge or a List/Set of base objects.
+  * Only attributes of the first level are allowed (U.Age is ok but U.Friends.Age will not work)
+  * Like in SQL you need to use a group by clause if you have not aggregated attributes in the select list.
+
+<code sql>FROM User U SELECT MAX(U.Age) as 'MaxAge', U.Name GROUP BY U.Name</code>
+<code sql>
+QueryResult[0]["MaxAge", 101]
+              ["Name", "a name"]
+           [1]["MaxAge", 107]
+              ["Name", "another name"]
+</code>
+
+===== JSON representation =====
+
+===== XML representation =====
+

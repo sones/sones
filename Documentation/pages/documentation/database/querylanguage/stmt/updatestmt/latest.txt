@@ -1,0 +1,101 @@
+====== UPDATE ======
+
+The UPDATE statement manipulates attributes on certain database objects for a given type. The selection of those objects is realized via an optional [[documentation:database:querylanguage:expression|EXPRESSION]] clause. Otherwise every object of the given type will be changed.
+
+
+If you want to know what is about the GraphDS and how it handles graphs you should check out the [[quickreference:fiveminuteguide|five minute guide]],
+
+===== Syntax =====
+
+UPDATE [[documentation:database:querylanguage:typewrapper:latest|type]] SET ( [[documentation:database:querylanguage:attributemanipulation:latest|attributeManipulation]] [, [[documentation:database:querylanguage:attributemanipulation:latest|attributeManipulation]] ] ) [ WHERE [[documentation:database:querylanguage:expression|expression]] ]
+
+===== QueryResult =====
+The QueryResult of the UPDATE query will contain
+  * The executed query
+  * The result: Successful | PartialSuccessful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The warnings (if result is //PartialSuccessful//)
+  * The errors (if result is //Failed//)
+  * The results contains 
+    * Each changed attribute with its new value
+    * UUID: The unique identifier of the vertex type
+    * REVISION: The revision timestamp
+
+sample json output:
+<code json>
+{
+  "query": "UPDATE UserProfile3 SET(Age = 10) WHERE UUID = '1'",
+  "result": "Successful",
+  "duration": [
+    5,
+    "ms"
+  ],
+  "warnings": [],
+  "errors": [],
+  "results": [
+    {
+      "Age": "10",
+      "UUID": "1",
+      "REVISION": "20102610.160940.7292504(271de081e50fec46ad2413575b608edf)"
+    }
+  ]
+}
+</code>
+
+===== Examples =====
+
+==== Setting an attribute ====
+''UPDATE User SET( Age=25 ) WHERE Name='Alice'''
+
+The attribute ''Age'' is set to 25 on the database object with ''Name'' "Alice".
+
+----
+
+''UPDATE User SET( Friends = SETOF( Name=Alice ) ) WHERE Name='Bob'''
+
+The database object with ''Name'' "Bob" is updated by assigning the attribute ''Friends'' (a set of ''User'' objects) to a set which contains any database object with ''Name'' "Alice".
+
+----
+
+''UPDATE User SET( Age=Age + 1 ) WHERE Name='Alice'''
+
+The attribute ''Age'' of the database object with ''Name'' "Alice" is incremented by one.
+
+----
+
+''UPDATE User SET( Dad = REF(Name="Adam")) WHERE NAME = 'Kain'''
+
+Sets a reference attribute.
+
+==== Removing attributes ====
+''UPDATE User SET ( REMOVE ATTRIBUTES (Age, Name) )''
+
+Because there is no WHERE [[documentation:database:querylanguage:expression|EXPRESSION]] clause, the attributes ''Age'' and ''Name'' are removed on every database object of type ''User''.
+
+==== Manipulation of LIST/SET attributes ====
+''UPDATE User SET (ADD TO Friends SETOF( Name='Carol', Name='Dave' ) ) WHERE Name='Bob'''
+
+The ''User'' objects with ''Name'' "Carol" and "Dave" are added to the ''Friends'' attribute of the database object with ''Name'' "Bob".
+
+----
+
+''UPDATE User SET ( Friends += SETOF ( Name='Carol', Name='Dave' ) ) WHERE Name='Bob'''
+
+Analogous to the previous example with the difference that ''+='' is used instead of ''ADD TO''.
+
+----
+
+''UPDATE User SET( REMOVE FROM Friends ( Name='Dave' ) ) WHERE Name='Bob'''
+
+The ''User'' object with ''Name'' "Dave" is removed from the ''Friends'' attribute of the database object with ''Name'' "Bob".
+
+----
+
+''UPDATE User SET ( Friends -= ( Name='Carol' ), Enemies += SETOF( Name='Eve' OR Name='Mallory' ) ) WHERE Name='Bob'''
+
+Analogous to the previous example the ''User'' object with ''Name'' "Carol" is removed from the ''Friends'' attribute. Additionally the attribute ''Enemies'' is filled with ''User'' objects with ''Name'' "Eve" and "Mallory".
+
+===== Return on success =====
+
+  * The attributes that have been defined within the SET section
+  * The [[documentation:datamodell:specialproperties|special properties]] with their current values

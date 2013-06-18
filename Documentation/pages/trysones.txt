@@ -1,0 +1,45 @@
+==== Try sones... ====
+
+=== Download and Install ===
+
+=== Open Source Repository ===
+
+  * [[http://github.com/sones/sones|GitHub source code repository]]
+
+=== Pre-compiled Binaries and Appliances ===
+
+  * [[http://github.com/sones/sones/downloads|Pre-compiled binaries at GitHub]]
+  * [[http://susegallery.com/a/qhE3ne/sones-graphdb-20-linux-appliance|Virtual Machine with GraphDB inside (VMWare, VirtualBox, KVM, Amazon EC2, ...)]]
+
+=== The Cloud ===
+
+  * [[sones GraphDB on Microsoft Windows Azure]]
+
+=== Getting Started (Wiki and Documentation) ===
+
+  * [[start|Developers Wiki (developers.sones.de)]]
+  * [[quickreference:installationguide|Quick Installation Guide]]
+  * {{http://github.com/downloads/sones/sones/GQL%20cheatsheet-1.1.pdf|GraphQL Cheat Sheet v1.1}}
+  * [[TryOut-WebShell|A simple browser-based WebShell for taking your first steps on sones]]
+
+==== Licensing ====
+
+  * The sones GraphDB OSE is available for use in other open source projects under the [[http://www.gnu.org/licenses/agpl-3.0.html|AGPLv3]] license.
+  * For proprietary or commercial use other licenses are available on [[mailto:info@sones.com|request]].
+  * Commercial support contracts can be [[mailto:info@sones.com|ordered]].
+  * [[OpenSource License|sones GraphDB OSE AGPLv3 license information]]
+  * [[DifferencesBetweenOSEandEE|What differentiates the Open Source Edition from the Enterprise Edition?]]
+
+{{:agplv3-155x51.png|}}
+
+
+==== Credits ====
+
+Parts of sones contain source code and binary samples from the following open source projects:
+
+  * **Newtonsoft.JSON**: Copyright (c) 2007 James Newton-King
+  * **Irony**: Copyright (c) 2008 Roman Ivantsov
+  * **LZMA SDK**: LZMA SDK is written and placed in the public domain by Igor Pavlov.
+  * **MurmurHash 2.0**: written and released to the public domain by Austin Appleby (MIT license for business use)
+  * **Simple REST Client**: Copyright (c) 2010 james@crispdesign.net
+

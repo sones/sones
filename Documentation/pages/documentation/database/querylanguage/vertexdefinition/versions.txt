@@ -1,0 +1,4 @@
+====== Vertex Definition Versions ======
+
+  * [[documentation:database:querylanguage:vertexdefinition:1.1|Type Definition 1.1]]
+  * [[documentation:database:querylanguage:vertexdefinition:latest|Vertex Definition latest]]

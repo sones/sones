@@ -1,0 +1,85 @@
+[[documentation:graphql:gddl|Back to: Graph Data Definition Language Overview]]
+
+====== CREATE EDGE TYPE ======
+
+Edge is a term for an Object in an Graph. You can find more information about Edge and Graphs in section [[documentation:datamodel:graph|Graph Model]].
+
+The //CREATE EDGE TYPE// statement creates a new database edge type which contains various attributes. Additionally it is possible to tag a edge type as abstract or let it inherit from any other user defined edge.
+
+===== Syntax =====
+
+CREATE EDGE TYPE [[documentation:database:querylanguage:edgetypepredefinition:latest|EdgeTypePredefinition]]
+===== QueryResult =====
+The QueryResult of the CREATE EDGE TYPE query will contain
+  * The executed query
+  * The result: Successful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The errors (if result is //Failed//)
+  * The results containing
+    * Properties
+    * Edges
+    
+
+sample json output:
+<code json>
+{
+  "Query": "CREATE EDGE TYPE MyEdge",
+  "Result": "Successful",
+  "Duration": [
+    389,
+    "ms"
+  ],
+  "Results": [
+    [
+      {
+        "Properties": {
+          "EdgeType": "MyEdge",
+          "EdgeTypeID": "-9223372036854775808"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ]
+  ]
+}
+</code>
+
+===== Examples =====
+
+==== Creating a edge type ====
+
+CREATE EDGE TYPE Street
+
+Creates a edge type //Street// without any attributes but the [[documentation:datamodell:specialproperties|special properties]].
+
+----
+
+CREATE EDGE TYPE Street ATTRIBUTES ( String Name, Int64 Distance, LIST<Double> Numbers )
+
+Creates a edge type //Street// with the attributes Name of type String, Distance of type Int64 and a list of Double values.
+
+----
+
+CREATE EDGE TYPE Street ATTRIBUTES ( String Name='Street', Int64 Age, LIST<Double> Numbers )
+
+Its the same example specified above. With the difference that the attribute Name has an default value 'Street'. 
+
+----
+
+CREATE EDGE TYPE Street COMMENT = 'Comment for edge type Street'
+
+Creates a edge type //Street// defining nothing but a comment.
+
+==== Creating a derived vertex ====
+
+  - CREATE EDGE TYPE Street ATTRIBUTES ( String Name, Double Weight )
+  - CREATE EDGE TYPE DEStreet EXTENDS Street ATTRIBUTES ( Double DistanceInKM )
+  - CREATE EDGE TYPE ENStreet EXTENDS Street ATTRIBUTES ( Double DistanceInMiles )
+ 
+In this example a typical OOP scenario has been created. In the first statement some kind of super edge type has been created and in the following ones it gets more specific. Afterwards it is possible to [[documentation:database:querylanguage:stmt:insertstmt:latest|insert]] into an specified vertex type with outgoing edges of userdefined types and specifie some special edge properties.
+
+===== Return on success =====
+
+  * The name of the EDGE TYPE that has been created
+  * The [[documentation:datamodell:specialproperties|special properties]]

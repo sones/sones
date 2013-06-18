@@ -1,0 +1,22 @@
+===== Setting readonly =====
+
+This setting decide wheter the database is readonly or writeable. If it is set to readonly, then only readonly statments are queryable. For example a readonly statement is the //SELECT// statement.
+
+===== Values =====
+
+The boolean values true or false.
+
+===== Default =====
+
+The default value is set to false.
+
+===== Examples =====
+
+<code sql>
+SETTING DB SET('SETREADONLY'=true)
+</code>
+
+Setting the database to readonly.
+
+
+

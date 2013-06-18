@@ -1,0 +1,86 @@
+[[documentation:graphql:gdml|Back to: Graph Data Manipulation Language Overview]]
+
+====== SELECT ======
+Most of the select syntax is similar to the RDBMS select, of course there are some special conditions to work with graphs and objects like depth or functions on attributes.
+The select query is evaluated in a lazy way. That means, in the first step the query is parsed and at the time, the first object is requested from the resultSet it will be loaded from the DB.
+
+===== Syntax =====
+FROM [[documentation:database:querylanguage:typewrapper:latest|vertexType]], [ [[documentation:database:querylanguage:typewrapper:latest|vertexType]] ] SELECT //selectionElement// [, //selectionElement//] [ WHERE [[documentation:database:querylanguage:expression|expression]] ] [ GROUP BY //groupByList// ] [ HAVING [[documentation:database:querylanguage:expression|expression]] ] [ ORDER BY //orderByList// ] [ LIMIT <number> ] [ OFFSET <number> ] [ DEPTH <number> ]
+
+
+selectionElement = * | # | - | @Id | < | > | [[documentation:database:aggregates|aggregate]] [ AS <alias> ] | [[documentation:database:querylanguage:idorfunc|IdOrFunc]] [ AS <alias> ] [ = value | ?= value ]
+
+groupByList = [[documentation:database:querylanguage:idorfunc|IdOrFunc]] | <alias>
+
+orderByList = [[documentation:database:querylanguage:idorfunc|IdOrFunc]] | <alias>
+
+
+The optional parameter [ = value | ?= value ] allows you to override an selected attribute with the given value. Using ?= the value will be set if the DBObject does not have any value.
+
+===== QueryResult =====
+You will find more information in the [[documentation:database:queryresult:latest|QueryResult]].
+
+===== Group By =====
+You can group all attributes which are not aggregated. But each attriute has to be grouped or aggregated as soon as one attribute is grouped or aggregated.
+
+<code sql>FROM User SELECT MAX(Age), COUNT(VertexID), Name GROUP BY Name</code>
+This will group all users with the same name and returns them with their maximum age and the number of users with this same name.
+
+As of version 1.2 (trunk) undefined attributes can be used with the Group By functionality.
+
+===== Having =====
+Similar to the RDBMS, if you use aggregates you can filter your results. 
+
+<code sql>FROM User SELECT MAX(Age), COUNT(VertexID), Name GROUP BY Name HAVING MAX(Age) > 50</code>
+This select will filter all results and return all Users grouped by their name, where the maximum age of each group is greater than 50.
+
+
+===== Order by =====
+This will order the results by the given condition. Keep in mind, that this will take a while depending on the amount of results.
+
+<code sql>FROM User SELECT Age, VertexID, Name ORDER BY Name ASC</code>
+Select all Users, sorted by their name ascending.
+
+Undefined attributes can be used with the Order By functionality.
+
+===== Limit =====
+To realize paging or to just get the first results you can use the limit condition. This will return the number of objects given by the parameter <number>.
+
+<code sql>FROM User SELECT Age, VertexID, Name LIMIT 10</code>
+This will return only the first 10 users. If there are less than 10 Users in the DB, all objects will be returned.
+
+
+===== Offset =====
+Using the offset condition you skip the first number of objects given by the parameter <number>.
+
+<code sql>FROM User SELECT Age, VertexID, Name LIMIT 10 OFFSET 10</code>
+This will return only the users 11 to 20.
+
+===== Depth =====
+The depth condition indicates to which level the objects will be resolved. On depth 0 you will get only the first level of objects. Each edge will have only the destination UUIDs and types of the objects. The depth 1 will resolve the second level to their real objects. Keep in mind, as higher the depth is defined as more objects needs to be loaded.
+
+
+===== Examples =====
+
+
+<code sql>FROM User SELECT #</code>
+
+Select all userdefined and undefined attributes from type User.
+For example the Name and the Age of a User.
+
+<code sql>FROM User SELECT -</code>
+
+Select all edges from type User.
+For example the Friends or the Enemies of a User.
+
+<code sql>FROM User SELECT @Integer</code>
+
+Select all attributes of type Integer.
+
+<code sql>FROM User SELECT ></code>
+
+Select all edges, without incoming edges from User.
+
+<code sql>FROM User SELECT <</code>
+
+Select all incoming edges to User.

@@ -1,0 +1,15 @@
+===== Installation Scenarios =====
+The sones GraphDB software covers manifold usage scenarios. Therefore there is not one single installation procedure. Instead, the installation covers multiple scenarios, beginning with the integration into a software project as a library, to multi-tier client-server architectures.
+
+==== SW-Integration ====
+A possible - very lightweight - characteristic is the integration of sones GraphDB directly into an application. In this scenario, the application and database are running as a single process. From outside, the sones GraphDB is not visible. \\ 
+The interaction between application and database logic is on local API-level without any networking, which allows the highest possible performance and minimum communication overhead. \\ 
+Installation, configuration and maintenance of this solution is task of the overburden application. \\ 
+
+==== In-Server application development ====
+For high performance scenarios, it is possible to do application development directly on the database. The scenario is alike SW-Integration with the difference that the sones GraphDB is now the visible application container.  Additional application logic is provided as service by the database, e.g. as service or specific server component. \\ 
+Now, the sones GraphDB is configurable and offers the tools for administration and maintenance. \\ 
+
+==== Client-Server ====
+With the sones GraphDB, a typical client/server scenario can be set up. The communication between server and client is done via REST. For an easier integration to SW-projects, programming language specific client libraries (currently Java and C#) are available. \\ 
+Here, the database is running a dedicated service, offering interfaces for multithreaded communication with clients. \\ 

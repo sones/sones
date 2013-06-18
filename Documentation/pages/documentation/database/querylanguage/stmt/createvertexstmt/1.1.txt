@@ -1,0 +1,73 @@
+====== CREATE TYPE ======
+
+The CREATE statement creates a new database type which can consist of various attributes. Additionally it is possible to tag a type as abstract or let it inherit from any other user defined type ([[:DevStuff:Database:ontology|Ontology type system]]).
+
+===== Syntax =====
+
+CREATE [ ABSTRACT ] TYPE [[documentation:database:querylanguage:vertexdefinition:1.1|TYPEDEFINITION]]
+
+===== Examples =====
+
+==== Creating a type ====
+
+CREATE TYPE User
+
+Creates a type User without any attributes but the [[documentation:datamodell:specialproperties|special attributes]].
+
+----
+
+CREATE TYPE User ATTRIBUTES ( String Name, Integer Age, LIST<Double> FavouriteNumbers, SET<User> Friends )
+
+Creates a type User with the attributes Name of type String, Age of type Integer, a list of Double values and a set of User objects called Friends. The last one is interesting because it is possible to create a type that references itself within the ATTRIBUTES section.
+
+----
+
+CREATE TYPE User ATTRIBUTES ( String Name='Homer', Integer Age, LIST<Double> FavouriteNumbers, SET<User> Friends )
+
+Its the same example specified above. With the difference that the attribute Name has an default value 'Homer'. The attribute is now marked as mandatory.
+
+----
+
+CREATE TYPE User ATTRIBUTES ( SET<User> Friends ) BACKWARDEDGES ( User.Friends IsFriendOf )
+
+Creates a type User with a set of User attribute called Friends. Additionally a [[documentation:database:querylanguage:backwardEdgeAttribute|BackwardEdge attribute]] IsFriendOf is defined which points to the type User and the attribute Friends.
+
+----
+
+CREATE TYPE User ATTRIBUTES ( String Name ) UNIQUE ( Name ) MANDATORY ( Name )
+
+Create a type User that defines a simple String attribute called Name and sets a UNIQUE and MANDATORY contraint on it. This means that every User object must have a Name set and it has to be unique.
+
+----
+
+CREATE TYPE User ATTRIBUTES ( String Name, Integer Age ) INDICES ( Age )
+
+Creates a type User defining the two attributes Name and Age. For the last one a default index is created.
+
+----
+
+CREATE TYPE User COMMENT = 'Comment for type User'
+
+Creates a type User defining nothing but a comment.
+
+==== Creating a derived type ====
+
+  - CREATE TYPE User ATTRIBUTES ( String Name, Integer Age )
+  - CREATE TYPE Employee EXTENDS User ATTRIBUTES ( Double Wage , SET<Employee> Colleagues)
+  - CREATE TYPE Chief EXTENDS Employee ATTRIBUTES ( SET<Employee> Worker )
+  - CREATE TYPE Worker EXTENDS Employee ATTRIBUTES ( Chief Boss )
+
+In this example a typical OOP scenario has been created. In the first statement some kind of super type has been created and in the following ones it gets more and more specific. Afterwards it is possible to [[documentation:database:querylanguage:stmt:insertstmt:latest|insert]] a Worker object and reuse the attributes of User (Name, Age) and Employee (Wage, Colleagues) in addition to Boss. Another advantage of using such a inheritance is the possibility to fill the Colleagues attribute with either Chief or Worker objects.
+
+==== Creating an abstract type ====
+
+  - CREATE ABSTRACT TYPE Car ATTRIBUTES ( String Name, Integer HorsePower )
+  - CREATE TYPE Volkswagen EXTENDS Car
+  - CREATE TYPE Mercedes EXTENDS Car
+
+This example creates an abstract type Car. The only difference (within the creation process) to a non abstract type is that it is not possible to [[documentation:database:querylanguage:stmt:insertstmt:latest|insert]] objects into it. Besides the different [[documentation:database:querylanguage:stmt:insertstmt:latest|insert]] behaviour types taged as abstract show another result while [[documentation:database:querylanguage:stmt:selectstmt:1.1|selecting]] them.
+
+===== Return on success =====
+
+  * The name of the TYPE that has been created
+  * The [[documentation:datamodell:specialproperties|special attributes]] with their current values

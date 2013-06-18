@@ -1,0 +1,25 @@
+[[documentation:graphql|Back to: GraphQL Overview]]
+
+====== Graph Data Manipulation Language ======
+
+For manip­u­lat­ing objects or their data within a graph the fol­low­ing GDML state­ments are provided: 
+
+===== Statements =====
+
+^ GraphQL statement ^description^
+|[[documentation:database:querylanguage:stmt:altervertextype_stmt:2.0|ALTER VERTEX TYPE]]|Manipulates a user-defined vertex type|
+|[[documentation:database:querylanguage:stmt:alteredgetype_stmt:2.0|ALTER EDGE TYPE]]|Manipulates a user-defined edge type|
+|[[documentation:database:querylanguage:stmt:select_stmt:2.0|SELECT]]|Select a subgraph |
+|[[documentation:database:querylanguage:stmt:insert_stmt:2.0|INSERT]]|Insert an object into a graph / creates a vertex|
+|[[documentation:database:querylanguage:stmt:update_stmt:2.0|UPDATE]]| Updates an object within a graph|
+|[[documentation:database:querylanguage:stmt:replace_stmt:2.0|REPLACE]]| Replaces an object into a graph|         
+|[[documentation:database:querylanguage:stmt:insertorupdate_stmt:2.0|INSERTORUPDATE]]| Inserts or Updates an object into a graph|
+|[[documentation:database:querylanguage:stmt:insertorreplace_stmt:2.0|INSERTORREPLACE]]| Inserts or Replaces an object into a graph|                                              
+|[[documentation:database:querylanguage:stmt:link_stmt:2.0|LINK]]| Add edges between vertices| 
+|[[documentation:database:querylanguage:stmt:unlink_stmt:2.0|UNLINK]]| Remove edges between vertices| 
+|[[documentation:database:querylanguage:stmt:truncatevertextype_stmt:2.0|TRUNCATE VERTEX TYPE]]| Removes all records from a user-defined vertex| 
+|[[documentation:database:querylanguage:stmt:rebuildindices_stmt:2.0|REBUILD INDICES]]| rebuilds all or specific index on a user-defined vertex type| 
+|[[documentation:database:querylanguage:stmt:dropindex_stmt:2.0|DROP INDEX]]| Deletes an index of a user-defined vertex type| 
+===== Result =====
+Each statement will return a queryresult containing the requested or changed data.
+        * [[documentation:database:queryresult:2.0|Query Result]]

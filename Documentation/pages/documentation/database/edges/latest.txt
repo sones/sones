@@ -1,0 +1,263 @@
+====== Edges in v2.1 ======
+In this section we want to show our type interfaces and implementations structure, especially regarding to the edge type management.
+\\ 
+**Note:** This article refers to the sones GraphDB v2.1, so the additional edge type management described in this article will not part of the v2.0.
+===== Hierarchy =====
+The EdgeTypes defines all information you will find on an edge from one Vertex to another. The following image shows the type interfaces and implementations hierarchy.
+\\
+{{ :documentation:database:edges:typeinterfaces_trans_.png? |}}
+{{ :documentation:database:edges:typeimplementations_trans_.png? |}}
+
+The following image shows the current hierarchie of the edge interfaces and implementations.
+\\
+{{ :documentation:database:edges:classdiagram_edges_trans.png? |}}
+\\
+
+===== use in GraphDB API =====
+See the following link to read more about the use of user-defnined edge types inside the [[connectors:graphdsapi#edgetypepredefinition|API article]] or the example at the end of this article.
+
+===== Creating your own EdgeType =====
+
+You have to create a new EdgeType by calling the **StoreEdgeType** method of the **BaseGraphStorageManager**. There you have to specify following (Example "WeightedEdge"):
+  * IVertexStore - the vertex store you are using
+  * VertexInformation - this information provides the VertexTypeID [(long)BaseTypes.EdgeType] and VertexID [(long)BaseTypes.Weighted]
+  * Name of the edge - "Weighted"
+  * Comment - "WeightedEdgeComment"
+  * CreationDate
+  * IsAbstract - true
+  * IsSealed - false
+  * IsUserdefined - false
+  * VertexInformation of the parent type - In this case the base EdgeType "Edge"
+  * SecurityToken
+  * TransactionToken
+
+Now to store properties on this edge, we use the **StoreProperty** method of the **BaseGraphStorageManager**.
+There you have to specify following (Example "WeightedEdge"):
+  * IVertexStore - the vertex store you are using
+  * VertexInformation - this information provides the VertexTypeID [(long)BaseTypes.Property] and VertexID [(long)AttributeDefinitions.WeightedEdgeDotWeight]
+  * Name of the edge - "Weight"
+  * Comment - "WeightedComment"
+  * CreationDate
+  * IsMandatory - true
+  * PropertyMultiplicity - PropertyMultiplicity.Single
+  * DefaultValue - "0.0"
+  * IsUserdefined - false
+  * VertexInformation of the defining type - In this case the EdgeType "WeightedEdge"
+  * VertexInformation of the basic type - In this case the base type "Double"
+  * SecurityToken
+  * TransactionToken
+
+Now we created a new vertex with one property, we can now create our EdgeType calling **new EdgeType(VertexWeightedEdge, BaseGraphStorageManager)** and specifie the created vertex which represents the type and the BaseGraphStorageManager.
+
+===== base EdgeType 'Edge' =====
+The base EdgeType is **Edge**. This type provides the [[documentation:datamodell:specialproperties#basic_edge_properties|special and basic attrbutes]] like CreationDate, ModificationDate aso.. Setting this type as parent edge type makes these basic properties usable on your userdefined type.
+Beside the common informationless Single- / Multiedge //Edge// there are some predefined edges like Weighted and Orderable.
+  * The **Weighted** edge has a additional property //Weight// of type //Double//.
+  * The **Orderable** egde has a additional property //Order// of type //UInt64//.
+
+
+===== Example =====
+An example how to create and use user-defined edge types using the QL and the C# API.
+We create an edge type with three properties:
+  * name:String
+  * weight:Double
+  * tags:List<String>
+and a vertex type with the attributes
+  * name:String
+  * age:Byte
+  * friends:MultiEdge("MyEdge") -- a multi edge with inner edge type MyEdge
+==== using the QueryLanguage ====
+First we create the edge type and define the properties, after that we create a vertex type and use the defined edge type for the outgoing edge as inner edge type (type of the single edges) of the multi edge 'friends'.
+<code csharp>
+CREATE EDGE TYPE MyEdge ATTRIBUTES (String name, Double weight, LIST<String> tags)
+CREATE VERTEX TYPE User ATTRIBUTES (String name, Byte age, SET<User(MyEdge)> friends)
+
+INSERT INTO User VALUES (name = 'Hans', age = 23)
+INSERT INTO User VALUES (name = 'Jens', age = 43, friends = SETOF(name = 'Hans' : (weight = 100, tags = LISTOF('best friend'))))
+INSERT INTO User VALUES (name = 'Lisa', age = 34, friends = SETOF(name = 'Jens' : (weight = 10, tags = LISTOF('mate', 'honey'))))
+</code>
+By inserting an single edge into the multi edge we are now able to insert some values inside the defined properties.
+
+Now we want to select some edges and properties.
+  - At first we select the name of each User and the names of there friends.<code csharp>
+FROM User SELECT name, friends.name</code>
+  - Now we get the name of each User and there edge friends, which will contain all edge properties.<code csharp>
+FROM User SELECT name, friends</code>
+  - To get the name of each User and just a specific property of the edge friends we use following:<code csharp>
+FROM User SELECT name, friends->weight, friends->tags</code>Using this select, the operator '->' allows us to get access to the edge properties, whereby the operator '.' allows access to the target vertex and his properties.
+  - Also helpful, the use of edge properties in where conditions.<code csharp>
+FROM User SELECT name, friends->weight, friends->tags WHERE friends->weight > 10</code>
+The result will be just one User 'Jens' which has one single edge inside the multi edge 'friends' which property 'weight' fulfilled the condition.
+\\ The operator '>' will be applied on a collection, which means if there is one single edge which property weight doesn't fulfill the condition the source vertex will not be added to the result.
+
+==== using the API ====
+Again we create first the edge type and define the properties and after that we create a vertex type and use the defined edge type for the outgoing edge as inner edge type (type of the single edges) of the multi edge 'friends'.
+<code csharp>
+var edgeType = new EdgeTypePredefinition("MyEdge")
+                   .AddProperty(new PropertyPredefinition("name", "String"))
+                   .AddProperty(new PropertyPredefinition("weight", "Double"))
+                   .AddProperty(new PropertyPredefinition("tags", "String").SetMultiplicityToList());
+               
+var vertexType = new VertexTypePredefinition("User")
+                     .AddProperty(new PropertyPredefinition("name", "String"))
+                     .AddProperty(new PropertyPredefinition("age", "Byte"))
+                     .AddOutgoingEdge(new OutgoingEdgePredefinition("friends", "User").SetMultiplicityAsMultiEdge("MyEdge"));
+
+GraphDSServer.CreateEdgeTypes<IEnumerable<IEdgeType>>(
+               SecToken,
+               TransationID,
+               new RequestCreateEdgeTypes(
+                   new List<EdgeTypePredefinition> { edgeType }),
+               (Statistics, EdgeTypes) => EdgeTypes);
+
+GraphDSServer.CreateVertexTypes<IEnumerable<IVertexType>>(
+               SecToken,
+               TransationID,
+               new RequestCreateVertexTypes(
+                   new List<VertexTypePredefinition> { vertexType }),
+               (Statistics, VertexTypes) => VertexTypes);
+               
+var Hans = GraphDSServer.Insert<IVertex>(
+                         SecToken, 
+                         TransationID, 
+                         new RequestInsertVertex("User")
+                             .AddStructuredProperty("name", "Hans")
+                             .AddStructuredProperty("age", 23),
+                         (Statistics, Result) => Result);
+                         
+var Jens = GraphDSServer.Insert<IVertex>(
+                         SecToken, 
+                         TransationID, 
+                         new RequestInsertVertex("User")
+                             .AddStructuredProperty("name", "Jens")
+                             .AddStructuredProperty("age", 43)
+                             .AddEdge(new EdgePredefinition("friends")
+                                          .AddVertexID(Hans.VertexTypeID, Hans.VertexID)
+                                          .AddStructuredProperty("weight", 100)
+                                          .AddStructuredProperty("tags", 
+                                                                 new ListCollectionWrapper(new List<String>{"best friend"}))),
+                         (Statistics, Result) => Result);
+                         
+var Lisa = GraphDSServer.Insert<IVertex>(
+                         SecToken, 
+                         TransationID, 
+                         new RequestInsertVertex("User")
+                             .AddStructuredProperty("name", "Lisa")
+                             .AddStructuredProperty("age", 34)
+                             .AddEdge(new EdgePredefinition("friends")
+                                          .AddVertexID(Jens.VertexTypeID, Jens.VertexID)
+                                          .AddStructuredProperty("weight", 10)
+                                          .AddStructuredProperty("tags", 
+                                                                 new ListCollectionWrapper(new List<String>{"mate", "honey"}))),
+                         (Statistics, Result) => Result);
+</code>
+Now we adapting the selects described above.
+**Note:** When selecting some properties of any vertex we need the corresponding attribute definition. Thats because the vertex just knows an attribute id and value, the corresponding attribute definition holds further information like multiplicity and attribute type. So before a select we need to fetch the vertex type and readout the attribute definitions of the attributes we want to select.
+Here are the needed definitions:<code csharp>var attrName = typeUser.GetAttributeDefinition("name");
+var attrFriends = typeUser.GetAttributeDefinition("friends");
+var attrFriendsWeight = typeUser.GetOutgoingEdgeDefinition("friends").InnerEdgeType.GetAttributeDefinition("weight");
+var attrFriendsTags = typeUser.GetOutgoingEdgeDefinition("friends").InnerEdgeType.GetAttributeDefinition("tags");</code>
+Additionally we need following lines before each select to get all vertices and then select only these who have the attribute 'name' and the edge 'friends' 
+<code csharp>
+var vertices = GraphDSServer.GetVertices<IEnumerable<IVertex>>(SecToken,
+                                                               TransationID,
+                                                               new RequestGetVertices("User"),
+                                                               (statistics, Vertices) => Vertices);
+
+var preparedVertices = vertices.Where(vertex => vertex.HasProperty(attrName.ID) &&
+                                                vertex.HasOutgoingEdge(attrFriends.ID));
+</code>
+Select some edges and properties.
+  - At first we select the name of each User and the names of there friends. The QL statement is:<code csharp>
+FROM User SELECT name, friends.name</code>and using the API we create a list of tuples. Each tuple consists of an IComparable - the 'name' and a list of IComparables - the 'names' of the targets.<code csharp>
+var selectVertices = preparedVertices.Select(vertex => new Tuple<IComparable, IEnumerable<IComparable>>(
+                                                           vertex.GetProperty(attrName.ID),
+                                                           vertex.GetOutgoingEdge(attrFriends.ID)
+                                                                 .GetTargetVertices()
+                                                                 .Select(item => item.GetProperty(attrName.ID))));</code>
+  - Now we get the name of each User and there edge friends, which will contain all edge properties. The QL stament is:<code csharp>
+FROM User SELECT name, friends</code>and using the API again we create a list of tuples. This time each tuple consists of an IComparable - the 'name' and an IEdge - representing the multi edge 'friends'.<code csharp>
+var selectVertices = preparedVertices.Select(vertex => new Tuple<IComparable, IEdge>(
+                                                           vertex.GetProperty(attrName.ID),
+                                                           vertex.GetOutgoingEdge(attrFriends.ID)));</code>
+  - To get the name of each User and just a specific property of the edge friends. The QL statement is:<code csharp>
+FROM User SELECT name, friends->weight, friends->tags</code>and using the API we create a list of tuples. Each tuple contains of an IComparable - the property 'name' and a list of tuples. This list of tuples represents the single edges, whereby we are just reading out the properties 'weight' - the first IComparable and 'tags' - the second IComparable.<code csharp>
+var selectVertices = preparedVertices
+                        .Select(vertex => new Tuple<IComparable, IEnumerable<Tuple<IComparable, IComparable>>>(
+                                              vertex.GetProperty(attrName.ID),
+                                              new List<Tuple<IComparable, IComparable>>(
+                                                  vertex.GetOutgoingHyperEdge(attrFriends.ID)
+                                                        .GetAllEdges()
+                                                        .Select(edge => new Tuple<IComparable, IComparable>(
+                                                                            edge.GetProperty(attrFriendsWeight.ID), 
+                                                                            edge.GetProperty(attrFriendsTags.ID))))));</code>
+  - The use of edge properties in where conditions. The QL statement is:<code csharp>
+FROM User SELECT name, friends->weight, friends->tags WHERE friends->weight > 10</code>and using the API we create the same output as above, but after that we want select just the elements which edge property 'weigth' is greater than '10'.<code csharp>
+var selectVertices = preparedVertices
+                        .Select(vertex => new Tuple<IComparable, IEnumerable<Tuple<IComparable, IComparable>>>(
+                                              vertex.GetProperty(attrName.ID),
+                                              new List<Tuple<IComparable, IComparable>>(
+                                                  vertex.GetOutgoingHyperEdge(attrFriends.ID)
+                                                        .GetAllEdges()
+                                                        .Select(edge => new Tuple<IComparable, IComparable>(
+                                                                            edge.GetProperty(attrFriendsWeight.ID), 
+                                                                            edge.GetProperty(attrFriendsTags.ID))))));
+
+var selectionAfterWhere = selectVertices.Where(vertex => vertex.Item2.All(edge => edge.Item1.CompareTo(10d) == 1));</code>
+To implement the where condition we take the selected vertices (tuples). Of each tuple we take the second element (which represents the single edges) and of each element (which is also a tuple) the first one (which represents the property 'weight').
+
+==== inheritance in edge types using the QL and API ====
+Inheritance is also possible with the implemented edge type management. Similar to vertex types will inherited types get the attributes of there super types.
+Following example shows the ability of inheritance in edge types.
+<code csharp>
+CREATE EDGE TYPE Link ATTRIBUTES (String name, Double weight)
+CREATE EDGE TYPE UserLink EXTENDS Link ATTRIBUTES (LIST<String> tags)
+CREATE EDGE TYPE CompanyLink EXTENDS Link ATTRIBUTES (DateTime workingSince)
+
+CREATE VERTEX TYPE User ATTRIBUTES (String name, SET<User(UserLink)> friends)
+CREATE VERTEX TYPE Company ATTRIBUTES (String name)
+CREATE VERTEX TYPE Employee EXTENDS User ATTRIBUTES (Company(CompanyLink) workingAt)
+</code>
+This will create an hierarchy of edge types, whereby the type 'Link' is the super type and the types 'UserLink' and 'CompanyLink' will inherit from it.
+The vertex types use this edge types to create specialized edges.
+\\
+Doing the same, using the API:
+<code csharp>
+var edgeTypeLink = new EdgeTypePredefinition("Link")
+                       .AddProperty(new PropertyPredefinition("name", "String"))
+                       .AddProperty(new PropertyPredefinition("weight", "Double"));
+                       
+var edgeTypeUserLink = new EdgeTypePredefinition("UserLink")
+                           .AddProperty(new PropertyPredefinition("tags", "String").SetMultiplicityToList());
+                       
+var edgeTypeCompanyLink = new EdgeTypePredefinition("CompanyLink")
+                              .AddProperty(new PropertyPredefinition("workingAt", "DateTime"));
+                                      
+var vertexTypeUser = new VertexTypePredefinition("User")
+                         .AddProperty(new PropertyPredefinition("name", "String"))
+                         .AddOutgoingEdge(new OutgoingEdgePredefinition("friends", "User").SetMultiplicityAsMultiEdge("UserLink"));
+                         
+var vertexTypeCompany = new VertexTypePredefinition("Company")
+                            .AddProperty(new PropertyPredefinition("name", "String"));
+                         
+var vertexTypeEmployee = new VertexTypePredefinition("Employee")
+                             .AddOutgoingEdge(new OutgoingEdgePredefinition("workingAt", "Company").SetEdgeType("CompanyLink"));
+
+GraphDSServer.CreateEdgeTypes<IEnumerable<IEdgeType>>(
+               SecToken,
+               TransationID,
+               new RequestCreateEdgeTypes(
+                   new List<EdgeTypePredefinition> { edgeTypeLink,
+                                                     edgeTypeUserLink,
+                                                     edgeTypeCompanyLink }),
+               (Statistics, EdgeTypes) => EdgeTypes);
+               
+GraphDSServer.CreateVertexTypes<IEnumerable<IVertexType>>(
+               SecToken,
+               TransationID,
+               new RequestCreateVertexTypes(
+                   new List<VertexTypePredefinition> { vertexTypeUser,
+                                                       vertexTypeCompany,
+                                                       vertexTypeEmployee }),
+               (Statistics, VertexTypes) => VertexTypes);
+</code>

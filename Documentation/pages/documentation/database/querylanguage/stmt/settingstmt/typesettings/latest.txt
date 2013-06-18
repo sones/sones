@@ -1,0 +1,39 @@
+===== Settings for userdefined types  =====
+
+Settings for user defined types can be set by the following statement. They also effective for the attributes of this type.
+
+===== Syntax =====
+
+SETTING TYPE TYPENAME [[documentation:database:querylanguage:stmt:settingstmt:settingmanipulation:latest|SETTINGMANIPULATION]]
+
+===== Examples =====
+
+===== Set a type setting =====
+
+<code sql>
+SETTING TYPE User SET('DEPTH'=3)
+</code>
+
+This set the depth for an request for the type //User//.
+
+==== Return on success ====
+
+  * The scope of the setting (TYPE)
+  * The type that has been configured
+  * The setting itself and its value
+
+===== Get a type setting =====
+
+The value for an setting on a type can you get by this statement.
+
+<code sql>
+SETTING TYPE User GET('DEPTH')
+</code>
+
+===== Remove a type setting =====
+
+The statement 
+<code sql>
+SETTING TYPE User REMOVE('DEPTH')
+</code>
+removes the setting //depth// from type //User//.

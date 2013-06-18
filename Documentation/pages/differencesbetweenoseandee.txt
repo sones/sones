@@ -1,0 +1,10 @@
+====== Community and Enterprise Edition ======
+
+^ Category ^ Feature ^ Community Edition ^ Enterprise Edition ^ 
+| Client Libraries | C# API Client Library | X | X |
+| :::  | Java Client Library | X | X |
+| :::  | JavaScript Client Library | X | X |
+| :::  | PHP Client Library | X | X |
+| :::  | Open Client Protocol Specification | X | X |
+| Network Protocols | REST Web Service | X | X |
+| :::  | Open Service Plug-In Interface | X | X |

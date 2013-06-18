@@ -1,0 +1,98 @@
+====== Abstract Types Tutorial ======
+
+[[:start|back]]
+
+This tutorial will give you an overview on how abstract user defined datatypes can be created, inserted and queries.
+
+===== Create abstract types ======
+
+In a little scenario we want to use abstract types to distinguish between different music genre. This can be made by creating an abstract type "genre" like this:
+
+<code>
+CREATE ABSTRACT VERTEX TYPE genre ATTRIBUTES(String GenreName, Int32 NumberOfFans)INDICES(NumberOfFans)
+</code>
+
+Having done that we can inherit from this abstract type by creating some additional types:
+
+<code>
+CREATE VERTEX TYPE rock EXTENDS genre
+CREATE VERTEX TYPE pop  EXTENDS genre
+CREATE VERTEX TYPE umptaumtata EXTENDS genre
+</code>
+
+===== Inserting abstract types =====
+
+Inserting a genre type directly would not work. You need to inherit a new type from the previously created abstract type (like in the query code sample above).
+
+Since we have created three genre types we can start filling them with some data:
+
+<code>
+insert into rock values (Name = 'nirvana',   NumberOfFans = 10)
+insert into rock values (Name = 'metallica', NumberOfFans = 122)
+insert into rock values (Name = 'offspring', NumberOfFans = 13)
+
+insert into pop  values (Name = 'britney',   NumberOfFans = 1)
+insert into pop  values (Name = 'abba',      NumberOfFans = 133)
+
+insert into umptaumtata values (Name = 'zillertaler schuerzenjaeger', NumberOfFans = 13)
+insert into umptaumtata values (Name = 'wildecker herzbuben',         NumberOfFans = 3)
+insert into umptaumtata values (Name = 'oberhainer saengerknaben',    NumberOfFans = 165)
+insert into umptaumtata values (Name = 'weimaraner holzblaeser',      NumberOfFans = 15)
+</code>
+
+===== Querying abstract types =====
+
+One use case of abstract types is to query and group on all different inherited types. Having executed the above code snippets one after another you can try to query something like that:
+
+<code>
+FROM genre g SELECT g.VertexTypeName, count(g.VertexID) AS countOfGenre WHERE NumberOfFans > 10 GROUP BY g.VertexTypeName
+</code>
+
+This queries for all genre: including pop, rock, umptaumtata and any other type extending the abstract type genre. The WHERE-condition limits the result set to all genre with more than 10 fans. the Type-Name and the Number of Object-instances in each genre-type is selected and grouped by the type.
+
+The output should look similar to this:
+<code>
+{
+  "Query": "FROM genre g SELECT g.VertexTypeName, count(g.VertexID) AS countOfGenre WHERE NumberOfFans > 10 GROUP BY g.VertexTypeName",
+  "Result": "Successful",
+  "Duration": [
+    109,
+    "ms"
+  ],
+  "Results": [
+    [
+      {
+        "Properties": {
+          "countOfGenre": "2",
+          "VertexTypeName": "rock"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ],
+    [
+      {
+        "Properties": {
+          "countOfGenre": "1",
+          "VertexTypeName": "pop"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ],
+    [
+      {
+        "Properties": {
+          "countOfGenre": "3",
+          "VertexTypeName": "umptaumtata"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ]
+  ]
+}
+</code>

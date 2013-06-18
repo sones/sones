@@ -1,0 +1,7 @@
+====== EdgeTypeSingle ======
+
+This [[documentation:database:edges:latest|EdgeType]] implementation of the abstract class [[documentation:database:edges:asingleedgetype|ASingleEdgeType]] is used for all single reference attributes. In the image below this would be the ''FavouriteUni'' attribute. In detail, this edge just holds one single VertexID which reference a Vertex.
+
+===== Syntax =====
+In an ''CREATE VERTEX TYPE'' statement you would use this like following example:
+<code sql>CREATE VERTEX TYPE Student ATTRIBUTES (University FavouriteUni)</code>

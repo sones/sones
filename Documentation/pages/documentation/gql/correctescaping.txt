@@ -1,0 +1,51 @@
+====== Correct String Escaping ======
+
+There are several cases when you are working with String values when you need to know how to correctly escape a character within that string. 
+
+First there's a list of reserved characters which are interpreted by the Query Language itself:
+
+===== String Delimiters =====
+
+  * to delimit a String use: ' ([[http://en.wikipedia.org/wiki/ASCII|ASCII]] 0x27) or " ([[http://en.wikipedia.org/wiki/ASCII|ASCII]] 0x32)
+    * This delimiter needs to be escaped in order to be used within a value
+
+
+==== Example ====
+<code SQL>
+Name = 'theName'
+</code>
+
+or 
+
+<code SQL>
+Name = "theName"
+</code>
+
+=== Wrong ===
+
+<code SQL>
+Name = 'the'Name'
+</code>
+
+=== Correct ===
+
+<code SQL>
+Name = 'the\'Name'
+</code>
+
+or
+
+<code SQL>
+Name = "the'Name"
+</code>
+
+
+===== Path Separator \ =====
+
+  * the character \ ([[http://en.wikipedia.org/wiki/ASCII|ASCII]] 0x5c) is used to escape other characters, if you want to use the character itself you have to double-escape it
+
+==== Example ====
+
+<code SQL>
+FSURL = 'folder1\\folder2'
+</code>

@@ -1,0 +1,12 @@
+====== edge attribute definition ======
+
+[[documentation:database:adbbaseobjects|primitive_datatype]] <attribute_name> |
+
+SET<[[documentation:database:adbbaseobjects|primitive_datatype]]> <attribute_name> |
+
+LIST<[[documentation:database:adbbaseobjects|primitive_datatype]]> <attribute_name> |
+
+----
+\\
+
+attribute_name = any name without special (any of 'ÄÖÜäöüß0123456789_') the first character might be one of 'ÄÖÜäöü0123456789$_'

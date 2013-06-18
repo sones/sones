@@ -1,0 +1,6 @@
+====== Unary operators ======
+
+  * [[documentation:database:querylanguage:expression:operator:unaryAddition|+]]
+  * [[documentation:database:querylanguage:expression:operator:unaryNegation|-]]
+  * [[documentation:database:querylanguage:expression:operator:unaryTilde|~]]
+  * [[documentation:database:querylanguage:expression:operator:unaryNegator|! / NOT]]

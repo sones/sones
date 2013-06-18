@@ -1,0 +1,19 @@
+====== Whitepapers ======
+
+sones GraphDB:
+
+  * {{http://github.com/downloads/sones/sones/whitepaper_graphdb_eng.pdf|sones GraphDB Whitepaper (english)}}
+  * {{http://github.com/downloads/sones/sones/whitepaper_graphdb.pdf|sones GraphDB Whitepaper (german)}}
+
+sones GraphDB on Windows Azure:
+
+  * {{https://github.com/downloads/sones/sones/sones%20on%20Windows%20Azure%20Whitepaper%20english.pdf|sones GraphDB on Windows Azure Whitepaper (english)}}
+  * {{https://github.com/downloads/sones/sones/sones%20on%20Windows%20Azure%20Whitepaper%20german.pdf|sones GraphDB on Windows Azure Whitepaper (german)}}
+
+technical Whitepaper on sones GraphDB:
+
+  * {{https://github.com/downloads/sones/sones/technisches%20Whitepaper%20sones%20GraphDB.pdf|sones GraphDB technical Whitepaper (german)}}
+
+
+
+[[start|back]]

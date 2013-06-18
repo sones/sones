@@ -1,0 +1,152 @@
+====== ALTER TYPE ======
+The alter type statement allows you to manipulate user-defined-types.
+
+===== Syntax =====
+
+ALTER TYPE typeName [AlterTypeCommandList] [DROP UNIQUE | DROP MANDATORY]
+
+==== typeName ====
+
+The name of the type that is to be manipulate. 
+
+
+==== AlterTypeCommandList ====
+
+Types of alter type commands.
+
+==== Syntax ====
+
+ADD ATTRIBUTES([[documentation:database:querylanguage:attributedefinition:latest|attr_definition]] [, [[documentation:database:querylanguage:attributedefinition:latest|attr_definition]]]) | \\
+DROP ATTRIBUTES (Identifier [,Identifier]) | \\
+ADD BACKWARDEDGES (BackwardEdge [,BackwardEdge]) | \\
+DROP BACKWARDEDGES (Identifier [,Identifier]) | \\
+ADD INDICES ( (IndexCreation) [,(IndexCreation]) ) | \\
+DROP INDICES ( (IndexDrop)[,(IndexDrop]) ) | \\
+RENAME ATTRIBUTE Identifier TO Identifier | \\
+RENAME BACKWARDEDGE Identifier TO Identifier | \\
+RENAME TO Identifier | \\
+DEFINE ATTRIBUTES ([[documentation:database:querylanguage:attributedefinition:latest|attr_definition]] [, [[documentation:database:querylanguage:attributedefinition:latest|attr_definition]]]) | \\
+UDEFINE ATTRIBUTES (Identifier [, Identifier]) | \\
+DROP UNIQUE | \\
+DROP MANDATORY | \\
+UNIQUE (Identifier [,Identifier]) | \\
+MANDATORY(Identifier [,Identifier])
+
+----
+
+== IndexCreation ==
+
+----
+
+([Identifier] [EDITION Identifier] [INDEXTYPE Identifier] ON ATTRIBUTES IndexAttributeList) | \\
+([Identifier] [EDITION Identifier] [INDEXTYPE Identifier] ON IndexAttributeList) | \\
+(IndexAttributeList)
+
+----
+
+== IndexAttributeList ==
+
+----
+
+
+Identifier | id_typeAndAttribute
+
+
+----
+
+
+== IndexDrop ==
+
+
+----
+
+
+(Identifier [EDITION Identifier])[, (Identifier [EDITION Identifier])] 
+
+
+----
+
+==== Examples ====
+
+
+----
+
+
+ALTER TYPE User ADD ATTRIBUTES (Integer Age, SET<User> Friends) \\ \\
+This example add the two attributes to type User. The attribute Age of type Integer  and the attribute Friends of type User. \\
+
+----
+
+ALTER TYPE User DROP ATTRIBUTES (Age, Friends) \\ \\
+Drop the two attributes Age and Friends from type User. \\
+
+----
+
+ALTER TYPE User ADD BACKWARDEDGES (User.Friends BestFriend) \\ \\
+Add the backwardedge BestFriend to the type User.
+
+----
+
+ALTER TYPE User DROP BACKWARDEDGES (BestFriend) \\ \\
+Drop Backwardedge BestFriend from type User. \\
+
+----
+
+ALTER TYPE User ADD INDICES ( (IDX_Name EDITION EDTName INDEXTYPE BPlusTree ON ATTRIBUTES Name), (Age) ) \\ \\
+Add indices for the attributes Name and Age to the type User. The index for the attribute Name has the name IDX_Name and the edition EDTName and is from index type BPlusTree. \\
+
+
+----
+
+ALTER TYPE User DROP INDICES( (IDX_Name EDITION EDTName),(Idx_Age) )  \\ \\
+Drop the indices IDX_Name and Idx_Age from the attributes Name and Age of the type User. \\
+
+
+----
+
+ALTER TYPE User RENAME ATTRIBUTE Name TO FirstName \\ \\
+Rename the attribute Name of the type User to FirstName. \\
+
+
+----
+
+ALTER TYPE User RENAME BACKWARDEDGE BestFriend TO IsFriend \\ \\
+Rename the backwardedge BestFriend of the type User IsFriend. \\
+
+
+----
+
+ALTER TYPE User RENAME TO Person \\ \\
+Rename the type User to Person. Its only an renaming of the type User to Person. All type characteristics are retained. \\ 
+
+
+----
+
+ALTER TYPE User DEFINE ATTRIBUTES(String Name, Integer Age) \\ \\
+Define undefined attributes and convert the content to the given type. \\
+
+
+----
+
+ALTER TYPE User UNDEFINE ATTRIBUTES(Name, Age) \\ \\
+Undefine the defined attributes of the type Use. The content of the attributes converted to an undefined content. After the conversion the attributes Name and Age are not available. \\
+
+
+----
+
+ALTER TYPE User UNIQUE(Name) \\ \\
+Define the attribute Name of the type User as unique. All inserted values must be unique. \\
+
+
+----
+
+ALTER TYPE User MANDATORY(Age) \\ \\
+Define the attribute Age to mandatory. The attribute must be set on every insert or update statement. \\
+
+
+----
+
+Return on success
+
+The return value depends on the altertype command.
+

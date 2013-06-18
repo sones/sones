@@ -1,0 +1,105 @@
+[[documentation:graphql:gdml|Back to: Graph Data Manipulation Language Overview]]
+
+====== INSERT ======
+
+The INSERT statement inserts objects into the database. Therefore a type must be specified and attributes can be assigned optionally. Those attributes don't have to be defined by the type that has been used. They are called [[documentation:database:querylanguage:undefinedattribute|undefined attributes]] and are stored on a separate stream.
+
+===== Syntax =====
+
+INSERT INTO [[documentation:database:querylanguage:typewrapper:latest|type]] [ VALUES ( [[documentation:database:querylanguage:attributeassign:latest|attributeAssign]] [, [[documentation:database:querylanguage:attributeassign:latest|attributeAssign]] ] ) ]
+
+
+===== QueryResult =====
+The QueryResult of the INSERT INTO query will contain
+  * The executed query
+  * The result: Successful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The errors (if result is //Failed//)
+  
+sample json output:
+<code json>
+{
+  "Query": "INSERT INTO UserProfile VALUES(Name='User1', Age=21)",
+  "Result": "Successful",
+  "Duration": [
+    65,
+    "ms"
+  ],
+  "Results": [
+    [
+      {
+        "Properties": {
+          "VertexID": "-9223372036854775808",
+          "VertexTypeID": "-9223372036854775797"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ]
+  ]
+}</code>
+
+===== Examples =====
+
+**Given are following types:**
+
+CREATE VERTEX TYPE Cars ATTRIBUTES (String LicenceNumber)
+
+CREATE VERTEX TYPE Songs ATTRIBUTES (String Name)
+
+CREATE VERTEX TYPE User ATTRIBUTES (String Name, Int64 Age, List<Int64> FavouriteNumbers, Cars Car, SET<User> Friends, SET<Songs(Weighted)> LovedSongs, User BestFriend)
+
+----
+
+INSERT INTO User
+
+Insert an object of type ''User'' without any attributes.
+
+----
+
+INSERT INTO User VALUES (Name='Alice', Age=22, FavouriteNumbers = LISTOF(1, 2, 3, 4))
+
+Insert an object of type User. Additionally the attributes Name, Age and FavouriteNumbers are defined.
+
+----
+
+INSERT INTO User VALUES (Name='Dave', DavesUndefinedAttribute='this attribute is stored on a separate stream')
+
+Analogous to the previous example a ''User'' object is inserted. But in this case a so called [[documentation:database:querylanguage:undefinedattribute|undefined attribute]] named ''DavesUndefinedAttribute'' has been defined.
+
+----
+
+INSERT INTO User VALUES (Name='Eve', Age=23, Car = REF( LicenceNumber='EF-IL-23' ))
+
+This INSERT statement create an ''User'' object that has a ''Car'' attribute which references a ''Car'' object with a certain ''LicenceNumber''.
+
+----
+
+INSERT INTO User VALUES (Name='Eve', Friends = SETOF( Name='Dave', Age > 20))
+
+In contrast to the previous example this one adds a User object with a Friends attribute that consists of a set of User references.
+
+----
+
+INSERT INTO User VALUES (Name='Carol' LovedSongs= SETOF( Name= 'Song1':(Weight = 100.2)), Name= 'Song2':(Weight = 5.2)), Name= 'Song3':(Weight = 1.2)))
+
+Additionally it is possible to add a set of weighted references.
+
+----
+
+INSERT INTO User VALUES (Name='Carol' LovedSongs = SETOFUUIDS<Songs>(1, 2, 3, 4, 5))
+
+Will set the edge LovedSongs to the VertexIDs of the Songs 1, 2, 3, 4, 5. It won't check whether the Songs really exist with the specified VertexIDs or not. On an select, they will be resolved if they exist. A count and a select of the VertexIDs directly will return all values.
+
+----
+
+INSERT INTO User VALUES (Name='Carol' BestFriend = REFUUID(1))
+
+Will set the edge BestFriend to the UUID of the User 1. It won't check whether the User really exist with the specified UUID or not. On an select, they will be resolved if they exist. A count and a select of the UUIDs directly will return all values.
+
+===== Return on success =====
+
+  * The attributes that have been defined within the VALUES section
+
+

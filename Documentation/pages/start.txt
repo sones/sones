@@ -1,0 +1,86 @@
+====== sones GraphDB Wiki and Documentation ======
+
+The sones GraphDB is an object-ori­en­tated graph data storage for a large amount of highly con­nected semi-struc­tured data in a dis­trib­uted envi­ron­ment. In con­trast to clas­si­cal rela­tional but also purely object ori­en­tated data­bases this implies two very impor­tant con­se­quences: First its main focus is no longer the data, objects or ver­tices itself, but their (type-safe) inter­con­nec­tions or edges. This means we are inter­ested in the name of an user within a large scale social net­work, but we are much more inter­ested to know which films his friends-friends watched last sum­mer and thought that they were amaz­ing. In the near future we will pro­vide a large frame­work of graph algo­rithms for these prob­lems and usage scenarios. 
+
+Since it's build upon the .NET Framework and Mono it can run on Windows, Linux, OSX and other Unixes.
+
+===== Getting Started =====
+
+  * [[trysones|Downloads and Licensing (try.sones.com)]]
+  * The [[quickreference:InstallationGuide|Quick Installation Guide]] on how to download, build and install your  instance.
+    * [[:Installation:Windows|Installation using Windows and Microsoft .NET Framework]]
+    * [[:Installation:Mono|Installation using MONO (Linux, MacOSX, Solaris)]]
+  * The [[quickreference:FiveMinuteGuide|Five-Minute-Guide]] on how to get started using the sones GraphDB WebShell.
+  * The [[quickreference:GraphQLCheatSheet:GraphQL CheatSheet]] for your reference.
+  * The [[quickreference:RESTQuickReferenceGuide|REST Quick Reference Guide]].
+  * The [[connectors:graphdsapi|GraphDB C# API]] Quick Reference Guide.
+  * [[quickreference:assemblyreferences|Necessary Assembly References]] to use the sones GraphDB API.
+  * [[Whitepapers|Whitepapers about our technology]]
+  * [[Benchmarks|Benchmarking GraphDB]]
+
+===== Documentation =====
+
+  * Overview
+    * [[WhatIsSones|What is sones GraphDB?]]
+    * [[ArchitecturOverview|Architecture Overview of sones GraphDB]]
+    * [[DifferencesBetweenOSEandEE|What differentiates the Open Source Edition from the Enterprise Edition?]]
+
+  * GraphDB Data Model
+    * [[property_hypergraph|Property Hypergraph]]
+    * [[documentation:datamodell:SpecialProperties|Special Properties]]
+    * [[documentation:database:edges:latest|Edges]]
+    * [[documentation:database:adbbaseobjects|Basic Datatypes]]
+
+  * Query Languages and Graph Traversals 
+    * Graph Query Language (sones GraphQL)
+      * [[documentation:GraphQL|GraphQL Overview]]
+      * [[:documentation:GraphQL:CorrectEscaping|Correct String Escaping]]
+      * [[:documentation:GraphQL:GDDL|Graph Data Definition Language]]
+      * [[:documentation:GraphQL:GDML|Graph Data Manipulation Language]]
+      * [[documentation:database:functions|Functions]]
+      * [[documentation:database:aggregates|Aggregates]]
+
+  * Graph and Semantic Algorithms
+    * [[documentation:GraphAlgorithms|Graph Algorithms]]
+    * [[documentation:GraphPartitioning|Graph Partitioning]]
+
+  * Connectors
+    * [[Connectors:PHPClient2|GraphDB PHP Client]]
+    * [[Connectors:JavaClient2|GraphDB Java Client]]
+    * [[Connectors:C#Client2|GraphDB C# Client]]
+    * [[Connectors:JavaScriptClient2|GraphDB JavaScript Client]]
+    * [[Connectors:GraphDSREST2|GraphDB RESTful Interface]]
+    * [[Connectors:GraphDSAPI|GraphDB API Interface]]
+    * [[Connectors:RemoteAPI|GraphDB Remote API]]
+
+  * Import and Export
+    * [[ImExport:GraphML|GraphML Import]]
+
+  * [[documentation:plugins|Plug-Ins and Extensions]]
+
+  * [[BestPractices|GraphDB best practices]]
+
+===== In-depth Tutorials, Talks and Articles =====
+
+  * [[tutorials:YourFirstGraph|Your first graph]]
+  * [[http://developers.sones.de/tag/tutorial/|Tutorials on the offical sones developer blog]]
+  * [[tutorials:TagExample|Tag Example]]
+  * [[tutorials:AbstractTypes|Abstract Types]]
+  * [[TalksAndPresentations|Talks and Presentations]]
+  * [[UseCases|Use-Cases]]
+  * [[tutorials:MuleExampleApp | How to integrate the sones GraphDB with the Mule ESB]]
+  * [[http://www.slideshare.net/bietiekay/sones-graph-db-in-net-net-usergroup-leipzig|sones GraphDB in .NET - german presentation for .NET usergroup Leipzig]]
+
+===== External Resources =====
+
+  * [[http://en.wikipedia.org/wiki/Discordian_calendar|Discordian Date]] used in many places
+  * Graph Visualization
+    * [[http://gephi.org/|Gephi Graph Drawing]]
+    * [[http://www.graphviz.org/|Graphviz - Graph Visualization Software]]
+
+  * More information on graphs
+    * [[ExternalResources:AcademicGraphPapers|Academic papers on graphs, graph algorithms and graph databases]]
+    * [[ExternalResources:GraphBooks|Books on Graphs and Graph-Databases]]
+    * [[http://www.eecs.wsu.edu/mgd/gdb.html|Graph Datasets]]
+
+

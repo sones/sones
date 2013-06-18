@@ -1,0 +1,15 @@
+====== AListBaseEdgeType ======
+
+This class should be derived for any implementation of [[documentation:database:edges:latest|EdgeTypes]] on list attributes of [[documentation:database:adbbaseobjects|DBBaseType]] like ''FavouriteNumbers'' etc. In addition to the abstract classes AListEdgeType and AEdgeType it defines following Methods:
+
+<code csharp>void Add(ADBBaseObject myValue, params ADBBaseObject[] myParameters)</code>
+This method will add a single edge. The dynamic params definition allows you to pass any kind and number of [[documentation:database:edges:edgetypeparam|EdgeTypeParams]]. With these parameters you can handle the edge in your way. 
+
+<code csharp>Boolean Remove(ADBBaseObject myValue)</code>
+Removes one single edge and returns true if the element was removed; otherwise, false.
+
+<code csharp>Boolean Contains(ADBBaseObject myValue)</code>
+Determines whether the edges contains the specified element. 
+
+<code csharp>IEnumerable<Object> GetReadoutValues()</code>
+This will return a collection of all values. Currently we don't want to return [[documentation:database:adbbaseobjects|ADBBaseObjects]]

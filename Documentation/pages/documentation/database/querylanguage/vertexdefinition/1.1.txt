@@ -1,0 +1,63 @@
+====== Type definition ======
+
+The type definition characterizes a database type.
+
+===== Syntax =====
+
+typeName\\
+[ EXTENDS typeName ]\\
+[ ATTRIBUTES ( typeName attributeName[=DefaultValue] [, typeName attributeName[=DefaultValue] ] ) ]\\
+[ BACKWARDEDGES (typeName.attributeName attributeName [, typeName.attributeName attributeName ]) ]\\ 
+[ UNIQUE ( uniqueAttribute [, uniqueAttribute ] ) ]\\
+[ MANDATORY ( mandatoryAttribute [, mandatoryAttribute ] ) ]\\
+[ INDICES ( [[documentation:database:querylanguage:indexdefinition:1.1|INDEXDEFINITION ]] [, [[documentation:database:querylanguage:indexdefinition:1.1|INDEXDEFINITION]] ] ) ]\\
+[ COMMENT = commentString ]\\
+
+==== typeName ====
+
+The name of the type.
+
+==== EXTENDS ====
+
+[ EXTENDS typeName ]
+
+The name of the parent type within the ([[devstuff:database:ontology|Ontology type system]]).
+
+==== ATTRIBUTES ====
+
+[ ATTRIBUTES ( typeName attributeName[=DefaultValue] [, typeName attributeName[=DefaultValue] ] ) ]
+
+A list of attribute definitions with at least one member. The first part of the definition is the type of the attribute (i.e. Integer, String, User,...) and the second part represents the name of the attribute.
+
+=== Default Value ===
+
+Default value for the attribute. If a default value is set for the attribute, then it is automatically marked as mandatory. Default values are only allowed on non reference types.
+==== BACKWARDEDGES ====
+
+[ BACKWARDEDGES (typeName.attributeName attributeName [, typeName.attributeName attributeName ]) ]
+
+A list of [[documentation:database:querylanguage:backwardEdgeAttribute|backward edge]] attributes with at least one member. The first part of a backward edge definition consists of a type - attribute combination. Analogous to the Attributes clause the second part represents the name of the [[documentation:database:querylanguage:backwardEdgeAttribute|backward edge]].
+
+==== UNIQUE ====
+
+[ UNIQUE ( uniqueAttribute [, uniqueAttribute ] ) ]
+
+Defines at least one attributes that has to be unique for each database object of the specified type.
+
+==== MANDATORY ====
+
+[ MANDATORY ( mandatoryAttribute [, mandatoryAttribute ] ) ]
+
+Defines at least one attribute that has to be set on each database object of the specified type.
+
+==== INDICES ====
+
+[ INDICES ( [[documentation:database:querylanguage:indexdefinition:1.1|INDEXDEFINITION ]] [, [[documentation:database:querylanguage:indexdefinition:1.1|INDEXDEFINITION]] ] ) ]
+
+Defines at least one index for the specified type.
+
+==== COMMENT ====
+
+[ COMMENT = commentString ]
+
+A comment that is stored on the defined type.

@@ -1,0 +1,21 @@
+====== How to download and compile GraphDB ======
+
+  - Check if the installed MONO version suits the requirements by running this on the commandline:
+    - <code>mono --version</code>
+    - The result should look like this:
+      - <code>Mono JIT compiler version 2.10.1 (tarball Fri Feb 25 15:56:49 MST 2011)</code>
+    - when there is a version greater than 2.8 you're ready to go - best results will be achieved with versions greater than 2.10
+  - You have two options to download and compile GraphDB
+    - Download directly from the git repository
+      - Install git on your machine - how to do this please refer to the installation information on http://git-scm.com/
+      - you can download the source code using the command
+        - <code>git clone git://github.com/sones/sones.git</code>
+      - you will have a sones folder containing the source code when everything completed successfully
+      - cd to that folder and run
+      - <code>./buildSolution.sh</code>
+      - this will build sones GraphDB
+    - Download a current code tarball
+      - https://github.com/sones/sones/tarball/master
+      - unpack the tarball and follow the building instructions above
+  - after following the steps above you should be able to run the sones GraphDB REST Server by using the command
+    - <code>./run_sonesGraphDB.sh</code>

@@ -1,0 +1,16 @@
+====== EdgeTypeListOfBaseObjects ======
+
+This [[documentation:database:edges:latest|EdgeType]] implementation of the abstract class [[documentation:database:edges:alistbaseedgetype|AListBaseEdgeType]] is used for all list attributes of [[documentation:database:adbbaseobjects|DBBaseTypes]]. In the image below this would be the ''Credits'' attribute. In detail, this edge just holds a list of [[documentation:database:adbbaseobjects|ADBBaseObjects]].
+
+===== Syntax =====
+In an ''CREATE VERTEX TYPE'' statement you would use this like following example:
+<code sql>CREATE VERTEX TYPE Student ATTRIBUTES (LIST<Int64> Credits)</code>
+<code sql>
+INSERT INTO User VALUES (Credits = LISTOF(1,1,1,3,5,7)
+</code>
+
+You can also use ''SET'', in that case the DB will make sure that on each change of the attribute all duplicated entries will be removed.
+<code sql>CREATE VERTEX TYPE Student ATTRIBUTES (SET<Int64> Credits)</code>
+<code sql>
+INSERT INTO User VALUES (Credits = SETOF(1,3,5,7)
+</code>

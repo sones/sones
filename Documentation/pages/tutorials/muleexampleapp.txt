@@ -1,0 +1,579 @@
+====== Preamble ======
+
+Mule provides an Enterprise Service Bus. This tutorial shows how to create a simple Mule Application which uses the sones GraphDB as an outbound endpoint. The following picture gives information about the architecture of the example application:
+
+{{ :tutorials:mule-esb-graphdb-2.png?600 |}}
+
+
+The source code samples are also available here: https://github.com/sones/sones-mule
+
+====== Preparations ======
+
+It's recommended to have the following software installed to follow this tutorial:
+
+  * sones GraphDB v2.0
+  * Mule ESB v3.x
+  * Java 1.6 or higher
+  * A Java IDE, for instance Eclipse
+
+===== Database and Vertex type creation =====
+
+Please follow the sones GraphDB installation instructions to get the sones GraphDB installed. Afterwards you can create the vertex type 'messages' by using the following GraphQL statement:
+
+<code>
+CREATE VERTEX TYPE messages ATTRIBUTES (Int64 date, String userName, String message)
+</code>
+
+This GraphQL statement creates you a new Vertex Type without edges by storing a date timestamp, the user name and a text message as vertex.
+
+===== Mule configuration and application deployment =====
+
+Please follow the Mule ESB installation instructions to get the Mule ESB installed. Let's assume that you installed it to $MULE_HOME then you can start up your ESB instance by using the script $MULE_HOME/bin/mule (on Linux) or $MULE_HOME/bin/mule.bat (on Windows).
+
+To deploy an application to the Mule ESB it is required to copy it to the $MULE_HOME/apps directory. So let's create a new directory $MULE_HOME/apps/messenger for our Messenger example application. An application is described by a configuration file. So let's create the file $MULE_HOME/apps/messenger/mule-config.xml . This XML file should initially contain the following lines:
+
+<code xml>
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+      xsi:schemaLocation="
+                         http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.0/mule.xsd
+                         http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/3.0/mule-http.xsd
+                         http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/3.0/mule-vm.xsd
+                         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+</mule>
+</code>
+
+====== The Inbound Endpoint ======
+
+We want to receive HTTP POST requests as incoming messages. So what we need is an inbound HTTP endpoint. The Mule ESB comes with an 'HTTP transport' which we can use for this purposes.
+
+<code xml>
+ <model name="messenger-model">
+        <service name="messanger-http-service">
+                <inbound>
+                        <http:inbound-endpoint host="localhost" port="8888" path="services/messenger"/>
+                </indbound>
+        </service>
+  </model>
+</code>
+
+As you can see services are living inside Models (or Flows). The above configuration creates a new HTTP inbound endpoint by binding to port 8888 and mapping to the path 'services/messenger'.
+
+====== A simple Logging Component ======
+
+The above mentioned endpoint does currently exactly nothing. You can pass the incomming HTTP request to a component. Such a component is a Java class which implements the Interface 'org.mule.api.lifecycle.Callable'. A simple logging component could look as the following:
+
+<code java>
+package de.sones.mule.demo.logger;
+
+import org.mule.api.MuleEventContext;
+import org.mule.api.lifecycle.Callable;
+
+public class LoggingComponent implements Callable {
+
+
+	@Override
+	public Object onCall(MuleEventContext arg0) throws Exception {
+		
+		String msg = arg0.getMessageAsString();
+		
+		System.out.println("Message:" + msg);
+		
+		return msg;
+	}
+	
+}
+</code>
+
+
+-- Note: It's required to add the mule-core-3.x.jar library as dependency in order to compile the code example above.
+
+To make the class above available in your mule application you can simply copy the class' package to $MULE_HOME/apps/messenger/classes . Then the configuration can become extended as the following XML snippet shows:
+
+<code xml>
+<service name="messanger-http-service">
+                <inbound>
+                        <http:inbound-endpoint host="localhost" port="8888" path="services/messenger"/>
+                </inbound>
+                <component class="de.sones.mule.demo.logger.LoggingComponent"/>
+</service>
+</code>
+
+====== HTTP POST Request to GraphQL transformation ======
+
+It's easy to see that such a component could do quite more than simple logging. However, instead to use the component to connect to our sones GraphDB instance, we will configure the sones GraphDB as an endpoint of the Flow. The incoming simple POST request has the wrong format to be executed by the sones GraphDB directly. So we need to transform it to a GraphQ(uery)L(anguage) statement. Therefore we use a 2 step transformation:
+
+  - Transform the incoming request parameters into a Java HashMap by using an out of the box available Transformer
+  - Transform the HashMap into a GQL statement by using an user defined transformer.
+
+Let's at first look at the configuration file:
+
+<code xml>
+    <custom-transformer name="HttpRequestToMap" class="org.mule.transport.http.transformers.HttpRequestBodyToParamMap"/>
+    <custom-transformer name="PropsToGQL" class="de.sones.mule.demo.transformers.PropsToGQLTransformer"/>
+
+     <model name="messenger-model">
+        <service name="messanger-http-service">
+                <inbound>
+                        <http:inbound-endpoint host="localhost" port="8888" path="services/messenger" transformer-refs="HttpRequestToMap PropsToGQL"/>
+                </inbound>
+                <component class="de.sones.mule.demo.logger.LoggingComponent"/>
+              </service>
+    </model>
+</code>
+
+BTW: The logging component prints out a GQL statement.
+
+Here the code of the "PropsToGQLTransformer":
+
+<code java>
+package de.sones.mule.demo.transformers;
+
+import java.util.HashMap;
+
+import org.mule.api.MuleMessage;
+import org.mule.api.transformer.TransformerException;
+import org.mule.transformer.AbstractMessageTransformer;
+
+public class PropsToGQLTransformer extends AbstractMessageTransformer 
+{
+
+	@Override
+	public Object transformMessage(MuleMessage message, String arg1)
+			throws TransformerException {
+
+		
+		HashMap props = (HashMap) message.getPayload();
+		
+		String date =  props.get("date").toString();
+		String userName = props.get("userName").toString();
+		String messageTxt = props.get("message").toString();
+	
+		String gql = "INSERT INTO messages VALUES ( date = " + date + "," + " userName = '" + userName + "'," + " message = '" + messageTxt +"')"; 
+		
+		return gql;
+	}
+}
+
+</code>
+
+As you can see, such a transformer has to extend the 'AbstractMessageTransformer' class. Don't forget to add the class to your Mule application deployment by copying the whole package to the application's class' folder.
+
+
+====== The Outbound Endpoint ======
+
+What we now need is to pass the GraphQL statement over to our sones GraphDB instance. The sones GraphDB provides access via a RESTful Web Service. So we can use an HTTP endpoint as the outbound one. 
+
+<code xml>
+    <custom-transformer name="HttpRequestToMap" class="org.mule.transport.http.transformers.HttpRequestBodyToParamMap"/>
+    <custom-transformer name="PropsToGQL" class="de.sones.mule.demo.transformers.PropsToGQLTransformer"/>
+    <custom-transformer name="GQLToHttpRequest" class="de.sones.mule.demo.transformers.GQLToHttpRequestTransformer"/>
+
+     <model name="messenger-model">
+        <service name="messanger-http-service">
+                <inbound>
+                        <http:inbound-endpoint host="localhost" port="8888" path="services/messenger" transformer-refs="HttpRequestToMap PropsToGQL"/>
+                </inbound>
+                <component class="de.sones.mule.demo.logger.LoggingComponent"/>
+                <outbound>
+                        <pass-through-router>
+                                <http:outbound-endpoint address="http://test:test@localhost:9975/gql" transformer-refs="GQLToHttpRequest"/>
+                        </pass-through-router>
+                </outbound>
+        </service>
+    </model>
+</code>
+
+As you can see, there is an additional transformer configured on the outbound endpoint. Such a transformer becomes executed before the message will become passed through the outside. In our case it has the purpose to wrap the previously created GraphQL statement inside a HTTP POST message. The configuration above references the sones GraphDB instance which is listening on the local host and the port 9975. The default user name and password, which means test/test, are used.
+
+===== GraphQL to HTTP POST Request transformer =====
+
+Here the source code of the transformer which takes a GraphQL as the input and returns an HTTP POST request (to the configured sones GraphDB) as the output.
+
+<code java>
+package de.sones.mule.demo.transformers;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URI;
+
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.mule.api.MuleMessage;
+import org.mule.api.config.MuleProperties;
+import org.mule.api.transformer.TransformerException;
+import org.mule.transformer.AbstractMessageTransformer;
+
+public class GQLToHttpRequestTransformer extends AbstractMessageTransformer {
+
+	@Override
+	public Object transformMessage(MuleMessage message, String arg1)
+			throws TransformerException {
+
+		try {
+		
+		  HttpMethod result;
+		
+		  //Get the contents of the previous message
+		  Object src = message.getPayload();
+		
+		  System.out.println("Body:" + src.toString());
+		  
+		  //Get the endpoint which is configured
+		  String endpoint = message.getOutboundProperty(MuleProperties.MULE_ENDPOINT_PROPERTY, null);
+		  
+		  System.out.println("Enpoint:" + endpoint);
+		  
+		  //Create an uri
+		  URI uri = null;
+		  
+			  
+			  uri = new URI(endpoint);
+		  
+		
+		  PostMethod postMethod = new PostMethod(uri.toString());
+		 
+		  InputStream is = new ByteArrayInputStream(src.toString().getBytes("UTF-8"));
+		  
+		  postMethod.setRequestBody(src.toString()); 
+		
+		  result = postMethod;
+		  
+		  return result;
+		  
+		}
+		catch (Exception e)
+		{
+			 throw new TransformerException(this, e);
+		}
+		  
+	}
+
+	
+	
+}
+
+</code>
+
+
+====== The Example Web Application ======
+
+
+
+This application is realized as a simple JSP based one. A MessageBean gets passed the form data. The Bean's 'sendMessage' method is used to post the form data to our inbound HTTP endpoint. The 'list' JSP uses the 'MessageListBean'. The call of 'getMessages()' connects to the same sones GraphDB instance as configured as the outbound endpoint by retrieving the messages. Therefore the sones Java Client is used. 
+
+
+--Note: The web application example needs to be deployed to an JSP compatible Servlet container. I used Apache Tomcat 6.x for this purpose. 
+
+Here how the web application looks:
+
+{{ :tutorials:messenger1.png?300 |}}
+
+{{ :tutorials:messenger2.png?400 |}}
+
+
+You can also query the GraphDB directly via the WebShell:
+
+{{ :tutorials:messenger-webshell-output.png?400 |}}
+
+
+=== The index.jsp ===
+
+<code html>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Messenger</title>
+</head>
+<body>
+
+<jsp:useBean id="msgBean" class="de.sones.mule.demo.MessageBean" scope="request"/>
+
+<h1>MessengerWebApp</h1>
+
+<hr/>
+
+
+<form action="index.jsp" method="get">
+	<input type="text" name="FromName" value="Anonymous" style="width: 300px; "/>
+	<br/>
+	<textarea name="MsgText" style="width: 300px; height: 150px">Enter your message here!</textarea>
+	<hr/>
+	<input type="submit" value="Send"/>
+</form>
+
+<hr/>
+
+<%
+
+if (request.getParameterNames().hasMoreElements())
+{
+	msgBean.setUserName(request.getParameter("FromName"));
+	msgBean.setMessage(request.getParameter("MsgText"));
+	
+	String result = msgBean.sendMessage();
+	
+	if (!result.equals(""))
+	{
+		out.println( result + "<br/>");		
+	}
+
+	out.println("From: " + msgBean.getUserName());
+	out.println("<br/>");
+	out.println("Message: " + msgBean.getMessage() );
+	
+	
+}
+%>
+
+<br/>
+<a href="list.jsp">Show all messages</a>
+
+<hr/>
+
+
+</body>
+</html>
+</code>
+
+=== The list.jsp ===
+
+<code html>
+<%@page import="de.sones.mule.demo.MessageBean"%>
+<%@page import="java.util.ArrayList"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<jsp:useBean id="msgListBean" class="de.sones.mule.demo.MessageListBean" scope="request"/>
+
+
+<table border="1">
+
+<%
+ArrayList<MessageBean> result = msgListBean.getMessages();
+
+
+for (MessageBean msg : result)
+{
+   out.println("<tr>");
+	
+   out.println("<td>" + msg.getDate().toString()  + "</td>" +
+		       "<td>" + msg.getUserName() + "</td>" +
+		       "<td>" + msg.getMessage() + "</td>"
+    );
+	
+   out.println("</tr>");	
+}
+%>
+
+</table>
+
+<hr/>
+<a href="index.jsp">Back</a>
+<hr/>
+
+</body>
+</html>
+</code>
+
+=== The MessageBean ===
+
+<code java>
+package de.sones.mule.demo;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.Date;
+
+import sun.net.www.protocol.http.HttpURLConnection;
+
+
+public class MessageBean {
+
+	private Date date;
+	private String userName;
+	private String message;
+	
+	
+	/*
+	 * Date
+	 */
+	public Date getDate() {
+		return date;
+	}
+	
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	
+	/*
+	 * User name
+	 */
+	public String getUserName() {
+		return userName;
+	}
+	
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	
+	
+	/*
+	 * Message
+	 */
+	public String getMessage() {
+		return message;
+	}
+	
+	public void setMessage(String message) {
+		
+		this.date = new Date();
+		this.message = message;
+	}
+	
+	/*
+	 * Program logic
+	 */
+	public String sendMessage()
+	{
+		System.out.println("Sending message ...");
+		
+		try
+		{
+	
+
+		    String data = "date=" + URLEncoder.encode("" + this.date.getTime()) +
+		                  "&userName=" + URLEncoder.encode(this.userName) + 
+		                  "&message=" + URLEncoder.encode(this.message);
+
+			
+			HttpURLConnection con = (HttpURLConnection) new URL("http://localhost:8888/services/messenger").openConnection();
+			con.setDoOutput(true);
+			con.setDoInput(true);
+				
+			OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
+			out.write(data);
+			out.flush();			
+			out.close();
+
+
+			//Get Response	
+		    InputStream is = con.getInputStream();
+		    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+		    String line;
+		    StringBuffer response = new StringBuffer(); 
+		      
+		    while((line = rd.readLine()) != null) {
+		        response.append(line);
+		        response.append('\r');
+		    }
+		    
+		    rd.close();
+		    
+		    con.disconnect();
+		     
+		    return "";
+			
+			
+		}
+		catch (Exception e)
+		{
+			return e.getMessage();
+		}
+			
+	}	
+}
+
+</code>
+
+=== The MessageListBean ===
+
+<code java>
+package de.sones.mule.demo;
+
+
+import java.util.ArrayList;
+import java.util.Date;
+import de.sones.GraphDBClient.GraphDBClient;
+import de.sones.GraphDBClient.Objects.Property;
+import de.sones.GraphDBClient.Objects.Vertex;
+import de.sones.GraphDBClient.QueryResult.QueryResult;
+
+public class MessageListBean {
+
+	
+	private ArrayList<MessageBean> messages;
+	
+	
+	
+	public ArrayList<MessageBean> getMessages() {
+	
+		System.out.println("Retrieving messages ...");
+		
+		messages = new ArrayList<MessageBean>();
+		
+		try
+		{
+		
+			GraphDBClient client = new GraphDBClient("localhost", "test", "test", 9975);
+		
+			//date, userName, message
+			QueryResult result = client.Query("FROM messages SELECT date, userName, message");
+			
+			//To convert the current vertex into a message
+			MessageBean currMessageBean = null;
+			
+			for (Vertex v : result.getVertexViewList())
+			{
+				currMessageBean = new MessageBean();
+				
+				Property userProperty = v.getPropertyByID("userName");
+				currMessageBean.setUserName(userProperty.getValue().toString());
+				
+				Property msgProperty = v.getPropertyByID("message");
+				currMessageBean.setMessage(msgProperty.getValue().toString());
+				
+				Property dateProperty = v.getPropertyByID("date");
+				long dateAsLong = (Long) dateProperty.getValue();
+				currMessageBean.setDate(new Date(dateAsLong));
+				
+				this.messages.add(currMessageBean);
+			}
+			
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
+		
+		return this.messages;
+	}
+	
+}
+
+</code>
+
+--Note: The sones Java Client is used to connect to the sones Graph DB instance. So you have to add it as a dependency to your web application project.
+
+
+ --- //[[david.maier@sones.com|David Maier]] 2011/08/30 14:05//

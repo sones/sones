@@ -1,0 +1,672 @@
+====== Query Result (v2.0) - accessing results =====
+
+Each statement returns a QueryResult instance, which contains a set of query informations:
+  * **QueryMeta:**
+    * **Duration** (The time that was spent on executing the query - in milliseconds.)
+    * **Error** (A error message that may occured during the query process)
+    * **Query language** (The name of the query language that has been executed.)
+    * **Query string** (The query statement that was executed)
+    * **Result type** (Determines whether the statement was successful or failed)
+      * Failed (There is any error)
+      * Successful (The statement executed successful. No error occured during the execution.)
+    * **Affected vertices** (The number of affected vertices)   
+  * **Fetched vertex / vertices:**
+    * **Vertices** (An enumerable of [[documentation:database:queryresult:2.0#Vertex|vertex]] - one for each selected object. Every vertex has attributes that can be accessed in various ways.)
+
+===== Vertex =====
+The Vertex contains all data including properties, binary proiperties and edges to other vertices.
+
+==== Properties ====
+Properties are simple values and may be accessed via:
+  * **HasProperty(String myPropertyName)**: Returns //true// if the vertex has a property value for this key
+  * **GetProperty(String myPropertyName):** Returns the value as //Object// if the vertex has a property value for this key otherwise //NULL//
+  * **GetProperty<T>(String myPropertyName):** Returns the value as type //T// if the vertex has a property value for this key otherwise //NULL//. If  the value is not of type T a cast exception will be thrown.
+  * **GetAllProperties()**: Returns all properties of this vertex as Object. You can pass a filter as optional parameter
+  * **...**
+
+==== Binary Properties ====
+Binary properties are simple attached binary data and may be accessed via:
+  * **HasBinaryProperty(String myBinaryPropertyName)**: Returns //true// if the vertex has a binary property value for this key
+  * **GetBinaryProperty(String myBinaryPropertyName)**: Returns a //Stream// if the vertex has a binary property for this key, otherwise //Null//
+  * **GetAllBinaryProperties()**: Returns all binary properties of this vertex as enumerable. 
+  * **...**
+
+==== Edges ====
+The edges contains all connections from the source vertex to target vertices via the attribute, including single edges, multi edges and hyper edges.
+
+  * **HasEdge(String myEdgeName)**: Returns //true// if the given egde exists.
+  * **GetAllEdges()**: Returns all edges.
+  * **GetEdge(String myEdgeName)**: Returns the specified //IEdgesView// object.
+  * **GetAllHyperEdges()**: Returns all hyper edges.
+  * **GetAllSingleEdges()**: Returns all single edges.
+  * **GetAllNeighbours(String myEdgeName)**: Returns all target vertices of an edge.
+  * **...**
+
+
+===== Accessing the QueryResult attributes, vertices, edges and properties in different levels =====
+
+
+==== Access to vertices within level 0 ====
+
+<code csharp>myQueryResult.Vertices</code>
+Access to the vertices property.
+
+<code csharp>
+foreach (var aVertex in myQueryResult.Vertices)
+{
+   //do something with the vertex
+   
+}</code>
+Access to any vertex within level 0.
+
+==== Access to properties of vertices within level 0 ====
+Given the following statement:
+<code sql>FROM User U SELECT U.Name</code>
+
+There are various ways of accessing the resulting vertices.
+
+<code csharp>myQueryResult.Vertices[0].GetPropertyAsString("Name")</code>
+Access to the property "Name" of the first object.
+
+<code csharp>
+String vertexName = null;
+foreach (var aVertex in myQueryResult.Vertices)
+{
+   vertexName = aVertex.GetProperty<String>("Name");
+   
+   var properties = aVertex.GetAllProperties(); // get all properties from this vertex
+}</code>
+Access to the property "Name" of all vertices within level 0.
+
+==== Access to neighbors of vertices ====
+Given the following statement:
+
+<code sql>FROM User U SELECT U.Name, U.Friends.Name</code>
+
+There are several way accessing the neighbors of vertices (in this case level 0 vertices):
+
+<code csharp>myQueryResult.Vertices[0].GetAllNeighbours("Friends")</code>
+Returns all target neighbour vertices of the "Friends" edge.
+
+<code csharp>IEnumerable<IVertexView> neighbours = myQueryResult.Vertices[0].GetAllNeighbours("Friends")</code>
+Access to all neighbours of the "Friends" [[documentation:database:edges:latest|edge]]. The attributes of each vertex can be accessed by the functions (i.e. GetProperty) which have been mentioned above.
+
+   
+<code csharp>IEdgeView edge = aResultVertex.GetEdge("Friends");</code>
+Get the "Friends" [[documentation:database:edges:latest|edge]] containing the target vertices.
+
+==== Access to edges of vertices ====
+
+Given the following statement:
+
+<code sql>FROM User U SELECT U.Name, U.Friends.Name</code>
+
+There are several way accessing the edges of vertices (in this case level 0 vertices):
+
+<code sql>IEdgeView friendsHyperEdge = myQueryResult.Vertices[0].GetEdge("Friends")</code>
+Access to the [[documentation:database:edges:latest|edge]] "Friends" of the first vertex.
+
+<code sql>IEnumerable<Tuple<string,IEdgeView>> allHyperEdges = myQueryResult.Vertices[0].GetAllEdges()</code>
+Access to all [[documentation:database:edges:latest|edges]] of the first vertex.
+
+==== Asterisk on multi types ====
+
+<code sql>FROM User U, Car C SELECT *</code>
+This statement creates a QueryResult that consists of vertices of type "User" and "Car" which contain all their attributes (projection of both types).
+
+==== Asterisk on one type ====
+
+<code sql>FROM User U, Car C SELECT U</code>
+In contrast to the last example only one type ("User") is going to be projected by this statement (including all unstructured data of each vertex).
+
+==== Attribute selections on multiple types ====
+
+<code sql>FROM User U, Car C SELECT U.Name, C.Color</code>
+This statment creates a QueryResult that consists of both "User" and "Car" vertices. Because of the selected attributes "Name" (on type "User") and "Color" (on type "Car") the resulting vertices contain nothing but the requested attributes (depending on the type of the vertex).
+
+==== Higher level selections ====
+
+<code sql>FROM User U SELECT U.Friends.Name</code>
+The resulting QueryResult looks like this:
+<code csharp>
+myQueryResult.Vertices[0]["Friends", [0]["Name", "NameOfFriend1"]]
+                          [1]["Name", "NameOfFriend2"]]
+                          [2]["Name", "NameOfFriend3"]]
+                          [3]["Name", "NameOfFriend4"]]
+</code>
+The first level in the QueryResult consists of a single vertex with just ONE attribute ("Friends"). So one can access the names of all Users that are friends of other Users via:
+<code csharp>
+IEnumerable<String> friendsNames = 
+    QueryResult.Vertices[0].GetAllNeighbours("Friends").Select(aNeighbor => aNeighbor.GetProperty<String>("Name"));</code>
+
+==== Lower and Higher level selection ====
+<code sql>FROM User U SELECT U.Age, U.Friends.Name</code>
+
+This example shows the consequences of a mixed selection of "U.Age" (level 0) and "U.Friends.Name" (level 1). So every User that has friends has to be resolved in the result.
+
+The result looks like this:
+<code sql>
+QueryResult.Vertices[0]["Age", 20]
+                       ["Friends", [0]["Name", "NameOfFriend1"]]
+                                   [1]["Name", "NameOfFriend2"]]
+                          
+                    [1]["Age", 22]
+                       ["Friends", [0]["Name", "NameOfFriend3"]]
+                            
+                    [2]["Age", 23]
+                       ["Friends", [0]["Name", "NameOfFriend4"]]
+</code>
+The QueryResult contains an enumeration of vertices with a "Age" and a "Friends" attribute. "Friends" is resolved in each level zero vertex to show the "Name" of every friend.
+
+==== Non Resolved Neighbours ====
+
+<code sql>FROM User U SELECT U.Friends</code>
+
+This query requests the "Friends" neighbours of every User vertex but should not resolve them.
+
+<code sql>
+QueryResult.Vertices[0]["Friends", [0]["UUID", 1]]
+                             ["TYPE", "User"]]
+                          [1]["UUID", 2]]
+                             ["TYPE", "User"]]
+                    [1]["Friends", [0]["UUID", 3]]
+                             ["TYPE", "User"]]
+                    [2]["Friends", [0]["UUID", 4]]
+                             ["TYPE", "User"]]
+</code>
+In this case, one would get n User vertices containing the "Friends" attribute (if the vertex has a "Friends" hyperedge). If there was a "DEPTH >0" the "Friends" edge would be resolved.
+
+==== Functions on attributes ====
+All [[documentation:database:functions|functions]] are based on an attribute (same like in OOP). Each function implementation (a class which inherit the abstract class ABaseFunction) will have a 
+  * CallingObject: This is the payload of a TypeAttribute. In the below sample it would be a [[documentation:database:edges:edgetypesetofreferences|EdgeTypeSet]].
+  * CallingAttribute: Is the TypeAttribute definition. In the below sample 'Friends'
+  * CallingDBObjectStream: Is the DBObject which called the function. In the below sample each User DBObject which have a Friends Edge.
+
+<code sql>FROM User U SELECT U.Friends.TOP(1) DEPTH 1</code>
+
+The result will have the same format like a usual select without the function. If you want to select an attribute with a funtion AND without than you have to use the AS parameter. The QueryResult looks like this:
+<code sql>
+myQueryResult.Vertices[0]["Friends", ... ]
+</code>
+
+Please keep in mind, that the type of the attribute value could change with a function like "MAXWEIGHT()".
+<code sql>
+FROM User U SELECT U.Friends.MAXWEIGHT() DEPTH 1
+myQueryResult.Vertices[0]["Friends", 5.3]
+</code>
+
+Using the AS will create a quite better result:
+<code sql>
+FROM User U SELECT U.Friends.MAXWEIGHT() as MaxWeight, U.Friends DEPTH 1
+myQueryResult.Vertices[0]["MaxWeight", 5.3]
+              ["Friends", ...]
+</code>
+
+==== Functions without parameters ====
+There are some functions which you can't call from an attribute in a OOP way. This would be for example the "CurrentDate" function.
+
+<code sql>FROM User U SELECT U.Friends, CURRENTDATE() as 'CurrentDate' DEPTH 0</code>
+<code sql>
+myQueryResult.Vertices[0]["Friends", ...]
+                      [1]["Friends", ...]
+                      [2]["Friends", ...]
+                      [3]["CurrentDate", "2010/04/29"]
+</code>
+
+==== Aggregates ====
+Even if they look like functions the [[documentation:database:aggregates|aggregates]] are different with some restrictions:
+  * They have only one parameter and are called directly.
+  * The parameter must not be an edge or a List/Set of base objects.
+  * Only attributes of the first level are allowed (U.Age is ok but U.Friends.Age will not work)
+  * Like in SQL you need to use a group by clause if you have not aggregated attributes in the select list.
+
+<code sql>FROM User U SELECT MAX(U.Age) as 'MaxAge', U.Name GROUP BY U.Name</code>
+<code sql>
+QueryResult.Vertices[0]["MaxAge", 101]
+                       ["Name", "a name"]
+                    [1]["MaxAge", 107]
+                       ["Name", "another name"]
+</code>
+
+===== JSON representation =====
+
+<code json>
+{
+  "Query": "From UserProfile Select *",
+  "Result": "Successful",
+  "Duration": [
+    27,
+    "ms"
+  ],
+  "Results": [
+    [
+      {
+        "Properties": {
+          "Username": "User1",
+          "Age": "25",
+          "VertexID": "1",
+          "CreationDate": "5246130302886059344",
+          "ModificationDate": "5246130302886059344",
+          "Revision": "0",
+          "Edition": "Default",
+          "VertexTypeName": "UserProfile",
+          "VertexTypeID": "-9223372036854775797",
+          "Comment": ""
+        }
+      },
+      {
+        "Edges": [
+          {
+            "HyperEdgeView": {
+              "FriendOf": [
+                {
+                  "SingleEdge": [
+                    {
+                      "Properties": [
+                        {
+                          "VertexTypeID": "-9223372036854775797"
+                        },
+                        {
+                          "VertexID": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "TargetVertex": []
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Properties": {
+          "Username": "User2",
+          "Age": "22",
+          "VertexID": "2",
+          "CreationDate": "5246130303900339344",
+          "ModificationDate": "5246130303900339344",
+          "Revision": "0",
+          "Edition": "Default",
+          "VertexTypeName": "UserProfile",
+          "VertexTypeID": "-9223372036854775797",
+          "Comment": ""
+        }
+      },
+      {
+        "Edges": [
+          {
+            "HyperEdgeView": {
+              "Friends": [
+                {
+                  "SingleEdge": [
+                    {
+                      "Properties": [
+                        {
+                          "VertexTypeID": "-9223372036854775797"
+                        },
+
+                        {
+                          "VertexID": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "TargetVertex": []
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "Properties": {
+          "Username": "User3",
+          "VertexID": "3",
+          "CreationDate": "5246130321735542345",
+          "ModificationDate": "5246130321735542345",
+          "Revision": "0",
+          "Edition": "Default",
+          "VertexTypeName": "UserProfile",
+          "VertexTypeID": "-9223372036854775797",
+          "Comment": ""
+        }
+      },
+      {
+        "Edges": [
+          {
+            "HyperEdgeView": {
+              "Enemies": [
+                {
+                  "SingleEdge": [
+                    {
+                      "Properties": [
+                        {
+                          "VertexTypeID": "-9223372036854775797"
+                        },
+                        {
+                          "VertexID": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "TargetVertex": []
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  ]
+}
+</code>
+===== XML representation =====
+
+<code xml>
+<Result xmlns="http://sones.com/QueryResultSchema.xsd" Version="2.0.0.0">
+  <Query VerticesCount="3" Duration="0" ResultType="Successful" Value="From UserProfile Select *" Language="sones.gql" />
+  <VertexViews>
+    <VertexView>
+      <Properties>
+        <Property>
+          <ID>Username</ID>
+          <Type>String</Type>
+          <Value>User1</Value>
+        </Property>
+        <Property>
+          <ID>Age</ID>
+          <Type>Int32</Type>
+          <Value>25</Value>
+        </Property>
+        <Property>
+          <ID>VertexID</ID>
+          <Type>Int64</Type>
+          <Value>1</Value>
+        </Property>
+        <Property>
+          <ID>CreationDate</ID>
+          <Type>Int64</Type>
+          <Value>5246130302886059344</Value>
+        </Property>
+        <Property>
+          <ID>ModificationDate</ID>
+          <Type>Int64</Type>
+          <Value>5246130302886059344</Value>
+        </Property>
+        <Property>
+          <ID>Revision</ID>
+          <Type>Int64</Type>
+          <Value>0</Value>
+        </Property>
+        <Property>
+          <ID>Edition</ID>
+          <Type>String</Type>
+          <Value>Default</Value>
+        </Property>
+        <Property>
+          <ID>VertexTypeName</ID>
+          <Type>String</Type>
+          <Value>UserProfile</Value>
+        </Property>
+        <Property>
+          <ID>VertexTypeID</ID>
+          <Type>Int64</Type>
+          <Value>-9223372036854775797</Value>
+        </Property>
+        <Property>
+          <ID>Comment</ID>
+          <Type>String</Type>
+          <Value />
+        </Property>
+      </Properties>
+      <BinaryProperties />
+      <Edges>
+        <Edge xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="HyperEdgeView">
+          <Name>FriendOf</Name>
+          <Properties />
+          <SingleEdge>
+            <Properties>
+              <Property>
+                <ID>VertexTypeID</ID>
+                <Type>Int64</Type>
+                <Value>-9223372036854775797</Value>
+              </Property>
+              <Property>
+                <ID>VertexID</ID>
+                <Type>Int64</Type>
+                <Value>2</Value>
+              </Property>
+            </Properties>
+            <TargetVertex />
+          </SingleEdge>
+        </Edge>
+      </Edges>
+    </VertexView>
+    <VertexView>
+      <Properties>
+        <Property>
+          <ID>Username</ID>
+          <Type>String</Type>
+          <Value>User2</Value>
+        </Property>
+        <Property>
+          <ID>Age</ID>
+          <Type>Int32</Type>
+          <Value>22</Value>
+        </Property>
+        <Property>
+          <ID>VertexID</ID>
+          <Type>Int64</Type>
+          <Value>2</Value>
+        </Property>
+        <Property>
+          <ID>CreationDate</ID>
+          <Type>Int64</Type>
+          <Value>5246130303900339344</Value>
+        </Property>
+        <Property>
+          <ID>ModificationDate</ID>
+          <Type>Int64</Type>
+          <Value>5246130303900339344</Value>
+        </Property>
+        <Property>
+          <ID>Revision</ID>
+          <Type>Int64</Type>
+          <Value>0</Value>
+        </Property>
+        <Property>
+          <ID>Edition</ID>
+          <Type>String</Type>
+          <Value>Default</Value>
+        </Property>
+        <Property>
+          <ID>VertexTypeName</ID>
+          <Type>String</Type>
+          <Value>UserProfile</Value>
+        </Property>
+        <Property>
+          <ID>VertexTypeID</ID>
+          <Type>Int64</Type>
+          <Value>-9223372036854775797</Value>
+        </Property>
+        <Property>
+          <ID>Comment</ID>
+          <Type>String</Type>
+          <Value />
+        </Property>
+      </Properties>
+      <BinaryProperties />
+      <Edges>
+        <Edge xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="HyperEdgeView">
+          <Name>Friends</Name>
+          <Properties />
+          <SingleEdge>
+            <Properties>
+              <Property>
+                <ID>VertexTypeID</ID>
+                <Type>Int64</Type>
+                <Value>-9223372036854775797</Value>
+              </Property>
+              <Property>
+                <ID>VertexID</ID>
+                <Type>Int64</Type>
+                <Value>1</Value>
+              </Property>
+            </Properties>
+            <TargetVertex />
+          </SingleEdge>
+        </Edge>
+      </Edges>
+    </VertexView>
+    <VertexView>
+      <Properties>
+        <Property>
+          <ID>Username</ID>
+          <Type>String</Type>
+          <Value>User3</Value>
+        </Property>
+        <Property>
+          <ID>VertexID</ID>
+          <Type>Int64</Type>
+          <Value>3</Value>
+        </Property>
+        <Property>
+          <ID>CreationDate</ID>
+          <Type>Int64</Type>
+          <Value>5246130321735542345</Value>
+        </Property>
+        <Property>
+          <ID>ModificationDate</ID>
+          <Type>Int64</Type>
+          <Value>5246130321735542345</Value>
+        </Property>
+        <Property>
+          <ID>Revision</ID>
+          <Type>Int64</Type>
+          <Value>0</Value>
+        </Property>
+        <Property>
+          <ID>Edition</ID>
+          <Type>String</Type>
+          <Value>Default</Value>
+        </Property>
+        <Property>
+          <ID>VertexTypeName</ID>
+          <Type>String</Type>
+          <Value>UserProfile</Value>
+        </Property>
+        <Property>
+          <ID>VertexTypeID</ID>
+          <Type>Int64</Type>
+          <Value>-9223372036854775797</Value>
+        </Property>
+        <Property>
+          <ID>Comment</ID>
+          <Type>String</Type>
+          <Value />
+        </Property>
+      </Properties>
+      <BinaryProperties />
+      <Edges>
+        <Edge xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="HyperEdgeView">
+          <Name>Enemies</Name>
+          <Properties />
+          <SingleEdge>
+            <Properties>
+              <Property>
+                <ID>VertexTypeID</ID>
+                <Type>Int64</Type>
+                <Value>-9223372036854775797</Value>
+              </Property>
+              <Property>
+                <ID>VertexID</ID>
+                <Type>Int64</Type>
+                <Value>2</Value>
+              </Property>
+            </Properties>
+            <TargetVertex />
+          </SingleEdge>
+        </Edge>
+      </Edges>
+    </VertexView>
+  </VertexViews>
+</Result>
+</code>
+
+===== Text representation =====
+<code>
+      Query:		From UserProfile Select *
+      Result:		Successful
+      Duration:	0 ms
+      Vertices:
+
+		Username	 User1
+		Age	 25
+		VertexID	 1
+		CreationDate	 5246130302886059344
+		ModificationDate	 5246130302886059344
+		Revision	 0
+		Edition	 Default
+		VertexTypeName	 UserProfile
+		VertexTypeID	 -9223372036854775797
+		Comment	 
+			 Edges:
+				HyperEdgeView
+				FriendOf
+						 Edge
+						 Properties
+						 SingleEdge
+								Properties
+									 VertexTypeID		 -9223372036854775797
+									 VertexID		 2
+
+		Username	 User2
+		Age	 22
+		VertexID	 2
+		CreationDate	 5246130303900339344
+		ModificationDate	 5246130303900339344
+		Revision	 0
+		Edition	 Default
+		VertexTypeName	 UserProfile
+		VertexTypeID	 -9223372036854775797
+		Comment	 
+			 Edges:
+				HyperEdgeView
+				Friends
+						 Edge
+						 Properties
+						 SingleEdge
+								Properties
+									 VertexTypeID		 -9223372036854775797
+									 VertexID		 1
+
+		Username	 User3
+		VertexID	 3
+		CreationDate	 5246130321735542345
+		ModificationDate	 5246130321735542345
+		Revision	 0
+		Edition	 Default
+		VertexTypeName	 UserProfile
+		VertexTypeID	 -9223372036854775797
+		Comment	 
+			 Edges:
+				HyperEdgeView
+				Enemies
+						 Edge
+						 Properties
+						 SingleEdge
+								Properties
+									 VertexTypeID		 -9223372036854775797
+									 VertexID		 2
+</code>

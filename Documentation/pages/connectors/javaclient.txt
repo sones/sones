@@ -1,0 +1,256 @@
+====== sones JavaClient ======
+
+[[:connectors|back]]
+
+The sones JavaClient is a simple library written in Java to communicate with a sones GraphDB instance using the REST interface. The API uses the [[http://www.jdom.org/|jdom]] XML-Framework to parse the query-result and wraps it back into handy database objects.
+
+The following document consists of three parts: 
+  - At first there will be explained how to use the javaclient in other projects as an external library. 
+  - The second part contains a description of how you can pull the sources from git and build the project on your own using Eclipse.
+  - The last part contains some examples of how you could use the connector.
+ 
+
+==== Part 1: Using the "ready-to-work"-library in your java project ====
+
+The following section describes, how to use the javaclient in your own Eclipse java-project. If you are completely new to Eclipse, you should check out the excellent [[http://help.eclipse.org/helios/index.jsp|Helios Documentation]], where you can find an answer on any topic concerning eclipse.
+The following step-by-step guide starts from scratch:
+
+  * Get [[http://www.eclipse.org/|Eclipse]] and the latest [[http://www.oracle.com/technetwork/java/javase/downloads/index.html|JDK]]
+  * Download the latest javaclient-jar-archive from [[http://github.com/downloads/sones/sones-javaclient/sones-javaclient_20101101.jar|Github]]
+  * Open Eclipse and choose your workspace
+  * Create a new java project: Package Explorer -> Right Mouse Button (RMB) -> New -> Java Project 
+  * Choose a name for your project (like "Demo") -> //Finish//
+  {{:connectors:new_step1.jpg|}}
+  * Create a library folder: RMB on your project -> New -> Folder -> Select your project -> Call it "lib" -> //Finish//
+  {{:connectors:new_step2.jpg|}}
+  * Import javaclient.jar: RMB on lib folder -> Import -> General -> File System -> //Next// -> Browse for the folder which contains the jar -> //OK// -> Select the jar -> Finish
+  {{:connectors:new_step3.jpg|}}
+  * Configure Build Path: RMB on your project -> Build Path -> Configure Build Path  
+  * //Libraries//-Tab -> Add JARs -> Navigate to your libraries folder -> Select jar-file
+  {{:connectors:add_library.jpg|}}
+  * Done
+
+[[http://developers.sones.de/wiki/doku.php?id=connectors:javaclient#part_3examples|Part 3]] of this documentation shows you some examples on how to use the client library.
+  
+  
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+ 
+  
+
+
+==== Part 2: Pull the sources and build it on your own ====
+
+If you want to browse the source use this guide to import the javaclient into the Eclipse IDE. There is also a demo-class included, which contains some examples of how to use the javaclient.
+At first there will be explained how to install [[http://www.eclipse.org/egit/|EGit]] in Eclipse and then how to import the javaclient as an existing java-project. EGit is an Eclipse Team provider for the Git version control system.
+
+=== Install EGit ===
+
+If you want to use Eclipse and EGit as Git Team Provider use the following description.
+
+  * If you don't have Eclipse, get it from [[http://www.eclipse.org/|here]]
+  * Open Eclipse and switch to Marketplace: Help -> Eclipse Marketplace
+  * Select "Eclipse Marketplace" -> //Next//
+  * Search for "egit"
+  * Select "EGit - Git Team Provider" -> //Install//
+  * Check all boxes -> //Next//
+  * Accept the license agreement -> //Finish//
+  * Restart Eclipse
+
+=== Configure SSH2 in Eclipse ===
+
+To use Git SSH2 authentication you must add your private key to the Eclipse SSH2 configuration. If you don't have any experience with git and ssh check [[http://help.github.com/working-with-key-passphrases/|this]].
+
+  * In Eclipse: Window -> Preferences -> General -> Network Connections -> SSH2
+  * Add your private key -> //OK//
+{{:connectors:ssh2.jpg|}}
+
+=== Import JavaClient ===
+
+The following description is about cloning the master branch using the Import-Assistant of Eclipse.
+
+  * In Project Explorer: RMB -> Import
+  * Select Git -> Projects from Git 
+  {{:connectors:import_step_1.jpg|}}
+  * //Next//
+  * Select //Clone//
+  * Clone menu
+    * URI: "git@github.com:sones/sones-javaclient.git"
+    * Protocol: ssh
+    * User: git
+    * Password: leave blank
+  {{:connectors:import_step_2.jpg|}}
+  * //Next//
+  * Select "master" -> //Next//
+  {{:connectors:import_step_3.jpg|}}
+  * Select local project directory and the desired branch -> //Next//
+  {{:connectors:import_step_4.jpg|}}
+  * Select repository "sones-javaclient - <your directory>\.git" -> //Next//
+  {{:connectors:import_step_5.jpg|}}
+  * Import Dialog
+    * Method for project creation: Import Existing Project
+    * Method for sharing projects after project creation: Try to share newly created projects automaticall 
+  {{:connectors:import_step_6.jpg|}}
+  * //Next//
+  * Check "sones-javaclient" -> //Finish//
+  {{:connectors:import_step_7.jpg|}}
+  * Done
+  
+
+==== Part 3: Examples ====
+
+This part shows some examples on how to work with the javaclient. The sources also contain a Demo-Class where you can find some more examples. The javadoc is also contained in the sources.
+
+=== Create Instance ===
+
+The following line creates an instance of the javaclient. The first argument identifies the URI where the REST-Service is listening. The second argument is the username and the third the password. This configuration can be used in combination with the example contained in [[http://github.com/sones/sones|sones Open Source Edition]].
+
+<code java>GraphDSJavaClient client = new GraphDSJavaClient(new URI("http://localhost:9975"), "test", "test");</code>
+
+=== Sending a Query ===
+
+To send a query you just have to call the query() method with a GraphQL-Query as string-Parameter, like that:
+
+<code java>QueryResult result = client.query("FROM Tag SELECT *");</code>
+
+or do some inserting:
+
+<code java>QueryResult result = client.query("INSERT INTO Car VALUES (Color = 'black', HP = 42, Weight = 1337)");</code>
+
+The method returns a QueryResult-instance, which contains all necessary data. Check the [[http://developers.sones.de/wiki/doku.php?id=documentation:graphql|GraphQL-Documentation]] to see more GraphQL-Examples.
+
+=== Query Information ===
+
+The QueryResult contains a lot of meta-information, like query-duration or result-type. Check the javadoc of that class to see all methods. Here are just a few examples..
+
+This will print the query duration to the console:
+
+<code java>System.out.println(result.getDuration());</code>
+
+This will tell you if your query was successful or if it failed (ResultType is enum):
+
+<code java>System.out.println(result.getResultType());</code>
+
+=== Errors and Warnings ===
+
+If your query wasn't successful, you can check the Errors and Warnings like that:
+
+<code java>
+for (IWarning warning : myResult.getWarnings()) 
+{
+    System.out.println(String.format("\t%s : %s", new Object[] {warning.getID(), warning.getMessage()}));
+}
+</code>
+
+The output would contain all warnings, where each warning contains an ID and a message. It's the same procedure with errors.
+
+=== Vertices and Edges ===
+
+The queryresult contains a list of vertices and edges. You can iterate through that list like that:
+
+<code java>
+for(IVertex vertex : myResult.getVertices())
+{
+    showVertex(vertex, 1);
+}	
+</code>
+
+In this example we want to traverse through the result graph and print out all information. The showVertex() method could look like this (taken from the demo in the sources):
+
+<code java>
+private static void showVertex(IVertex myVertex, int depth)
+{
+    String tabs = ""; //used for some nice output
+    for(int i = 0; i < depth; i++) tabs += "\t";
+		
+    Edge tmpEdge;
+    ObjectUUID tmpUUID;
+    ObjectRevisionID objectRevisionID;
+
+    //iterate through all attributes of any vertex		
+    for(Map.Entry<String, Object> entry : myVertex.getAttributes().entrySet())									
+    { 
+        if(entry.getValue() instanceof Edge) //we got an edge, follow it
+	{
+		tmpEdge = (Edge) entry.getValue();				
+		System.out.println(tabs + entry.getKey() + " :");
+		for(IVertex targetVertex : tmpEdge.getTargetVertices())
+		{
+                        //follow this edge and go deeper in the dungeon
+			showVertex(targetVertex, depth + 1);
+		}
+	}
+	else if(entry.getValue() instanceof ObjectUUID)
+	{
+		tmpUUID = (ObjectUUID) entry.getValue();				
+		System.out.println(tabs + entry.getKey() + " : " + tmpUUID.toString());
+	}
+	else if(entry.getValue() instanceof ObjectRevisionID)
+	{
+		objectRevisionID = (ObjectRevisionID) entry.getValue();
+		System.out.println(tabs + entry.getKey() + " : " + objectRevisionID.toString());
+	}
+	else
+	{	
+                //display all attributes of that vertex			
+		System.out.println(tabs + entry.getKey() + " : " + entry.getValue());
+	}
+		
+	if(myVertex instanceof VertexWeightedEdges) //weighted edge
+	{			
+		System.out.println(tabs + "VertexWeightedEdges:");
+		System.out.println(tabs + "Weight : " + ((VertexWeightedEdges) myVertex).getWeight());
+		System.out.println(tabs + "TypeName : " + ((VertexWeightedEdges) myVertex).getTypeName());					
+	}
+		
+		
+	if(myVertex instanceof VertexGroup) //grouped vertices (group by)
+	{						
+		int count = 0;
+		
+		for(IVertex groupedVertex : ((VertexGroup) myVertex).getGroupedVertices())
+		{
+			groupedVertex.getAttributeCount();
+			count++;
+		}
+			
+		System.out.println(tabs + "VertexGroup including " +  count + " vertices");
+	}
+}
+</code>
+
+=== Disconnect from DB ===
+
+To close the connection use the disconnect() method:
+
+<code java>client.disconnect();</code>
+
+ 
+   
+ 
+ 
+ 
+ 
+   
+ 
+ 
+ 
+
+ 
+ 
+  
+ 
+ 
+ 
+ 
+ 
+
+ 
+
+

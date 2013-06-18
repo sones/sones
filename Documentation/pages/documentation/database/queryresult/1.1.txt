@@ -1,0 +1,134 @@
+====== Query Result (v1.1) - accessing select results =====
+
+<code sql>FROM User U SELECT U.Name, U.Friends.Name</code>
+Each select will return a QueryResult object instance. This contains a set of SelectionResultSets.
+Each SelectionResultSet will contains a list of DBObjectReadouts - one for each selected object.
+Each DBObjectReadouts will have attributes. You can cast reference attributes like Friends as 'Edge' to access each readout.
+<code sql>QueryResult[0]</code>
+Access the first SelectionResultSet
+<code sql>QueryResult[0][0]</code>
+Access the first object
+<code sql>QueryResult[0][1]["Name"]</code>
+Access the attribute "Name" of the second object
+<code sql>(QueryResult[0][0]["Friends"] as Edge)[0]</code>
+Access the first user object of the friends of the first object
+<code sql>(QueryResult[0][0]["Friends"] as Edge)[0]["Name"]</code>
+Access the attribute "Name" of the first user object of the friends of the first object
+<code sql>((QueryResult[0][0]["Friends"] as Edge)[0]["Friends"] as Edge)[0]["Name"]</code> 
+Access the attribute "Name" of the first user object of the friends of the friends of the first object
+
+
+==== Asterisk on multi types ====
+
+<code sql>FROM User U, Car C SELECT *</code>
+This will create 2 SelectionElementResults. One for U and one for C. Each contains readouts of all DBObjects (this includes unstructured attributes as well) of this type to the defined DEPTH. All reference attributes will be resolved.
+
+==== Asterisk on one type ====
+
+<code sql>FROM User U, Car C SELECT U</code>
+This will create 1 SelectionElementResult - for U. This contains readouts of all DBObjects of User to the defined DEPTH. All reference attributes will be resolved.
+
+==== Single attributes on multi types ====
+
+<code sql>FROM User U, Car C SELECT U.Name, C.Color</code>
+This will create 2 SelectionElementResults. One for U and one for C. Each contains readouts of all DBObjects of this type with the appropriate attribute.
+
+==== Higher level (detour) ====
+
+<code sql>FROM User U, Car C SELECT U.Friends.Name</code>
+<code sql>
+SelectionElementResult[0][0]["Friends", [0]["Name", "firstOfUser1"]]
+                                        [1]["Name", "secondOfUser1"]]
+                                        [2]["Name", "firstOfUser2"]]
+                                        [3]["Name", "firstOfUser3"]]
+</code>
+The first level in the SelectionElementResult will contains only ONE DBObjectReadout with just one Attribute "Friends" and this will contains all Readouts (with one Attribute "Name") of all user DBObjects which  are friend of a nother user.
+
+<code sql>FROM User U, Car C SELECT U.Friends.Friends.Friends.Name</code>
+<code sql>
+SelectionElementResult[0][0]["Friends", ["Friends", ["Friends", [0]["Name", "firstOfUser1"]]
+                                                                [1]["Name", "secondOfUser1"]]
+                                                                [2]["Name", "firstOfUser2"]]
+                                                                [3]["Name", "firstOfUser3"]]
+</code>
+
+==== Lower and Higher level ====
+
+<code sql>FROM User U, Car C SELECT U.Age, U.Friends.Name</code>
+<code sql>
+SelectionElementResult[0][0]["Age", 20]
+                            ["Friends", [0]["Name", "firstOfUser1"]]
+                                        [1]["Name", "secondOfUser1"]]
+                         [1]["Age", 22]
+                            ["Friends", [0]["Name", "firstOfUser2"]]
+                            
+                         [2]["Age", 23]
+                            ["Friends", [0]["Name", "firstOfUser3"]]
+
+</code>
+The SelectionElementResult  will contains for each User DBObject one Readout with Attribute "Name" and "Friends" which will be resolved to the Friends Name.
+
+==== Higher level with DEPTH ====
+
+<code sql>FROM User U, Car C SELECT U.Friends DEPTH 0</code>
+<code sql>
+SelectionElementResult[0][0]["Friends", ]
+                         [1]["Friends", ]
+                         [2]["Friends", ]
+
+</code>
+In this case, we will get for each User an DBReadoutObject with one Attribute "Friends" which is not resolved. In this case, it contains only the UUIDs and the type of the edges.
+
+Any greater DEPTH will resolve the Friends edge.
+
+==== Functions on attributes ====
+All functions are based on an attribute (same like in OOP). Each function implementation (a class which inherit the abstract class ABaseFunction) will have a 
+  * CallingObject: This is the payload of a TypeAttribute. In the below sample it would be a [[documentation:database:edges:edgetypesetofreferences|EdgeTypeSet]].
+  * CallingAttribute: Is the TypeAttribute definition. In the below sample 'Friends'
+  * CallingDBObjectStream: Is the DBObject which called the function. In the below sample each User DBObject which have a Friends Edge.
+
+<code sql>FROM User U SELECT U.Friends.TOP(1) DEPTH 1</code>
+
+The result will have the same format like a usual select without the function. If you want to select a attribute with a funtion AND without than you have to use the AS parameter.
+<code sql>
+SelectionElementResult[0][0]["Friends", ... ]
+</code>
+
+Please keep in mind, that the type in the SelectionElementResult could change with a function like "MAXWEIGHT()".
+<code sql>
+FROM User U SELECT U.Friends.MAXWEIGHT() DEPTH 1
+SelectionElementResult[0][0]["Friends", 5.3]
+</code>
+
+Using the AS will create a quite better result:
+<code sql>
+FROM User U SELECT U.Friends.MAXWEIGHT() as MaxWeight, U.Friends DEPTH 1
+SelectionElementResult[0][0]["MaxWeight", 5.3]
+                            ["Friends", ...]
+</code>
+
+==== Functions without parameters ====
+There are some functions which you can't call from an attribute in a OOP way. This would be for example the "CurrentDate" function. Please keep in mind, that all type independent function will have his own SelectionElementResult!
+
+<code sql>FROM User U SELECT U.Friends, CURRENTDATE() as 'CurrentDate' DEPTH 0</code>
+<code sql>
+SelectionElementResult[0][0]["Friends", ]
+                         [1]["Friends", ]
+                         [2]["Friends", ]
+SelectionElementResult[1][0]["CurrentDate", "2010/04/29"]
+</code>
+
+==== Aggregates ====
+Even if they looks like function they are different with some restrictions. 
+  * They have only one parameter and are called directly.
+  * The parameter must not be an edge or a List/Set of base objects.
+  * Only attributes of the first level are allowed (U.Age is ok but U.Friends.Age will not work)
+  * Like in SQL you need to use a group by clause if you have not aggregated attributes in the select list.
+
+<code sql>FROM User U SELECT MAX(U.Age) as 'MaxAge', U.Name GROUP BY U.Name</code>
+<code sql>
+SelectionElementResult[0][0]["MaxAge", 101]
+                            ["Name", "a name"]
+                         [1]["MaxAge", 107]
+                            ["Name", "another name"]
+</code>

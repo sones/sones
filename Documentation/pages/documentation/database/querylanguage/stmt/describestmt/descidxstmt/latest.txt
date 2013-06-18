@@ -1,0 +1,2 @@
+This statement show all indices and informations about them.
+<code>DESCRIBE INDICES</code>

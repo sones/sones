@@ -1,0 +1,5 @@
+====== Setup, Compiling and Running GraphDB using Mono ======
+
+  * On any non Windows platform a .NET runtime is available with the project "MONO". Please visit the projects website to see how to install Mono (version 2.8 or later) on your Linux distribution:
+    * http://www.go-mono.com/mono-downloads/download.html
+  * After you installed Mono on your machine follow the [[:Installation:Mono:Linux|instructions how to download and compile GraphDB on your Machine]]

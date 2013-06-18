@@ -1,0 +1,41 @@
+===== Settings for the database =====
+
+Settings for the database take effect on all sessions and user defined types and his attributes. For example if you set the depth for a query then all querys in all sessions have the same depth. 
+The following example set the depth for all requests.
+
+
+===== Syntax =====
+
+SETTING DB [[documentation:database:querylanguage:stmt:settingstmt:settingmanipulation:latest|SETTINGMANIPULATION]]
+
+===== Examples =====
+
+===== Set a database setting =====
+
+This statement set the depth for request to the level 2.
+
+<code sql>
+SETTING DB SET('DEPTH'=2)
+</code>
+
+==== Return on success ====
+
+  * The scope of the setting (DB)
+  * The setting itself and its value
+
+===== Get a database setting =====
+If you want to know the value for an setting then you will get it over the following query.
+
+<code sql>
+SETTING DB GET('DEPTH')
+</code>
+
+===== Remove a database setting =====
+
+A setting can be removed by the following statement.
+
+<code sql>
+SETTING DB REMOVE('DEPTH')
+</code>
+
+Then the setting is set to the default value.

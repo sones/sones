@@ -1,0 +1,523 @@
+====== GraphML ======
+
+==== General ====
+
+GraphML is a comprehensive and easy-to-use file format for graphs. It consists of a language core to describe the structural properties of a graph and a flexible extension mechanism to add application-specific data. Its main features include support of
+
+  * directed, undirected, and mixed graphs,
+  * hypergraphs,
+  * hierarchical graphs,
+  * graphical representations,
+  * references to external data,
+  * application-specific attribute data, and
+  * light-weight parsers.
+
+Unlike many other file formats for graphs, GraphML does not use a custom syntax. Instead, it is based on XML and hence ideally suited as a common denominator for all kinds of services generating, archiving, or processing graphs.
+(from: [[http://graphml.graphdrawing.org/]])
+
+==== Current support ====
+
+The sones GraphDB currently supports reading / parsing GraphML files with the following features
+
+  * custom attribute definition
+  * vertex parsing
+  * edge parsing
+  * vertex attribute parsing
+ 
+==== Planned support ==== 
+
+In a later version of the GraphML Import the following features will be supported
+
+  * export to graphml
+  * hyperedges
+  * nested graphs
+  * graph meta
+  * xml header stuff
+  * ports
+  * extends
+
+==== Usage ====
+
+=== VertexType Definition ===
+
+
+GraphMLImport creates a new VertexType while inserting the data. The name of the VertexType can be defined via C# API or by GQL Options:
+
+C#
+<code csharp>
+var importer = new GraphMLImport();
+			
+var options = new Dictionary<string, string>();
+options.Add(GraphMLImport.PARAM_VERTEXTYPENAME, "User");
+options.Add(GraphMLImport.PARAM_EDGENAME, "FriendOf");
+			
+importer.Import(@"file://Testgraph.graphml",
+        _GraphDB,
+        _GraphQL,
+        _SecurityToken,
+        _TransactionToken,
+	1U,
+	null,
+	null,
+	null,
+	VerbosityTypes.Silent,
+	options);
+</code>
+
+GQL
+<code sql>
+IMPORT FROM 'file://futurama.graphml' FORMAT graphml OPTIONS(VertexTypeName='User', EdgeName="FriendOf")
+</code>
+
+**Vertex Properties**
+
+In both cases the VertexType **User** and an Hyperedge **FriendOf** will be created. To define custom properties for the VertexType or define a weighted edge, you can do it using the **<key>**-tag in GraphML:
+
+<code xml>
+<key id="Name" for="node" attr.name="Name" attr.type="string"/>
+<key id="Age" for="node" attr.name="Age" attr.type="int"/>
+</code>
+
+The above definitions create two properties for the VertexType User: **Name** and **Age**. You can use any data type supported by GraphML:
+
+  * string
+  * int (which is internally handled as Int32)
+  * float (which is internally handled as Double)
+  * boolean
+  * long (which is internally handled as Int64)
+  * double
+
+Note, that during the import process an extra property "ID" of type string will be created to store the VertexID which has been defined in GraphML. This is necessary, because internal GraphDB VertexIDs are of type long and the ID in GraphML depends on the output of the generating tool (like igraph in R) and isn't usually a long-value.
+
+**Weighted Edges**
+
+The edge is declared as **weighted** per default. If you don't provide any weights in your GraphML-File, the default weight will be used (which is acually 1.0). To define a weight, you have to declare an attribute for the edge which MUST have the name "weight":
+
+<code xml>
+<key id="weight" for="edge" attr.name="weight" attr.type="float"/>
+</code>
+
+=== Vertex Data ===
+
+A vertex in GraphML can look like the following example:
+
+<code xml>
+<node id="100001.000000">
+        <data key="Name">Fry</data>
+	<data key="Age">22</data>	
+        <data key="Weight">70.8</data>
+	<data key="IsAlien">false</data>
+	<data key="JustAnotherLongValue">1234567890</data>
+	<data key="JustAnotherDoubleValue">0</data>						
+</node>
+</code>
+
+All properties have been defined before. This definition creates a vertex of VertexType User with the given properties. The ID //100001.000000// is stored in the property **ID**, which stores values of type String.
+
+=== Edge Data ===
+
+Currently, edges only support the Weight-property. To define a weighed edge you can do it like in the following example:
+
+<code xml>
+<edge id="e0" source="100001.000000" target="100002.000000">
+	<data key="weight">1.25</data>
+</edge>
+</code>
+
+The above definition creates an edge with source VertexID //100001.000000// and target VertexID //100002.000000//. The edge weight value is 1.25. The edge id is currently NOT considered.
+
+=== Import ===
+
+As told in the previous chapters, you can use the GQL to import a GraphML File. The location can be file or web based. In case of file based locations, the path can be either absolute or relative in the specific file system.
+
+Import from file using relative path:
+
+<code sql>
+IMPORT FROM 'file://futurama.graphml' FORMAT graphml OPTIONS(VertexTypeName='User', EdgeName="FriendOf")
+</code>
+
+Import from file using absolute path:
+
+<code sql>
+IMPORT FROM 'file:///home/user/graphs/futurama.graphml' FORMAT graphml OPTIONS(VertexTypeName='User', EdgeName="FriendOf")
+</code>
+
+Import from web source:
+
+<code sql>
+IMPORT FROM 'http://www.example.com/futurama.graphml' FORMAT graphml OPTIONS(VertexTypeName='User', EdgeName="FriendOf")
+</code>
+
+In all cases the VertexType will be created during the insert, it MUST not exist before. If something goes wrong during the import, the created VertexType will be deleted and an appropriate message tries to tell you what the error was.
+==== Examples ====
+
+The following chapter show some examples for typical GraphML files.
+
+**Small-World example without custom attributes**
+
+The following is a simple graph without any extra properties or edge weights.
+
+<code xml>
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+<graph id="G" edgedefault="directed">
+       <node id="0">
+       </node>
+       <node id="1">
+       </node>
+       <node id="2">
+       </node>
+       <node id="3">
+       </node>
+       <node id="4">
+       </node>
+       <node id="5">
+       </node>
+       <node id="6">
+       </node>
+       <node id="7">
+       </node>
+       <node id="8">
+       </node>
+       <node id="9">
+       </node>
+       <node id="10">
+       </node>
+       <node id="11">
+       </node>
+       <node id="12">
+       </node>
+       <node id="13">
+       </node>
+       <node id="14">
+       </node>
+       <node id="15">
+       </node>
+       <node id="16">
+       </node>
+       <node id="17">
+       </node>
+       <node id="18">
+       </node>
+       <node id="19">
+       </node>       
+       <edge source="0" target="1"></edge>
+	   <edge source="0" target="2"></edge>
+	   <edge source="1" target="2"></edge>
+	   <edge source="1" target="8"></edge>
+	   <edge source="2" target="3"></edge>
+	   <edge source="2" target="4"></edge>
+	   <edge source="3" target="4"></edge>
+	   <edge source="3" target="5"></edge>
+	   <edge source="4" target="5"></edge>
+	   <edge source="4" target="6"></edge>
+	   <edge source="5" target="6"></edge>
+	   <edge source="5" target="7"></edge>
+	   <edge source="6" target="13"></edge>
+	   <edge source="6" target="8"></edge>
+	   <edge source="7" target="8"></edge>
+	   <edge source="7" target="9"></edge>
+	   <edge source="8" target="9"></edge>
+	   <edge source="8" target="10"></edge>
+	   <edge source="9" target="10"></edge>
+	   <edge source="9" target="11"></edge>
+	   <edge source="10" target="11"></edge>
+	   <edge source="10" target="12"></edge>
+	   <edge source="11" target="12"></edge>
+	   <edge source="11" target="13"></edge>
+	   <edge source="12" target="13"></edge>
+	   <edge source="12" target="14"></edge>
+	   <edge source="13" target="2"></edge>
+	   <edge source="13" target="15"></edge>
+	   <edge source="14" target="15"></edge>
+	   <edge source="14" target="16"></edge>
+	   <edge source="15" target="16"></edge>
+	   <edge source="15" target="17"></edge>
+	   <edge source="16" target="17"></edge>
+	   <edge source="16" target="18"></edge>
+	   <edge source="17" target="18"></edge>
+	   <edge source="17" target="12"></edge>
+	   <edge source="18" target="19"></edge>
+	   <edge source="18" target="0"></edge>
+	   <edge source="19" target="0"></edge>
+	   <edge source="19" target="1"></edge>	   
+</graph>
+</graphml>
+</code>
+
+**Small-World example with custom attributes**
+
+A graph with some vertex properties but no edge weights.
+
+<code xml>
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+<key id="name" for="node" attr.name="name" attr.type="string">
+</key>
+<key id="age" for="node" attr.name="age" attr.type="int">
+</key>
+<graph id="G" edgedefault="directed">
+       <node id="0">
+			<data key="name">Alice</data>
+			<data key="age">23</data>
+       </node>
+       <node id="1">
+			<data key="name">Bob</data>
+			<data key="age">12</data>
+       </node>
+       <node id="2">
+			<data key="name">Eve</data>
+			<data key="age">37</data>
+       </node>
+       <node id="3">
+			<data key="name">Carol</data>
+			<data key="age">42</data>	   
+       </node>
+       <node id="4">
+			<data key="name">John</data>
+			<data key="age">22</data>
+       </node>
+       <node id="5">
+			<data key="name">Dave</data>
+			<data key="age">65</data>	
+       </node>
+       <node id="6">
+			<data key="name">Paul</data>
+			<data key="age">43</data>		   
+       </node>
+       <node id="7">
+			<data key="name">Peter</data>
+			<data key="age">5</data>	
+       </node>
+       <node id="8">
+			<data key="name">Dave</data>
+			<data key="age">55</data>
+       </node>
+       <node id="9">
+			<data key="name">Barack</data>
+			<data key="age">29</data>	
+       </node>
+       <edge source="0" target="1">
+       </edge>
+       <edge source="0" target="8">
+       </edge>
+       <edge source="0" target="3">
+       </edge>
+       <edge source="0" target="9">
+       </edge>
+       <edge source="1" target="0">
+       </edge>
+       <edge source="1" target="2">
+       </edge>
+       <edge source="1" target="9">
+       </edge>
+       <edge source="1" target="4">
+       </edge>
+       <edge source="1" target="7">
+       </edge>
+       <edge source="2" target="1">
+       </edge>
+       <edge source="2" target="3">
+       </edge>
+       <edge source="2" target="8">
+       </edge>
+       <edge source="2" target="9">
+       </edge>
+       <edge source="3" target="2">
+       </edge>
+       <edge source="3" target="1">
+       </edge>
+       <edge source="3" target="6">
+       </edge>
+       <edge source="3" target="0">
+       </edge>
+       <edge source="4" target="3">
+       </edge>
+       <edge source="4" target="2">
+       </edge>
+       <edge source="4" target="5">
+       </edge>
+       <edge source="4" target="0">
+       </edge>
+       <edge source="4" target="8">
+       </edge>
+       <edge source="5" target="6">
+       </edge>
+       <edge source="5" target="0">
+       </edge>
+       <edge source="5" target="2">
+       </edge>
+       <edge source="5" target="3">
+       </edge>
+       <edge source="5" target="7">
+       </edge>
+       <edge source="6" target="5">
+       </edge>
+       <edge source="6" target="7">
+       </edge>
+       <edge source="6" target="1">
+       </edge>
+       <edge source="6" target="2">
+       </edge>
+       <edge source="6" target="8">
+       </edge>
+       <edge source="6" target="9">
+       </edge>
+       <edge source="6" target="4">
+       </edge>
+       <edge source="7" target="6">
+       </edge>
+       <edge source="7" target="8">
+       </edge>
+       <edge source="7" target="2">
+       </edge>
+       <edge source="7" target="9">
+       </edge>
+       <edge source="7" target="0">
+       </edge>
+       <edge source="7" target="1">
+       </edge>
+       <edge source="8" target="7">
+       </edge>
+       <edge source="8" target="3">
+       </edge>
+       <edge source="8" target="4">
+       </edge>
+       <edge source="8" target="5">
+       </edge>
+       <edge source="8" target="0">
+       </edge>
+       <edge source="8" target="1">
+       </edge>
+       <edge source="9" target="8">
+       </edge>
+       <edge source="9" target="4">
+       </edge>
+       <edge source="9" target="3">
+       </edge>
+       <edge source="9" target="5">
+       </edge>
+       <edge source="9" target="6">
+       </edge>
+</graph>
+</graphml>
+</code>
+
+**Futurama full featured Graph**
+
+A full featured graph which uses all possible property types for vertices and weighted edges.
+
+<code xml>
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<key id="Name" for="node" attr.name="Name" attr.type="string"/>
+	<key id="Alter" for="node" attr.name="Alter" attr.type="int"/>
+	<key id="Gewicht" for="node" attr.name="Gewicht" attr.type="float"/>
+	<key id="IsAlien" for="node" attr.name="IsAlien" attr.type="boolean"/>	
+	<key id="JustAnotherLongValue" for="node" attr.name="JustAnotherLongValue" attr.type="long"/>	
+	<key id="JustAnotherDoubleValue" for="node" attr.name="JustAnotherDoubleValue" attr.type="double"/>	
+	<key id="weight" for="edge" attr.name="weight" attr.type="float"/>
+	<graph edgedefault="directed">
+		<node id="100001.000000">
+			<data key="Name">Fry</data>
+			<data key="Alter">22</data>	
+			<data key="Gewicht">70.8</data>
+			<data key="IsAlien">false</data>
+			<data key="JustAnotherLongValue">1234567890</data>
+			<data key="JustAnotherDoubleValue">0</data>						
+		</node>
+		<node id="100002.000000">
+			<data key="Name">Lila</data>
+			<data key="Alter">22</data>						
+			<data key="Gewicht">65.0</data>
+			<data key="IsAlien">false</data>
+			<data key="JustAnotherLongValue">1234567890</data>
+			<data key="JustAnotherDoubleValue">1200</data>			
+		</node>
+		<node id="100003.000000">
+			<data key="Name">Bender</data>
+			<data key="Alter">-300</data>
+			<data key="Gewicht">1337</data>
+			<data key="IsAlien">false</data>
+			<data key="JustAnotherLongValue">-1234567890</data>
+			<data key="JustAnotherDoubleValue">-13.37</data>						
+		</node>
+		<node id="1234">
+			<data key="Name">Farnsworth</data>
+			<data key="Alter">129</data>
+			<data key="Gewicht">24.75</data>
+			<data key="IsAlien">false</data>
+			<data key="JustAnotherLongValue">1234567890</data>			
+			<data key="JustAnotherDoubleValue">123.456</data>			
+		</node>
+		<node id="100005.000000">
+			<data key="Name">Amy</data>
+			<data key="Alter">17</data>
+			<data key="Gewicht">58.89</data>
+			<data key="IsAlien">true</data>
+			<data key="JustAnotherLongValue">0</data>			
+			<data key="JustAnotherDoubleValue">20</data>			
+		</node>
+		<node id="n1m2o3p5l9t5">
+			<data key="Name">Hermes</data>
+			<data key="Alter">60</data>
+			<data key="Gewicht">89.9</data>
+			<data key="IsAlien">false</data>
+			<data key="JustAnotherLongValue">987654321</data>
+			<data key="JustAnotherDoubleValue">0.1337</data>			
+		</node>
+		<node id="100007.000000">
+			<data key="Name">Zoidberg</data>
+			<data key="Alter">42</data>
+			<data key="Gewicht">124.3</data>
+			<data key="IsAlien">true</data>
+			<data key="JustAnotherLongValue">1234567890</data>
+			<data key="JustAnotherDoubleValue">12.234567890</data>
+		</node>
+		<node id="100008.000000">
+			<data key="Name">Nibbler</data>
+			<data key="Alter">1</data>
+			<data key="Gewicht">2.4</data>
+			<data key="IsAlien">true</data>
+			<data key="JustAnotherLongValue">1234567890</data>
+			<data key="JustAnotherDoubleValue">2.34567890</data>			
+		</node>		
+		<edge id="e0" source="100001.000000" target="100002.000000">
+			<data key="weight">1.000000</data>
+		</edge>
+		<edge id="e1" source="100001.000000" target="1234">
+			<data key="weight">2.000000</data>
+		</edge>		
+		<edge id="e2" source="100002.000000" target="100001.000000">
+			<data key="weight">3.000000</data>
+		</edge>				
+		<edge id="e3" source="100002.000000" target="100008.000000">
+			<data key="weight">-1.25</data>			
+		</edge>						
+		<edge id="e4" source="100002.000000" target="n1m2o3p5l9t5">
+			<data key="weight">1.500000</data>
+		</edge>																
+		<edge id="e5" source="1234" target="n1m2o3p5l9t5">
+			<data key="weight">0</data>
+		</edge>								
+		<edge id="e6" source="100007.000000" target="100002.000000">
+			<data key="weight">0.750000</data>
+		</edge>										
+		<edge id="e7" source="100007.000000" target="100001.000000">
+			<data key="weight">2.010000</data>
+		</edge>												
+	</graph>
+</graphml>
+</code>
+
+==== More Sample Graphs ====
+
+The following links guide to some resources containing more sample graph data stored in GraphML:
+
+  * [[http://snap.stanford.edu/data/|Stanford Large Network Dataset Collection]]
+
+To create you own graphs, you can use p.e. the [[http://igraph.sourceforge.net/|igraph]] Library in [[http://www.r-project.org/|R Project]].

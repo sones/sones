@@ -1,0 +1,49 @@
+====== GreenCouch ======
+
+[[connectors:greencouch|back]]
+
+===== Working with Attachments =====
+
+==== Store an attachment ====
+**CouchDB REST**
+<code>curl -X PUT http://127.0.0.1:5984/contacts/6e1295ed6c29495e54cc05947f18c8af/artwork.jpg --data-binary @artwork.jpg -H "Content-Type: image/jpg"</code>
+<code>curl -X PUT http://127.0.0.1:5984/contacts/_AutoUUID/artwork.jpg --data-binary @artwork.jpg -H "Content-Type: image/jpg" <<<--- Sones extension!</code>
+**GraphDS**
+<code>_GraphDS.StoreFileObject(new ObjectLocation("/contacts/Objects/6e1295ed6c29495e54cc05947f18c8af"), "artwork.jpg", "image/jpg", null)</code>
+<code>_GraphDS.StoreFileObject(new ObjectLocation("/contacts/Objects", ObjectUUID.newUUID.toString()), "artwork.jpg", "image/jpg", null)</code>
+**Output**
+<code>
+HTTP/1.1 201 Created
+Location: http://127.0.0.1:5984/contacts/6e1295ed6c29495e54cc05947f18c8af
+Etag: "2-2739352689"
+{"ok":true,"id":"6e1295ed6c29495e54cc05947f18c8af","rev":"2-2739352689"}
+</code>
+**Error**
+<code>
+{"error":"conflict","reason":"Document update conflict."}
+</code>
+
+==== Display attachment metadata ====
+**CouchDB REST** <code>curl http://127.0.0.1:5984/albums/6e1295ed6c29495e54cc05947f18c8af</code>
+
+**Output**
+<code>
+{"_id":"6e1295ed6c29495e54cc05947f18c8af","_rev":"3-131533518","Name":"Alice", "EMail":"alice@schneier.com","_attachments":{"artwork.jpg":{"stub":true,"content_type":"image/jpg","length":52450}}}
+</code>
+
+==== Display attachment inline ====
+**CouchDB REST** <code>curl http://127.0.0.1:5984/albums/6e1295ed6c29495e54cc05947f18c8af?attachments=true</code>
+
+**Output**
+<code>
+{"_id":"6e1295ed6c29495e54cc05947f18c8af","_rev":"3-131533518","Name":"Alice", "EMail":"alice@schneier.com","_attachments":{"artwork.jpg":base64[...]}}
+</code>
+
+
+==== Get an attachment ====
+**CouchDB REST** <code>curl http://127.0.0.1:5984/albums/6e1295ed6c29495e54cc05947f18c8af/artwork.jpg</code>
+
+**Output**
+<code>
+{"_id":"6e1295ed6c29495e54cc05947f18c8af","_rev":"3-131533518","Name":"Alice", "EMail":"alice@schneier.com","_attachments":{"artwork.jpg":{"stub":true,"content_type":"image/jpg","length":52450}}}
+</code>

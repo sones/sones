@@ -1,0 +1,8 @@
+====== Options tag ======
+
+===== Description =====
+Contains options for the import. Reserved for later use.
+
+|**Parent tags:  **| [[importexport:xmlbulkimport:xmltags:BulkImport|BulkImport]] |
+|**Children tags:**| No children. |
+|**Attributes:   **| No attributes. |

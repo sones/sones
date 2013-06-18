@@ -1,0 +1,8 @@
+====== GraphDS WebDAV Connector ======
+
+If you have any issues connecting to the WebDAV Server using the Windows Vista or Windows 7 Explorer ("Map network drive" feature) please change or add following registry setting:
+
+**HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WebClient\Parameters** DWORD (32-bit) value "//BasicAuthLevel//" = "//2//"
+
+
+[[:connectors|back]]

@@ -1,0 +1,31 @@
+====== Aggregates ======
+Aggregates are functions which works on the result set. That means, that the whole result is aggregated in opposit to a function which works on each single result.
+
+===== Restrictions =====
+There are some restrictions for aggregates.
+  * they works only on single attributes like ''User.Age'' eg: ''AVG(User.Age)''
+  * only level 0 attributes are currently allowed, aggregates like ''AVG(User.Friends.Age)'' are not allowed
+  * aggregates on list attributes are treated as [[documentation:database:functions|functions]] e.g. ''COUNT(User.Friends)'' is a [[documentation:database:functions|function]] and force a different syntax
+  * each selected attribute must be aggregated or grouped if at least one attribute is aggregated or grouped
+
+===== Current aggregates =====
+Currently provided aggregates:
+
+==== Avg ====
+The AVG aggregate returns the average value of a numeric column or any user defined type.
+<code>FROM User u SELECT AVG(u.Age)</code>
+==== Count ====
+The COUNT aggregate returns the number of values (NULL values will not be counted) of the specified column.
+<code>FROM User u SELECT COUNT(u.Age)</code>
+==== Max ====
+The MAX aggregate returns the largest value of the selected column.
+<code>FROM User u SELECT MAX(u.Age)</code>
+==== Min ====
+The MAX aggregate returns the smallest value of the selected column.
+<code>FROM User u SELECT MIN(u.Age)</code>
+==== Sum ====
+The SUM() function returns the total sum of a numeric column or any user defined type.
+<code>FROM User u SELECT SUM(u.Age)</code>
+
+===== Userdefined aggregates =====
+You can create your own aggregates by creating a public class which derives the //ABaseAggregate// class. All classes marked as private won't be added to the Database as aggregate. 

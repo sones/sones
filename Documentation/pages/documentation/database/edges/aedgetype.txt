@@ -1,0 +1,17 @@
+====== AEgdeType ======
+
+This is the base abstract class of all abstract EdgeTypes and must **NOT** be used for a [[documentation:database:edges:latest|EdgeType]] implementation. It defines some properties and methods which has to be implemented.
+===== Properties =====
+
+<code csharp>String EdgeTypeName</code> 
+This is the name of the Edge. This is exactly that name you would use for the EdgeType definition in the query language
+<code>EdgeTypeUUID EdgyTypeUUID</code> 
+This is a unique identifier to identify the [[documentation:database:edges:latest|EdgeType]] after a Database restart.
+
+===== Methods =====
+<code csharp>void ApplyParams(params EdgeTypeParamNode[] myParams)</code>
+At the time of the creation of a new [[documentation:database:edges:latest|EdgeType]] attribute this method will be invoked. You can put in here any logic you need to initially create a EdgeType. The dynamic params edfinition allows you to pass any kind and number of [[documentation:database:edges:edgetypeparam|EdgeTypeParams]].
+
+<code csharp>AEdgeType GetNewInstance()</code>
+This method must return a brand new instance of this [[documentation:database:edges:latest|EdgeType]] including all settings and definitions which are made to this EdgeType during the runtime **EXCEPT** the edges itself (the content)!
+

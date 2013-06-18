@@ -1,0 +1,24 @@
+====== AListEdgeType ======
+
+This is the base abstract class of all abstract ListEdgeTypes and must **NOT** be used for a [[documentation:database:edges:latest|EdgeType]] implementation. It defines some properties and methods which has to be implemented.
+
+<code csharp>UInt64 Count()</code>
+Counts all elements of the edge.
+
+<code csharp>IEnumerable GetAll()</code>
+Returns all elements of the edge. This is the edge destination as well as the user defined information.
+
+<code csharp>IEnumerable GetTop(UInt64 myNumOfEntries)</code>
+Returns the top ''myNumOfEntries'' elements of the edge. This is the edge destination as well as the user defined information.
+
+<code csharp>void UnionWith(AEdgeType myAListEdgeType)</code>
+This merge the current EdgeType with another EdgeType. Make sure, that you work on the same EdgeType implementation.
+
+<code csharp>void Distinction()</code>
+This will remove all duplicate entries - if neccessary.
+
+<code csharp>void Clear()</code>
+This will clean up all entries.
+
+<code csharp>IEnumerator GetEnumerator()</code>
+The method defined by the ''IEnumerable'' interface

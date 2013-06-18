@@ -1,0 +1,9 @@
+====== Binary expression ======
+
+A binary expression is a calculation involving two operands.
+
+===== Syntax =====
+
+BINARYEXPRESSION = [[documentation:database:querylanguage:expression|EXPRESSION]] [[documentation:database:querylanguage:expression:operator:binop|BINARYOPERATOR]] [[documentation:database:querylanguage:expression|EXPRESSION]]
+
+===== Examples =====

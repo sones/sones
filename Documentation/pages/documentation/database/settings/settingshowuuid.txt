@@ -1,0 +1,19 @@
+===== Setting show UUID =====
+
+This setting show the UUID of an object on select statements.
+
+===== Values =====
+
+The boolean values true or false.
+
+===== Default =====
+
+The default value is set to false.
+
+===== Examples =====
+
+<code sql>
+SETTING SESSION SET('UUID'='true')
+</code>
+
+Show the UUID of an object on an all insert statements in the current session.

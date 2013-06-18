@@ -1,0 +1,191 @@
+
+
+In this chapter we will talk about two versions. The minimal one without any connectors but the opportunity to query the DB using the GraphDS using the C# API and a extended version providing the REST connector.
+
+===== Create an empty console project =====
+At first, you need to create a new console project:
+<code csharp>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace SampleGraphApplication
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+        }
+    }
+}
+</code>
+
+Make sure, that you choose ".Net Framework 4" as the Target Framework from the Project-Application settings!
+
+===== Add GraphDS assembly references and usings =====
+Now you need to add all assembly references to your project (either as project reference or the .dll from a precompiled GraphDS).
+
+==== The minimal version ====
+Add following assemblies to get the minimum version without any connectors but the GraphDS C# API.
+
+  * GraphDB.dll, 
+  * GraphDBAPI.dll, 
+  * GraphDBInterface.dll, 
+  * GraphDSSharp.dll, 
+  * GraphFS.dll, 
+  * GraphFSInterface.dll, 
+  * GraphQL.dll, 
+  * GraphQLImportExport.dll, 
+  * Lib.dll, 
+  * StorageEngines.dll, 
+  * StorageEnginesInterface.dll
+
+To use the GraphDS C# API you need to add following usings:
+<code csharp>
+
+#region GraphDS
+
+using sones.GraphDS.API.CSharp;
+using sones.Lib.ErrorHandling;
+
+#endregion
+
+</code>
+
+==== The extended version with REST support ====
+Add following assemblies for the extended version with REST support:
+
+  * GraphDB.dll, 
+  * GraphDBAPI.dll, 
+  * GraphDBInterface.dll, 
+  * GraphDSREST.dll, 
+  * GraphDSSharp.dll, 
+  * GraphFS.dll, 
+  * GraphFSInterface.dll, 
+  * GraphIO.dll, 
+  * GraphQL.dll, 
+  * GraphQLImportExport.dll, 
+  * JSON_IO.dll, 
+  * Lib.dll, 
+  * Networking.dll, 
+  * Newtonsoft.Json.dll, 
+  * Notifications.dll, 
+  * StorageEngines.dll, 
+  * StorageEnginesInterface.dll
+
+  * System.IdentityModel
+  * System.ServiceModel
+
+For instanciating the GraphDS you need to add following usings:
+<code csharp>
+
+#region GraphDS
+
+using sones.GraphDS.API.CSharp;
+using sones.Lib.ErrorHandling;
+
+#endregion
+
+</code>
+
+To use REST which gives you the opportunity to query the GraphDS using the WebShell you need to add following usings:
+<code csharp>
+
+#region REST
+
+using System.IdentityModel.Selectors;
+using System.IdentityModel.Tokens;
+using System.Net;
+using System.ServiceModel;
+
+using sones.GraphDS.Connectors.REST;
+using sones.Networking.HTTP;
+
+#endregion
+
+</code>
+
+===== Instanciate the GraphDS =====
+To create a GraphDS (and with that the C# API) you need to create a new instance of GraphDSSharp.
+
+<code csharp>
+#region Create or open GraphDS
+
+var _GraphDSSharp = new GraphDSSharp()
+{
+    DatabaseName = "sonesExample",
+    Username = "Dr.Falken",
+    Password = "Joshua",
+};
+
+#endregion
+</code>
+
+The next step is creating a new database. Using the OSE version you will work with a memory only GraphDS - so you won't open an existing one.
+<code csharp>
+#region Create the DataBase
+
+_GraphDSSharp.CreateDatabase(true)
+    .FailedAction(exceptional => { throw new GraphDSSharpException(exceptional.GetIErrorsAsString()); });
+
+#endregion
+</code>
+
+Now you are ready to do your first query using the C# API. If you are not interested in using REST you can proceed with [[quickreference:fiveminuteguide#creating_the_example_graph|Creating the example graph]] by executing the queries directly via the C# API:
+<code csharp>
+var result = _GraphDSSharp.Query("any query string");
+</code>
+
+===== Start REST service =====
+If you want to use the WebShell (provided by the REST service) you need to start the service:
+
+<code csharp>
+#region Start REST service
+
+var _HttpSecurity = new HTTPSecurity()
+{
+    CredentialType = HttpClientCredentialType.Basic,
+    UserNamePasswordValidator = new PassValidator()
+};
+
+// Start a REST service on localhost port 9975
+var _RESTService      = _GraphDSSharp.StartREST(IPAddress.Any, 9975, _HttpSecurity);
+
+#endregion
+</code>
+
+The PassValidator class validates a username and password coming from the basic authentication:
+<code csharp>
+    #region PassValidator
+
+    public class PassValidator : UserNamePasswordValidator
+    {
+        public override void Validate(String myUserName, String myPassword)
+        {
+
+            if (!(myUserName == "test" && myPassword == "test") && !(myUserName == "test2" && myPassword == "test2"))
+            {
+                throw new SecurityTokenException("Unknown Username or Password");
+            }
+
+        }
+    }
+
+    #endregion
+</code>
+
+Now you can access the GraphDS WebShell via REST using [[http://localhost:9975/WebShell]]. Please use the username and password from the "PassValidator" implementation.
+
+**Please note, that starting the rest service is a non-blocking call. So you need to add a Console.ReadKey or some other blocking method call.**
+
+===== Shutdown GraphDS =====
+
+After finished working with the GraphDS you need to shutdown everything using:
+<code csharp>
+#region Shutdown
+
+_GraphDSSharp.Shutdown(false);
+
+#endregion
+</code>

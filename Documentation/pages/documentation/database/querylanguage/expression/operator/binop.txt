@@ -1,0 +1,13 @@
+====== Binary operator ======
+
+  * [[documentation:database:querylanguage:expression:operator:binop:binAddition|+]]
+  * [[documentation:database:querylanguage:expression:operator:binop:binSubtraktion|-]]
+  * [[documentation:database:querylanguage:expression:operator:binop:binMult|*]]
+  * [[documentation:database:querylanguage:expression:operator:binop:binDiv|%]]
+  * [[documentation:database:querylanguage:expression:operator:binop:binEqal|=]]
+  * [[documentation:database:querylanguage:expression:operator:binop:binGreaterThan|>]]
+  * [[documentation:database:querylanguage:expression:operator:binop:binGreaterOrEqal|>=]]
+  * [[documentation:database:querylanguage:expression:operator:binop:binLower|<]]
+  * [[documentation:database:querylanguage:expression:operator:binop:binLowerOrEqual|<=]]
+  * ...
+  * 

@@ -1,0 +1,28 @@
+====== EdgeTypeCounted ======
+
+This [[documentation:database:edges:latest|EdgeType]] implementation of the abstract class [[documentation:database:edges:asingleedgetype|ASingleEdgeType]] was created to count changes on an single reference attribute. In the image below this would be the ''FavouriteUni'' attribute. In detail, this edge just holds one single ObjectUUID which reference a DBObject and for each change of this reference it will add the default count or the passed number.
+
+===== Parameters =====
+The EdgeTypeCounted expect at least one parameter - the type of the counted number. 
+
+**Type:**
+This have to be the __first__ parameter. Currently provided types are
+  * //Integer//
+  * //UnsignedInteger//
+  * //Double//
+
+**Default value:**
+You can pass a default value by which each count should be incremented. The type of the //number_literal// must match the defined type of the first parameter! If there is no default value defined the number 1 will be used.
+<code>DEFAULT=[number_literal]</code>
+
+===== Syntax =====
+In an ''CREATE TYPE'' statement you would use this like following example:
+<code sql>
+CREATE TYPE Student ATTRIBUTES (COUNTED(Double, DEFAULT=2.0)<University> Visit)
+UPDATE Student SET (Visit = REF(Name = 'FU Berlin')) WHERE Name = 'Blue'
+UPDATE Student SET (Visit = REF(Name = 'HSF Bonn'):(1.5)) WHERE Name = 'Blue'
+</code>
+
+The first update will increment the counted value by 2 and the second update by 1.5. An select of the edge will return a value of 3.5.
+
+

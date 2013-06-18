@@ -1,0 +1,36 @@
+====== Availability ======
+
+The functionality described here is **not** available in version 1.1. 
+
+====== UNLINK ======
+
+The unlink command disconnect two nodes.
+
+===== Syntax =====
+
+UNLINK [[documentation:database:querylanguage:typewrapper:latest|type]] ( [[documentation:database:querylanguage:expression|expression]] [, [[documentation:database:querylanguage:expression|expression]] ]) VIA EDGE FROM ( [[documentation:database:querylanguage:expression|expression]] )
+
+UNLINK [[documentation:database:querylanguage:typewrapper:latest|type]] ( [[documentation:database:querylanguage:expression|expression]] [, [[documentation:database:querylanguage:expression|expression]] ]) FROM [[documentation:database:querylanguage:typewrapper:latest|type]] ( [[documentation:database:querylanguage:expression|expression]] ) VIA EDGE
+
+
+===== Examples =====
+
+<code sql>
+UNLINK User(Name = 'Fry') VIA Friends FROM User(Name = 'Amy')
+</code>
+
+Disconnect Fry from Amy over the friends edge. This means Fry is not longer a friend of Amy.
+
+<code sql>
+UNLINK User(Name = 'Fry') FROM User(Name = 'Amy') VIA FRIENDS
+</code>
+
+This example differs with the example above only in the syntax.
+
+There are two styles for the unlink command. The first style is the semantic web style and the second is a human language style.
+
+<code sql>
+UNLINK User(Name = 'Hermes', Name = 'Amy', Name='Farnsworth') VIA Friends FROM User(UserID = 12, UserID = 13, UserID = 14)
+</code>
+
+You can also disconnect one or more sources from one ore more targets. This example unset the friends for the users with the id 12, 13, and 14.

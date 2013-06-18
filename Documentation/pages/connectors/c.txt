@@ -1,0 +1,5 @@
+====== C# Client ======
+
+Currently there is a C# client available with the source code of GraphDB. This can be [[https://github.com/sones/sones|downloaded here.]]
+
+Additionally we currently work on putting the C# client library in it's own project which can be [[https://github.com/sones/sones-csharpclient|accessed here.]]

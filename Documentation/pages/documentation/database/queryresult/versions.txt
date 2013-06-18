@@ -1,0 +1,4 @@
+====== QueryResult versions ======
+
+  * [[documentation:database:queryresult:1.1|QueryResult 1.1]]
+  * [[documentation:database:queryresult:latest|QueryResult latest version]]

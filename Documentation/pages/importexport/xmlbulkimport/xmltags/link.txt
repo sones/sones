@@ -1,0 +1,8 @@
+====== Link tag ======
+
+===== Description =====
+Represents one edge. It is allowed to have multiple [[importexport:xmlbulkimport:xmltags:Link|Link]] tags in one [[importexport:xmlbulkimport:xmltags:MultiLink|MultiLink]] tag but only one in a [[importexport:xmlbulkimport:xmltags:SingleLink|SingleLink]]. The attributes [[importexport:xmlbulkimport:xmlattr:VertexType|VertexType]] and [[importexport:xmlbulkimport:xmlattr:VertexID|VertexID]] references to a vertex that was inserted before the import or anytime during the import.
+
+|**Parent tags:  **| [[importexport:xmlbulkimport:xmltags:MultiLink|MultiLink]], [[importexport:xmlbulkimport:xmltags:SingleLink|SingleLink]] |
+|**Children tags:**| [[importexport:xmlbulkimport:xmltags:SetValue|SetValue]] |
+|**Attributes:   **| [[importexport:xmlbulkimport:xmlattr:VertexType|VertexType]], [[importexport:xmlbulkimport:xmlattr:VertexID|VertexID]] |

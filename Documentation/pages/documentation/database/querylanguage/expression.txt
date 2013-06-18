@@ -1,0 +1,29 @@
+====== Expression ======
+
+An expression is a finite mix of terms or operations.
+
+===== Syntax =====
+
+EXPRESSION = [[documentation:database:querylanguage:expression:term|TERM]] | [[documentation:database:querylanguage:expression:operator:unop|UNARYOPERATION]] | [[documentation:database:querylanguage:expression:operator:binop|BINARYOPERATION]]
+
+===== Examples =====
+
+FROM User U SELECT * WHERE U.Age < 23
+
+FROM User U SELECT * WHERE U.Age / 2 < 42
+
+FROM User U SELECT * WHERE (-U.Age) * -2 < 43
+
+FROM User U SELECT * WHERE U.Name = 'Alice' AND U.Age = 23
+
+FROM User U SELECT * WHERE U.Name = 'Alice' OR U.Age = 23
+
+FROM User U SELECT * WHERE ( U.Name = 'Alice' OR U.Age = 23 ) AND U.Friends.Count() > 10
+
+FROM User U SELECT * WHERE U.Age IN [8, 12, 13, 14]
+
+FROM User U SELECT * WHERE U.Age INRANGE (8, 12]
+
+FROM User U SELECT U.Age, U.Name WHERE ( ( ( U.Friends.Age = 22 OR U.Friends.Friends.Age > 100 ) OR U.Name = 'Alice' ) OR U.Friends.Age = 22 ) OR U.Friends.Friends.Age < 1000
+
+UPDATE User SET(REMOVE FROM Friends (Name = 'Bob')) WHERE Name='Alice'

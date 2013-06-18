@@ -1,0 +1,12 @@
+====== EgdeTypeSetOfReferences ======
+
+This [[documentation:database:edges:latest|EdgeType]] implementation of the abstract class [[documentation:database:edges:asetreferenceedgetype|ASetReferenceEdgeType]] is used for all list reference attributes. In the image below this would be the ''StudyAt'' attribute. In detail, this edge just holds a set of VertexIDs which references Vertices. As the name ''Set'' suggest, each VertexID is unique within a type.
+
+===== Syntax =====
+In an ''CREATE VERTEX TYPE'' statement you would use this like following example:
+<code sql>CREATE VERTEX TYPE Student ATTRIBUTES (Int64 UserID, SET<University> StudyAt)</code>
+
+Any changes to this SET needs to be done by the SETOF parameter.
+<code sql>
+UPDATE User SET (StudyAt = SETOF (UserID = 12, UserID = 13, UserID = 14, UserID = 15, UserID = 16)) WHERE UserID = 17
+</code>

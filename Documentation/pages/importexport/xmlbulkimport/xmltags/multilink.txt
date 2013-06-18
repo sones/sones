@@ -1,0 +1,8 @@
+====== MultiLink tag ======
+
+===== Description =====
+Represents a multi-edge. It contains multiple [[importexport:xmlbulkimport:xmltags:Link|Link]] tags that will be stored under the outgoing edge attribute, that is referenced with [[importexport:xmlbulkimport:xmlattr:AttributeName|AttributeName]].
+
+|**Parent tags:  **| [[importexport:xmlbulkimport:xmltags:Insert|Insert]] |
+|**Children tags:**| [[importexport:xmlbulkimport:xmltags:Link|Link]] |
+|**Attributes:   **| [[importexport:xmlbulkimport:xmlattr:Key|AttributeName]] |

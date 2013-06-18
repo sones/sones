@@ -1,0 +1,2 @@
+moved to [[documentation:database:querylanguage:stmt:insertstmt:latest|insert statement]]
+

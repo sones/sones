@@ -1,0 +1,37 @@
+[[documentation:graphql:gdml|Back to: Graph Data Manipulation Language Overview]]
+
+====== TRUNCATE VERTEX TYPE ======
+The TRUNCATE statement will delete all content of a vertex. This includes the content of the indices as well. This will fail as long as there are some references to this vertex.
+
+===== Syntax =====
+<code sql>
+TRUNCATE VERTEX TYPE <vertex_name>
+</code>
+
+===== QueryResult =====
+The QueryResult of the TRUNCATE VERTEX query will contain
+  * The executed query
+  * The result: Successful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The errors (if result is //Failed//)
+  * An empty result
+
+sample json output:
+<code json>
+{
+  "Query": "TRUNCATE VERTEX TYPE User",
+  "Result": "Successful",
+  "Duration": [
+    249,
+    "ms"
+  ],
+  "Results": []
+}
+</code>
+
+===== Examples =====
+<code sql>
+TRUNCATE VERTEX TYPE User
+</code>
+Deletes all **content** of the vertex "User".
+

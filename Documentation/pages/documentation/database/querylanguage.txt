@@ -1,0 +1,6 @@
+    * Graph Query Language (sones GraphQL)
+      * [[documentation:GraphQL|GraphQL Overview]]
+      * [[documentation:GraphQL:GDDL|Graph Data Definition Language]]
+      * [[documentation:GraphQL:GDML|Graph Data Manipulation Language]]
+      * [[documentation:database:functions|Functions]]
+      * [[documentation:database:aggregates|Aggregates]]

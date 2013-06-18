@@ -1,0 +1,115 @@
+[[documentation:graphql:gddl|Back to: Graph Data Definition Language Overview]]
+
+====== CREATE VERTEX TYPE ======
+
+Vertex is a term for an Object in an Graph. You can find more information about Vertex and Graphs in section [[documentation:datamodel:graph|Graph Model]].
+
+The CREATE VERTEX TYPE statement creates a new database vertex which can consist of various attributes. Additionally it is possible to tag a vertex as abstract or let it inherit from any other user defined vertex.
+
+===== Syntax =====
+
+CREATE [ ABSTRACT ] VERTEX TYPE [[documentation:database:querylanguage:vertexdefinition:latest|VertexTypePredefinition]]
+
+  * ABSTRACT: you cannot create any instance of this vertex (no [[documentation:database:querylanguage:stmt:insertstmt:latest|INSERT]] allowed)
+
+===== QueryResult =====
+The QueryResult of the CREATE VERTEX TYPE query will contain
+  * The executed query
+  * The result: Successful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The errors (if result is //Failed//)
+  * The results containing
+    * Properties
+    * Edges
+    
+
+sample json output:
+<code json>
+{
+  "Query": "CREATE VERTEX TYPE UserProfile",
+  "Result": "Successful",
+  "Duration": [
+    389,
+    "ms"
+  ],
+  "Results": [
+    [
+      {
+        "Properties": {
+          "VertexType": "UserProfile",
+          "VertexTypeID": "-9223372036854775797"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ]
+  ]
+}
+</code>
+
+===== Examples =====
+
+==== Creating a vertex type ====
+
+CREATE VERTEX TYPE User
+
+Creates a vertex User without any attributes but the [[documentation:datamodell:specialproperties|special properties]].
+
+----
+
+CREATE VERTEX TYPE User ATTRIBUTES ( String Name, Int64 Age, LIST<Double> FavouriteNumbers, SET<User> Friends )
+
+Creates a vertex User with the attributes Name of vertex String, Age of vertex Int64, a list of Double values and a set of User objects called Friends. The last one is interesting because it is possible to create a vertex that references itself within the ATTRIBUTES section.
+
+----
+
+CREATE VERTEX TYPE User ATTRIBUTES ( String Name='Homer', Int64 Age, LIST<Double> FavouriteNumbers, SET<User> Friends )
+
+Its the same example specified above. With the difference that the attribute Name has an default value 'Homer'. The attribute is now marked as mandatory.
+
+----
+
+CREATE VERTEX TYPE User ATTRIBUTES ( SET<User> Friends ) INCOMINGEDGES ( User.Friends IsFriendOf )
+
+Creates a vertex User with a set of User attribute called Friends. Additionally a [[documentation:database:querylanguage:backwardEdgeAttribute|BackwardEdge attribute]] IsFriendOf is defined which points to the vertex User and the attribute Friends.
+
+----
+
+CREATE VERTEX TYPE User ATTRIBUTES ( String Name ) UNIQUE ( Name ) MANDATORY ( Name )
+
+Create a vertex User that defines a simple String attribute called Name and sets a UNIQUE and MANDATORY constraint on it. This means that every User object must have a Name set and it has to be unique.
+
+----
+
+CREATE VERTEX TYPE User ATTRIBUTES ( String Name, Int64 Age ) INDICES ( Age )
+
+Creates a vertex User defining the two attributes Name and Age. For the last one a default index is created.
+
+----
+
+CREATE VERTEX TYPE User COMMENT = 'Comment for vertex User'
+
+Creates a vertex User defining nothing but a comment.
+
+==== Creating a derived vertex ====
+
+  - CREATE VERTEX TYPE User ATTRIBUTES ( String Name, Int64 Age )
+  - CREATE VERTEX TYPE Employee EXTENDS User ATTRIBUTES ( Double Wage , SET<Employee> Colleagues)
+  - CREATE VERTEX TYPE Chief EXTENDS Employee ATTRIBUTES ( SET<Employee> Worker )
+  - CREATE VERTEX TYPE Worker EXTENDS Employee ATTRIBUTES ( Chief Boss )
+
+In this example a typical OOP scenario has been created. In the first statement some kind of super vertex has been created and in the following ones it gets more and more specific. Afterwards it is possible to [[documentation:database:querylanguage:stmt:insertstmt:latest|insert]] a Worker object and reuse the attributes of User (Name, Age) and Employee (Wage, Colleagues) in addition to Boss. Another advantage of using such a inheritance is the possibility to fill the Colleagues attribute with either Chief or Worker objects.
+
+==== Creating an abstract vertex ====
+
+  - CREATE ABSTRACT VERTEX TYPE Car ATTRIBUTES ( String Name, Int64 HorsePower )
+  - CREATE VERTEX TYPE Volkswagen EXTENDS Car
+  - CREATE VERTEX TYPE Mercedes EXTENDS Car
+
+This example creates an abstract vertex Car. The only difference (within the creation process) to a non abstract vertex is that it is not possible to [[documentation:database:querylanguage:stmt:insert_stmt:2.0|insert]] objects into it. Besides the different [[documentation:database:querylanguage:stmt:insert_stmt:2.0|insert]] behaviour vertexs taged as abstract show another result while [[documentation:database:querylanguage:stmt:select_stmt:2.0|selecting]] them.
+
+===== Return on success =====
+
+  * The name of the VERTEX TYPE that has been created
+  * The [[documentation:datamodell:specialproperties|special properties]]

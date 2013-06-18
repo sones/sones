@@ -1,0 +1,43 @@
+====== Term ======
+
+A term defines an individual element of an [[documentation:database:querylanguage:expression|expression]].
+
+===== Syntax =====
+
+TERM = [[documentation:database:querylanguage:idorfunc|IDorFUNC]] | <string> | <number> | [[documentation:database:aggregates|AGGREGATE]] | [[documentation:database:querylanguage:tuple|TUPLE]] | 
+( [[documentation:database:querylanguage:stmt:selectstmt:versions|SELECT]] ) | 
+TRUE | FALSE
+
+===== Examples =====
+
+//U.Age// = 23
+
+//Friends.Count()// > 10
+
+These two examples represent [[documentation:database:querylanguage:idorfunc|IDorFUNCs]] as terms.
+
+----
+
+Name = //'UserName'//
+
+Age = //10//
+
+A term might also be a simple string or number.
+
+----
+
+HAVING //COUNT(P.Fiends)// >= 2
+
+The aggregate term can be used by the [[documentation:database:querylanguage:stmt:selectstmt:latest|SELECT]] statement within its HAVING section. 
+
+----
+
+//(Age = 10, Name = 'Alice')//
+
+This example illustrates a [[documentation:database:querylanguage:tuple|tuple]] term which consists of two expressions. Often it is used to defined edges to other database objects.
+
+----
+
+//( FROM User SELECT Age )//
+
+This term specifies a partial / nested select. It can be used to define subsets of elements within a [[documentation:database:querylanguage:expression:operators|IN]] / [[documentation:database:querylanguage:expression:operators|NOTIN]] tuple operator.

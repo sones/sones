@@ -1,0 +1,97 @@
+====== GreenCouch ======
+
+[[connectors:greencouch|back]]
+
+===== Working with Documents =====
+
+^ToDo^CouchDB/sones query^Output^Error^^
+|List all documents|curl -X GET http://127.0.0.1:5984/contacts/_all_docs?descending=true\&limit=1|...|
+| ::: |FROM contacts SELECT * ORDER BY UUID DESCENDING LIMIT 1| ::: | ::: |
+|List all documents by last modified|curl -X GET http://127.0.0.1:5984/contacts/_all_docs_by_seq|...|
+| ::: |FROM contacts SELECT * ORDER BY UUID DESCENDING LIMIT 1| ::: | ::: |
+|Get a single UUID|curl -X GET http://127.0.0.1:5984/_uuids|{"uuids":["6e1295ed6c29495e54cc05947f18c8af"]}|...|
+|Get 10 UUIDs|curl -X GET http://127.0.0.1:5984/_uuids?count=10|{"uuids":["6e1295ed6c29495e54cc05947f18c8af", ...]}|...|
+
+
+
+
+==== Insert document ====
+**CouchDB REST**
+<code>
+curl -X PUT http://127.0.0.1:5984/contacts/6e1295ed6c29495e54cc05947f18c8af  -d '{"Name":"Alice", "EMail":"alice@schneier.com"}'
+curl -X PUT http://127.0.0.1:5984/contacts/_AutoUUID  -d '{"Name":"Alice", "EMail":"alice@schneier.com"}' <- sones extension!
+</code>
+**GraphQL**
+<code>
+INSERT INTO contacts VALUES (UUID = '6e1295ed6c29495e54cc05947f18c8af', Name = 'Alice', EMail = 'alice@schneier.com')
+INSERT INTO contacts VALUES (UUID = '" + ObjectUUID.newUUID.toString() + "', Name = 'Alice', EMail = 'alice@schneier.com')
+</code>
+**Output**
+<code>
+HTTP/1.1 201 Created
+Location: http://127.0.0.1:5984/contacts/6e1295ed6c29495e54cc05947f18c8af
+Etag: "1-2248288203"
+{"ok":true,"id":"6e1295ed6c29495e54cc05947f18c8af","rev":"1-2902191555"}
+</code>
+**Error**
+<code>
+{"error":"conflict","reason":"Document update conflict."}
+</code>
+
+
+
+==== Update document ====
+
+Documents may only be updated when a vaild RevisionID was provided!
+
+**CouchDB REST**
+<code>curl -X PUT http://127.0.0.1:5984/contacts/6e1295ed6c29495e54cc05947f18c8af  -d '{"_rev":"1-2902191555","Name":"Bob"}'</code>
+**GraphQL**
+<code>UPDATE contacts SET (Name = 'Bob') WHERE UUID = '6e1295ed6c29495e54cc05947f18c8af'</code>
+**Output**
+<code>
+HTTP/1.1 201 Created
+Location: http://127.0.0.1:5984/contacts/6e1295ed6c29495e54cc05947f18c8af
+Etag: "2-2739352689"
+{"ok":true,"id":"6e1295ed6c29495e54cc05947f18c8af","rev":"2-2739352689"}
+</code>
+**Error**
+<code>
+{"error":"conflict","reason":"Document update conflict."}
+</code>
+
+
+==== Get document ====
+
+**CouchDB REST**
+<code>curl -X GET http://127.0.0.1:5984/contacts/6e1295ed6c29495e54cc05947f18c8af</code>
+**GraphQL**
+<code>FROM contacts SELECT * WHERE UUID = '6e1295ed6c29495e54cc05947f18c8af'</code>
+**Output**
+<code>
+HTTP/1.1 ??? ???
+Etag: "2-2739352689"
+{"_id":"6e1295ed6c29495e54cc05947f18c8af","_rev":"2-2739352689","Name":"Bob", "EMail":"alice@schneier.com"}
+</code>
+
+==== Copy document ====
+
+**CouchDB REST**
+<code>curl -X COPY http://127.0.0.1:5984/contacts/6e1295ed6c29495e54cc05947f18c8af -H "Destination: 0f234867028476t234056e34"</code>
+**GraphQL**
+<code>?</code>
+**Output**
+<code>
+?
+</code>
+
+==== Delete document ====
+
+**CouchDB REST**
+<code>curl -X DELETE http://127.0.0.1:5984/contacts/6e1295ed6c29495e54cc05947f18c8af?rev={$REVID}</code>
+**GraphQL**
+<code>FROM contacts DELETE WHERE UUID = '6e1295ed6c29495e54cc05947f18c8af' AND RevisionID = '$REVID'</code>
+**Output**
+<code>
+?
+</code>

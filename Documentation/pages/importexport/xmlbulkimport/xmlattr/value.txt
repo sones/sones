@@ -1,0 +1,8 @@
+====== AttributeName attribute ======
+
+===== Description =====
+A base-64 encoded String, that represents the value of a property.
+
+|**Containing tags: **| [[importexport:xmlbulkimport:xmltags:SetValue|SetValue]] |
+|**Value Type:      **| [[http://www.w3.org/TR/xmlschema-2/#base64Binary|base64Binary]]|
+

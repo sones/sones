@@ -1,0 +1,22 @@
+====== Ontology type system ======
+
+The type system is designed in an ontological way to be able to create a network of types that are related to each other. This brings the following advantages:
+  - A type can be derived from another one to be able to use its attributes
+  - Attributes of a type are able to point to other types with no respect to their own location within the hierarchy
+  - Hierarchical organization of knowledge
+
+===== Example =====
+
+  Entity ->
+           Abstract ->
+                      Language
+                      GeneralTerm
+                      ...
+           Happening ->
+                       Event
+                       Situation
+                       ...
+           Object->
+                   Agent
+                   Product
+                   ...

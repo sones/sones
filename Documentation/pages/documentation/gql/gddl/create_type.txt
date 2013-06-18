@@ -1,0 +1,28 @@
+====== CREATE TYPE ======
+
+This state­ment cre­ates a sin­gle user-defined type. If you want to add mul­ti­ple types at once please use the CREATE TYPES query. ‘CREATE TYPES’ is manda­tory if you have cir­cu­lar depen­den­cies within your type definitions.
+
+<code>
+CREATE TYPE identifier
+[ EXTENDS identifier ]
+[ ATTRIBUTES ( attr_definition ) ]
+[ BACKWARDEDGES ( backwardedges_list ) ]
+[ UNIQUE ( identifier_list ) ]
+[ INDICES ( IndexOptOnCreateType ) ]
+</code>
+
+  * The key­word ‘EXTENDS’ fol­lowed by any iden­ti­fier can be used to inherit the base type def­i­n­i­tion from another type (called supertype).
+  * Addi­tional attrib­utes can be added using the ‘ATTRIBUTES’ key­word fol­lowed by a brack­eted list of attribute definitions.
+  * Back­wardegeds can be added using the ‘BACKWARDEDGES’ key­word fol­lowed by a brack­eted list of backwardedges.
+  * The key­word ‘UNIQUE’ fol­lowed by a brack­eted list of attrib­utes will define a unique­ness con­straint. Hav­ing a ‘UNIQUE ( Name, Age )’ con­straint will deny an ‘INSERT’ query if the com­bi­na­tion of the attrib­utes ‘Name’ and ‘Age’ is already present within the database.
+
+<code>
+Index­Op­tOn­Cre­ate­Type
+
+( ( identifier [ UNIQUE ] [ EDITION identifier ] [ INDEXTYPE identifier]
+ON index_attribute_list ) [, (...) ] )
+</code>
+
+  * CREATE TYPE User ATTRIBUTES (String Name, Inte­ger Age) INDICES ( (Idx_Name ON Name), (Idx_Age INDEXTYPE HashTable ON Age) )
+  * CREATE TYPE User ATTRIBUTES (String Name, Inte­ger Age) INDICES ( (Idx_Name UNIQUE EDITION myEdi­tion INDEXTYPE HashTable ON Name) )
+  * CREATE TYPE User ATTRIBUTES (String Name, Inte­ger Age) INDICES ( (Name, Age) )

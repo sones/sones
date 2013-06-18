@@ -1,0 +1,17 @@
+This statement starts an transaction.
+
+<code>BEGIN 
+        | [DISTRIBUTED]
+        | [LONG-RUNNING]
+        
+TRANSACTION 
+        | [ISOLATION = {Full | Read | Write}]
+        | [NAME=transact_name] 
+        | [TIMESTAMP=transact_time]
+</code>
+
+A transaction can be started as DISTRIBUTED or LONG-RUNNING or DISTRIBUTED LONG-RUNNING. This parameters are optional. An DISTRIBUTED transaction runs distributed on several systems.
+An LONG-RUNNING runs over a long time and make all changes persistent.
+The ISOLATION set the interaction between transactions. You can set the isolation to Full, Read or Write. If the isolation is set to Full then the transactions can not interact. The isolation Read allow to read the changes from other running transactions. And the isolation Write allow to read the changes from other running transactions and make changes.
+The NAME set an name for the transaction.
+The TIMESTAMP option set the transaction for a time.

@@ -1,0 +1,93 @@
+[[documentation:graphql:gddl|Back to: Graph Data Definition Language Overview]]
+
+====== CREATE EDGE TYPES ======
+
+The //CREATE EDGE TYPES// statement creates multiple database edge types which can consist of various attributes. This statement is useful to create multiple types in one statement, instead of using multiple[[documentation:database:querylanguage:stmt:createedgetype_stmt:2.0|CREATE EDGE TYPE]] statements.
+
+===== Syntax =====
+
+CREATE EDGE TYPES [[documentation:database:querylanguage:edgetypepredefinition:latest|EdgeTypePredefinition]] [, [[documentation:database:querylanguage:vertexdefinition:latest|EdgeTypePredefinition]] ]
+
+===== QueryResult =====
+The QueryResult of the CREATE EDGE TYPES query will contain
+  * The executed query
+  * The result: Successful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The errors (if result is //Failed//)
+  * The results contains **for each vertex**
+    * Properties
+    * Edges
+
+sample json output:
+<code json>
+{
+  "Query": "CREATE EDGE TYPES MyEdge ATTRIBUTES (String Name), Street EXTENDS MyEdge, DEStreet EXTENDS Street"
+  "Result": "Successful",
+  "Duration": [
+    25,
+    "ms"
+  ],
+  "Results": [
+    [
+      {
+        "Properties": {
+          "EdgeType": "MyEdge",
+          "EdgeTypeID": "-9223372036854775808"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ],
+    [
+      {
+        "Properties": {
+          "EdgeType": "Street",
+          "EdgeTypeID": "-9223372036854775807"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ],
+    [
+      {
+        "Properties": {
+          "EdgeType": "DEStreet",
+          "EdgeTypeID": "-9223372036854775806"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ]
+  ]
+}
+</code>
+
+===== Examples =====
+
+==== Creating Edge Types ====
+
+CREATE EDGE TYPES Street
+
+Creates a single type that is called Street and consists of noting but the [[documentation:datamodell:specialproperties|special properties]].
+
+----
+
+CREATE EDGE TYPES MyEdge, Street, DEStreet
+
+Creates the edge types MyEdge, Street and DEStreet analogous to the previous example.
+
+----
+
+CREATE EDGE TYPES MyEdge ATTRIBUTES ( String Name ), Street ATTRIBUTES ( Int64 Distance )
+
+This example creates multiple edge types with corresponding attributes. In contrast it would be possible to execute two [[documentation:database:querylanguage:stmt:createedgetype_stmt:2.0|CREATE EDGE TYPE]] statements.
+
+----
+
+===== Return on success =====
+
+  * The name of the EDGE TYPEs that have been created
+  * The [[documentation:datamodell:specialproperties|special properties]]

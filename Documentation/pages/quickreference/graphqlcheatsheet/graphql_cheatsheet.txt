@@ -1,0 +1,6 @@
+====== GraphQL CheatSheet ======
+
+  * GraphDB 2.0
+    * {{http://github.com/downloads/sones/sones/GQL_cheatsheet_latest.pdf|GraphQL Cheat Sheet latest version}}
+  * for GraphDB 1.1
+    * {{http://github.com/downloads/sones/sones/GQL%20cheatsheet-1.1.pdf|GraphQL Cheat Sheet v1.1}}

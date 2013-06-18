@@ -1,0 +1,42 @@
+====== Index definition ======
+
+The definition of an attribute index during type creation via [[documentation:database:querylanguage:stmt:createvertextype_stmt:2.0|CREATE VERTEX TYPE]] or [[documentation:database:querylanguage:stmt:createvertextypes_stmt:2.0|CREATE VERTEX TYPES]].
+
+===== Syntax =====
+
+[ indexName ] [ EDITION editionName ] [ INDEXTYPE indexTypeName ] ON ATTRIBUTES ( attributeName [, attributeName ] ) 
+[ INDEXTYPE (SingleValueIndex | MultipleValueIndex | SingleValuePersistent | MultipleValuePersistent)
+
+**alternate:**
+
+( attributeName [, attributeName ] )
+
+----
+
+[ indexName ]
+
+The name of the new index. If it is empty a name would be generated.
+
+----
+
+[ EDITION editionName ]
+
+Sets the edition of an index which is used to allow multiple indices on (a) defined attribue(s) with different INDEXTYPES.
+
+----
+
+[ INDEXTYPE indexTypeName ]
+
+Sets the type of the underlying index structure. Possible values are HashTable (default), BPlusTree or any other plug-in index.
+
+===== Example =====
+
+== ALTER VERTEX TYPE ==
+
+ALTER VERTEX TYPE User ADD INDICES <nowiki>((</nowiki>IDX_Name EDITION EDTName INDEXTYPE SingleValueIndex ON ATTRIBUTES Name), (IDX_Age ON ATTRIBUTES User.VertexID))
+
+----
+== CREATE VERTEX TYPE ==
+
+CREATE VERTEX User ATTRIBUTES (String Name, Int64 Age) INDICES ((Idx_Name EDITION SkiplistDings INDEXTYPE SingleValueIndex ON ATTRIBUTES Name), (Idx_Age ON Age), (Name, Age)
+

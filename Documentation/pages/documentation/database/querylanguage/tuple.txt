@@ -1,0 +1,31 @@
+====== Tuple ======
+
+A tuple is an ordered list of expressions surrounded by brackets.
+
+===== Syntax =====
+
+TUPLE = LEFTBRACKETSYMBOL [[documentation:database:querylanguage:expression|EXPRESSION]] [, [[documentation:database:querylanguage:expression|EXPRESSION]] ] RIGHTBRACKETSYMBOL
+
+LEFTBRACKETSYMBOL = ( | [
+
+RIGHTBRACKETSYMBOL = ) | ]
+
+===== Examples =====
+
+INSERT INTO Flower VALUES (Colors = SETOF//(Name = 'red', Name = 'black')//, Name = 'rose')
+
+In this case a tuple is used to define references to other objects. It consists of two [[documentation:database:querylanguage:expression:binexpression|binary expressions]].
+
+----
+
+FROM User SELECT * WHERE Age INRANGE //[17, 22]//
+
+FROM User SELECT * WHERE Age INRANGE //(17, 22]//
+
+A tuple can be used to define an interval for the [[documentation:database:querylanguage:expression:operators|INRANGE]] operator. The first example defines an interval inclusive its lower and upper boundaries. The secord example defines an interval which excludes the lower and includes the upper boundary.
+
+----
+
+FROM User U SELECT * WHERE U.Age NOT_IN //[(FROM User U SELECT U.Age), 14]//
+
+This example illustrates the usage of partial select statemens within a tuple.

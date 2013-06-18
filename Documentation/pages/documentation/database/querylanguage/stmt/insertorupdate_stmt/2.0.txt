@@ -1,0 +1,64 @@
+[[documentation:graphql:gdml|Back to: Graph Data Manipulation Language Overview]]
+
+====== INSERTORUPDATE ======
+
+The INSERTORUPDATE statement updates attributes of database objects. Attributes, that aren't mentioned in the statement aren't changed. If the desired objects don't exist they are inserted with the given attributes. In general it works similar to the [[documentation:database:querylanguage:stmt:insertstmt:latest|INSERT]] statement. The selection of a database object is realized via an optional [[documentation:database:querylanguage:expression|EXPRESSION]] clause. If the selection returns more than one object an error would be returned.
+
+===== Syntax =====
+
+INSERTORUPDATE [[documentation:database:querylanguage:typewrapper:latest|type]] VALUES ( [[documentation:database:querylanguage:attributeassign:latest|attributeAssign]] [, [[documentation:database:querylanguage:attributeassign:latest|attributeAssign]] ] ) [ WHERE [[documentation:database:querylanguage:expression|expression]] ]
+
+===== QueryResult =====
+The QueryResult of the INSERTORUPDATE query will contain
+  * The executed query
+  * The result: Successful | Failed
+  * The duration in ms (the time which needs the query to be executed in the database)
+  * The errors (if result is //Failed//)
+  
+sample json output:
+<code json>
+{
+  "Query": "INSERTORUPDATE UserProfile VALUES (Username = 'User1', Age = 40)",
+  "Result": "Successful",
+  "Duration": [
+    6,
+    "ms"
+  ],
+  "Results": [
+    [
+      {
+        "Properties": {
+          "VertexID": "-9223372036854775807",
+          "VertexTypeID": "-9223372036854775797",
+          "Action": "Inserted"
+        }
+      },
+      {
+        "Edges": []
+      }
+    ]
+  ]
+}</code>
+
+===== Examples =====
+
+INSERTORUPDATE User VALUES( IsInteresting = false )
+
+A new User object is inserted.
+
+----
+
+INSERTORUPDATE User VALUES( IsInteresting = true ) WHERE Age > 20
+
+If there is more than one User object an error would be returned. Otherwise the object would be updated.
+
+----
+
+INSERTORUPDATE User VALUES( Name = 'Horst', Age = 32, UndefinedHorstAttribute = 'Horsts undefined attribute content' ) WHERE Name = 'Horst'
+
+This statement tries to find a User object with Name = 'Horst'. If this object doesn't exist it would be inserted. Otherwise it would be updated.
+
+===== Return on success =====
+
+  * The attributes that have been defined within the VALUES section
+  * The [[documentation:datamodell:specialproperties|special properties]] with their current values

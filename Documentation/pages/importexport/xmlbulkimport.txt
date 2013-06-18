@@ -1,0 +1,101 @@
+====== XmlBulkImport plug-in ======
+
+===== Introduction =====
+
+XmlBulkImport is an import plug-in for the sones GraphDB licensed under [license]. It is designed to speed up the import into a sones GraphDB instance running with the [[documentation:plugins:graphfs:persistency|Enterprise Edition Persistency]] Plug-in, but it also works with any IGraphFS plug-in.
+This page should help understanding the usage of the plug-in and the format of the input xml. 
+Usage
+
+
+===== Important Notes =====
+
+As of the 1st of July sones is providing XmlBulkImport functionality as a plugin module to the freely available Community Edition of the sones GraphDB.
+
+
+===== Prerequisites =====
+
+This is what is needed to get the XMLBulkImport Plug-in running:
+
+  * a runable CommunityEdition later or equal the master version from the 01.06.2011
+  * the XMLBulkImport PlugIn itself
+    * currently not available in the OpenSource Edition, though we are planning to release it as OSS
+    * can be downloaded as a free trial from sones - just [[http://www.sones.com/kontakt|contact us]].
+  * on Microsoft Windows
+    * installed and updated Microsoft .NET 4.0 Framework
+  * on Linux, Mac OS X or any other unixoid operating system
+    * installed Mono Framework version 2.8
+
+===== Getting XMLBulkImport up and running =====
+
+Copy the previously downloaded PlugIn dlls to your application binaries path
+    * XmlBulkImport.dll
+
+After deploying the plug-in you can use it by sending an [[documentation:database:import|Import]] statement. The format name for this plug-in is “FASTIMPORT”. For further information see [[documentation:database:import|Import]] statement.
+
+Currently only local files can be read. This means the URI must start with ‘file:\\’.
+
+===== Behavior =====
+
+At the beginning of the import the vertex types stored in the sones GraphDB are read. The import must match the current database schema. It is planned to allow also DDL in the [[importexport:xmlbulkimport:xmltags:prephase|PrePhase]], but it is not implemented yet.
+The plug-in reads the input source only one time. It validates the xml against the schema during the execution. If an error occurs the plug-in tries to execute as much as possible of the import and logs the erroneous inserts.
+If the error is not manageable the import ends and logs the reason. The previously inserted vertices remain in the database.
+
+The result of the import contains the number of successfully inserted vertices.
+
+===== Input Format =====
+
+The input format is xml and must comply with requirements of this [[http://schema.sones.com/graphds/xmlbulkimport.xsd|schema]]. 
+The schema defines the following types:
+  * [[importexport:xmlbulkimport:xmltags:BulkImport|BulkImport]]
+  * [[importexport:xmlbulkimport:xmltags:Import|Import]]
+  * [[importexport:xmlbulkimport:xmltags:Insert|Insert]]
+  * [[importexport:xmlbulkimport:xmltags:Link|Link]]
+  * [[importexport:xmlbulkimport:xmltags:MultiLink|MultiLink]]
+  * [[importexport:xmlbulkimport:xmltags:Options|Options]]
+  * [[importexport:xmlbulkimport:xmltags:PostPhase|PostPhase]]
+  * [[importexport:xmlbulkimport:xmltags:PrePhase|PrePhase]]
+  * [[importexport:xmlbulkimport:xmltags:SetValue|SetValue]]
+  * [[importexport:xmlbulkimport:xmltags:SingleLink|SingleLink]]
+
+
+The [[importexport:xmlbulkimport:xmltags:BulkImport|BulkImport]] tag is the start tag of the xml tree. 
+
+==== Example ====
+
+This example shows a simple xml tree that imports vertices. The database schema used for this import can be created by the following GraphQL statement 
+
+        CREATE VERTEX TYPE User ATTRIBUTES (String Name, Set<User> Friends, User Father, Set(Weighted)<User> WeigthedFriends)
+
+or the following API calls.
+        coming soon
+
+The xml file may looks like this:
+    <?xml version="1.0" encoding="UTF-8"?>
+    <BulkImport xmlns="http://sones.com/schemas/XMLBulkImport.xsd">
+      <Import>
+        <Insert VertexType="User" VertexID="-9223372036854775808">
+          <SetValue AttributeName="Name" Value="SGFydHdpZw=="/>
+        </Insert>
+        <Insert VertexType="User" VertexID="-9223372036854775807">
+          <SetValue AttributeName="Name" Value="RWxpc2E="/>
+          <MultiLink AttributeName="Friends">
+            <Link VertexType="User" VertexID="-9223372036854775806"/>
+            <Link VertexType="User" VertexID="-9223372036854775808"/>
+          </MultiLink>
+        </Insert>
+        <Insert VertexType="User" VertexID="-9223372036854775806">
+          <SetValue AttributeName="Name" Value="VGltbw=="/>
+          <SingleLink AttributeName="Father">
+            <Link VertexType="User" VertexID="-9223372036854775808"/>
+          </SingleLink>
+          <MultiLink AttributeName="Friends">
+            <Link VertexType="User" VertexID="-9223372036854775807"/>
+          </MultiLink>
+          <MultiLink AttributeName="WeigthedFriends">
+            <Link VertexType="User" VertexID="-9223372036854775807">
+              <SetValue AttributeName="Weight" Value="MS43OTc2OTMxMzQ4NjIzMTU3RSszMDg="/>
+            </Link>
+          </MultiLink>
+        </Insert>
+      </Import>
+    </BulkImport>

@@ -1,0 +1,19 @@
+===== Setting timeout =====
+
+This setting set the timeout value in milliseconds for a select query. If the processing time for a select query is greater than the setting value, than it throws an error.
+
+===== Values =====
+
+All positive numbers starting at 0.
+
+===== Default =====
+
+The default value is set to 300000.
+
+===== Examples =====
+
+<code sql>
+SETTING DB SET('SELECTTIMEOUT'=900000)
+</code>
+
+Set the timeout for a select query to 900000 milliseconds.

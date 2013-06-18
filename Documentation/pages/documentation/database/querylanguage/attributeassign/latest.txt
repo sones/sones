@@ -1,0 +1,20 @@
+====== Attribute assignment ======
+
+===== Syntax =====
+
+[[documentation:database:querylanguage:idnode]] = [[documentation:database:querylanguage:expression|Expression]]
+<nowiki>|</nowiki> [[documentation:database:querylanguage:idnode]] =  //[[documentation:database:querylanguage:singlereference]]//
+<nowiki>|</nowiki> [[documentation:database:querylanguage:idnode]] = //collectionOfDBObjects//
+
+collectionOfDBObjects = SETOF ...
+ <nowiki>|</nowiki> SETOFUUID( [[documentation:database:querylanguage:tuple|tuple]] )
+ <nowiki>|</nowiki> LISTOF ...
+
+
+===== Examples =====
+
+==== SETOFUUID ====
+
+INSERT INTO User VALUES (Name='Carol' LovedSongs = SETOFUUIDS(1, 2, 3, 4, 5))
+
+Will set the edge LovedSongs to the UUIDS of the Songs 1, 2, 3, 4, 5. It won't check whether the Songs really exist with the specified UUIDs. On an select, they will be resolved if they exist. A count and a select of the UUIDs directly will return all values. 

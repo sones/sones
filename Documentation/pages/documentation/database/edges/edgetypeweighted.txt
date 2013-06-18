@@ -1,0 +1,15 @@
+====== EdgeTypeWeighted ======
+
+This [[documentation:database:edges:latest|EdgeType]] implementation of the abstract class [[documentation:database:edges:alistedgetype|AListEdgeType]] was created to realize a weighted graph. The value of the attribute "Weight" is the given argument of an insert or update or the default value (1.0) if the argument is missing.
+
+===== Syntax =====
+In an ''CREATE VERTEX TYPE'' statement you would use this like following example (please take care that the "Weighted" parameter is a DB specific type and therefore case sensitive):
+<code sql>
+CREATE VERTEX TYPE Student ATTRIBUTES (SET<University(Weighted)> Visits)
+INSERT INTO Student VALUES (Name = 'Blue', Visit = SETOF(Name = 'FU Berlin'))
+UPDATE Student SET (Visit = SETOF(Name = 'HSF Bonn':(Weight = 1.5), Name = 'FU Berlin':(Weight = 1.1))) WHERE Name = 'Blue'
+</code>
+
+An select of the edge will return weight of 1.1 for //FU Berlin// and a weight of 1.5 for //HSF Bonn//
+
+

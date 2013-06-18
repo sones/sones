@@ -1,0 +1,84 @@
+====== Graph Algorithms ======
+
+====== Shortest Path - Breath First Search ======
+
+In graph theory, breadth-first search (BFS) is a graph search algorithm that begins at the root node and explores all the neighboring nodes. Then for each of those nearest nodes, it explores their unexplored neighbor nodes, and so on, until it finds the goal. ([[http://en.wikipedia.org/wiki/Breadth-first_search|Wikipedia]])
+
+This algorithm is by default included in the open source version of the sones GraphDB. 
+
+==== PATH ====
+This will start a shortest path algorithm on the database. Currently the Breadth First Search (BFS) or Bidrectional BFS is used to find paths between nodes in an unweighted graph. 
+For each object of the DB (either defined by an optional where clause or for all existing objects) the algorithm will try to find all paths to the target object depending on the parameters.
+Following parameters have to be specified:
+  - The target object (in the he following example a User with "Name" = "Hans"). 
+  - Is the maximum depth of the search.
+  - The maximum length of the path(s).
+  - If this parameter is set to TRUE, the algorithm will look only for the shortest path if FALSE all pathes will be found. 
+  - If this parameter is set to TRUE, all paths will be searched. If both (parameter 4 and 5) set TRUE all shortest paths (all of the same depth) will be searched.
+There is one additional parameter which is optional:
+\\ The last Parameter specifies if the BFS or Bidirectional BFS algorithm will be used for the search. In standard the BFS algorithm will be used.
+
+Example:
+\\ Using the standard BFS
+<code sql>FROM User U SELECT U.Name, U.Friends.PATH(U.Name = 'Hans', 3, 3, true, false) as 'path' WHERE U.Name = 'Bernd'</code>
+Using the bidirectional BFS
+<code sql>FROM User U SELECT U.Name, U.Friends.PATH(U.Name = 'Hans', 3, 3, true, false, true) as 'path' WHERE U.Name = 'Bernd'</code>
+Result:
+  * "Bernd", "path" { "VertexID": "-9223372036854775806", "VertexTypeID": "-9223372036854775797"" }, "path" { "VertexID": "-9223372036854775808", "VertexTypeID": "-9223372036854775797" }
+
+  BFS and Bidrectional BFS is used to find paths between nodes in an unweighted graph.
+  The Bidirectional Breadth First Search starts searching at both ends of the paths, 
+  to reduce data amount.
+  
+  algorithm (abstract):
+  
+       1. start at Node_A, put it into the queue_left
+          start at Node_B, put it into the queue_right
+       2. dequeue the first Node from queue_left and mark it as "visited"
+           if the dequeued node is Node_B
+               one of the shortest paths is found, (search is finished, break)
+           else
+               get all successors of the dequeued node (forward edges)
+               if one of the successors is Node_B
+                   one of the shortest paths is found, (search is finished, break)
+               else
+                   enqueue the successors
+       3. dequeue the first Node from queue_right and mark it as "visited"
+           if the dequeued node is Node_A
+               one of the shortest paths is found, (search is finished, break)
+           else
+               get all predecessors of the dequeued node (backward edges)
+               if one of the predecessors is Node_A
+                   one of the shortest paths is found, (search is finished, break)
+               else
+                   enqueue the predecessors
+       4. Make an intersect of visited nodes (right) and visited nodes (left)
+           if the intersect is not empty
+               found a path
+       5. repeat with step 2
+       6. if the queues are empty or the maximum depth is reached, search is finished and the result will be generated
+       
+  complexity:
+   
+  Worst case O(|V|+|E|), V - node count, E - edge count
+   
+  enhancements:
+  
+  This algorithm can be used to search for one of the shortest, all shortest or all paths up to a given depth and path length.
+  
+  In case of searching only for the shortest, it breaks up when the first match occurs.
+  If all shortest paths are searched and one match occurs, the search on current depth is 
+  finalized.
+  If all paths are requested, it searches until there are no successors or the maximum depth
+  is reached.
+  
+  detail:
+  
+  The Algorithm builds a so called "path-graph" which contains all paths beween two defined nodes.
+  The evaluation of that graph is done via an extra class, called "TargetAnalyzer" (you can find a 
+  documentation how evaluation works at the class).
+  Every Node is represented via an "Node-Object" which has an tuple attribute which makes the node "unique"
+  (we use the "VertexID" and "VertexTypeID" for that), a HashSet of children nodes and a HashSet of parent nodes. 
+  On the left side, every time we acquire the successors of an dequeued node, we attach the dequeued node 
+  as parent to it's successors. On the right side, every time we acquire the predecessor of an dequeued node,
+  we attach the dequeued node as children to it's successor.

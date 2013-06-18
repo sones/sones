@@ -1,0 +1,9 @@
+====== Unary operation ======
+
+An unary operation is an operation with only one operand.
+
+===== Syntax =====
+
+UNARYOPERATION = [[documentation:database:querylanguage:expression:operator:unop|UNARYOPERATOR]] + [[documentation:database:querylanguage:expression:term|TERM]]
+
+===== Examples =====

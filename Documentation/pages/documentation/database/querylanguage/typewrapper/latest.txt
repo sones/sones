@@ -1,0 +1,7 @@
+
+====== Type wrapper ======
+
+This is the vertex type definition. Use either direct or with an reference definition to work on the same vertex type in different meanings.
+
+===== Syntax =====
+<ID> [<REFERENCE>]

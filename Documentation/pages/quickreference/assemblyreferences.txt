@@ -1,0 +1,80 @@
+====== Assembly References ======
+This section should show which assemblies of the sones GraphDB are necessary to create your own project which uses just some specific functionality of the sones GraphDB.
+
+Here you can find two main articles, which show lists of assemblies..
+  - that are needed if you want to work with the sones **GraphDS API**
+  - which are necessary to create a project which just uses the **GraphDSRestClient**, that could easily be integrated into your client server architecture.
+
+Aditionally you find a article which describes the content of each assembly and the contained functionalities.
+===== GraphDS API =====
+Like in the [[tutorials:tagexample|TagExample (C#)]] explained the GraphDS API provides a powerful interface. 
+It allows you to work with the GraphDB and easily connect them with your custom project.
+Of course there are a lot of datastructures and datatypes and furthermore components which are used within the sones GraphDB.
+Because of these elements it is required that the user adds some specific references to the assamblies, which provide these elements.
+
+The following list shows the assemblies which have to be referenced **at least** to use the **GraphDS API**:
+  * Commons
+  * ErrorHandling
+  * GraphQLAggregates
+  * GraphQLFunctions
+  * GraphDBExport
+  * GraphDSPluginManager
+  * GraphDSServer
+  * IGraphDB
+  * IGraphDS
+  * IGraphDSServer
+  * IGraphQL
+  * InMemoryNonRevisioned
+  * IPluginable
+  * ISonesIndex
+  * PluginDefinition
+  * PropertyHyperGraph
+  * SonesGraphDB
+  * SonesGraphDBImport
+  * SonesGraphQueryLanguage
+  * SonesIndices
+
+===== GraphDSClient =====
+This section should show which assemblies of the sones GraphDB are necessary to create a project which is just working with the GraphDSClient.
+
+The following list shows the assemblies which have to be referenced **at least** to use the **GraphDSClient**:
+  * Commons
+  * GraphDSRESTClient
+  * IGraphDB
+  * IGraphDS
+  * IGraphDSClient
+  * IGraphQL
+  * QueryResult
+===== Assembly Background =====
+Here is a short description, why the listed assemblies above are needed.
+
+  * **Commons** -- This Project provides f.e. the functionality for the Security- and TransactionToken.\\
+  * **ErrorHandling** -- Holds the base structure for exceptions created by a sones GraphDB member.\\
+  * **GraphQLAggregates** -- Includes all GraphDB Aggregates like //COUNT//, //MIN// and //MAX//.
+  * **GraphQLFunctions** -- Includes all GraphDB Functions like //CONCAT//, //MAXWEIGHT// and //CURRENTDATE//.
+  * **GraphDBExport** -- This class provides the GraphDB GraphQL exporter.
+  * **GraphDSPluginManager** -- Is needed to load and handle the GraphDS Plug-ins.
+  * **GraphDSRestClient** -- A GraphDS client that communicates via REST.
+  * **GraphDSServer** -- The class which represents the API to pass out the provided API functionality.
+  * **IGraphDB** -- The interface for a GraphDB.
+  * **IGraphDS** -- The interface for a GraphDS.
+  * **IGraphDSClient** -- The interface for all GraphDS clients.
+  * **IGraphDSServer** -- Interface for a GraphDSServer.
+  * **IGraphQL** -- Interface for a GraphQL.
+  * **InMemoryNonRevisioned** -- The class which contains all functionality to create and manage an in memory file system.
+  * **IPluginable** -- The interface for all GraphDB Plug-ins. You can use this Plug-in to write your own Plug-in which could easily be integrated to the GraphDB.
+  * **ISonesIndex** -- Interface for sones indices.
+  * **PluginDefinition** -- Provides the datastructure to define a Plug-in which can be loaded, f.e. in the sones GraphDB constructor or GraphDSServer constructor.
+  * **PropertyHyperGraph** -- Provides the datastructures for all sones GraphDB types like //IVertex//, //ISingleEdge// and //IHyperEdge//.
+  * **SonesGraphDB** -- The main project, which provides all base functions, request structures and holds all manager.
+  * **SonesGraphDBImport** -- The GraphQL importer which is provided by default.
+  * **SonesGraphQueryLanguage** -- This project contains the sones GraphQueryLanguage functionality.
+  * **SonesIndices** -- All provided sones non persistent indices.
+
+  * **Arithmetics** -- Provides the arithmetic functions //ADD//, //SUB//, //DIV// and //MUL// which operate depending on a given type.
+  * **CollectionWrapper** -- Contains wrapper that wraps lists and sets. This data structure is needed, because generic lists do not implement IComparable.
+  * **IGraphDBExport** - The interface for the GraphDB exporter.
+  * **ISonesGQLAggregate** -- The interface for all GraphQL aggregates.
+  * **ISonesGQLFunction** -- The interface for all GraphQL functions.
+  * **ISonesGraphDBImport** -- The interface for the GraphDB importer.
+  * **ISonesIndex** -- The interface for all sones indices.
